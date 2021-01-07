@@ -1,0 +1,20 @@
+new_session: yes
+delete_merged_file: true
+book_filename: "covpncorr"
+before_chapter_script: "_common.R"
+
+language:
+  ui:
+    chapter_name: "Section "
+
+rmd_files: [
+  "index.Rmd",
+  "antibodes_eda/report.Rmd",
+  "antibodes_dimred/report.Rmd",
+  "risk_scoring/report.Rmd",
+  "MORE",
+  "cop_stochastic.Rmd,"
+  "cop_mediation.Rmd",
+  "99-references.Rmd"
+]
+

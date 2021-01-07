@@ -1,0 +1,22 @@
+bookdown::bs4_book:
+  theme:
+    primary: "#637238"
+  repo: https://github.com/nhejazi/covpncorr
+
+bookdown::gitbook:
+  css: [style.css, toc.css, center.css]
+  dev: svg
+  config:
+    toc:
+      collapse: section
+      before: |
+        <li><strong><a href="./">CoVPN Correlates Analysis</a></strong></li>
+    sharing: no
+
+bookdown::pdf_book:
+  latex_engine: xelatex
+  citation_package: natbib
+  includes:
+    in_header: preamble.tex
+  keep_tex: yes
+  highlight: tango

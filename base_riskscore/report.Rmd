@@ -1,0 +1,8 @@
+# Baseline Risk Score (Proxy for SARS-CoV-2 Exposure) {#base-riskscore}
+
+TO FILL IN
+
+```{r base-riskscore-setup}
+# TODO
+```
+

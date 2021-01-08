@@ -1,0 +1,8 @@
+# CoP: Stochastic Interventional Effects on Risk and Vaccine Efficacy {#cop-stochastic}
+
+TO FILL IN
+
+```{r cop-stochastic-setup}
+# TODO
+```
+

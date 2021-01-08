@@ -1,4 +1,4 @@
-new_session: yes
+#new_session: yes
 delete_merged_file: true
 book_filename: "covpncorr"
 before_chapter_script: "_common.R"
@@ -9,12 +9,17 @@ language:
 
 rmd_files: [
   "index.Rmd",
-  "antibodes_eda/report.Rmd",
-  "antibodes_dimred/report.Rmd",
-  "risk_scoring/report.Rmd",
-  "MORE",
-  "cop_stochastic.Rmd,"
-  "cop_mediation.Rmd",
-  "99-references.Rmd"
+  "ab_graphical/report.Rmd",
+  "ab_combined/report.Rmd",
+  "base_riskscore/report.Rmd",
+  "cor_coxph/report.Rmd",
+  "cor_nonpar/report.Rmd",
+  "cor_threshold/report.Rmd",
+  "cor_surrogates/report.Rmd",
+  "cop_prinstrat/report.Rmd",
+  "cop_controlled/report.Rmd",
+  "cop_stochastic/report.Rmd",
+  "cop_mediation/report.Rmd",
+  "references.Rmd"
 ]
 

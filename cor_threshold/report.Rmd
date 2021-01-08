@@ -1,0 +1,8 @@
+# Univariate CoR: Nonparametric Threshold Modeling {#cor-threshold}
+
+TO FILL IN
+
+```{r cor-threshold-setup}
+# TODO
+```
+

@@ -1,0 +1,10 @@
+# CoP: Mediators of Vaccine Efficacy {#cop-mediators}
+
+TO FILL IN
+
+```{r cop-mediator-setup}
+# TODO
+```
+
+Here, we take a different approach than that based on the [stochastic
+interventional effects](#cop-stochastic)...

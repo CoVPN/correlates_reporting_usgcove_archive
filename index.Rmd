@@ -24,14 +24,9 @@ graphics: yes
 
 TO FILL IN
 
-## Outline {#outline}
+## Statistical Analysis Plan {#sap}
 
-TO FILL IN
+The _Statistical Analysis Plan_ is available at
+https://doi.org/10.6084/m9.figshare.13198595
 
-* ...
-* ...
-* ...
-
-## Related
-
-TO FILL IN -- SAP
+`r if (knitr::is_latex_output()) '-->'`

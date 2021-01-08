@@ -1,0 +1,8 @@
+# Univariate CoR: Cox Proportional Hazards Modeling of Risk {#cor-coxph}
+
+TO FILL IN
+
+```{r cor-coxph-setup}
+# TODO
+```
+

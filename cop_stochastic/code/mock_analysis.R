@@ -104,7 +104,7 @@ ve_msm <- msm_vimshift(
   eif_reg_type = "hal",
   ipcw_fit_ext = ipcw_external
 )
-saveRDS(ve_msm, file = here("data_clean", "covid_vetrial_mock_results.rds"))
+saveRDS(ve_msm, file = here("output", "covid_vetrial_mock_results.rds"))
 
 # pretty plot for OWS presentation
 p_ve_msm <- plot(ve_msm) +

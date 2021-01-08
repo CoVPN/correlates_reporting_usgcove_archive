@@ -6,9 +6,10 @@ The _Statistical Analysis Plan_ (SAP) is available at
 
 ## Collaboration Guide
 
-Long-form documentation on our most aspects of our project organization
-recommendations are provided in [this blog
-post](https://davidbphd.com/project-organization-for-reproducible-data-science/).
+Please consult [this blog
+post](https://davidbphd.com/project-organization-for-reproducible-data-science/)
+for long-form documentation on most aspects of our project organization
+recommendations.
 
 * [Code style guide](https://style.tidyverse.org/), with some modifications;
   this will largely be enforcd with [`styler`](https://styler.r-lib.org/).

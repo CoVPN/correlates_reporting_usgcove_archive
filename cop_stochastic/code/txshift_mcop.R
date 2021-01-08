@@ -75,6 +75,7 @@ ipcw_external <- list(pi_mech = ipcw_fit_pred, ipc_weights = ipc_weights)
 
 # run MSM analysis
 lapply(seq_len(ncol(ve_immuno_day57_std)), function(col_idx) {
+#for (col_idx in c(2, 3, 4)) {
   # set immune biomarker for analysis
   marker_day57_name <- colnames(ve_immuno_day57_std)[col_idx]
   marker_day57_name_long <- marker_day57_longer_names[[marker_day57_name]]
@@ -143,4 +144,5 @@ lapply(seq_len(ncol(ve_immuno_day57_std)), function(col_idx) {
   ggsave2(filename = here("figs",
                           paste0("ve_summary_", marker_day57_name, ".pdf")),
          plot = p_ve_msm)
+#}
 })

@@ -1,4 +1,4 @@
-# CoVPN Stochastic Interventional VE Analyses
+# Stochastic Interventional Vaccine Efficacy Analyses
 
 ## Contents
 

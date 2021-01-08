@@ -29,7 +29,8 @@ Imports:
   SuperLearner,
   sl3,
   haldensify,
-  txshift
+  txshift,
+  COVIDcorr
 Suggests:
   nnls,
   Rsolnp,
@@ -43,6 +44,7 @@ Suggests:
   ranger
 Remotes:
   github::rstudio/bookdown,
+  github::youyifong/CovidCorrSAP/R_packages/COVIDcorr,
   github::tlverse/hal9001@master,
   github::tlverse/delayed@master,
   github::tlverse/origami@master,

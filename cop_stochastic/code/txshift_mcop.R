@@ -14,26 +14,12 @@ library(hal9001)
 library(sl3)
 library(SuperLearner)
 library(txshift)
+library(COVIDcorr)  # data package
 source(here("..", "_common.R"))
 source(here("code", "sl_libs.R"))
 plan(multiprocess, workers = 4)
 sl3_debug_mode()
 options(sl3.pcontinuous = 0)
-
-## download and install package archived from CRAN
-if (!("osDesign" %in% installed.packages())) {
-  pkg_file <- "osDesign_1.7.tar.gz"
-  url <- paste0("http://cran.r-project.org/src/contrib/Archive/osDesign/",
-                pkg_file)
-  download.file(url = url, destfile = pkg_file)
-  install.packages(pkgs = pkg_file, type = "source", repos = NULL)
-  unlink(pkg_file)
-}
-
-## install local data package
-remotes::install_github("youyifong/CovidCorrSAP/R_packages/COVIDcorr")
-#remotes::install_local(here("..", "R_packages", "COVIDcorr"), force = TRUE)
-library(COVIDcorr); stopifnot(packageVersion("COVIDcorr") >= "2020.10.14")
 
 # longer names of immune markers of interest
 marker_day57_longer_names <- list(
@@ -75,7 +61,6 @@ ipcw_external <- list(pi_mech = ipcw_fit_pred, ipc_weights = ipc_weights)
 
 # run MSM analysis
 lapply(seq_len(ncol(ve_immuno_day57_std)), function(col_idx) {
-#for (col_idx in c(2, 3, 4)) {
   # set immune biomarker for analysis
   marker_day57_name <- colnames(ve_immuno_day57_std)[col_idx]
   marker_day57_name_long <- marker_day57_longer_names[[marker_day57_name]]
@@ -144,5 +129,4 @@ lapply(seq_len(ncol(ve_immuno_day57_std)), function(col_idx) {
   ggsave2(filename = here("figs",
                           paste0("ve_summary_", marker_day57_name, ".pdf")),
          plot = p_ve_msm)
-#}
 })

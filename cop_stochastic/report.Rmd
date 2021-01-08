@@ -1,8 +1,61 @@
 # CoP: Stochastic Interventional Effects on Risk and Vaccine Efficacy {#cop-stochastic}
 
-TO FILL IN
-
 ```{r cop-stochastic-setup}
 # TODO
 ```
+
+Using an approach recently advocated by @hejazi2020efficient, we estimate the
+counterfactual mean of symptomatic COVID-19 infection under posited shifts in
+the measured activity levels of each of four CoP biomarkers.  By shifting the
+_standardized_ CoP biomarker activity levels by standard units $\{-0.5, -0.4,
+\ldots, 0.4, 0.5\}$, we can assess the degree to which vaccines that possibly
+enhance the CoP biomarker activity to these levels could mitigate COVID-19
+infection in terms of counterfactual risk.
+
+## Receptor binding domain (RBD) binding antibody
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{figs/ve_summary_Day57bindRBD}
+    \caption{Counterfactual COVID-19 infection risks across standardized shifts
+      in RBD binding antibody activity levels. Projection of the dose-response
+      curve onto a linear working model provides evidence of decreased expected
+      infection risk with increases in RBD binding antibody activity.}
+\end{figure}
+
+## Spike protein antibody
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{figs/ve_summary_Day57bindSpike}
+    \caption{Counterfactual COVID-19 infection risks across standardized shifts
+      in spike protein antibody activity levels. Projection of the dose-response
+      curve onto a linear working model provides limited evidence of decreased
+      expected infection risk with increases in spike protein antibody activity,
+      though the trend flattens sharply beyond negative shifts.}
+\end{figure}
+
+## Live virus-neutralizing antibody
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{figs/ve_summary_Day57liveneut}
+    \caption{Counterfactual COVID-19 infection risks across standardized shifts
+      in live virus-neutralizing antibody activity levels. Projection of the
+      dose-response curve onto a linear working model provides no evidence of
+      of decreased expected infection risk with increases in live
+      virus-neutralizing antibody activity.}
+\end{figure}
+
+## Pseudo-neutralizing antibody
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{figs/ve_summary_Day57pseudoneut}
+    \caption{Counterfactual COVID-19 infection risks across standardized shifts
+      in pseudo-neutralizing antibody activity levels. Projection of the
+      dose-response curve onto a linear working model provides limited evidence
+      of decreased expected infection risk with increases in pseudo-neutralizing
+      antibody activity.}
+\end{figure}
 

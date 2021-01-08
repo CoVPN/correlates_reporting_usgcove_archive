@@ -16,7 +16,7 @@ graphics: yes
 # Preface {-}
 
 <img style="float: center; margin-right: 1%; margin-bottom: 0.01em"
-     src="covpn_logo.svg" width="30%" height="30%">
+     src="covpn_logo.png" width="40%" height="40%">
 <p style="clear: both;">
 <br>
 
@@ -24,7 +24,7 @@ graphics: yes
 
 TO FILL IN
 
-## Statistical Analysis Plan {#sap}
+## Statistical Analysis Plan {-}
 
 The _Statistical Analysis Plan_ is available at
 https://doi.org/10.6084/m9.figshare.13198595

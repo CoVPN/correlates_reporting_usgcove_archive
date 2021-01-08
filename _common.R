@@ -10,8 +10,7 @@ knitr::opts_chunk$set(
   dpi = 300,
   fig.align = "center",
   fig.show = "hold",
-  out.width = "70%",
-  tidy = FALSE
+  out.width = "120%"
 )
 
 # global options

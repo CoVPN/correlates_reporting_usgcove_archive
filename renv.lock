@@ -1138,6 +1138,13 @@
       "RemoteSha": "7b31005c73029a77118ae8bd316cca053ccd91f4",
       "Hash": "1f9fbbd0e3413b7759d61edd5d69d3d7"
     },
+    "speedglm": {
+      "Package": "speedglm",
+      "Version": "0.3-3",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "5955a9bd4ed0275ad45596a49d75946f"
+    },
     "stringi": {
       "Package": "stringi",
       "Version": "1.5.3",

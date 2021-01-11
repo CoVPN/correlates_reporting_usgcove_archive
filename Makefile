@@ -11,3 +11,5 @@ code:
 	rm R/*.R
 	R CMD BATCH purl.R
 	rm purl.Rout .RData
+
+PHONY: nima

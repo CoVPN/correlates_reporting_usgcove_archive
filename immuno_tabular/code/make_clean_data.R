@@ -1,33 +1,8 @@
-library(COVIDcorr)
-library(here)
-library(tidyverse)
-library(survey)
-library(knitr)
-library(kableExtra)
-
-indat <- COVIDcorr::dat.mock
-dataDate <- format(lubridate::mdy("01/12/2021"), "%B %d, %Y")
-
-bAb_lloq <- 34
-bAb_uloq <- 19136250
-nAb50_lloq <- 49
-nAb80_lloq <- 43
-
-# Variable Names by Assay
-bAb <- c("bindSpike", "bindRBD")
-pnAb <- c("pseudoneutid50", "pseudoneutid80")
-lnAb <- c("liveneutid50", "liveneutid80")
-
-visits <- c("B", "Day29", "Day57")
-bAb_v <-  levels(interaction(visits, bAb, sep=""))
-pnAb_v <- levels(interaction(visits, pnAb, sep=""))
-lnAb_v <- levels(interaction(visits, lnAb, sep=""))
-
-
+source(here::here("code", "make_functions.R"))
 # Read in original data
 ds_o <- COVIDcorr::dat.mock
 
-# Sampling Probability & Weight 
+# The stratified random cohort for immunogenicity
 ds_s <- ds_o %>% 
   filter(SubcohortInd==1 & TwophasesampInd==1 & Perprotocol==1)
 
@@ -56,7 +31,7 @@ ds_long <- ds_s %>%
          AgeRiskC = paste(Age65C, HighRiskC),
          AgeSexC = paste(Age65C, SexC),
          AgeMinorC = paste(Age65C, MinorityC)
-         ) %>% 
+  ) %>% 
   pivot_longer(cols=c(Age65C, HighRiskC, AgeRiskC, SexC, AgeSexC, ethnicityC, RaceEthC, MinorityC, AgeMinorC), 
                names_to="subgroup", values_to = "subgroup_cat") %>% 
   filter(!subgroup_cat %in% c("","Age < 65 ", "Age >= 65 ")) %>% 
@@ -96,7 +71,7 @@ ds2<- bind_cols(
             lloq=list(bAb_lloq, bAb_lloq, nAb50_lloq, nAb80_lloq, nAb50_lloq, nAb80_lloq)),
        .f=setResponder, folds=c(2,4), responderFR=4) %>% 
     do.call(cbind, .),
-  ) 
+) 
 
 sub_lev <- c("Total","Age65C", "HighRiskC", "AgeRiskC", "SexC", "AgeSexC", "ethnicityC", "RaceEthC", "MinorityC", "AgeMinorC")
 sub_lb <- c("Total", "Age", "High Risk", "Age, Risk", "Sex", "Age, Sex", "Ethnicity", "Race", "Minority", "Age, Minority")
@@ -135,5 +110,6 @@ ds_mag_l <- pivot_longer(ds, cols=all_of(c(bAb_v, pnAb_v, lnAb_v)), names_to = "
                unite("responder_cat", c(time, endpoint), sep=""), by="responder_cat")
 
 
-save(ds, ds_resp_l, ds_mag_l, resp_v, file = here::here("data_clean","ds_all.Rdata"))
+save(ds, ds_resp_l, ds_mag_l, resp_v, 
+     file = here("immuno_tabular","data_clean","ds_all.Rdata"))
 

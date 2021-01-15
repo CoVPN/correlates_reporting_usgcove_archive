@@ -8,7 +8,7 @@ outfile <- sprintf("%s-%s>", rmd, Sys.Date())
 render(
   input = rmd,
   output_format = "all", # Generate all outputs in YAML header
-  output_dir = here("immuno_tabular","output")
+  output_dir = here("output")
 )
 
 

@@ -1,13 +1,12 @@
-# ds <- readRDS(here("clean_data", "ds_all.Rds"))
+# Reload clean_data
+load(here("immuno_tabular","data_clean","ds_all.Rdata"))
 
-
-load(here::here("data_clean","ds_all.Rdata"))
-
+# Variables used for stratification in the tables
 sub_grp_col <- c("subgroup", "Group", "Baseline")
 sub_grp <- as.formula(paste0("~", paste(sub_grp_col, collapse="+"))) 
+dssvy <- svydesign(ids=~Bstratum, strata=sub_grp, weights=~wt, data=ds, nest=T)
 
 # 1 - 3 tab_rr: Responder Rates
-dssvy <- svydesign(ids=~Bstratum, strata=sub_grp, weights=~wt, data=ds, nest=T)
 resp_f <- paste0("~", paste(resp_v, collapse = " + "))
 rpcnt <- svyby(as.formula(resp_f), sub_grp, dssvy, svymean, vartype="ci")
 
@@ -24,9 +23,7 @@ tab_rr <- pivot_longer(rpcnt, cols=-(1:length(sub_grp_col)), names_to="responder
   mutate(rspr= sprintf("%.1f%%", rr*100), ci=sprintf("(%.1f%%, %.1f%%)", ci_l*100, ci_u*100)) %>% 
   pivot_longer(cols=c(rspr, ci), values_to = "rslt") %>% 
   pivot_wider(c(subgroup, Group, Baseline, Visit, Endpoint, name, rslt, N), 
-              names_from=ind.lb, values_from = rslt) %>% 
-  select(-name)
-
+              names_from=ind.lb, values_from = rslt)
 
 # 4 GM 
 gm_f <- paste0("~", paste(c(bAb_v, pnAb_v, lnAb_v), collapse = " + "))
@@ -43,8 +40,7 @@ tab_gm <- pivot_longer(rgm, cols=-(1:length(sub_grp_col)), names_to="responder_c
              by=c("subgroup", "Group", "Baseline", "responder_cat")) %>% 
   pivot_wider(names_from = param, values_from = value) %>% 
   mutate(`GMT/GMC`=sprintf("%.0f", 10^gm), 
-         `95% CI`=sprintf("(%.0f, %.0f)", 10^ci_l, 10^ci_u)) %>% 
-  select(subgroup, Group, Baseline, Visit, Endpoint, N, `GMT/GMC`, `95% CI`)
+         `95% CI`=sprintf("(%.0f, %.0f)", 10^ci_l, 10^ci_u)) 
 
 # 5 - 6
 gmr_f <- paste0("~", paste(grep("Delta", names(ds), value=T, fixed=F), collapse = " + "))
@@ -67,46 +63,50 @@ tab_gmr <- pivot_longer(rgmr, cols=-(1:length(sub_grp_col)), names_to="responder
          responder_cat=ifelse(is.na(responder_cat), param, responder_cat),
          param=ifelse(!param%in%c("ci_l","ci_u"), "gmr", param)) %>% 
   inner_join(delta_lb, by="responder_cat") %>% 
+  inner_join(ds %>% group_by(across(all_of(sub_grp_col))) %>% summarise(N=n()), by=sub_grp_col) %>% 
   pivot_wider(names_from = param, values_from = value) %>% 
-  mutate(`GMTR/GMCR`=sprintf("%.2f", 10^gmr), `95% CI`=sprintf("(%.2f, %.2f)", 10^ci_l, 10^ci_u)) %>%
-  select(Baseline, Endpoint, Group, Visits, `GMTR/GMCR`, `95% CI`)
+  mutate(`GMTR/GMCR`=sprintf("%.2f", 10^gmr), `95% CI`=sprintf("(%.2f, %.2f)", 10^ci_l, 10^ci_u)) 
 
 
 # 7a
 # Ratios of GMT/GMC between Vaccine vs Placebo 
 comp_v <- "Trt"
 f_v <- as.formula(sprintf("mag ~ %s", comp_v))
+
 tab_gmtrA <- ds_mag_l %>% 
   filter(subgroup=="Total") %>% 
   group_split(across(c(all_of(sub_grp_col), "Visit","responder_cat"))) %>% 
   map_dfr(function(x){
     ret <- x %>% 
       group_by(subgroup, Baseline, Endpoint, Visit,responder_cat) %>% 
-      summarise(estimate=summary(lm(f_v, weights = wt, data=.))$coefficients[comp_v, "Estimate"],
+      summarise(N=n(), 
+                estimate=summary(lm(f_v, weights = wt, data=.))$coefficients[comp_v, "Estimate"],
                 se=summary(lm(f_v, weights = wt, data=.))$coefficients[comp_v, "Std. Error"],
-                ci_u=10^(estimate+1.96*se), ci_l=10^(estimate-1.96*se), est=round(10^estimate,2)) %>% 
-      mutate(`95% CI`=sprintf("(%.2f, %.2f)", ci_l, ci_u))
-  }) %>% 
-  rename(`Ratios of GMT/GMC`=est) %>% 
-  select(-c(estimate, responder_cat, se, ci_u, ci_l))
+                ci_u=10^(estimate+1.96*se), ci_l=10^(estimate-1.96*se), 
+                `Ratios of GMT/GMC`=round(10^estimate,2),
+                `95% CI`=sprintf("(%.2f, %.2f)", ci_l, ci_u))
+  })
+
 
 # 7b Ratios of GMT/GMC between baseline negative vs positive among vacinees
 comp_v <- "Baseline"
 f_v <- as.formula(sprintf("mag ~ %s", comp_v))
 sub_grp_colB <- c("subgroup", "Group", "Trt")
+
 tab_gmtrB <- ds_mag_l %>% 
   filter(subgroup=="Total" & Trt==1) %>% 
   group_split(across(c(all_of(sub_grp_colB), "responder_cat"))) %>%
   map_dfr(function(x){
     ret <- x %>% 
       group_by(subgroup, Endpoint, Visit,responder_cat) %>% 
-      summarise(estimate=summary(lm(f_v, weights = wt, data=.))$coefficients[2, "Estimate"],
+      summarise(N=n(),
+                estimate=summary(lm(f_v, weights = wt, data=.))$coefficients[2, "Estimate"],
                 se=summary(lm(f_v, weights = wt, data=.))$coefficients[2, "Std. Error"],
-                ci_u=10^(estimate+1.96*se), ci_l=10^(estimate-1.96*se), est=round(10^estimate,2)) %>% 
-      mutate(`95% CI`=sprintf("(%.2f, %.2f)", ci_l, ci_u))
-  }) %>% 
-  rename(`Ratios of GMT/GMC`=est) %>% 
-  select(-c(estimate, responder_cat, se, ci_u, ci_l))
+                ci_u=10^(estimate+1.96*se), ci_l=10^(estimate-1.96*se), 
+                `Ratios of GMT/GMC`=round(10^estimate,2),
+                `95% CI`=sprintf("(%.2f, %.2f)", ci_l, ci_u))
+  }) 
+
 
 # 7c
 ds_mag_l_7c <- ds_mag_l %>% 
@@ -125,34 +125,33 @@ tab_gmtrC <- ds_mag_l_7c %>%
   map_dfr(function(x){
     ret <- x %>% 
       group_by(Baseline, Endpoint, responder_cat, Visit, comp_i) %>% 
-      summarise(estimate=summary(lm(f_v, weights = wt, data=.))$coefficients[2, "Estimate"],
+      summarise(N=n(),
+                estimate=summary(lm(f_v, weights = wt, data=.))$coefficients[2, "Estimate"],
                 se=summary(lm(f_v, weights = wt, data=.))$coefficients[2, "Std. Error"],
-                est=round(10^estimate,2),
-                ci_u=10^(estimate+1.96*se), ci_l=10^(estimate-1.96*se)) %>% 
-      mutate(`95% CI`=sprintf("(%.2f, %.2f)", ci_l, ci_u))}
-  ) %>%
-  ungroup() %>% 
-  rename(`Ratios of GMT/GMC`=est) %>% 
-  select(-c(estimate, responder_cat, se, ci_u, ci_l))
+                ci_u=10^(estimate+1.96*se), ci_l=10^(estimate-1.96*se),
+                `Ratios of GMT/GMC`=round(10^estimate,2),
+                `95% CI`=sprintf("(%.2f, %.2f)", ci_l, ci_u))
+  })
+
 
 # 8
 comp_v <- "Trt"
 f_v <- as.formula(sprintf("response ~ %s", comp_v))
+
 tab_rrdiff <- ds_resp_l %>% 
   group_split(across(c(all_of(sub_grp_col), "responder_cat", "ind.lb"))) %>% 
   map_dfr(function(x){
     ret <- x %>% 
       group_by(Baseline, Endpoint, subgroup, Group, Visit, ind.lb) %>%
-      summarise(estimate=summary(glm(f_v, weights = wt, data=.))$coefficients[comp_v, "Estimate"],
-            se=summary(glm(f_v, weights = wt, data=.))$coefficients[comp_v, "Std. Error"],
-            ci_u=estimate+1.96*se, ci_l=estimate-1.96*se) %>% 
-      mutate(`95% CI`=sprintf("(%.1f%%, %.1f%%)", ci_l*100, ci_u*100), 
-             est=sprintf("%.1f%%", estimate*100))
-    }) %>% 
-  pivot_longer(cols=c(est, `95% CI`), values_to="rslt") %>% 
-  pivot_wider(-c(estimate, se, ci_u, ci_l), names_from=ind.lb, values_from = rslt) %>% 
-  select(-name)
+      summarise(N=n(),
+                estimate=summary(glm(f_v, weights = wt, data=.))$coefficients[comp_v, "Estimate"],
+                se=summary(glm(f_v, weights = wt, data=.))$coefficients[comp_v, "Std. Error"],
+                ci_u=estimate+1.96*se, ci_l=estimate-1.96*se,
+                est=sprintf("%.1f%%", estimate*100),
+                ci=sprintf("(%.1f%%, %.1f%%)", ci_l*100, ci_u*100))}) %>% 
+  pivot_longer(cols=c(est, ci), values_to="rslt") %>% 
+  pivot_wider(-c(estimate, se, ci_u, ci_l), names_from=ind.lb, values_from = rslt) 
 
 
 save(tab_rr, tab_gm, tab_gmr, tab_gmtrA, tab_gmtrB, tab_gmtrC, tab_rrdiff, 
-     file=here::here("output","Tables.Rdata"))
+     file=here("immuno_tabular","output","Tables.Rdata"))

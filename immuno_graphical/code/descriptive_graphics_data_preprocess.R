@@ -21,7 +21,7 @@ library(SWIM)  ## allowing weighted ecdf in ggplot
 library(stringr)
 
 ## preprocess the data for subsequent plotting, and save the output data to a specific file path
-dat <- dat
+dat <- dat.mock
 
 save.results.to <- "../figs/"
 ## color palatte throughout the report
@@ -175,13 +175,62 @@ dat.long$EventD57 <- factor(dat.long$EventIndPrimaryD57, levels = c(0, 1), label
 
 
 # matrix to decide the sampling strata
-dat.long$demo_lab <- with(dat.long, ifelse(age.geq.65 == 0,
-                                                     ifelse(HighRiskInd == 0, "Age < 65, Not High Risk", "Age < 65, High Risk"),
-                                                     ifelse(HighRiskInd == 0, "Age >= 65, Not High Risk", "Age >= 65, High RIsk")))
+dat.long$demo_lab <- 
+  with(dat.long, factor(paste0(age.geq.65, HighRiskInd),
+                        levels = c("00", "01", "10", "11"),
+                        labels = c("Age < 65 not at tisk",
+                                   "Age < 65 at risk",
+                                   "Age >= 65 not at risk",
+                                   "Age >= 65 at risk")))
 
+# labels of the demographic strata for the subgroup plotting
+dat.long.twophase.sample$age_geq_65_label <- 
+  with(dat.long.twophase.sample,
+       factor(age.geq.65, 
+              levels = c(0, 1), 
+              labels = c("Age >= 65", "Age < 65")))
 
+dat.long.twophase.sample$highrisk_label <- 
+  with(dat.long.twophase.sample,
+       factor(HighRiskInd, 
+              levels = c(0, 1), 
+              labels = c("Not at risk", "At risk")))
 
+dat.long.twophase.sample$age_risk_label <- 
+  with(dat.long.twophase.sample, 
+       factor(paste0(age.geq.65, HighRiskInd),
+              levels = c("00", "01", "10", "11"),
+              labels = c("Age < 65 not at tisk",
+                         "Age < 65 at risk",
+                         "Age >= 65 not at risk",
+                         "Age >= 65 at risk")))
 
+dat.long.twophase.sample$sex_label <- 
+  with(dat.long.twophase.sample,
+       factor(Sex,
+              levels = c(0, 1), 
+              labels = c("Female", "Male")))
 
+dat.long.twophase.sample$age_sex_label <- 
+  with(dat.long.twophase.sample, 
+       factor(paste0(age.geq.65, Sex),
+              levels = c("00", "01", "10", "11"),
+              labels = c("Age < 65 male",
+                         "Age < 65 female",
+                         "Age >= 65 male",
+                         "Age >= 65 female")))
 
+dat.long.twophase.sample$minority_label <-
+  with(dat.long.twophase.sample,
+       factor(MinorityInd, 
+              levels = c(0, 1),
+              labels = c("White Non-Hispanic", "Comm. of Color")))
 
+dat.long.twophase.sample$age_minority_label <- 
+  with(dat.long.twophase.sample, 
+       factor(paste0(age.geq.65, MinorityInd),
+              levels = c("00", "01", "10", "11"),
+              labels = c("Age < 65 Comm. of Color",
+                         "Age < 65 White Non-Hispanic",
+                         "Age >= 65 Comm. of Color",
+                         "Age >= 65 White Non-Hispanic")))

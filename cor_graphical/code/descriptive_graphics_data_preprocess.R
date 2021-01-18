@@ -1,8 +1,7 @@
-rm(list=ls())
 #install.packages("kyotil")
 #install.packages("D:/CovidCorrSAP/R_packages/COVIDcorr", repos = NULL, type = "source")
 
-set.seed(1027)
+source(here::here("..", "_common.R"))
 
 
 library(kyotil)
@@ -21,7 +20,7 @@ library(SWIM)  ## allowing weighted ecdf in ggplot
 library(stringr)
 
 
-save.results.to <- "../figs/"
+save.results.to <- here::here("figs")
 study.name <- "mock"
 ## color palatte throughout the report
 hvtn_col <- c("#1749FF","#D92321","#0AB7C9","#FF6F1B","#810094","#378252","#FF5EBF","#3700A5","#8F8F8F","#787873")
@@ -176,7 +175,6 @@ dat.mock.long$EventD57 <- factor(dat.mock.long$EventIndPrimaryD57, levels = c(0,
 dat.mock.long$demo_lab <- with(dat.mock.long, ifelse(age.geq.65 == 0,
                                                      ifelse(HighRiskInd == 0, "Age < 65, Not High Risk", "Age < 65, High Risk"),
                                                      ifelse(HighRiskInd == 0, "Age >= 65, Not High Risk", "Age >= 65, High RIsk")))
-
 
 
 

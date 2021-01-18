@@ -1,5 +1,5 @@
-source("descriptive_graphics_data_preprocess.R")
-source("ggally_cor_resample.R") 
+source(here::here("code", "descriptive_graphics_data_preprocess.R"))
+source(here::here("code", "ggally_cor_resample.R"))
 
 
 #=========================================================================================================================
@@ -188,4 +188,3 @@ for (bstatus in 1:2) {
     }
   }
 }
-

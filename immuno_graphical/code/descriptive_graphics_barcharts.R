@@ -1,4 +1,4 @@
-source("descriptive_graphics_data_preprocess.R")
+source(here::here("code", "descriptive_graphics_data_preprocess.R"))
 #==============================================================================================
 # Point estimates of Day 57 marker positive response rates for the vaccine arm by the baseline
 # demographic subgroups and the baseline serostrata are provided, as well as pooled over base-
@@ -78,5 +78,4 @@ print(ggplot(data = res_rate_under_sample,
               legend.text = element_text(size = 18),
               legend.position = "bottom"))
 dev.off()
-
 

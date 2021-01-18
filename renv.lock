@@ -26,15 +26,9 @@
     "COVIDcorr": {
       "Package": "COVIDcorr",
       "Version": "2021.1.5",
-      "Source": "GitHub",
-      "RemoteType": "github",
-      "RemoteHost": "api.github.com",
-      "RemoteRepo": "CovidCorrSAP",
-      "RemoteUsername": "youyifong",
-      "RemoteRef": "HEAD",
-      "RemoteSha": "a68eafdd3eb43e32c6593e829d78f41cc18673a1",
-      "RemoteSubdir": "R_packages/COVIDcorr",
-      "Hash": "42db671be0e5bcd931d1ed0afbd170c4"
+      "Source": "Repository",
+      "Repository": "MRAN",
+      "Hash": "8e3850ca320849f26a4a277fad97d0e7"
     },
     "DBI": {
       "Package": "DBI",
@@ -178,8 +172,8 @@
       "Package": "bookdown",
       "Version": "0.21.6",
       "Source": "GitHub",
-      "Remotes": "rstudio/bslib, rstudio/rmarkdown, r-lib/downlit",
       "RemoteType": "github",
+      "Remotes": "rstudio/bslib, rstudio/rmarkdown, r-lib/downlit",
       "RemoteHost": "api.github.com",
       "RemoteRepo": "bookdown",
       "RemoteUsername": "rstudio",
@@ -212,8 +206,8 @@
       "Package": "bslib",
       "Version": "0.2.3.9000",
       "Source": "GitHub",
-      "Remotes": "rstudio/thematic, rstudio/promises, rstudio/sass,\nrstudio/htmltools, rstudio/shiny",
       "RemoteType": "github",
+      "Remotes": "rstudio/thematic, rstudio/promises, rstudio/sass, rstudio/htmltools,\nrstudio/shiny",
       "RemoteHost": "api.github.com",
       "RemoteRepo": "bslib",
       "RemoteUsername": "rstudio",
@@ -564,14 +558,14 @@
       "Package": "haldensify",
       "Version": "0.0.7",
       "Source": "GitHub",
-      "Remotes": "github::tlverse/hal9001@devel",
       "RemoteType": "github",
+      "Remotes": "github::tlverse/hal9001@devel",
       "RemoteHost": "api.github.com",
       "RemoteRepo": "haldensify",
       "RemoteUsername": "nhejazi",
       "RemoteRef": "master",
       "RemoteSha": "9c7bcbdfbeb7099afff81ac340c4eb7382c698a2",
-      "Hash": "2c15425b5dfebbdb6b40517a6f9aea7e"
+      "Hash": "895bc6a1c256916e493647fd4ffab48a"
     },
     "haven": {
       "Package": "haven",
@@ -1010,6 +1004,13 @@
       "RemoteSha": "b2b741f0209acdbe58c990864ef3c375b35903a6",
       "Hash": "16b45ec3edebbf35ead3e8c6ba5996b7"
     },
+    "repr": {
+      "Package": "repr",
+      "Version": "1.1.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "466aee1b69232becb73769daa894c171"
+    },
     "reprex": {
       "Package": "reprex",
       "Version": "0.3.0",
@@ -1125,12 +1126,19 @@
       "Repository": "CRAN",
       "Hash": "58510f25472de6fd363d76698d29709e"
     },
+    "skimr": {
+      "Package": "skimr",
+      "Version": "2.1.2",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "1771d7c2061c3608c9d149cd36024eb5"
+    },
     "sl3": {
       "Package": "sl3",
       "Version": "1.3.7",
       "Source": "GitHub",
-      "Remotes": "github::osofr/condensier, github::tlverse/hal9001,\ngithub::nhejazi/haldensify, github::tpospisi/RFCDE/r",
       "RemoteType": "github",
+      "Remotes": "github::osofr/condensier, github::tlverse/hal9001,\ngithub::nhejazi/haldensify, github::tpospisi/RFCDE/r",
       "RemoteHost": "api.github.com",
       "RemoteRepo": "sl3",
       "RemoteUsername": "tlverse",
@@ -1225,7 +1233,7 @@
       "RemoteUsername": "nhejazi",
       "RemoteRef": "master",
       "RemoteSha": "b3c4eb0c12b94f8e49c9374b32787ce802c5eb7f",
-      "Hash": "bb891dbcbeead157cf4eac7641711cc1"
+      "Hash": "4408f0fae3afa27957d3f99813719b23"
     },
     "usethis": {
       "Package": "usethis",
@@ -1275,6 +1283,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "181d1a31b1ba2009ef20926f2ee0570c"
+    },
+    "webshot": {
+      "Package": "webshot",
+      "Version": "0.5.2",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "e99d80ad34457a4853674e89d5e806de"
     },
     "whisker": {
       "Package": "whisker",

@@ -10,5 +10,3 @@ render(
   output_format = "all", # Generate all outputs in YAML header
   output_dir = here("output")
 )
-
-

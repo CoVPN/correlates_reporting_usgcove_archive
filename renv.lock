@@ -25,10 +25,16 @@
     },
     "COVIDcorr": {
       "Package": "COVIDcorr",
-      "Version": "2021.1.5",
-      "Source": "Repository",
-      "Repository": "MRAN",
-      "Hash": "8e3850ca320849f26a4a277fad97d0e7"
+      "Version": "2021.1.16",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteRepo": "CovidCorrSAP",
+      "RemoteUsername": "CoVPN",
+      "RemoteRef": "HEAD",
+      "RemoteSha": "70ef45b7b7d11eae8467393e8f3ba179ed5d7f71",
+      "RemoteSubdir": "R_packages/COVIDcorr",
+      "Hash": "64c8f7672a428118ad14fc9b6d00ecdf"
     },
     "DBI": {
       "Package": "DBI",

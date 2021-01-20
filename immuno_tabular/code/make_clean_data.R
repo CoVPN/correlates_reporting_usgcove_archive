@@ -1,7 +1,7 @@
 ##################################################
 # obligatory to append to the top of each script #
-renv::activate(project = here::here("..")) #
-source(here::here("..", "_common.R")) #
+renv::activate(project = here::here(".."))       #
+source(here::here("..", "_common.R"))            #
 ##################################################
 
 # load packages and helper scripts
@@ -108,7 +108,7 @@ ds2 <- bind_cols(
   ),
   .f = setResponder, folds = c(2, 4), responderFR = 4
   ) %>%
-    do.call(cbind, .),
+  do.call(cbind, .),
 )
 
 sub_lev <- c("Total", "Age65C", "HighRiskC", "AgeRiskC", "SexC", "AgeSexC",

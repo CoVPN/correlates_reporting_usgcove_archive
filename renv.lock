@@ -25,15 +25,9 @@
     },
     "COVIDcorr": {
       "Package": "COVIDcorr",
-      "Version": "2020.12.17",
-      "Source": "GitHub",
-      "RemoteType": "github",
-      "RemoteHost": "api.github.com",
-      "RemoteRepo": "correlates_mockdata",
-      "RemoteUsername": "CoVPN",
-      "RemoteRef": "HEAD",
-      "RemoteSha": "87abb7894d95d170aecd1041bea86023bcc35a0b",
-      "Hash": "a7c26058d9762ece16c195718b3e218a"
+      "Version": "2021.1.16",
+      "Source": "unknown",
+      "Hash": "155cb9a575ad0264ac0b76dfabe09c87"
     },
     "DBI": {
       "Package": "DBI",
@@ -388,10 +382,10 @@
     },
     "dplyr": {
       "Package": "dplyr",
-      "Version": "1.0.2",
+      "Version": "1.0.3",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "d0509913b27ea898189ee664b6030dc2"
+      "Hash": "365f8c3650ab95582e600f160fd5fb88"
     },
     "ellipsis": {
       "Package": "ellipsis",

@@ -1,6 +1,5 @@
 library(COVIDcorr)
-library(here)
-library(tidyverse)
+library(dplyr)
 library(survey)
 library(knitr)
 library(kableExtra)
@@ -32,22 +31,26 @@ setLOQ <- function(x, lloq = -Inf, uloq = Inf) {
 }
 
 # Function to Generate Responder calls
-setResponder <- function(data, bl, post, folds = c(2, 4), lloq, responderFR = 4) {
-  data[, paste0(post, "FR")] <- 10^(data[, post] - data[, bl])
-  foldsInd <- sapply(folds, function(x) as.numeric(data[, paste0(post, "FR")] >= x)) %>% data.frame()
+setResponder <- function(data, bl, post, folds = c(2, 4), lloq,
+                         responderFR = 4) {
+  data[, paste0(post, "FR")] <- 10 ^ (data[, post] - data[, bl])
+  foldsInd <- sapply(folds, function(x) {
+    as.numeric(data[, paste0(post, "FR")] >= x)
+  }) %>% data.frame()
   names(foldsInd) <- paste0(post, "FR", folds)
   data <- cbind(data, foldsInd)
-  data[, paste0(post, "Resp")] <- ifelse((data[, bl] < log10(lloq) & data[, post] > log10(lloq)) |
-    (data[, bl] >= log10(lloq) & data[, paste0(post, "FR", responderFR)] == 1),
-  1,
-  0
-  )
-  return(select_at(data, c(paste0(post, "Resp"), paste0(post, "FR", folds))))
+  data[, paste0(post, "Resp")] <-
+    ifelse((data[, bl] < log10(lloq) & data[, post] > log10(lloq)) |
+           (data[, bl] >= log10(lloq) &
+            data[, paste0(post, "FR", responderFR)] == 1), 1, 0)
+  return(select_at(data, c(paste0(post, "Resp"),
+                           paste0(post, "FR", folds))))
 }
 
 # Function Generate delta between T1 and T2
 setDelta <- function(data, endpoint, t1, t2, prefix = "", suffix = "") {
-  data[, paste0(prefix, endpoint, "delta", suffix)] <- data[paste0(t2, endpoint)] - data[paste0(t1, endpoint)]
+  data[, paste0(prefix, endpoint, "delta", suffix)] <-
+    data[paste0(t2, endpoint)] - data[paste0(t1, endpoint)]
   return(select_at(data, paste0(prefix, endpoint, "delta", suffix)))
 }
 
@@ -92,4 +95,5 @@ group_table <- function(data, keys) {
 
   rownames(data) <- NULL
   data
-} # end group_table()
+}
+# end group_table()

@@ -1,12 +1,13 @@
-## data             : clean up and reformat input data, and save to data_clean/
-data: code/make_clean_data.R
+## clean_data       : clean up and reformat input data, and save to data_clean/
+clean_data: code/make_clean_data.R
 	Rscript code/make_clean_data.R
 
-## tables           : make summary tables and save data to output/
-tables: code/make_table_all.R data
+## tables_output    : make summary tables and save data to output/
+tables_output: code/make_table_all.R \
+  clean_data
 	Rscript code/make_table_all.R
 
-## report           : use tables in output/ to build summary report
+## report           : use tables in output/ to build bookdown summary report
 report:
 	Rscript "rmarkdown::render(input = 'report.Rmd', output_dir = 'output')"
 
@@ -21,4 +22,4 @@ help: Makefile
 	@sed -n 's/^##//p' $<
 
 # define PHONYS
-.PHONY: help clean data tables
+.PHONY: help clean clean_data tables_output

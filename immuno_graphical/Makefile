@@ -17,10 +17,10 @@ plot_data: code/descriptive_graphics_data_preprocess.R params
 params: code/params.R
 
 ## clean            : delete contents of data_clean/ and figs/
-clean: 
-	rm figs/*.png
-	rm figs/demographics/*.png
-	rm data_clean/*.rds
+clean:
+	rm -f data_clean/*.rds
+	rm -f figs/*.png
+	rm -f figs/demographics/*.png
 
 # type 'make help' to show all make commands
 help: Makefile

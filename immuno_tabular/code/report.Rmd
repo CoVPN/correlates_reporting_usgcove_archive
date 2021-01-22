@@ -1,0 +1,275 @@
+---
+title: "CoVPN COVID-19 Vaccine Efficacy Trial Immune Correlates"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+output: 
+  pdf_document
+classoption: 
+  landscape
+---
+
+```{r knitr, echo = FALSE, message=FALSE, warning=F}
+# Somehow here() always starts from /code
+here::set_here("~/correlates_reporting/immuno_tabular")
+source(here::here("code", "make_functions.R"))
+source(here::here("code", "make_clean_data.R"))
+source(here::here("code", "make_table_all.R"))
+load(here::here("output","Tables.Rdata"))
+
+# Determine output document type.
+doctype <- opts_knit$get('rmarkdown.pandoc.to')
+opts_chunk$set(echo = doctype == "html", message = doctype == "html")
+
+```
+
+```{r setPage, echo = FALSE, message=FALSE}
+header <-  c("CoVPN COVID-19 Vaccine Efficacy Trial Immunogenicity","","Mock Report", paste("Data as of", format(Sys.Date(), '%B %d, %Y')))
+header <- paste(header, collapse = "\\\\")
+trt_footer <-  c("T1: Vaccination", "P2: Placebo")
+add2footer <- "All calculations were weighted by the inverse probability sampling (IPS), defined based on the subcohort sampling strata."
+tbl_num <- 1
+
+```
+
+
+```{r tlflist, eval = doctype != "docx"}
+tlf <- 
+list(
+  respprop = list(
+     table_name = "Responder Rates",
+     table_header = "Responder rates",
+     table_footer = c("Neutralization Responders are defined as participants who had baseline values below the lower limit of quantification (LLOQ) with detectable ID50 neutralization titer above the assay LLOQ, or as participants with baseline values above the LLOQ with a 4-fold increase in ID50.", 
+                      "",
+                      "Binding Antibody Responders are defined as participants who had baseline values below the LLOQ with detectable antibody concentration above the assay LLOQ, or as participants with baseline values above the LLOQ with a 4-fold increase in antibody concentration.",
+                      "",
+                      sprintf("bAb LLOQ = %s; nAb ID50 LLOQ = %s; nAb ID80 LLOQ = %s", bAb_lloq, nAb50_lloq, nAb80_lloq))),
+  
+   gmt = c(
+     table_name = "Geometric mean titers",
+     table_header = "Geometric mean titers (GMTs) or geometric mean value of concentrations (GMCs)",
+     table_footer = sprintf("bAb LLOQ = %s; nAb ID50 LLOQ = %s; nAb ID80 LLOQ = %s", bAb_lloq, nAb50_lloq, nAb80_lloq)),
+
+   gmtr = c(
+     table_name = "Geometric mean titer ratios",
+     table_header = "Geometric mean titer ratios (GMTRs) or geometric mean concentration ratios (GMCRs) between post-vaccinations/pre-vaccination",
+     table_footer = " "),
+
+   RofGMTa = c(
+     table_name = "Ratios of GMTs/GMCs",
+     table_header = "Ratios of GMTs/GMCs between the vaccine arm vs. placebo arm, by baseline status",
+     table_footer = " "),
+  
+   RofGMTb = c(
+     table_name = "Ratios of GMTs/GMCs",
+     table_header = "Ratios of GMTs/GMCs between baseline positive participants vs. negative participants, among the recipients",
+     table_footer = " "),
+  
+   RofGMTc = c(
+     table_name = "Ratios of GMTs/GMCs",
+     table_header = "Ratios of GMTs/GMCs between demographic subgroups among the vaccine recipients",
+     table_footer = " "),
+
+  respdiff = c(
+    table_name = "Responder Rate differences",
+    table_header = "Differences of responder rates between the vaccine arm and the placebo arm",
+    table_footer = " "),
+  
+  empty=c()
+)
+```
+
+```{r respprop, results = "asis", eval = "respprop" %in% names(tlf) & doctype != "docx"}
+chunk_name <- opts_current$get("label")
+tlf_labels <- tlf[[chunk_name]]
+
+title_i <- tlf_labels[["table_header"]]
+footer_i <- tlf_labels[["table_footer"]]
+
+add2header <- paste0("Table ", tbl_num, ": ", title_i)
+
+tab_header <- paste(header, add2header, sep = "\\\\")
+tab_footer <- c(footer_i, "", add2footer, "", trt_footer)
+ 
+lineseps <- tab_rr %>%
+  group_by(Baseline, Endpoint, subgroup) %>%
+  summarise(n=n()) %>%
+  pull(n) %>%
+  sapply(function(x)c(rep("",x-1), "\\addlinespace")) %>%
+  unlist()
+
+kable(tab_rr %>% arrange(Group) %>% select(-c(subgroup, Group)), format = doctype, booktabs = TRUE, longtable = TRUE, linesep=lineseps, caption=tab_header) %>%
+  pack_rows(index=table(tab_rr$Group)) %>% 
+  kable_styling(latex_options = "repeat_header") %>%
+  footnote(general = tab_footer,
+           general_title = " ", threeparttable = TRUE, escape = TRUE)
+
+tbl_num <- tbl_num + 1
+
+```
+\clearpage
+```{r gmt, results = "asis", eval = "gmt" %in% names(tlf) & doctype != "docx"}
+chunk_name <- opts_current$get("label")
+tlf_labels <- tlf[[chunk_name]]
+
+title_i <- tlf_labels[["table_header"]]
+footer_i <- tlf_labels[["table_footer"]]
+
+add2header <- paste0("Table ", tbl_num, ": ", title_i)
+
+tab_header <- paste(header, add2header, sep = "\\\\")
+tab_footer <- c(footer_i, "", add2footer, "", trt_footer)
+
+
+lineseps <- tab_gm %>%
+  group_by(Baseline, Endpoint, subgroup) %>%
+  summarise(n=n()) %>%
+  pull(n) %>%
+  sapply(function(x)c(rep("",x-1), "\\addlinespace")) %>%
+  unlist()
+
+kable(tab_gm, format = doctype, booktabs = TRUE, longtable = TRUE, linesep=lineseps, caption=tab_header) %>%
+  kable_styling(latex_options = "repeat_header") %>%
+  footnote(general =  tab_footer,
+           general_title = " ", threeparttable = TRUE, escape = TRUE)
+
+tbl_num <- tbl_num + 1
+
+```
+\clearpage
+```{r gmtr, results = "asis", eval = "gmtr" %in% names(tlf) & doctype != "docx"}
+chunk_name <- opts_current$get("label")
+tlf_labels <- tlf[[chunk_name]]
+
+title_i <- tlf_labels[["table_header"]]
+footer_i <- tlf_labels[["table_footer"]]
+
+add2header <- paste0("Table ", tbl_num, ": ", title_i)
+
+tab_header <- paste(header, add2header, sep = "\\\\")
+tab_footer <- c(footer_i, "", add2footer, "", trt_footer)
+
+
+kable(tab_gmr, format = doctype, booktabs = TRUE, longtable = TRUE, linesep="\\addlinespace", caption=tab_header) %>%
+  kable_styling(latex_options = "repeat_header") %>%
+  footnote(general = tab_footer,
+           general_title = " ", threeparttable = TRUE, escape = TRUE)
+
+tbl_num <- tbl_num + 1
+
+```
+\clearpage
+```{r RofGMTa, results = "asis", eval = "RofGMTa" %in% names(tlf) & doctype != "docx"}
+chunk_name <- opts_current$get("label")
+tlf_labels <- tlf[[chunk_name]]
+
+title_i <- tlf_labels[["table_header"]]
+footer_i <- tlf_labels[["table_footer"]]
+
+add2header <- paste0("Table ", tbl_num, ": ", title_i)
+
+tab_header <- paste(header, add2header, sep = "\\\\")
+tab_footer <- c(footer_i, "", add2footer, "", trt_footer)
+
+
+lineseps <- tab_gmtrA %>%
+  group_by(Baseline, Endpoint, subgroup) %>%
+  summarise(n=n()) %>%
+  pull(n) %>%
+  sapply(function(x)c(rep("",x-1), "\\addlinespace")) %>%
+  unlist()
+
+
+kable(tab_gmtrA, format = doctype, booktabs = TRUE, longtable = TRUE, linesep=lineseps, caption=tab_header) %>%
+  kable_styling(latex_options = "repeat_header") %>%
+  footnote(general = tab_footer,
+           general_title = " ", threeparttable = TRUE, escape = TRUE)
+
+tbl_num <- tbl_num + 1
+
+```
+\clearpage
+```{r RofGMTb, results = "asis", eval = "RofGMTb" %in% names(tlf) & doctype != "docx"}
+chunk_name <- opts_current$get("label")
+tlf_labels <- tlf[[chunk_name]]
+
+title_i <- tlf_labels[["table_header"]]
+footer_i <- tlf_labels[["table_footer"]]
+
+add2header <- paste0("Table ", tbl_num, ": ", title_i)
+
+tab_header <- paste(header, add2header, sep = "\\\\")
+tab_footer <- c(footer_i, "", add2footer, "", trt_footer)
+
+lineseps <- tab_gmtrB %>%
+  group_by(Endpoint) %>%
+  summarise(n=n()) %>%
+  pull(n) %>%
+  sapply(function(x)c(rep("",x-1), "\\addlinespace")) %>%
+  unlist()
+
+kable(tab_gmtrB, format = doctype, booktabs = TRUE, longtable = TRUE, linesep=lineseps, caption=tab_header) %>%
+  kable_styling(latex_options = "repeat_header") %>%
+  footnote(general = tab_footer,
+           general_title = " ", threeparttable = TRUE, escape = TRUE)
+
+tbl_num <- tbl_num + 1
+
+```
+\clearpage
+```{r RofGMTc, results = "asis", eval = "RofGMTc" %in% names(tlf) & doctype != "docx"}
+chunk_name <- opts_current$get("label")
+tlf_labels <- tlf[[chunk_name]]
+
+title_i <- tlf_labels[["table_header"]]
+footer_i <- tlf_labels[["table_footer"]]
+
+add2header <- paste0("Table ", tbl_num, ": ", title_i)
+
+tab_header <- paste(header, add2header, sep = "\\\\")
+tab_footer <- c(footer_i, "", add2footer, "", trt_footer)
+
+
+lineseps <- tab_gmtrC %>%
+  group_by(Baseline, Endpoint, comp_i) %>%
+  summarise(n=n()) %>%
+  pull(n) %>%
+  sapply(function(x)c(rep("",x-1), "\\addlinespace")) %>%
+  unlist()
+
+
+kable(tab_gmtrC, format = doctype, booktabs = TRUE, longtable = TRUE, linesep=lineseps, caption=tab_header) %>%
+  kable_styling(latex_options = "repeat_header") %>%
+  footnote(general = tab_footer,
+           general_title = " ", threeparttable = TRUE, escape = TRUE)
+
+tbl_num <- tbl_num + 1
+
+```
+\clearpage
+```{r respdiff, results = "asis", eval = "respdiff" %in% names(tlf) & doctype != "docx"}
+chunk_name <- opts_current$get("label")
+tlf_labels <- tlf[[chunk_name]]
+
+title_i <- tlf_labels[["table_header"]]
+footer_i <- tlf_labels[["table_footer"]]
+
+add2header <- paste0("Table ", tbl_num, ": ", title_i)
+
+tab_header <- paste(header, add2header, sep = "\\\\")
+tab_footer <- c(footer_i, "", add2footer, "", trt_footer)
+
+lineseps <- tab_rrdiff %>%
+  group_by(Baseline, Endpoint, subgroup) %>%
+  summarise(n=n()) %>%
+  pull(n) %>%
+  sapply(function(x)c(rep("",x-1), "\\addlinespace")) %>%
+  unlist()
+
+
+kable(tab_rrdiff, format = doctype, booktabs = TRUE, longtable = TRUE, linesep=lineseps, caption=tab_header) %>%
+  kable_styling(latex_options = "repeat_header") %>%
+  footnote(general = tab_footer,
+           general_title = " ", threeparttable = TRUE, escape = TRUE)
+
+tbl_num <- tbl_num + 1
+
+```

@@ -1,6 +1,24 @@
-source("descriptive_graphics_data_preprocess.R")
-source("ggally_cor_resample.R") ## produce geom_statistics with resampling-based covariate-adjusted Spearman correlation
-source("covid_corr_plot_functions.R")
+#--------------------------------------------
+renv::activate(project = here::here(".."))
+source(here::here("..", "_common.R"))
+#--------------------------------------------
+
+library(COVIDcorr)
+library(dplyr)
+library(stringr)
+library(GGally)
+library(scales)
+library(dummies)
+library(ggpubr)
+
+source(here::here("code", "ggally_cor_resample.R")) ## produce geom_statistics with resampling-based covariate-adjusted Spearman correlation
+source(here::here("code", "covid_corr_plot_functions.R"))
+source(here::here("code", "params.R"))
+
+dat.long.twophase.sample <- readRDS(here::here("data_clean", "long_twophase_data.rds"))
+dat.twophase.sample <- readRDS(here::here("data_clean", "twophase_data.rds"))
+
+
 ####################################
 ###          PAIR PLOTS          ### 
 ####################################
@@ -25,7 +43,7 @@ for (tt in 1:4) {
                            plot_title = paste0(c("D29", "D57", "D29 Fold-rise over D1", "D57 Fold-rise over D1")[tt], " Ab markers: baseline ", ifelse(bserostatus, "positive", "negative"), ", ", 
                                                c("placebo", "vaccine")[trt + 1], " arm"),
                            column_labels = labels.axis[tt + 1, 1:4],
-                           output_path = paste0(save.results.to, "pairs_", times[tt + 1], 
+                           filename = paste0(save.results.to, "/pairs_", times[tt + 1], 
                                                 "_Markers_", bstatus.labels.2[bserostatus+1], 
                                                 c("_placebo_arm", "_vaccine_arm")[trt + 1], "_",
                                                 study.name, ".png"))
@@ -47,7 +65,7 @@ for (tt in 1:4) {
                                              ifelse(bserostatus, "positive", "negative"), 
                                              ", placebo + vaccine arm"),
                          column_labels = labels.axis[tt + 1, 1:4],
-                         filename = paste0(save.results.to, "pairs_", c("Day29", "Day57", "Delta29overB", "Delta57overB")[tt], 
+                         filename = paste0(save.results.to, "/pairs_", c("Day29", "Day57", "Delta29overB", "Delta57overB")[tt], 
                                            "_Markers_", bstatus.labels.2[bserostatus+1], "_", study.name, ".png"))
   }
 }
@@ -71,7 +89,7 @@ for (bserostatus in 0:1) {
                          plot_title = paste0("D1 Ab markers: baseline ", ifelse(bserostatus, "positive", "negative"), ", ", 
                                              c("placebo", "vaccine")[trt + 1], " arm"),
                          column_labels = labels.axis[tt + 1, 1:4],
-                         filename = paste0(save.results.to, "pairs_baselineMarkers_",bstatus.labels.2[bserostatus + 1],
+                         filename = paste0(save.results.to, "/pairs_baselineMarkers_",bstatus.labels.2[bserostatus + 1],
                                            "_", c("placebo", "vaccine")[trt + 1], "_arm_", study.name, ".png"))
   }
 }
@@ -88,7 +106,7 @@ for (bserostatus in 0:1) {
                        weight = "wt",
                        plot_title = paste0("D1 Ab markers: baseline ", ifelse(bserostatus, "positive", "negative"), ", vaccine + placebo arm"),
                        column_labels = labels.axis[tt + 1, 1:4],
-                       filename = paste0(save.results.to, "pairs_baselineMarkers_",bstatus.labels.2[bserostatus + 1],
+                       filename = paste0(save.results.to, "/pairs_baselineMarkers_",bstatus.labels.2[bserostatus + 1],
                                          "_", study.name, ".png"))
   
   
@@ -116,7 +134,7 @@ for (tt in 1:5) {
                                       "Vaccine, Baseline Pos"),
                            panel_titles = labels.title2[tt,],
                            axis_titles = labels.axis[tt,],
-                           filename = paste0(save.results.to, "Marker_RCDF_", 
+                           filename = paste0(save.results.to, "/Marker_RCDF_", 
                                              times[tt], "_trt_both_bstatus_both_", 
                                              study.name, ".png"))
 }
@@ -128,13 +146,13 @@ for (tt in 1:5) {
 ##==========================================================================
 
 for (day in c("29", "57")) {
-  covid_corr_rcdf(plot_dat = subset(dat.long.v2, Trt = "Vaccine"),
+  covid_corr_rcdf(plot_dat = subset(dat.long.twophase.sample, Trt = "Vaccine"),
                   x = paste0("Day", day),
                   color = "assay",
                   lty = "Bserostatus",
                   weight = "wt",
                   xlab = paste0("D", day, " Binding Ab (IU/ml) / Pseudovirus nAb ID50 or ID80"),
-                  filename = paste0(save.results.to, "Marker_Rcdf_Day", day, "_trt_vaccine_bstatus_both_", 
+                  filename = paste0(save.results.to, "/Marker_Rcdf_Day", day, "_trt_vaccine_bstatus_both_", 
                                     study.name, ".png"))
 }             
 
@@ -144,13 +162,13 @@ for (day in c("29", "57")) {
 ##==========================================================================
 
 for (day in c("29", "57")) {
-  covid_corr_rcdf(plot_dat = subset(dat.long.v2, Trt = "Vaccine"),
+  covid_corr_rcdf(plot_dat = subset(dat.long.twophase.sample, Trt = "Vaccine"),
                   x = paste0("Delta", day, "overB"),
                   color = "assay",
                   lty = "Bserostatus",
                   weight = "wt",
                   xlab = paste0("D", day, " Fold-rise over D1 Binding Ab (IU/ml) / Pseudovirus nAb ID50 or ID80"),
-                  filename = paste0(save.results.to, "Marker_Rcdf_Delta", day, "overB_trt_vaccine_bstatus_both_", 
+                  filename = paste0(save.results.to, "/Marker_Rcdf_Delta", day, "overB_trt_vaccine_bstatus_both_", 
                                     study.name,".png"))
 }       
 
@@ -161,24 +179,24 @@ for (day in c("29", "57")) {
 ##==========================================================================
 
 for (day in c("29", "57")) {
-  covid_corr_rcdf(plot_dat = subset(dat.long.v2, Trt = "Vaccine"),
+  covid_corr_rcdf(plot_dat = subset(dat.long.twophase.sample, Trt = "Vaccine"),
                   x = paste0("Day", day),
                   color = "assay",
                   lty = NULL,
                   weight = "wt",
                   xlab = paste0("D", day, " Binding Ab (IU/ml) / Pseudovirus nAb ID50 or ID80"),
-                  filename = paste0(save.results.to, "Marker_Rcdf_Day", day, "_trt_vaccine_bstatus_Neg_", 
+                  filename = paste0(save.results.to, "/Marker_Rcdf_Day", day, "_trt_vaccine_bstatus_Neg_", 
                                     study.name, ".png"))
 }    
 
 for (day in c("29", "57")) {
-  covid_corr_rcdf(plot_dat = subset(dat.long.v2, Trt = "Vaccine"),
+  covid_corr_rcdf(plot_dat = subset(dat.long.twophase.sample, Trt = "Vaccine"),
                   x = paste0("Delta", day, "overB"),
                   color = "assay",
                   lty = NULL,
                   weight = "wt",
                   xlab = paste0("D", day, " Fold-rise over D1 Binding Ab (IU/ml) / Pseudovirus nAb ID50 or ID80"),
-                  filename = paste0(save.results.to, "Marker_Rcdf_Delta", day, "overB_trt_vaccine_bstatus_Neg_", 
+                  filename = paste0(save.results.to, "/Marker_Rcdf_Delta", day, "overB_trt_vaccine_bstatus_Neg_", 
                                     study.name,".png"))
 }     
 
@@ -202,10 +220,6 @@ for (day in c("29", "57")) {
 for (tt in 2:5) {
   for (bserostatus in 1:2) {
     for (trt in 1:2) {
-      subdat <- subset(dat.long.twophase.sample, as.numeric(Bserostatus) == bserostatus &
-                         as.numeric(Trt) == trt)[, c("B", "Day29", "Day57", "Delta29overB", 
-                                                     "Delta57overB", "assay", "Trt", "Bstratum", "wt")]
-      
       covid_corr_scatter_by_assay(plot_dat = subset(dat.long.twophase.sample, as.numeric(Bserostatus) == bserostatus &
                                                       as.numeric(Trt) == trt)[, c(times, "assay", "Trt", "Bstratum", "wt")],
                                   x = "B",
@@ -216,7 +230,7 @@ for (tt in 2:5) {
                                   panel_titles = assay.labels,
                                   x_axis_titles = labels.axis[1, ],
                                   y_axis_titles = labels.axis[tt, ],
-                                  filename = paste0(save.results.to, "scatterplots_", times[tt], "vB_", bstatus.labels.2[bserostatus],
+                                  filename = paste0(save.results.to, "/scatterplots_", times[tt], "vB_", bstatus.labels.2[bserostatus],
                                                     c("_placebo_arm_", "_vaccine_arm_")[trt], study.name, ".png"))
     }
   }
@@ -251,7 +265,7 @@ for (bstatus in 1:2) {
                                 legend = c("Placebo", "Vaccine"),
                                 axis_titles_y = labels.axis[tt, ],
                                 panel_titles = labels.title2[tt, ],
-                                filename = paste0(save.results.to, "boxplots_", times[tt], "_x_trt_", bstatus.labels.2[bstatus],
+                                filename = paste0(save.results.to, "/boxplots_", times[tt], "_x_trt_", bstatus.labels.2[bstatus],
                                                   "_", study.name, ".png"))
   }
 }
@@ -274,7 +288,7 @@ for (trt in 1:2) {
                                 legend = c("Baseline Negative", "Baseline Positive"),
                                 axis_titles_y = labels.axis[tt, ],
                                 panel_titles = labels.title2[tt, ],
-                                filename = paste0(save.results.to, "boxplots_", times[tt], "_x_bstatus_", c("placebo_arm_", "vaccine_arm_")[trt],
+                                filename = paste0(save.results.to, "/boxplots_", times[tt], "_x_bstatus_", c("placebo_arm_", "vaccine_arm_")[trt],
                                                   study.name, ".png"))
   }
 }

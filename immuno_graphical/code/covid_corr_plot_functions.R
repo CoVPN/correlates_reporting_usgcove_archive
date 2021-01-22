@@ -19,7 +19,7 @@ covid_corr_pairplots <- function(plot_dat,  ## data for plotting
                                  axis_label_size = 9,  ## axis label font size
                                  filename) {  ## output file name
   
-  dat.tmp <- plot_dat[, time %.% assays]
+  dat.tmp <- plot_dat[, paste0(time, assays)]
   
   rr <- range(dat.tmp, na.rm = TRUE) 
   
@@ -201,7 +201,7 @@ covid_corr_scatter_by_assay <- function(plot_dat,  ## data frame, data used for 
   ## make the plot axis limits adaptive to the data range
   
   if (is.null(lim) | is.null(breaks)) {
-    lim <- range(subdat[, c(x, y)], na.rm = TRUE) 
+    lim <- range(plot_dat[, c(x, y)], na.rm = TRUE) 
     
     if (lim[2] - lim[1] < 2) {
       lim <- floor(lim[1]):ceiling(lim[2])
@@ -260,8 +260,6 @@ covid_corr_scatter_by_assay <- function(plot_dat,  ## data frame, data used for 
 }
 
 
-
-
 covid_corr_boxplot_by_assay <- function(plot_dat,
                                         x,
                                         y,
@@ -318,8 +316,6 @@ covid_corr_boxplot_by_assay <- function(plot_dat,
       } else {
         return(xx[sample(1:nrow(xx), size = njitter),])
       }}) %>% bind_rows
-
-  
   
   boxplot_list <- vector("list", length(assays))
   for (aa in 1:length(assays)) {
@@ -334,7 +330,7 @@ covid_corr_boxplot_by_assay <- function(plot_dat,
       scale_x_discrete(labels = xlabels) +
       scale_y_continuous(limits = ylim, labels = label_math(10 ^ .x), breaks = ybreaks) +
       theme_pubr(legend = "none") + 
-      ylab(labels.axis[tt, aa]) + xlab("") + 
+      ylab(axis_titles_y[aa]) + xlab("") + 
       scale_fill_manual(values = palette) +
       scale_color_manual(values = palette, labels = legend)+
       ggtitle(panel_titles[aa]) +

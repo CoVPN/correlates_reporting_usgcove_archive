@@ -8,7 +8,7 @@ spearman_resample <- function(x, y, strata, weight, B = 200) {
   colnames(strata_dummy) <- paste0("strata", 1:nstrata)
   
   cor_dat <- cbind(data.frame(x = x, y = y), strata_dummy[, 1:(nstrata - 1)])
-  fml <- as.Formula(paste0("y | x ~ ", paste0("strata", 1:(nstrata - 1), collapse = "+")))
+  fml <- as.formula(paste0("y | x ~ ", paste0("strata", 1:(nstrata - 1), collapse = "+")))
   
   corvec <- 1:B * NA
   

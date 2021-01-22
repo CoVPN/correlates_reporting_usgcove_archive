@@ -1,6 +1,22 @@
-source("descriptive_graphics_data_preprocess.R")
-source("ggally_cor_resample.R")
-source("covid_corr_plot_functions.R")
+#--------------------------------------------
+renv::activate(project = here::here(".."))
+source(here::here("..", "_common.R"))
+#--------------------------------------------
+
+library(COVIDcorr)
+library(dplyr)
+library(stringr)
+library(GGally)
+library(scales)
+library(dummies)
+library(ggpubr)
+
+source(here::here("code", "ggally_cor_resample.R"))
+source(here::here("code", "covid_corr_plot_functions.R"))
+source(here::here("code", "params.R"))
+
+dat.long.twophase.sample <- readRDS(here::here("data_clean", "long_twophase_data.rds"))
+dat.twophase.sample <- readRDS(here::here("data_clean", "twophase_data.rds"))
 
 ## =================================================================================================
 ## boxplots and weighted rcdf plots of assay readouts at different time points versus 
@@ -15,7 +31,6 @@ source("covid_corr_plot_functions.R")
 ##  (9) age * minority status 
 ## plot for each treatment group by baseline status
 ## =================================================================================================
-
 
 for (tt in 1:5) {
   for (trt in 1:2) {
@@ -33,7 +48,7 @@ for (tt in 1:5) {
                                   LLOQ = LLOQ,
                                   axis_titles_y = labels.axis[tt, ],
                                   panel_titles = labels.title2[tt, ],
-                                  filename = paste0(save.results.to, "demographics/boxplots_", times[tt], "_", bstatus.labels.2[bstatus],"_trt_", 
+                                  filename = paste0(save.results.to, "/demographics/boxplots_", times[tt], "_", bstatus.labels.2[bstatus],"_trt_", 
                                                     trt.labels[trt],"_by_age_group_", study.name,".png"))
       
       covid_corr_rcdf_by_assay(plot_dat = subdat,
@@ -43,7 +58,7 @@ for (tt in 1:5) {
                                weight = "wt",
                                panel_titles = labels.title2[tt, ],
                                axis_titles = labels.axis[tt, ],
-                               filename = paste0(save.results.to, "demographics/Marker_Rcdf_", times[tt], 
+                               filename = paste0(save.results.to, "/demographics/Marker_Rcdf_", times[tt], 
                                                  "_trt_", c("placebo_", "vaccine_")[trt], bstatus.labels.2[bstatus], 
                                                  "_by_age_group_", study.name, ".png"))
       
@@ -56,7 +71,7 @@ for (tt in 1:5) {
                                   LLOQ = LLOQ,
                                   axis_titles_y = labels.axis[tt, ],
                                   panel_titles = labels.title2[tt, ],
-                                  filename = paste0(save.results.to, "demographics/boxplots_", times[tt], "_", bstatus.labels.2[bstatus],"_trt_", 
+                                  filename = paste0(save.results.to, "/demographics/boxplots_", times[tt], "_", bstatus.labels.2[bstatus],"_trt_", 
                                                     trt.labels[trt],"_by_risk_group_", study.name, ".png"))
       
       covid_corr_rcdf_by_assay(plot_dat = subdat,
@@ -66,7 +81,7 @@ for (tt in 1:5) {
                                weight = "wt",
                                panel_titles = labels.title2[tt, ],
                                axis_titles = labels.axis[tt, ],
-                               filename = paste0(save.results.to, "demographics/Marker_Rcdf_", times[tt], 
+                               filename = paste0(save.results.to, "/demographics/Marker_Rcdf_", times[tt], 
                                                  "_trt_", c("placebo_", "vaccine_")[trt], bstatus.labels.2[bstatus], 
                                                  "_by_risk_group_", study.name, ".png"))
       
@@ -80,7 +95,7 @@ for (tt in 1:5) {
                                   axis_titles_y = labels.axis[tt, ],
                                   panel_titles = labels.title2[tt, ],
                                   height = 7,
-                                  filename = paste0(save.results.to, "demographics/boxplots_", times[tt], "_", bstatus.labels.2[bstatus],"_trt_", 
+                                  filename = paste0(save.results.to, "/demographics/boxplots_", times[tt], "_", bstatus.labels.2[bstatus],"_trt_", 
                                                     trt.labels[trt],"_by_age_x_risk_group_", study.name, ".png"))
       
       covid_corr_rcdf_by_assay(plot_dat = subdat,
@@ -91,7 +106,7 @@ for (tt in 1:5) {
                                panel_titles = labels.title2[tt, ],
                                axis_titles = labels.axis[tt, ],
                                height = 7,
-                               filename = paste0(save.results.to, "demographics/Marker_Rcdf_", times[tt], 
+                               filename = paste0(save.results.to, "/demographics/Marker_Rcdf_", times[tt], 
                                                  "_trt_", c("placebo_", "vaccine_")[trt], bstatus.labels.2[bstatus], 
                                                  "_by_age_risk_group_", study.name, ".png"))
       
@@ -104,7 +119,7 @@ for (tt in 1:5) {
                                   LLOQ = LLOQ,
                                   axis_titles_y = labels.axis[tt, ],
                                   panel_titles = labels.title2[tt, ],
-                                  filename = paste0(save.results.to, "demographics/boxplots_", times[tt], "_", bstatus.labels.2[bstatus],"_trt_", 
+                                  filename = paste0(save.results.to, "/demographics/boxplots_", times[tt], "_", bstatus.labels.2[bstatus],"_trt_", 
                                                     trt.labels[trt],"_by_sex_", study.name, ".png"))
       
       
@@ -115,7 +130,7 @@ for (tt in 1:5) {
                                weight = "wt",
                                panel_titles = labels.title2[tt, ],
                                axis_titles = labels.axis[tt, ],
-                               filename = paste0(save.results.to, "demographics/Marker_Rcdf_", times[tt], 
+                               filename = paste0(save.results.to, "/demographics/Marker_Rcdf_", times[tt], 
                                                  "_trt_", c("placebo_", "vaccine_")[trt], bstatus.labels.2[bstatus], 
                                                  "_by_sex_group_", study.name, ".png"))
       
@@ -129,7 +144,7 @@ for (tt in 1:5) {
                                   axis_titles_y = labels.axis[tt, ],
                                   panel_titles = labels.title2[tt, ],
                                   height = 7,
-                                  filename = paste0(save.results.to, "demographics/boxplots_", times[tt], "_", bstatus.labels.2[bstatus],
+                                  filename = paste0(save.results.to, "/demographics/boxplots_", times[tt], "_", bstatus.labels.2[bstatus],
                                                     "_trt_", trt.labels[trt],"_by_age_x_sex_group_", study.name, ".png"))
       
       covid_corr_rcdf_by_assay(plot_dat = subdat,
@@ -140,7 +155,7 @@ for (tt in 1:5) {
                                panel_titles = labels.title2[tt, ],
                                axis_titles = labels.axis[tt, ],
                                height = 7,
-                               filename = paste0(save.results.to, "demographics/Marker_Rcdf_", times[tt], 
+                               filename = paste0(save.results.to, "/demographics/Marker_Rcdf_", times[tt], 
                                                  "_trt_", c("placebo_", "vaccine_")[trt], bstatus.labels.2[bstatus], 
                                                  "_by_age_sex_group_", study.name, ".png"))
       
@@ -155,7 +170,7 @@ for (tt in 1:5) {
                                   axis_titles_y = labels.axis[tt, ],
                                   panel_titles = labels.title2[tt, ],
                                   height = 7,
-                                  filename = paste0(save.results.to, "demographics/boxplots_", times[tt], "_", bstatus.labels.2[bstatus],
+                                  filename = paste0(save.results.to, "/demographics/boxplots_", times[tt], "_", bstatus.labels.2[bstatus],
                                                     "_trt_", trt.labels[trt],"_by_ethnicity_", study.name, ".png"))
       
       covid_corr_rcdf_by_assay(plot_dat = subdat,
@@ -166,7 +181,7 @@ for (tt in 1:5) {
                                panel_titles = labels.title2[tt, ],
                                axis_titles = labels.axis[tt, ],
                                height = 7,
-                               filename = paste0(save.results.to, "demographics/Marker_Rcdf_", times[tt], 
+                               filename = paste0(save.results.to, "/demographics/Marker_Rcdf_", times[tt], 
                                                  "_trt_", c("placebo_", "vaccine_")[trt], bstatus.labels.2[bstatus], 
                                                  "_by_ethnicity_", study.name, ".png"))
       
@@ -181,7 +196,7 @@ for (tt in 1:5) {
                                   axis_titles_y = labels.axis[tt, ],
                                   panel_titles = labels.title2[tt, ],
                                   height = 7.5,
-                                  filename = paste0(save.results.to, "demographics/boxplots_", times[tt], "_", bstatus.labels.2[bstatus],
+                                  filename = paste0(save.results.to, "/demographics/boxplots_", times[tt], "_", bstatus.labels.2[bstatus],
                                                     "_trt_", trt.labels[trt],"_by_race_", study.name, ".png"))
       
       covid_corr_rcdf_by_assay(plot_dat = subset(subdat,
@@ -193,7 +208,7 @@ for (tt in 1:5) {
                                panel_titles = labels.title2[tt, ],
                                axis_titles = labels.axis[tt, ],
                                height = 7.5,
-                               filename = paste0(save.results.to, "demographics/Marker_Rcdf_", times[tt], 
+                               filename = paste0(save.results.to, "/demographics/Marker_Rcdf_", times[tt], 
                                                  "_trt_", c("placebo_", "vaccine_")[trt], bstatus.labels.2[bstatus], 
                                                  "_by_race_", study.name, ".png"))
       
@@ -206,7 +221,7 @@ for (tt in 1:5) {
                                   LLOQ = LLOQ,
                                   axis_titles_y = labels.axis[tt, ],
                                   panel_titles = labels.title2[tt, ],
-                                  filename = paste0(save.results.to, "demographics/boxplots_", times[tt], "_", bstatus.labels.2[bstatus],
+                                  filename = paste0(save.results.to, "/demographics/boxplots_", times[tt], "_", bstatus.labels.2[bstatus],
                                                     "_trt_", trt.labels[trt],"_by_minority_group_", study.name,".png"))
       
       covid_corr_rcdf_by_assay(plot_dat = subdat,
@@ -216,7 +231,7 @@ for (tt in 1:5) {
                                weight = "wt",
                                panel_titles = labels.title2[tt, ],
                                axis_titles = labels.axis[tt, ],
-                               filename = paste0(save.results.to, "demographics/Marker_Rcdf_", times[tt], 
+                               filename = paste0(save.results.to, "/demographics/Marker_Rcdf_", times[tt], 
                                                  "_trt_", c("placebo_", "vaccine_")[trt], bstatus.labels.2[bstatus], 
                                                  "_by_minority_group_", study.name, ".png"))
       
@@ -231,7 +246,7 @@ for (tt in 1:5) {
                                   axis_titles_y = labels.axis[tt, ],
                                   panel_titles = labels.title2[tt, ],
                                   height = 7,
-                                  filename = paste0(save.results.to, "demographics/boxplots_", times[tt], "_", bstatus.labels.2[bstatus],
+                                  filename = paste0(save.results.to, "/demographics/boxplots_", times[tt], "_", bstatus.labels.2[bstatus],
                                                     "_trt_", trt.labels[trt],"_by_age_x_minority_", study.name, ".png"))
       
       covid_corr_rcdf_by_assay(plot_dat = subdat,
@@ -242,7 +257,7 @@ for (tt in 1:5) {
                                panel_titles = labels.title2[tt, ],
                                axis_titles = labels.axis[tt, ],
                                height = 7,
-                               filename = paste0(save.results.to, "demographics/Marker_Rcdf_", times[tt], 
+                               filename = paste0(save.results.to, "/demographics/Marker_Rcdf_", times[tt], 
                                                  "_trt_", c("placebo_", "vaccine_")[trt], bstatus.labels.2[bstatus], 
                                                  "_by_age_minority_group_", study.name, ".png"))
       

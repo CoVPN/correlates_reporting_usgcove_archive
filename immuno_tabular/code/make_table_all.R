@@ -6,6 +6,9 @@ source(here::here("..", "_common.R"))            #
 
 # load packages and helper scripts
 library(here)
+library(dplyr)
+library(tidyr)
+library(purrr)
 library(survey)
 source(here("code", "make_functions.R"))
 

@@ -1,10 +1,80 @@
 #  Graphical Description of Antibody Marker Data {#ab-grapical}
 
-TO FILL IN
 
-```{r ab-graphical-setup}
-# TODO
-```
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{figs/Marker_RCDF_Day29_trt_by_caseD29_bstatus_BaselineNeg_\studyname}
+    \caption{(Mock data) RCDF plots for D29 Ab markers: baseline negative by treatment arm and D29 case/non-case.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{figs/Marker_RCDF_Delta29overB_trt_by_caseD29_bstatus_BaselineNeg_\studyname}
+    \caption{(Mock data) RCDF plots for D29 fold-rise over D1 Ab markers: baseline negative by treatment arm and D29 case/non-case.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{figs/Marker_RCDF_Day57_trt_by_caseD57_bstatus_BaselineNeg_\studyname}
+    \caption{(Mock data) RCDF plots for D57 Ab markers: baseline negative by treatment arm and D57 case/non-case.}
+\end{figure}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{figs/Marker_RCDF_Delta57overB_trt_by_caseD57_bstatus_BaselineNeg_\studyname}
+    \caption{(Mock data) RCDF plots for D57 fold-rise over D1 Ab markers: baseline negative by treatment arm and D57 case/non-case.}
+\end{figure}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{figs/boxplots_day29_trt_vaccine_x_cc_BaselineNeg_\studyname}
+    \caption{(Mock data) Boxplots of D29 Ab markers: baseline negative vaccine arm by cases and non-cases}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{figs/boxplots_day57_trt_vaccine_x_cc_BaselineNeg_\studyname}
+    \caption{(Mock data) Boxplots of D57 Ab markers: baseline negative vaccine arm by cases and non-cases}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{figs/boxplots_Delta29overB_trt_vaccine_x_cc_BaselineNeg_\studyname}
+    \caption{(Mock data) Boxplots of D29 fold-rise over D1 Ab markers: baseline negative vaccine arm by cases and non-cases}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{figs/boxplots_Delta57overB_trt_vaccine_x_cc_BaselineNeg_\studyname}
+    \caption{(Mock data) Boxplots of D57 fold-rise over D1 Ab markers: baseline negative vaccine arm by cases and non-cases}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{figs/boxplots_day29_trt_vaccine_x_cc_BaselinePos_\studyname}
+    \caption{(Mock data) Boxplots of D29 Ab markers: baseline positive vaccine arm by cases and non-cases}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{figs/boxplots_day57_trt_vaccine_x_cc_BaselinePos_\studyname}
+    \caption{(Mock data) Boxplots of D57 Ab markers: baseline positive vaccine arm by cases and non-cases}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{figs/boxplots_Delta29overB_trt_vaccine_x_cc_BaselinePos_\studyname}
+    \caption{(Mock data) Boxplots of D29 fold-rise over D1 Ab markers: baseline positive vaccine arm by cases and non-cases}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{figs/boxplots_Delta57overB_trt_vaccine_x_cc_BaselinePos_\studyname}
+    \caption{(Mock data) Boxplots of D57 fold-rise over D1 Ab markers: baseline positive vaccine arm by cases and non-cases}
+\end{figure}
 
 \newcommand{\studyname}{mock}
 

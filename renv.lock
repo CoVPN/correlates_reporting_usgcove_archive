@@ -26,13 +26,15 @@
     "COVIDcorr": {
       "Package": "COVIDcorr",
       "Version": "2021.1.16",
-<<<<<<< HEAD
-      "Source": "unknown",
-=======
-      "Source": "Repository",
-      "Repository": "MRAN",
->>>>>>> f5c34eff247d034a524cbe41fb9a45a392c35559
-      "Hash": "155cb9a575ad0264ac0b76dfabe09c87"
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteRepo": "CovidCorrSAP",
+      "RemoteUsername": "CoVPN",
+      "RemoteRef": "HEAD",
+      "RemoteSha": "70ef45b7b7d11eae8467393e8f3ba179ed5d7f71",
+      "RemoteSubdir": "R_packages/COVIDcorr",
+      "Hash": "64c8f7672a428118ad14fc9b6d00ecdf"
     },
     "DBI": {
       "Package": "DBI",
@@ -681,7 +683,7 @@
       "RemoteUsername": "nhejazi",
       "RemoteRef": "master",
       "RemoteSha": "9c7bcbdfbeb7099afff81ac340c4eb7382c698a2",
-      "Hash": "2c15425b5dfebbdb6b40517a6f9aea7e"
+      "Hash": "895bc6a1c256916e493647fd4ffab48a"
     },
     "haven": {
       "Package": "haven",
@@ -1214,6 +1216,13 @@
       "RemoteSha": "b2b741f0209acdbe58c990864ef3c375b35903a6",
       "Hash": "16b45ec3edebbf35ead3e8c6ba5996b7"
     },
+    "repr": {
+      "Package": "repr",
+      "Version": "1.1.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "466aee1b69232becb73769daa894c171"
+    },
     "reprex": {
       "Package": "reprex",
       "Version": "0.3.0",
@@ -1350,6 +1359,13 @@
       "Repository": "CRAN",
       "Hash": "58510f25472de6fd363d76698d29709e"
     },
+    "skimr": {
+      "Package": "skimr",
+      "Version": "2.1.2",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "1771d7c2061c3608c9d149cd36024eb5"
+    },
     "sl3": {
       "Package": "sl3",
       "Version": "1.3.7",
@@ -1471,7 +1487,7 @@
       "RemoteUsername": "nhejazi",
       "RemoteRef": "master",
       "RemoteSha": "b3c4eb0c12b94f8e49c9374b32787ce802c5eb7f",
-      "Hash": "bb891dbcbeead157cf4eac7641711cc1"
+      "Hash": "4408f0fae3afa27957d3f99813719b23"
     },
     "usethis": {
       "Package": "usethis",

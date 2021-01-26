@@ -1,6 +1,31 @@
 
-## pairplots of assay readouts. The correlation is calculated by the 
-## resampling-based strata adjusted Spearman rank correlation
+#' Pairplots of assay readouts
+#' 
+#' Produce the pairplots of assay readouts. The correlation is calculated by the 
+#' resampling-based strata adjusted Spearman rank correlation.
+#' 
+#' @param plot_dat: data frame: data for plotting
+#' @param time: string: one of "D1", "D29", "D57", "Delta29overB" or "Delta57overB"
+#' @param assays: vector of strings: the assay names for plotting
+#' @param strata: string: the column name in plot_dat that indicates the strata
+#' @param weight: string: the column name in plot_dat that indicates the individual sampling weights
+#' @param plot_title: string: title of the plot
+#' @param column_labels: vector of strings: titles of each column
+#' @param height: scalar: plot height
+#' @param width: scalar: plot width
+#' @param units: string: the unit of plot height and width
+#' @param corr_size: scalar: font size of the correlation labels
+#' @param point_size: scalar: point size in the scatter plots
+#' @param loess_lwd: scalar: loess line width in the scatter plots
+#' @param plot_title_size: scalar: font size of the plot title
+#' @param column_label_size: scalar: font size of the column labels
+#' @param axis_label_size: scalar: font size of the axis labels
+#' @param filename: string: output file name
+#' 
+#' @return pairplots: a ggplot object of the pairplot
+#' 
+#' @export
+#'  
 covid_corr_pairplots <- function(plot_dat,  ## data for plotting
                                  time, ## one of "D1", "D29", "D57", "Delta29overB" or "Delta57overB"
                                  assays, ## the assay names for plotting
@@ -66,44 +91,79 @@ covid_corr_pairplots <- function(plot_dat,  ## data for plotting
   }
   
   ggsave(filename = filename, plot = pairplots, width = width, height = height, units = units)
+  
+  return(pairplots)
 }
 
 
 
 
 
-## Weighted RCDF plots -- figure contain multiple panels, where each panel
-## is one type of assay
 
-covid_corr_rcdf_by_assay <- function(plot_dat,  ## data frame, data used for plotting
-                                     time, ## one of "D1", "D29", "D57", "Delta29overB" or "Delta57overB"
-                                     assays,  ## vector of strings, assays for plotting
-                                     by,  ## string, column names separated by ":", plotting variables for the curves
-                                     weight,  ## the column name in the dataframe indicating the sampling weights
-                                     lwd = 1,  ## rcdf curve line width
-                                     xlim = c(-2, 10),  ## limits of the x axis
-                                     xbreaks = seq(-2, 10, 2), ## location of ticks at x axis
-                                     palette = c("#1749FF","#D92321","#0AB7C9","#FF6F1B",
-                                                 "#810094","#378252","#FF5EBF","#3700A5",
-                                                 "#8F8F8F","#787873"),  ## color palette
-                                     legend = levels(plot_dat[, by]),  ## vector of strings, legend labels
-                                     legend_size = 10, ## legend label font size
-                                     legend_nrow = ceiling(length(legend) / 2), ## number of rows of the legend
-                                     panel_titles,  ## vector of strings, panel titles
-                                     panel_title_size = 10, ## panel title font size
-                                     axis_size = 10,  ## axis label font size
-                                     axis_titles,
-                                     axis_title_size = 9,  ## axis title font size
-                                     arrange_nrow = ceiling(length(assays) / 2),  ## number of rows of panels
-                                     arrange_ncol = 2,  ## number of columns of panels
-                                     height = 6.5,  ## plot height
-                                     width = 6.5,  ## plot width
-                                     units = "in",  ## units of plot height and width
-                                     filename) {  ## output file path
+#' Weighted RCDF plots, grouped by a categorical variable
+#' 
+#' Produce the weighted RCDF plots. 
+#' 
+#' @param plot_dat: data frame: data for plotting
+#' @param x: string: column name in the plot_dat for plotting the value
+#' @param facet_by: string: column name in the plot_dat for deciding the panels
+#' @param color: string: the variable names in plot_dat, separated by ":", for separate RCDF curves
+#' @param weight: string: the column name in plot_dat that indicates the individual sampling weights
+#' @param lwd: scalar: RCDF line width
+#' @param xlim: numeric vector of length two: range of the x axis
+#' @param xbreaks: numeric vector: locations of where to plot axis ticks
+#' @param palette: string vector: palette that decides the colors of the RCDF curves
+#' @param legend: string vector of length levels(plot_by[, by]): legend labels.
+#' @param legend_size: string: font size of the legend labels
+#' @param legend_nrow: integer: number of rows to arrange the legend labels
+#' @param panel_titles: string vector: subtitles of each panel
+#' @param panel_title_size: scalar: font size of the panel titles
+#' @param axis_size: scalar: font size of the axis labels
+#' @param axis_titles: string vector: axis titles for the panels
+#' @param axis_title_size: scalar: font size of the axis title
+#' @param arrange_nrow: integer: number of rows to arrange the panels
+#' @param arrange_ncol: integer: number of columns to arrange the panels
+#' @param height: scalar: plot height
+#' @param width: scalar: plot width
+#' @param units: string: the unit of plot height and width
+#' @param filename: string: output file name
+#' 
+#' @return output_plot: a ggplot object of the RCDF plots
+#' 
+#' @export
+#' 
+
+covid_corr_rcdf_facets <- function(plot_dat,  
+                                   x,
+                                   facet_by,  
+                                   color, 
+                                   weight, 
+                                   lwd = 1,  
+                                   xlim = c(-2, 10), 
+                                   xbreaks = seq(-2, 10, 2), 
+                                   palette = c("#1749FF","#D92321","#0AB7C9","#FF6F1B",
+                                               "#810094","#378252","#FF5EBF","#3700A5",
+                                               "#8F8F8F","#787873"), 
+                                   legend = levels(plot_dat[, color]),
+                                   legend_size = 10,
+                                   legend_nrow = ceiling(length(legend) / 2), 
+                                   panel_titles, 
+                                   panel_title_size = 10, 
+                                   axis_size = 10,  
+                                   axis_titles,
+                                   axis_title_size = 9,  
+                                   arrange_nrow = ceiling(nlevels(plot_dat[, facet_by]) / 2),  
+                                   arrange_ncol = 2,  
+                                   height = 6.5, 
+                                   width = 6.5, 
+                                   units = "in",  
+                                   filename) {  
   
-  rcdf_list <- vector("list", length(assays))
-  for (aa in 1:length(assays)) {
-    rcdf_list[[aa]] <- ggplot(subset(plot_dat, assay == assays[aa]), aes_string(x = time, colour = by, weight = weight)) +
+  
+  rcdf_list <- vector("list", nlevels(plot_dat[, facet_by]))
+  for (aa in 1:nlevels(plot_dat[, facet_by])) {
+    rcdf_list[[aa]] <- ggplot(subset(plot_dat, plot_dat[,facet_by] == levels(plot_dat[, facet_by])[aa]), 
+                              aes_string(x = x, color = color, weight = weight)) +
       geom_line(aes(y = 1 - ..y..), stat='ecdf', lwd = lwd) +  theme_pubr(legend = "none") + 
       ylab("Reverse ECDF") + xlab(axis_titles[aa]) +
       scale_x_continuous(labels = label_math(10^.x), limits = xlim, breaks = xbreaks) +
@@ -119,17 +179,47 @@ covid_corr_rcdf_by_assay <- function(plot_dat,  ## data frame, data used for plo
             axis.title = element_text(size = axis_title_size),
             axis.text = element_text(size = axis_size))
   }
-
+  
   output_plot <- ggarrange(plotlist = rcdf_list, ncol = 2, nrow = 2, 
                            common.legend = TRUE, legend = "bottom",
                            align = "h")
   
   ggsave(filename = filename, plot = output_plot, width = width, height = height, units = units)
+  return(output_plot)
 } 
 
 
 
-## one-panel weighted rcdf plot, lines stratified by given variables
+#' Weighted RCDF plot
+#' 
+#' Produce the weighted RCDF plots of assay readouts. 
+#' 
+#' @param plot_dat: data frame: data for plotting
+#' @param x: string: column name in the plot_dat for plotting the value
+#' @param color: string: the variable names in plot_dat, separated by ":", for separate RCDF curves
+#' @param weight: string: the column name in plot_dat that indicates the individual sampling weights
+#' @param lwd: scalar: RCDF line width
+#' @param xlim: numeric vector of length two: range of the x axis
+#' @param xbreaks: numeric vector: locations of where to plot axis ticks
+#' @param palette: string vector: palette that decides the colors of the RCDF curves
+#' @param legend: string vector of length levels(plot_by[, by]): legend labels.
+#' @param legend_size: string: font size of the legend labels
+#' @param legend_nrow: integer: number of rows to arrange the legend labels
+#' @param panel_titles: string vector: subtitles of each panel
+#' @param panel_title_size: scalar: font size of the panel titles
+#' @param axis_size: scalar: font size of the axis labels
+#' @param axis_titles: string vector: axis titles for the panels
+#' @param axis_title_size: scalar: font size of the axis title
+#' @param arrange_nrow: integer: number of rows to arrange the panels
+#' @param arrange_ncol: integer: number of columns to arrange the panels
+#' @param height: scalar: plot height
+#' @param width: scalar: plot width
+#' @param units: string: the unit of plot height and width
+#' @param filename: string: output file name
+#' 
+#' @return output_plot: a ggplot object of the RCDF plots
+#' 
+#' @export
 covid_corr_rcdf <- function(plot_dat,
                             x,
                             color,
@@ -167,14 +257,45 @@ covid_corr_rcdf <- function(plot_dat,
   
   ggsave(filename = filename, plot = output_plot, width = width, height = height, units = units)
   
+  return(output_plot)
 }
 
 
-## each figure consists of several scatter plots, where each panel is for one assay
-covid_corr_scatter_by_assay <- function(plot_dat,  ## data frame, data used for plotting
+#' Scatter plots showing correlation of two variables, plots grouped by a third variable,
+#' with correlation computed by resampling-based baseline strata adjusted Spearman correlation.
+#' 
+#' @param plot_dat: data frame: data for plotting
+#' @param x: string: column name in plot_dat for the x-axis value
+#' @param y: string: column name in plot_dat for the y-axis value
+#' @param facet_by: string: column name of plot_dat, grouping variable for the panels 
+#' @param strata: string: the column name in plot_dat that indicates the sampling stratum
+#' @param weight: string: the column name in plot_dat that indicates the individual sampling weights
+#' @param nboot: integer: number of resamples
+#' @param lwd: scalar: loess line width
+#' @param lim: numeric vector of length two: range of the x and y axis
+#' @param breaks: numeric vector: locations of where to plot axis ticks
+#' @param point_size: scalar: point size in the scatter point
+#' @param corr_size: font size of the correlation labels
+#' @param panel_titles: string vector: subtitles of each panel
+#' @param panel_title_size: scalar: font size of the panel titles
+#' @param axis_size: scalar: font size of the axis labels
+#' @param x_axis_titles: string vector: x axis titles for the panels
+#' @param y_axis_titles: string vector: y axis titles for the panels
+#' @param axis_title_size: scalar: font size of the axis title
+#' @param arrange_nrow: integer: number of rows to arrange the panels
+#' @param arrange_ncol: integer: number of columns to arrange the panels
+#' @param height: scalar: plot height
+#' @param width: scalar: plot width
+#' @param units: string: the unit of plot height and width
+#' @param filename: string: output file name
+#' 
+#' @return output_plot: a ggplot object of the scatter plots
+#' 
+#' @export
+covid_corr_scatter_facets <- function(plot_dat,  ## data frame, data used for plotting
                                         x,  ## x axis variable name (string) in the scatter plots
                                         y, ## y axis variable name (string) in the scatter plots
-                                        assays,  ## vector of strings, assays for plotting
+                                        facet_by,  ## string: column name of plot_dat, grouping variable for the panels 
                                         strata, ## the column name in the dheataframe indicating the strata
                                         weight,  ## the column name in the dataframe indicating the sampling weights
                                         nboot = 200, ## number of resamples when calculating resampling based correlation
@@ -189,7 +310,7 @@ covid_corr_scatter_by_assay <- function(plot_dat,  ## data frame, data used for 
                                         x_axis_titles,
                                         y_axis_titles,
                                         axis_title_size = 10,  ## axis title font size
-                                        arrange_nrow = ceiling(length(assays) / 2),  ## number of rows of panels
+                                        arrange_nrow = ceiling(nlevels(plot_dat[, facet_by]) / 2),  ## number of rows of panels
                                         arrange_ncol = 2,  ## number of columns of panels
                                         height = 7,  ## plot height
                                         width = 7,  ## plot width
@@ -220,10 +341,10 @@ covid_corr_scatter_by_assay <- function(plot_dat,  ## data frame, data used for 
     }
   }
   
-  for (aa in 1:length(assays)) {
+  for (aa in 1:nlevels(plot_dat[, facet_by])) {
     ## correlation
     
-    ss <- subset(plot_dat, assay == assays[aa]) %>% filter(complete.cases(.))
+    ss <- plot_dat[plot_dat[, facet_by] == levels(plot_dat[, facet_by])[aa], ] %>% filter(complete.cases(.))
     
     
     marker_corr <- round(spearman_resample(x = ss[, x], y = ss[, y], 
@@ -231,7 +352,8 @@ covid_corr_scatter_by_assay <- function(plot_dat,  ## data frame, data used for 
                                            B = nboot),
                          2)
     
-    scatterplot_list[[aa]] <- ggplot(data = subset(plot_dat, assay == assays[aa]), aes_string(x = x, y = y)) +
+    scatterplot_list[[aa]] <- ggplot(data = plot_dat[plot_dat[, facet_by] == levels(plot_dat[, facet_by])[aa], ], 
+                                     aes_string(x = x, y = y)) +
       geom_point(size = point_size) +
       xlab(x_axis_titles[aa]) + ylab(y_axis_titles[aa]) +
       ggtitle(panel_titles[aa]) + 
@@ -257,45 +379,89 @@ covid_corr_scatter_by_assay <- function(plot_dat,  ## data frame, data used for 
   
   ggsave(filename = filename, plot = output_plot, width = width, height = height, units = units)
   
+  return(output_plot)
 }
 
+#' Weighted boxplots, grouped by a categorical variable
+#' 
+#' Produce the box plots. 
+#' 
+#' @param plot_dat: data frame: data for plotting
+#' @param x: string: column name in the plot_dat for grouping the boxplots
+#' @param y: string: column name in the plot_dat for the value of the boxplots
+#' @param facet_by: string: column name in the plot_dat for deciding the panels
+#' @param plot_LLOQ: logical: whether to plot LLOQ lines?
+#' @param LLOQ: numeric vector: values of the LLOQ lines
+#' @param LLOQ_label_size: numeric: font size of the LLOQ labels
+#' @param LLOW_lwd: LLOQ line width
+#' @param color: string: the variable names in plot_dat, separated by ":", for the boxplot colors
+#' @param lwd: scalar: boxplot border line width
+#' @param box_width: scalar: boxplot width
+#' @param errorbar_width: scalar: error bar with
+#' @param jitter_width: scalar: jitter point area width
+#' @param njitter: integer: number of jitter points
+#' @param palette: string vector: palette that decides the colors of the RCDF curves
+#' @param legend: string vector of length levels(plot_by[, by]): legend labels.
+#' @param legend_position: position of the legend in the plot
+#' @param legend_size: string: font size of the legend labels
+#' @param legend_nrow: integer: number of rows to arrange the legend labels
+#' @param ylim: numeric vector of length 2: limits of the y axis
+#' @param ybreaks: positions of y axis ticks
+#' @param axis_size: scalar: font size of the axis labels
+#' @param axis_titles_y: string vector: y axis titles for the panels
+#' @param axis_title_size: scalar: font size of the axis title
+#' @param arrange_nrow: integer: number of rows to arrange the panels
+#' @param arrange_ncol: integer: number of columns to arrange the panels
+#' @param panel_titles: string vector: subtitles of each panel
+#' @param panel_title_size: scalar: font size of the panel titles
+#' @param height: scalar: plot height
+#' @param width: scalar: plot width
+#' @param units: string: the unit of plot height and width
+#' @param filename: string: output file name
+#' 
+#' @return output_plot: a ggplot object of the RCDF plots
+#' 
+#' @export
+#' 
 
-covid_corr_boxplot_by_assay <- function(plot_dat,
-                                        x,
-                                        y,
-                                        color = x,
-                                        palette = c("#1749FF","#D92321","#0AB7C9","#FF6F1B",
-                                                    "#810094","#378252","#FF5EBF","#3700A5",
-                                                    "#8F8F8F","#787873"),
-                                        assays,
-                                        plot_LLOQ = TRUE,
-                                        LLOQ = NULL, ## if not null, plot LLOQ dash line
-                                        LLOQ_label_size = 3.5,
-                                        LLOW_lwd = 1,
-                                        lwd = 1,
-                                        point_size = 1.4,
-                                        box_width = 0.6,
-                                        errorbar_width = 0.45,
-                                        jitter_width = 0.15,
-                                        njitter = 30, ## number of jittered points overlaid with each box
-                                        legend = levels(plot_dat[, x]),
-                                        legend_position = "bottom",
-                                        legend_nrow = ceiling(length(legend) / 2),
-                                        legend_size = 10,
-                                        axis_size = 10,
-                                        axis_title_size = 9,
-                                        axis_titles_y,
-                                        xlab_use_letters = (nlevels(plot_dat[, x]) > 2),
-                                        ylim = c(-2, 10),
-                                        ybreaks = seq(-2, 10, by = 2),
-                                        arrange_nrow = ceiling(length(assays) / 2),
-                                        arrange_ncol = 2,
-                                        panel_titles,
-                                        panel_title_size = 10,
-                                        height = 6.5,
-                                        width = 6.5,
-                                        units = "in",
-                                        filename) {
+
+covid_corr_boxplot_facets <- function(plot_dat,
+                                      x,
+                                      y,
+                                      facet_by,
+                                      color = x,
+                                      palette = c("#1749FF","#D92321","#0AB7C9","#FF6F1B",
+                                                  "#810094","#378252","#FF5EBF","#3700A5",
+                                                  "#8F8F8F","#787873"),
+                                      
+                                      plot_LLOQ = TRUE,
+                                      LLOQ = NULL, ## if not null, plot LLOQ dash line
+                                      LLOQ_label_size = 3.5,
+                                      LLOW_lwd = 1,
+                                      lwd = 1,
+                                      point_size = 1.4,
+                                      box_width = 0.6,
+                                      errorbar_width = 0.45,
+                                      jitter_width = 0.15,
+                                      njitter = 30, ## number of jittered points overlaid with each box
+                                      legend = levels(plot_dat[, x]),
+                                      legend_position = "bottom",
+                                      legend_nrow = ceiling(nlevels(plot_dat[, x]) / 2),
+                                      legend_size = 10,
+                                      axis_size = 10,
+                                      axis_title_size = 9,
+                                      axis_titles_y,
+                                      xlab_use_letters = (nlevels(plot_dat[, x]) > 2),
+                                      ylim = c(-2, 10),
+                                      ybreaks = seq(-2, 10, by = 2),
+                                      arrange_nrow = ceiling(nlevels(plot_dat[, facet_by]) / 2),
+                                      arrange_ncol = 2,
+                                      panel_titles,
+                                      panel_title_size = 10,
+                                      height = 6.5,
+                                      width = 6.5,
+                                      units = "in",
+                                      filename) {
   ## make a subset of data with 30 sample points for the jitter in each subgroup defined by Trt:Bserostatus
   
   if (xlab_use_letters) {
@@ -307,9 +473,9 @@ covid_corr_boxplot_by_assay <- function(plot_dat,
     xlabels <- levels(plot_dat[, x])
   }
   
-  boxplot_jitter_points <- plot_dat[, c(x, y, "assay")] %>%
+  boxplot_jitter_points <- plot_dat[, c(x, y, facet_by)] %>%
     filter(., complete.cases(.)) %>%
-    split(., list(.$assay, .[, x])) %>%
+    split(., list(.[, facet_by], .[, x])) %>%
     lapply(., function(xx) {
       if(nrow(xx) <= njitter) {
         return(xx)
@@ -317,15 +483,16 @@ covid_corr_boxplot_by_assay <- function(plot_dat,
         return(xx[sample(1:nrow(xx), size = njitter),])
       }}) %>% bind_rows
   
-  boxplot_list <- vector("list", length(assays))
-  for (aa in 1:length(assays)) {
-    boxplot_list[[aa]] <- ggplot(subset(plot_dat, assay = assays[aa]), 
+  boxplot_list <- vector("list", nlevels(plot_dat[, facet_by]))
+  for (aa in 1:nlevels(plot_dat[, facet_by])) {
+    boxplot_list[[aa]] <- ggplot(subset(plot_dat, plot_dat[, facet_by] == levels(plot_dat[, facet_by])[aa]), 
                                  aes_string(x = x, y = y, color = color)) +
       geom_boxplot(width = box_width, lwd = lwd) + 
       stat_boxplot(geom = "errorbar", width = errorbar_width, lwd = lwd) +
       guides(alpha = "none", fill = "none",
              color = guide_legend(nrow = legend_nrow, byrow = TRUE)) +
-      geom_jitter(data = subset(boxplot_jitter_points, assay = assays[aa]),
+      geom_jitter(data = subset(boxplot_jitter_points, 
+                                boxplot_jitter_points[, facet_by] == levels(boxplot_jitter_points[, facet_by])[aa]),
                   width = jitter_width, size = point_size) +
       scale_x_discrete(labels = xlabels) +
       scale_y_continuous(limits = ylim, labels = label_math(10 ^ .x), breaks = ybreaks) +
@@ -345,7 +512,7 @@ covid_corr_boxplot_by_assay <- function(plot_dat,
     
     if (plot_LLOQ) {
       boxplot_list[[aa]] <- boxplot_list[[aa]] + geom_hline(yintercept = LLOQ[aa], linetype = 2, color = "black", lwd = LLOW_lwd) +
-        geom_text(x = 0.7, vjust = "right", y = LLOQ[aa] - 0.5 , label = "LLOQ", size = LLOQ_label_size,
+        geom_text(x = 0.65 + 0.025 * nlevels(plot_dat[, x]), vjust = "right", y = LLOQ[aa] - 0.5 , label = "LLOQ", size = LLOQ_label_size,
                   color = "black", show.legend = FALSE) 
     }
   }
@@ -355,4 +522,6 @@ covid_corr_boxplot_by_assay <- function(plot_dat,
                            align = "h")
   
   ggsave(filename = filename, plot = output_plot, width = width, height = height, units = units)
+  
+  return(output_plot)
 }

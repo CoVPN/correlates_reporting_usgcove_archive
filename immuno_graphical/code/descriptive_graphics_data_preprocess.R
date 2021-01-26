@@ -6,9 +6,9 @@ source(here::here("..", "_common.R"))
 library(dplyr)
 library(here)
 library(stringr)
-
 library(COVIDcorr)
-dat <- COVIDcorr::dat.mock
+
+dat <- COVIDcorr::dat.mock$dat.mock
 
 source(here::here("code", "params.R"))
 
@@ -29,14 +29,14 @@ dat$Bpseudoneutid80 <- ifelse(dat$Bpseudoneutid80 >= log10(22), dat$Bpseudoneuti
 dat$Day29pseudoneutid80 <- ifelse(dat$Day29pseudoneutid80 >= log10(22), dat$Day29pseudoneutid80, log10(22))
 dat$Day57pseudoneutid80 <- ifelse(dat$Day57pseudoneutid80 >= log10(22), dat$Day57pseudoneutid80, log10(22))
 
-
-dat$Bliveneutid50 <- ifelse(dat$Bliveneutid50 >= log10(25), dat$Bliveneutid50, log10(25))
-dat$Day29liveneutid50 <- ifelse(dat$Day29liveneutid50 >= log10(25), dat$Day29liveneutid50, log10(25))
-dat$Day57liveneutid50 <- ifelse(dat$Day57liveneutid50 >= log10(25), dat$Day57liveneutid50, log10(25))
-
-dat$Bliveneutid80 <- ifelse(dat$Bliveneutid80 >= log10(22), dat$Bliveneutid80, log10(22))
-dat$Day29liveneutid80 <- ifelse(dat$Day29liveneutid80 >= log10(22), dat$Day29liveneutid80, log10(22))
-dat$Day57liveneutid80 <- ifelse(dat$Day57liveneutid80 >= log10(22), dat$Day57liveneutid80, log10(22))
+## add the floor value of Live Virus Neutralization Titer when the data are available
+# dat$Bliveneutid50 <- ifelse(dat$Bliveneutid50 >= log10(25), dat$Bliveneutid50, log10(25))
+# dat$Day29liveneutid50 <- ifelse(dat$Day29liveneutid50 >= log10(25), dat$Day29liveneutid50, log10(25))
+# dat$Day57liveneutid50 <- ifelse(dat$Day57liveneutid50 >= log10(25), dat$Day57liveneutid50, log10(25))
+# 
+# dat$Bliveneutid80 <- ifelse(dat$Bliveneutid80 >= log10(22), dat$Bliveneutid80, log10(22))
+# dat$Day29liveneutid80 <- ifelse(dat$Day29liveneutid80 >= log10(22), dat$Day29liveneutid80, log10(22))
+# dat$Day57liveneutid80 <- ifelse(dat$Day57liveneutid80 >= log10(22), dat$Day57liveneutid80, log10(22))
 
 
 ## For immunogenicity characterization, complete ignore any information on cases vs. non-cases.  The goal is to
@@ -59,11 +59,11 @@ dat$EventLabelD57 <- factor(dat$EventIndPrimaryD57, levels = c(0, 1), labels = c
 ## arrange the dataset in the long form, expand by assay types
 ## dat.long.1 is the subject level covariates;
 ## dat.long.2 is the long-form time varying variables
-dat.long.1.0 <- dat[, c("Ptid", "Trt", "MinorityInd", "HighRiskInd", "Age", "BRiskScore", "Sex",
-                                  "Bserostatus", "Fullvaccine", "Perprotocol", "EventTimePrimaryD29", "EventIndPrimaryD29",
-                                  "EventTimePrimaryD57", "EventIndPrimaryD57", "SubcohortInd", "CPVsampInd",
-                                  "age.geq.65",  "TwophasesampInd", "Bstratum", "tps.stratum", "Wstratum", "wt",
-                                  "EventLabelD29", "EventLabelD57", "race", "ethnicity", "WhiteNonHispanic")]
+dat.long.1.0 <- dat[, c("Ptid", "Trt", "MinorityInd", "HighRiskInd", "Age", "Sex",
+                        "Bserostatus", "Fullvaccine", "Perprotocol", "EventIndPrimaryD29",
+                        "EventIndPrimaryD57", "SubcohortInd", "age.geq.65",  "TwophasesampInd", 
+                        "Bstratum", "wt", "EventLabelD29", "EventLabelD57", "race", "ethnicity", 
+                        "WhiteNonHispanic")]
 
 dat.long.1 <- bind_rows(replicate(4, dat.long.1.0, simplify = FALSE))
 name_grid <- expand.grid(aa = times,
@@ -102,21 +102,32 @@ dat.twophase.sample <- subset(dat, Ptid %in% twophase_sample_id)
 ## label the subjects according to their case-control status
 dat.long.twophase.sample$EventD29 <- factor(dat.long.twophase.sample$EventIndPrimaryD29, levels = c(0, 1), labels = c("Non-Case", "Case"))
 dat.long.twophase.sample$EventD57 <- factor(dat.long.twophase.sample$EventIndPrimaryD57, levels = c(0, 1), labels = c("Non-Case", "Case"))
-# dat.long$EventD29 <- factor(dat.long$EventIndPrimaryD29, levels = c(0, 1), labels = c("Non-Case", "Case"))
-# dat.long$EventD57 <- factor(dat.long$EventIndPrimaryD57, levels = c(0, 1), labels = c("Non-Case", "Case"))
+dat.long$EventD29 <- factor(dat.long$EventIndPrimaryD29, levels = c(0, 1), labels = c("Non-Case", "Case"))
+dat.long$EventD57 <- factor(dat.long$EventIndPrimaryD57, levels = c(0, 1), labels = c("Non-Case", "Case"))
 
 
 
 # # matrix to decide the sampling strata
-# dat.long$demo_lab <- 
-#   with(dat.long, factor(paste0(age.geq.65, HighRiskInd),
-#                         levels = c("00", "01", "10", "11"),
-#                         labels = c("Age < 65 not at tisk",
-#                                    "Age < 65 at risk",
-#                                    "Age >= 65 not at risk",
-#                                    "Age >= 65 at risk")))
+dat.long$demo_lab <-
+  with(dat.long, factor(paste0(age.geq.65, HighRiskInd),
+                        levels = c("00", "01", "10", "11"),
+                        labels = c("Age < 65 not at tisk",
+                                   "Age < 65 at risk",
+                                   "Age >= 65 not at risk",
+                                   "Age >= 65 at risk")))
 
 # labels of the demographic strata for the subgroup plotting
+dat.long.twophase.sample$trt_bstatus_label <- 
+  with(dat.long.twophase.sample, 
+       factor(paste0(as.numeric(Trt), as.numeric(Bserostatus)),
+              levels = c("11", "12", "21", "22"),
+              labels = c("Placebo, Baseline Neg",
+                         "Placebo, Baseline Pos",
+                         "Vaccine, Baseline Neg",
+                         "Vaccine, Baseline Pos")))
+
+
+
 dat.long.twophase.sample$age_geq_65_label <- 
   with(dat.long.twophase.sample,
        factor(age.geq.65, 

@@ -7,9 +7,15 @@ library(COVIDcorr)
 library(dplyr)
 library(stringr)
 library(GGally)
-library(scales)
 library(dummies)
 library(ggpubr)
+library(SWIM)
+library(scales)
+library(ggplot2)
+library(gridExtra)
+library(PResiduals)
+
+
 
 source(here::here("code", "ggally_cor_resample.R")) ## produce geom_statistics with resampling-based covariate-adjusted Spearman correlation
 source(here::here("code", "covid_corr_plot_functions.R"))
@@ -32,21 +38,21 @@ dat.twophase.sample <- readRDS(here::here("data_clean", "twophase_data.rds"))
 
 for (tt in 1:4) {
   for (bserostatus in 0:1) {
-    for (trt in c(0,1)) {    
+    for (trt in c(0,1)) {
       subdat <- subset(dat.twophase.sample, Bserostatus==bserostatus & Trt==trt)
-      
+
       covid_corr_pairplots(plot_dat = subdat,
                            time = times[tt + 1],
                            assays = assays,
                            strata = "Bstratum",
                            weight = "wt",
-                           plot_title = paste0(c("D29", "D57", "D29 Fold-rise over D1", "D57 Fold-rise over D1")[tt], " Ab markers: baseline ", ifelse(bserostatus, "positive", "negative"), ", ", 
+                           plot_title = paste0(c("D29", "D57", "D29 Fold-rise over D1", "D57 Fold-rise over D1")[tt], " Ab markers: baseline ", ifelse(bserostatus, "positive", "negative"), ", ",
                                                c("placebo", "vaccine")[trt + 1], " arm"),
-                           column_labels = labels.axis[tt + 1, 1:4],
-                           filename = paste0(save.results.to, "/pairs_", times[tt + 1], 
-                                                "_Markers_", bstatus.labels.2[bserostatus+1], 
-                                                c("_placebo_arm", "_vaccine_arm")[trt + 1], "_",
-                                                study.name, ".png"))
+                           column_labels = labels.axis[tt + 1, 1:4] %>% unlist,
+                           filename = paste0(save.results.to, "/pairs_", times[tt + 1],
+                                             "_Markers_", bstatus.labels.2[bserostatus+1],
+                                             c("_placebo_arm", "_vaccine_arm")[trt + 1], "_",
+                                             study.name, ".png"))
     }
   }
 }
@@ -55,17 +61,17 @@ for (tt in 1:4) {
 for (tt in 1:4) {
   for (bserostatus in 0:1) {
     subdat <- subset(dat.twophase.sample, Bserostatus==bserostatus)
-    
+
     covid_corr_pairplots(plot_dat = subdat,
                          time = times[tt + 1],
                          assays = assays,
                          strata = "Bstratum",
                          weight = "wt",
-                         plot_title = paste0(c("D29", "D57", "D29 Fold-rise over D1", "D57 Fold-rise over D1")[tt], " Ab markers: baseline ", 
-                                             ifelse(bserostatus, "positive", "negative"), 
+                         plot_title = paste0(c("D29", "D57", "D29 Fold-rise over D1", "D57 Fold-rise over D1")[tt], " Ab markers: baseline ",
+                                             ifelse(bserostatus, "positive", "negative"),
                                              ", placebo + vaccine arm"),
-                         column_labels = labels.axis[tt + 1, 1:4],
-                         filename = paste0(save.results.to, "/pairs_", c("Day29", "Day57", "Delta29overB", "Delta57overB")[tt], 
+                         column_labels = labels.axis[tt + 1, 1:4] %>% unlist,
+                         filename = paste0(save.results.to, "/pairs_", c("Day29", "Day57", "Delta29overB", "Delta57overB")[tt],
                                            "_Markers_", bstatus.labels.2[bserostatus+1], "_", study.name, ".png"))
   }
 }
@@ -78,17 +84,17 @@ for (tt in 1:4) {
 
 
 for (bserostatus in 0:1) {
-  for (trt in 0:1) { 
+  for (trt in 0:1) {
     subdat <- subset(dat.twophase.sample, Bserostatus == bserostatus & as.numeric(Trt) == trt)
-    
+
     covid_corr_pairplots(plot_dat = subdat,
                          time = "B",
                          assays = assays,
                          strata = "Bstratum",
                          weight = "wt",
-                         plot_title = paste0("D1 Ab markers: baseline ", ifelse(bserostatus, "positive", "negative"), ", ", 
+                         plot_title = paste0("D1 Ab markers: baseline ", ifelse(bserostatus, "positive", "negative"), ", ",
                                              c("placebo", "vaccine")[trt + 1], " arm"),
-                         column_labels = labels.axis[tt + 1, 1:4],
+                         column_labels = labels.axis[tt + 1, 1:4] %>% unlist,
                          filename = paste0(save.results.to, "/pairs_baselineMarkers_",bstatus.labels.2[bserostatus + 1],
                                            "_", c("placebo", "vaccine")[trt + 1], "_arm_", study.name, ".png"))
   }
@@ -97,19 +103,19 @@ for (bserostatus in 0:1) {
 ## pairplots by baseline serostatus
 for (bserostatus in 0:1) {
   subdat <- subset(dat.twophase.sample, Bserostatus == bserostatus)
-  
-  
+
+
   covid_corr_pairplots(plot_dat = subdat,
                        time = "B",
                        assays = assays,
                        strata = "Bstratum",
                        weight = "wt",
                        plot_title = paste0("D1 Ab markers: baseline ", ifelse(bserostatus, "positive", "negative"), ", vaccine + placebo arm"),
-                       column_labels = labels.axis[tt + 1, 1:4],
+                       column_labels = labels.axis[tt + 1, 1:4] %>% unlist,
                        filename = paste0(save.results.to, "/pairs_baselineMarkers_",bstatus.labels.2[bserostatus + 1],
                                          "_", study.name, ".png"))
-  
-  
+
+
 }
 
 ####################################
@@ -122,21 +128,17 @@ for (bserostatus in 0:1) {
 #=========================================================================================================================
 
 
-for (tt in 1:5) {
-  covid_corr_rcdf_by_assay(plot_dat = dat.long.twophase.sample,
-                           time = times[tt],
-                           assays = assays,
-                           by = "Trt:Bserostatus",
-                           weight = "wt",
-                           legend = c("Placebo, Baseline Neg",
-                                      "Placebo, Baseline Pos",
-                                      "Vaccine, Baseline Neg",
-                                      "Vaccine, Baseline Pos"),
-                           panel_titles = labels.title2[tt,],
-                           axis_titles = labels.axis[tt,],
-                           filename = paste0(save.results.to, "/Marker_RCDF_", 
-                                             times[tt], "_trt_both_bstatus_both_", 
-                                             study.name, ".png"))
+for (tt in 1:length(times)) {
+  covid_corr_rcdf_facets(plot_dat = dat.long.twophase.sample,
+                         x = times[tt],
+                         facet_by = "assay",
+                         color = "trt_bstatus_label",
+                         weight = "wt",
+                         panel_titles = labels.title2[tt,] %>% unlist,
+                         axis_titles = labels.axis[tt,] %>% unlist,
+                         filename = paste0(save.results.to, "/Marker_RCDF_", 
+                                           times[tt], "_trt_both_bstatus_both_", 
+                                           study.name, ".png"))
 }
 
 
@@ -217,21 +219,21 @@ for (day in c("29", "57")) {
 ##========================================================================================
 
 
-for (tt in 2:5) {
+for (tt in 2:length(times)) {
   for (bserostatus in 1:2) {
     for (trt in 1:2) {
-      covid_corr_scatter_by_assay(plot_dat = subset(dat.long.twophase.sample, as.numeric(Bserostatus) == bserostatus &
-                                                      as.numeric(Trt) == trt)[, c(times, "assay", "Trt", "Bstratum", "wt")],
-                                  x = "B",
-                                  y = times[tt],
-                                  assays = assays,
-                                  strata = "Bstratum",
-                                  weight = "wt",
-                                  panel_titles = assay.labels,
-                                  x_axis_titles = labels.axis[1, ],
-                                  y_axis_titles = labels.axis[tt, ],
-                                  filename = paste0(save.results.to, "/scatterplots_", times[tt], "vB_", bstatus.labels.2[bserostatus],
-                                                    c("_placebo_arm_", "_vaccine_arm_")[trt], study.name, ".png"))
+      covid_corr_scatter_facets(plot_dat = subset(dat.long.twophase.sample, as.numeric(Bserostatus) == bserostatus &
+                                                    as.numeric(Trt) == trt)[, c(times, "assay", "Trt", "Bstratum", "wt")],
+                                x = "B",
+                                y = times[tt],
+                                facet_by = "assay",
+                                strata = "Bstratum",
+                                weight = "wt",
+                                panel_titles = labels.assay.short %>% unlist,
+                                x_axis_titles = labels.axis[1, ] %>% unlist,
+                                y_axis_titles = labels.axis[tt, ] %>% unlist,
+                                filename = paste0(save.results.to, "/scatterplots_", times[tt], "vB_", bstatus.labels.2[bserostatus],
+                                                  c("_placebo_arm_", "_vaccine_arm_")[trt], study.name, ".png"))
     }
   }
 }
@@ -254,19 +256,19 @@ for (tt in 2:5) {
 
 
 for (bstatus in 1:2) {
-  for (tt in 1:5) {
-    covid_corr_boxplot_by_assay(plot_dat = subset(dat.long.twophase.sample, Bserostatus == bstatus.labels[bstatus]),
-                                x = "Trt", 
-                                y = times[tt], 
-                                color = "Trt",
-                                assays = assays, 
-                                plot_LLOQ = (tt <= 3), 
-                                LLOQ = LLOQ,
-                                legend = c("Placebo", "Vaccine"),
-                                axis_titles_y = labels.axis[tt, ],
-                                panel_titles = labels.title2[tt, ],
-                                filename = paste0(save.results.to, "/boxplots_", times[tt], "_x_trt_", bstatus.labels.2[bstatus],
-                                                  "_", study.name, ".png"))
+  for (tt in 1:length(times)) {
+    covid_corr_boxplot_facets(plot_dat = subset(dat.long.twophase.sample, Bserostatus == bstatus.labels[bstatus]),
+                              x = "Trt", 
+                              y = times[tt], 
+                              color = "Trt",
+                              facet_by = "assay", 
+                              plot_LLOQ = (tt <= 3), 
+                              LLOQ = LLOQ,
+                              legend = c("Placebo", "Vaccine"),
+                              axis_titles_y = labels.axis[tt, ] %>% unlist,
+                              panel_titles = labels.title2[tt, ] %>% unlist,
+                              filename = paste0(save.results.to, "/boxplots_", times[tt], "_x_trt_", bstatus.labels.2[bstatus],
+                                                "_", study.name, ".png"))
   }
 }
 
@@ -277,19 +279,19 @@ for (bstatus in 1:2) {
 ## ==============================================================================================
 
 for (trt in 1:2) {
-  for (tt in 1:5) {
-    covid_corr_boxplot_by_assay(plot_dat = subset(dat.long.twophase.sample, as.numeric(Trt) == trt),
-                                x = "Bserostatus", 
-                                y = times[tt], 
-                                color = "Bserostatus",
-                                assays = assays, 
-                                plot_LLOQ = (tt <= 3), 
-                                LLOQ = LLOQ,
-                                legend = c("Baseline Negative", "Baseline Positive"),
-                                axis_titles_y = labels.axis[tt, ],
-                                panel_titles = labels.title2[tt, ],
-                                filename = paste0(save.results.to, "/boxplots_", times[tt], "_x_bstatus_", c("placebo_arm_", "vaccine_arm_")[trt],
-                                                  study.name, ".png"))
+  for (tt in 1:length(times)) {
+    covid_corr_boxplot_facets(plot_dat = subset(dat.long.twophase.sample, as.numeric(Trt) == trt),
+                              x = "Bserostatus", 
+                              y = times[tt], 
+                              color = "Bserostatus",
+                              facet_by = "assay", 
+                              plot_LLOQ = (tt <= 3), 
+                              LLOQ = LLOQ,
+                              legend = c("Baseline Negative", "Baseline Positive"),
+                              axis_titles_y = labels.axis[tt, ] %>% unlist,
+                              panel_titles = labels.title2[tt, ] %>% unlist,
+                              filename = paste0(save.results.to, "/boxplots_", times[tt], "_x_bstatus_", c("placebo_arm_", "vaccine_arm_")[trt],
+                                                study.name, ".png"))
   }
 }
 

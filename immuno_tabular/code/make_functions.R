@@ -15,7 +15,7 @@ nAb80_lloq <- 43
 # Variable Names by Assay
 bAb <- c("bindSpike", "bindRBD")
 pnAb <- c("pseudoneutid50", "pseudoneutid80")
-lnAb <- c("liveneutid50", "liveneutid80")
+lnAb <- c("liveneutmn50")
 
 visits <- c("B", "Day29", "Day57")
 bAb_v <- levels(interaction(visits, bAb, sep = ""))

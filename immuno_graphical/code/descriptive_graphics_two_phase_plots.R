@@ -8,12 +8,12 @@ library(here)
 library(COVIDcorr)
 library(dplyr)
 library(stringr)
-library(GGally)
-library(dummies)
+library(ggplot2)
 library(ggpubr)
+library(GGally)
 library(SWIM)
 library(scales)
-library(ggplot2)
+library(dummies)
 library(gridExtra)
 library(PResiduals)
 
@@ -22,6 +22,7 @@ source(here("code", "ggally_cor_resample.R"))
 source(here("code", "covid_corr_plot_functions.R"))
 source(here("code", "params.R"))
 
+# load cleaned data
 dat.long.twophase.sample <- readRDS(here("data_clean",
                                          "long_twophase_data.rds"))
 dat.twophase.sample <- readRDS(here("data_clean", "twophase_data.rds"))
@@ -154,7 +155,7 @@ for (bserostatus in 0:1) {
 #   ggarrange()
 #-----------------------------------------------
 
-for (tt in seq_len(times)) {
+for (tt in seq_along(times)) {
   covid_corr_rcdf_facets(
     plot_dat = dat.long.twophase.sample,
     x = times[tt],
@@ -264,7 +265,7 @@ for (tt in 2:length(times)) {
         facet_by = "assay",
         strata = "Bstratum",
         weight = "wt",
-        panel_titles = labels.assay.short %>% unlist,
+        panel_titles = labels.assays.short %>% unlist,
         x_axis_titles = labels.axis[1, ] %>% unlist,
         y_axis_titles = labels.axis[tt, ] %>% unlist,
         filename = paste0(save.results.to, "/scatterplots_", times[tt], "vB_",
@@ -290,7 +291,7 @@ for (tt in 2:length(times)) {
 #-----------------------------------------------
 
 for (bstatus in 1:2) {
-  for (tt in seq_len(times)) {
+  for (tt in seq_along(times)) {
     covid_corr_boxplot_facets(
       plot_dat = subset(dat.long.twophase.sample,
                         Bserostatus == bstatus.labels[bstatus]),
@@ -316,7 +317,7 @@ for (bstatus in 1:2) {
 #-----------------------------------------------
 
 for (trt in 1:2) {
-  for (tt in seq_len(times)) {
+  for (tt in seq_along(times)) {
     covid_corr_boxplot_facets(
       plot_dat = subset(dat.long.twophase.sample, as.numeric(Trt) == trt),
       x = "Bserostatus",

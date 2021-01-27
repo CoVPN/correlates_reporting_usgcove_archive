@@ -3,8 +3,8 @@ twophase_plots: code/descriptive_graphics_two_phase_plots.R \
   plot_data params
 	Rscript code/descriptive_graphics_two_phase_plots.R
 
-## demo_plots       : rcdfs, boxplots by demographics saved in figs/demographics	
-demo_plots: code/descriptive_graphics_demographic_strata.R \
+## demog_plots      : rcdfs, boxplots by demographics saved in figs/demographics
+demog_plots: code/descriptive_graphics_demographic_strata.R \
   plot_data params
 	Rscript code/descriptive_graphics_demographic_strata.R
 
@@ -21,10 +21,11 @@ clean:
 	rm -f data_clean/*.rds
 	rm -f figs/*.png
 	rm -f figs/demographics/*.png
+	rm -f Rplots.pdf
 
 # type 'make help' to show all make commands
 help: Makefile
 	@sed -n 's/^##//p' $<
 
 # define PHONYS
-.PHONY: help clean plot_data params demo_plots twophase_plots
+.PHONY: clean plot_data params demog_plots twophase_plots

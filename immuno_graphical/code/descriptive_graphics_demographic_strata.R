@@ -14,10 +14,12 @@ library(SWIM)
 library(ggplot2)
 library(scales)
 
+# load helper scripts and parameters
 source(here("code", "ggally_cor_resample.R"))
 source(here("code", "covid_corr_plot_functions.R"))
 source(here("code", "params.R"))
 
+# load cleaned data
 dat.long.twophase.sample <- readRDS(here("data_clean",
                                          "long_twophase_data.rds"))
 dat.twophase.sample <- readRDS(here("data_clean", "twophase_data.rds"))
@@ -41,7 +43,7 @@ for (tt in 1:5) {
     for (bstatus in 1:2) {
       subdat <- subset(dat.long.twophase.sample,
                        Bserostatus == bstatus.labels[bstatus] &
-                         Trt == trt.labels[trt])
+                       Trt == trt.labels[trt])
 
       ##  (1) age >= 65 or age < 65 
       covid_corr_boxplot_facets(plot_dat = subdat,
@@ -56,8 +58,7 @@ for (tt in 1:5) {
                                                   "/demographics/boxplots_",
                                                   times[tt], "_",
                                                   bstatus.labels.2[bstatus],
-                                                  "_trt_", 
-                                                  trt.labels[trt],
+                                                  "_trt_", trt.labels[trt],
                                                   "_by_age_group_",
                                                   study.name, ".png"))
 
@@ -110,10 +111,10 @@ for (tt in 1:5) {
 
       ##  (3) age * high risk
       covid_corr_boxplot_facets(plot_dat = subdat,
-                                x = "age_risk_label", 
+                                x = "age_risk_label",
                                 y = times[tt],
                                 facet_by = "assay",
-                                plot_LLOQ = (tt <= 3), 
+                                plot_LLOQ = (tt <= 3),
                                 LLOQ = LLOQ,
                                 axis_titles_y = labels.axis[tt, ] %>% unlist,
                                 panel_titles = labels.title2[tt, ] %>% unlist,
@@ -208,7 +209,7 @@ for (tt in 1:5) {
                                                "_by_age_sex_group_",
                                                study.name, ".png"))
 
-      ##  (6) ethnicity
+      # (6) ethnicity
       covid_corr_boxplot_facets(plot_dat = subdat,
                                 x = "ethnicity",
                                 y = times[tt],
@@ -242,7 +243,7 @@ for (tt in 1:5) {
                                                "_by_ethnicity_", study.name,
                                                ".png"))
 
-      ##  (7) race
+      # (7) race
       covid_corr_boxplot_facets(plot_dat =
                                   subset(subdat, !(race == "White" &
                                                    WhiteNonHispanic == 0)),

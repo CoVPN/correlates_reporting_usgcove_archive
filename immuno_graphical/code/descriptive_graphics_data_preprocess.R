@@ -6,14 +6,13 @@ source(here::here("..", "_common.R"))
 
 library(here)
 library(dplyr)
-library(here)
 library(stringr)
 library(COVIDcorr)
 
 # load data
 data(dat.mock)
 
-# load parameters 
+# load parameters
 source(here("code", "params.R"))
 
 ## setting the floor values
@@ -81,7 +80,7 @@ dat.long.2 <- as.data.frame(matrix(nrow = nrow(dat) * 4,
                                    ncol = length(dat.long.2.names)))
 colnames(dat.long.2) <- dat.long.2.names
 
-for (ii in 1:nrow(name_grid)) {
+for (ii in seq_len(nrow(name_grid))) {
   dat_mock_col_names <- paste(name_grid$aa[ii], assays,
                               name_grid$cc[ii], sep = "")
   dat.long.2[, dat.long.2.names[ii]] <-
@@ -94,7 +93,6 @@ for (ii in 1:nrow(name_grid)) {
            })
     )
 }
-
 dat.long.2$assay <- rep(assays, each = nrow(dat))
 dat.long <- cbind(dat.long.1, dat.long.2)
 
@@ -142,18 +140,16 @@ dat.long.twophase.sample$trt_bstatus_label <-
                          "Vaccine, Baseline Neg",
                          "Vaccine, Baseline Pos")))
 
-
-
 dat.long.twophase.sample$age_geq_65_label <-
   with(dat.long.twophase.sample,
-       factor(age.geq.65, 
+       factor(age.geq.65,
               levels = c(0, 1),
               labels = c("Age >= 65", "Age < 65")))
 
 dat.long.twophase.sample$highrisk_label <-
   with(dat.long.twophase.sample,
-       factor(HighRiskInd, 
-              levels = c(0, 1), 
+       factor(HighRiskInd,
+              levels = c(0, 1),
               labels = c("Not at risk", "At risk")))
 
 dat.long.twophase.sample$age_risk_label <-
@@ -182,7 +178,7 @@ dat.long.twophase.sample$age_sex_label <-
 
 dat.long.twophase.sample$minority_label <-
   with(dat.long.twophase.sample,
-       factor(MinorityInd, 
+       factor(MinorityInd,
               levels = c(0, 1),
               labels = c("White Non-Hispanic", "Comm. of Color")))
 
@@ -195,7 +191,7 @@ dat.long.twophase.sample$age_minority_label <-
                          "Age >= 65 Comm. of Color",
                          "Age >= 65 White Non-Hispanic")))
 
-saveRDS(dat.long.twophase.sample,
+saveRDS(as.data.frame(dat.long.twophase.sample),
         file = here("data_clean", "long_twophase_data.rds"))
-saveRDS(dat.twophase.sample,
+saveRDS(as.data.frame(dat.twophase.sample),
         file = here("data_clean", "twophase_data.rds"))

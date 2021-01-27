@@ -145,8 +145,7 @@ resp_lb <- expand.grid(
       endpoint == "bindRBD" ~ "Anti-RBD IgG",
       endpoint == "pseudoneutid50" ~ "Pseudo nAb ID50",
       endpoint == "pseudoneutid80" ~ "Pseudo nAb ID80",
-      endpoint == "liveneutid50" ~ "Live Virus nAb ID50",
-      endpoint == "liveneutid80" ~ "Live Virus nAb ID80"
+      endpoint == "liveneutmn50" ~ "Live Virus nAb MN50"
     ),
     Endpoint = factor(Endpoint, levels = ep_lev),
     ind.lb = case_when(ind == "FR2" ~ "2-Fold Rise",

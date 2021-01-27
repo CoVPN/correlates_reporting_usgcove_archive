@@ -1,12 +1,10 @@
 ## Pairs plots
+
 ```{r immuno-graphical-setup, echo = FALSE, message = FALSE}
 library(here)
 library(latex2exp)
 here::i_am("immuno-graphical/report.Rmd")
-
-
 ```
-
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{figs/pairs_baselineMarkers_BaselineNeg_\studyname}

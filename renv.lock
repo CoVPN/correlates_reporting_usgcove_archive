@@ -170,15 +170,10 @@
     },
     "SuperLearner": {
       "Package": "SuperLearner",
-      "Version": "2.0-27-9000",
-      "Source": "Local",
-      "RemoteType": "local",
-      "RemoteUsername": "ecpolley",
-      "RemoteRepo": "SuperLearner",
-      "RemoteRef": "HEAD",
-      "RemoteSha": "3d31d70660a2865e049acfdd8af92da51e18d494",
-      "RemoteHost": "api.github.com",
-      "Hash": "6e086ba1da67d2f5b69f4369a1a408b7"
+      "Version": "2.0-26",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "664b1c3ade05bd5afbd5ca5609c78bf1"
     },
     "TH.data": {
       "Package": "TH.data",
@@ -238,15 +233,10 @@
     },
     "bookdown": {
       "Package": "bookdown",
-      "Version": "0.21.6",
-      "Source": "Local",
-      "RemoteType": "local",
-      "RemoteUsername": "rstudio",
-      "RemoteRepo": "bookdown",
-      "RemoteRef": "HEAD",
-      "RemoteSha": "11bedc80e1bab09a308167a28f98bd7873a78216",
-      "RemoteHost": "api.github.com",
-      "Hash": "a9db502a1e9fc3cd46e0ca4873d3e365"
+      "Version": "0.21",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "1bf627f1f77313e345f71e779b658578"
     },
     "boot": {
       "Package": "boot",
@@ -336,13 +326,6 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "a667800d5f0350371bedeb8b8b950289"
-    },
-    "class": {
-      "Package": "class",
-      "Version": "7.3-18",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "15ef288688a6919417ade6251deea2b3"
     },
     "cli": {
       "Package": "cli",
@@ -1492,8 +1475,8 @@
       "Package": "sl3",
       "Version": "1.3.7",
       "Source": "GitHub",
-      "Remotes": "github::osofr/condensier, github::tlverse/hal9001,\ngithub::nhejazi/haldensify, github::tpospisi/RFCDE/r",
       "RemoteType": "github",
+      "Remotes": "github::osofr/condensier, github::tlverse/hal9001,\ngithub::nhejazi/haldensify, github::tpospisi/RFCDE/r",
       "RemoteHost": "api.github.com",
       "RemoteRepo": "sl3",
       "RemoteUsername": "tlverse",
@@ -1602,14 +1585,14 @@
     "txshift": {
       "Package": "txshift",
       "Version": "0.3.5",
-      "Source": "Local",
-      "RemoteType": "local",
-      "RemoteUsername": "nhejazi",
-      "RemoteRepo": "txshift",
-      "RemoteRef": "master",
-      "RemoteSha": "1622c808291033a73280c42688ee53faa35e5f1c",
+      "Source": "GitHub",
+      "RemoteType": "github",
       "RemoteHost": "api.github.com",
-      "Hash": "dc7cb61fc1914bbf1ca3527b759a8e8b"
+      "RemoteRepo": "txshift",
+      "RemoteUsername": "nhejazi",
+      "RemoteRef": "HEAD",
+      "RemoteSha": "1622c808291033a73280c42688ee53faa35e5f1c",
+      "Hash": "6e82ec7c334eecf8f29078537f033167"
     },
     "usethis": {
       "Package": "usethis",

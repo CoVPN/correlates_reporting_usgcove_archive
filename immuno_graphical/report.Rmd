@@ -1,9 +1,11 @@
+# Graphical Description of Immunogenicity Data {#immuno_graphical}
+
 ## Pairs plots
 
 ```{r immuno-graphical-setup, echo = FALSE, message = FALSE}
 library(here)
 library(latex2exp)
-here::i_am("immuno-graphical/report.Rmd")
+here::i_am("immuno_graphical/report.Rmd")
 ```
 \begin{figure}[H]
     \centering

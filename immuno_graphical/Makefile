@@ -28,4 +28,4 @@ help: Makefile
 	@sed -n 's/^##//p' $<
 
 # define PHONYS
-.PHONY: clean plot_data params demog_plots twophase_plots
+.PHONY: help clean plot_data params demog_plots twophase_plots

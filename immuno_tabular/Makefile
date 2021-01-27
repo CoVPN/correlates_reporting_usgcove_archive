@@ -3,13 +3,8 @@ clean_data: code/make_clean_data.R
 	Rscript code/make_clean_data.R
 
 ## tables_output    : make summary tables and save data to output/
-tables_output: code/make_table_all.R \
-  clean_data
+tables_output: code/make_table_all.R clean_data
 	Rscript code/make_table_all.R
-
-## report           : use tables in output/ to build bookdown summary report
-report:
-	Rscript "rmarkdown::render(input = 'report.Rmd', output_dir = 'output')"
 
 ## clean            : delete contents of data_clean/ and output/ directories
 clean:
@@ -22,4 +17,4 @@ help: Makefile
 	@sed -n 's/^##//p' $<
 
 # define PHONYS
-.PHONY: help clean clean_data tables_output
+.PHONY: help clean tables_output

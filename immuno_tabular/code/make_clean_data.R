@@ -7,10 +7,12 @@ source(here::here("..", "_common.R"))            #
 # load packages and helper scripts
 library(here)
 library(tidyverse)
+library(COVIDcorr)
 source(here("code", "make_functions.R"))
 
-# Read in original data
-ds_o <- COVIDcorr::dat.mock
+# read in original data
+data(dat.mock)
+ds_o <- dat.mock
 
 # The stratified random cohort for immunogenicity
 ds_s <- ds_o %>%
@@ -89,22 +91,20 @@ ds1 <- bind_cols(
 ds2 <- bind_cols(
   ds1,
   pmap(list(
-    data = replicate(length(c(bAb, pnAb, lnAb)), ds1, simplify = F),
+    data = replicate(length(c(bAb, pnAb, lnAb)), ds1, simplify = FALSE),
     bl = paste0("B", c(bAb, pnAb, lnAb)),
     post = paste0("Day29", c(bAb, pnAb, lnAb)),
-    lloq = list(bAb_lloq, bAb_lloq, nAb50_lloq, nAb80_lloq, nAb50_lloq,
-                nAb80_lloq)
+    lloq = list(bAb_lloq, bAb_lloq, nAb50_lloq, nAb80_lloq, nAb50_lloq)
   ),
   .f = setResponder, folds = c(2, 4), responderFR = 4
   ) %>%
-    do.call(cbind, .),
+  do.call(cbind, .),
 
   pmap(list(
     data = replicate(length(c(bAb, pnAb, lnAb)), ds1, simplify = F),
     bl = paste0("B", c(bAb, pnAb, lnAb)),
     post = paste0("Day57", c(bAb, pnAb, lnAb)),
-    lloq = list(bAb_lloq, bAb_lloq, nAb50_lloq, nAb80_lloq, nAb50_lloq,
-                nAb80_lloq)
+    lloq = list(bAb_lloq, bAb_lloq, nAb50_lloq, nAb80_lloq, nAb50_lloq)
   ),
   .f = setResponder, folds = c(2, 4), responderFR = 4
   ) %>%

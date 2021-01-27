@@ -1,13 +1,12 @@
-#  Graphical Description of Antibody Marker Data {#immuno-grapical}
+#  Graphical Description of Immunogenicity Data {#immuno-grapical}
 
 ```{r knitr, echo = FALSE, message = FALSE, warning = FALSE}
-library(here)
 here::i_am("immuno-tabular/report.Rmd")
-source(here("code", "make_functions.R"))
-load(here("output", "Tables.Rdata"))
+source(here::here("code", "make_functions.R"))
+load(here::here("output", "tables.Rdata"))
 
 # Determine output document type.
-doctype <- opts_knit$get('rmarkdown.pandoc.to')
+doctype <- opts_knit$get("rmarkdown.pandoc.to")
 opts_chunk$set(echo = doctype == "html", message = doctype == "html")
 
 tab_v <- c("Baseline", "Visit", "Endpoint", "N", "Responder")

@@ -1,6 +1,0 @@
-Windows Registry Editor Version 5.00
-
-[HKEY_CLASSES_ROOT\Folder\shell]
-
-[HKEY_CLASSES_ROOT\Folder\shell\!R\command]
-@="\"D:\\R\\R-4.0.2\\bin\\x64\\Rgui.exe\" \"--no-save\" \"%1\""

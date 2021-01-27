@@ -3,6 +3,6 @@
 .RData
 .Ruserdata
 .DS_Store
+*.reg
 _book
 _bookdown_files
-immuno_graphical/figs/*

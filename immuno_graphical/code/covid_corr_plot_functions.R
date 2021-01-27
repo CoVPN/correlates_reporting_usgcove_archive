@@ -1,4 +1,3 @@
-
 #' Pairplots of assay readouts
 #' 
 #' Produce the pairplots of assay readouts. The correlation is calculated by the 

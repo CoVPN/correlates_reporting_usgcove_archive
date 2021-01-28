@@ -327,6 +327,13 @@
       "Repository": "CRAN",
       "Hash": "a667800d5f0350371bedeb8b8b950289"
     },
+    "class": {
+      "Package": "class",
+      "Version": "7.3-18",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "15ef288688a6919417ade6251deea2b3"
+    },
     "cli": {
       "Package": "cli",
       "Version": "2.2.0",
@@ -1475,8 +1482,8 @@
       "Package": "sl3",
       "Version": "1.3.7",
       "Source": "GitHub",
-      "RemoteType": "github",
       "Remotes": "github::osofr/condensier, github::tlverse/hal9001,\ngithub::nhejazi/haldensify, github::tpospisi/RFCDE/r",
+      "RemoteType": "github",
       "RemoteHost": "api.github.com",
       "RemoteRepo": "sl3",
       "RemoteUsername": "tlverse",

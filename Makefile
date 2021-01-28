@@ -22,12 +22,20 @@ cop:
 style:
 	Rscript -e "styler::style_dir(filetype = 'rmd')"
 
-## book                   : builds the CoVPN report
-book:
+## book_immuno            : builds the CoVPN immunogenicity report
+book_immuno:
+	sh ./_build.sh
+
+## book_cor               : builds the CoVPN correlates of risk report
+book_cor:
+	sh ./_build.sh
+
+## book_cop               : builds the CoVPN correlates of protection report
+book_cop:
 	sh ./_build.sh
 
 ## type 'make help' to show all make commands
 help: Makefile
 	@sed -n 's/^##//p' $<
 
-.PHONY: style book
+.PHONY: style immuno cor cop

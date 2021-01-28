@@ -3,8 +3,8 @@ library(dplyr)
 library(survey)
 library(knitr)
 library(kableExtra)
-
-indat <- COVIDcorr::dat.mock
+data(dat.mock)
+indat <- as.data.frame(dat.mock)
 dataDate <- format(lubridate::mdy("01/12/2021"), "%B %d, %Y")
 
 bAb_lloq <- 34
@@ -15,12 +15,18 @@ nAb80_lloq <- 43
 # Variable Names by Assay
 bAb <- c("bindSpike", "bindRBD")
 pnAb <- c("pseudoneutid50", "pseudoneutid80")
-lnAb <- c("liveneutid50", "liveneutid80")
+lnAb <- c("liveneutmn50")
 
 visits <- c("B", "Day29", "Day57")
-bAb_v <- levels(interaction(visits, bAb, sep = ""))
-pnAb_v <- levels(interaction(visits, pnAb, sep = ""))
-lnAb_v <- levels(interaction(visits, lnAb, sep = ""))
+suppressWarnings(
+  bAb_v <- levels(interaction(visits, bAb, sep = ""))
+)
+suppressWarnings(
+  pnAb_v <- levels(interaction(visits, pnAb, sep = ""))
+)
+suppressWarnings(
+  lnAb_v <- levels(interaction(visits, lnAb, sep = ""))
+)
 
 # Function to truncate at LLOQ and ULOQ
 setLOQ <- function(x, lloq = -Inf, uloq = Inf) {

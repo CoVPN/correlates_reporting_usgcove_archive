@@ -1,0 +1,5 @@
+"","Learner","SL Weights","Predictors","Coefficient","Odds Ratio"
+"1","screen_univariate_logistic_pval_SL.glm","0.700","(Intercept)","-3.896","0.020"
+"2","screen_univariate_logistic_pval_SL.glm","0.700","NatAmer"," 0.049","1.050"
+"3","screen_univariate_logistic_pval_SL.glm","0.700","HighRiskInd"," 0.755","2.129"
+"4","screen_univariate_logistic_pval_SL.glm","0.700","Age"," 1.095","2.990"

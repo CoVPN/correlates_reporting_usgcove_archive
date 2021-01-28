@@ -1,0 +1,120 @@
+
+<!-- ## Tables and Figures -->
+
+```{r riskVarstable, warning=FALSE, echo=FALSE}
+load(file = paste0(here(), "/SL_risk_score/code/results/objects_for_running_SL.rda"))
+rm(Y, X_markers_varset, weights)
+caption <- "Variables considered for risk score analysis."
+
+read.csv(paste0(here(), "/SL_risk_score/output/risk_vars.csv"), row.names = 1, header = TRUE) %>%
+  kable(
+    #format = output_type,
+    booktabs = TRUE,
+    linesep = "",
+    caption = caption
+  ) %>%
+  column_spec(2, width = "3cm") %>%
+  column_spec(4, width = "3cm") %>%
+  kable_styling(latex_options = c("hold_position"),
+                font_size = 9) 
+
+```
+
+
+\clearpage
+
+
+```{r learner-screens, warning=FALSE, echo=FALSE}
+
+tab_ls <- read.csv(paste0(here(), "/SL_risk_score/output/learner-screens.csv"), row.names = 1, header = TRUE) %>%
+    rename(`Screen*` = `Screen.`) 
+
+caption <- paste0("All learner-screen combinations (", nrow(tab_ls), " in total) used as input to the superlearner.")
+
+tab_ls  %>% 
+  kable(
+    booktabs = TRUE,
+    linesep = "",
+    caption = caption
+  ) %>%
+  kable_styling(latex_options = c("hold_position"),
+                font_size = 9) %>%
+  column_spec(1:2, width = "5cm") %>%
+  row_spec(0,bold=TRUE) %>%
+  collapse_rows(columns = 1, valign = "top", latex_hline = "major") %>%
+  footnote(c("*Screen details:",
+             "all: includes all variables",
+             "glmnet: includes variables with non-zero coefficients in the standard implementation of SL.glmnet that optimizes the lasso tuning parameter via cross-validation",
+             "univar_logistic_pval: includes variables with Wald test 2-sided p-value in a logistic regression model < 0.10",
+             "highcor_random: if pairs of quantitative variables with Spearman rank correlation > 0.90, one of the variables is selected at random"),
+           threeparttable = TRUE)
+
+```
+
+\clearpage
+
+```{r cvauc-riskscore, echo=FALSE, out.width='100%', fig.cap=paste0("Forest plot showing CV-AUC point estimates and 95\\% confidence intervals for the Super Learner and all models trained to classify cases in placebo group defined by ", endpoint, " as the endpoint. Learners are sorted by their CV-AUC point estimates."), fig.scap=paste0("Forest plot showing CV-AUC point estimates and 95\\% confidence intervals for SL and all models (placebo group, ", endpoint, " endpoint)"), fig.pos="H", fig.height=8}
+
+knitr::include_graphics(paste0(here(), "/SL_risk_score/output/risk_placebo_cvaucs.png"))
+
+```
+
+\clearpage
+
+```{r predprob-riskscore, echo=FALSE, out.width='100%', fig.cap=paste0("CV estimated probabilities of COVID disease based off ", endpoint, " as the endpoint for the top 2 learners, SuperLearner and Discrete SL."), fig.pos="H", fig.height=8}
+
+knitr::include_graphics(paste0(here(), "/SL_risk_score/output/predProb_riskscore_plac.png"))
+
+```
+
+
+\clearpage
+
+```{r ROCcurves-riskscore, echo=FALSE, out.width='100%', fig.cap=paste0("ROC curves for the top 2 learners, SuperLearner and Discrete SL. (", endpoint, " as endpoint)."), fig.pos="H", fig.height=8}
+
+knitr::include_graphics(paste0(here(), "/SL_risk_score/output/ROCcurve_riskscore_plac.png"))
+
+```
+
+<!-- \clearpage -->
+
+
+<!-- ```{r sl-weights, warning=FALSE, echo=FALSE} -->
+
+<!-- caption <- paste0("Weights assigned by SuperLearner to individual learners.") -->
+
+<!-- read.csv(paste0(here(), "/SL_risk_score/output/SL_weights.csv"), row.names = 1, header = TRUE)  %>%  -->
+<!--   kable( -->
+<!--     booktabs = TRUE, -->
+<!--     linesep = "", -->
+<!--     caption = caption -->
+<!--   ) %>% -->
+<!--   kable_styling(latex_options = c("hold_position"), -->
+<!--                 font_size = 9) %>% -->
+<!--   column_spec(1:2, width = "5cm") %>% -->
+<!--   row_spec(0,bold=TRUE) %>% -->
+<!--   collapse_rows(columns = 1, valign = "top", latex_hline = "major")  -->
+
+<!-- ``` -->
+
+\clearpage
+
+
+```{r top-learners-with-predictors, warning=FALSE, echo=FALSE}
+
+caption <- paste0("Predictors and their coefficients in learners assigned top weights (weights > 0.5) by the SuperLearner.")
+
+read.csv(paste0(here(), "/SL_risk_score/output/SL_top_models_with_predictors.csv"), row.names = 1, header = TRUE)  %>% 
+  kable(
+    booktabs = TRUE,
+    linesep = "",
+    caption = caption
+  ) %>%
+  kable_styling(latex_options = c("hold_position"),
+                font_size = 9) %>%
+  column_spec(1:2, width = "5cm") %>%
+  row_spec(0,bold=TRUE) %>%
+  collapse_rows(columns = 1:2, valign = "top", latex_hline = "major") 
+
+```
+

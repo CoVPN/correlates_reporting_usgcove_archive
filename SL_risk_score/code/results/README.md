@@ -1,0 +1,1 @@
+SL objects (.rda and .rds files) will be stored in this directory and will be used to created the output. Since these files are huge, they will not be pushed to Github and thus are included in the .gitignore file.  

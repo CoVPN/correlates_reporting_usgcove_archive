@@ -19,6 +19,8 @@ classoption:
 ```{r knitr, echo = FALSE, message=FALSE, warning=F}
 library(knitr)
 library(kableExtra)
+library(tidyverse)
+
 base::load(here::here("data_clean", "params.Rdata"))
 base::load(here::here("output","Tables.Rdata"))
 

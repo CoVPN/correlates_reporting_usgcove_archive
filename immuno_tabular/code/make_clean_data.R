@@ -5,31 +5,31 @@ source(here::here("..", "_common.R"))            #
 ##################################################
 
 library(tidyverse)
+library(COVIDcorr)
 load(here::here("data_clean", "params.Rdata"))
 
-dat.ls <- COVIDcorr::dat.mock
-
 # Read in original data
-ds_o <- dat.ls$dat.mock
+data(dat.mock)
+ds_o <- dat.mock
 # The stratified random cohort for immunogenicity
 ds_s <- ds_o %>% 
-  dplyr::filter(SubcohortInd==1 & TwophasesampInd==1 & Perprotocol==1) %>%
-  # dplyr::filter(SubcohortInd==1 & Perprotocol==1) %>% 
+  dplyr::filter(SubcohortInd == 1 & TwophasesampInd == 1 & Perprotocol == 1) %>%
+  # dplyr::filter(SubcohortInd == 1 & Perprotocol == 1) %>% 
   mutate(raceC = as.character(race), ethnicityC=as.character(ethnicity)) %>% 
-  mutate(RaceEthC = case_when(raceC=="White" & ethnicityC=="Not Hispanic or Latino" ~ "White Non-Hispanic",
-                              raceC=="White" & ethnicityC=="Hispanic or Latino" ~ "",
+  mutate(RaceEthC = case_when(raceC == "White" & ethnicityC == "Not Hispanic or Latino" ~ "White Non-Hispanic",
+                              raceC == "White" & ethnicityC == "Hispanic or Latino" ~ "",
                               TRUE ~ raceC),
-         MinorityC = case_when(MinorityInd==1~"Communities of Color", 
-                               MinorityInd==0 & raceC=="White" & ethnicityC=="Not Hispanic or Latino" ~ "White Non-Hispanic",
+         MinorityC = case_when(MinorityInd == 1~"Communities of Color", 
+                               MinorityInd == 0 & raceC == "White" & ethnicityC == "Not Hispanic or Latino" ~ "White Non-Hispanic",
                                TRUE ~ ""),
-         HighRiskC = ifelse(HighRiskInd==1, "At-risk", "Not at-risk"),
-         Age65C = ifelse(age.geq.65==1, "Age >= 65", "Age < 65"),
-         SexC = ifelse(Sex==1, "Female", "Male"),
+         HighRiskC = ifelse(HighRiskInd == 1, "At-risk", "Not at-risk"),
+         Age65C = ifelse(age.geq.65 == 1, "Age >= 65", "Age < 65"),
+         SexC = ifelse(Sex == 1, "Female", "Male"),
          AgeRiskC = paste(Age65C, HighRiskC),
          AgeSexC = paste(Age65C, SexC),
          AgeMinorC = paste(Age65C, MinorityC),
-         Baseline = factor(ifelse(Bserostatus==1, "Positive", "Negative"), levels=c("Negative", "Positive")),
-         Rx = factor(ifelse(Trt==1, "Vaccine", "Placebo"), levels=c("Vaccine", "Placebo"))
+         Baseline = factor(ifelse(Bserostatus == 1, "Positive", "Negative"), levels=c("Negative", "Positive")),
+         Rx = factor(ifelse(Trt == 1, "Vaccine", "Placebo"), levels=c("Vaccine", "Placebo"))
   )
 
 # Generate a long format dataset stacking the subgroups, so that Bserostatus*Trt, Bserostatus*Trt*subgroup, etc.
@@ -46,7 +46,7 @@ ds_long <- ds_s %>%
                names_to="subgroup", values_to = "subgroup_cat") %>% 
   mutate(subgroup=factor(subgrp[subgroup], levels=subgrp)) %>% 
   dplyr::filter(!subgroup_cat %in% c("","Age < 65 ", "Age >= 65 ")) %>% 
-  dplyr::filter(!(subgroup=="ethnicityC" & subgroup_cat=="Not reported and unknown"))
+  dplyr::filter(!(subgroup == "ethnicityC" & subgroup_cat == "Not reported and unknown"))
 
 ds_all <- bind_rows(
   ds_long, 

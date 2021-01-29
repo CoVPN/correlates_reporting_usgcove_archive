@@ -57,25 +57,27 @@ dat$EventLabelD29 <- factor(dat$EventIndPrimaryD29, levels = c(0, 1), labels = c
 dat$EventLabelD57 <- factor(dat$EventIndPrimaryD57, levels = c(0, 1), labels = c("D57 Non-Case", "D57 Case"))
 
 ## arrange the dataset in the long form, expand by assay types
-## dat.long.1 is the subject level covariates;
-## dat.long.2 is the long-form time varying variables
-dat.long.1.0 <- dat[, c("Ptid", "Trt", "MinorityInd", "HighRiskInd", "Age", "Sex",
+## dat.long.subject_level is the subject level covariates;
+## dat.long.assay_value is the long-form time variables that differ by the assay type
+dat.long.subject_level <- dat[, c("Ptid", "Trt", "MinorityInd", "HighRiskInd", "Age", "Sex",
                         "Bserostatus", "Fullvaccine", "Perprotocol", "EventIndPrimaryD29",
                         "EventIndPrimaryD57", "SubcohortInd", "age.geq.65",  "TwophasesampInd", 
                         "Bstratum", "wt", "EventLabelD29", "EventLabelD57", "race", "ethnicity", 
-                        "WhiteNonHispanic")]
+                        "WhiteNonHispanic")] %>%
+  replicate(length(assays), ., simplify = FALSE) %>%
+  bind_rows
 
-dat.long.1 <- bind_rows(replicate(4, dat.long.1.0, simplify = FALSE))
+
 name_grid <- expand.grid(aa = times,
                          cc = c("", "CPV", paste(".imp", 1:10, sep = "")))
-dat.long.2.names <- paste(name_grid$aa, name_grid$cc, sep = "")
-dat.long.2 <- as.data.frame(matrix(nrow = nrow(dat) * 4,
-                                        ncol = length(dat.long.2.names)))
-colnames(dat.long.2) <- dat.long.2.names
+dat.long.assay_value.names <- paste(name_grid$aa, name_grid$cc, sep = "")
+dat.long.assay_value <- as.data.frame(matrix(nrow = nrow(dat) * length(assays),
+                                        ncol = length(dat.long.assay_value.names)))
+colnames(dat.long.assay_value) <- dat.long.assay_value.names
 
 for (ii in 1:nrow(name_grid)) {
   dat_mock_col_names <- paste(name_grid$aa[ii], assays, name_grid$cc[ii], sep = "")
-  dat.long.2[, dat.long.2.names[ii]] <- unlist(lapply(dat_mock_col_names,
+  dat.long.assay_value[, dat.long.assay_value.names[ii]] <- unlist(lapply(dat_mock_col_names,
                                                                 function(nn) {
                                                                   if (nn %in% colnames(dat)) {
                                                                     dat[, nn]
@@ -86,9 +88,9 @@ for (ii in 1:nrow(name_grid)) {
 
 }
 
-dat.long.2$assay <- rep(assays, each = nrow(dat))
+dat.long.assay_value$assay <- rep(assays, each = nrow(dat))
 
-dat.long <- cbind(dat.long.1, dat.long.2)
+dat.long <- cbind(dat.long.subject_level, dat.long.assay_value)
 
 ## change the labels of the factors for plot labels
 dat.long$Trt <- factor(dat.long$Trt, levels = c(0, 1), labels = trt.labels)

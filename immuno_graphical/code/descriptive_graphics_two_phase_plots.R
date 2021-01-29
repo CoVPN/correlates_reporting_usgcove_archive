@@ -128,7 +128,7 @@ for (bserostatus in 0:1) {
 #=========================================================================================================================
 
 
-for (tt in 1:length(times)) {
+for (tt in seq_len(length(times))) {
   covid_corr_rcdf_facets(plot_dat = dat.long.twophase.sample,
                          x = times[tt],
                          facet_by = "assay",
@@ -219,7 +219,7 @@ for (day in c("29", "57")) {
 ##========================================================================================
 
 
-for (tt in 2:length(times)) {
+for (tt in seq_len(length(times))) {
   for (bserostatus in 1:2) {
     for (trt in 1:2) {
       covid_corr_scatter_facets(plot_dat = subset(dat.long.twophase.sample, as.numeric(Bserostatus) == bserostatus &
@@ -256,7 +256,7 @@ for (tt in 2:length(times)) {
 
 
 for (bstatus in 1:2) {
-  for (tt in 1:length(times)) {
+  for (tt in seq_len(length(times))) {
     covid_corr_boxplot_facets(plot_dat = subset(dat.long.twophase.sample, Bserostatus == bstatus.labels[bstatus]),
                               x = "Trt", 
                               y = times[tt], 
@@ -279,7 +279,7 @@ for (bstatus in 1:2) {
 ## ==============================================================================================
 
 for (trt in 1:2) {
-  for (tt in 1:length(times)) {
+  for (tt in seq_len(length(times))) {
     covid_corr_boxplot_facets(plot_dat = subset(dat.long.twophase.sample, as.numeric(Trt) == trt),
                               x = "Bserostatus", 
                               y = times[tt], 

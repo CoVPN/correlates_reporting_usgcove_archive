@@ -11,35 +11,35 @@ nAb50_lloq <- 49
 nAb80_lloq <- 43
 
 # Variable Names by Assay
-labels.assays.short <- COVIDcorr::dat.mock$labels.assays.short
-labels.assays.long <- COVIDcorr::dat.mock$labels.assays.long
+data(labels.assays.short)
+data(labels.assays.long) 
 
-bAb <- grep("bind", names(labels.assays.short), value=T) # c("bindSpike", "bindRBD")
-pnAb <- grep("pseudo", names(labels.assays.short), value=T) # c("pseudoneutid50", "pseudoneutid80")
-lnAb <- grep("liveneut", names(labels.assays.short), value=T) # c("liveneutid50", "liveneutid80")
+bAb <- grep("bind", names(labels.assays.short), value = T) # c("bindSpike", "bindRBD")
+pnAb <- grep("pseudo", names(labels.assays.short), value = T) # c("pseudoneutid50", "pseudoneutid80")
+lnAb <- grep("liveneut", names(labels.assays.short), value = T) # c("liveneutid50", "liveneutid80")
 
 visits <- rownames(labels.assays.long)[!grepl("Delta", rownames(labels.assays.long))]
-bAb_v <-  levels(interaction(visits, bAb, sep=""))
-pnAb_v <- levels(interaction(visits, pnAb, sep=""))
-lnAb_v <- levels(interaction(visits, lnAb, sep=""))
+bAb_v <-  levels(interaction(visits, bAb, sep = ""))
+pnAb_v <- levels(interaction(visits, pnAb, sep = ""))
+lnAb_v <- levels(interaction(visits, lnAb, sep = ""))
 
 labels.assays <- expand.grid(time = rownames(labels.assays.long), 
                              endpoint = colnames(labels.assays.long), 
                              stringsAsFactors = F) %>%
   rowwise() %>% 
   mutate(label.long = labels.assays.long[time, endpoint], label.short = labels.assays.short[endpoint],
-         Endpoint = strsplit(label.long, ": ", fixed=T)[[1]][1],
-         Visit = strsplit(label.long, ": ", fixed=T)[[1]][2],
+         Endpoint = strsplit(label.long, ": ", fixed = T)[[1]][1],
+         Visit = strsplit(label.long, ": ", fixed = T)[[1]][2],
          colname = paste0(time, endpoint)) 
 
-resp.lb <- expand.grid(time=visits, endpoint=c(bAb, pnAb, lnAb), ind=c("FR2", "FR4", "Resp"), stringsAsFactors = F) %>% 
-  mutate(Ind = case_when(ind=="FR2"~"2-Fold Rise", ind=="FR4"~"4-Fold Rise",ind=="Resp"~"Responder")) %>% 
-  unite("mag_cat", c(time, endpoint), sep="", remove=F) %>% 
-  unite("resp_cat", c(time, endpoint, ind), sep="", remove=F) %>% 
+resp.lb <- expand.grid(time = visits, endpoint = c(bAb, pnAb, lnAb), ind = c("FR2", "FR4", "Resp"), stringsAsFactors = F) %>% 
+  mutate(Ind = case_when(ind == "FR2"~"2-Fold Rise", ind == "FR4"~"4-Fold Rise",ind == "Resp"~"Responder")) %>% 
+  unite("mag_cat", c(time, endpoint), sep = "", remove = F) %>% 
+  unite("resp_cat", c(time, endpoint, ind), sep = "", remove = F) %>% 
   # Remove Response/Fold-Rise Indicators at Baseline
-  mutate(resp_cat=ifelse(time=="B", "", resp_cat))
+  mutate(resp_cat = ifelse(time == "B", "", resp_cat))
 
-labels_all <- full_join(labels.assays, resp.lb, by=c("time", "endpoint"))
+labels_all <- full_join(labels.assays, resp.lb, by = c("time", "endpoint"))
 
 
 # Page header and footer for the tables
@@ -59,9 +59,9 @@ tbl_num <- 1
 
 tlf <- 
   list(
-    demo=c(table_name = "Demographic",
-           table_header="Demographic",
-           table_footer="This table summarises the case-cohort, which measures antibody markers at (Day 1, Day 29, and Day 57)."),
+    demo = c(table_name = "Demographic",
+           table_header = "Demographic",
+           table_footer = "This table summarises the case-cohort, which measures antibody markers at (Day 1, Day 29, and Day 57)."),
     
     respprop = list(
       table_name = "Responder Rates",
@@ -102,7 +102,7 @@ tlf <-
       table_header = "Differences of responder rates between the vaccine arm and the placebo arm",
       table_footer = " "),
     
-    empty=c()
+    empty = c()
   )
 
-save.image(file=here::here("data_clean", "params.Rdata"))
+save.image(file = here::here("data_clean", "params.Rdata"))

@@ -1,7 +1,11 @@
+# Graphical Description of Immunogenicity Data {#immuno_graphical}
+
 ## Pairs plots
+
 ```{r immuno-graphical-setup, echo = FALSE, message = FALSE}
 library(here)
 library(latex2exp)
+
 here::i_am("immuno-graphical/report.Rmd")
 
 ## define study name
@@ -11,6 +15,7 @@ study_name = "mock"
 ```{r, fig.cap = "(Mock data) Pairs plots of D1 Ab markers: baseline negative vaccine + placebo arms"}
     knitr::include_graphics(here::here("immuno_graphical", "figs", "pairs_baselineMarkers_BaselineNeg_", study_name, ".png"))
 ```
+
 
 
 ```{r, fig.cap = "(Mock data) Pairs plots of D1 Ab markers: baseline positive vaccine + placebo arms"}
@@ -1295,4 +1300,3 @@ study_name = "mock"
     knitr::include_graphics(here::here("immuno_graphical", "figs", "demographics", "boxplots_Delta57overB_BaselinePos_trt_Vaccine_by_age_x_minority_", study_name, ".png"))
     
 ```
-

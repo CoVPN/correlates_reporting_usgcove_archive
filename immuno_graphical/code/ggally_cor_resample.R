@@ -1,36 +1,34 @@
-## resamping-based correlation, allowing for strata
+# resamping-based correlation, allowing for strata
 spearman_resample <- function(x, y, strata, weight, B = 200) {
   n <- length(x)
   ## dummify the strata variable
   strata_dummy <- dummy(strata)
   nstrata <- ncol(strata_dummy)
-  
+
   colnames(strata_dummy) <- paste0("strata", 1:nstrata)
-  
+
   cor_dat <- cbind(data.frame(x = x, y = y), strata_dummy[, 1:(nstrata - 1)])
-  fml <- as.formula(paste0("y | x ~ ", paste0("strata", 1:(nstrata - 1), collapse = "+")))
-  
+  fml <- as.formula(paste0("y | x ~ ", paste0("strata", 1:(nstrata - 1),
+                                              collapse = "+")))
+
   corvec <- 1:B * NA
-  
+
   for (bb in 1:B) {
     resamp <- sample.int(n = n, replace = TRUE)
     cor_dat_resamp <- cor_dat[resamp, ]
     corObj <- try(partial_Spearman(formula = fml, data = cor_dat_resamp,
-                                   fit.x = "lm", fit.y = "lm")$TS$TB$ts, silent = TRUE)
-    corObj <- ifelse(class(corObj) == "try-error", 
-                     round(cor(cor_dat_resamp$x, cor_dat_resamp$y, method = "spearman"), 2), 
+                                   fit.x = "lm", fit.y = "lm")$TS$TB$ts,
+                  silent = TRUE)
+    corObj <- ifelse(class(corObj) == "try-error",
+                     round(cor(cor_dat_resamp$x, cor_dat_resamp$y,
+                               method = "spearman"), 2),
                      corObj)
     corvec[bb] <- corObj
   }
   mean(corvec, na.rm = TRUE)
 }
 
-
-
-
-
-## resamping-based correlation, used in ggplots, allowing for strata
-
+# resamping-based correlation, used in ggplots, allowing for strata
 ggally_statistic_resample <- function(
   data,
   mapping,
@@ -58,23 +56,23 @@ ggally_statistic_resample <- function(
     #}
     obj
   }
-  
+
   #title_args <- set_if_not_there(title_args, "family", family)
   #group_args <- set_if_not_there(group_args, "family", family)
-  
+
   title_args <- set_if_not_there(title_args, "hjust", title_hjust)
   group_args <- set_if_not_there(group_args, "hjust", group_hjust)
-  
+
   xData <- eval_data_col(data, mapping$x)
   yData <- eval_data_col(data, mapping$y)
   strataData <- strata
   weightData <- weight
   colorData <- eval_data_col(data, mapping$colour)
-  
+
   if (is.numeric(colorData)) {
     stop("`mapping` color column must be categorical, not numeric")
   }
-  
+
   display_na_rm <- is.na(na.rm)
   if (display_na_rm) {
     na.rm <- TRUE
@@ -85,7 +83,7 @@ ggally_statistic_resample <- function(
     } else {
       rows <- complete.cases(xData, yData, strataData, weightData)
     }
-    
+
     if (any(!rows)) {
       if (!is.null(colorData) && (length(colorData) == length(xData))) {
         colorData <- colorData[rows]
@@ -94,7 +92,7 @@ ggally_statistic_resample <- function(
       yData <- yData[rows]
       strataData <- strataData[rows]
       weightData <- weightData[rows]
-      
+
       if (isTRUE(display_na_rm)) {
         total <- sum(!rows)
         if (total > 1) {
@@ -105,13 +103,12 @@ ggally_statistic_resample <- function(
       }
     }
   }
-  
   xVal <- xData
   yVal <- yData
   strataVal <- strataData
   weightVal <- weightData
   # if the mapping has to deal with the data, remove it
-  ### IDK what this does. inherited from old code.
+  ### NOTE: IDK what this does. inherited from old code.
   for (mappingName in names(mapping)) {
     itemData <- eval_data_col(data, mapping[[mappingName]])
     if (!inherits(itemData, "AsIs")) {
@@ -119,35 +116,29 @@ ggally_statistic_resample <- function(
     }
   }
   ### END IDK
-  
+
   # calculate variable ranges so the gridlines line up
   xValNum <- as.numeric(xVal)
   yValNum <- as.numeric(yVal)
 
-  
   xmin <- min(xValNum, na.rm = TRUE)
   xmax <- max(xValNum, na.rm = TRUE)
   xrange <- c(xmin - 0.01 * (xmax - xmin), xmax + 0.01 * (xmax - xmin))
   ymin <- min(yValNum, na.rm = TRUE)
   ymax <- max(yValNum, na.rm = TRUE)
   yrange <- c(ymin - 0.01 * (ymax - ymin), ymax + 0.01 * (ymax - ymin))
-  
   # if there is a color grouping...
-  if (
-    !is.null(colorData) &&
-    !inherits(colorData, "AsIs")
-  ) {
-    
+  if (!is.null(colorData) && !inherits(colorData, "AsIs")) {
     cord <- ddply(
-      data.frame(x = xData, y = yData, st = strataData, wt = weightData, color = colorData),
+      data.frame(x = xData, y = yData, st = strataData, wt = weightData,
+                 color = colorData),
       "color",
       function(dt) {
         text_fn(dt$x, dt$y, dt$st, dt$wt, B)
       }
     )
     colnames(cord)[2] <- "text"
-    
-    
+
     # put in correct order
     lev <- levels(as.factor(colorData))
     ord <- rep(-1, nrow(cord))
@@ -159,14 +150,14 @@ ggally_statistic_resample <- function(
       }
     }
     cord <- cord[order(ord[ord >= 0]), ]
-    
+
     # make labels align together
     cord$label <- str_c(
       format(cord$color, justify = justify_labels),
       sep,
       format(cord$text, justify = justify_text)
     )
-    
+
     # title
     ggally_text_args <- append(
       list(
@@ -180,18 +171,19 @@ ggally_statistic_resample <- function(
       title_args
     )
     p <- do.call(ggally_text, ggally_text_args)
-    
-    xPos <- rep(align_percent, nrow(cord)) * diff(xrange) + min(xrange, na.rm = TRUE)
+
+    xPos <- rep(align_percent, nrow(cord)) * diff(xrange) +
+      min(xrange, na.rm = TRUE)
     yPos <- seq(
       from = 0.9,
       to = 0.2,
       length.out = nrow(cord) + 1)
     yPos <- yPos * diff(yrange) + min(yrange, na.rm = TRUE)
     yPos <- yPos[-1]
-    
+
     cordf <- data.frame(xPos = xPos, yPos = yPos, labelp = cord$label)
     cordf$labelp <- factor(cordf$labelp, levels = cordf$labelp)
-    
+
     # group text values
     geom_text_args <- append(
       list(
@@ -207,10 +199,10 @@ ggally_statistic_resample <- function(
     )
     p <- p + do.call(geom_text, geom_text_args)
   } else {
-    
     ggally_text_args <- append(
       list(
-        label = paste0(title, sep, text_fn(xVal, yVal, strataVal, weightVal, B), collapse = ""),
+        label = paste0(title, sep, text_fn(xVal, yVal, strataVal,
+                                           weightVal, B), collapse = ""),
         mapping,
         xP = 0.5,
         yP = 0.5,
@@ -219,10 +211,9 @@ ggally_statistic_resample <- function(
       ),
       title_args
     )
-    
     p <- do.call(ggally_text, ggally_text_args)
   }
-  
+
   if (!isTRUE(display_grid)) {
     p <- p +
       theme(
@@ -235,9 +226,7 @@ ggally_statistic_resample <- function(
         )
       )
   }
-  
   p + theme(legend.position = "none")
-  
 }
 
 
@@ -269,7 +258,7 @@ ggally_cor_resample <- function(
     warning("`displayGrid` is deprecated. Please use `display_grid`")
     display_grid <- displayGrid
   }
-  
+
   na.rm <-
     if (missing(use)) {
       # display warnings
@@ -277,7 +266,7 @@ ggally_cor_resample <- function(
     } else {
       (use %in% c("complete.obs", "pairwise.complete.obs", "na.or.complete"))
     }
-  
+
   ggally_statistic_resample(
     data = data,
     mapping = mapping,
@@ -295,36 +284,37 @@ ggally_cor_resample <- function(
     text_fn = function(x, y, st, wt, B) {
       x <- as.numeric(x)
       y <- as.numeric(y)
-      corvec <- 1:B * NA
-      
-      for (bb in 1:B) {
-        
+      corvec <- rep(NA, B)
+
+      for (bb in seq_len(B)) {
         resamp_vec <- sample.int(n = length(x), replace = TRUE, prob = wt)
         x_resamp <- x[resamp_vec]
         y_resamp <- y[resamp_vec]
-        st_resamp <- strata[resamp_vec] 
-        
-        suppressWarnings(st_resamp_dummy <- dummy(st_resamp, sep = "_"))
-        
+        st_resamp <- strata[resamp_vec]
+
+        suppressWarnings(st_resamp_dummy <-
+          dummies::dummy(st_resamp, sep = "_"))
+
         resamp_data <- cbind(data.frame(x = x_resamp, y = y_resamp),
                              st_resamp_dummy[, 1:(ncol(st_resamp_dummy) - 1)])
-        names(resamp_data)[3:ncol(resamp_data)] <- paste0("strata", 1:(ncol(st_resamp_dummy) - 1))
-        
-        fml <- formula(paste0("y | x ~ ", paste0("strata", 1:(ncol(st_resamp_dummy) - 1), collapse = "+")))
+        names(resamp_data)[3:ncol(resamp_data)] <-
+          paste0("strata", 1:(ncol(st_resamp_dummy) - 1))
+
+        fml <- formula(paste0("y | x ~ ",
+                              paste0("strata", 1:(ncol(st_resamp_dummy) - 1),
+                                     collapse = "+")))
         corObj <- try(partial_Spearman(formula = fml, data = resamp_data,
                                        fit.x = "lm", fit.y = "lm")$TS$TB$ts,
                       silent = TRUE)
-        
-        
+
         # make sure all values have X-many decimal places
-        corvec[bb] <- ifelse(class(corObj) == "try-error", 
-                             cor(resamp_data$x, resamp_data$y, method = method),
+        corvec[bb] <- ifelse(class(corObj) == "try-error",
+                             cor(resamp_data$x, resamp_data$y,
+                                 method = method),
                              corObj)
-        
       }
       cor_est <- mean(corvec, na.rm = TRUE)
       cor_txt <- formatC(cor_est, digits = digits, format = "f")
-      
       cor_txt
     }
   )

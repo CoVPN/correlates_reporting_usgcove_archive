@@ -95,8 +95,7 @@ delta_lb <- expand.grid(t1t2 = c("57overB", "57over29", "29overB"),
       endpoint == "bindRBD" ~ "Anti-RBD IgG",
       endpoint == "pseudoneutid50" ~ "Pseudo nAb ID50",
       endpoint == "pseudoneutid80" ~ "Pseudo nAb ID80",
-      endpoint == "liveneutid50" ~ "Live Virus nAb ID50",
-      endpoint == "liveneutid80" ~ "Live Virus nAb ID80"
+      endpoint == "liveneutmn50" ~ "Live Virus nAb MN50"
     ),
     Endpoint = factor(Endpoint, levels = ep_lev)
   ) %>%

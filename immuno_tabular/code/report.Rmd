@@ -17,6 +17,11 @@ classoption:
 ---
 
 ```{r knitr, echo = FALSE, message=FALSE, warning=F}
+##################################################
+# obligatory to append to the top of each script #
+renv::activate(project = here::here(".."))       #
+source(here::here("..", "_common.R"))            #
+##################################################
 library(knitr)
 library(kableExtra)
 library(tidyverse)
@@ -73,7 +78,7 @@ tab1 <- tab_rr %>%
 subnum <- 0
 for (i in unique(tab_rr$subgroup)){
   subnum <- subnum + 1
-  tab.i <- filter(tab1, subgroup==i) %>% 
+  tab.i <- dplyr::filter(tab1, subgroup==i) %>% 
     arrange(subgroup, Group, Baseline, Visit, Endpoint) %>%
     group_table(., c("Group", "Baseline", "Visit", "N", "Endpoint")) 
   
@@ -110,7 +115,7 @@ tab2 <- tab_gm %>%
 subnum <- 0
 for (i in unique(tab2$subgroup)){ 
   subnum <- subnum + 1
-  tab.i <- filter(tab2, subgroup==i) %>% 
+  tab.i <- dplyr::filter(tab2, subgroup==i) %>% 
   arrange(Group, Baseline, Visit, N, Endpoint) %>% 
   group_table(., c("Group", "Baseline", "Visit", "N", "Endpoint")) 
   
@@ -148,7 +153,7 @@ tab3 <- tab_gmr %>%
 subnum <- 0
 for (i in unique(tab3$subgroup)){ 
   subnum <- subnum + 1
-  tab.i <- filter(tab3, subgroup==i) %>% 
+  tab.i <- dplyr::filter(tab3, subgroup==i) %>% 
   arrange(Group, Baseline, Visit, N, Endpoint) %>% 
   group_table(., c("Group", "Baseline", "Visit", "N", "Endpoint")) 
   
@@ -277,7 +282,7 @@ subnum <- 0
 for (i in unique(tab7$subgroup)){ 
   subnum <- subnum + 1
 
-  tab.i <- filter(tab7, subgroup==i) %>% 
+  tab.i <- dplyr::filter(tab7, subgroup==i) %>% 
     arrange(subgroup, Group, Baseline, Visit, N, Endpoint) %>% 
     group_table(., c( "Group", "Baseline","Visit", "N", "Endpoint")) 
   

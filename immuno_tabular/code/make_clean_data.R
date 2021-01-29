@@ -1,3 +1,9 @@
+##################################################
+# obligatory to append to the top of each script #
+renv::activate(project = here::here(".."))       #
+source(here::here("..", "_common.R"))            #
+##################################################
+
 library(tidyverse)
 load(here::here("data_clean", "params.Rdata"))
 
@@ -7,8 +13,8 @@ dat.ls <- COVIDcorr::dat.mock
 ds_o <- dat.ls$dat.mock
 # The stratified random cohort for immunogenicity
 ds_s <- ds_o %>% 
-  filter(SubcohortInd==1 & TwophasesampInd==1 & Perprotocol==1) %>%
-  # filter(SubcohortInd==1 & Perprotocol==1) %>% 
+  dplyr::filter(SubcohortInd==1 & TwophasesampInd==1 & Perprotocol==1) %>%
+  # dplyr::filter(SubcohortInd==1 & Perprotocol==1) %>% 
   mutate(raceC = as.character(race), ethnicityC=as.character(ethnicity)) %>% 
   mutate(RaceEthC = case_when(raceC=="White" & ethnicityC=="Not Hispanic or Latino" ~ "White Non-Hispanic",
                               raceC=="White" & ethnicityC=="Hispanic or Latino" ~ "",
@@ -39,8 +45,8 @@ ds_long <- ds_s %>%
   pivot_longer(cols=c(Age65C, HighRiskC, AgeRiskC, SexC, AgeSexC, ethnicityC, RaceEthC, MinorityC, AgeMinorC), 
                names_to="subgroup", values_to = "subgroup_cat") %>% 
   mutate(subgroup=factor(subgrp[subgroup], levels=subgrp)) %>% 
-  filter(!subgroup_cat %in% c("","Age < 65 ", "Age >= 65 ")) %>% 
-  filter(!(subgroup=="ethnicityC" & subgroup_cat=="Not reported and unknown"))
+  dplyr::filter(!subgroup_cat %in% c("","Age < 65 ", "Age >= 65 ")) %>% 
+  dplyr::filter(!(subgroup=="ethnicityC" & subgroup_cat=="Not reported and unknown"))
 
 ds_all <- bind_rows(
   ds_long, 

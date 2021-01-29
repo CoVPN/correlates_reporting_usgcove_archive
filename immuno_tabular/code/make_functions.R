@@ -1,3 +1,9 @@
+##################################################
+# obligatory to append to the top of each script #
+renv::activate(project = here::here(".."))       #
+source(here::here("..", "_common.R"))            #
+##################################################
+
 #' Find the LLOQ value for an endpoint, used for \code{getLLOQ()}
 #'
 #' @param x An endpoint name
@@ -95,3 +101,4 @@ group_table <- function(data, keys){
   data
   
 } # end group_table() 
+

@@ -28,12 +28,12 @@ ds_long_ttl <- bind_rows(
 # Calculate % for categorical covariates
 dm_cat <- inner_join(
   ds_long_ttl %>% 
-    filter(subgroup %in% cat_v) %>% 
+    dplyr::filter(subgroup %in% cat_v) %>% 
     group_by(Rx, subgroup, subgroup_cat) %>% 
     summarise(n=n()),
   
   ds_long_ttl %>% 
-    filter(subgroup %in% cat_v) %>% 
+    dplyr::filter(subgroup %in% cat_v) %>% 
     group_by(Rx, subgroup) %>% 
     summarise(N=n())
 ) %>% 
@@ -69,7 +69,7 @@ tab_dm <- full_join(dm_cat, dm_num1) %>%
   pivot_wider(c(Rx, subgroup, subgroup_cat, rslt), names_from=Rx, values_from=rslt) %>% 
   arrange(subgroup, subgroup_cat) %>% 
   relocate(subgroup, subgroup_cat, Placebo, Vaccine, Total) %>% 
-  filter(!((subgroup=="Age" & subgroup_cat=="Mean +/- SD")|(subgroup=="BMI" & subgroup_cat=="Mean (range)"))) %>%
+  dplyr::filter(!((subgroup=="Age" & subgroup_cat=="Mean +/- SD")|(subgroup=="BMI" & subgroup_cat=="Mean (range)"))) %>%
   mutate(subgroup = factor(subgroup, levels=c("Age", "BMI", "Sex", "Hispanic or Latino ethnicity", "Race", "Risk for Severe Covid-19"))) %>% 
   arrange(subgroup, subgroup_cat) %>% 
   ungroup()
@@ -143,7 +143,7 @@ comp_v <- "Rx"
 f_v <- as.formula(sprintf("mag ~ %s", comp_v))
 
 tab_gmtrA <- ds_mag_l %>% 
-  filter(subgroup=="All participants" & Visit != "Day 1") %>% 
+  dplyr::filter(subgroup=="All participants" & Visit != "Day 1") %>% 
   group_split(across(c(all_of(sub_grp_col), "Visit", "mag_cat"))) %>% 
   map_dfr(function(x){
     ret <- x %>% 
@@ -163,7 +163,7 @@ f_v <- as.formula(sprintf("mag ~ %s", comp_v))
 sub_grp_colB <- c("subgroup", "Group", "Rx")
 
 tab_gmtrB <- ds_mag_l %>% 
-  filter(subgroup=="All participants" & Rx=="Vaccine" & Visit != "Day 1") %>% 
+  dplyr::filter(subgroup=="All participants" & Rx=="Vaccine" & Visit != "Day 1") %>% 
   group_split(across(c(all_of(sub_grp_colB), "mag_cat"))) %>%
   map_dfr(function(x){
     ret <- x %>% 
@@ -179,7 +179,7 @@ tab_gmtrB <- ds_mag_l %>%
 
 # 7c
 ds_mag_l_7c <- ds_mag_l %>% 
-  filter(subgroup %in% c("Age", "Risk for Severe Covid-19", "Age, Risk for Severe Covid-19 ", "Sex", 
+  dplyr::filter(subgroup %in% c("Age", "Risk for Severe Covid-19", "Age, Risk for Severe Covid-19 ", "Sex", 
                          "Hispanic or Latino ethnicity", "Race and ethnic group")) %>% 
   mutate(comp_i=case_when(as.character(Group) %in% c("Age >= 65 At-risk", "Age >= 65 Not at-risk") ~ "Age >= 65, Risk",
                           as.character(Group) %in% c("Age < 65 At-risk", "Age < 65 Not at-risk") ~ "Age < 65, Risk",
@@ -190,7 +190,7 @@ f_v <- as.formula(sprintf("mag ~ %s", comp_v))
 sub_grp_colC <- c("subgroup", "Baseline")
 
 tab_gmtrC <- ds_mag_l_7c %>% 
-  filter(Rx=="Vaccine" & Visit != "Day 1") %>% 
+  dplyr::filter(Rx=="Vaccine" & Visit != "Day 1") %>% 
   group_split(across(c(all_of(sub_grp_colC), "mag_cat", "comp_i"))) %>% 
   map_dfr(function(x){
     ret <- x %>% 

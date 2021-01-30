@@ -26,6 +26,11 @@ clean:
 	rm -f figs/demographics/*.png
 	rm -f Rplots.pdf
 
+## style            : enforce R code styling conventions automatically
+style:
+	Rscript -e "styler::style_file('report.Rmd')"
+	Rscript -e "styler::style_dir('code')"
+
 # type 'make help' to show all make commands
 help: Makefile
 	@sed -n 's/^##//p' $<

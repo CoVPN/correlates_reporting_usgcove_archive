@@ -25,7 +25,7 @@
 #' @param filename: string: output file name.
 #'
 #' @return pairplots: a ggplot object of the pairplot
-covid_corr_pairplots <- function(plot_dat,  ## data for plotting
+covid_corr_pairplots <- function(plot_dat, ## data for plotting
                                  time,
                                  assays,
                                  strata,
@@ -61,43 +61,60 @@ covid_corr_pairplots <- function(plot_dat,  ## data for plotting
     breaks <- breaks[breaks %% 2 == 0]
   }
 
-  pairplots <- ggpairs(data = dat.tmp, title = plot_title,
-                       columnLabels = column_labels,
-                       upper = list(continuous =
-                         wrap(ggally_cor_resample,
-                              stars = FALSE,
-                              size = corr_size,
-                              strata = subdat[, strata],
-                              weight = subdat[, weight])
-                        ),
-                       lower = list(continuous =
-                                    wrap("points", size = point_size))
-                      ) +
+  pairplots <- ggpairs(
+    data = dat.tmp, title = plot_title,
+    columnLabels = column_labels,
+    upper = list(
+      continuous =
+        wrap(ggally_cor_resample,
+          stars = FALSE,
+          size = corr_size,
+          strata = subdat[, strata],
+          weight = subdat[, weight]
+        )
+    ),
+    lower = list(
+      continuous =
+        wrap("points", size = point_size)
+    )
+  ) +
     theme_bw() +
-    theme(plot.title = element_text(hjust = 0.5, size = plot_title_size),
-          strip.text = element_text(size = column_label_size, face = "bold"),
-          axis.text = element_text(size = axis_label_size),
-          panel.grid.major = element_blank(),
-          panel.grid.minor = element_blank())
+    theme(
+      plot.title = element_text(hjust = 0.5, size = plot_title_size),
+      strip.text = element_text(size = column_label_size, face = "bold"),
+      axis.text = element_text(size = axis_label_size),
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank()
+    )
   pairplots[1, 1] <- pairplots[1, 1] +
     scale_x_continuous(limits = rr, breaks = breaks) + ylim(0, 1.2)
-  for(j in 2:pairplots$nrow) {
+  for (j in 2:pairplots$nrow) {
     for (k in 1:(j - 1)) {
       pairplots[j, k] <- pairplots[j, k] +
-        stat_smooth(method = "loess", color = "red", se = FALSE,
-                    lwd = loess_lwd) +
-        scale_x_continuous(limits = rr, breaks = breaks,
-                           labels = label_math(10 ^ .x)) +
-        scale_y_continuous(limits = rr, breaks = breaks,
-                           labels = label_math(10 ^ .x))
+        stat_smooth(
+          method = "loess", color = "red", se = FALSE,
+          lwd = loess_lwd
+        ) +
+        scale_x_continuous(
+          limits = rr, breaks = breaks,
+          labels = label_math(10^.x)
+        ) +
+        scale_y_continuous(
+          limits = rr, breaks = breaks,
+          labels = label_math(10^.x)
+        )
     }
     pairplots[j, j] <- pairplots[j, j] +
-      scale_x_continuous(limits = rr, breaks = breaks,
-                         labels = label_math(10 ^ .x)) + ylim(0, 1.2)
+      scale_x_continuous(
+        limits = rr, breaks = breaks,
+        labels = label_math(10^.x)
+      ) + ylim(0, 1.2)
   }
 
-  ggsave(filename = filename, plot = pairplots, width = width, height = height,
-         units = units)
+  ggsave(
+    filename = filename, plot = pairplots, width = width, height = height,
+    units = units
+  )
   return(pairplots)
 }
 
@@ -144,10 +161,12 @@ covid_corr_rcdf_facets <- function(plot_dat,
                                    lwd = 1,
                                    xlim = c(-2, 10),
                                    xbreaks = seq(-2, 10, 2),
-                                   palette = c("#1749FF", "#D92321", "#0AB7C9",
-                                               "#FF6F1B", "#810094", "#378252",
-                                               "#FF5EBF","#3700A5", "#8F8F8F",
-                                               "#787873"),
+                                   palette = c(
+                                     "#1749FF", "#D92321", "#0AB7C9",
+                                     "#FF6F1B", "#810094", "#378252",
+                                     "#FF5EBF", "#3700A5", "#8F8F8F",
+                                     "#787873"
+                                   ),
                                    legend = levels(plot_dat[, color]),
                                    legend_size = 10,
                                    legend_nrow = ceiling(length(legend) / 2),
@@ -157,7 +176,7 @@ covid_corr_rcdf_facets <- function(plot_dat,
                                    axis_titles,
                                    axis_title_size = 9,
                                    arrange_nrow =
-                                     ceiling(nlevels(plot_dat[, facet_by])/2),
+                                     ceiling(nlevels(plot_dat[, facet_by]) / 2),
                                    arrange_ncol = 2,
                                    height = 6.5,
                                    width = 6.5,
@@ -167,42 +186,53 @@ covid_corr_rcdf_facets <- function(plot_dat,
   for (aa in 1:nlevels(plot_dat[, facet_by])) {
     rcdf_list[[aa]] <- ggplot(
       subset(plot_dat, plot_dat[, facet_by] ==
-             levels(plot_dat[, facet_by])[aa]),
-      aes_string(x = x, color = color, weight = weight)) +
-      geom_line(aes(y = 1 - ..y..), stat='ecdf', lwd = lwd) + 
+        levels(plot_dat[, facet_by])[aa]),
+      aes_string(x = x, color = color, weight = weight)
+    ) +
+      geom_line(aes(y = 1 - ..y..), stat = "ecdf", lwd = lwd) +
       theme_pubr(legend = "none") +
       ylab("Reverse ECDF") +
       xlab(axis_titles[aa]) +
-      scale_x_continuous(labels = label_math(10^.x), limits = xlim,
-                         breaks = xbreaks) +
-      scale_color_manual(values = palette,
-                         labels = legend) +
+      scale_x_continuous(
+        labels = label_math(10^.x), limits = xlim,
+        breaks = xbreaks
+      ) +
+      scale_color_manual(
+        values = palette,
+        labels = legend
+      ) +
       ggtitle(panel_titles[aa]) +
       guides(color = guide_legend(nrow = legend_nrow, byrow = TRUE)) +
-      theme(plot.title = element_text(hjust = 0.5, size = panel_title_size),
-            legend.title = element_blank(),
-            legend.text = element_text(size = legend_size, face = "bold"),
-            panel.grid.minor.y = element_line(),
-            panel.grid.major.y = element_line(),
-            axis.title = element_text(size = axis_title_size),
-            axis.text = element_text(size = axis_size))
+      theme(
+        plot.title = element_text(hjust = 0.5, size = panel_title_size),
+        legend.title = element_blank(),
+        legend.text = element_text(size = legend_size, face = "bold"),
+        panel.grid.minor.y = element_line(),
+        panel.grid.major.y = element_line(),
+        axis.title = element_text(size = axis_title_size),
+        axis.text = element_text(size = axis_size)
+      )
   }
 
-  output_plot <- ggarrange(plotlist = rcdf_list, ncol = 2, nrow = 2,
-                           common.legend = TRUE, legend = "bottom",
-                           align = "h")
+  output_plot <- ggarrange(
+    plotlist = rcdf_list, ncol = 2, nrow = 2,
+    common.legend = TRUE, legend = "bottom",
+    align = "h"
+  )
 
-  ggsave(filename = filename, plot = output_plot, width = width,
-         height = height, units = units)
+  ggsave(
+    filename = filename, plot = output_plot, width = width,
+    height = height, units = units
+  )
   return(output_plot)
 }
 
 ###############################################################################
 
 #' Weighted RCDF plot
-#' 
+#'
 #' Produce the weighted RCDF plots of assay readouts
-#' 
+#'
 #' @param plot_dat: data frame: data for plotting.
 #' @param x: string: column name in the plot_dat for plotting the value.
 #' @param color: string: the variable names in plot_dat, separated by ":", for
@@ -233,12 +263,14 @@ covid_corr_rcdf_facets <- function(plot_dat,
 covid_corr_rcdf <- function(plot_dat,
                             x,
                             color,
-                            lty, 
+                            lty,
                             weight,
-                            palette = c("#1749FF", "#D92321", "#0AB7C9",
-                                        "#FF6F1B", "#810094", "#378252",
-                                        "#FF5EBF","#3700A5", "#8F8F8F",
-                                        "#787873"),
+                            palette = c(
+                              "#1749FF", "#D92321", "#0AB7C9",
+                              "#FF6F1B", "#810094", "#378252",
+                              "#FF5EBF", "#3700A5", "#8F8F8F",
+                              "#787873"
+                            ),
                             xlab,
                             lwd = 1,
                             xlim = c(-2, 10),
@@ -252,27 +284,37 @@ covid_corr_rcdf <- function(plot_dat,
                             width = 8,
                             units = "in",
                             filename) {
-  output_plot <- ggplot(plot_dat,
-                        aes_string(x = x, color = color, lty = lty,
-                                   weight = weight)) +
+  output_plot <- ggplot(
+    plot_dat,
+    aes_string(
+      x = x, color = color, lty = lty,
+      weight = weight
+    )
+  ) +
     geom_line(aes(y = 1 - ..y..), stat = "ecdf", lwd = lwd) +
     theme_pubr() +
-    scale_x_continuous(limits = xlim, labels = label_math(10 ^ .x),
-                       breaks = xbreaks) +
+    scale_x_continuous(
+      limits = xlim, labels = label_math(10^.x),
+      breaks = xbreaks
+    ) +
     scale_color_manual(values = palette) +
     ylab("Reverse ECDF") +
     xlab(xlab) +
-    theme(plot.title = element_text(hjust = 0.5, size = plot_title_size),
-          legend.position = legend_position,
-          legend.title = element_blank(),
-          legend.text = element_text(size = legend_size),
-          panel.grid.minor.y = element_line(),
-          panel.grid.major.y = element_line(),
-          axis.title = element_text(size = axis_title_size),
-          axis.text = element_text(size = axis_size))
+    theme(
+      plot.title = element_text(hjust = 0.5, size = plot_title_size),
+      legend.position = legend_position,
+      legend.title = element_blank(),
+      legend.text = element_text(size = legend_size),
+      panel.grid.minor.y = element_line(),
+      panel.grid.major.y = element_line(),
+      axis.title = element_text(size = axis_title_size),
+      axis.text = element_text(size = axis_size)
+    )
 
-  ggsave(filename = filename, plot = output_plot, width = width,
-         height = height, units = units)
+  ggsave(
+    filename = filename, plot = output_plot, width = width,
+    height = height, units = units
+  )
   return(output_plot)
 }
 
@@ -359,44 +401,61 @@ covid_corr_scatter_facets <- function(plot_dat,
   for (aa in 1:nlevels(plot_dat[, facet_by])) {
     ## correlation
     ss <- plot_dat[plot_dat[, facet_by] ==
-                   levels(plot_dat[, facet_by])[aa], ] %>%
+      levels(plot_dat[, facet_by])[aa], ] %>%
       dplyr::filter(complete.cases(.))
 
-    marker_corr <- round(spearman_resample(x = ss[, x], y = ss[, y],
-                                           strata = ss[, strata],
-                                           weight = ss[, weight],
-                                           B = nboot), 2)
+    marker_corr <- round(spearman_resample(
+      x = ss[, x], y = ss[, y],
+      strata = ss[, strata],
+      weight = ss[, weight],
+      B = nboot
+    ), 2)
 
-    scatterplot_list[[aa]] <- ggplot(data = plot_dat[plot_dat[, facet_by] ==
-                                     levels(plot_dat[, facet_by])[aa], ],
-                                     aes_string(x = x, y = y)) +
+    scatterplot_list[[aa]] <- ggplot(
+      data = plot_dat[plot_dat[, facet_by] ==
+        levels(plot_dat[, facet_by])[aa], ],
+      aes_string(x = x, y = y)
+    ) +
       geom_point(size = point_size) +
-      xlab(x_axis_titles[aa]) + ylab(y_axis_titles[aa]) +
+      xlab(x_axis_titles[aa]) +
+      ylab(y_axis_titles[aa]) +
       ggtitle(panel_titles[aa]) +
       stat_smooth(method = "loess", color = "red", se = FALSE, lwd = lwd) +
-      scale_x_continuous(labels = label_math(10^.x), limits = lim,
-                         breaks = breaks) +
-      scale_y_continuous(labels = label_math(10^.x), limits = lim,
-                         breaks = breaks) +
-      geom_text(x = 0.85 * lim[2] + 0.15 * lim[1], y = 0.93 * lim[2] + 0.07 *
-                lim[1],
-                label = paste0("Cor: ", marker_corr), size = corr_size) +
+      scale_x_continuous(
+        labels = label_math(10^.x), limits = lim,
+        breaks = breaks
+      ) +
+      scale_y_continuous(
+        labels = label_math(10^.x), limits = lim,
+        breaks = breaks
+      ) +
+      geom_text(
+        x = 0.85 * lim[2] + 0.15 * lim[1], y = 0.93 * lim[2] + 0.07 *
+          lim[1],
+        label = paste0("Cor: ", marker_corr), size = corr_size
+      ) +
       theme_pubr() +
-      theme(plot.title = element_text(hjust = 0.5, size = panel_title_size),
-            panel.border = element_rect(fill = NA),
-            panel.grid.minor.y = element_line(),
-            panel.grid.major.y = element_line(),
-            axis.title = element_text(size = axis_title_size),
-            axis.text = element_text(size = axis_size),
-            legend.title = element_blank())
+      theme(
+        plot.title = element_text(hjust = 0.5, size = panel_title_size),
+        panel.border = element_rect(fill = NA),
+        panel.grid.minor.y = element_line(),
+        panel.grid.major.y = element_line(),
+        axis.title = element_text(size = axis_title_size),
+        axis.text = element_text(size = axis_size),
+        legend.title = element_blank()
+      )
   }
-  output_plot <- ggarrange(plotlist = scatterplot_list, ncol = arrange_ncol,
-                           nrow = arrange_nrow,
-                           legend = "none", common.legend = FALSE,
-                           align = "h")
+  output_plot <- ggarrange(
+    plotlist = scatterplot_list, ncol = arrange_ncol,
+    nrow = arrange_nrow,
+    legend = "none", common.legend = FALSE,
+    align = "h"
+  )
 
-  ggsave(filename = filename, plot = output_plot, width = width,
-         height = height, units = units)
+  ggsave(
+    filename = filename, plot = output_plot, width = width,
+    height = height, units = units
+  )
   return(output_plot)
 }
 
@@ -448,11 +507,13 @@ covid_corr_boxplot_facets <- function(plot_dat,
                                       y,
                                       facet_by,
                                       color = x,
-                                      palette = c("#1749FF", "#D92321",
-                                                  "#0AB7C9", "#FF6F1B",
-                                                  "#810094", "#378252",
-                                                  "#FF5EBF","#3700A5",
-                                                  "#8F8F8F","#787873"),
+                                      palette = c(
+                                        "#1749FF", "#D92321",
+                                        "#0AB7C9", "#FF6F1B",
+                                        "#810094", "#378252",
+                                        "#FF5EBF", "#3700A5",
+                                        "#8F8F8F", "#787873"
+                                      ),
                                       plot_LLOQ = TRUE,
                                       LLOQ = NULL,
                                       LLOQ_label_size = 3.5,
@@ -489,9 +550,11 @@ covid_corr_boxplot_facets <- function(plot_dat,
   # make a subset of data with 30 sample points for the jitter in each subgroup
   # defined by Trt:Bserostatus
   if (xlab_use_letters) {
-    legend <- paste0(LETTERS[1:nlevels(plot_dat[, x])],
-                     ": ",
-                     legend)
+    legend <- paste0(
+      LETTERS[1:nlevels(plot_dat[, x])],
+      ": ",
+      legend
+    )
     xlabels <- LETTERS[1:nlevels(plot_dat[, x])]
   } else {
     xlabels <- levels(plot_dat[, x])
@@ -500,56 +563,78 @@ covid_corr_boxplot_facets <- function(plot_dat,
     dplyr::filter(., complete.cases(.)) %>%
     split(., list(.[, facet_by], .[, x])) %>%
     lapply(., function(xx) {
-      if(nrow(xx) <= njitter) {
+      if (nrow(xx) <= njitter) {
         return(xx)
       } else {
         return(xx[sample(1:nrow(xx), size = njitter), ])
-      }}) %>% bind_rows
+      }
+    }) %>%
+    bind_rows()
 
   boxplot_list <- vector("list", nlevels(plot_dat[, facet_by]))
   for (aa in 1:nlevels(plot_dat[, facet_by])) {
-    boxplot_list[[aa]] <- ggplot(subset(plot_dat, plot_dat[, facet_by] ==
-                                        levels(plot_dat[, facet_by])[aa]),
-                                 aes_string(x = x, y = y, color = color)) +
+    boxplot_list[[aa]] <- ggplot(
+      subset(plot_dat, plot_dat[, facet_by] ==
+        levels(plot_dat[, facet_by])[aa]),
+      aes_string(x = x, y = y, color = color)
+    ) +
       geom_boxplot(width = box_width, lwd = lwd) +
       stat_boxplot(geom = "errorbar", width = errorbar_width, lwd = lwd) +
-      guides(alpha = "none", fill = "none",
-             color = guide_legend(nrow = legend_nrow, byrow = TRUE)) +
+      guides(
+        alpha = "none", fill = "none",
+        color = guide_legend(nrow = legend_nrow, byrow = TRUE)
+      ) +
       geom_jitter(
-        data = subset(boxplot_jitter_points,
-                      boxplot_jitter_points[, facet_by] ==
-                        levels(boxplot_jitter_points[, facet_by])[aa]),
-                  width = jitter_width, size = point_size) +
+        data = subset(
+          boxplot_jitter_points,
+          boxplot_jitter_points[, facet_by] ==
+            levels(boxplot_jitter_points[, facet_by])[aa]
+        ),
+        width = jitter_width, size = point_size
+      ) +
       scale_x_discrete(labels = xlabels) +
-      scale_y_continuous(limits = ylim, labels = label_math(10 ^ .x),
-                         breaks = ybreaks) +
+      scale_y_continuous(
+        limits = ylim, labels = label_math(10^.x),
+        breaks = ybreaks
+      ) +
       theme_pubr(legend = "none") +
-      ylab(axis_titles_y[aa]) + xlab("") +
+      ylab(axis_titles_y[aa]) +
+      xlab("") +
       scale_fill_manual(values = palette) +
-      scale_color_manual(values = palette, labels = legend)+
+      scale_color_manual(values = palette, labels = legend) +
       ggtitle(panel_titles[aa]) +
-      theme(plot.title = element_text(hjust = 0.5, size = panel_title_size),
-            panel.border = element_rect(fill = NA),
-            panel.grid.minor.y = element_line(),
-            panel.grid.major.y = element_line(),
-            axis.title = element_text(size = axis_title_size),
-            axis.text = element_text(size = axis_size),
-            legend.title = element_blank(),
-            legend.text = element_text(size = legend_size, face = "bold"))
+      theme(
+        plot.title = element_text(hjust = 0.5, size = panel_title_size),
+        panel.border = element_rect(fill = NA),
+        panel.grid.minor.y = element_line(),
+        panel.grid.major.y = element_line(),
+        axis.title = element_text(size = axis_title_size),
+        axis.text = element_text(size = axis_size),
+        legend.title = element_blank(),
+        legend.text = element_text(size = legend_size, face = "bold")
+      )
 
     if (plot_LLOQ) {
       boxplot_list[[aa]] <- boxplot_list[[aa]] +
-        geom_hline(yintercept = LLOQ[aa], linetype = 2, color = "black",
-                   lwd = LLOW_lwd) +
-        geom_text(x = 0.65 + 0.025 * nlevels(plot_dat[, x]), vjust = "right",
-                  y = LLOQ[aa] - 0.5 , label = "LLOQ", size = LLOQ_label_size,
-                  color = "black", show.legend = FALSE)
+        geom_hline(
+          yintercept = LLOQ[aa], linetype = 2, color = "black",
+          lwd = LLOW_lwd
+        ) +
+        geom_text(
+          x = 0.65 + 0.025 * nlevels(plot_dat[, x]), vjust = "right",
+          y = LLOQ[aa] - 0.5, label = "LLOQ", size = LLOQ_label_size,
+          color = "black", show.legend = FALSE
+        )
     }
   }
-  output_plot <- ggarrange(plotlist = boxplot_list, ncol = arrange_ncol,
-                           nrow = arrange_nrow, common.legend = TRUE,
-                           legend = "bottom", align = "h")
-  ggsave(filename = filename, plot = output_plot, width = width,
-         height = height, units = units)
+  output_plot <- ggarrange(
+    plotlist = boxplot_list, ncol = arrange_ncol,
+    nrow = arrange_nrow, common.legend = TRUE,
+    legend = "bottom", align = "h"
+  )
+  ggsave(
+    filename = filename, plot = output_plot, width = width,
+    height = height, units = units
+  )
   return(output_plot)
 }

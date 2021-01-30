@@ -1,76 +1,131 @@
 ##################################################
 # obligatory to append to the top of each script #
-renv::activate(project = here::here(".."))       #
-source(here::here("..", "_common.R"))            #
+renv::activate(project = here::here("..")) #
+source(here::here("..", "_common.R")) #
 ##################################################
 
-# load packages and helper scripts
-library(here)
-library(dplyr)
-library(tidyr)
-library(purrr)
-library(survey)
-source(here("code", "make_functions.R"))
+# Immunogenicity Tables
 
-# reload cleaned data
-load(here("data_clean", "ds_all.Rdata"))
+# Reload clean_data
+base::load(here::here("data_clean", "params.Rdata"))
+base::load(here::here("data_clean", "ds_all.Rdata"))
+
+library(survey)
+library(tidyverse)
+
+# Select the covariates to be summarised.
+# num_v are columns from ds_long;
+# cat_v are rows of `subgroup`
+num_v <- c("Age", "BMI")
+cat_v <- c("Age", "Risk for Severe Covid-19", "Sex", "Hispanic or Latino ethnicity", "Race", "Risk for Severe Covid-19")
+
+# Stack a Rx = "Total" to the original data
+ds_long_ttl <- bind_rows(
+  ds_long %>% mutate(Rx = "Total"),
+  ds_long
+)
+
+# Calculate % for categorical covariates
+dm_cat <- inner_join(
+  ds_long_ttl %>%
+    dplyr::filter(subgroup %in% cat_v) %>%
+    group_by(Rx, subgroup, subgroup_cat) %>%
+    summarise(n = n()),
+
+  ds_long_ttl %>%
+    dplyr::filter(subgroup %in% cat_v) %>%
+    group_by(Rx, subgroup) %>%
+    summarise(N = n())
+) %>%
+  mutate(pct = n / N, rslt = sprintf("%s (%.1f)", n, n / N * 100), rslt2 = sprintf("%s/%s = %.1f%%", n, N, n / N * 100))
+
+# Calculate mean and range for numeric covariates
+# Mean (Min, Max)
+dm_num1 <- ds_long_ttl %>%
+  distinct_at(all_of(c("Rx", "Ptid", num_v))) %>%
+  pivot_longer(cols = all_of(num_v), names_to = "subgroup", values_to = "subgroup_cat") %>%
+  group_by(Rx, subgroup) %>%
+  summarise(
+    min = round(min(subgroup_cat), 1),
+    max = round(max(subgroup_cat), 1),
+    mean = round(mean(subgroup_cat), 1),
+    range = sprintf("(%s, %s)", min, max),
+    rslt = paste(mean, range),
+    N = n(),
+    subgroup_cat = "Mean (range)"
+  )
+
+# Mean +/- SD
+dm_num2 <- ds_long_ttl %>%
+  distinct_at(all_of(c("Rx", "Ptid", num_v))) %>%
+  pivot_longer(cols = all_of(num_v), names_to = "subgroup", values_to = "subgroup_cat") %>%
+  group_by(Rx, subgroup) %>%
+  summarise(
+    mean = round(mean(subgroup_cat), 1),
+    sd = round(sd(subgroup_cat), 1),
+    rslt = paste(mean, "+/-", sd),
+    N = n(),
+    subgroup_cat = "Mean +/- SD"
+  )
+
+tab_dm <- full_join(dm_cat, dm_num1) %>%
+  full_join(dm_num2) %>%
+  pivot_wider(c(Rx, subgroup, subgroup_cat, rslt), names_from = Rx, values_from = rslt) %>%
+  arrange(subgroup, subgroup_cat) %>%
+  relocate(subgroup, subgroup_cat, Placebo, Vaccine, Total) %>%
+  dplyr::filter(!((subgroup == "Age" & subgroup_cat == "Mean +/- SD") | (subgroup == "BMI" & subgroup_cat == "Mean (range)"))) %>%
+  mutate(subgroup = factor(subgroup, levels = c("Age", "BMI", "Sex", "Hispanic or Latino ethnicity", "Race", "Risk for Severe Covid-19"))) %>%
+  arrange(subgroup, subgroup_cat) %>%
+  ungroup()
 
 # Variables used for stratification in the tables
+# subgroup: SAP Table 6: Baseline Subgroups
+# Group: Category in each subgroup
+# Baseline: Baseline COVID-19 Positive or Negative
+
 sub_grp_col <- c("subgroup", "Group", "Baseline")
 sub_grp <- as.formula(paste0("~", paste(sub_grp_col, collapse = "+")))
-dssvy <- svydesign(ids = ~Bstratum, strata = sub_grp, weights = ~wt,
-                   data = ds, nest = TRUE)
+dssvy <- svydesign(ids = ~Bstratum, strata = sub_grp, weights = ~wt, data = ds, nest = T)
 
-# 1 - 3 tab_rr: Responder Rates
+# 1 - 3 tab_rr: Responder Rates and 95% CI
+resp_v <- grep("Resp|FR2|FR4", names(ds), value = T)
 resp_f <- paste0("~", paste(resp_v, collapse = " + "))
 rpcnt <- svyby(as.formula(resp_f), sub_grp, dssvy, svymean, vartype = "ci")
 
-tab_rr <- pivot_longer(rpcnt, cols = -(seq_along(sub_grp_col)),
-                       names_to = "responder_cat", values_to = "value") %>%
+tab_rr <- rpcnt %>%
+  rename_with(function(x) paste0("rr.", x), !contains(sub_grp_col) & !starts_with("ci_")) %>%
+  pivot_longer(cols = -all_of(sub_grp_col), names_to = "resp_cat", values_to = "value") %>%
   mutate(
-    param = sapply(responder_cat, function(x) {
-      strsplit(x, ".", fixed = TRUE)[[1]][1]
-    }),
-    responder_cat = sapply(responder_cat, function(x) {
-      strsplit(x, ".", fixed = TRUE)[[1]][2]
-    }),
-    responder_cat = ifelse(is.na(responder_cat), param, responder_cat),
-    param = ifelse(!param %in% c("ci_l", "ci_u"), "rr", param)
+    param = sapply(resp_cat, function(x) strsplit(x, ".", fixed = T)[[1]][1]),
+    resp_cat = sapply(resp_cat, function(x) strsplit(x, ".", fixed = T)[[1]][2])
   ) %>%
+  # Merge with the labels
   inner_join(ds_resp_l %>%
-    group_by(subgroup, responder_cat, Group, Visit, Endpoint, Baseline,
-             ind.lb) %>%
+    group_by(Baseline, Endpoint, resp_cat, subgroup, Group, Visit, Ind) %>%
     summarise(N = n(), rspndr = sum(response)),
-  by = c("subgroup", "Group", "Baseline", "responder_cat")
+  by = c("subgroup", "Group", "Baseline", "resp_cat")
   ) %>%
+  # Format into different respond rate columns
   pivot_wider(names_from = param, values_from = value) %>%
-  mutate(rspr = sprintf("%.1f%%", rr * 100),
-         ci = sprintf("(%.1f%%, %.1f%%)", ci_l * 100, ci_u * 100)) %>%
+  mutate(rspr = sprintf("%.1f%%", rr * 100), ci = sprintf("(%.1f%%, %.1f%%)", ci_l * 100, ci_u * 100)) %>%
   pivot_longer(cols = c(rspr, ci), values_to = "rslt") %>%
-  pivot_wider(c(subgroup, Group, Baseline, Visit, Endpoint, name, rslt, N),
-              names_from = ind.lb, values_from = rslt
-  )
+  pivot_wider(c(subgroup, Group, Baseline, Visit, Endpoint, name, rslt, N), names_from = Ind, values_from = rslt)
 
-# 4 GM
+# 4 tab_gm: Geometric Mean & 95% CI of Titers or Concentrations
 gm_f <- paste0("~", paste(c(bAb_v, pnAb_v, lnAb_v), collapse = " + "))
 rgm <- svyby(as.formula(gm_f), sub_grp, dssvy, svymean, vartype = "ci")
 
-tab_gm <- pivot_longer(rgm, cols = -(seq_along(sub_grp_col)),
-                       names_to = "responder_cat", values_to = "value") %>%
+tab_gm <- rgm %>%
+  rename_with(function(x) paste0("gm.", x), !contains(sub_grp_col) & !starts_with("ci_")) %>%
+  pivot_longer(cols = -all_of(sub_grp_col), names_to = "mag_cat", values_to = "value") %>%
   mutate(
-    param = sapply(responder_cat, function(x) {
-      strsplit(x, ".", fixed = TRUE)[[1]][1]
-    }),
-    responder_cat = sapply(responder_cat, function(x) {
-      strsplit(x, ".", fixed = TRUE)[[1]][2]
-    }),
-    responder_cat = ifelse(is.na(responder_cat), param, responder_cat),
-    param = ifelse(!param %in% c("ci_l", "ci_u"), "gm", param)
+    param = sapply(mag_cat, function(x) strsplit(x, ".", fixed = T)[[1]][1]),
+    mag_cat = sapply(mag_cat, function(x) strsplit(x, ".", fixed = T)[[1]][2])
   ) %>%
   inner_join(ds_mag_l %>%
-    group_by(subgroup, responder_cat, Group, Visit, Endpoint, Baseline) %>%
+    group_by(subgroup, mag_cat, Group, Visit, Endpoint, Baseline) %>%
     summarise(N = n()),
-    by = c("subgroup", "Group", "Baseline", "responder_cat")
+  by = c("subgroup", "Group", "Baseline", "mag_cat")
   ) %>%
   pivot_wider(names_from = param, values_from = value) %>%
   mutate(
@@ -78,114 +133,77 @@ tab_gm <- pivot_longer(rgm, cols = -(seq_along(sub_grp_col)),
     `95% CI` = sprintf("(%.0f, %.0f)", 10^ci_l, 10^ci_u)
   )
 
-# 5 - 6
-gmr_f <- paste0("~", paste(grep("Delta", names(ds),
-                                value = TRUE, fixed = FALSE),
-                         collapse = " + "))
+# 5 - 6:
+gmr_f <- paste0("~", paste(grep("Delta", names(ds), value = T, fixed = F), collapse = " + "))
 rgmr <- svyby(as.formula(gmr_f), sub_grp, dssvy, svymean, vartype = "ci")
 
-ep_lev <- c("Anti-Spike IgG", "Anti-RBD IgG", "Pseudo nAb ID50",
-            "Pseudo nAb ID80", "Live Virus nAb ID50", "Live Virus nAb ID80")
-delta_lb <- expand.grid(t1t2 = c("57overB", "57over29", "29overB"),
-                        endpoint = c(bAb, pnAb, lnAb)) %>%
-  mutate(
-    responder_cat = paste0("Delta", t1t2, endpoint),
-    Endpoint = case_when(
-      endpoint == "bindSpike" ~ "Anti-Spike IgG",
-      endpoint == "bindRBD" ~ "Anti-RBD IgG",
-      endpoint == "pseudoneutid50" ~ "Pseudo nAb ID50",
-      endpoint == "pseudoneutid80" ~ "Pseudo nAb ID80",
-      endpoint == "liveneutmn50" ~ "Live Virus nAb MN50"
-    ),
-    Endpoint = factor(Endpoint, levels = ep_lev)
-  ) %>%
-  inner_join(data.frame(
-    t1t2 = c("57overB", "57over29", "29overB"),
-    Visits = c("D57 vs. Baseline", "D57 vs. D29", "D29 vs. Baseline")
-  ),
-  by = "t1t2"
-  )
 
-tab_gmr <- pivot_longer(rgmr, cols = -(seq_along(sub_grp_col)),
-                        names_to = "responder_cat", values_to = "value") %>%
+tab_gmr <- rgmr %>%
+  rename_with(function(x) paste0("gmr.", x), !contains(sub_grp_col) & !starts_with("ci_")) %>%
+  pivot_longer(cols = -all_of(sub_grp_col), names_to = "colname", values_to = "value") %>%
   mutate(
-    param = sapply(responder_cat, function(x) {
-      strsplit(x, ".", fixed = TRUE)[[1]][1]
-    }),
-    responder_cat = sapply(responder_cat, function(x) {
-      strsplit(x, ".", fixed = TRUE)[[1]][2]
-    }),
-    responder_cat = ifelse(is.na(responder_cat), param, responder_cat),
-    param = ifelse(!param %in% c("ci_l", "ci_u"), "gmr", param)
+    param = sapply(colname, function(x) strsplit(x, ".", fixed = T)[[1]][1]),
+    colname = sapply(colname, function(x) strsplit(x, ".", fixed = T)[[1]][2])
   ) %>%
-  inner_join(delta_lb, by = "responder_cat") %>%
-  inner_join(ds %>%
-             group_by(across(all_of(sub_grp_col))) %>%
-             summarise(N = n()), by = sub_grp_col) %>%
+  inner_join(labels_all %>% distinct(colname, Endpoint, Visit, label.long), by = "colname") %>%
+  inner_join(ds %>% group_by(across(all_of(sub_grp_col))) %>% summarise(N = n()), by = sub_grp_col) %>%
   pivot_wider(names_from = param, values_from = value) %>%
-  mutate(`GMTR/GMCR` = sprintf("%.2f", 10^gmr),
-         `95% CI` = sprintf("(%.2f, %.2f)", 10^ci_l, 10^ci_u))
+  mutate(`GMTR/GMCR` = sprintf("%.2f", 10^gmr), `95% CI` = sprintf("(%.2f, %.2f)", 10^ci_l, 10^ci_u))
 
 
 # 7a
 # Ratios of GMT/GMC between Vaccine vs Placebo
-comp_v <- "Trt"
+comp_v <- "Rx"
 f_v <- as.formula(sprintf("mag ~ %s", comp_v))
 
 tab_gmtrA <- ds_mag_l %>%
-  dplyr::filter(subgroup == "Total") %>%
-  group_split(across(c(all_of(sub_grp_col), "Visit", "responder_cat"))) %>%
+  dplyr::filter(subgroup == "All participants" & Visit != "Day 1") %>%
+  group_split(across(c(all_of(sub_grp_col), "Visit", "mag_cat"))) %>%
   map_dfr(function(x) {
     ret <- x %>%
-      group_by(subgroup, Baseline, Endpoint, Visit, responder_cat) %>%
+      group_by(subgroup, Baseline, Endpoint, Visit, mag_cat) %>%
       summarise(
         N = n(),
-        estimate =
-          summary(lm(f_v, weights = wt, data = .))$coefficients[comp_v,
-                                                                "Estimate"],
-        se =
-          summary(lm(f_v, weights = wt, data = .))$coefficients[comp_v,
-                                                                "Std. Error"],
+        estimate = summary(lm(f_v, weights = wt, data = .))$coefficients[2, "Estimate"],
+        se = summary(lm(f_v, weights = wt, data = .))$coefficients[2, "Std. Error"],
         ci_u = 10^(estimate + 1.96 * se), ci_l = 10^(estimate - 1.96 * se),
-          `Ratios of GMT/GMC` = round(10^estimate, 2),
-          `95% CI` = sprintf("(%.2f, %.2f)", ci_l, ci_u)
+        `Ratios of GMT/GMC` = round(10^estimate, 2),
+        `95% CI` = sprintf("(%.2f, %.2f)", ci_l, ci_u)
       )
   })
+
 
 # 7b Ratios of GMT/GMC between baseline negative vs positive among vacinees
 comp_v <- "Baseline"
 f_v <- as.formula(sprintf("mag ~ %s", comp_v))
-sub_grp_colB <- c("subgroup", "Group", "Trt")
+sub_grp_colB <- c("subgroup", "Group", "Rx")
 
 tab_gmtrB <- ds_mag_l %>%
-  dplyr::filter(subgroup == "Total" & Trt == 1) %>%
-  group_split(across(c(all_of(sub_grp_colB), "responder_cat"))) %>%
+  dplyr::filter(subgroup == "All participants" & Rx == "Vaccine" & Visit != "Day 1") %>%
+  group_split(across(c(all_of(sub_grp_colB), "mag_cat"))) %>%
   map_dfr(function(x) {
     ret <- x %>%
-      group_by(subgroup, Endpoint, Visit, responder_cat) %>%
+      group_by(subgroup, Endpoint, Visit, mag_cat) %>%
       summarise(
         N = n(),
-        estimate =
-          summary(lm(f_v, weights = wt, data = .))$coefficients[2, "Estimate"],
-        se =
-          summary(lm(f_v, weights = wt, data = .))$coefficients[2,
-                                                                "Std. Error"],
+        estimate = summary(lm(f_v, weights = wt, data = .))$coefficients[2, "Estimate"],
+        se = summary(lm(f_v, weights = wt, data = .))$coefficients[2, "Std. Error"],
         ci_u = 10^(estimate + 1.96 * se), ci_l = 10^(estimate - 1.96 * se),
-          `Ratios of GMT/GMC` = round(10^estimate, 2),
-          `95% CI` = sprintf("(%.2f, %.2f)", ci_l, ci_u)
+        `Ratios of GMT/GMC` = round(10^estimate, 2),
+        `95% CI` = sprintf("(%.2f, %.2f)", ci_l, ci_u)
       )
   })
 
 
 # 7c
 ds_mag_l_7c <- ds_mag_l %>%
-  dplyr::filter(subgroup %in% c("Age", "High Risk", "Age Risk", "Sex",
-                                "Ethnicity", "Minority")) %>%
+  dplyr::filter(subgroup %in% c(
+    "Age", "Risk for Severe Covid-19", "Age, Risk for Severe Covid-19 ", "Sex",
+    "Hispanic or Latino ethnicity", "Race and ethnic group"
+  )) %>%
   mutate(comp_i = case_when(
-    as.character(Group) %in% c("Age >= 65 At-risk", "Age >= 65 Not at-risk") ~
-      "Age >= 65, Risk",
-    as.character(Group) %in% c("Age < 65 At-risk", "Age < 65 Not at-risk") ~
-      "Age < 65, Risk",
+    as.character(Group) %in% c("Age >= 65 At-risk", "Age >= 65 Not at-risk") ~ "Age >= 65, Risk",
+    as.character(Group) %in% c("Age < 65 At-risk", "Age < 65 Not at-risk") ~ "Age < 65, Risk",
     TRUE ~ as.character(subgroup)
   ))
 
@@ -194,52 +212,47 @@ f_v <- as.formula(sprintf("mag ~ %s", comp_v))
 sub_grp_colC <- c("subgroup", "Baseline")
 
 tab_gmtrC <- ds_mag_l_7c %>%
-  dplyr::filter(Trt == 1) %>%
-  group_split(across(c(all_of(sub_grp_colC), "responder_cat", "comp_i"))) %>%
+  dplyr::filter(Rx == "Vaccine" & Visit != "Day 1") %>%
+  group_split(across(c(all_of(sub_grp_colC), "mag_cat", "comp_i"))) %>%
   map_dfr(function(x) {
     ret <- x %>%
-      group_by(Baseline, Endpoint, responder_cat, Visit, comp_i) %>%
+      group_by(Baseline, Endpoint, mag_cat, Visit, comp_i) %>%
       summarise(
         N = n(),
-        estimate =
-          summary(lm(f_v, weights = wt, data = .))$coefficients[2, "Estimate"],
-        se =
-          summary(lm(f_v, weights = wt, data = .))$coefficients[2,
-                                                                "Std. Error"],
+        estimate = summary(lm(f_v, weights = wt, data = .))$coefficients[2, "Estimate"],
+        se = summary(lm(f_v, weights = wt, data = .))$coefficients[2, "Std. Error"],
         ci_u = 10^(estimate + 1.96 * se), ci_l = 10^(estimate - 1.96 * se),
-          `Ratios of GMT/GMC` = round(10^estimate, 2),
-          `95% CI` = sprintf("(%.2f, %.2f)", ci_l, ci_u)
+        `Ratios of GMT/GMC` = round(10^estimate, 2),
+        `95% CI` = sprintf("(%.2f, %.2f)", ci_l, ci_u)
       )
   })
 
-
+tmp <- tab_gmtrC %>%
+  arrange(Baseline, Endpoint, comp_i)
 # 8
-comp_v <- "Trt"
+comp_v <- "Rx"
 f_v <- as.formula(sprintf("response ~ %s", comp_v))
+contrasts(ds_resp_l$Rx) <- contr.treatment(2, base = 2)
+
 
 tab_rrdiff <- ds_resp_l %>%
-  group_split(across(c(all_of(sub_grp_col), "responder_cat", "ind.lb"))) %>%
+  group_split(across(c(all_of(sub_grp_col), "resp_cat", "Ind"))) %>%
   map_dfr(function(x) {
     ret <- x %>%
-      group_by(Baseline, Endpoint, subgroup, Group, Visit, ind.lb) %>%
+      group_by(Baseline, Endpoint, subgroup, Group, Visit, Ind) %>%
       summarise(
         N = n(),
-        estimate =
-          summary(glm(f_v, weights = wt, data = .))$coefficients[comp_v,
-                                                                 "Estimate"],
-        se =
-          summary(glm(f_v, weights = wt, data = .))$coefficients[comp_v,
-                                                                 "Std. Error"],
+        estimate = summary(glm(f_v, weights = wt, data = .))$coefficients[2, "Estimate"],
+        se = summary(glm(f_v, weights = wt, data = .))$coefficients[2, "Std. Error"],
         ci_u = estimate + 1.96 * se, ci_l = estimate - 1.96 * se,
         est = sprintf("%.1f%%", estimate * 100),
         ci = sprintf("(%.1f%%, %.1f%%)", ci_l * 100, ci_u * 100)
       )
   }) %>%
   pivot_longer(cols = c(est, ci), values_to = "rslt") %>%
-  pivot_wider(-c(estimate, se, ci_u, ci_l), names_from = ind.lb,
-              values_from = rslt)
+  pivot_wider(-c(estimate, se, ci_u, ci_l), names_from = Ind, values_from = rslt)
 
 
-save(tab_rr, tab_gm, tab_gmr, tab_gmtrA, tab_gmtrB, tab_gmtrC, tab_rrdiff,
-  file = here("output", "tables.Rdata")
+save(ds_s, tab_dm, tab_rr, tab_gm, tab_gmr, tab_gmtrA, tab_gmtrB, tab_gmtrC, tab_rrdiff,
+  file = here::here("output", "Tables.Rdata")
 )

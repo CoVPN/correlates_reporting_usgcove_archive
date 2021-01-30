@@ -9,7 +9,7 @@ tables_output: code/make_table_all.R clean_data
 clean_data: code/make_clean_data.R set_params
 	Rscript code/make_clean_data.R
 
-## set_params       : set up parameters (e.g., lloq) and modify the tables to be included/
+## set_params       : set up parameters (e.g., lloq) and modify included tables
 set_params: code/make_parameters.R
 	Rscript code/make_parameters.R
 
@@ -19,9 +19,14 @@ clean:
 	rm -f output/*.Rdata
 	rm -f output/*.pdf
 
+## style            : enforce R code styling conventions automatically
+style:
+	Rscript -e "styler::style_file('report.Rmd')"
+	Rscript -e "styler::style_dir('code')"
+
 ## type 'make help' to show all make commands
 help: Makefile
 	@sed -n 's/^##//p' $<
 
 # define PHONYS
-.PHONY: help clean tables_output
+.PHONY: help clean style tables_output

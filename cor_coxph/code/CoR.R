@@ -20,7 +20,7 @@ library(parallel)
 library(Hmisc)# wtd.quantile, biconf
 library(forestplot)
 library(svyVGAM) # Firth penalized glm
-save.results.to="output/"; if (!dir.exists(save.results.to))  dir.create(save.results.to)
+save.results.to="../output/"; if (!dir.exists(save.results.to))  dir.create(save.results.to)
 assays=c("bindSpike","bindRBD","pseudoneutid50","pseudoneutid80")
 #assays=c("bindSpike","bindRBD","pseudoneutid80","liveneutid80")
 trt.labels=c("Placebo","Vaccine")

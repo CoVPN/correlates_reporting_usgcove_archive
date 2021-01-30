@@ -37,9 +37,10 @@ t0=max(dat.mock.vacc.seroneg$EventTimePrimaryD57[dat.mock.vacc.seroneg$EventIndP
 write(t0, file=paste0(save.results.to, "timepoints_cum_risk_"%.%study.name))
 # base formula
 form.a = ~. + Age # + BRiskScore
-form.0 = update (Surv(EventTimePrimaryD57, EventIndPrimaryD57) ~ MinorityInd + HighRiskInd, form.a)
-form.0.logistic = update (                 EventIndPrimaryD57  ~ MinorityInd + HighRiskInd, form.a)
-form.1 = update (Surv(EventTimePrimaryD57, EventIndPrimaryD57) ~ 1, form.a) 
+form.s = Surv(EventTimePrimaryD57, EventIndPrimaryD57) ~ 1
+form.0 = update (update (form.s, ~.+MinorityInd + HighRiskInd), form.a)
+form.0.logistic = update (EventIndPrimaryD57  ~ MinorityInd + HighRiskInd, form.a)
+form.1 = update (form.s, form.a) 
 # covariate length without markers
 p.cov=length(terms(form.0))
 # save cutpoints to files
@@ -69,14 +70,6 @@ for (a in c("Day57"%.%assays, "Delta57overB"%.%assays)) {
     fits[[a]]=svycoxph(f, design=design.vacc.seroneg) 
 }
 
-# make quick table
-tab=getFormattedSummary(fits, exp=T, robust=T)
-rownames(tab)[nrow(tab)]="marker"
-#colnames(tab)=labels.axis[c("Day57"%.%assays, "Delta57overB"%.%assays)]
-tab
-mytex(tab, file.name="CoR_univariable_svycoxph_"%.%study.name, input.foldername=save.results.to, align="c", save2input.only=TRUE)
-
-
 # make pretty table for D57 only
 fits=fits[1:length(assays)] # subset here for multitesting adjustment
 rows=1+p.cov
@@ -101,6 +94,15 @@ mytex(tab, file.name="CoR_D57_univariable_svycoxph_pretty_"%.%study.name, align=
          \\hline\n 
     ")
 )
+
+
+# make quick table
+tab=getFormattedSummary(fits, exp=T, robust=T)
+rownames(tab)[nrow(tab)]="marker"
+#colnames(tab)=labels.axis[c("Day57"%.%assays, "Delta57overB"%.%assays)]
+tab
+mytex(tab, file.name="CoR_univariable_svycoxph_"%.%study.name, input.foldername=save.results.to, align="c", save2input.only=TRUE)
+
 
 
 ######################################
@@ -620,7 +622,7 @@ dev.off()
 
 
 
-###########################################################
+#############################################################
 # marginalized risk (cumulative incidence) curves by tertiles
 # no bootstrap
 
@@ -643,9 +645,10 @@ risk.0= 1 - exp(-predict(fit.0, type="expected"))
 time.0= dat.mock.plac.seroneg$EventTimePrimaryD57
 
 mypdf(oma=c(1,0,0,0), onefile=F, file=paste0(save.results.to, "marginal_risks_cat", "_"%.%study.name), mfrow=c(2,2), width=7, height = 7.5)
-lwd=2
-ylim=c(0,max(risk.0))
 for (a in assays) {        
+    lwd=2
+    ylim=c(0,max(risk.0))
+    
     out=risks.all.ter[[a]]
     # cutpoints
     q.a=wtd.quantile(dat.mock.vacc.seroneg[["Day57"%.%a]], weights=dat.mock.vacc.seroneg$wt, probs=c(1/3, 2/3))
@@ -662,8 +665,54 @@ for (a in assays) {
 mtext(toTitleCase(study.name), side = 1, line = 2, outer = T, at = NA, adj = NA, padj = NA, cex = .8, col = NA, font = NA)
 dev.off()    
 
-
-
+#
+#
+#  # extract numbers at risk by Low/ Medium High
+#  km.L <- svysurvfit(form.s, data=dat[cate=="Low",])
+#  km.M <- survfit(Surv(oftime_m13, ofstatus_m13) ~ 1, data=dat[cate=="Medium",])
+#  km.H <- survfit(Surv(oftime_m13, ofstatus_m13) ~ 1, data=dat[cate=="High",])
+#  
+#  #x.time <- seq(0, min(max(dat$flrtime[cat=="Low"]), max(dat$flrtime[cat=="Medium"]),max(dat$flrtime[cat=="High"])), length.out=13) # may want to modify
+#  x.time<-seq(0,12,by=2)*scl
+#  n.risk.L <- summary(km.L, times=x.time)$n.risk
+#  n.risk.M <- summary(km.M, times=x.time)$n.risk
+#  n.risk.H <- summary(km.H, times=x.time)$n.risk
+#  
+#  cum.L <- cumsum(summary(km.L, times=x.time)$n.event)
+#  cum.M <- cumsum(summary(km.M, times=x.time)$n.event)
+#  cum.H <- cumsum(summary(km.H, times=x.time)$n.event)
+#  
+#  #make the last entry include visit window
+#  cum.L[7] <- count[1]
+#  cum.M[7] <- count[2]
+#  cum.H[7] <- count[3]
+#  
+#  cex.text <- 0.7
+#  mtext(expression(bold("No. at risk")),side=1,outer=FALSE,line=2.5,at=-2,adj=0,cex=cex.text)
+#  mtext(n.risk.L,side=1,outer=FALSE,line=3.4,at=seq(0,12,by=2),cex=cex.text)
+#  mtext(n.risk.M,side=1,outer=FALSE,line=4.3,at=seq(0,12,by=2),cex=cex.text)
+#  mtext(n.risk.H,side=1,outer=FALSE,line=5.2,at=seq(0,12,by=2),cex=cex.text)
+#  
+#  mtext(paste0("Low S",i,":"),side=1,outer=F,line=3.4,at=-4,adj=0,cex=cex.text)
+#  mtext(paste0("Med S",i,":"),side=1,outer=F,line=4.3,at=-4,adj=0,cex=cex.text)
+#  mtext(paste0("High S",i,":"),side=1,outer=F,line=5.2,at=-4,adj=0,cex=cex.text)
+#  mtext(expression(bold("Cumulative No. of Overall Dengue infections")),side=1,outer=FALSE,line=6.4,at=-2,adj=0,
+#        cex=cex.text)
+#  mtext(cum.L,side=1,outer=FALSE,line=7.3,at=x.time/scl,cex=cex.text)
+#  mtext(cum.M,side=1,outer=FALSE,line=8.2,at=x.time/scl,cex=cex.text)
+#  mtext(cum.H,side=1,outer=FALSE,line=9.1,at=x.time/scl,cex=cex.text)
+#  
+#  
+#  mtext(paste0("Low S",i,":"),side=1,outer=FALSE,line=7.3,at=-4,adj=0,cex=cex.text)
+#  mtext(paste0("Med S",i,":"),side=1,outer=FALSE,line=8.2,at=-4,adj=0,cex=cex.text)
+#  mtext(paste0("High S",i,":"),side=1,outer=FALSE,line=9.1,at=-4,adj=0,cex=cex.text)
+#    }
+#  if(vacc=="Vaccine"){mtext(expression(bold("Cumulative Overall Dengue Incidence by Serotype Response Subgroups (Vaccine)")), side=3, outer=TRUE, line=0.5,cex=1.2)}
+#  if(vacc=="Placebo"){mtext(expression(bold("Cumulative Overall Dengue Incidence by Serotype Response Subgroups (Placebo)")), side=3, outer=TRUE, line=0.5,cex=1.2)}
+#                      
+#  mtext("Note: (1)Low, Medium, High subgroups are the bottom, middle, and upper third of the month 13 PRNT titers.", side=1, outer=TRUE, line=1,cex=0.85) 
+#  mtext("                  (2)P.val.HR(P.val.OR) is the two-sided p-value for different hazard rates(odds of event) by titer subgroups.", side=1, outer=TRUE, line=2,cex=0.85) 
+#
 
 
 ##########################################################

@@ -6,8 +6,12 @@ tables_output: code/make_table_all.R clean_data
 	Rscript code/make_table_all.R
 
 ## clean_data       : clean up and reformat input data, and save to data_clean/
-clean_data: code/make_clean_data.R
+clean_data: code/make_clean_data.R set_params
 	Rscript code/make_clean_data.R
+
+## set_params       : set up parameters (e.g., lloq) and modify the tables to be included/
+set_params: code/make_parameters.R
+	Rscript code/make_parameters.R
 
 ## clean            : delete contents of data_clean/ and output/ directories
 clean:

@@ -129,7 +129,7 @@ include_graphics(here(
 ```{r, fig.cap = "(Mock data) RCDF plots for D29 Ab markers: by baseline status for the vaccine arm"}
 include_graphics(here(
   "immuno_graphical", "figs",
-  paste0("Marker_Rcdf_day29_trt_vaccine_bstatus_both_",
+  paste0("Marker_Rcdf_Day29_trt_vaccine_bstatus_both_",
   study_name, ".png")
 ))
 ```
@@ -137,7 +137,7 @@ include_graphics(here(
 ```{r, fig.cap = "(Mock data) RCDF plots for D57 Ab markers: by baseline status for the vaccine arm"}
 include_graphics(here(
   "immuno_graphical", "figs",
-  paste0("Marker_Rcdf_day57_trt_vaccine_bstatus_both_",
+  paste0("Marker_Rcdf_Day57_trt_vaccine_bstatus_both_",
   study_name, ".png")
 ))
 ```
@@ -161,7 +161,7 @@ include_graphics(here(
 ```{r, fig.cap = "(Mock data) RCDF plots for D29 Ab markers: baseline negative vaccine arm"}
 include_graphics(here(
   "immuno_graphical", "figs",
-  paste0("Marker_Rcdf_day29_trt_vaccine_bstatus_Neg_",
+  paste0("Marker_Rcdf_Day29_trt_vaccine_bstatus_Neg_",
   study_name, ".png")
 ))
 ```
@@ -169,7 +169,7 @@ include_graphics(here(
 ```{r, fig.cap = "(Mock data) RCDF plots for D57 Ab markers: baseline negative vaccine arm"}
 include_graphics(here(
   "immuno_graphical", "figs",
-  paste0("Marker_Rcdf_day57_trt_vaccine_bstatus_Neg_",
+  paste0("Marker_Rcdf_Day57_trt_vaccine_bstatus_Neg_",
   study_name, ".png")
 ))
 ```
@@ -177,7 +177,7 @@ include_graphics(here(
 ```{r, fig.cap = "(Mock data) RCDF plots for D29 fold-rise over D1 Ab markers: baseline negative vaccine arm"}
 include_graphics(here(
   "immuno_graphical", "figs",
-  paste0("Marker_Rcdf_delta29_trt_vaccine_bstatus_Neg_",
+  paste0("Marker_Rcdf_Delta29overB_trt_vaccine_bstatus_Neg_",
   study_name, ".png")
 ))
 ```
@@ -185,7 +185,7 @@ include_graphics(here(
 ```{r, fig.cap = "(Mock data) RCDF plots for D57 fold-rise over D1 Ab markers: baseline negative vaccine arm"}
 include_graphics(here(
   "immuno_graphical", "figs",
-  paste0("Marker_Rcdf_delta57_trt_vaccine_bstatus_Neg_",
+  paste0("Marker_Rcdf_Delta57overB_trt_vaccine_bstatus_Neg_",
   study_name, ".png")
 ))
 ```
@@ -955,7 +955,7 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Boxplots of D29 Anti-Spike Binding Ab: Baseline negative vaccine arm"}
+```{r, fig.cap = "(Mock data) Boxplots of D29 Anti-Spike Binding Ab: Baseline negative vaccine arm", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0("boxplots_Day29_trt_vaccine_x_cc_BaselineNeg_bindSpike_", study_name,
@@ -963,7 +963,7 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Boxplots of D57 Anti-Spike Binding Ab: Baseline negative vaccine arm"}
+```{r, fig.cap = "(Mock data) Boxplots of D57 Anti-Spike Binding Ab: Baseline negative vaccine arm", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0("boxplots_Day57_trt_vaccine_x_cc_BaselineNeg_bindSpike_",
@@ -971,7 +971,7 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Boxplots of D29 fold-rise over D1 Anti-Spike Binding Ab: Baseline negative vaccine arm"}
+```{r, fig.cap = "(Mock data) Boxplots of D29 fold-rise over D1 Anti-Spike Binding Ab: Baseline negative vaccine arm", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0("boxplots_Delta29overB_trt_vaccine_x_cc_BaselineNeg_bindSpike_",
@@ -979,7 +979,7 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Boxplots of D57 fold-rise over D1 Anti-Spike Binding Ab: Baseline negative vaccine arm"}
+```{r, fig.cap = "(Mock data) Boxplots of D57 fold-rise over D1 Anti-Spike Binding Ab: Baseline negative vaccine arm", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0("boxplots_Delta57overB_trt_vaccine_x_cc_BaselineNeg_bindSpike_",
@@ -987,7 +987,7 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Boxplots of D29 Binding Anti-RBD Binding Ab: Baseline negative vaccine arm"}
+```{r, fig.cap = "(Mock data) Boxplots of D29 Binding Anti-RBD Binding Ab: Baseline negative vaccine arm", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0("boxplots_Day29_trt_vaccine_x_cc_BaselineNeg_bindRBD_",
@@ -995,7 +995,7 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Boxplots of D57 Binding Anti-RBD Binding Ab: Baseline negative vaccine arm"}
+```{r, fig.cap = "(Mock data) Boxplots of D57 Binding Anti-RBD Binding Ab: Baseline negative vaccine arm", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0("boxplots_Day57_trt_vaccine_x_cc_BaselineNeg_bindRBD_",
@@ -1003,7 +1003,7 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Boxplots of D29 fold-rise over D1 Anti-RBD Binding Ab: Baseline negative vaccine arm"}
+```{r, fig.cap = "(Mock data) Boxplots of D29 fold-rise over D1 Anti-RBD Binding Ab: Baseline negative vaccine arm", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0("boxplots_Delta29overB_trt_vaccine_x_cc_BaselineNeg_bindRBD_",
@@ -1011,7 +1011,7 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Boxplots of D57 fold-rise over D1 Anti-RBD Binding Ab: Baseline negative vaccine arm"}
+```{r, fig.cap = "(Mock data) Boxplots of D57 fold-rise over D1 Anti-RBD Binding Ab: Baseline negative vaccine arm", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0("boxplots_Delta57overB_trt_vaccine_x_cc_BaselineNeg_bindRBD_",
@@ -1019,7 +1019,7 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Boxplots of D29 Pseudo Neutralizing Titer ID50: Baseline negative vaccine arm"}
+```{r, fig.cap = "(Mock data) Boxplots of D29 Pseudo Neutralizing Titer ID50: Baseline negative vaccine arm", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0("boxplots_Day29_trt_vaccine_x_cc_BaselineNeg_pseudoneutid50_",
@@ -1027,7 +1027,7 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Boxplots of D57 Pseudo Neutralizing Titer ID50: Baseline negative vaccine arm"}
+```{r, fig.cap = "(Mock data) Boxplots of D57 Pseudo Neutralizing Titer ID50: Baseline negative vaccine arm", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0("boxplots_Day57_trt_vaccine_x_cc_BaselineNeg_pseudoneutid50_",
@@ -1035,7 +1035,7 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Boxplots of D29 fold-rise over D1 Pseudo Neutralizing Titer ID50: Baseline negative vaccine arm"}
+```{r, fig.cap = "(Mock data) Boxplots of D29 fold-rise over D1 Pseudo Neutralizing Titer ID50: Baseline negative vaccine arm", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0("boxplots_Delta29overB_trt_vaccine_x_cc_BaselineNeg_pseudoneutid50_",
@@ -1043,7 +1043,7 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Boxplots of D57 fold-rise over D1 Pseudo Neutralizing Titer ID50: Baseline negative vaccine arm"}
+```{r, fig.cap = "(Mock data) Boxplots of D57 fold-rise over D1 Pseudo Neutralizing Titer ID50: Baseline negative vaccine arm", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0("boxplots_Delta57overB_trt_vaccine_x_cc_BaselineNeg_pseudoneutid50_",
@@ -1051,7 +1051,7 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Boxplots of D29 Pseudo Neutralizing Titer ID80: Baseline negative vaccine arm"}
+```{r, fig.cap = "(Mock data) Boxplots of D29 Pseudo Neutralizing Titer ID80: Baseline negative vaccine arm", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0("boxplots_Day29_trt_vaccine_x_cc_BaselineNeg_pseudoneutid80_",
@@ -1059,7 +1059,7 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Boxplots of D57 Pseudo Neutralizing Titer ID80: Baseline negative vaccine arm"}
+```{r, fig.cap = "(Mock data) Boxplots of D57 Pseudo Neutralizing Titer ID80: Baseline negative vaccine arm", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0("boxplots_Day57_trt_vaccine_x_cc_BaselineNeg_pseudoneutid80_",
@@ -1067,7 +1067,7 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Boxplots of D29 fold-rise over D1 Pseudo Neutralizing Titer ID80: Baseline negative vaccine arm"}
+```{r, fig.cap = "(Mock data) Boxplots of D29 fold-rise over D1 Pseudo Neutralizing Titer ID80: Baseline negative vaccine arm", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0("boxplots_Delta29overB_trt_vaccine_x_cc_BaselineNeg_pseudoneutid80_",
@@ -1075,7 +1075,7 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Boxplots of D57 fold-rise over D1 Pseudo Neutralizing Titer ID80: Baseline negative vaccine arm"}
+```{r, fig.cap = "(Mock data) Boxplots of D57 fold-rise over D1 Pseudo Neutralizing Titer ID80: Baseline negative vaccine arm", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0("boxplots_Delta57overB_trt_vaccine_x_cc_BaselineNeg_pseudoneutid80_",
@@ -1083,7 +1083,7 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Boxplots of D29 Ab markers: Baseline negative vaccine arm by age group."}
+```{r, fig.cap = "(Mock data) Boxplots of D29 Ab markers: Baseline negative vaccine arm by age group.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0("boxplots_Day29_BaselineNeg_trt_vaccine_by_age_group_",
@@ -1091,7 +1091,7 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Boxplots of D57 Ab markers: Baseline negative vaccine arm by age group."}
+```{r, fig.cap = "(Mock data) Boxplots of D57 Ab markers: Baseline negative vaccine arm by age group.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0("boxplots_Day57_BaselineNeg_trt_vaccine_by_age_group_",
@@ -1099,7 +1099,7 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Boxplots of D29 fold-rise over D1 Ab markers: Baseline negative vaccine arm by age group."}
+```{r, fig.cap = "(Mock data) Boxplots of D29 fold-rise over D1 Ab markers: Baseline negative vaccine arm by age group.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0("boxplots_Delta29overB_BaselineNeg_trt_Vaccine_by_age_group_",
@@ -1107,7 +1107,7 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Boxplots of D57 fold-rise over D1 Ab markers: Baseline negative vaccine arm by age group."}
+```{r, fig.cap = "(Mock data) Boxplots of D57 fold-rise over D1 Ab markers: Baseline negative vaccine arm by age group.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0("boxplots_Delta57overB_BaselineNeg_trt_Vaccine_by_age_group_",
@@ -1115,7 +1115,7 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Boxplots of D29 Ab markers: Baseline negative vaccine arm by high-risk condition."}
+```{r, fig.cap = "(Mock data) Boxplots of D29 Ab markers: Baseline negative vaccine arm by high-risk condition.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0("boxplots_Day29_BaselineNeg_trt_vaccine_by_risk_group_",
@@ -1123,7 +1123,7 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Boxplots of D57 Ab markers: Baseline negative vaccine arm by high-risk condition."}
+```{r, fig.cap = "(Mock data) Boxplots of D57 Ab markers: Baseline negative vaccine arm by high-risk condition.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0("boxplots_Day57_BaselineNeg_trt_vaccine_by_risk_group_",
@@ -1131,7 +1131,7 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Boxplots of D29 fold-rise over D1 Ab markers: Baseline negative vaccine arm by high-risk condition."}
+```{r, fig.cap = "(Mock data) Boxplots of D29 fold-rise over D1 Ab markers: Baseline negative vaccine arm by high-risk condition.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0("boxplots_Delta29overB_BaselineNeg_trt_Vaccine_by_risk_group_",
@@ -1139,7 +1139,7 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Boxplots of D57 fold-rise over D1 Ab markers: Baseline negative vaccine arm by high-risk condition."}
+```{r, fig.cap = "(Mock data) Boxplots of D57 fold-rise over D1 Ab markers: Baseline negative vaccine arm by high-risk condition.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0("boxplots_Delta57overB_BaselineNeg_trt_Vaccine_by_risk_group_",
@@ -1147,7 +1147,7 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Boxplots of D29 Ab markers: Baseline negative vaccine arm by age and high-risk condition."}
+```{r, fig.cap = "(Mock data) Boxplots of D29 Ab markers: Baseline negative vaccine arm by age and high-risk condition.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0("boxplots_Day29_BaselineNeg_trt_vaccine_by_age_x_risk_group_",
@@ -1155,7 +1155,7 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Boxplots of D57 Ab markers: Baseline negative vaccine arm by age and high-risk condition."}
+```{r, fig.cap = "(Mock data) Boxplots of D57 Ab markers: Baseline negative vaccine arm by age and high-risk condition.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0("boxplots_Day57_BaselineNeg_trt_vaccine_by_age_x_risk_group_",
@@ -1163,7 +1163,7 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Boxplots of D29 fold-rise over D1 Ab markers: Baseline negative vaccine arm by age and high-risk condition."}
+```{r, fig.cap = "(Mock data) Boxplots of D29 fold-rise over D1 Ab markers: Baseline negative vaccine arm by age and high-risk condition.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0("boxplots_Delta29overB_BaselineNeg_trt_Vaccine_by_age_x_risk_group_",
@@ -1171,7 +1171,7 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Boxplots of D57 fold-rise over D1 Ab markers: Baseline negative vaccine arm by age and high-risk condition."}
+```{r, fig.cap = "(Mock data) Boxplots of D57 fold-rise over D1 Ab markers: Baseline negative vaccine arm by age and high-risk condition.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0("boxplots_Delta57overB_BaselineNeg_trt_Vaccine_by_age_x_risk_group_",
@@ -1179,7 +1179,7 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Boxplots of D29 Ab markers: Baseline negative vaccine arm by sex assigned at birth."}
+```{r, fig.cap = "(Mock data) Boxplots of D29 Ab markers: Baseline negative vaccine arm by sex assigned at birth.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0("boxplots_Day29_BaselineNeg_trt_vaccine_by_sex_",
@@ -1187,7 +1187,7 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Boxplots of D57 Ab markers: Baseline negative vaccine arm by sex assigned at birth."}
+```{r, fig.cap = "(Mock data) Boxplots of D57 Ab markers: Baseline negative vaccine arm by sex assigned at birth.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0("boxplots_Day57_BaselineNeg_trt_vaccine_by_sex_",
@@ -1195,7 +1195,7 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Boxplots of D29 fold-rise over D1 Ab markers: Baseline negative vaccine arm by sex assigned at birth."}
+```{r, fig.cap = "(Mock data) Boxplots of D29 fold-rise over D1 Ab markers: Baseline negative vaccine arm by sex assigned at birth.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0("boxplots_Delta29overB_BaselineNeg_trt_Vaccine_by_sex_",
@@ -1203,7 +1203,7 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Boxplots of D57 fold-rise over D1 Ab markers: Baseline negative vaccine arm by sex assigned at birth."}
+```{r, fig.cap = "(Mock data) Boxplots of D57 fold-rise over D1 Ab markers: Baseline negative vaccine arm by sex assigned at birth.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0("boxplots_Delta57overB_BaselineNeg_trt_Vaccine_by_sex_",
@@ -1211,7 +1211,7 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Boxplots of D29 Ab markers: Baseline negative vaccine arm by age and sex assigned at birth."}
+```{r, fig.cap = "(Mock data) Boxplots of D29 Ab markers: Baseline negative vaccine arm by age and sex assigned at birth.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0("boxplots_Day29_BaselineNeg_trt_vaccine_by_age_x_sex_group_",
@@ -1219,7 +1219,7 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Boxplots of D57 Ab markers: Baseline negative vaccine arm by age and sex assigned at birth."}
+```{r, fig.cap = "(Mock data) Boxplots of D57 Ab markers: Baseline negative vaccine arm by age and sex assigned at birth.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0("boxplots_Day57_BaselineNeg_trt_vaccine_by_age_x_sex_group_",
@@ -1243,7 +1243,7 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Boxplots of D29 Ab markers: Baseline negative vaccine arm by ethnicity."}
+```{r, fig.cap = "(Mock data) Boxplots of D29 Ab markers: Baseline negative vaccine arm by ethnicity.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0("boxplots_Day29_BaselineNeg_trt_vaccine_by_ethnicity_",
@@ -1251,7 +1251,7 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Boxplots of D57 Ab markers: Baseline negative vaccine arm by ethnicity."}
+```{r, fig.cap = "(Mock data) Boxplots of D57 Ab markers: Baseline negative vaccine arm by ethnicity.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0("boxplots_Day57_BaselineNeg_trt_vaccine_by_ethnicity_",
@@ -1275,7 +1275,7 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Boxplots of D29 Ab markers: Baseline negative vaccine arm by race."}
+```{r, fig.cap = "(Mock data) Boxplots of D29 Ab markers: Baseline negative vaccine arm by race.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0("boxplots_Day29_BaselineNeg_trt_vaccine_by_race_",
@@ -1283,7 +1283,7 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Boxplots of D57 Ab markers: Baseline negative vaccine arm by race."}
+```{r, fig.cap = "(Mock data) Boxplots of D57 Ab markers: Baseline negative vaccine arm by race.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0("boxplots_Day57_BaselineNeg_trt_vaccine_by_race_",
@@ -1307,7 +1307,7 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Boxplots of D29 Ab markers: Baseline negative vaccine arm by dichotomous classification of race and ethnic group."}
+```{r, fig.cap = "(Mock data) Boxplots of D29 Ab markers: Baseline negative vaccine arm by dichotomous classification of race and ethnic group.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0("boxplots_Day29_BaselineNeg_trt_vaccine_by_minority_group_",
@@ -1315,7 +1315,7 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Boxplots of D57 Ab markers: Baseline negative vaccine arm by dichotomous classification of race and ethnic group."}
+```{r, fig.cap = "(Mock data) Boxplots of D57 Ab markers: Baseline negative vaccine arm by dichotomous classification of race and ethnic group.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0("boxplots_Day57_BaselineNeg_trt_vaccine_by_minority_group_",
@@ -1339,7 +1339,7 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Boxplots of D29 Ab markers: Baseline negative vaccine arm by age and dichotomous classification of race and ethnic group."}
+```{r, fig.cap = "(Mock data) Boxplots of D29 Ab markers: Baseline negative vaccine arm by age and dichotomous classification of race and ethnic group.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0("boxplots_Day29_BaselineNeg_trt_vaccine_by_age_x_minority_",
@@ -1347,7 +1347,7 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Boxplots of D57 Ab markers: Baseline negative vaccine arm by age and dichotomous classification of race and ethnic group."}
+```{r, fig.cap = "(Mock data) Boxplots of D57 Ab markers: Baseline negative vaccine arm by age and dichotomous classification of race and ethnic group.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0("boxplots_Day57_BaselineNeg_trt_vaccine_by_age_x_minority_",
@@ -1371,7 +1371,7 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Boxplots of D29 Ab markers: baseline positive vaccine arm by age group."}
+```{r, fig.cap = "(Mock data) Boxplots of D29 Ab markers: baseline positive vaccine arm by age group.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0("boxplots_Day29_BaselinePos_trt_vaccine_by_age_group_",
@@ -1379,7 +1379,7 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Boxplots of D57 Ab markers: baseline positive vaccine arm by age group."}
+```{r, fig.cap = "(Mock data) Boxplots of D57 Ab markers: baseline positive vaccine arm by age group.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0("boxplots_Day57_BaselinePos_trt_vaccine_by_age_group_",
@@ -1403,7 +1403,7 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Boxplots of D29 Ab markers: baseline positive vaccine arm by high-risk condition."}
+```{r, fig.cap = "(Mock data) Boxplots of D29 Ab markers: baseline positive vaccine arm by high-risk condition.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0("boxplots_Day29_BaselinePos_trt_vaccine_by_risk_group_",
@@ -1411,7 +1411,7 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Boxplots of D57 Ab markers: baseline positive vaccine arm by high-risk condition."}
+```{r, fig.cap = "(Mock data) Boxplots of D57 Ab markers: baseline positive vaccine arm by high-risk condition.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0("boxplots_Day57_BaselinePos_trt_vaccine_by_risk_group_",
@@ -1435,7 +1435,7 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Boxplots of D29 Ab markers: baseline positive vaccine arm by age and high-risk condition."}
+```{r, fig.cap = "(Mock data) Boxplots of D29 Ab markers: baseline positive vaccine arm by age and high-risk condition.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0("boxplots_Day29_BaselinePos_trt_vaccine_by_age_x_risk_group_",
@@ -1443,7 +1443,7 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Boxplots of D57 Ab markers: baseline positive vaccine arm by age and high-risk condition."}
+```{r, fig.cap = "(Mock data) Boxplots of D57 Ab markers: baseline positive vaccine arm by age and high-risk condition.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0("boxplots_Day57_BaselinePos_trt_vaccine_by_age_x_risk_group_",
@@ -1467,7 +1467,7 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Boxplots of D29 Ab markers: baseline positive vaccine arm by sex assigned at birth."}
+```{r, fig.cap = "(Mock data) Boxplots of D29 Ab markers: baseline positive vaccine arm by sex assigned at birth.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0("boxplots_Day29_BaselinePos_trt_vaccine_by_sex_",
@@ -1475,7 +1475,7 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Boxplots of D57 Ab markers: baseline positive vaccine arm by sex assigned at birth."}
+```{r, fig.cap = "(Mock data) Boxplots of D57 Ab markers: baseline positive vaccine arm by sex assigned at birth.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0("boxplots_Day57_BaselinePos_trt_vaccine_by_sex_",
@@ -1499,7 +1499,7 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Boxplots of D29 Ab markers: baseline positive vaccine arm by age and sex assigned at birth."}
+```{r, fig.cap = "(Mock data) Boxplots of D29 Ab markers: baseline positive vaccine arm by age and sex assigned at birth.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0("boxplots_Day29_BaselinePos_trt_vaccine_by_age_x_sex_group_",
@@ -1507,7 +1507,7 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Boxplots of D57 Ab markers: baseline positive vaccine arm by age and sex assigned at birth."}
+```{r, fig.cap = "(Mock data) Boxplots of D57 Ab markers: baseline positive vaccine arm by age and sex assigned at birth.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0("boxplots_Day57_BaselinePos_trt_vaccine_by_age_x_sex_group_",
@@ -1531,7 +1531,7 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Boxplots of D29 Ab markers: baseline positive vaccine arm by ethnicity."}
+```{r, fig.cap = "(Mock data) Boxplots of D29 Ab markers: baseline positive vaccine arm by ethnicity.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0("boxplots_Day29_BaselinePos_trt_vaccine_by_ethnicity_",
@@ -1539,7 +1539,7 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Boxplots of D57 Ab markers: baseline positive vaccine arm by ethnicity."}
+```{r, fig.cap = "(Mock data) Boxplots of D57 Ab markers: baseline positive vaccine arm by ethnicity.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0("boxplots_Day57_BaselinePos_trt_vaccine_by_ethnicity_",
@@ -1563,7 +1563,7 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Boxplots of D29 Ab markers: baseline positive vaccine arm by race."}
+```{r, fig.cap = "(Mock data) Boxplots of D29 Ab markers: baseline positive vaccine arm by race.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0("boxplots_Day29_BaselinePos_trt_vaccine_by_race_",
@@ -1571,7 +1571,7 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Boxplots of D57 Ab markers: baseline positive vaccine arm by race."}
+```{r, fig.cap = "(Mock data) Boxplots of D57 Ab markers: baseline positive vaccine arm by race.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0("boxplots_Day57_BaselinePos_trt_vaccine_by_race_",
@@ -1595,7 +1595,7 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Boxplots of D29 Ab markers: baseline positive vaccine arm by dichotomous classification of race and ethnic group."}
+```{r, fig.cap = "(Mock data) Boxplots of D29 Ab markers: baseline positive vaccine arm by dichotomous classification of race and ethnic group.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0("boxplots_Day29_BaselinePos_trt_vaccine_by_minority_group_",
@@ -1603,7 +1603,7 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Boxplots of D57 Ab markers: baseline positive vaccine arm by dichotomous classification of race and ethnic group."}
+```{r, fig.cap = "(Mock data) Boxplots of D57 Ab markers: baseline positive vaccine arm by dichotomous classification of race and ethnic group.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0("boxplots_Day57_BaselinePos_trt_vaccine_by_minority_group_",
@@ -1627,7 +1627,7 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Boxplots of D29 Ab markers: baseline positive vaccine arm by age and dichotomous classification of race and ethnic group."}
+```{r, fig.cap = "(Mock data) Boxplots of D29 Ab markers: baseline positive vaccine arm by age and dichotomous classification of race and ethnic group.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0("boxplots_Day29_BaselinePos_trt_vaccine_by_age_x_minority_",
@@ -1635,7 +1635,7 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Boxplots of D57 Ab markers: baseline positive vaccine arm by age and dichotomous classification of race and ethnic group."}
+```{r, fig.cap = "(Mock data) Boxplots of D57 Ab markers: baseline positive vaccine arm by age and dichotomous classification of race and ethnic group.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0("boxplots_Day57_BaselinePos_trt_vaccine_by_age_x_minority_",

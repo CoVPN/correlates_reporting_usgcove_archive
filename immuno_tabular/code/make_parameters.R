@@ -36,13 +36,13 @@ lnAb_v <- levels(interaction(visits, lnAb, sep = ""))
 labels.assays <- expand.grid(
   time = rownames(labels.assays.long),
   endpoint = colnames(labels.assays.long),
-  stringsAsFactors = F
+  stringsAsFactors = FALSE
 ) %>%
   rowwise() %>%
   mutate(
     label.long = labels.assays.long[time, endpoint],
     label.short = labels.assays.short[endpoint],
-    Endpoint = strsplit(label.long, ": ", fixed = T)[[1]][1],
+    Endpoint = strsplit(label.long, ": ", fixed = TRUE)[[1]][1],
     Visit = strsplit(label.long, ": ", fixed = T)[[1]][2],
     colname = paste0(time, endpoint)
   )

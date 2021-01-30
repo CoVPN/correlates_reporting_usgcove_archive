@@ -2,12 +2,17 @@
 
 ```{r knitr, echo = FALSE, message = FALSE, warning = FALSE}
 here::i_am("immuno_tabular/report.Rmd")
-source(here::here("immuno_tabular", "code", "make_functions.R"))
-load(here::here("immuno_tabular", "output", "tables.Rdata"))
+#source(here::here("immuno_tabular", "code", "make_functions.R"))
+#source(here::here("immuno_tabular", "code", "make_parameters.R"))
+load(here::here("immuno_tabular", "output", "Tables.Rdata"))
+load(here::here("immuno_tabular", "data_clean", "params.Rdata"))
+
+library(knitr)
+library(kableExtra)
+library(tidyverse)
 
 # Determine output document type.
-doctype <- opts_knit$get("rmarkdown.pandoc.to")
-
+doctype <- knitr::opts_knit$get("rmarkdown.pandoc.to")
 tab_v <- c("Baseline", "Visit", "Endpoint", "N", "Responder")
 ```
 

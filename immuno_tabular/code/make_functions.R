@@ -7,11 +7,11 @@
 #' @examples
 #' getLLOQ("bindSpike")
 .getLLOQ <- function(x) {
-  if (grepl("bind", x, fixed = T)) {
+  if (grepl("bind", x, fixed = TRUE)) {
     bAb_lloq
-  } else if (grepl("50", x, fixed = T)) {
+  } else if (grepl("50", x, fixed = TRUE)) {
     nAb50_lloq
-  } else if (grepl("80", x, fixed = T)) {
+  } else if (grepl("80", x, fixed = TRUE)) {
     nAb80_lloq
   }
 }

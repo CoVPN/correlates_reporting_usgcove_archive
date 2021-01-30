@@ -145,6 +145,7 @@ for (bserostatus in 0:1) {
   )
 }
 
+
 #-----------------------------------------------
 # RCDF PLOTS
 #-----------------------------------------------
@@ -252,7 +253,7 @@ for (day in c("29", "57")) {
 #   stratified by the treatment group.
 #-----------------------------------------------
 
-for (tt in 2:length(times)) {
+for (tt in seq_along(times)) {
   for (bserostatus in 1:2) {
     for (trt in 1:2) {
       covid_corr_scatter_facets(
@@ -293,20 +294,19 @@ for (tt in 2:length(times)) {
 for (bstatus in 1:2) {
   for (tt in seq_along(times)) {
     covid_corr_boxplot_facets(
-      plot_dat = subset(dat.long.twophase.sample,
+      plot_dat = subset(dat.long.twophase.sample, 
                         Bserostatus == bstatus.labels[bstatus]),
-      x = "Trt",
-      y = times[tt],
+      x = "Trt", 
+      y = times[tt], 
       color = "Trt",
-      facet_by = "assay",
-      plot_LLOQ = (tt <= 3),
+      facet_by = "assay", 
+      plot_LLOQ = (tt <= 3), 
       LLOQ = LLOQ,
       legend = c("Placebo", "Vaccine"),
       axis_titles_y = labels.axis[tt, ] %>% unlist,
       panel_titles = labels.title2[tt, ] %>% unlist,
-      filename = paste0(save.results.to, "/boxplots_", times[tt], "_x_trt_",
-                        bstatus.labels.2[bstatus], "_", study.name, ".png")
-    )
+      filename = paste0(save.results.to, "/boxplots_", times[tt], "_x_trt_", bstatus.labels.2[bstatus],
+                        "_", study.name, ".png"))
   }
 }
 
@@ -332,6 +332,6 @@ for (trt in 1:2) {
       filename = paste0(save.results.to, "/boxplots_", times[tt],
                         "_x_bstatus_", c("placebo_arm_", "vaccine_arm_")[trt],
                         study.name, ".png")
-    )
+
   }
 }

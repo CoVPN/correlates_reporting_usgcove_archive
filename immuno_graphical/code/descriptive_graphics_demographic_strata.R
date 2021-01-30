@@ -38,7 +38,7 @@ dat.twophase.sample <- readRDS(here("data_clean", "twophase_data.rds"))
 ## plot for each treatment group by baseline status
 ## ============================================================================
 
-for (tt in 1:5) {
+for (tt in seq_len(length(times))) {
   for (trt in 1:2) {
     for (bstatus in 1:2) {
       subdat <- subset(dat.long.twophase.sample,

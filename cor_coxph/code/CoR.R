@@ -51,6 +51,8 @@ for (a in assays) {
         write(paste0(labels.axis[1,a], " [", concatList(round(q.a, 2), ", "), ")%"), file=paste0(save.results.to, "cutpoints_",t,a, "_"%.%study.name))
     }
 }
+#
+dat.mock.vacc.seroneg.5 <- dat.mock.vacc.seroneg.subsample[["cases_5"]]
 
 
 ####################################################################################################
@@ -812,14 +814,15 @@ dev.off()
 # sensitivity study to the number of cases
 ####################################################################################################
 
-dat.list=list(dat.mock.vacc.seroneg, dat.mock.vacc.seroneg.40, dat.mock.vacc.seroneg.30, dat.mock.vacc.seroneg.25, dat.mock.vacc.seroneg.20, dat.mock.vacc.seroneg.15, dat.mock.vacc.seroneg.10, dat.mock.vacc.seroneg.5)
+dat.list=c(list(dat.mock.vacc.seroneg), rev(dat.mock.vacc.seroneg.subsample))
+names(dat.list)=c(nrow(subset(dat.mock.vacc.seroneg,TwophasesampInd==1 & EventIndPrimaryD57==1)),40,30,25,20,15,10,5)%.%" cases"
+
 fit.1=lapply(dat.list, function (data) {
     f= update(form.0, ~.+Day57pseudoneutid80)
     design<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd, data=data)
     svycoxph(f, design=design) 
 })
 tab.sens.1=getFormattedSummary(fit.1, exp=T, robust=T); tab.sens.1
-colnames(tab.sens.1)=c(66,40,30,25,20,15,10,5)%.%" cases"
 
 tabs=list(t(tab.sens.1)[,1:3], t(tab.sens.1)[,4:(1+p.cov),drop=F]); names(tabs)=c("","")
 mytex(tabs, file.name="CoR_Day57pseudoneutid80_sens_noCases_"%.%study.name, input.foldername=save.results.to, align="c", save2input.only=TRUE)

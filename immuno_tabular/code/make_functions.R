@@ -58,10 +58,10 @@ setResponder <- function(data, bl, post, folds = c(2, 4), lloq,
   data <- cbind(data, foldsInd)
   data[, paste0(post, "Resp")] <-
     ifelse((data[, bl] < log10(lloq) & data[, post] > log10(lloq)) |
-    (data[, bl] >= log10(lloq) & data[, paste0(post, "FR", responderFR)] == 1),
-  1,
-  0
-  )
+      (data[, bl] >= log10(lloq) & data[, paste0(post, "FR", responderFR)] == 1),
+    1,
+    0
+    )
   return(select_at(data, c(paste0(post, "Resp"), paste0(post, "FR", folds))))
 }
 

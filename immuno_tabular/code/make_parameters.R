@@ -27,8 +27,10 @@ pnAb <- grep("pseudo", names(labels.assays.short), value = TRUE)
 # c("liveneutid50", "liveneutid80")
 lnAb <- grep("liveneut", names(labels.assays.short), value = TRUE)
 
-visits <- rownames(labels.assays.long)[!grepl("Delta",
-                                              rownames(labels.assays.long))]
+visits <- rownames(labels.assays.long)[!grepl(
+  "Delta",
+  rownames(labels.assays.long)
+)]
 bAb_v <- levels(interaction(visits, bAb, sep = ""))
 pnAb_v <- levels(interaction(visits, pnAb, sep = ""))
 lnAb_v <- levels(interaction(visits, lnAb, sep = ""))
@@ -47,11 +49,15 @@ labels.assays <- expand.grid(
     colname = paste0(time, endpoint)
   )
 
-resp.lb <- expand.grid(time = visits, endpoint = c(bAb, pnAb, lnAb),
-                       ind = c("FR2", "FR4", "Resp"), stringsAsFactors = F) %>%
-  mutate(Ind = case_when(ind == "FR2" ~ "2-Fold Rise",
-                         ind == "FR4" ~ "4-Fold Rise",
-                         ind == "Resp" ~ "Responder")) %>%
+resp.lb <- expand.grid(
+  time = visits, endpoint = c(bAb, pnAb, lnAb),
+  ind = c("FR2", "FR4", "Resp"), stringsAsFactors = F
+) %>%
+  mutate(Ind = case_when(
+    ind == "FR2" ~ "2-Fold Rise",
+    ind == "FR4" ~ "4-Fold Rise",
+    ind == "Resp" ~ "Responder"
+  )) %>%
   unite("mag_cat", c(time, endpoint), sep = "", remove = FALSE) %>%
   unite("resp_cat", c(time, endpoint, ind), sep = "", remove = FALSE) %>%
   # Remove Response/Fold-Rise Indicators at Baseline

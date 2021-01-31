@@ -1,6 +1,6 @@
 Package: covpncorrelates
 Title: CoVPN COVID-19 Correlates Analyses
-Version: 0.0.2
+Version: 0.0.3
 Authors@R: c(
     person("CoVPN Biostatistics", "Team", email = "",
            role = c("aut", "cre", "cph"))
@@ -44,7 +44,7 @@ Suggests:
   ranger
 Remotes:
   github::rstudio/bookdown,
-  github::youyifong/CovidCorrSAP/R_packages/COVIDcorr,
+  github::CoVPN/correlates_mockdata,
   github::tlverse/hal9001@master,
   github::tlverse/delayed@master,
   github::tlverse/origami@master,

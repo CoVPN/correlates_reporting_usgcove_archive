@@ -80,19 +80,19 @@ Cutpoints:
 <!-- \end{table} -->
 
 
-\begin{table}[H]
-    \setlength{\tabcolsep}{.5ex}
-    \input{\pathCoRoutput/CoR_Day57pseudoneutid80_sens_noCases_\studyname}
-\caption{CoR models for Day 57 pseudo neut ID80 among baseline seronegative vaccine recipients. Each row corresponds to one Cox model fitted by survey::svycoxph.For each model, a different dataset that keeps a random subset of the cases is used. The original dataset has 66 cases.}
-    \label{tab:CoR_Day57pseudoneutid80_sens_noCases_\studyname}
-\end{table}
+<!-- \begin{table}[H] -->
+<!--     \setlength{\tabcolsep}{.5ex} -->
+<!--     \input{\pathCoRoutput/CoR_Day57pseudoneutid80_sens_noCases_\studyname} -->
+<!-- \caption{CoR models for Day 57 pseudo neut ID80 among baseline seronegative vaccine recipients. Each row corresponds to one Cox model fitted by survey::svycoxph.For each model, a different dataset that keeps a random subset of the cases is used. The original dataset has 66 cases.} -->
+<!--     \label{tab:CoR_Day57pseudoneutid80_sens_noCases_\studyname} -->
+<!-- \end{table} -->
 
-\begin{table}[H]
-    \setlength{\tabcolsep}{.5ex}
-    \input{\pathCoRoutput/CoR_Day57pseudoneutid80_5cases_\studyname}
-\caption{CoR models for Day 57 pseudo neut ID80 among baseline seronegative vaccine recipients. Each row corresponds to one Cox model fitted by survey::svycoxph.For each model, a different dataset that keeps a random subset of 5 cases is used.}
-    \label{tab:CoR_Day57pseudoneutid80_5cases_\studyname}
-\end{table}
+<!-- \begin{table}[H] -->
+<!--     \setlength{\tabcolsep}{.5ex} -->
+<!--     \input{\pathCoRoutput/CoR_Day57pseudoneutid80_5cases_\studyname} -->
+<!-- \caption{CoR models for Day 57 pseudo neut ID80 among baseline seronegative vaccine recipients. Each row corresponds to one Cox model fitted by survey::svycoxph.For each model, a different dataset that keeps a random subset of 5 cases is used.} -->
+<!--     \label{tab:CoR_Day57pseudoneutid80_5cases_\studyname} -->
+<!-- \end{table} -->
 
 
 <!-- \begin{table}[H] -->
@@ -156,11 +156,11 @@ Cutpoints:
     \caption{Forest plots of hazard ratios of Day 57 pseudo neut ID50 markers among baseline seronegative vaccine recipients (top row) and each of the 3 randomization strata with 95\% confidence intervals.}
 \end{figure}
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=1\textwidth]{\pathCoRoutput/hr_forest_liveneutmn50_\studyname}
-    \caption{Forest plots of hazard ratios of Day 57 live neut MN50 markers among baseline seronegative vaccine recipients (top row) and each of the 3 randomization strata with 95\% confidence intervals.}
-\end{figure}
+<!-- \begin{figure}[H] -->
+<!--     \centering -->
+<!--     \includegraphics[width=1\textwidth]{\pathCoRoutput/hr_forest_liveneutmn50_\studyname} -->
+<!--     \caption{Forest plots of hazard ratios of Day 57 live neut MN50 markers among baseline seronegative vaccine recipients (top row) and each of the 3 randomization strata with 95\% confidence intervals.} -->
+<!-- \end{figure} -->
 
 \begin{figure}[H]
     \centering
@@ -190,11 +190,11 @@ Cutpoints:
     \caption{Forest plots of hazard ratios of Day 57 pseudo neut ID50 markers among baseline seronegative vaccine recipients (top row) and eight subpopulations (row 2-9) with 95\% confidence intervals.}
 \end{figure}
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=1\textwidth]{\pathCoRoutput/hr_forest_marginal_liveneutmn50_\studyname}
-    \caption{Forest plots of hazard ratios of Day 57 live neut MN50 markers among baseline seronegative vaccine recipients (top row) and eight subpopulations (row 2-9) with 95\% confidence intervals.}
-\end{figure}
+<!-- \begin{figure}[H] -->
+<!--     \centering -->
+<!--     \includegraphics[width=1\textwidth]{\pathCoRoutput/hr_forest_marginal_liveneutmn50_\studyname} -->
+<!--     \caption{Forest plots of hazard ratios of Day 57 live neut MN50 markers among baseline seronegative vaccine recipients (top row) and eight subpopulations (row 2-9) with 95\% confidence intervals.} -->
+<!-- \end{figure} -->
 
 \begin{figure}[H]
     \centering

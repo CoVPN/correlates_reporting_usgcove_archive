@@ -22,7 +22,8 @@ library(Hmisc)# wtd.quantile, biconf
 library(forestplot)
 library(svyVGAM) # Firth penalized glm
 save.results.to="../output/"; if (!dir.exists(save.results.to))  dir.create(save.results.to)
-assays=c("bindSpike","bindRBD","pseudoneutid50","liveneutmn50","pseudoneutid80")
+#assays=c("bindSpike","bindRBD","pseudoneutid50","liveneutmn50","pseudoneutid80")
+assays=c("bindSpike","bindRBD","pseudoneutid50","pseudoneutid80")
 .mfrow=if(length(assays)==4) c(2,2) else if(length(assays)==5) c(3,2) else stop("pls redefine .mfrows")
 trt.labels=c("Placebo","Vaccine")
 bstatus.labels=c("Baseline Neg","Pos")

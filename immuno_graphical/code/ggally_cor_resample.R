@@ -9,20 +9,26 @@ spearman_resample <- function(x, y, strata, weight, B = 200) {
 
   cor_dat <- cbind(data.frame(x = x, y = y), strata_dummy[, 1:(nstrata - 1)])
   fml <- as.formula(paste0("y | x ~ ", paste0("strata", 1:(nstrata - 1),
-                                              collapse = "+")))
+    collapse = "+"
+  )))
 
   corvec <- 1:B * NA
 
   for (bb in 1:B) {
     resamp <- sample.int(n = n, replace = TRUE)
     cor_dat_resamp <- cor_dat[resamp, ]
-    corObj <- try(partial_Spearman(formula = fml, data = cor_dat_resamp,
-                                   fit.x = "lm", fit.y = "lm")$TS$TB$ts,
-                  silent = TRUE)
+    corObj <- try(partial_Spearman(
+      formula = fml, data = cor_dat_resamp,
+      fit.x = "lm", fit.y = "lm"
+    )$TS$TB$ts,
+    silent = TRUE
+    )
     corObj <- ifelse(class(corObj) == "try-error",
-                     round(cor(cor_dat_resamp$x, cor_dat_resamp$y,
-                               method = "spearman"), 2),
-                     corObj)
+      round(cor(cor_dat_resamp$x, cor_dat_resamp$y,
+        method = "spearman"
+      ), 2),
+      corObj
+    )
     corvec[bb] <- corObj
   }
   mean(corvec, na.rm = TRUE)
@@ -30,35 +36,34 @@ spearman_resample <- function(x, y, strata, weight, B = 200) {
 
 # resamping-based correlation, used in ggplots, allowing for strata
 ggally_statistic_resample <- function(
-  data,
-  mapping,
-  B = 200,
-  strata = NULL,
-  weight = NULL,
-  text_fn,
-  title,
-  na.rm = NA,
-  display_grid = FALSE,
-  justify_labels = "right",
-  justify_text = "left",
-  sep = ": ",
-  family = "mono",
-  title_args = list(),
-  group_args = list(),
-  align_percent = 0.5,
-  title_hjust = 0.5,
-  group_hjust = 0.5
-) {
+                                      data,
+                                      mapping,
+                                      B = 200,
+                                      strata = NULL,
+                                      weight = NULL,
+                                      text_fn,
+                                      title,
+                                      na.rm = NA,
+                                      display_grid = FALSE,
+                                      justify_labels = "right",
+                                      justify_text = "left",
+                                      sep = ": ",
+                                      family = "mono",
+                                      title_args = list(),
+                                      group_args = list(),
+                                      align_percent = 0.5,
+                                      title_hjust = 0.5,
+                                      group_hjust = 0.5) {
   set_if_not_there <- function(obj, key, value) {
     obj <- as.list(obj)
-    #if (! "family" %in% rlang::names2(obj)) {
+    # if (! "family" %in% rlang::names2(obj)) {
     #  obj$family <- family
-    #}
+    # }
     obj
   }
 
-  #title_args <- set_if_not_there(title_args, "family", family)
-  #group_args <- set_if_not_there(group_args, "family", family)
+  # title_args <- set_if_not_there(title_args, "family", family)
+  # group_args <- set_if_not_there(group_args, "family", family)
 
   title_args <- set_if_not_there(title_args, "hjust", title_hjust)
   group_args <- set_if_not_there(group_args, "hjust", group_hjust)
@@ -130,8 +135,10 @@ ggally_statistic_resample <- function(
   # if there is a color grouping...
   if (!is.null(colorData) && !inherits(colorData, "AsIs")) {
     cord <- ddply(
-      data.frame(x = xData, y = yData, st = strataData, wt = weightData,
-                 color = colorData),
+      data.frame(
+        x = xData, y = yData, st = strataData, wt = weightData,
+        color = colorData
+      ),
       "color",
       function(dt) {
         text_fn(dt$x, dt$y, dt$st, dt$wt, B)
@@ -143,7 +150,7 @@ ggally_statistic_resample <- function(
     lev <- levels(as.factor(colorData))
     ord <- rep(-1, nrow(cord))
     for (i in 1:nrow(cord)) {
-      for (j in seq_along(lev)){
+      for (j in seq_along(lev)) {
         if (identical(as.character(cord$color[i]), as.character(lev[j]))) {
           ord[i] <- j
         }
@@ -161,12 +168,12 @@ ggally_statistic_resample <- function(
     # title
     ggally_text_args <- append(
       list(
-        label   = str_c(title, sep, text_fn(xVal, yVal, strataVal, wVal, B)),
+        label = str_c(title, sep, text_fn(xVal, yVal, strataVal, wVal, B)),
         mapping = mapping,
-        xP      = 0.5,
-        yP      = 0.9,
-        xrange  = xrange,
-        yrange  = yrange
+        xP = 0.5,
+        yP = 0.9,
+        xrange = xrange,
+        yrange = yrange
       ),
       title_args
     )
@@ -177,7 +184,8 @@ ggally_statistic_resample <- function(
     yPos <- seq(
       from = 0.9,
       to = 0.2,
-      length.out = nrow(cord) + 1)
+      length.out = nrow(cord) + 1
+    )
     yPos <- yPos * diff(yrange) + min(yrange, na.rm = TRUE)
     yPos <- yPos[-1]
 
@@ -201,8 +209,10 @@ ggally_statistic_resample <- function(
   } else {
     ggally_text_args <- append(
       list(
-        label = paste0(title, sep, text_fn(xVal, yVal, strataVal,
-                                           weightVal, B), collapse = ""),
+        label = paste0(title, sep, text_fn(
+          xVal, yVal, strataVal,
+          weightVal, B
+        ), collapse = ""),
         mapping,
         xP = 0.5,
         yP = 0.5,
@@ -231,25 +241,24 @@ ggally_statistic_resample <- function(
 
 
 ggally_cor_resample <- function(
-  data,
-  mapping,
-  strata,
-  weight,
-  B = 200,
-  ...,
-  stars = TRUE,
-  method = "pearson",
-  use = "complete.obs",
-  display_grid = FALSE,
-  digits = 3,
-  title_args = list(...),
-  group_args = list(...),
-  justify_labels = "right",
-  align_percent = 0.5,
-  title = "Corr",
-  alignPercent = warning("deprecated. Use `align_percent`"),
-  displayGrid = warning("deprecated. Use `display_grid`")
-) {
+                                data,
+                                mapping,
+                                strata,
+                                weight,
+                                B = 200,
+                                ...,
+                                stars = TRUE,
+                                method = "pearson",
+                                use = "complete.obs",
+                                display_grid = FALSE,
+                                digits = 3,
+                                title_args = list(...),
+                                group_args = list(...),
+                                justify_labels = "right",
+                                align_percent = 0.5,
+                                title = "Corr",
+                                alignPercent = warning("deprecated. Use `align_percent`"),
+                                displayGrid = warning("deprecated. Use `display_grid`")) {
   if (!missing(alignPercent)) {
     warning("`alignPercent` is deprecated. Please use `align_percent` if alignment still needs to be adjusted")
     align_percent <- alignPercent
@@ -295,23 +304,33 @@ ggally_cor_resample <- function(
         suppressWarnings(st_resamp_dummy <-
           dummies::dummy(st_resamp, sep = "_"))
 
-        resamp_data <- cbind(data.frame(x = x_resamp, y = y_resamp),
-                             st_resamp_dummy[, 1:(ncol(st_resamp_dummy) - 1)])
+        resamp_data <- cbind(
+          data.frame(x = x_resamp, y = y_resamp),
+          st_resamp_dummy[, 1:(ncol(st_resamp_dummy) - 1)]
+        )
         names(resamp_data)[3:ncol(resamp_data)] <-
           paste0("strata", 1:(ncol(st_resamp_dummy) - 1))
 
-        fml <- formula(paste0("y | x ~ ",
-                              paste0("strata", 1:(ncol(st_resamp_dummy) - 1),
-                                     collapse = "+")))
-        corObj <- try(partial_Spearman(formula = fml, data = resamp_data,
-                                       fit.x = "lm", fit.y = "lm")$TS$TB$ts,
-                      silent = TRUE)
+        fml <- formula(paste0(
+          "y | x ~ ",
+          paste0("strata", 1:(ncol(st_resamp_dummy) - 1),
+            collapse = "+"
+          )
+        ))
+        corObj <- try(partial_Spearman(
+          formula = fml, data = resamp_data,
+          fit.x = "lm", fit.y = "lm"
+        )$TS$TB$ts,
+        silent = TRUE
+        )
 
         # make sure all values have X-many decimal places
         corvec[bb] <- ifelse(class(corObj) == "try-error",
-                             cor(resamp_data$x, resamp_data$y,
-                                 method = method),
-                             corObj)
+          cor(resamp_data$x, resamp_data$y,
+            method = method
+          ),
+          corObj
+        )
       }
       cor_est <- mean(corvec, na.rm = TRUE)
       cor_txt <- formatC(cor_est, digits = digits, format = "f")

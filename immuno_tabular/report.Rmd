@@ -2,25 +2,34 @@
 
 ```{r knitr, echo = FALSE, message = FALSE, warning = FALSE}
 here::i_am("immuno_tabular/report.Rmd")
-source(here::here("immuno_tabular", "code", "make_functions.R"))
-load(here::here("immuno_tabular", "output", "tables.Rdata"))
+# source(here::here("immuno_tabular", "code", "make_functions.R"))
+# source(here::here("immuno_tabular", "code", "make_parameters.R"))
+load(here::here("immuno_tabular", "output", "Tables.Rdata"))
+load(here::here("immuno_tabular", "data_clean", "params.Rdata"))
+
+library(knitr)
+library(kableExtra)
+library(tidyverse)
 
 # Determine output document type.
-doctype <- opts_knit$get("rmarkdown.pandoc.to")
-
+doctype <- knitr::opts_knit$get("rmarkdown.pandoc.to")
 tab_v <- c("Baseline", "Visit", "Endpoint", "N", "Responder")
 ```
 
 ```{r setPage, echo = FALSE, message=FALSE}
-header <-  c("CoVPN COVID-19 Vaccine Efficacy Trial Immunogenicity",
-             "Mock Report",
-             paste("Data as of", format(Sys.Date(), '%B %d, %Y')))
+header <- c(
+  "CoVPN COVID-19 Vaccine Efficacy Trial Immunogenicity",
+  "Mock Report",
+  paste("Data as of", format(Sys.Date(), "%B %d, %Y"))
+)
 header <- paste(header, collapse = "\\\\")
 
-trt_footer <-  c("T1: Vaccination", "P2: Placebo")
-add2footer <- paste("All calculations were weighted by the inverse",
-                    "probability sampling (IPS), defined based on the",
-                    "subcohort sampling strata.")
+trt_footer <- c("T1: Vaccination", "P2: Placebo")
+add2footer <- paste(
+  "All calculations were weighted by the inverse",
+  "probability sampling (IPS), defined based on the",
+  "subcohort sampling strata."
+)
 tbl_num <- 0
 ```
 
@@ -32,43 +41,52 @@ tlf <- list(
   #                             "which measures antibody markers at (Day 1,",
   #                             "Day 29, and Day 57)."))
   respprop = list(
-     table_name = "Responder Rates",
-     table_header = "Responder rates",
-     table_footer = c("Neutralization Responders are defined as participants who had baseline values below the lower limit of quantification (LLOQ) with detectable ID50 neutralization titer above the assay LLOQ, or as participants with baseline values above the LLOQ with a 4-fold increase in ID50.",
-                      "",
-                      "Binding Antibody Responders are defined as participants who had baseline values below the LLOQ with detectable antibody concentration above the assay LLOQ, or as participants with baseline values above the LLOQ with a 4-fold increase in antibody concentration.",
-                      "",
-                      sprintf("bAb LLOQ = %s; nAb ID50 LLOQ = %s; nAb ID80 LLOQ = %s", bAb_lloq, nAb50_lloq, nAb80_lloq))),
-  
-   gmt = c(
-     table_name = "Geometric mean titers",
-     table_header = "Geometric mean titers (GMTs) or geometric mean value of concentrations (GMCs)",
-     table_footer = sprintf("bAb LLOQ = %s; nAb ID50 LLOQ = %s; nAb ID80 LLOQ = %s", bAb_lloq, nAb50_lloq, nAb80_lloq)),
+    table_name = "Responder Rates",
+    table_header = "Responder rates",
+    table_footer = c(
+      "Neutralization Responders are defined as participants who had baseline values below the lower limit of quantification (LLOQ) with detectable ID50 neutralization titer above the assay LLOQ, or as participants with baseline values above the LLOQ with a 4-fold increase in ID50.",
+      "",
+      "Binding Antibody Responders are defined as participants who had baseline values below the LLOQ with detectable antibody concentration above the assay LLOQ, or as participants with baseline values above the LLOQ with a 4-fold increase in antibody concentration.",
+      "",
+      sprintf("bAb LLOQ = %s; nAb ID50 LLOQ = %s; nAb ID80 LLOQ = %s", bAb_lloq, nAb50_lloq, nAb80_lloq)
+    )
+  ),
 
-   gmtr = c(
-     table_name = "Geometric mean titer ratios",
-     table_header = "Geometric mean titer ratios (GMTRs) or geometric mean concentration ratios (GMCRs) between post-vaccinations/pre-vaccination",
-     table_footer = " "),
+  gmt = c(
+    table_name = "Geometric mean titers",
+    table_header = "Geometric mean titers (GMTs) or geometric mean value of concentrations (GMCs)",
+    table_footer = sprintf("bAb LLOQ = %s; nAb ID50 LLOQ = %s; nAb ID80 LLOQ = %s", bAb_lloq, nAb50_lloq, nAb80_lloq)
+  ),
 
-   RofGMTa = c(
-     table_name = "Ratios of GMTs/GMCs",
-     table_header = "Ratios of GMTs/GMCs between the vaccine arm vs. placebo arm, by baseline status",
-     table_footer = " "),
+  gmtr = c(
+    table_name = "Geometric mean titer ratios",
+    table_header = "Geometric mean titer ratios (GMTRs) or geometric mean concentration ratios (GMCRs) between post-vaccinations/pre-vaccination",
+    table_footer = " "
+  ),
 
-   RofGMTb = c(
-     table_name = "Ratios of GMTs/GMCs",
-     table_header = "Ratios of GMTs/GMCs between baseline positive participants vs. negative participants, among the vaccine recipients",
-     table_footer = " "),
+  RofGMTa = c(
+    table_name = "Ratios of GMTs/GMCs",
+    table_header = "Ratios of GMTs/GMCs between the vaccine arm vs. placebo arm, by baseline status",
+    table_footer = " "
+  ),
 
-   RofGMTc = c(
-     table_name = "Ratios of GMTs/GMCs",
-     table_header = "Ratios of GMTs/GMCs between demographic subgroups among the vaccine recipients",
-     table_footer = " "),
+  RofGMTb = c(
+    table_name = "Ratios of GMTs/GMCs",
+    table_header = "Ratios of GMTs/GMCs between baseline positive participants vs. negative participants, among the vaccine recipients",
+    table_footer = " "
+  ),
+
+  RofGMTc = c(
+    table_name = "Ratios of GMTs/GMCs",
+    table_header = "Ratios of GMTs/GMCs between demographic subgroups among the vaccine recipients",
+    table_footer = " "
+  ),
 
   respdiff = c(
     table_name = "Responder Rate differences",
     table_header = "Differences of responder rates between the vaccine arm and the placebo arm",
-    table_footer = " "),
+    table_footer = " "
+  ),
 
   empty = c()
 )
@@ -86,17 +104,20 @@ footer_i <- tlf_labels[["table_footer"]]
 tab_footer <- c(footer_i, "", add2footer, "", trt_footer)
 
 tab0 <- tab_rr %>%
-  mutate(N=as.character(N)) %>%
+  mutate(N = as.character(N)) %>%
   arrange(subgroup, Group, Baseline, Visit, Endpoint) %>%
   group_table(., c("Group", "Baseline", "Visit", "Endpoint", "N"))
 
 kable(tab1 %>% select(-c(name, subgroup)),
-      format = doctype, booktabs = TRUE, longtable = TRUE,
-      caption = title_i) %>%
-  pack_rows(index=table(tab1$subgroup)[levels(tab_rr$subgroup)]) %>%
+  format = doctype, booktabs = TRUE, longtable = TRUE,
+  caption = title_i
+) %>%
+  pack_rows(index = table(tab1$subgroup)[levels(tab_rr$subgroup)]) %>%
   kable_styling(latex_options = "repeat_header") %>%
-  footnote(general = tab_footer, general_title = " ",
-           threeparttable = TRUE, escape = TRUE)
+  footnote(
+    general = tab_footer, general_title = " ",
+    threeparttable = TRUE, escape = TRUE
+  )
 tbl_num <- tbl_num + 1
 ```
 
@@ -112,16 +133,19 @@ footer_i <- tlf_labels[["table_footer"]]
 tab_footer <- c(footer_i, "", add2footer, "", trt_footer)
 
 tab1 <- tab_rr %>%
-  mutate(N=as.character(N)) %>%
+  mutate(N = as.character(N)) %>%
   arrange(subgroup, Group, Baseline, Visit, Endpoint) %>%
   group_table(., c("Group", "Baseline", "Visit", "Endpoint", "N"))
 
 kable(tab1 %>% select(-c(name, subgroup)),
-      format = doctype, booktabs = TRUE, longtable = TRUE, caption=title_i) %>%
-  pack_rows(index=table(tab1$subgroup)[levels(tab_rr$subgroup)]) %>%
+  format = doctype, booktabs = TRUE, longtable = TRUE, caption = title_i
+) %>%
+  pack_rows(index = table(tab1$subgroup)[levels(tab_rr$subgroup)]) %>%
   kable_styling(latex_options = "repeat_header") %>%
-  footnote(general = tab_footer, general_title = " ", threeparttable = TRUE,
-           escape = TRUE)
+  footnote(
+    general = tab_footer, general_title = " ", threeparttable = TRUE,
+    escape = TRUE
+  )
 
 tbl_num <- tbl_num + 1
 ```
@@ -139,18 +163,21 @@ footer_i <- tlf_labels[["table_footer"]]
 
 tab_footer <- c(footer_i, "", add2footer, "", trt_footer)
 
-tab2 <- tab_gm %>% 
-  mutate(N=as.character(N)) %>% 
-  arrange(Group, Baseline, Visit, Endpoint, N) %>% 
-  group_table(., c("Group", "Baseline", "Visit", "Endpoint", "N")) 
+tab2 <- tab_gm %>%
+  mutate(N = as.character(N)) %>%
+  arrange(Group, Baseline, Visit, Endpoint, N) %>%
+  group_table(., c("Group", "Baseline", "Visit", "Endpoint", "N"))
 
 
-kable(tab2 %>% select(-c(subgroup, responder_cat, gm, ci_l, ci_u)), 
-      format = doctype, booktabs = TRUE, longtable = TRUE, caption=title_i) %>%
-  pack_rows(index=table(tab2$subgroup)[levels(tab_gm$subgroup)]) %>% 
+kable(tab2 %>% select(-c(subgroup, responder_cat, gm, ci_l, ci_u)),
+  format = doctype, booktabs = TRUE, longtable = TRUE, caption = title_i
+) %>%
+  pack_rows(index = table(tab2$subgroup)[levels(tab_gm$subgroup)]) %>%
   kable_styling(latex_options = "repeat_header") %>%
-  footnote(general =  tab_footer, general_title = " ", threeparttable = TRUE,
-           escape = TRUE)
+  footnote(
+    general = tab_footer, general_title = " ", threeparttable = TRUE,
+    escape = TRUE
+  )
 
 tbl_num <- tbl_num + 1
 ```
@@ -169,18 +196,21 @@ footer_i <- tlf_labels[["table_footer"]]
 tab_footer <- c(footer_i, "", add2footer, "", trt_footer)
 
 tab3 <- tab_gmr %>%
-  mutate(N=as.character(N)) %>%
-  arrange(Group, Baseline, Visits, Endpoint, N) %>% 
-  group_table(., c("Group", "Baseline", "Visits", "Endpoint", "N")) 
+  mutate(N = as.character(N)) %>%
+  arrange(Group, Baseline, Visits, Endpoint, N) %>%
+  group_table(., c("Group", "Baseline", "Visits", "Endpoint", "N"))
 
 kable(tab3 %>%
-      select(-c(subgroup, responder_cat, t1t2, endpoint, gmr, ci_l, ci_u)),
-      format = doctype, booktabs = TRUE, longtable = TRUE,
-      caption = title_i) %>%
+  select(-c(subgroup, responder_cat, t1t2, endpoint, gmr, ci_l, ci_u)),
+format = doctype, booktabs = TRUE, longtable = TRUE,
+caption = title_i
+) %>%
   kable_styling(latex_options = "repeat_header") %>%
-  pack_rows(index=table(tab3$subgroup)[levels(tab_gm$subgroup)]) %>%
-  footnote(general = tab_footer, general_title = " ", threeparttable = TRUE,
-           escape = TRUE)
+  pack_rows(index = table(tab3$subgroup)[levels(tab_gm$subgroup)]) %>%
+  footnote(
+    general = tab_footer, general_title = " ", threeparttable = TRUE,
+    escape = TRUE
+  )
 
 tbl_num <- tbl_num + 1
 ```
@@ -200,24 +230,29 @@ tab_footer <- c(footer_i, "", add2footer, "", trt_footer)
 
 lineseps <- tab_gmtrA %>%
   group_by(Baseline, Visit) %>%
-  summarise(n=n()) %>%
+  summarise(n = n()) %>%
   pull(n) %>%
-  sapply(function(x)c(rep("",x-1), "\\addlinespace")) %>%
+  sapply(function(x) c(rep("", x - 1), "\\addlinespace")) %>%
   unlist()
 
 tab4 <- tab_gmtrA %>%
-  mutate(N=as.character(N)) %>%
+  mutate(N = as.character(N)) %>%
   arrange(Baseline, Visit, Endpoint, N) %>%
-  group_table(., c("Baseline", "Visit", "Endpoint", "N")) %>% 
+  group_table(., c("Baseline", "Visit", "Endpoint", "N")) %>%
   ungroup()
 
-kable(tab4 %>% select(Baseline, Visit, Endpoint, N, `Ratios of GMT/GMC`,
-                      `95% CI`),
-      format = doctype, booktabs = TRUE, longtable = TRUE, caption = title_i,
-      linesep = lineseps) %>%
+kable(tab4 %>% select(
+  Baseline, Visit, Endpoint, N, `Ratios of GMT/GMC`,
+  `95% CI`
+),
+format = doctype, booktabs = TRUE, longtable = TRUE, caption = title_i,
+linesep = lineseps
+) %>%
   kable_styling(latex_options = "repeat_header") %>%
-  footnote(general = tab_footer, general_title = " ", threeparttable = TRUE,
-           escape = TRUE)
+  footnote(
+    general = tab_footer, general_title = " ", threeparttable = TRUE,
+    escape = TRUE
+  )
 
 tbl_num <- tbl_num + 1
 ```
@@ -245,15 +280,18 @@ lineseps <- tab5 %>%
   group_by(Endpoint) %>%
   summarise(n = n()) %>%
   pull(n) %>%
-  sapply(function(x)c(rep("", x-1), "\\addlinespace")) %>%
+  sapply(function(x) c(rep("", x - 1), "\\addlinespace")) %>%
   unlist()
 
 kable(tab5 %>% select(Visit, Endpoint, N, `Ratios of GMT/GMC`, `95% CI`),
-      format = doctype, booktabs = TRUE, longtable = TRUE,
-      linesep = lineseps, caption = title_i) %>%
+  format = doctype, booktabs = TRUE, longtable = TRUE,
+  linesep = lineseps, caption = title_i
+) %>%
   kable_styling(latex_options = "repeat_header") %>%
-  footnote(general = tab_footer, general_title = " ", threeparttable = TRUE,
-           escape = TRUE)
+  footnote(
+    general = tab_footer, general_title = " ", threeparttable = TRUE,
+    escape = TRUE
+  )
 
 tbl_num <- tbl_num + 1
 ```
@@ -271,28 +309,37 @@ footer_i <- tlf_labels[["table_footer"]]
 tab_footer <- c(footer_i, "", add2footer, "", trt_footer)
 
 tab6 <- tab_gmtrC %>%
-  mutate(N = as.character(N),
-         Group = factor(comp_i, levels = c("Age", "Sex", "High Risk",
-                                         "Ethnicity", "Minority"))) %>% 
-  arrange(Baseline, Group, Visit, Endpoint, N) %>% 
+  mutate(
+    N = as.character(N),
+    Group = factor(comp_i, levels = c(
+      "Age", "Sex", "High Risk",
+      "Ethnicity", "Minority"
+    ))
+  ) %>%
+  arrange(Baseline, Group, Visit, Endpoint, N) %>%
   group_table(., c("Baseline", "Group", "Visit", "Endpoint", "N")) %>%
   ungroup()
 
 lineseps <- tab6 %>%
   group_by(Baseline, Visit, Group, Endpoint) %>%
-  summarise(n=n()) %>%
+  summarise(n = n()) %>%
   pull(n) %>%
-  sapply(function(x)c(rep("", x-1), "\\addlinespace")) %>%
+  sapply(function(x) c(rep("", x - 1), "\\addlinespace")) %>%
   unlist()
 
 kable(tab6 %>%
-      select(Baseline, Visit, Group, Endpoint, N, `Ratios of GMT/GMC`,
-             `95% CI`),
-      format = doctype, booktabs = TRUE, longtable = TRUE, caption = title_i,
-      linesep = lineseps) %>%
+  select(
+    Baseline, Visit, Group, Endpoint, N, `Ratios of GMT/GMC`,
+    `95% CI`
+  ),
+format = doctype, booktabs = TRUE, longtable = TRUE, caption = title_i,
+linesep = lineseps
+) %>%
   kable_styling(latex_options = "repeat_header") %>%
-  footnote(general = tab_footer, general_title = " ", threeparttable = TRUE,
-           escape = TRUE)
+  footnote(
+    general = tab_footer, general_title = " ", threeparttable = TRUE,
+    escape = TRUE
+  )
 
 tbl_num <- tbl_num + 1
 ```
@@ -310,7 +357,7 @@ footer_i <- tlf_labels[["table_footer"]]
 
 tab_footer <- c(footer_i, "", add2footer, "", trt_footer)
 
-tab7 <- tab_rrdiff %>% 
+tab7 <- tab_rrdiff %>%
   mutate(N = as.character(N)) %>%
   arrange(subgroup, Baseline, Group, Visit, Endpoint, N) %>%
   group_table(., c("Baseline", "Group", "Visit", "Endpoint", "N")) %>%
@@ -320,20 +367,25 @@ lineseps <- tab7 %>%
   group_by(subgroup, Baseline, Group, Visit, Endpoint) %>%
   summarise(n = n()) %>%
   pull(n) %>%
-  sapply(function(x)c(rep("",x-1), "\\addlinespace")) %>%
+  sapply(function(x) c(rep("", x - 1), "\\addlinespace")) %>%
   unlist()
 
 
 kable(
   tab7 %>%
-    select(Baseline, Group, Visit, Endpoint, N, Responder, `2-Fold Rise`,
-           `4-Fold Rise`),
+    select(
+      Baseline, Group, Visit, Endpoint, N, Responder, `2-Fold Rise`,
+      `4-Fold Rise`
+    ),
   format = doctype, booktabs = TRUE, longtable = TRUE, caption = title_i,
-  linesep = lineseps) %>%
+  linesep = lineseps
+) %>%
   kable_styling(latex_options = "repeat_header") %>%
-  pack_rows(index=table(tab7$subgroup)[levels(tab_rrdiff$subgroup)]) %>%
-  footnote(general = tab_footer, general_title = " ", threeparttable = TRUE,
-           escape = TRUE)
+  pack_rows(index = table(tab7$subgroup)[levels(tab_rrdiff$subgroup)]) %>%
+  footnote(
+    general = tab_footer, general_title = " ", threeparttable = TRUE,
+    escape = TRUE
+  )
 
 tbl_num <- tbl_num + 1
 ```

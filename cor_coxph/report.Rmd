@@ -141,32 +141,35 @@ Cutpoints:
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{\pathCoRoutput/hr_forest_bindSpike_\studyname}
-    \caption{Forest plots of hazard ratios of Day 57 binding Ab to spike markers among baseline seronegative vaccine recipients (top row) and each of the 8 strata within (row 2-9) with 95\% confidence intervals.}
+    \caption{Forest plots of hazard ratios of Day 57 binding Ab to spike markers among baseline seronegative vaccine recipients (top row) and each of the 3 randomization strata with 95\% confidence intervals.}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{\pathCoRoutput/hr_forest_bindRBD_\studyname}
-    \caption{Forest plots of hazard ratios of Day 57 binding Ab to RBD markers among baseline seronegative vaccine recipients (top row) and each of the 8 strata within (row 2-9) with 95\% confidence intervals.}
+    \caption{Forest plots of hazard ratios of Day 57 binding Ab to RBD markers among baseline seronegative vaccine recipients (top row) and each of the 3 randomization strata with 95\% confidence intervals.}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{\pathCoRoutput/hr_forest_pseudoneutid50_\studyname}
-    \caption{Forest plots of hazard ratios of Day 57 pseudo neut ID50 markers among baseline seronegative vaccine recipients (top row) and each of the 8 strata within (row 2-9) with 95\% confidence intervals.}
+    \caption{Forest plots of hazard ratios of Day 57 pseudo neut ID50 markers among baseline seronegative vaccine recipients (top row) and each of the 3 randomization strata with 95\% confidence intervals.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{\pathCoRoutput/hr_forest_liveneutmn50_\studyname}
+    \caption{Forest plots of hazard ratios of Day 57 live neut MN50 markers among baseline seronegative vaccine recipients (top row) and each of the 3 randomization strata with 95\% confidence intervals.}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{\pathCoRoutput/hr_forest_pseudoneutid80_\studyname}
-    \caption{Forest plots of hazard ratios of Day 57 pseudo neut ID80 markers among baseline seronegative vaccine recipients (top row) and each of the 8 strata within (row 2-9) with 95\% confidence intervals.}
+    \caption{Forest plots of hazard ratios of Day 57 pseudo neut ID80 markers among baseline seronegative vaccine recipients (top row) and each of the 3 randomization strata with 95\% confidence intervals.}
 \end{figure}
 
-<!-- \begin{figure}[H] -->
-<!--     \centering -->
-<!--     \includegraphics[width=1\textwidth]{\pathCoRoutput/hr_forest_liveneutid80_\studyname} -->
-<!--     \caption{Forest plots of hazard ratios of Day 57 live neut ID80 markers among baseline seronegative vaccine recipients (top row) and each of the 8 strata within (row 2-9) with 95\% confidence intervals.} -->
-<!-- \end{figure} -->
+
+
 
 
 \begin{figure}[H]
@@ -189,35 +192,14 @@ Cutpoints:
 
 \begin{figure}[H]
     \centering
+    \includegraphics[width=1\textwidth]{\pathCoRoutput/hr_forest_marginal_liveneutmn50_\studyname}
+    \caption{Forest plots of hazard ratios of Day 57 live neut MN50 markers among baseline seronegative vaccine recipients (top row) and eight subpopulations (row 2-9) with 95\% confidence intervals.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
     \includegraphics[width=1\textwidth]{\pathCoRoutput/hr_forest_marginal_pseudoneutid80_\studyname}
     \caption{Forest plots of hazard ratios of Day 57 pseudo neut ID80 markers among baseline seronegative vaccine recipients (top row) and eight subpopulations (row 2-9) with 95\% confidence intervals.}
 \end{figure}
 
-<!-- \begin{figure}[H] -->
-<!--     \centering -->
-<!--     \includegraphics[width=1\textwidth]{\pathCoRoutput/hr_forest_marginal_liveneutid80_\studyname} -->
-<!--     \caption{Forest plots of hazard ratios of Day 57 live neut ID80 markers among baseline seronegative vaccine recipients (top row) and eight subpopulations (row 2-9) with 95\% confidence intervals.} -->
-<!-- \end{figure} -->
 
-
-
-\clearpage
-### Nonlinear association
-
-To explore nonlinear association and threshold modeling, we first fit smoothing spline using the mgcv R package. The estimated degree of freedom is 1, and the fitted curve is shown in Figure \@ref(fig:gam_\studyname). The results suggest no nonlinear trend.
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=1\textwidth]{\pathCoRoutput/gam_\studyname}
-    \caption{GAM fit of risk of infection versus markers. Clinical covariates are adjusted, weights are ignored.}
-    \label{fig:gam_\studyname}
-\end{figure}
-
-
-<!-- We also fit a loess curve and the results are shown in Figure \@ref(fig:binaryloess).  -->
-<!-- \begin{figure}[H] -->
-<!--     \centering -->
-<!--     \includegraphics[width=1\textwidth]{\pathCoRoutput/binaryloess_\studyname} -->
-<!--     \caption{Loess fit of risk of infection versus markers. No clinical covariates are adjusted, weights are passed to the loess function.} -->
-<!--     \label{fig:binaryloess_\studyname} -->
-<!-- \end{figure} -->

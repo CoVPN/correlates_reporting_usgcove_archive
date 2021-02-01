@@ -36,3 +36,9 @@ cor_coxph/output/cutpoints_Delta57overBpseudoneutid50_mock
 cor_coxph/output/cutpoints_Delta57overBpseudoneutid80_mock
 cor_coxph/output/gam_mock.pdf
 cor_coxph/output/timepoints_cum_risk_mock
+cor_coxph/report.pdf
+cor_coxph/output/marginalized_risks_cat_mock.pdf
+cor_coxph/output/cutpoints_Day57liveneutmn50_mock
+cor_coxph/output/cutpoints_Delta57overBliveneutmn50_mock
+cor_coxph/output/hr_forest_liveneutmn50_mock.pdf
+cor_coxph/output/hr_forest_marginal_liveneutmn50_mock.pdf

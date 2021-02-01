@@ -1,11 +1,32 @@
+---
+title: "COVID correlates analysis report CoR"
+shorttitle: "COVID correlates analysis CoR"
+author:
+header-includes:
+   - \usepackage{float}
+date: "`r Sys.Date()`"
+output:
+  bookdown::pdf_document2:
+    citation_package: natbib
+    number_sections: true
+    extra_dependencies: ["caption", "subcaption", "graphicx"]
+    toc: false
+linkcolor: blue
+bibliography: ref.bib
+---
+
+
+<!-- ```{r cor-coxph-setup, echo = FALSE, message = FALSE} -->
+<!-- library(here) -->
+<!-- library(latex2exp) -->
+<!-- here::i_am("cor_coxph/report.Rmd") -->
+<!-- ``` -->
+
+
+\newcommand{\studyname}{mock}
+\newcommand{\pathCoRoutput}{output}
+
 # Univariate CoR: Cox Proportional Hazards Modeling of Relative and Absolute Risk {#cor-coxph}
-
-```{r cor-coxph-setup, echo = FALSE, message = FALSE}
-library(here)
-library(latex2exp)
-here::i_am("cor_coxph/report.Rmd")
-```
-
 
 The main regression model is the Cox proportional hazards model. All plots are made with Cox models fit unless specified otherwise. The trichotomized variables in Table \ref{tab:CoR_D57_univariable_svycoxph_pretty_\studyname} are defined with respect to inverse probability weighted quantiles computed using the Hmisc::wtd.quantile function.
 

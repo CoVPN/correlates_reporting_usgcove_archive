@@ -1,14 +1,14 @@
 # start R in the correlates_report folder or make sure working directory is here
 rm(list=ls())       
     
-# bootstrapping marginalized risks takes about ten min with 20 CPUS. The results are saved in .Rdata files.
-rerun.time.consuming.steps=F
-numCores=30
-B=500# number of bootstrap replicates
+rerun.time.consuming.steps=F # bootstrapping marginalized risks takes about 5 min with 40 CPUS. The results are saved in two .Rdata files.
+numCores=30 # number of cores available on the machine
+B=500 # number of bootstrap replicates
     
 # study.name is used in figure/table file names and printed in tables/figures as well
 study.name="mock"   
-library(COVIDcorr); stopifnot(packageVersion("COVIDcorr")>="2021.1.16")
+library(COVIDcorr); stopifnot(packageVersion("COVIDcorr")>="2021.01.25")
+#remotes::install_github("CoVPN/correlates_mockdata", auth_token="e09062bae8d9a4acf4ba7e7c587c5d3fbe1abd69")
 library(mgcv)
 library(nnet)# multinom, for estimating trichotomous markers probability, make sure this comes after mgcv since mgcv also has multinom
 library(kyotil);       stopifnot(packageVersion("kyotil")>="2021.1.11")
@@ -16,13 +16,14 @@ library(marginalRisk); stopifnot(packageVersion("marginalRisk")>="2021.1.7")
 library(chngpt);       stopifnot(packageVersion("chngpt")>="2020.10.12")
 library(tools) # toTitleCase
 library(survey)
+library(splines)
 library(parallel)
 library(Hmisc)# wtd.quantile, biconf
 library(forestplot)
 library(svyVGAM) # Firth penalized glm
 save.results.to="../output/"; if (!dir.exists(save.results.to))  dir.create(save.results.to)
-assays=c("bindSpike","bindRBD","pseudoneutid50","pseudoneutid80")
-#assays=c("bindSpike","bindRBD","pseudoneutid80","liveneutid80")
+assays=c("bindSpike","bindRBD","pseudoneutid50","liveneutmn50","pseudoneutid80")
+.mfrow=if(length(assays)==4) c(2,2) else if(length(assays)==5) c(3,2) else stop("pls redefine .mfrows")
 trt.labels=c("Placebo","Vaccine")
 bstatus.labels=c("Baseline Neg","Pos")
 max.stratum=max(dat.mock$Bstratum)
@@ -141,10 +142,12 @@ tab=cbind(
     formatDouble(nevents/natrisk, digit=4, remove.leading0=F),
     est, ci, p, overall.p.0, overall.p.1, overall.p.2
 )
-tmp=rbind(c(labels.axis["Day57", assays], labels.axis["Delta57overB", assays]), c("(IU/ml)", "(IU/ml)", "ID50", "ID80"), "")
-tmp[1,]=sub(" \\(IU/ml)","", tmp[1,])
-tmp[1,]=sub(" ID50","", tmp[1,])
-tmp[1,]=sub(" ID80","", tmp[1,])
+## move unit to another row if too long, code depends on length of assay
+#tmp=rbind(c(labels.axis["Day57", assays], labels.axis["Delta57overB", assays]), c("(IU/ml)", "(IU/ml)", "ID50", "ID80"), "")
+#tmp[1,]=sub(" \\(IU/ml)","", tmp[1,])
+#tmp[1,]=sub(" ID50","", tmp[1,])
+#tmp[1,]=sub(" ID80","", tmp[1,])
+tmp=rbind(c(labels.axis["Day57", assays], labels.axis["Delta57overB", assays]), "", "")
 rownames(tab)=c(tmp)
 tab
 
@@ -174,41 +177,6 @@ mytex(tab[1:(nrow(tab)/2),], file.name="CoR_D57_univariable_svycoxph_cat_pretty_
 ####################################################################################################
 # Forest plots
 ####################################################################################################
-
-
-
-####################################################################################
-# fit models for different phase one baseline strata subgroups and make forest plots
-
-fits.all=list()
-for (a in assays) {
-    fits=list()
-    
-    fit=svycoxph(update(form.0, as.formula(paste0("~.+Day57", a))), design=design.vacc.seroneg) 
-    fits[[1]]=fit
-    
-    for (k in 1:max.stratum) {
-        if(sum (subset(dat.mock.vacc.seroneg, Bstratum==k, EventIndPrimaryD57))<=2) {
-            # 0-2 cases
-            fits[[k+1]]=NA
-        } else {
-            design<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd, data=subset(dat.mock.vacc.seroneg, Bstratum==k))            
-            fit=svycoxph(update(form.1, as.formula(paste0("~.+Day57", a))), design=design) # no need to adjust for binary baseline demog b/c it is within stratum
-            fits[[k+1]]=fit
-        }
-    }       
-    
-    fits.all[[a]]=fits
-}
-
-# Get “No. Endpoints V:P“ that reports the number of endpoints in the vaccine:placebo arm used in the correlates analysis
-cnts=sapply (1:max.stratum, function(k) {
-    tmp=table(subset(dat.mock.vacc.seroneg, Bstratum==k, Wstratum, drop=T))
-    if(length(tmp)==1) c(0, tmp) else rev(tmp)
-})
-tmp=table(dat.mock.vacc.seroneg$Wstratum==max(dat.mock.vacc.seroneg$Wstratum))
-cnts=cbind(rev(tmp), cnts)
-
 
 # 26Oct2020      Erika Rudnicki
 theforestplot <- function(cohort=NA,group,nEvents=NA,totFU=NA,rate=NA,point.estimates,lower.bounds,upper.bounds,p.values,table.labels,zero.line=1.0,dashed.line=NA,x.ticks = c(0, 0.2, 0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8, 2),
@@ -269,6 +237,43 @@ theforestplot <- function(cohort=NA,group,nEvents=NA,totFU=NA,rate=NA,point.esti
   )
 }
 
+
+
+####################################################################################
+# fit models for different phase one baseline strata subgroups and make forest plots
+
+fits.all=list()
+for (a in assays) {
+    fits=list()
+    
+    fit=svycoxph(update(form.0, as.formula(paste0("~.+Day57", a))), design=design.vacc.seroneg) 
+    fits[[1]]=fit
+    
+    for (k in 1:max.stratum) {
+        if(sum (subset(dat.mock.vacc.seroneg, Bstratum==k, EventIndPrimaryD57))<=2) {
+            # 0-2 cases
+            fits[[k+1]]=NA
+        } else {
+            design<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd, data=subset(dat.mock.vacc.seroneg, Bstratum==k))            
+            fit=svycoxph(update(form.1, as.formula(paste0("~.+Day57", a))), design=design) # no need to adjust for binary baseline demog b/c it is within stratum
+            fits[[k+1]]=fit
+        }
+    }       
+    
+    fits.all[[a]]=fits
+}
+
+# Get “No. Endpoints V:P“ that reports the number of endpoints in the vaccine:placebo arm used in the correlates analysis
+cnts=sapply (1:max.stratum, function(k) {
+    tmp=table(subset(dat.mock.vacc.seroneg, Bstratum==k & EventTimePrimaryD29>=35, Wstratum, drop=T))
+    if(length(tmp)==1) c(0, tmp) else rev(tmp)
+})
+#tmp=table(dat.mock.vacc.seroneg$Wstratum==max(dat.mock.vacc.seroneg$Wstratum)) # this includes intercurrent cases
+tmp=with(subset(dat.mock.vacc.seroneg, EventTimePrimaryD29>=35), table(EventIndPrimaryD57))
+cnts=cbind(rev(tmp), cnts)
+
+
+
 for (a in assays) {
     mypdf(oma=c(1,0,0,0), onefile=F, width=12,height=6, file=paste0(save.results.to, "hr_forest_", a, "_", study.name)) # to make CI wider, make width bigger and graphwidth larger # onefile has to be F otherwise there will be an empty page inserted
         fits = fits.all[[a]]
@@ -278,11 +283,10 @@ for (a in assays) {
             tmp=getFixedEf(fit, exp=T, robust=T)
             tmp[nrow(tmp),c("HR", "(lower", "upper)", "p.value")]
         })
-        theforestplot (point.estimates=est.ci[1,], lower.bounds=est.ci[2,], upper.bounds=est.ci[3,], p.values=NA, graphwidth=unit(120, "mm"), table.labels = c("Group", "HR (95% CI)","No. Events"), group=colnames(est.ci), decimal.places=2, nEvents=cnts[1,], title=toTitleCase(study.name))
+        theforestplot (point.estimates=est.ci[1,], lower.bounds=est.ci[2,], upper.bounds=est.ci[3,], p.values=NA, graphwidth=unit(120, "mm"), 
+            table.labels = c("Group", "HR (95% CI)","No. Events"), group=colnames(est.ci), decimal.places=2, nEvents=cnts[1,], title=toTitleCase(study.name))
     dev.off()
 }
-
-
 
 
 #########################################################################
@@ -334,16 +338,16 @@ for (a in assays) {
 # Get “No. Endpoints V:P“ that reports the number of endpoints in the vaccine:placebo arm used in the correlates analysis
 cnts.2=sapply (1:4, function(i) {
     if(i==1) {
-        rev(with(dat.mock.vacc.seroneg, table(EventIndPrimaryD57, age.geq.65))[2,])
+        rev(with(subset(dat.mock.vacc.seroneg,EventTimePrimaryD29>=35), table(EventIndPrimaryD57, age.geq.65))[2,])
     } else if(i==2) {
-        rev(with(dat.mock.vacc.seroneg, table(EventIndPrimaryD57, HighRiskInd))[2,])
+        rev(with(subset(dat.mock.vacc.seroneg,EventTimePrimaryD29>=35), table(EventIndPrimaryD57, HighRiskInd))[2,])
     } else if(i==3) {
-        rev(with(dat.mock.vacc.seroneg, table(EventIndPrimaryD57, MinorityInd))[2,])
+        rev(with(subset(dat.mock.vacc.seroneg,EventTimePrimaryD29>=35), table(EventIndPrimaryD57, MinorityInd))[2,])
     } else if(i==4) {
-        rev(with(dat.mock.vacc.seroneg, table(EventIndPrimaryD57, Sex))[2,])
+        rev(with(subset(dat.mock.vacc.seroneg,EventTimePrimaryD29>=35), table(EventIndPrimaryD57, Sex))[2,])
     }    
 })
-cnts.2=c(with(dat.mock.vacc.seroneg, table(EventIndPrimaryD57))[2], cnts.2)
+cnts.2=c(with(subset(dat.mock.vacc.seroneg,EventTimePrimaryD29>=35), table(EventIndPrimaryD57))[2], cnts.2)
 
 for (a in assays) {
 #a=assays[1]
@@ -537,7 +541,7 @@ for (idx in 1:2) {
     ylim=range(sapply(risks.all, function(x) x$prob), if(idx==1) prev.plac, prev.vacc, 0)
     lwd=2
     
-    mypdf(oma=c(1,0,0,0), onefile=F, file=paste0(save.results.to, "marginalized_risks", ifelse(idx==1,"","_woplacebo"), "_"%.%study.name), mfrow=c(2,2))
+    mypdf(oma=c(1,0,0,0), onefile=F, file=paste0(save.results.to, "marginalized_risks", ifelse(idx==1,"","_woplacebo"), "_"%.%study.name), mfrow=.mfrow)
     for (a in assays) {        
         risks=risks.all[[a]]
         
@@ -577,7 +581,7 @@ for (idx in 1:2) {
 # controlled VE curves
 s2="85%"; s1="15%" # these two reference quantiles are used in the next two blocks of code
 RRud=RReu=4
-mypdf(onefile=F, file=paste0(save.results.to, "controlled_ve_curves_"%.%study.name), mfrow=c(2,2), oma=c(0,0,1,0))
+mypdf(onefile=F, file=paste0(save.results.to, "controlled_ve_curves_"%.%study.name), mfrow=.mfrow, oma=c(0,0,1,0))
     lwd=2.5
     par(las=1, cex.axis=0.9, cex.lab=1)# axis label orientation
     for (a in assays) {        
@@ -646,7 +650,7 @@ fit.0=coxph(Surv(EventTimePrimaryD57, EventIndPrimaryD57) ~ 1, dat.mock.plac.ser
 risk.0= 1 - exp(-predict(fit.0, type="expected"))
 time.0= dat.mock.plac.seroneg$EventTimePrimaryD57
 
-mypdf(oma=c(1,0,0,0), onefile=F, file=paste0(save.results.to, "marginal_risks_cat", "_"%.%study.name), mfrow=c(2,2), width=7, height = 7.5)
+mypdf(oma=c(1,0,0,0), onefile=F, file=paste0(save.results.to, "marginalized_risks_cat", "_"%.%study.name), mfrow=.mfrow, width=7, height = 7.5)
 for (a in assays) {        
     lwd=2
     ylim=c(0,max(risk.0))
@@ -850,7 +854,7 @@ coef.sens.1=sapply(fit.1, simplify="array", function(fit) getFixedEf(fit, exp=T,
 dimnames(coef.sens.1)[[3]]=c(66,40,30,25,20,15,10,5)%.%" cases"
 coef.sens.2=sapply(fit.2, simplify="array", function(fit) getFixedEf(fit, exp=T, robust=T))
 dimnames(coef.sens.2)[[3]]="seed "%.%2:6
-save(coef.sens.1, coef.sens.2, file=save.results.to%.%"coef.sens."%.%study.name%.%".Rdata")
+#save(coef.sens.1, coef.sens.2, file=save.results.to%.%"coef.sens."%.%study.name%.%".Rdata")
 
 
 # Firth survey
@@ -874,55 +878,6 @@ summary(fit.3)
 tab=getFormattedSummary(list(fit, fit.2, fit.3), robust=T, exp=F)
 colnames(tab)=c("svyglm", "svy_vglm", "svy_vglm rescaled wt")
 mytex(tab, file.name="CoR_Day57pseudoneutid80_5cases_Firth_"%.%study.name, input.foldername=save.results.to, align="c", save2input.only=T)
-
-
-
-
-####################################################################################################
-# segmented model
-####################################################################################################
-
-# local smoothing
-mypdf(oma=c(1,0,0,0), onefile=F, file=paste0(save.results.to, "binaryloess", "_"%.%study.name), mfrow=c(1,length(assays)))
-    for (a in assays) binaryloess(dat.mock.vacc.seroneg.ph2[["Day57"%.%a]], dat.mock.vacc.seroneg.ph2$EventIndPrimaryD57, scale="logit", weights=dat.mock.vacc.seroneg.ph2$wt, xlab=labels.axis["Day57",assays])
-    mtext(toTitleCase(study.name), side = 1, line = 0, outer = T, at = NA, adj = NA, padj = NA, cex = NA, col = NA, font = NA)
-dev.off()
-
-
-mypdf(oma=c(1,0,0,0), onefile=F, file=paste0(save.results.to, "gam", "_"%.%study.name), mfrow=c(2,2))
-for (a in assays) {
-    fit <- mgcv::gam(update(form.0.logistic, as.formula("~.+s(Day57"%.%a%.%")")), data=dat.mock.vacc.seroneg.ph2, family=binomial, )
-    plot(fit, xlab=labels.axis["Day57",a], main="Smoothed Effect on logit (COVID Risk)")
-}
-mtext(toTitleCase(study.name), side = 1, line = 0, outer = T, at = NA, adj = NA, padj = NA, cex = NA, col = NA, font = NA)
-dev.off()
-
-
-
-
-## results from local smoothing suggests no threshold model fits for the binding abs
-## fit hinge models
-#if(F) {
-#
-#hinge.fit.logistic=list()
-#hinge.fit.coxph=list()
-#for (a in assays) {
-#    hinge.fit.logistic[[a]]=chngptm(form.0.logistic, as.formula("~Day57"%.%a), dat.mock.vacc.seroneg.ph2, type="hinge", family="binomial", var.type="bootstrap", weights=dat.mock.vacc.seroneg.ph2$wt, verbose=0, ci.bootstrap.size=B, ncpu=numCores)    
-#    # lots of errors probably due to bootstrap scheme
-#    #hinge.fit.coxph[[a]]=   chngptm(form.0, as.formula("~Day57"%.%a),          dat.mock.vacc.seroneg.ph2, type="hinge", family="coxph",    var.type="bootstrap", weights=dat.mock.vacc.seroneg.ph2$wt, verbose=0, ci.bootstrap.size=B, ncpu=numCores)
-#}
-#save(hinge.fit.logistic, hinge.fit.coxph, file=paste0(save.results.to, "hinge.fits.Rdata"), save2input.only=TRUE)
-#
-#}
-#load(file=paste0(save.results.to, "hinge.fits.Rdata"))
-#tab=getFormattedSummary(hinge.fit.logistic, exp=T, robust=T)
-#tab=tab[-1,]# remove intercept
-#colnames(tab)=labels.axis["Day57",assays]
-#rownames(tab)=gsub("Day57bind", "Day 57 marker", rownames(tab))
-##rownames(tab)=gsub("age.geq.65", "Age>=65", rownames(tab))
-#tab
-#mytex(tab, file.name="CoR_univariable_hingelogistic", input.foldername=save.results.to, align="c")
-
 
 
 

@@ -111,20 +111,32 @@ Cutpoints:
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\textwidth]{\pathCoRoutput/marginalized_risks_woplacebo_\studyname}
-    \caption{Marginalized cumulative risk by Day \protect\input{\pathCoRoutput/timepoints_cum_risk_\studyname} as functions of Day 57 markers among baseline seronegative vaccine recipients with 95\% bootstrap confidence bands. The horizontal lines indicate the overall cumulative risk of the vaccine arm by Day \protect\input{\pathCoRoutput/timepoints_cum_risk_\studyname} and its 95\% confidence interval. Histograms of the immunological markers in the vaccine arm are overlayed.}
+    \includegraphics[width=1\textwidth]{\pathCoRoutput/marginalized_risks1_woplacebo_\studyname}
+    \caption{Marginalized cumulative risk by Day \protect\input{\pathCoRoutput/timepoints_cum_risk_\studyname} as functions of Day 57 markers among baseline seronegative vaccine recipients with 95\% bootstrap confidence bands. The horizontal lines indicate the overall cumulative risk of the vaccine arm by Day \protect\input{\pathCoRoutput/timepoints_cum_risk_\studyname} and its 95\% confidence interval. Histograms of the immunological markers in the vaccine arm are overlaid.}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\textwidth]{\pathCoRoutput/marginalized_risks_\studyname}
-    \caption{Marginalized cumulative risk by Day \protect\input{\pathCoRoutput/timepoints_cum_risk_\studyname} as functions of Day 57 markers among baseline seronegative vaccine recipients with 95\% bootstrap confidence bands. The horizontal lines indicate the overall cumulative risk of the placebo and vaccine arms by Day \protect\input{\pathCoRoutput/timepoints_cum_risk_\studyname} and its 95\% confidence interval. Histograms of the immunological markers in the vaccine arm are overlayed.}
+    \includegraphics[width=1\textwidth]{\pathCoRoutput/marginalized_risks1_\studyname}
+    \caption{Marginalized cumulative risk by Day \protect\input{\pathCoRoutput/timepoints_cum_risk_\studyname} as functions of Day 57 markers among baseline seronegative vaccine recipients with 95\% bootstrap confidence bands. The horizontal lines indicate the overall cumulative risk of the placebo and vaccine arms by Day \protect\input{\pathCoRoutput/timepoints_cum_risk_\studyname} and its 95\% confidence interval. Histograms of the immunological markers in the vaccine arm are overlaid.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{\pathCoRoutput/marginalized_risks2_woplacebo_\studyname}
+    \caption{Marginalized cumulative risk by Day \protect\input{\pathCoRoutput/timepoints_cum_risk_\studyname} as functions of Day 57 markers above a threshold among baseline seronegative vaccine recipients with 95\% bootstrap confidence bands. The horizontal lines indicate the overall cumulative risk of the vaccine arm by Day \protect\input{\pathCoRoutput/timepoints_cum_risk_\studyname} and its 95\% confidence interval. Histograms of the immunological markers in the vaccine arm are overlaid.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{\pathCoRoutput/marginalized_risks2_\studyname}
+    \caption{Marginalized cumulative risk by Day \protect\input{\pathCoRoutput/timepoints_cum_risk_\studyname} as functions of Day 57 markers above a threshold among baseline seronegative vaccine recipients with 95\% bootstrap confidence bands. The horizontal lines indicate the overall cumulative risk of the placebo and vaccine arms by Day \protect\input{\pathCoRoutput/timepoints_cum_risk_\studyname} and its 95\% confidence interval. Histograms of the immunological markers in the vaccine arm are overlaid.}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{\pathCoRoutput/controlled_ve_curves_\studyname}
-    \caption{Controlled VE with sensitivity analysis as functions of Day 57 markers among baseline seronegative vaccine recipients with 95\% bootstrap confidence bands. Histograms of the immunological markers in the vaccine arm are overlayed.}
+    \caption{Controlled VE with sensitivity analysis as functions of Day 57 markers among baseline seronegative vaccine recipients with 95\% bootstrap confidence bands. Histograms of the immunological markers in the vaccine arm are overlaid.}
 \end{figure}
 
 

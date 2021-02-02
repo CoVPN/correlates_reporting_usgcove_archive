@@ -265,6 +265,7 @@ for (a in assays) {
 }
 
 # Get “No. Endpoints V:P“ that reports the number of endpoints in the vaccine:placebo arm used in the correlates analysis
+# EventTimePrimaryD29>=35 is used in a few places for count. It is not really necessary, but it subsets to those at risk for correlates analyses after second injections
 cnts=sapply (1:max.stratum, function(k) {
     tmp=table(subset(dat.mock.vacc.seroneg, Bstratum==k & EventTimePrimaryD29>=35, Wstratum, drop=T))
     if(length(tmp)==1) c(0, tmp) else rev(tmp)
@@ -455,18 +456,115 @@ marginal.risk.svycoxph.boot=function(formula, marker.name, data, t, weights, B, 
     list(marker=ss, prob=prob, boot=res, lb=ci.band[,1], ub=ci.band[,2])     
 }    
 
+
+# continuous markers |S>=s. with bootstrap
+# data is ph1 data
+# t is a time point near to the time of the last observed outcome will be defined
+marginal.risk.svycoxph.boot.2=function(formula, marker.name, data, t, weights, B, ci.type="quantile", numCores=1) {  
+# formula=form.0; marker.name="Day57bindSpike"; data=dat.mock.vacc.seroneg; t=t0; weights=dat.mock.vacc.seroneg$wt; B=2; ci.type="quantile"; numCores=1
+    
+    # store the current rng state 
+    save.seed <- try(get(".Random.seed", .GlobalEnv), silent=TRUE) 
+    if (class(save.seed)=="try-error") {set.seed(1); save.seed <- get(".Random.seed", .GlobalEnv) }      
+    
+    ss=quantile(data[[marker.name]], seq(0,.9,by=0.05), na.rm=TRUE)
+    
+    prob=sapply (ss, function(s) {
+        tmp=data[data$TwophasesampInd==1 & data[[marker.name]]>=s, ]
+        fit.risk=coxph(formula, tmp, weights=wt, model=T)         
+        tmp$EventTimePrimaryD57=t0
+        ret=try(weighted.mean(1 - exp(-predict(fit.risk, newdata=tmp, type="expected")), tmp$wt), silent=T)
+        if (class(ret) != "try-error" ) {
+            ret # when there are no cases, even model=T won't prevent errors: 
+                # Error in predict.coxph(fit.risk, type = "expected") : 
+                #   Data is not the same size as it was in the original fit
+        } else 0
+    })
+    
+    
+    # for use in stratified bootstrap
+    strat=sort(unique(data$Wstratum))
+    ptids.by.stratum=lapply(strat, function (i) subset(data, Wstratum==i, Ptid, drop=TRUE))
+    case.ptids=ptids.by.stratum[[length(ptids.by.stratum)]]
+    
+    case.by.stratum.ph2=lapply(strat[-length(strat)], function (i) subset(data, tps.stratum==i & TwophasesampInd==1 & EventIndPrimaryD57==1, Ptid, drop=TRUE))
+    ctrl.by.stratum.ph2=lapply(strat[-length(strat)], function (i) subset(data, Wstratum==i    & TwophasesampInd==1 & EventIndPrimaryD57==0, Ptid, drop=TRUE))
+    ctrl.nonph2=subset(data, TwophasesampInd==0 & EventIndPrimaryD57==0, Ptid, drop=TRUE)
+    nonph2=subset(data, TwophasesampInd==0, Ptid, drop=TRUE) # both cases and controls
+    
+    # bootstrap
+    out=mclapply(1:B, mc.cores = numCores, FUN=function(seed) {   
+        set.seed(seed)    
+        
+        #### there are several ways to create bootstrap datasets
+#        ## not stratified
+#        dat.b=data[sample(nrow(data), replace=TRUE),]
+#        ## stratified by baseline strata
+#        idxes=do.call(c, lapply(ptids.by.stratum, function(x) sample(x, replace=TRUE)))
+#        dat.b=data[match(idxes, data$Ptid),]
+        ## three-step stratified process
+        tmp=list()
+        # 1. bootstrap ph2 cases stratified by baseline strata.
+        tmp[[1]]=do.call(c, lapply(case.by.stratum.ph2, function(x) sample(x, replace=TRUE)))
+        # 2. bootstrap ph2 controls stratified by baseline strata
+        tmp[[2]]=do.call(c, lapply(ctrl.by.stratum.ph2, function(x) sample(x, replace=TRUE)))
+        # 3. add non-ph2 for methods that require ph1 strata sizes info
+        tmp[[3]]=nonph2
+        idxes=do.call(c, tmp)
+        dat.b=data[match(idxes, data$Ptid),]
+    
+        # compute weights
+        tmp=with(dat.b, table(Wstratum, TwophasesampInd))
+        weights=rowSums(tmp)/tmp[,2]
+        dat.b$wt=weights[""%.%dat.b$Wstratum]
+        
+        prob=sapply (ss, function(s) {
+            tmp=dat.b[dat.b$TwophasesampInd==1 & dat.b[[marker.name]]>=s, ]
+            fit.risk=coxph(formula, tmp, weights=wt, model=T)  
+            tmp$EventTimePrimaryD57=t0
+            ret=try(weighted.mean(1 - exp(-predict(fit.risk, newdata=tmp, type="expected")), tmp$wt), silent=T)
+            if (class(ret) != "try-error" ) {
+                ret # when there are no cases, even model=T won't prevent errors: 
+                    # Error in predict.coxph(fit.risk, type = "expected") : 
+                    #   Data is not the same size as it was in the original fit
+            } else 0
+        })
+    })
+    res=do.call(cbind, out)
+    
+    # restore rng state 
+    assign(".Random.seed", save.seed, .GlobalEnv)    
+    
+    if (ci.type=="quantile") {
+        ci.band=t(apply(res, 1, function(x) quantile(x, c(.025,.975))))
+    } else {
+        stop("only quantile bootstrap CI supported for now")
+    }
+    
+    list(marker=ss, prob=prob, boot=res, lb=ci.band[,1], ub=ci.band[,2])
+}    
+
+
 # bootstrap marginalized risk is a time-consumming step
 if(rerun.time.consuming.steps) {
     time.start=Sys.time()
     
     #################
     # vaccine arm
-    risks.all=list()
-    for (a in assays) {
-        risks.all[[a]]=marginal.risk.svycoxph.boot(formula=form.0, marker.name="Day57"%.%a, data=dat.mock.vacc.seroneg, t0, weights=dat.mock.vacc.seroneg$wt, B=B, ci.type="quantile", numCores=numCores)        
-    }
-    save(risks.all, file=paste0(save.results.to, "risks.all."%.%study.name%.%".Rdata"))
     
+    # conditional on s
+    risks.all.1=list()
+    for (a in assays) {
+        risks.all.1[[a]]=marginal.risk.svycoxph.boot(formula=form.0, marker.name="Day57"%.%a, data=dat.mock.vacc.seroneg, t0, weights=dat.mock.vacc.seroneg$wt, B=B, ci.type="quantile", numCores=numCores)        
+    }
+    save(risks.all.1, file=paste0(save.results.to, "risks.all.1."%.%study.name%.%".Rdata"))
+    
+    # conditional on S>=s
+    risks.all.2=list()
+    for (a in assays) {
+        risks.all.2[[a]]=marginal.risk.svycoxph.boot.2(formula=form.0, marker.name="Day57"%.%a, data=dat.mock.vacc.seroneg, t0, weights=dat.mock.vacc.seroneg$wt, B=B, ci.type="quantile", numCores=numCores)        
+    }
+    save(risks.all.2, file=paste0(save.results.to, "risks.all.2."%.%study.name%.%".Rdata"))
     
     #################
     # placebo arm
@@ -502,7 +600,8 @@ if(rerun.time.consuming.steps) {
     
     print(Sys.time()-time.start)
 } else {
-    load(file=paste0(save.results.to, "risks.all", "."%.%study.name, ".Rdata"))
+    load(file=paste0(save.results.to, "risks.all.1", "."%.%study.name, ".Rdata"))
+    load(file=paste0(save.results.to, "risks.all.2", "."%.%study.name, ".Rdata"))
     load(file=paste0(save.results.to, "risks_placebo_cont_", study.name, ".Rdata"))
 }
 
@@ -512,8 +611,8 @@ if(rerun.time.consuming.steps) {
 #   idx=1, with placebo lines
 #   idx=2, without placebo lines
 # Implementation-wise, only difference is in ylim
-
-# compute overall risk by integrating over form.0
+#
+# first, compute overall risk by integrating over form.0
 # placebo arm, variance is asymptotic, which is close to bootstrap results
 dat.tmp=subset(dat.mock, Trt==0 & Bserostatus==0 & Perprotocol==1)
 fit.tmp = coxph(form.0, dat.tmp)
@@ -538,11 +637,13 @@ prev.vacc[2:3] = prev.vacc[1] + c(-1,1)*1.96*sd.tmp
 #        tmp=subset(dat.mock.vacc.seroneg, select=EventIndPrimaryD57, drop=T)    
 #        prev.vacc=binconf(sum(tmp), length(tmp))    
 
+for (ii in 1:2) {
 for (idx in 1:2) {
+    risks.all=get("risks.all."%.%ii)
     ylim=range(sapply(risks.all, function(x) x$prob), if(idx==1) prev.plac, prev.vacc, 0)
     lwd=2
     
-    mypdf(oma=c(1,0,0,0), onefile=F, file=paste0(save.results.to, "marginalized_risks", ifelse(idx==1,"","_woplacebo"), "_"%.%study.name), mfrow=.mfrow)
+    mypdf(oma=c(1,0,0,0), onefile=F, file=paste0(save.results.to, "marginalized_risks", ii, ifelse(idx==1,"","_woplacebo"), "_"%.%study.name), mfrow=.mfrow)
     for (a in assays) {        
         risks=risks.all[[a]]
         
@@ -561,8 +662,8 @@ for (idx in 1:2) {
             text(x=par("usr")[2]-diff(par("usr")[1:2])/4, y=prev.plac[1]+(prev.plac[1]-prev.plac[2])/2, "placebo overall risk")        
             text(x=par("usr")[2]-diff(par("usr")[1:2])/4, y=prev.vacc[1]+(prev.plac[1]-prev.plac[2])/2, "vaccine overall risk")
         } else {
-            text(x=par("usr")[2]-diff(par("usr")[1:2])/2.5, y=par("usr")[4]-(prev.vacc[1]-prev.vacc[2]), "placebo overall risk "%.%formatDouble(prev.plac[1],3,remove.leading0=F))
-            text(x=par("usr")[2]-diff(par("usr")[1:2])/4, y=prev.vacc[1]+(prev.vacc[1]-prev.vacc[2])/2, "vaccine overall risk")
+            text(x=par("usr")[2]-diff(par("usr")[1:2])/2.5, y=par("usr")[4]-diff(par("usr")[3:4])/20, "placebo overall risk "%.%formatDouble(prev.plac[1],3,remove.leading0=F))
+            text(x=par("usr")[2]-diff(par("usr")[1:2])/4, y=prev.vacc[1]-(prev.vacc[1]-prev.vacc[2])/4, "vaccine overall risk")
         }
         
         # add histogram
@@ -577,6 +678,8 @@ for (idx in 1:2) {
     mtext(toTitleCase(study.name), side = 1, line = 0, outer = T, at = NA, adj = NA, padj = NA, cex = NA, col = NA, font = NA)
     dev.off()    
 }
+}
+
 
 
 # controlled VE curves
@@ -629,9 +732,8 @@ dev.off()
 
 
 
-#############################################################
-# marginalized risk (cumulative incidence) curves by tertiles
-# no bootstrap
+####################################################################
+# marginalized risk curves for trichotomized markers, no bootstrap
 
 risks.all.ter=list()
 for (a in assays) {        
@@ -668,149 +770,65 @@ for (a in assays) {
     mylegend(x=1, legend=legend, lty=c(1:3,1), col=c("green3","green","darkgreen","gray"), lwd=2)
     mylines(time.0, risk.0, col="gray", lwd=2)
     
+    # add data ribbon
+    f1=update(form.s, as.formula(paste0("~.+",marker.name)))
+    km <- svykm(f1, design.vacc.seroneg)
+    tmp=summary(km, times=x.time)            
 }
 mtext(toTitleCase(study.name), side = 1, line = 2, outer = T, at = NA, adj = NA, padj = NA, cex = .8, col = NA, font = NA)
 dev.off()    
 
-#
-#
-#  # extract numbers at risk by Low/ Medium High
-#  km.L <- svysurvfit(form.s, data=dat[cate=="Low",])
-#  km.M <- survfit(Surv(oftime_m13, ofstatus_m13) ~ 1, data=dat[cate=="Medium",])
-#  km.H <- survfit(Surv(oftime_m13, ofstatus_m13) ~ 1, data=dat[cate=="High",])
-#  
-#  #x.time <- seq(0, min(max(dat$flrtime[cat=="Low"]), max(dat$flrtime[cat=="Medium"]),max(dat$flrtime[cat=="High"])), length.out=13) # may want to modify
-#  x.time<-seq(0,12,by=2)*scl
-#  n.risk.L <- summary(km.L, times=x.time)$n.risk
-#  n.risk.M <- summary(km.M, times=x.time)$n.risk
-#  n.risk.H <- summary(km.H, times=x.time)$n.risk
-#  
-#  cum.L <- cumsum(summary(km.L, times=x.time)$n.event)
-#  cum.M <- cumsum(summary(km.M, times=x.time)$n.event)
-#  cum.H <- cumsum(summary(km.H, times=x.time)$n.event)
-#  
-#  #make the last entry include visit window
-#  cum.L[7] <- count[1]
-#  cum.M[7] <- count[2]
-#  cum.H[7] <- count[3]
-#  
-#  cex.text <- 0.7
-#  mtext(expression(bold("No. at risk")),side=1,outer=FALSE,line=2.5,at=-2,adj=0,cex=cex.text)
-#  mtext(n.risk.L,side=1,outer=FALSE,line=3.4,at=seq(0,12,by=2),cex=cex.text)
-#  mtext(n.risk.M,side=1,outer=FALSE,line=4.3,at=seq(0,12,by=2),cex=cex.text)
-#  mtext(n.risk.H,side=1,outer=FALSE,line=5.2,at=seq(0,12,by=2),cex=cex.text)
-#  
-#  mtext(paste0("Low S",i,":"),side=1,outer=F,line=3.4,at=-4,adj=0,cex=cex.text)
-#  mtext(paste0("Med S",i,":"),side=1,outer=F,line=4.3,at=-4,adj=0,cex=cex.text)
-#  mtext(paste0("High S",i,":"),side=1,outer=F,line=5.2,at=-4,adj=0,cex=cex.text)
-#  mtext(expression(bold("Cumulative No. of Overall Dengue infections")),side=1,outer=FALSE,line=6.4,at=-2,adj=0,
+
+## example code for data ribbon
+#    km.M <- survfit(Surv(oftime_m13, ofstatus_m13) ~ 1, data=dat[cate=="Medium",])
+#    km.H <- survfit(Surv(oftime_m13, ofstatus_m13) ~ 1, data=dat[cate=="High",])
+#    
+#    #x.time <- seq(0, min(max(dat$flrtime[cat=="Low"]), max(dat$flrtime[cat=="Medium"]),max(dat$flrtime[cat=="High"])), length.out=13) # may want to modify
+#    x.time<-seq(0,12,by=2)*scl
+#    n.risk.L <- summary(km.L, times=x.time)$n.risk
+#    n.risk.M <- summary(km.M, times=x.time)$n.risk
+#    n.risk.H <- summary(km.H, times=x.time)$n.risk
+#    
+#    cum.L <- cumsum(summary(km.L, times=x.time)$n.event)
+#    cum.M <- cumsum(summary(km.M, times=x.time)$n.event)
+#    cum.H <- cumsum(summary(km.H, times=x.time)$n.event)
+#    
+#    #make the last entry include visit window
+#    cum.L[7] <- count[1]
+#    cum.M[7] <- count[2]
+#    cum.H[7] <- count[3]
+#    
+#    cex.text <- 0.7
+#    mtext(expression(bold("No. at risk")),side=1,outer=FALSE,line=2.5,at=-2,adj=0,cex=cex.text)
+#    mtext(n.risk.L,side=1,outer=FALSE,line=3.4,at=seq(0,12,by=2),cex=cex.text)
+#    mtext(n.risk.M,side=1,outer=FALSE,line=4.3,at=seq(0,12,by=2),cex=cex.text)
+#    mtext(n.risk.H,side=1,outer=FALSE,line=5.2,at=seq(0,12,by=2),cex=cex.text)
+#    
+#    mtext(paste0("Low S",i,":"),side=1,outer=F,line=3.4,at=-4,adj=0,cex=cex.text)
+#    mtext(paste0("Med S",i,":"),side=1,outer=F,line=4.3,at=-4,adj=0,cex=cex.text)
+#    mtext(paste0("High S",i,":"),side=1,outer=F,line=5.2,at=-4,adj=0,cex=cex.text)
+#    mtext(expression(bold("Cumulative No. of Overall Dengue infections")),side=1,outer=FALSE,line=6.4,at=-2,adj=0,
 #        cex=cex.text)
-#  mtext(cum.L,side=1,outer=FALSE,line=7.3,at=x.time/scl,cex=cex.text)
-#  mtext(cum.M,side=1,outer=FALSE,line=8.2,at=x.time/scl,cex=cex.text)
-#  mtext(cum.H,side=1,outer=FALSE,line=9.1,at=x.time/scl,cex=cex.text)
-#  
-#  
-#  mtext(paste0("Low S",i,":"),side=1,outer=FALSE,line=7.3,at=-4,adj=0,cex=cex.text)
-#  mtext(paste0("Med S",i,":"),side=1,outer=FALSE,line=8.2,at=-4,adj=0,cex=cex.text)
-#  mtext(paste0("High S",i,":"),side=1,outer=FALSE,line=9.1,at=-4,adj=0,cex=cex.text)
+#    mtext(cum.L,side=1,outer=FALSE,line=7.3,at=x.time/scl,cex=cex.text)
+#    mtext(cum.M,side=1,outer=FALSE,line=8.2,at=x.time/scl,cex=cex.text)
+#    mtext(cum.H,side=1,outer=FALSE,line=9.1,at=x.time/scl,cex=cex.text)
+#    
+#    
+#    mtext(paste0("Low S",i,":"),side=1,outer=FALSE,line=7.3,at=-4,adj=0,cex=cex.text)
+#    mtext(paste0("Med S",i,":"),side=1,outer=FALSE,line=8.2,at=-4,adj=0,cex=cex.text)
+#    mtext(paste0("High S",i,":"),side=1,outer=FALSE,line=9.1,at=-4,adj=0,cex=cex.text)
 #    }
-#  if(vacc=="Vaccine"){mtext(expression(bold("Cumulative Overall Dengue Incidence by Serotype Response Subgroups (Vaccine)")), side=3, outer=TRUE, line=0.5,cex=1.2)}
-#  if(vacc=="Placebo"){mtext(expression(bold("Cumulative Overall Dengue Incidence by Serotype Response Subgroups (Placebo)")), side=3, outer=TRUE, line=0.5,cex=1.2)}
+#    if(vacc=="Vaccine"){mtext(expression(bold("Cumulative Overall Dengue Incidence by Serotype Response Subgroups (Vaccine)")), side=3, outer=TRUE, line=0.5,cex=1.2)}
+#    if(vacc=="Placebo"){mtext(expression(bold("Cumulative Overall Dengue Incidence by Serotype Response Subgroups (Placebo)")), side=3, outer=TRUE, line=0.5,cex=1.2)}
 #                      
-#  mtext("Note: (1)Low, Medium, High subgroups are the bottom, middle, and upper third of the month 13 PRNT titers.", side=1, outer=TRUE, line=1,cex=0.85) 
-#  mtext("                  (2)P.val.HR(P.val.OR) is the two-sided p-value for different hazard rates(odds of event) by titer subgroups.", side=1, outer=TRUE, line=2,cex=0.85) 
-#
+#    mtext("Note: (1)Low, Medium, High subgroups are the bottom, middle, and upper third of the month 13 PRNT titers.", side=1, outer=TRUE, line=1,cex=0.85) 
+#    mtext("                  (2)P.val.HR(P.val.OR) is the two-sided p-value for different hazard rates(odds of event) by titer subgroups.", side=1, outer=TRUE, line=2,cex=0.85) 
 
 
-##########################################################
-## Marginal risk conditional on S>=s, with bootstrap
-#
-#
-#        risks.all[[a]]=marginal.risk.svycoxph.boot(formula=form.0, marker.name="Day57"%.%a, data=dat.mock.vacc.seroneg, t0, weights=dat.mock.vacc.seroneg$wt, B=B, ci.type="quantile", numCores=numCores)        
-#
-#
-#
-## data is ph1 data
-## t is a time point near to the time of the last observed outcome will be defined
-#marginal.risk.svycoxph.boot=function(formula, marker.name, data, t, weights, B, ci.type="quantile", numCores=1) {  
-## formula=form.0; marker.name="Day57bindSpike"; data=dat.mock.vacc.seroneg; t=t0; weights=dat.mock.vacc.seroneg$wt; B=2; ci.type="quantile"; numCores=1
-#    
-#    # store the current rng state 
-#    save.seed <- try(get(".Random.seed", .GlobalEnv), silent=TRUE) 
-#    if (class(save.seed)=="try-error") {set.seed(1); save.seed <- get(".Random.seed", .GlobalEnv) }      
-#    
-#    ss=quantile(data[[marker.name]], seq(.1,.9,by=0.05), na.rm=TRUE)
-#    
-#    prob=sapply (ss, function(s) {
-#        ## since we are not using se from fit.risk, it does not matter if the se is not correct, 
-#        # the weights computed by svycoxph are a little different from the coxph, but since we need the weights in weighted.mean, we choose coxph
-#        fit.risk=coxph(formula, subset(data, TwophasesampInd==1)[data[[marker.name]]>=s, ], weights=wt)         
-#        weighted.mean(1 - exp(-predict(fit.risk, ype="expected")), data$wt[data[[marker.name]]>=s])
-#    })
-#    
-#    
-#    
-#    
-#    
-#    
-#    
-#    
-#    
-#    
-#    # for use in stratified bootstrap
-#    strat=sort(unique(data$Wstratum))
-#    ptids.by.stratum=lapply(strat, function (i) subset(data, Wstratum==i, Ptid, drop=TRUE))
-#    case.ptids=ptids.by.stratum[[length(ptids.by.stratum)]]
-#    
-#    case.by.stratum.ph2=lapply(strat[-length(strat)], function (i) subset(data, tps.stratum==i & TwophasesampInd==1 & EventIndPrimaryD57==1, Ptid, drop=TRUE))
-#    ctrl.by.stratum.ph2=lapply(strat[-length(strat)], function (i) subset(data, Wstratum==i    & TwophasesampInd==1 & EventIndPrimaryD57==0, Ptid, drop=TRUE))
-#    ctrl.nonph2=subset(data, TwophasesampInd==0 & EventIndPrimaryD57==0, Ptid, drop=TRUE)
-#    nonph2=subset(data, TwophasesampInd==0, Ptid, drop=TRUE) # both cases and controls
-#    
-#    # bootstrap
-#    out=mclapply(1:B, mc.cores = numCores, FUN=function(seed) {   
-#        set.seed(seed)    
-#        
-#        #### there are several ways to create bootstrap datasets
-##        ## not stratified
-##        dat.b=data[sample(nrow(data), replace=TRUE),]
-##        ## stratified by baseline strata
-##        idxes=do.call(c, lapply(ptids.by.stratum, function(x) sample(x, replace=TRUE)))
-##        dat.b=data[match(idxes, data$Ptid),]
-#        ## three-step stratified process
-#        tmp=list()
-#        # 1. bootstrap ph2 cases stratified by baseline strata.
-#        tmp[[1]]=do.call(c, lapply(case.by.stratum.ph2, function(x) sample(x, replace=TRUE)))
-#        # 2. bootstrap ph2 controls stratified by baseline strata
-#        tmp[[2]]=do.call(c, lapply(ctrl.by.stratum.ph2, function(x) sample(x, replace=TRUE)))
-#        # 3. add non-ph2 for methods that require ph1 strata sizes info
-#        tmp[[3]]=nonph2
-#        idxes=do.call(c, tmp)
-#        dat.b=data[match(idxes, data$Ptid),]
-#    
-#        # compute weights
-#        tmp=with(dat.b, table(Wstratum, TwophasesampInd))
-#        weights=rowSums(tmp)/tmp[,2]
-#        dat.b$wt=weights[""%.%dat.b$Wstratum]
-#        
-#        tmp.design=twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd, data=dat.b)
-#        fit.risk=svycoxph(f1, design=tmp.design)
-#        fit.s=svyglm(f2, tmp.design)      
-#        marginal.risk(fit.risk, fit.s, subset(dat.b,TwophasesampInd==1), t=t, ss=ss, weights=dat.b$wt[dat.b$TwophasesampInd==1], categorical.s=F)
-#    })
-#    res=do.call(cbind, out)
-#    
-#    # restore rng state 
-#    assign(".Random.seed", save.seed, .GlobalEnv)    
-#    
-#    if (ci.type=="quantile") {
-#        ci.band=t(apply(res, 1, function(x) quantile(x, c(.025,.975))))
-#    } else {
-#        stop("only quantile bootstrap CI supported for now")
-#    }
-#    
-#    list(marker=ss, prob=prob, boot=res, lb=ci.band[,1], ub=ci.band[,2])     
-#}    
+
+#########################################################
+# Marginalized risk curves for continuous markers conditional on S>=s, with bootstrap
+
 
 
 

@@ -42,3 +42,7 @@ cor_coxph/output/cutpoints_Day57liveneutmn50_mock
 cor_coxph/output/cutpoints_Delta57overBliveneutmn50_mock
 cor_coxph/output/hr_forest_liveneutmn50_mock.pdf
 cor_coxph/output/hr_forest_marginal_liveneutmn50_mock.pdf
+cor_coxph/output/marginalized_risks1_mock.pdf
+cor_coxph/output/marginalized_risks1_woplacebo_mock.pdf
+cor_coxph/output/marginalized_risks2_mock.pdf
+cor_coxph/output/marginalized_risks2_woplacebo_mock.pdf

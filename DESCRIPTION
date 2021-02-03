@@ -2,7 +2,7 @@ Package: covpncorrelates
 Title: CoVPN COVID-19 Correlates Analyses
 Version: 0.0.4
 Authors@R: c(
-    person("CoVPN Biostatistics", "Team", email = "",
+    person("the CoVPN Biostatistics Team", "", email = "",
            role = c("aut", "cre", "cph"))
   )
 Depends: R (>= 3.6.0)

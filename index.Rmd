@@ -18,16 +18,15 @@ always_allow_html: yes
 
 `r if (knitr::is_latex_output()) '<!--'`
 
-# COVID-19 Correlates Analysis Report {-}
+# CoVPN Correlates Analysis Report {-}
 
 <img style="float: center; margin-right: 1%; margin-bottom: 0.01em"
      src="covpn_logo.png" width="40%" height="40%">
 <p style="clear: both;">
 <br>
 
-## Statistical Analysis Plan {-}
+## Statistical Analysis Plan (SAP) {-}
 
-The _Statistical Analysis Plan_ is available at
-https://doi.org/10.6084/m9.figshare.13198595
+The SAP is available at https://doi.org/10.6084/m9.figshare.13198595
 
 `r if (knitr::is_latex_output()) '-->'`

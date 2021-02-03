@@ -1,7 +1,7 @@
 # start R inside the code folder or make sure working directory is here
 rm(list=ls())       
     
-rerun.time.consuming.steps=T # 1e3 bootstraps take 8 min with 30 CPUS. The results are saved in several .Rdata files.
+rerun.time.consuming.steps=F # 1e3 bootstraps take 8 min with 30 CPUS. The results are saved in several .Rdata files.
 numCores=30 # number of cores available on the machine
 B=1000 # number of bootstrap replicates
     
@@ -606,7 +606,7 @@ for (idx in 1:2) {
     for (a in assays) {        
         risks=risks.all[[a]]
         
-        plot(prob~marker, risks, xlab=labels.axis["Day57", a], ylab="Marginalized Probability of COVID", lwd=lwd, ylim=ylim, type="n", main=paste0("Cumulative Risk of COVID by Day ",t0), xaxt="n")
+        plot(prob~marker, risks, xlab=labels.assays.short[a]%.%ifelse(ii==1," (=s)"," (>=s)"), ylab="Marginalized Probability of COVID", lwd=lwd, ylim=ylim, type="n", main=paste0("Cumulative Risk of COVID by Day ",t0), xaxt="n")
         # x axis
         xx=seq(floor(min(risks$marker)), ceiling(max(risks$marker)))
         for (x in xx) axis(1, at=x, labels=if (x>=3) bquote(10^.(x)) else 10^x )
@@ -665,7 +665,8 @@ mypdf(onefile=F, file=paste0(save.results.to, "controlled_ve_curves_"%.%study.na
         est = 1 - risks$prob*Bias/res.placebo.cont["est"]
         boot = 1 - t( t(risks$boot*Bias)/res.placebo.cont[2:(1+ncol(risks$boot))] ) # res.placebo.cont may have more bootstrap replicates than risks$boot
         ci.band=apply(boot, 1, function (x) quantile(x, c(.025,.975)))
-        mymatplot(risks$marker, t(rbind(est, ci.band)), type="l", lty=c(1,2,2), col="red", lwd=lwd, make.legend=F, ylab="Vaccine Efficacy", main="",xlab=labels.assays.short[a], ylim=ylim, xlim=xlim, yaxt="n", xaxt="n", draw.x.axis=F)
+        mymatplot(risks$marker, t(rbind(est, ci.band)), type="l", lty=c(1,2,2), col="red", lwd=lwd, make.legend=F, ylab="Vaccine Efficacy", main="",xlab=labels.assays.short[a]%.%" (=s)", ylim=ylim, 
+            xlim=xlim, yaxt="n", xaxt="n", draw.x.axis=F)
         # VE
         est = 1 - risks$prob/res.placebo.cont["est"]
         boot = 1 - t( t(risks$boot)/res.placebo.cont[2:(1+ncol(risks$boot))] )                         

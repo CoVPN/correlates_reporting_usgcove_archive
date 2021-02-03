@@ -11,7 +11,7 @@ library(COVIDcorr); stopifnot(packageVersion("COVIDcorr")>="2021.01.25")
 # the order of these packages matters
 library(mgcv) # gam
 library(nnet)# multinom, for estimating trichotomous markers probability, make sure this comes after mgcv since mgcv also has multinom
-library(kyotil);       stopifnot(packageVersion("kyotil")>="2021.1.11")
+library(kyotil);       stopifnot(packageVersion("kyotil")>="2021.2-2")
 library(marginalRisk); stopifnot(packageVersion("marginalRisk")>="2021.2-2")
 library(chngpt);       stopifnot(packageVersion("chngpt")>="2020.10.12")
 library(tools) # toTitleCase
@@ -32,7 +32,12 @@ bstatus.labels=c("Baseline Neg","Pos")
 max.stratum=max(dat.mock$Bstratum)
     
 # important subset of data
-dat.mock.vacc.seroneg.ph2=subset(dat.mock.vacc.seroneg, TwophasesampInd==1)
+dat.mock.vacc.seroneg.D57=subset(dat.mock.vacc.seroneg, EventTimePrimaryD57>=7)
+#    # this is not needed
+#    # redefine wt for D57 forward
+#    wts_table <- with(dat.mock.vacc.seroneg.D57, table(Wstratum, TwophasesampInd))
+#    wts_norm <- rowSums(wts_table) / wts_table[, 2]
+#    dat.mock.vacc.seroneg.D57$wt.2 <- wts_norm[dat.mock.vacc.seroneg.D57$Wstratum%.%""]
 dat.mock.plac.seroneg=subset(dat.mock, Trt==0 & Bserostatus==0 & Perprotocol)
 dat.mock.vacc.seroneg.5 <- dat.mock.vacc.seroneg.subsample[["cases_5"]]
 # design objects, the two give slightly different results, twophase is better, but slower
@@ -41,6 +46,10 @@ dstrat<-svydesign(id=~1,strata=~Wstratum, weights=~wt, data=dat.mock.vacc.serone
 #
 t0=max(dat.mock.vacc.seroneg$EventTimePrimaryD57[dat.mock.vacc.seroneg$EventIndPrimaryD57==1]); myprint(t0)
 write(t0, file=paste0(save.results.to, "timepoints_cum_risk_"%.%study.name))
+
+# intercurrent cases
+nrow(subset(dat.mock.vacc.seroneg, TwophasesampInd==1& EventIndPrimaryD29==1))
+nrow(subset(dat.mock.vacc.seroneg, TwophasesampInd==1& EventIndPrimaryD57==1))
     
 # base formula
 form.a = ~. + Age # + BRiskScore
@@ -85,11 +94,12 @@ for (a in c("Day57"%.%assays, "Delta57overB"%.%assays)) {
     fits[[a]]=svycoxph(f, design=design.vacc.seroneg) 
 }
 
+natrisk=nrow(subset(dat.mock.vacc.seroneg, EventTimePrimaryD57>=7))
+nevents=nrow(subset(dat.mock.vacc.seroneg, EventTimePrimaryD57>=7 & EventIndPrimaryD57==1))
+
 # make pretty table for D57 only
-fits=fits[1:length(assays)] # subset here for multitesting adjustment
+fits=fits[1:length(assays)] # for now, we don't need the delta (multitesting adjustment results are affected)
 rows=1+p.cov
-nevents=sapply(fits, function(fit) fit$nevent)
-natrisk=nrow(dat.mock.vacc.seroneg) 
 est=getFormattedSummary(fits, exp=T, robust=T, rows=rows, type=1)
 ci= getFormattedSummary(fits, exp=T, robust=T, rows=rows, type=13)
 p=  getFormattedSummary(fits, exp=T, robust=T, rows=rows, type=10); p=sub("0.000","<0.001",p)
@@ -140,9 +150,13 @@ overall.p=sapply(fits.tri, function(fit) {
 overall.p.0=formatDouble(c(rbind(overall.p, NA,NA)), digits=3, remove.leading0 = F);   overall.p.0=sub("0.000","<0.001",overall.p.0)
 overall.p.1=formatDouble(c(rbind(p.adjust(overall.p, method="fdr"), NA,NA)), digits=3, remove.leading0 = F);   overall.p.1=sub("0.000","<0.001",overall.p.1)
 overall.p.2=formatDouble(c(rbind(p.adjust(overall.p, method="holm"), NA,NA)), digits=3, remove.leading0 = F);   overall.p.2=sub("0.000","<0.001",overall.p.2)
+
 # n cases and n at risk
-nevents = c(sapply (c("Day57"%.%assays, "Delta57overB"%.%assays)%.%"cat", function(a) table(subset(dat.mock.vacc.seroneg, EventIndPrimaryD57==1)[[a]])))
-natrisk = c(sapply (c("Day57"%.%assays, "Delta57overB"%.%assays)%.%"cat", function(a) aggregate(dat.mock.vacc.seroneg$wt, dat.mock.vacc.seroneg[a], sum, na.rm=T)[,2] ))
+natrisk = round(c(sapply (c("Day57"%.%assays, "Delta57overB"%.%assays)%.%"cat", function(a) aggregate(dat.mock.vacc.seroneg.D57$wt, dat.mock.vacc.seroneg.D57[a], sum, na.rm=T)[,2] )))
+colSums(matrix(natrisk, nrow=3))
+nevents = round(c(sapply (c("Day57"%.%assays, "Delta57overB"%.%assays)%.%"cat", function(a) aggregate(subset(dat.mock.vacc.seroneg.D57,EventIndPrimaryD57==1,wt,drop=T), 
+                                                                                                subset(dat.mock.vacc.seroneg.D57,EventIndPrimaryD57==1)[a], sum, na.rm=T)[,2] )))
+
 # regression parameters
 est=c(rbind(1.00,  getFormattedSummary(fits.tri, exp=T, robust=T, rows=rows, type=1)))
 ci= c(rbind("N/A", getFormattedSummary(fits.tri, exp=T, robust=T, rows=rows, type=13)))
@@ -191,7 +205,7 @@ mytex(tab[1:(nrow(tab)/2),], file.name="CoR_D57_univariable_svycoxph_cat_pretty_
 
 
 ####################################################################################################
-# Forest plots
+# forest plots
 ####################################################################################################
 
 # 26Oct2020      Erika Rudnicki
@@ -280,12 +294,15 @@ for (a in assays) {
     fits.all[[a]]=fits
 }
 
+nevents=c(nrow(subset(dat.mock.vacc.seroneg.D57, EventIndPrimaryD57==1)),
+          sapply(1:max.stratum, function (k) nrow(subset(dat.mock.vacc.seroneg.D57, EventIndPrimaryD57==1 & Bstratum==k))) 
+)
+
 for (a in assays) {
     #width and height decide margin
     # to make CI wider, make width bigger and graphwidth larger # onefile has to be F otherwise there will be an empty page inserted
     mypdf(onefile=F, width=10,height=3, file=paste0(save.results.to, "hr_forest_", a, "_", study.name)) 
         fits = fits.all[[a]]
-        nevents=sapply(fits, function(fit) fit$nevent)
         names(fits)=c("All baseline negative, vaccine", "      "%.%Bstratum.labels)
         est.ci = sapply(fits, function (fit) {
             if (length(fit)==1) return (rep(NA,4))
@@ -344,9 +361,19 @@ for (a in assays) {
     names(fits.all.2[[a]])=c("All Vaccine", "Age >= 65", "Age < 65", "At risk", "Not at risk", "Comm. of color", "White Non-Hispanic", "Men", "Women")
 }    
 
+nevents=c(nrow(subset(dat.mock.vacc.seroneg.D57, EventIndPrimaryD57==1)),
+          nrow(subset(dat.mock.vacc.seroneg.D57, EventIndPrimaryD57==1 & age.geq.65==1)), 
+          nrow(subset(dat.mock.vacc.seroneg.D57, EventIndPrimaryD57==1 & age.geq.65==0)), 
+          nrow(subset(dat.mock.vacc.seroneg.D57, EventIndPrimaryD57==1 & HighRiskInd==1)), 
+          nrow(subset(dat.mock.vacc.seroneg.D57, EventIndPrimaryD57==1 & HighRiskInd==0)), 
+          nrow(subset(dat.mock.vacc.seroneg.D57, EventIndPrimaryD57==1 & MinorityInd==1)), 
+          nrow(subset(dat.mock.vacc.seroneg.D57, EventIndPrimaryD57==1 & MinorityInd==0)), 
+          nrow(subset(dat.mock.vacc.seroneg.D57, EventIndPrimaryD57==1 & Sex==1)), 
+          nrow(subset(dat.mock.vacc.seroneg.D57, EventIndPrimaryD57==1 & Sex==0))
+)
+
 for (a in assays) {
     fits = fits.all.2[[a]]
-    nevents=sapply(fits, function(fit) fit$nevent)
     est.ci = sapply(fits, function (fit) {
         if (length(fit)==1) return (rep(NA,4))
         tmp=getFixedEf(fit, exp=T, robust=T)
@@ -685,16 +712,19 @@ fit.0=coxph(Surv(EventTimePrimaryD57, EventIndPrimaryD57) ~ 1, dat.mock.plac.ser
 risk.0= 1 - exp(-predict(fit.0, type="expected"))
 time.0= dat.mock.plac.seroneg$EventTimePrimaryD57
 
-mypdf(oma=c(1,0,0,0), onefile=F, file=paste0(save.results.to, "marginalized_risks_cat", "_"%.%study.name), mfrow=.mfrow, width=7, height = 7.5)
+lwd=2
+ylim=c(0,max(risk.0))
+x.time<-seq(0,t0,by=30); if(t0-last(x.time)>15) x.time=c(x.time, t0) else x.time[length(x.time)]=t0
+#
+mypdf(oma=c(1,0,0,0), onefile=F, file=paste0(save.results.to, "marginalized_risks_cat", "_"%.%study.name), mfrow=.mfrow, width=7*1.3, height = 7.5/2*.mfrow[1]*1.3, mar=c(11,4,4,2))
 for (a in assays) {        
-    lwd=2
-    ylim=c(0,max(risk.0))
+    marker.name="Day57"%.%a%.%"cat"    
     
     out=risks.all.ter[[a]]
     # cutpoints
     q.a=wtd.quantile(dat.mock.vacc.seroneg[["Day57"%.%a]], weights=dat.mock.vacc.seroneg$wt, probs=c(1/3, 2/3))
     
-    mymatplot(out$time, out$risk, lty=1:3, col=c("green3","green","darkgreen"), type="l", lwd=lwd, make.legend=F, ylab="Cumulative COVID Rate", ylim=ylim, xlab="", las=1)
+    mymatplot(out$time, out$risk, lty=1:3, col=c("green3","green","darkgreen"), type="l", lwd=lwd, make.legend=F, ylab="Cumulative COVID Rate", ylim=ylim, xlab="", las=1, xlim=c(0,t0), at=x.time, xaxt="n")
     title(xlab="Days Since Day 57 Visit", line=2)
     title(main=labels.title["Day57",a], cex.main=.9, line=2)
     mtext(bquote(cutpoints: list(.(formatDouble(10^q.a[1]/10^floor(q.a[1]),1)) %*% 10^ .(floor(q.a[1])), .(formatDouble(10^q.a[2]/10^floor(q.a[2]),1)) %*% 10^ .(floor(q.a[2])))), line= .25, cex=.8)   
@@ -702,66 +732,44 @@ for (a in assays) {
     mylegend(x=1, legend=legend, lty=c(1:3,1), col=c("green3","green","darkgreen","gray"), lwd=2)
     mylines(time.0, risk.0, col="gray", lwd=2)
     
-    # add data ribbon
+    # add data ribbon    
     f1=update(form.s, as.formula(paste0("~.+",marker.name)))
-    km <- svykm(f1, design.vacc.seroneg)
+    km <- survfit(f1, subset(dat.mock.vacc.seroneg.D57, TwophasesampInd==1), weights=wt)
     tmp=summary(km, times=x.time)            
+    
+    n.risk.L <- round(tmp$n.risk[1:length(x.time)])
+    n.risk.M <- round(tmp$n.risk[1:length(x.time)+length(x.time)])
+    n.risk.H <- round(tmp$n.risk[1:length(x.time)+length(x.time)*2])
+    
+    cum.L <- round(cumsum(tmp$n.event[1:length(x.time)]))
+    cum.M <- round(cumsum(tmp$n.event[1:length(x.time)+length(x.time)]))
+    cum.H <- round(cumsum(tmp$n.event[1:length(x.time)+length(x.time)*2]))
+    
+    cex.text <- 0.7
+    at.label=-25
+    
+    mtext(expression(bold("No. at risk")),side=1,outer=FALSE,line=2.5,at=-2,adj=0,cex=cex.text)
+    mtext(paste0("Low:"),side=1,outer=F,line=3.4,at=at.label,adj=0,cex=cex.text)
+    mtext(paste0("Med:"),side=1,outer=F,line=4.3,at=at.label,adj=0,cex=cex.text)
+    mtext(paste0("High:"),side=1,outer=F,line=5.2,at=at.label,adj=0,cex=cex.text)
+    mtext(n.risk.L,side=1,outer=FALSE,line=3.4,at=x.time,cex=cex.text)
+    mtext(n.risk.M,side=1,outer=FALSE,line=4.3,at=x.time,cex=cex.text)
+    mtext(n.risk.H,side=1,outer=FALSE,line=5.2,at=x.time,cex=cex.text)
+    
+    mtext(expression(bold("Cumulative No. of Overall infections")),side=1,outer=FALSE,line=6.4,at=-2,adj=0,cex=cex.text)
+    mtext(paste0("Low:"),side=1,outer=FALSE,line=7.3,at=at.label,adj=0,cex=cex.text)
+    mtext(paste0("Med:"),side=1,outer=FALSE,line=8.2,at=at.label,adj=0,cex=cex.text)
+    mtext(paste0("High:"),side=1,outer=FALSE,line=9.1,at=at.label,adj=0,cex=cex.text)
+    mtext(cum.L,side=1,outer=FALSE,line=7.3,at=x.time,cex=cex.text)
+    mtext(cum.M,side=1,outer=FALSE,line=8.2,at=x.time,cex=cex.text)
+    mtext(cum.H,side=1,outer=FALSE,line=9.1,at=x.time,cex=cex.text)
+    
 }
 mtext(toTitleCase(study.name), side = 1, line = 2, outer = T, at = NA, adj = NA, padj = NA, cex = .8, col = NA, font = NA)
 dev.off()    
-
-
-## example code for data ribbon
-#    km.M <- survfit(Surv(oftime_m13, ofstatus_m13) ~ 1, data=dat[cate=="Medium",])
-#    km.H <- survfit(Surv(oftime_m13, ofstatus_m13) ~ 1, data=dat[cate=="High",])
-#    
-#    #x.time <- seq(0, min(max(dat$flrtime[cat=="Low"]), max(dat$flrtime[cat=="Medium"]),max(dat$flrtime[cat=="High"])), length.out=13) # may want to modify
-#    x.time<-seq(0,12,by=2)*scl
-#    n.risk.L <- summary(km.L, times=x.time)$n.risk
-#    n.risk.M <- summary(km.M, times=x.time)$n.risk
-#    n.risk.H <- summary(km.H, times=x.time)$n.risk
-#    
-#    cum.L <- cumsum(summary(km.L, times=x.time)$n.event)
-#    cum.M <- cumsum(summary(km.M, times=x.time)$n.event)
-#    cum.H <- cumsum(summary(km.H, times=x.time)$n.event)
-#    
-#    #make the last entry include visit window
-#    cum.L[7] <- count[1]
-#    cum.M[7] <- count[2]
-#    cum.H[7] <- count[3]
-#    
-#    cex.text <- 0.7
-#    mtext(expression(bold("No. at risk")),side=1,outer=FALSE,line=2.5,at=-2,adj=0,cex=cex.text)
-#    mtext(n.risk.L,side=1,outer=FALSE,line=3.4,at=seq(0,12,by=2),cex=cex.text)
-#    mtext(n.risk.M,side=1,outer=FALSE,line=4.3,at=seq(0,12,by=2),cex=cex.text)
-#    mtext(n.risk.H,side=1,outer=FALSE,line=5.2,at=seq(0,12,by=2),cex=cex.text)
-#    
-#    mtext(paste0("Low S",i,":"),side=1,outer=F,line=3.4,at=-4,adj=0,cex=cex.text)
-#    mtext(paste0("Med S",i,":"),side=1,outer=F,line=4.3,at=-4,adj=0,cex=cex.text)
-#    mtext(paste0("High S",i,":"),side=1,outer=F,line=5.2,at=-4,adj=0,cex=cex.text)
-#    mtext(expression(bold("Cumulative No. of Overall Dengue infections")),side=1,outer=FALSE,line=6.4,at=-2,adj=0,
-#        cex=cex.text)
-#    mtext(cum.L,side=1,outer=FALSE,line=7.3,at=x.time/scl,cex=cex.text)
-#    mtext(cum.M,side=1,outer=FALSE,line=8.2,at=x.time/scl,cex=cex.text)
-#    mtext(cum.H,side=1,outer=FALSE,line=9.1,at=x.time/scl,cex=cex.text)
-#    
-#    
-#    mtext(paste0("Low S",i,":"),side=1,outer=FALSE,line=7.3,at=-4,adj=0,cex=cex.text)
-#    mtext(paste0("Med S",i,":"),side=1,outer=FALSE,line=8.2,at=-4,adj=0,cex=cex.text)
-#    mtext(paste0("High S",i,":"),side=1,outer=FALSE,line=9.1,at=-4,adj=0,cex=cex.text)
-#    }
-#    if(vacc=="Vaccine"){mtext(expression(bold("Cumulative Overall Dengue Incidence by Serotype Response Subgroups (Vaccine)")), side=3, outer=TRUE, line=0.5,cex=1.2)}
-#    if(vacc=="Placebo"){mtext(expression(bold("Cumulative Overall Dengue Incidence by Serotype Response Subgroups (Placebo)")), side=3, outer=TRUE, line=0.5,cex=1.2)}
-#                      
-#    mtext("Note: (1)Low, Medium, High subgroups are the bottom, middle, and upper third of the month 13 PRNT titers.", side=1, outer=TRUE, line=1,cex=0.85) 
-#    mtext("                  (2)P.val.HR(P.val.OR) is the two-sided p-value for different hazard rates(odds of event) by titer subgroups.", side=1, outer=TRUE, line=2,cex=0.85) 
-
-
-
-#########################################################
-# Marginalized risk curves for continuous markers conditional on S>=s, with bootstrap
-
-
+#
+cumsum(summary(survfit(form.s, subset(dat.mock.vacc.seroneg.D57, TwophasesampInd==1)), times=x.time)$n.event)
+with(subset(dat.mock.vacc.seroneg, EventIndPrimaryD57==1), table(Day57pseudoneutid80cat))
 
 
 

@@ -46,3 +46,5 @@ cor_coxph/output/marginalized_risks1_mock.pdf
 cor_coxph/output/marginalized_risks1_woplacebo_mock.pdf
 cor_coxph/output/marginalized_risks2_mock.pdf
 cor_coxph/output/marginalized_risks2_woplacebo_mock.pdf
+cor_coxph/report.knit.md
+cor_coxph/report.utf8.md

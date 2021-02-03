@@ -28,6 +28,7 @@ bibliography: ref.bib
 
 # Univariate CoR: Cox Proportional Hazards Modeling of Relative and Absolute Risk {#cor-coxph}
 
+All analyses for D57 markers are run on the population with EventTimePrimaryD57>=7.
 The main regression model is the Cox proportional hazards model. All plots are made with Cox models fit unless specified otherwise. The trichotomized variables in Table \ref{tab:CoR_D57_univariable_svycoxph_pretty_\studyname} are defined with respect to inverse probability weighted quantiles computed using the Hmisc::wtd.quantile function.
 
 

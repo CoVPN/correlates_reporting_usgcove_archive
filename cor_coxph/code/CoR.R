@@ -1,7 +1,7 @@
 # start R inside the code folder or make sure working directory is here
 rm(list=ls())       
     
-rerun.time.consuming.steps=F # 1e3 bootstraps take 8 min with 30 CPUS. The results are saved in several .Rdata files.
+rerun.time.consuming.steps=T # 1e3 bootstraps take 8 min with 30 CPUS. The results are saved in several .Rdata files.
 numCores=30 # number of cores available on the machine
 B=1000 # number of bootstrap replicates
     
@@ -31,6 +31,10 @@ trt.labels=c("Placebo","Vaccine")
 bstatus.labels=c("Baseline Neg","Pos")
 max.stratum=max(dat.mock$Bstratum)
     
+# intercurrent cases
+nrow(subset(dat.mock.vacc.seroneg, TwophasesampInd==1& EventIndPrimaryD29==1))
+nrow(subset(dat.mock.vacc.seroneg, TwophasesampInd==1& EventIndPrimaryD57==1))
+    
 # important subset of data
 dat.mock.vacc.seroneg.D57=subset(dat.mock.vacc.seroneg, EventTimePrimaryD57>=7)
 #    # this is not needed
@@ -41,16 +45,12 @@ dat.mock.vacc.seroneg.D57=subset(dat.mock.vacc.seroneg, EventTimePrimaryD57>=7)
 dat.mock.plac.seroneg=subset(dat.mock, Trt==0 & Bserostatus==0 & Perprotocol)
 dat.mock.vacc.seroneg.5 <- dat.mock.vacc.seroneg.subsample[["cases_5"]]
 # design objects, the two give slightly different results, twophase is better, but slower
-design.vacc.seroneg<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd, data=dat.mock.vacc.seroneg)
-dstrat<-svydesign(id=~1,strata=~Wstratum, weights=~wt, data=dat.mock.vacc.seroneg)
+design.vacc.seroneg<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd, data=dat.mock.vacc.seroneg.D57)
+dstrat<-svydesign(id=~1,strata=~Wstratum, weights=~wt, data=dat.mock.vacc.seroneg.D57)
 #
-t0=max(dat.mock.vacc.seroneg$EventTimePrimaryD57[dat.mock.vacc.seroneg$EventIndPrimaryD57==1]); myprint(t0)
+t0=max(dat.mock.vacc.seroneg.D57$EventTimePrimaryD57[dat.mock.vacc.seroneg.D57$EventIndPrimaryD57==1]); myprint(t0)
 write(t0, file=paste0(save.results.to, "timepoints_cum_risk_"%.%study.name))
 
-# intercurrent cases
-nrow(subset(dat.mock.vacc.seroneg, TwophasesampInd==1& EventIndPrimaryD29==1))
-nrow(subset(dat.mock.vacc.seroneg, TwophasesampInd==1& EventIndPrimaryD57==1))
-    
 # base formula
 form.a = ~. + Age # + BRiskScore
 form.s = Surv(EventTimePrimaryD57, EventIndPrimaryD57) ~ 1
@@ -64,7 +64,7 @@ p.cov=length(terms(form.0))
 cutpoints=list()
 for (a in assays) {        
     for (t in c("Day57", "Delta57overB")) {
-        q.a=wtd.quantile(dat.mock.vacc.seroneg[[t%.%a]], weights=dat.mock.vacc.seroneg$wt, probs=c(1/3, 2/3))
+        q.a=wtd.quantile(dat.mock.vacc.seroneg.D57[[t%.%a]], weights=dat.mock.vacc.seroneg.D57$wt, probs=c(1/3, 2/3))
         write(paste0(labels.axis[1,a], " [", concatList(round(q.a, 2), ", "), ")%"), file=paste0(save.results.to, "cutpoints_",t,a, "_"%.%study.name))
     }
 }
@@ -94,8 +94,8 @@ for (a in c("Day57"%.%assays, "Delta57overB"%.%assays)) {
     fits[[a]]=svycoxph(f, design=design.vacc.seroneg) 
 }
 
-natrisk=nrow(subset(dat.mock.vacc.seroneg, EventTimePrimaryD57>=7))
-nevents=nrow(subset(dat.mock.vacc.seroneg, EventTimePrimaryD57>=7 & EventIndPrimaryD57==1))
+natrisk=nrow(dat.mock.vacc.seroneg.D57)
+nevents=nrow(subset(dat.mock.vacc.seroneg.D57, EventIndPrimaryD57==1))
 
 # make pretty table for D57 only
 fits=fits[1:length(assays)] # for now, we don't need the delta (multitesting adjustment results are affected)
@@ -281,11 +281,11 @@ for (a in assays) {
     fits[[1]]=fit
     
     for (k in 1:max.stratum) {
-        if(sum (subset(dat.mock.vacc.seroneg, Bstratum==k, EventIndPrimaryD57))<=2) {
+        if(sum (subset(dat.mock.vacc.seroneg.D57, Bstratum==k, EventIndPrimaryD57))<=2) {
             # 0-2 cases
             fits[[k+1]]=NA
         } else {
-            design<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd, data=subset(dat.mock.vacc.seroneg, Bstratum==k))            
+            design<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd, data=subset(dat.mock.vacc.seroneg.D57, Bstratum==k))            
             fit=svycoxph(update(form.1, as.formula(paste0("~.+Day57", a))), design=design) # no need to adjust for binary baseline demog b/c it is within stratum
             fits[[k+1]]=fit
         }
@@ -322,17 +322,17 @@ designs=list()
 for (i in 1:4) {    
     designs[[i]]=list()
     if(i==1) {
-        designs[[i]][[1]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd, data=subset(dat.mock.vacc.seroneg, age.geq.65==1))
-        designs[[i]][[2]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd, data=subset(dat.mock.vacc.seroneg, age.geq.65==0))        
+        designs[[i]][[1]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd, data=subset(dat.mock.vacc.seroneg.D57, age.geq.65==1))
+        designs[[i]][[2]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd, data=subset(dat.mock.vacc.seroneg.D57, age.geq.65==0))        
     } else if(i==2) {
-        designs[[i]][[1]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd, data=subset(dat.mock.vacc.seroneg, HighRiskInd==1))
-        designs[[i]][[2]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd, data=subset(dat.mock.vacc.seroneg, HighRiskInd==0))
+        designs[[i]][[1]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd, data=subset(dat.mock.vacc.seroneg.D57, HighRiskInd==1))
+        designs[[i]][[2]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd, data=subset(dat.mock.vacc.seroneg.D57, HighRiskInd==0))
     } else if(i==3) {
-        designs[[i]][[1]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd, data=subset(dat.mock.vacc.seroneg, MinorityInd==1))
-        designs[[i]][[2]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd, data=subset(dat.mock.vacc.seroneg, MinorityInd==0))
+        designs[[i]][[1]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd, data=subset(dat.mock.vacc.seroneg.D57, MinorityInd==1))
+        designs[[i]][[2]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd, data=subset(dat.mock.vacc.seroneg.D57, MinorityInd==0))
     } else if(i==4) {
-        designs[[i]][[1]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd, data=subset(dat.mock.vacc.seroneg, Sex==1))
-        designs[[i]][[2]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd, data=subset(dat.mock.vacc.seroneg, Sex==0))
+        designs[[i]][[1]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd, data=subset(dat.mock.vacc.seroneg.D57, Sex==1))
+        designs[[i]][[2]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd, data=subset(dat.mock.vacc.seroneg.D57, Sex==0))
     }
 }
 
@@ -404,7 +404,7 @@ for (a in assays) {
 # data is ph1 data
 # t is a time point near to the time of the last observed outcome will be defined
 marginal.risk.svycoxph.boot=function(formula, marker.name, type, data, t, weights, B, ci.type="quantile", numCores=1) {  
-# formula=form.0; marker.name="Day57bindSpike"; data=dat.mock.vacc.seroneg; t=t0; weights=dat.mock.vacc.seroneg$wt; B=2; ci.type="quantile"; numCores=1
+# formula=form.0; marker.name="Day57bindSpike"; data=dat.mock.vacc.seroneg.D57; t=t0; weights=dat.mock.vacc.seroneg.D57$wt; B=2; ci.type="quantile"; numCores=1
     
     # store the current rng state 
     save.seed <- try(get(".Random.seed", .GlobalEnv), silent=TRUE) 
@@ -511,14 +511,14 @@ if(rerun.time.consuming.steps) {
     # conditional on s
     risks.all.1=list()
     for (a in assays) {
-        risks.all.1[[a]]=marginal.risk.svycoxph.boot(formula=form.0, marker.name="Day57"%.%a, type=1, data=dat.mock.vacc.seroneg, t0, weights=dat.mock.vacc.seroneg$wt, B=B, ci.type="quantile", numCores=numCores)        
+        risks.all.1[[a]]=marginal.risk.svycoxph.boot(formula=form.0, marker.name="Day57"%.%a, type=1, data=dat.mock.vacc.seroneg.D57, t0, weights=dat.mock.vacc.seroneg.D57$wt, B=B, ci.type="quantile", numCores=numCores)        
     }
     save(risks.all.1, file=paste0(save.results.to, "risks.all.1."%.%study.name%.%".Rdata"))
     
     # conditional on S>=s
     risks.all.2=list()
     for (a in assays) {
-        risks.all.2[[a]]=marginal.risk.svycoxph.boot(formula=form.0, marker.name="Day57"%.%a, type=2, data=dat.mock.vacc.seroneg, t0, weights=dat.mock.vacc.seroneg$wt, B=B, ci.type="quantile", numCores=numCores)        
+        risks.all.2[[a]]=marginal.risk.svycoxph.boot(formula=form.0, marker.name="Day57"%.%a, type=2, data=dat.mock.vacc.seroneg.D57, t0, weights=dat.mock.vacc.seroneg.D57$wt, B=B, ci.type="quantile", numCores=numCores)        
     }
     save(risks.all.2, file=paste0(save.results.to, "risks.all.2."%.%study.name%.%".Rdata"))
     
@@ -582,7 +582,7 @@ prev.plac[1] = mean (1 - exp(-pred.tmp$fit))
 prev.plac[2:3] = prev.plac[1] + c(-1,1)*1.96*sd.tmp        
 # vaccine arm
 # variance is asymptotic
-dat.tmp=dat.mock.vacc.seroneg
+dat.tmp=dat.mock.vacc.seroneg.D57
 fit.tmp = coxph(form.0, dat.tmp)
 dat.tmp$EventTimePrimaryD57=t0
 pred.tmp=predict(fit.tmp, newdata=dat.tmp, type="expected", se.fit=T)    
@@ -593,7 +593,7 @@ prev.vacc[2:3] = prev.vacc[1] + c(-1,1)*1.96*sd.tmp
 #        # simple method, not accurate
 #        tmp=subset(dat.mock, Trt==0 & Bserostatus==0 & Perprotocol==1, EventIndPrimaryD57, drop=T)    
 #        prev.plac=binconf(sum(tmp), length(tmp))
-#        tmp=subset(dat.mock.vacc.seroneg, select=EventIndPrimaryD57, drop=T)    
+#        tmp=subset(dat.mock.vacc.seroneg.D57, select=EventIndPrimaryD57, drop=T)    
 #        prev.vacc=binconf(sum(tmp), length(tmp))    
 
 for (ii in 1:2) { # 1 is conditional on s and 2 is conditional on S>=s
@@ -629,7 +629,7 @@ for (idx in 1:2) {
         par(new=TRUE) 
         col <- c(col2rgb("olivedrab3")) # orange, darkgoldenrod2
         col <- rgb(col[1], col[2], col[3], alpha=255*0.4, maxColorValue=255)
-        hist(dat.mock.vacc.seroneg[["Day57"%.%a]],col=col,axes=F,labels=F,main="",xlab="",ylab="",breaks=10,border=0,freq=F)    #,ylim=ylim    
+        hist(dat.mock.vacc.seroneg.D57[["Day57"%.%a]],col=col,axes=F,labels=F,main="",xlab="",ylab="",breaks=10,border=0,freq=F)    #,ylim=ylim    
         #axis(side=4, at=axTicks(side=4)[1:5])
         #mtext("Density", side=4, las=0, line=2, cex=1, at=.3)  
         #mylegend(x=6, fill=col, border=col, legend="Vaccine Group", bty="n", cex=0.7)      
@@ -652,7 +652,7 @@ mypdf(onefile=F, file=paste0(save.results.to, "controlled_ve_curves_"%.%study.na
         
         # compute Bias as a vector, which is a function of s
         # choose a reference marker value
-        tmp=subset(dat.mock.vacc.seroneg, select=EventIndPrimaryD57, drop=T)    
+        tmp=subset(dat.mock.vacc.seroneg.D57, select=EventIndPrimaryD57, drop=T)    
         mean(tmp)
         which=which.min(abs(risks$prob-mean(tmp)))
         s.ref=risks$marker[which]
@@ -684,7 +684,7 @@ mypdf(onefile=F, file=paste0(save.results.to, "controlled_ve_curves_"%.%study.na
         par(new=TRUE) 
         col <- c(col2rgb("olivedrab3")) # orange, darkgoldenrod2
         col <- rgb(col[1], col[2], col[3], alpha=255*0.4, maxColorValue=255)
-        hist(dat.mock.vacc.seroneg[["Day57"%.%a]],col=col,axes=F,labels=F,main="",xlab="",ylab="",breaks=10,border=0,freq=F)    #,ylim=ylim    
+        hist(dat.mock.vacc.seroneg.D57[["Day57"%.%a]],col=col,axes=F,labels=F,main="",xlab="",ylab="",breaks=10,border=0,freq=F)    #,ylim=ylim    
     
     }
 dev.off()    
@@ -700,14 +700,14 @@ for (a in assays) {
     f1=update(form.0, as.formula(paste0("~.+",marker.name)))
     f2=update(form.0, as.formula(paste0(marker.name,"~.")))
         
-    fit.risk=svycoxph(f1, design=twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd, data=dat.mock.vacc.seroneg))
-    fit.s=nnet::multinom(f2, dat.mock.vacc.seroneg, weights=dat.mock.vacc.seroneg$wt) 
+    fit.risk=svycoxph(f1, design=twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd, data=dat.mock.vacc.seroneg.D57))
+    fit.s=nnet::multinom(f2, dat.mock.vacc.seroneg.D57, weights=dat.mock.vacc.seroneg.D57$wt) 
     
-    risks.all.ter[[a]]=marginal.risk(fit.risk, fit.s, subset(dat.mock.vacc.seroneg,TwophasesampInd==1), weights=dat.mock.vacc.seroneg$wt[dat.mock.vacc.seroneg$TwophasesampInd==1], categorical.s=T)
+    risks.all.ter[[a]]=marginal.risk(fit.risk, fit.s, subset(dat.mock.vacc.seroneg.D57,TwophasesampInd==1), weights=dat.mock.vacc.seroneg.D57$wt[dat.mock.vacc.seroneg.D57$TwophasesampInd==1], categorical.s=T)
 }
 
 
-tt=sort(unique(dat.mock.plac.seroneg$EventTimePrimaryD57[dat.mock.vacc.seroneg$EventIndPrimaryD57==1]))
+tt=sort(unique(dat.mock.plac.seroneg$EventTimePrimaryD57[dat.mock.vacc.seroneg.D57$EventIndPrimaryD57==1]))
 fit.0=coxph(Surv(EventTimePrimaryD57, EventIndPrimaryD57) ~ 1, dat.mock.plac.seroneg)
 risk.0= 1 - exp(-predict(fit.0, type="expected"))
 time.0= dat.mock.plac.seroneg$EventTimePrimaryD57
@@ -722,7 +722,7 @@ for (a in assays) {
     
     out=risks.all.ter[[a]]
     # cutpoints
-    q.a=wtd.quantile(dat.mock.vacc.seroneg[["Day57"%.%a]], weights=dat.mock.vacc.seroneg$wt, probs=c(1/3, 2/3))
+    q.a=wtd.quantile(dat.mock.vacc.seroneg.D57[["Day57"%.%a]], weights=dat.mock.vacc.seroneg.D57$wt, probs=c(1/3, 2/3))
     
     mymatplot(out$time, out$risk, lty=1:3, col=c("green3","green","darkgreen"), type="l", lwd=lwd, make.legend=F, ylab="Cumulative COVID Rate", ylim=ylim, xlab="", las=1, xlim=c(0,t0), at=x.time, xaxt="n")
     title(xlab="Days Since Day 57 Visit", line=2)
@@ -769,7 +769,7 @@ mtext(toTitleCase(study.name), side = 1, line = 2, outer = T, at = NA, adj = NA,
 dev.off()    
 #
 cumsum(summary(survfit(form.s, subset(dat.mock.vacc.seroneg.D57, TwophasesampInd==1)), times=x.time)$n.event)
-with(subset(dat.mock.vacc.seroneg, EventIndPrimaryD57==1), table(Day57pseudoneutid80cat))
+with(subset(dat.mock.vacc.seroneg.D57, EventIndPrimaryD57==1), table(Day57pseudoneutid80cat))
 
 
 
@@ -777,8 +777,8 @@ with(subset(dat.mock.vacc.seroneg, EventIndPrimaryD57==1), table(Day57pseudoneut
 # sensitivity study to the number of cases
 ####################################################################################################
 
-dat.list=c(list(dat.mock.vacc.seroneg), rev(dat.mock.vacc.seroneg.subsample))
-names(dat.list)=c(nrow(subset(dat.mock.vacc.seroneg,TwophasesampInd==1 & EventIndPrimaryD57==1)),40,30,25,20,15,10,5)%.%" cases"
+dat.list=c(list(dat.mock.vacc.seroneg.D57), rev(dat.mock.vacc.seroneg.subsample))
+names(dat.list)=c(nrow(subset(dat.mock.vacc.seroneg.D57,TwophasesampInd==1 & EventIndPrimaryD57==1)),40,30,25,20,15,10,5)%.%" cases"
 
 fit.1=lapply(dat.list, function (data) {
     f= update(form.0, ~.+Day57pseudoneutid80)
@@ -791,11 +791,11 @@ tabs=list(t(tab.sens.1)[,1:3], t(tab.sens.1)[,4:(1+p.cov),drop=F]); names(tabs)=
 mytex(tabs, file.name="CoR_Day57pseudoneutid80_sens_noCases_"%.%study.name, input.foldername=save.results.to, align="c", save2input.only=TRUE)
 
 
-cases=subset(dat.mock.vacc.seroneg, EventIndPrimaryD57==1, Ptid, drop=T)
+cases=subset(dat.mock.vacc.seroneg.D57, EventIndPrimaryD57==1, Ptid, drop=T)
 fit.2=lapply(2:6, function(seed) {
     set.seed(seed)
     # resample 5
-    data = subset(dat.mock.vacc.seroneg, EventIndPrimaryD57==0 | Ptid %in% sample(cases, 5, replace=F))
+    data = subset(dat.mock.vacc.seroneg.D57, EventIndPrimaryD57==0 | Ptid %in% sample(cases, 5, replace=F))
     with(data, table(EventIndPrimaryD57, HighRiskInd))
     with(data, table(EventIndPrimaryD57, MinorityInd))
     f= update(form.0, ~.+Day57pseudoneutid80)
@@ -868,7 +868,7 @@ mytex(tab, file.name="CoR_Day57pseudoneutid80_5cases_Firth_"%.%study.name, input
 
 # comparing results with svyglm (before adding strata(age.geq.65)), also this uses a slightly different design object
 #fits.2=list()
-#dstrat<-svydesign(id=~1,strata=~Wstratum, weights=~wt, data=dat.mock.vacc.seroneg)
+#dstrat<-svydesign(id=~1,strata=~Wstratum, weights=~wt, data=dat.mock.vacc.seroneg.D57)
 #for (a in assays) {
 #    f= update(EventIndPrimaryD57~I(Age>65) + MinorityInd + HighRiskInd + BRiskScore, as.formula(paste0("~.+Day57", a)))
 #    fits.2[[a]]=svyglm(f, design=dstrat, family="binomial")
@@ -881,7 +881,7 @@ mytex(tab, file.name="CoR_Day57pseudoneutid80_5cases_Firth_"%.%study.name, input
 #fits.3=list()
 #for (a in assays) {
 #    f= update(form.0.logistic, as.formula(paste0("~.+Day57", a)))
-#    fits.3[[a]]=tps.covid(formula=f, data=dat.mock.vacc.seroneg)
+#    fits.3[[a]]=tps.covid(formula=f, data=dat.mock.vacc.seroneg.D57)
 #}
 #tab.3=getFormattedSummary(fits.3, exp=T, robust=T)
 ##getFormattedSummary(fits.3, exp=T, robust=F)

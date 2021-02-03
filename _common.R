@@ -1,3 +1,4 @@
+renv::activate()
 library(methods)
 set.seed(98109)
 

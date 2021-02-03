@@ -1,6 +1,6 @@
 Package: covpncorrelates
 Title: CoVPN COVID-19 Correlates Analyses
-Version: 0.0.3
+Version: 0.0.4
 Authors@R: c(
     person("CoVPN Biostatistics", "Team", email = "",
            role = c("aut", "cre", "cph"))
@@ -10,19 +10,22 @@ Imports:
   bookdown,
   bslib,
   rmarkdown,
-  ggplot2,
+  here,
+  devtools,
+  data.table,
   tibble,
+  ggplot2,
   tidyr,
   dplyr,
   readr,
-  knitr,
   stringr,
-  devtools,
-  data.table,
-  here,
+  knitr,
+  kableExtra,
+  latex2exp,
   webshot,
   mvtnorm,
   skimr,
+  tidyverse,
   delayed,
   origami,
   hal9001,
@@ -43,14 +46,15 @@ Suggests:
   randomForest,
   ranger
 Remotes:
+  github::rstudio/bslib,
   github::rstudio/bookdown,
   github::CoVPN/correlates_mockdata,
   github::tlverse/hal9001@master,
   github::tlverse/delayed@master,
   github::tlverse/origami@master,
-  github::tlverse/sl3@devel,
+  github::tlverse/sl3@master,
   github::nhejazi/haldensify@master,
   github::nhejazi/txshift@master
-URL: https://github.com/nhejazi/covpncorr
-BugReports: https://github.com/nhejazi/covpncorr/issues
+URL: https://github.com/CoVPN/correlates_reporting
+BugReports: https://github.com/CoVPN/correlates_reporting/issues
 RoxygenNote: 7.1.1

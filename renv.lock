@@ -247,10 +247,16 @@
     },
     "bookdown": {
       "Package": "bookdown",
-      "Version": "0.21",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "1bf627f1f77313e345f71e779b658578"
+      "Version": "0.21.6",
+      "Source": "GitHub",
+      "Remotes": "rstudio/bslib, rstudio/rmarkdown, r-lib/downlit",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteRepo": "bookdown",
+      "RemoteUsername": "rstudio",
+      "RemoteRef": "HEAD",
+      "RemoteSha": "6c7346a5b6013966195982f4ba69be46238a6b0c",
+      "Hash": "f80c41c1bcf9a8b381f32a38e2ddeaa4"
     },
     "boot": {
       "Package": "boot",
@@ -896,10 +902,10 @@
     },
     "knitr": {
       "Package": "knitr",
-      "Version": "1.30",
+      "Version": "1.31",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "eed7ee0d02eee88d53881cdc92457c62"
+      "Hash": "c3994c036d19fc22c5e2a209c8298bfb"
     },
     "kyotil": {
       "Package": "kyotil",
@@ -1416,13 +1422,14 @@
       "Package": "rmarkdown",
       "Version": "2.6.6",
       "Source": "GitHub",
+      "Remotes": "rstudio/bslib, rstudio/shiny",
       "RemoteType": "github",
-      "RemoteUsername": "rstudio",
-      "RemoteRepo": "rmarkdown",
-      "RemoteRef": "HEAD",
-      "RemoteSha": "4b119a9782f6153ed0c28514e1360b9a7229e010",
       "RemoteHost": "api.github.com",
-      "Hash": "c209fdb7ba5328a54da2e378ac675d4c"
+      "RemoteRepo": "rmarkdown",
+      "RemoteUsername": "rstudio",
+      "RemoteRef": "HEAD",
+      "RemoteSha": "d8e7a15e8fb7d0d4c0039c7336d6064dda30b126",
+      "Hash": "aaa4d2c5747a75eb820b8151eb8acc32"
     },
     "rms": {
       "Package": "rms",

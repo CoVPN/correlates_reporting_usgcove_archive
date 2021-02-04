@@ -2,6 +2,13 @@ library(dplyr)
 library(ggplot2)
 library(spatstat)
 
+
+format_number <- function(x, digits = 1) {
+  tens <- floor(log10(x))
+  x_main <- round(x / 10 ^ tens, digits)
+  paste0(x_main, "*10^", tens)
+}
+
 covid_corr_rcdf_ve_lines <- function(
   x,
   weights,
@@ -11,7 +18,7 @@ covid_corr_rcdf_ve_lines <- function(
   xlim = c(-2, 8),
   xbreaks = seq(-2, 8, 2),
   xlab,
-  ylab = "Vaccine Effectiveness",
+  ylab = "Vaccine Efficacy",
   
   legend_position = "right",
   legend_size = 10,
@@ -36,10 +43,14 @@ covid_corr_rcdf_ve_lines <- function(
   dat_areaV <- filter(dat_ecdf, x < line_low, x > line_top)
   
   ci_label <- paste0(conf.level * 100, "% CIs")
-  ve_line_label <- paste0("Antibody CoP threshold of ", round(line_mid, 1),
-                          " (", conf.level * 100, "% CI ", round(line_top, 1), " - ", round(line_low, 1),
-                          ")\ncalculated from vaccine efficacy of ", round(VE * 100, 1),
-                          "%\n(", conf.level * 100, "% CI ", round(VE_lb * 100, 1), " - ", round(VE_ub * 100, 1),")")
+  ve_line_label <- "VE lines"
+  
+  ve_line_label_legend <- paste0("Antibody CoP threshold of ", format_number(10 ^ line_mid),
+                                 " (", conf.level * 100, "% CI ", format_number(10 ^ line_top), " - ",
+                                 format_number(10 ^ line_low), ")\n",
+                                 "calculated from vaccine efficacy of ", round(VE * 100, 1), "%, \n",
+                                 conf.level * 100, "% CI (", round(VE_lb * 100, 1), " - ", 
+                                 round(VE_ub * 100, 1), ")")
   
   dat_seg <- data.frame(x = c(min(xgrid), min(xgrid), min(xgrid), line_low, line_top, line_mid),
                         y = c(VE_lb, VE_ub, VE, VE_lb, VE_ub, VE),
@@ -58,13 +69,16 @@ covid_corr_rcdf_ve_lines <- function(
     geom_ribbon(data = dat_areaV, aes(ymin = 0, ymax = rcdf), 
                 alpha = 0.3, fill = "grey")+
     geom_segment(data = dat_seg,
-                 aes(x = x, y = y, xend = xend, yend = yend, linetype = type, color = type),
+                 aes(x = x, y = y, xend = xend, yend = yend, linetype = type),
+                 color = "red",
                  arrow = arrow(length = unit(0.2, "cm"), type="closed"),
                  show.legend = FALSE) +
     geom_segment(data = dat_seg,
-                 aes(x = x, y = y, xend = xend, yend = yend, linetype = type, color = type)) +
-    scale_linetype_manual("", values = 1:2) +
-    scale_color_manual("", values=c("red", "red")) +
+                 aes(x = x, y = y, xend = xend, yend = yend, linetype = type),
+                 color = "red") +
+    scale_linetype_manual("", values = 1:2,
+                          labels = c(ve_line_label_legend, ci_label)) +
+    guides(color = "none") + 
     scale_x_continuous(labels = label_math(10^.x), limits = xlim, breaks = xbreaks) +
     scale_y_continuous(limits = c(0, 1), labels = percent) +
     xlab(xlab) +

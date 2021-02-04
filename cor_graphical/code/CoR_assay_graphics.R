@@ -1,5 +1,4 @@
 source(here::here("code", "cor_data_preprocess.R"))
-source(here::here("code", "cor_wrcdf_plot_function.R"))
 library(ggpubr)
 library(scales)
 
@@ -183,16 +182,4 @@ for (tt in 2:5){
            height = 6.5,
            width = 6.5)
   }
-}
-
-for (aa in 1:length(assays)) {
-  subdat <- subset(dat.long.cor.subset, assay == assays[aa] & Trt == "Vaccine")
-  covid_corr_rcdf_ve_lines(x = subdat$Day57,
-                           weights = subdat$wt,
-                           VE = 0.75,
-                           VE_lb = 0.43,
-                           VE_ub = 0.81,
-                           xlab = labels.axis["Day57", aa],
-                           filename = paste0(save.results.to, "/RCDF_VE_Day57_trt_Vaccine_", 
-                                             assays[aa], "_", study.name, ".png"))
 }

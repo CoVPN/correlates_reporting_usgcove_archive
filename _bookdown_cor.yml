@@ -1,0 +1,21 @@
+delete_merged_file: true
+book_filename: "covpn_correlates_cor"
+before_chapter_script: "_common.R"
+clean: packages.bib
+
+language:
+  label:
+    fig: "FIGURE "
+    tab: "TABLE "
+  ui:
+    chapter_name: "Section "
+
+rmd_files: [
+  "index.Rmd",
+  "cor_graphical/report.Rmd",
+  "cor_coxph/report.Rmd",
+  "cor_nonpar/report.Rmd",
+  "cor_threshold/report.Rmd",
+  "cor_surrogates/report.Rmd",
+  "references.Rmd"
+]

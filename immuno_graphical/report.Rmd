@@ -1,4 +1,4 @@
-# Graphical Description of Immunogenicity Data {#immuno_graphical}
+# Graphical Description of Immunogenicity Data {#immuno-graphical}
 
 ## Pairs plots
 

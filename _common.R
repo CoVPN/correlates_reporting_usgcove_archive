@@ -1,4 +1,3 @@
-renv::activate()
 library(methods)
 set.seed(98109)
 
@@ -6,21 +5,23 @@ set.seed(98109)
 knitr::opts_chunk$set(
   comment = "#>",
   collapse = TRUE,
-  fig.retina = 0.8,
-  fig.asp = 0.618,
-  dpi = 300,
+  #cache = TRUE,
+  out.width = "80%",
   fig.align = "center",
+  fig.width = 6,
+  fig.asp = 0.618,
+  fig.retina = 0.8,
   fig.show = "hold",
-  out.width = "120%",
+  dpi = 300,
   echo = FALSE,
-  message = FALSE, 
+  message = FALSE,
   warning = FALSE
 )
 
 # global options
 options(
-  digits = 7,
-  scipen = 999,
+  digits = 6,
+  #scipen = 999,
   dplyr.print_min = 6,
   dplyr.print_max = 6,
   crayon.enabled = FALSE,
@@ -34,7 +35,7 @@ Sys.setenv(R_REMOTES_NO_ERRORS_FROM_WARNINGS="true")
 
 # overwrite options by output type
 if (knitr:::is_html_output()) {
-  options(width = 80)
+  #options(width = 80)
 
   # automatically create a bib database for R packages
   knitr::write_bib(c(
@@ -42,22 +43,14 @@ if (knitr:::is_html_output()) {
   ), "packages.bib")
 }
 if (knitr:::is_latex_output()) {
-  knitr::opts_chunk$set(width = 67)
-  options(width = 67)
+  #knitr::opts_chunk$set(width = 67)
+  #options(width = 67)
   options(cli.unicode = TRUE)
 
   # automatically create a bib database for R packages
   knitr::write_bib(c(
     .packages(), "bookdown", "knitr", "rmarkdown"
   ), "packages.bib")
-}
-
-
-# get version of this document
-covpncorr_version <- function() {
-  today <- Sys.Date()
-  version <- read.dcf("DESCRIPTION")[1, "Version"]
-  paste0("Version ", version, " (", today, ")")
 }
 
 # create and set global ggplot theme
@@ -87,9 +80,7 @@ theme_update(
 )
 
 # custom ggsave function with updated defaults
-ggsave2 <- function(filename = default_name(plot),
-                   height= 15,
-                   width = 21,
-                   ...) {
+ggsave_custom <- function(filename = default_name(plot),
+                          height= 15, width = 21, ...) {
   ggsave(filename = filename, height = height, width = width, ...)
 }

@@ -13,8 +13,7 @@ doctype <- opts_knit$get("rmarkdown.pandoc.to")
 ```
 
 `r if ("demo" %in% names(tlf)) {sprintf("### Table %s. Demographic", tbl_num)}`
-```{r demo, results = "asis", eval = "demo" %in% names(tlf) & doctype != "docx"}
-
+```{r demo, results="asis", eval="demo" %in% names(tlf) & doctype != "docx"}
 chunk_name <- opts_current$get("label")
 tlf_labels <- tlf[[chunk_name]]
 
@@ -30,7 +29,7 @@ kable(
                 sprintf("Vaccine\n(N = %s)",sum(ds_s$Trt==1)),
                 sprintf("Total\n(N = %s)", nrow(ds_s))),
   format = doctype, booktabs = TRUE, longtable = TRUE,
-  caption=sprintf("Table %s. %s", tbl_num, title_i)
+  caption = sprintf("Table %s. %s", tbl_num, title_i)
 ) %>%
 pack_rows(index = table(tab_dm$subgroup)) %>%
 kable_styling(latex_options = "repeat_header") %>%
@@ -41,8 +40,7 @@ tbl_num <- tbl_num + 1
 ```
 
 `r if ("demo" %in% names(tlf)) {sprintf("### Table %s. Responder rates", tbl_num)}`
-```{r respprop, results = "asis", echo = FALSE, eval = "respprop" %in% names(tlf) & doctype != "docx"}
-
+```{r respprop, results="asis", echo=FALSE, eval="respprop" %in% names(tlf) & doctype != "docx"}
 chunk_name <- opts_current$get("label")
 tlf_labels <- tlf[[chunk_name]]
 
@@ -54,7 +52,7 @@ tab_footer <- c(footer_i, "", add2footer, "", trt_footer)
 tab1 <- tab_rr %>%
   select(subgroup, Group, Baseline, Visit,  N, Endpoint,Responder,
          `2-Fold Rise`, `4-Fold Rise`) %>%
-  mutate(N=as.character(N))
+  mutate(N = as.character(N))
 
 subnum <- 0
 for (i in unique(tab_rr$subgroup)){
@@ -80,7 +78,7 @@ tbl_num <- tbl_num + 1
 ```
 
 `r if ("demo" %in% names(tlf)) {sprintf("### Table %s. Geometric mean titers (GMTs) or geometric mean value of concentrations (GMCs)", tbl_num)}`
-```{r gmt, results = "asis", echo = FALSE, eval = "gmt" %in% names(tlf) & doctype != "docx"}
+```{r gmt, results="asis", echo=FALSE, eval="gmt" %in% names(tlf) & doctype != "docx"}
 chunk_name <- opts_current$get("label")
 tlf_labels <- tlf[[chunk_name]]
 

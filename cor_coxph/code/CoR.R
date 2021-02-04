@@ -1,7 +1,7 @@
 # start R inside the code folder or make sure working directory is here
 rm(list=ls())       
     
-rerun.time.consuming.steps=F # 1e3 bootstraps take 8 min with 30 CPUS. The results are saved in several .Rdata files.
+rerun.time.consuming.steps=T # 1e3 bootstraps take 8 min with 30 CPUS. The results are saved in several .Rdata files.
 numCores=30 # number of cores available on the machine
 B=1000 # number of bootstrap replicates
     
@@ -9,11 +9,12 @@ library(COVIDcorr); stopifnot(packageVersion("COVIDcorr")>="2021.01.25")
 #remotes::install_github("CoVPN/correlates_mockdata", auth_token="e09062bae8d9a4acf4ba7e7c587c5d3fbe1abd69")
     
 # the order of these packages matters
-library(mgcv) # gam
-library(nnet)# multinom, for estimating trichotomous markers probability, make sure this comes after mgcv since mgcv also has multinom
-library(kyotil);       stopifnot(packageVersion("kyotil")>="2021.2-2")
-library(marginalRisk); stopifnot(packageVersion("marginalRisk")>="2021.2-2")
-library(chngpt);       stopifnot(packageVersion("chngpt")>="2020.10.12")
+# kyotil mostly contains code for formatting, but may also contain code for some estimation tasks
+library(kyotil);           stopifnot(packageVersion("kyotil")>="2021.2-2")
+#remotes::install_github("youyifong/kyotil")
+# marginalizedRisk contains logic for computing marginalized risk curves
+library(marginalizedRisk); stopifnot(packageVersion("marginalizedRisk")>="2021.2-4")
+#remotes::install_github("youyifong/marginalizedRisk")
 library(tools) # toTitleCase
 library(survey)
 library(splines)
@@ -403,7 +404,7 @@ for (a in assays) {
 #### conditional on s
 # data is ph1 data
 # t is a time point near to the time of the last observed outcome will be defined
-marginal.risk.svycoxph.boot=function(formula, marker.name, type, data, t, weights, B, ci.type="quantile", numCores=1) {  
+marginalized.risk.svycoxph.boot=function(formula, marker.name, type, data, t, weights, B, ci.type="quantile", numCores=1) {  
 # formula=form.0; marker.name="Day57bindSpike"; data=dat.mock.vacc.seroneg.D57; t=t0; weights=dat.mock.vacc.seroneg.D57$wt; B=2; ci.type="quantile"; numCores=1
     
     # store the current rng state 
@@ -421,18 +422,18 @@ marginal.risk.svycoxph.boot=function(formula, marker.name, type, data, t, weight
         tmp.design=twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd, data=data)
         fit.risk=svycoxph(f1, design=tmp.design)
         ## since we are not using se from fit.risk, it does not matter if the se is not correct, but the weights computed by svycoxph are a little different from the coxph
-        ## environment(f1) <- list2env(list(data=data));  # may have to set env if prediction inside marginal.risk fails, but should not happen if the weights variable is part of the data frame
+        ## environment(f1) <- list2env(list(data=data));  # may have to set env if prediction inside marginalized.risk fails, but should not happen if the weights variable is part of the data frame
         # fit.risk=coxph(f1, subset(data, TwophasesampInd==1), weights=wt) 
      
         fit.s=svyglm(f2, tmp.design) 
         #fit.s=lm(f2, subset(data, TwophasesampInd==1)) 
         
-        prob=marginal.risk(fit.risk, fit.s, data=subset(data, TwophasesampInd==1), ss=ss, weights=weights[data$TwophasesampInd==1], t=t, categorical.s=F)        
+        prob=marginalized.risk(fit.risk, marker.name, data=subset(data, TwophasesampInd==1), ss=ss, weights=weights[data$TwophasesampInd==1], t=t, categorical.s=F)        
     
     } else if (type==2) {
     # conditional on S>=s
         ss=quantile(data[[marker.name]], seq(0,.9,by=0.05), na.rm=TRUE)
-        prob=marginal.risk.threshold (formula, marker.name, data=subset(data, TwophasesampInd==1), weights=weights[data$TwophasesampInd==1], t=t, ss=ss)
+        prob=marginalized.risk.threshold (formula, marker.name, data=subset(data, TwophasesampInd==1), weights=weights[data$TwophasesampInd==1], t=t, ss=ss)
        
     } else stop("wrong type")
     
@@ -477,11 +478,11 @@ marginal.risk.svycoxph.boot=function(formula, marker.name, type, data, t, weight
             tmp.design=twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd, data=dat.b)
             fit.risk=svycoxph(f1, design=tmp.design)
             fit.s=svyglm(f2, tmp.design)      
-            marginal.risk(fit.risk, fit.s, subset(dat.b,TwophasesampInd==1), t=t, ss=ss, weights=dat.b$wt[dat.b$TwophasesampInd==1], categorical.s=F)
+            marginalized.risk(fit.risk, marker.name, subset(dat.b,TwophasesampInd==1), t=t, ss=ss, weights=dat.b$wt[dat.b$TwophasesampInd==1], categorical.s=F)
             
         } else if (type==2) {
         # conditional on S>=s
-            marginal.risk.threshold (formula, marker.name, data=subset(dat.b, TwophasesampInd==1), weights=dat.b$wt[dat.b$TwophasesampInd==1], t=t, ss=ss)
+            marginalized.risk.threshold (formula, marker.name, data=subset(dat.b, TwophasesampInd==1), weights=dat.b$wt[dat.b$TwophasesampInd==1], t=t, ss=ss)
             
         } else stop("wrong type")
     })
@@ -511,14 +512,14 @@ if(rerun.time.consuming.steps) {
     # conditional on s
     risks.all.1=list()
     for (a in assays) {
-        risks.all.1[[a]]=marginal.risk.svycoxph.boot(formula=form.0, marker.name="Day57"%.%a, type=1, data=dat.mock.vacc.seroneg.D57, t0, weights=dat.mock.vacc.seroneg.D57$wt, B=B, ci.type="quantile", numCores=numCores)        
+        risks.all.1[[a]]=marginalized.risk.svycoxph.boot(formula=form.0, marker.name="Day57"%.%a, type=1, data=dat.mock.vacc.seroneg.D57, t0, weights=dat.mock.vacc.seroneg.D57$wt, B=B, ci.type="quantile", numCores=numCores)        
     }
     save(risks.all.1, file=paste0(save.results.to, "risks.all.1."%.%study.name%.%".Rdata"))
     
     # conditional on S>=s
     risks.all.2=list()
     for (a in assays) {
-        risks.all.2[[a]]=marginal.risk.svycoxph.boot(formula=form.0, marker.name="Day57"%.%a, type=2, data=dat.mock.vacc.seroneg.D57, t0, weights=dat.mock.vacc.seroneg.D57$wt, B=B, ci.type="quantile", numCores=numCores)        
+        risks.all.2[[a]]=marginalized.risk.svycoxph.boot(formula=form.0, marker.name="Day57"%.%a, type=2, data=dat.mock.vacc.seroneg.D57, t0, weights=dat.mock.vacc.seroneg.D57$wt, B=B, ci.type="quantile", numCores=numCores)        
     }
     save(risks.all.2, file=paste0(save.results.to, "risks.all.2."%.%study.name%.%".Rdata"))
     
@@ -527,7 +528,7 @@ if(rerun.time.consuming.steps) {
     # placebo arm    
     # integrating over form.0, but no marker. Thus this is not wrapped into a function as in vaccine arm
     
-    get.marginal.risk=function(dat){
+    get.marginalized.risk=function(dat){
         fit.risk = coxph(form.0, dat, model=T) # model=T is required because the type of prediction requires it, see Note on ?predict.coxph
         dat$EventTimePrimaryD57=t0
         risks = 1 - exp(-predict(fit.risk, newdata=dat, type="expected"))
@@ -535,7 +536,7 @@ if(rerun.time.consuming.steps) {
     }
     
     dat.tmp=subset(dat.mock, Trt==0 & Bserostatus==0 & Perprotocol==1)
-    prob=get.marginal.risk(dat.tmp)
+    prob=get.marginalized.risk(dat.tmp)
     
     # bootstrapping
     # store the current rng state 
@@ -544,7 +545,7 @@ if(rerun.time.consuming.steps) {
     out=mclapply(1:(2*B), mc.cores = numCores, FUN=function(seed) {   
         set.seed(seed)         
         dat.b=dat.tmp[sample.int(nrow(dat.tmp), replace=T),]            
-        get.marginal.risk(dat.b)    
+        get.marginalized.risk(dat.b)    
     })
     boot=do.call(cbind, out)
     # restore rng state 
@@ -704,7 +705,7 @@ for (a in assays) {
     fit.risk=svycoxph(f1, design=twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd, data=dat.mock.vacc.seroneg.D57))
     fit.s=nnet::multinom(f2, dat.mock.vacc.seroneg.D57, weights=dat.mock.vacc.seroneg.D57$wt) 
     
-    risks.all.ter[[a]]=marginal.risk(fit.risk, fit.s, subset(dat.mock.vacc.seroneg.D57,TwophasesampInd==1), weights=dat.mock.vacc.seroneg.D57$wt[dat.mock.vacc.seroneg.D57$TwophasesampInd==1], categorical.s=T)
+    risks.all.ter[[a]]=marginalized.risk(fit.risk, marker.name, subset(dat.mock.vacc.seroneg.D57,TwophasesampInd==1), weights=dat.mock.vacc.seroneg.D57$wt[dat.mock.vacc.seroneg.D57$TwophasesampInd==1], categorical.s=T)
 }
 
 

@@ -1,3 +1,72 @@
+# start R inside the code folder or make sure working directory is here
+rm(list=ls())       
+    
+rerun.time.consuming.steps=T # 1e3 bootstraps take 8 min with 30 CPUS. The results are saved in several .Rdata files.
+numCores=30 # number of cores available on the machine
+B=1000 # number of bootstrap replicates
+    
+library(COVIDcorr); stopifnot(packageVersion("COVIDcorr")>="2021.01.25")
+#remotes::install_github("CoVPN/correlates_mockdata", auth_token="e09062bae8d9a4acf4ba7e7c587c5d3fbe1abd69")
+    
+# the order of these packages matters
+library(mgcv) # gam
+#library(nnet)# multinom, for estimating trichotomous markers probability, make sure this comes after mgcv since mgcv also has multinom
+# kyotil mostly contains code for formatting, but may also contain code for some estimation tasks
+library(kyotil);           stopifnot(packageVersion("kyotil")>="2021.2-2")
+#remotes::install_github("youyifong/kyotil")
+# marginalizedRisk contains logic for computing marginalized risk curves
+library(marginalizedRisk); stopifnot(packageVersion("marginalizedRisk")>="2021.2-4")
+#remotes::install_github("youyifong/marginalizedRisk")
+library(chngpt);       stopifnot(packageVersion("chngpt")>="2020.10.12")
+#remotes::install_github("youyifong/chngpt")
+library(tools) # toTitleCase
+library(survey)
+library(splines)
+library(parallel)
+library(Hmisc)# wtd.quantile, biconf
+library(forestplot)
+library(svyVGAM) # Firth penalized glm
+    
+study.name="mock" # study.name is used in figure/table file names and printed in tables/figures as well
+save.results.to="../output/"; if (!dir.exists(save.results.to))  dir.create(save.results.to)
+#assays=c("bindSpike","bindRBD","pseudoneutid50","liveneutmn50","pseudoneutid80")
+assays=c("bindSpike","bindRBD","pseudoneutid50","pseudoneutid80")
+.mfrow=if(length(assays)==4) c(2,2) else if(length(assays)==5) c(3,2) else stop("pls redefine .mfrows")
+trt.labels=c("Placebo","Vaccine")
+bstatus.labels=c("Baseline Neg","Pos")
+max.stratum=max(dat.mock$Bstratum)
+    
+# intercurrent cases
+nrow(subset(dat.mock.vacc.seroneg, TwophasesampInd==1& EventIndPrimaryD29==1))
+nrow(subset(dat.mock.vacc.seroneg, TwophasesampInd==1& EventIndPrimaryD57==1))
+    
+# important subset of data
+dat.mock.vacc.seroneg.D57=subset(dat.mock.vacc.seroneg, EventTimePrimaryD57>=7)
+#    # this is not needed
+#    # redefine wt for D57 forward
+#    wts_table <- with(dat.mock.vacc.seroneg.D57, table(Wstratum, TwophasesampInd))
+#    wts_norm <- rowSums(wts_table) / wts_table[, 2]
+#    dat.mock.vacc.seroneg.D57$wt.2 <- wts_norm[dat.mock.vacc.seroneg.D57$Wstratum%.%""]
+dat.mock.plac.seroneg=subset(dat.mock, Trt==0 & Bserostatus==0 & Perprotocol)
+dat.mock.vacc.seroneg.5 <- dat.mock.vacc.seroneg.subsample[["cases_5"]]
+# design objects, the two give slightly different results, twophase is better, but slower
+design.vacc.seroneg<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd, data=dat.mock.vacc.seroneg.D57)
+dstrat<-svydesign(id=~1,strata=~Wstratum, weights=~wt, data=dat.mock.vacc.seroneg.D57)
+#
+t0=max(dat.mock.vacc.seroneg.D57$EventTimePrimaryD57[dat.mock.vacc.seroneg.D57$EventIndPrimaryD57==1]); myprint(t0)
+write(t0, file=paste0(save.results.to, "timepoints_cum_risk_"%.%study.name))
+
+# base formula
+form.a = ~. + Age # + BRiskScore
+form.s = Surv(EventTimePrimaryD57, EventIndPrimaryD57) ~ 1
+form.0 = update (update (form.s, ~.+MinorityInd + HighRiskInd), form.a)
+form.0.logistic = update (EventIndPrimaryD57  ~ MinorityInd + HighRiskInd, form.a)
+form.1 = update (form.s, form.a) 
+# covariate length without markers
+p.cov=length(terms(form.0))
+    
+
+
 
 
 ####################################################################################################

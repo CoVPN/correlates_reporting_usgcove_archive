@@ -1,49 +1,167 @@
-## CoVPN Guide to working with Git and {renv}
+# CoVPN Guide to working with Git and {renv}
 
-These are a set of instructions that are suggested to be followed to smooth the process of working on the CoVPN Correlates Report github repository. 
-The goal of this is to make sure we all follow the same process when we go to merge our new code into the master branch that is intended for use.
-Additionally, we want to make sure that our code works across as many instances as possible, and that means that the original programmer should be responsible for ensuring there are no merge conflicts before requesting other members perform code review.
+This set of instructions describes a suggested workflow and best practices for
+working smoothly across the CoVPN Correlates Report GitHub repository. The goal
+is to ensure that we all follow the same process when merging new code into the
+`master` branch intended for use by collaborators (including our future selves).
+Ultimately, the aim is to make sure that our code works across as many instances
+and compute setups as possible; thus, for all contributed code, the original
+programmer is responsible for resolving merge conflicts prior to requesting code
+review from other members.
 
-### Git, Github, Branching, and PRs
+## Git, GitHub, Branching, Pull Requests
 
-#### Branching
+### Branching
 
-The strength of using git as a collaborative tool is that multiple people can we working across the same repository at the same time, and seamlessly combine their work. This is done through a process of branching and pull requests. 
+Git is a powerful collaborative tool: its major strength is that multiple people
+can work across the same source repository at the same time, with the ability to
+seamlessly combine their work. This is done through several steps: branching,
+committing changes, and generating pull requests.
 
-Branching is creating a copy of the repository for you to work in, without impacting the master branch. This allows the programmer to make as many changes as they want, commit and push to make it available to other programmers, but will not impact the master branch until it is requested to be added in a Pull Request (PR).
+_Branching_ is the process of creating a distinct line of work (i.e., a sequence
+of commits) in a local copy of the repository. Your work on a branch does _not_
+impact the state of the `master` branch. This has the advantage of allowing you
+to develop and test new code, without any disruptions to the stable version of
+the code stored on the shared `master` branch. This way, the programmer is able
+to make as many changes as desired, then commit and push the updated code to
+make it available to other programmers; however, the new code will not impact
+the `master` branch until it is manually requested to be added in a pull
+request.
 
-#### Pull Requests
+### Pull Requests
 
-A Pull Request (PR) is a feature in github where the programmer of the branch _requests_ the changes made on their branch be _pulled_ into the master branch. This gives an opportunity for a few things to happen. First, github will check that there are no conflicts (covered later), and will flag cases where there are. Next, it gives an opportunity to request a review. This is where we tag another programmer to check our programming logic, and ensure it runs on more than your machine. The interface github gives too is very nice in that the reviewer can point to specific areas in the code with questions, etc.
+A [_pull request_](https://help.github.com/articles/about-pull-requests/) (PR)
+is a feature specific to GitHub that allows a programmer to request that changes
+in a given branch be _pulled_ into the `master` branch (or any other target
+branch). Upon _opening_ a new PR, a few things can happen. First, GitHub will
+check that there are no conflicts with the `master` branch (see later),
+automatically flagging any cases of such conflicts. Next, an opportunity to
+request a review is made available. In a review of a PR, the programmer is able
+to tag others to check their programming logic, a chance to ensure that the
+underlying logic is clear and that the code included in the PR runs on more than
+the machine on which it was written. The interface GitHub provides is very nice:
+reviewer can point to specific areas in the code with questions and comments, or
+even suggest changes to individual lines of code. As you work, make sure you've
+created a new branch, commit often with clear commit messages, and generate a PR
+once the code is ready to be reviewed and merged.
 
-#### Conflicts
+### Conflicts
 
-However, the downside of branching and pulling branches into master is that someone can unwittingly work on the same file in another branch, have their pull request approved before yours, and all of a sudden git is not sure which version to use. This is a merge conflict: Git is not sure whether to accept your changes or the changes another person made. This can happen for any number of reasons. The best method to avoid this issue is to make sure everyone only makes changes to the files they need to, and that the changes are explicit and contained. 
+An important downside of branching and pulling branches into `master` is that
+two programmers can unwittingly work on the same file across multiple branches.
+Should a PR updating a particular file (or files) also changed on your branch be
+approved and merged into `master` before the merging of your PR, Git will be
+unsure of which version of the updated file ought to be used. This results in
+a _merge conflict_: Git cannot be sure whether to accept your changes or those
+made by another programmer (on a different branch). This can happen for many
+reasons. The best method for avoiding such issues is simply for each programmer
+to make changes only to those files that they need to edit and that such changes
+be explicit and contained.
 
-If despite your best efforts, a merge conflict occurs when making a pull request, the conflicts will need to be resolved manually before merging. This should be done by the original programmer, since they know the expectations. Once all the changes on your branch have been committed, checkout the master branch (`git checkout master`) and pull(`git pull`) all the changes. Checkout your branch again(`git checkout MYBRANCH`) and attempt to merge in the master branch (`git merge master`). If there are conflicts, a warning message in the command line will appear that there were merge conflicts that need to be resolved. Use `git status` to identify the files with the conflicts, or if you are using RStudio, look at the git pane and orange boxes with a "U" in them will appear before the file name. 
+If, despite your best efforts, a merge conflict does occur when making a PR, the
+conflict(s) will need to be evaluated and resolved manually prior to merging the
+PR into the `master` branch. _Merge conflicts should be resolved by the original
+programmer_, as they are most familiar with the code being contributed in the PR
+in question. Once all changes to be included in your PR have been committed on
+your branch, `checkout` the `master` branch (i.e., `git checkout master`) and
+pull any/all changes from the remote (i.e., `git pull REMOTE master`). Now,
+switch back to your branch (`git checkout MYBRANCH`) and attempt to merge in the
+up-to-date `master` branch (i.e., `git merge master`). If there are any
+conflicts, a warning message will appear in the command line, indicating the
+presence of merge conflicts requiring manual resolution. Use `git status` to
+identify the files with the conflicts, or if you are using RStudio, look at the
+Git pane (orange boxes with a "U" in them will appear before the file name).
 
-For each of the files identified to have a merge conflict, read through the code, and it should highlight the differences. Sometimes they will be large chunks of code, and other times single lines. Differences start with `<<<<<<< BRANCH NAME`, which all code following is the code in your branche, then several equal signs (`=======`) then the code from the master branch, which ends with `>>>>>>> master`. Select which version, or a blend of both, to keep, and delete the other code. There may be multiple conflicts in a file, so make sure to have found and resolved each one. After doing this for each file, ensure the code still runs as intended. Commit the edits and voila, the pull request should no longer show merge conflicts.
+For each of the files identified to have a merge conflict, read through the code
+-- the differences should be highlighted. Sometimes, these will be large chunks
+of code, other times just single lines. Differences start with `<<<<<<< BRANCH
+NAME`, followed by all code from your branch, and then then several equal signs
+(`=======`) followed by the code from the `master` branch, which itself ends
+with `>>>>>>> master`. Select which version of the code, or blend of them, to
+keep and delete the remainder of the code. There may be multiple conflicts in
+a file, so make sure that all are found and resolved. After correcting each
+conflict across all affected files, ensure the code still runs as intended.
+Commit the edits, push, and voila...the PR should no longer indicate any merge
+conflicts.
 
-### Tracking Environment
+### Git Resources
 
-For this project, in an effort to ensure we are all using the same packages, we use {renv}. When opening the project, it should automatically start {renv}'s tracking system and highlight steps to follow. Things to note include:
+Here are a few useful notes and readings that may be useful in remedying any
+problems that may arise when working with `git`. These range the spectrum from
+applied to fairly technical:
 
-	- Make sure that all packages being used are the version specified from {renv} lockfile to ensure consistency across all programmers work by calling `renv::restore()`. Do this every time you manually start working.
-	
-	- To add a new package, there are a few steps. First, ensure there are no differences in your installed packages and the ones specified in the lockfile by calling `renv::restore()`. This will enforce the correct versions. Next, install the package and apply it into your code as necessary. Call `renv::snapshot()` now. This will identify that the new package has been added and used in the code and add it to the lock file.
+* ["Version Control with `git`" (Software
+    Carpentry)](https://swcarpentry.github.io/git-novice/): a comprehensive
+    introduction to the uses of `git` and social coding with GitHub. This is
+    aimed towards students and research professionals.
+* ["Happy `git` and GitHub for the useR" (Jenny Bryan,
+    RStudio)](http://happygitwithr.com/): a comprehensive introduction to both
+    the inner workings of `git` and best practices in using GitHub, with a focus
+    on integrating these tools into your R workflow. Aimed towards
+    masters-level university students.
+* ["Tools for Reproducible Research" (Karl
+    Broman)](http://kbroman.org/Tools4RR/): a University-level course on best
+    practices in modern reproducible research, which includes a couple of
+    lectures on `git` and GitHub.
+    * ["Version Control with `git` and
+        GitHub"](http://kbroman.org/Tools4RR/assets/lectures/04_git.pdf)
+* ["Introduction to `git`" (Berkeley's Stat 159/259, Fall 2015, KJ
+    Millman)](http://www.jarrodmillman.com/rcsds/standard/git-intro.html): a
+    thorough walkthrough of some common `git` commands as well as explanations
+    of what these commands do when invoked.
 
-### Optimal Flow
+## Tracking the Package Environment
 
-With all this being said, if we all work together, we can try to minimize cases that we need to resolve merge conflicts. work in your own folder, make changes specific and manageable, and commit/push regularly.
+In an effort to promote computational reporoducibility, we are making an effort
+to _all use the same version of R and R packages_, using {renv}. When opening
+the project in R, {renv}'s tracking system should start automatically and
+highlight steps to follow. Things to note include
 
-Follow this flow:
-1. checkout master if not there already (If in RStudio, Select master branch. If in command line: `git checkout master`)
-2. pull any updates from github repo(If in RStudio, click "pull" button. If in command line: `git pull`)
-3. make a new branch, check it out, and push to github. (If in RStudio, just make new branch. If in command line: `git branch NAME`,`git checkout NAME`,`git push -u origin NAME`).
-4. Make sure that the packages you are using are the same as other by calling `renv::restore()`. Resolve any issues from that as necessary. 
-5. Write your code and commit regularly. Install packages as needed. Alternate between `renv::restore()` and `renv::snapshot()` to capture active library use. 
-6. At the beginning of starting working on a branch for the day or reverting back to prior work, make sure as much of the code is up to date with remote. Make sure all your edits are committed, check out master, pulling updates, check out your branch and merging master into your branch. Resolve conflicts as necessary. 
-7. When preparing to open a pull request, make sure all your edits are committed. Check out the master branch, pull in the remote changes, check out your branch and merge master into your branch. Resolve conflicts. Commit and push any updates.
-8. Go to github and open a PR. Identify the updates clearly, and tag reviewers. 
-9. Once PR is accepted, merge normally (Do not use a special merge), and delete the branch.
-10. On your machine, clean things up by checking out master and pulling. delete the local copy of that working branch (`git branch -d NAME`), and prune your remote copies (`git remote prune origin`).
+- Make sure that all R packages being used are the version specified in the
+  {renv} lockfile (`renv.lock`), ensuring consistency across all programmers'
+  work by calling `renv::restore()`. _Do this every time you manually start
+  working,_ frequently updating from the `master` branch to ensure that the
+  lockfile is itself up-to-date.
+- To add a new package, there are a few steps. First, ensure there are no
+  differences in your installed packages and the ones specified in the lockfile
+  by calling `renv::restore()`. This will enforce the correct versions. Next,
+  install any package(s) as usual (e.g., `install.packages()` or
+  `install_github()`) and integrate use of the package into your code as
+  necessary. Finally, call `renv::snapshot()`. This will record use of the new
+  package(s) into the package library, adding to the lockfile.
+
+## Optimal Flow
+
+With all this being said, if we all work together, we can try to minimize cases
+in which we need to resolve merge conflicts. _Work in your own folder, make
+changes specific and manageable, and commit/push regularly._
+
+Follow this flow closely:
+1. Check out `master` if not there already. If using RStudio, select the `master`
+    branch; if on the command line: `git checkout master` will do.)
+2. Pull any updates from the GitHub repo. If in RStudio, click the "pull"
+    button; if on the command line, simply `git pull`.
+3. Make a new branch, check it out, and push to GitHub. If using RStudio, make
+    a new branch via the GUI. If on the command line: `git branch NAME`, then
+    `git checkout NAME`, then `git push -u origin NAME` (n.b., the first two
+    of these may be combined into `git checkout -b NAME`).
+4. Make sure that the packages you are using match those in the shared library
+     by calling `renv::restore()`. Resolve any issues as necessary.
+5. Write your code and commit regularly. Install packages as needed. Alternate
+    between `renv::restore()` and `renv::snapshot()` to capture changes to the
+     active library.
+6. At the beginning of starting work on a branch for the day or reverting back
+    to prior work, make sure as much of the code is up-to-date with the remote.
+    Make sure all your edits are committed, `checkout master`, pull updates from
+    the remote `master` branch, `checkout` your branch and merge `master` into
+    your branch. Resolve conflicts as necessary.
+7. When preparing to open a PR, make sure all your edits are committed. Check
+    out the `master` branch, pull in changes to the remote, check out your
+    branch and merge `master` into your branch. Resolve conflicts. Commit
+    and push any updates.
+8. Go to GitHub and open a PR. Identify the updates clearly, and tag reviewers.
+9. Once the PR has been accepted, merge normally (i.e., do _not_ use a special
+    merge), then delete the feature branch.
+10. On your machine, clean things up by checking out `master` and pulling.
+     Delete the local copy of that working branch (`git branch -d NAME`), and
+    prune your remote copies (`git remote prune origin`).

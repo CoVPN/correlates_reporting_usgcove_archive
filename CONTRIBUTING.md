@@ -130,6 +130,9 @@ highlight steps to follow. Things to note include
   necessary. Finally, call `renv::snapshot()`. This will record use of the new
   package(s) into the package library, adding to the lockfile.
 
+Also take note of [the {renv} collaboration
+guide](https://rstudio.github.io/renv/articles/collaborating.html).
+
 ## Optimal Flow
 
 With all this being said, if we all work together, we can try to minimize cases
@@ -138,30 +141,30 @@ changes specific and manageable, and commit/push regularly._
 
 Follow this flow closely:
 1. Check out `master` if not there already. If using RStudio, select the `master`
-    branch; if on the command line: `git checkout master` will do.)
+   branch; if on the command line: `git checkout master` will do.)
 2. Pull any updates from the GitHub repo. If in RStudio, click the "pull"
-    button; if on the command line, simply `git pull`.
+   button; if on the command line, simply `git pull`.
 3. Make a new branch, check it out, and push to GitHub. If using RStudio, make
-    a new branch via the GUI. If on the command line: `git branch NAME`, then
-    `git checkout NAME`, then `git push -u origin NAME` (n.b., the first two
-    of these may be combined into `git checkout -b NAME`).
+   a new branch via the GUI. If on the command line: `git branch NAME`, then
+   `git checkout NAME`, then `git push -u origin NAME` (n.b., the first two
+   of these may be combined into `git checkout -b NAME`).
 4. Make sure that the packages you are using match those in the shared library
      by calling `renv::restore()`. Resolve any issues as necessary.
 5. Write your code and commit regularly. Install packages as needed. Alternate
-    between `renv::restore()` and `renv::snapshot()` to capture changes to the
-     active library.
+   between `renv::restore()` and `renv::snapshot()` to capture changes to the
+    active library.
 6. At the beginning of starting work on a branch for the day or reverting back
-    to prior work, make sure as much of the code is up-to-date with the remote.
-    Make sure all your edits are committed, `checkout master`, pull updates from
-    the remote `master` branch, `checkout` your branch and merge `master` into
-    your branch. Resolve conflicts as necessary.
+   to prior work, make sure as much of the code is up-to-date with the remote.
+   Make sure all your edits are committed, `checkout master`, pull updates from
+   the remote `master` branch, `checkout` your branch and merge `master` into
+   your branch. Resolve conflicts as necessary.
 7. When preparing to open a PR, make sure all your edits are committed. Check
-    out the `master` branch, pull in changes to the remote, check out your
-    branch and merge `master` into your branch. Resolve conflicts. Commit
-    and push any updates.
+   out the `master` branch, pull in changes to the remote, check out your
+   branch and merge `master` into your branch. Resolve conflicts. Commit
+   and push any updates.
 8. Go to GitHub and open a PR. Identify the updates clearly, and tag reviewers.
 9. Once the PR has been accepted, merge normally (i.e., do _not_ use a special
-    merge), then delete the feature branch.
+   merge), then delete the feature branch.
 10. On your machine, clean things up by checking out `master` and pulling.
-     Delete the local copy of that working branch (`git branch -d NAME`), and
+    Delete the local copy of that working branch (`git branch -d NAME`), and
     prune your remote copies (`git remote prune origin`).

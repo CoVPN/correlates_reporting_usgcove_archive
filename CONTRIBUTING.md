@@ -100,9 +100,9 @@ applied to fairly technical:
     on integrating these tools into your R workflow. Aimed towards
     masters-level university students.
 * ["Tools for Reproducible Research" (Karl
-    Broman)](http://kbroman.org/Tools4RR/): a University-level course on best
-    practices in modern reproducible research, which includes a couple of
-    lectures on `git` and GitHub.
+    Broman)](http://kbroman.org/Tools4RR/): a semester-long course on best
+    practices for modern reproducible research, including a couple of lectures
+    on `git` and GitHub.
     * ["Version Control with `git` and
         GitHub"](http://kbroman.org/Tools4RR/assets/lectures/04_git.pdf)
 * ["Introduction to `git`" (Berkeley's Stat 159/259, Fall 2015, KJ
@@ -149,10 +149,10 @@ Follow this flow closely:
    `git checkout NAME`, then `git push -u origin NAME` (n.b., the first two
    of these may be combined into `git checkout -b NAME`).
 4. Make sure that the packages you are using match those in the shared library
-     by calling `renv::restore()`. Resolve any issues as necessary.
+    by calling `renv::restore()`. Resolve any issues as necessary.
 5. Write your code and commit regularly. Install packages as needed. Alternate
    between `renv::restore()` and `renv::snapshot()` to capture changes to the
-    active library.
+   active library.
 6. At the beginning of starting work on a branch for the day or reverting back
    to prior work, make sure as much of the code is up-to-date with the remote.
    Make sure all your edits are committed, `checkout master`, pull updates from

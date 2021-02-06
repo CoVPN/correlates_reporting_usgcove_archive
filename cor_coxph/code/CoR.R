@@ -1,7 +1,6 @@
 # start R inside the code folder or make sure working directory is here
 rm(list=ls())       
-    
-rerun.time.consuming.steps=T # 1e3 bootstraps take 8 min with 30 CPUS. The results are saved in several .Rdata files.
+rerun.time.consuming.steps=F # 1e3 bootstraps take 8 min with 30 CPUS. The results are saved in several .Rdata files.
 numCores=30 # number of cores available on the machine
 B=1000 # number of bootstrap replicates
     
@@ -51,7 +50,7 @@ dstrat<-svydesign(id=~1,strata=~Wstratum, weights=~wt, data=dat.mock.vacc.serone
 #
 t0=max(dat.mock.vacc.seroneg.D57$EventTimePrimaryD57[dat.mock.vacc.seroneg.D57$EventIndPrimaryD57==1]); myprint(t0)
 write(t0, file=paste0(save.results.to, "timepoints_cum_risk_"%.%study.name))
-
+    
 # base formula
 form.a = ~. + Age # + BRiskScore
 form.s = Surv(EventTimePrimaryD57, EventIndPrimaryD57) ~ 1
@@ -69,11 +68,6 @@ for (a in assays) {
         write(paste0(labels.axis[1,a], " [", concatList(round(q.a, 2), ", "), ")%"), file=paste0(save.results.to, "cutpoints_",t,a, "_"%.%study.name))
     }
 }
-
-
-
-
-
 
 
 
@@ -401,11 +395,11 @@ for (a in assays) {
 # continuous markers. with bootstrap
 # two curves, one conditional on s and one conditional on S>=s
 
-#### conditional on s
+#### type =1: S=s; type=2: S>=s
 # data is ph1 data
 # t is a time point near to the time of the last observed outcome will be defined
 marginalized.risk.svycoxph.boot=function(formula, marker.name, type, data, t, weights, B, ci.type="quantile", numCores=1) {  
-# formula=form.0; marker.name="Day57bindSpike"; data=dat.mock.vacc.seroneg.D57; t=t0; weights=dat.mock.vacc.seroneg.D57$wt; B=2; ci.type="quantile"; numCores=1
+# formula=form.0; marker.name="Day57bindSpike"; data=dat.mock.vacc.seroneg.D57; t=t0; weights=dat.mock.vacc.seroneg.D57$wt; B=2; ci.type="quantile"; numCores=1; type=2
     
     # store the current rng state 
     save.seed <- try(get(".Random.seed", .GlobalEnv), silent=TRUE) 
@@ -437,36 +431,17 @@ marginalized.risk.svycoxph.boot=function(formula, marker.name, type, data, t, we
        
     } else stop("wrong type")
     
-    # for use in stratified bootstrap
-    strat=sort(unique(data$Wstratum))
-    ptids.by.stratum=lapply(strat, function (i) subset(data, Wstratum==i, Ptid, drop=TRUE))
-    case.ptids=ptids.by.stratum[[length(ptids.by.stratum)]]
-    
-    case.by.stratum.ph2=lapply(strat[-length(strat)], function (i) subset(data, tps.stratum==i & TwophasesampInd==1 & EventIndPrimaryD57==1, Ptid, drop=TRUE))
-    ctrl.by.stratum.ph2=lapply(strat[-length(strat)], function (i) subset(data, Wstratum==i    & TwophasesampInd==1 & EventIndPrimaryD57==0, Ptid, drop=TRUE))
-    ctrl.nonph2=subset(data, TwophasesampInd==0 & EventIndPrimaryD57==0, Ptid, drop=TRUE)
-    nonph2=subset(data, TwophasesampInd==0, Ptid, drop=TRUE) # both cases and controls
+    # for use in bootstrap
+    strat=sort(unique(data$tps.stratum))
+    ptids.by.stratum=lapply(strat, function (i) list(subcohort=subset(data, tps.stratum==i & SubcohortInd==1, Ptid, drop=TRUE), nonsubcohort=subset(data, tps.stratum==i & SubcohortInd==0, Ptid, drop=TRUE)))
     
     # bootstrap
     out=mclapply(1:B, mc.cores = numCores, FUN=function(seed) {   
         set.seed(seed)    
         
-        #### there are several ways to create bootstrap datasets
-#        ## not stratified
-#        dat.b=data[sample(nrow(data), replace=TRUE),]
-#        ## stratified by baseline strata
-#        idxes=do.call(c, lapply(ptids.by.stratum, function(x) sample(x, replace=TRUE)))
-#        dat.b=data[match(idxes, data$Ptid),]
-        ## three-step stratified process
-        tmp=list()
-        # 1. bootstrap ph2 cases stratified by baseline strata.
-        tmp[[1]]=do.call(c, lapply(case.by.stratum.ph2, function(x) sample(x, replace=TRUE)))
-        # 2. bootstrap ph2 controls stratified by baseline strata
-        tmp[[2]]=do.call(c, lapply(ctrl.by.stratum.ph2, function(x) sample(x, replace=TRUE)))
-        # 3. add non-ph2 for methods that require ph1 strata sizes info
-        tmp[[3]]=nonph2
-        idxes=do.call(c, tmp)
-        dat.b=data[match(idxes, data$Ptid),]
+        # For each sampling stratum, bootstrap samples in subcohort and not in subchort separately
+        tmp=lapply(ptids.by.stratum, function(x) c(sample(x$subcohort, r=TRUE), sample(x$nonsubcohort, r=TRUE)))
+        dat.b=data[match(unlist(tmp), data$Ptid),]
     
         # compute weights
         tmp=with(dat.b, table(Wstratum, TwophasesampInd))
@@ -524,9 +499,8 @@ if(rerun.time.consuming.steps) {
     save(risks.all.2, file=paste0(save.results.to, "risks.all.2."%.%study.name%.%".Rdata"))
     
     
-    #################
-    # placebo arm    
-    # integrating over form.0, but no marker. Thus this is not wrapped into a function as in vaccine arm
+    ####################################################################
+    # get marginalized risk without marker 
     
     get.marginalized.risk=function(dat){
         fit.risk = coxph(form.0, dat, model=T) # model=T is required because the type of prediction requires it, see Note on ?predict.coxph
@@ -535,31 +509,44 @@ if(rerun.time.consuming.steps) {
         mean(risks)
     }
     
-    dat.tmp=subset(dat.mock, Trt==0 & Bserostatus==0 & Perprotocol==1)
-    prob=get.marginalized.risk(dat.tmp)
+    for (.trt in 0:1) {
+        dat.tmp=subset(dat.mock, Trt==.trt & Bserostatus==0 & Perprotocol==1 & EventTimePrimaryD57>=7)
+        prob=get.marginalized.risk(dat.tmp)
+        
+        # bootstrapping
+        # store the current rng state 
+        save.seed <- try(get(".Random.seed", .GlobalEnv), silent=TRUE) 
+        if (class(save.seed)=="try-error") {set.seed(1); save.seed <- get(".Random.seed", .GlobalEnv) }   
+        # bootstrap use
+        ptids.by.stratum=lapply(sort(unique(dat.tmp$tps.stratum)), function (i) list(subcohort=subset(dat.tmp, tps.stratum==i & SubcohortInd==1, Ptid, drop=TRUE), nonsubcohort=subset(dat.tmp, tps.stratum==i & SubcohortInd==0, Ptid, drop=TRUE)))
+        # 
+        out=mclapply(1:B, mc.cores = numCores, FUN=function(seed) {   
+            set.seed(seed)         
+            dat.b=dat.tmp[match(unlist(lapply(ptids.by.stratum, function(x) c(sample(x$subcohort, r=TRUE), sample(x$nonsubcohort, r=TRUE)))), dat.tmp$Ptid),]        
+            get.marginalized.risk(dat.b)    
+        })
+        boot=do.call(cbind, out)
+        # restore rng state 
+        assign(".Random.seed", save.seed, .GlobalEnv)    
+        
+        if (.trt==0) {
+            res.plac.cont=c(est=prob, boot)
+            save(res.plac.cont, file=paste0(save.results.to, "risks_plac_cont_", study.name, ".Rdata"))
+        } else {
+            res.vacc.cont=c(est=prob, boot)
+            save(res.vacc.cont, file=paste0(save.results.to, "risks_vacc_cont_", study.name, ".Rdata"))
+        }
+    }
     
-    # bootstrapping
-    # store the current rng state 
-    save.seed <- try(get(".Random.seed", .GlobalEnv), silent=TRUE) 
-    if (class(save.seed)=="try-error") {set.seed(1); save.seed <- get(".Random.seed", .GlobalEnv) }   
-    out=mclapply(1:(2*B), mc.cores = numCores, FUN=function(seed) {   
-        set.seed(seed)         
-        dat.b=dat.tmp[sample.int(nrow(dat.tmp), replace=T),]            
-        get.marginalized.risk(dat.b)    
-    })
-    boot=do.call(cbind, out)
-    # restore rng state 
-    assign(".Random.seed", save.seed, .GlobalEnv)    
     
-    res.placebo.cont=c(est=prob, boot)
-    save(res.placebo.cont, file=paste0(save.results.to, "risks_placebo_cont_", study.name, ".Rdata"))
     
     print(Sys.time()-time.start)
     
 } else {
     load(file=paste0(save.results.to, "risks.all.1", "."%.%study.name, ".Rdata"))
     load(file=paste0(save.results.to, "risks.all.2", "."%.%study.name, ".Rdata"))
-    load(file=paste0(save.results.to, "risks_placebo_cont_", study.name, ".Rdata"))
+    load(file=paste0(save.results.to, "risks_plac_cont_", study.name, ".Rdata"))
+    load(file=paste0(save.results.to, "risks_vacc_cont_", study.name, ".Rdata"))
 }
 
 
@@ -568,12 +555,13 @@ if(rerun.time.consuming.steps) {
 #   idx=1, with placebo lines
 #   idx=2, without placebo lines
 #   Implementation-wise, only difference is in ylim
-#
-# first, compute overall risk regardless of markers in both arms by integrating over form.0
+
+# these results are close to bootstrap results. they are not used later and only for sanity check
+# compute overall risk regardless of markers in both arms by integrating over form.0. 
 # placebo arm
-# the point estimate matche the results in res.placebo.cont
-# the variance is asymptotic and is close to that estimated by bootstrap based on res.placebo.cont
-dat.tmp=subset(dat.mock, Trt==0 & Bserostatus==0 & Perprotocol==1)
+# the point estimate matche the results in res.plac.cont
+# the variance is asymptotic and is close to that estimated by bootstrap based on res.plabo.cont
+dat.tmp=subset(dat.mock, Trt==0 & Bserostatus==0 & Perprotocol==1 & EventTimePrimaryD57>=7)
 fit.tmp = coxph(form.0, dat.tmp)
 dat.tmp$EventTimePrimaryD57=t0
 pred.tmp=predict(fit.tmp, newdata=dat.tmp, type="expected", se.fit=T)    
@@ -596,6 +584,15 @@ prev.vacc[2:3] = prev.vacc[1] + c(-1,1)*1.96*sd.tmp
 #        prev.plac=binconf(sum(tmp), length(tmp))
 #        tmp=subset(dat.mock.vacc.seroneg.D57, select=EventIndPrimaryD57, drop=T)    
 #        prev.vacc=binconf(sum(tmp), length(tmp))    
+myprint(prev.plac)
+myprint(prev.vacc)
+
+prev.plac=c(res.plac.cont[1], quantile(res.plac.cont[-1], c(.025,.975)))
+prev.vacc=c(res.vacc.cont[1], quantile(res.vacc.cont[-1], c(.025,.975)))
+myprint(prev.plac)
+myprint(prev.vacc)
+
+
 
 for (ii in 1:2) { # 1 is conditional on s and 2 is conditional on S>=s
 for (idx in 1:2) {
@@ -607,7 +604,10 @@ for (idx in 1:2) {
     for (a in assays) {        
         risks=risks.all[[a]]
         
-        plot(prob~marker, risks, xlab=labels.assays.short[a]%.%ifelse(ii==1," (=s)"," (>=s)"), ylab="Marginalized Probability of COVID", lwd=lwd, ylim=ylim, type="n", main=paste0("Cumulative Risk of COVID by Day ",t0), xaxt="n")
+        ncases=sapply(risks$marker, function(s) sum(dat.mock.vacc.seroneg.D57$EventIndPrimaryD57[dat.mock.vacc.seroneg.D57[["Day57"%.%a]]>=s], na.rm=T))
+        
+        plot(prob~marker, risks, xlab=labels.assays.short[a]%.%ifelse(ii==1," (=s)"," (>=s)"), 
+            ylab="Marginalized Probability of COVID", lwd=lwd, ylim=ylim, type="n", main=paste0("Cumulative Risk of COVID by Day ",t0), xaxt="n")
         # x axis
         xx=seq(floor(min(risks$marker)), ceiling(max(risks$marker)))
         for (x in xx) axis(1, at=x, labels=if (x>=3) bquote(10^.(x)) else 10^x )
@@ -615,9 +615,15 @@ for (idx in 1:2) {
         abline(h=prev.plac, col="gray", lty=c(1,3,3), lwd=lwd)
         abline(h=prev.vacc, col="gray", lty=c(1,3,3), lwd=lwd)
         #
-        lines(risks$marker, risks$prob, lwd=lwd)
-        lines(risks$marker, risks$lb,   lwd=lwd, lty=3)
-        lines(risks$marker, risks$ub,   lwd=lwd, lty=3)    
+        if (ii==1) {
+            lines(risks$marker, risks$prob, lwd=lwd)
+            lines(risks$marker, risks$lb,   lwd=lwd, lty=3)
+            lines(risks$marker, risks$ub,   lwd=lwd, lty=3)    
+        } else {
+            lines(risks$marker[ncases>=5], risks$prob[ncases>=5], lwd=lwd)
+            lines(risks$marker[ncases>=5], risks$lb[ncases>=5],   lwd=lwd, lty=3)
+            lines(risks$marker[ncases>=5], risks$ub[ncases>=5],   lwd=lwd, lty=3)    
+        }
         if (idx==1) {
             text(x=par("usr")[2]-diff(par("usr")[1:2])/4, y=prev.plac[1]+(prev.plac[1]-prev.plac[2])/2, "placebo overall risk")        
             text(x=par("usr")[2]-diff(par("usr")[1:2])/4, y=prev.vacc[1]+(prev.plac[1]-prev.plac[2])/2, "vaccine overall risk")
@@ -663,14 +669,14 @@ mypdf(onefile=F, file=paste0(save.results.to, "controlled_ve_curves_"%.%study.na
         xlim=NULL#log10(c(20,3000))
     
         # CVE
-        est = 1 - risks$prob*Bias/res.placebo.cont["est"]
-        boot = 1 - t( t(risks$boot*Bias)/res.placebo.cont[2:(1+ncol(risks$boot))] ) # res.placebo.cont may have more bootstrap replicates than risks$boot
+        est = 1 - risks$prob*Bias/res.plac.cont["est"]
+        boot = 1 - t( t(risks$boot*Bias)/res.plac.cont[2:(1+ncol(risks$boot))] ) # res.plac.cont may have more bootstrap replicates than risks$boot
         ci.band=apply(boot, 1, function (x) quantile(x, c(.025,.975)))
         mymatplot(risks$marker, t(rbind(est, ci.band)), type="l", lty=c(1,2,2), col="red", lwd=lwd, make.legend=F, ylab="Vaccine Efficacy", main="",xlab=labels.assays.short[a]%.%" (=s)", ylim=ylim, 
             xlim=xlim, yaxt="n", xaxt="n", draw.x.axis=F)
         # VE
-        est = 1 - risks$prob/res.placebo.cont["est"]
-        boot = 1 - t( t(risks$boot)/res.placebo.cont[2:(1+ncol(risks$boot))] )                         
+        est = 1 - risks$prob/res.plac.cont["est"]
+        boot = 1 - t( t(risks$boot)/res.plac.cont[2:(1+ncol(risks$boot))] )                         
         ci.band=apply(boot, 1, function (x) quantile(x, c(.025,.975)))
         mymatplot(risks$marker, t(rbind(est, ci.band)), type="l", lty=c(1,2,2), col="pink", lwd=lwd, make.legend=F, add=T)
         mylegend(x=1,legend=c("Controlled VE Sens. Analysis","Controlled VE"), lty=1, col=c("red","pink"), lwd=2, cex=.8)

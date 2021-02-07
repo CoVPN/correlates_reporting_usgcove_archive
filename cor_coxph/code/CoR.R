@@ -1,6 +1,12 @@
 # start R inside the code folder or make sure working directory is here
 rm(list=ls())       
-rerun.time.consuming.steps=F # 1e3 bootstraps take 8 min with 30 CPUS. The results are saved in several .Rdata files.
+study.name="mock" # study.name is used in figure/table file names and printed in tables/figures as well
+save.results.to="../output/"; if (!dir.exists(save.results.to))  dir.create(save.results.to)
+
+# if .Rdata already exists, don't rerun
+rerun.time.consuming.steps=!file.exists(paste0(save.results.to, "risks.all.1.mock.Rdata"))
+
+# 1e3 bootstraps take 8 min with 30 CPUS. The results are saved in several .Rdata files.
 numCores=30 # number of cores available on the machine
 B=1000 # number of bootstrap replicates
     
@@ -22,8 +28,6 @@ library(Hmisc)# wtd.quantile, biconf
 library(forestplot)
 library(svyVGAM) # Firth penalized glm
     
-study.name="mock" # study.name is used in figure/table file names and printed in tables/figures as well
-save.results.to="../output/"; if (!dir.exists(save.results.to))  dir.create(save.results.to)
 #assays=c("bindSpike","bindRBD","pseudoneutid50","liveneutmn50","pseudoneutid80")
 assays=c("bindSpike","bindRBD","pseudoneutid50","pseudoneutid80")
 .mfrow=if(length(assays)==4) c(2,2) else if(length(assays)==5) c(3,2) else stop("pls redefine .mfrows")

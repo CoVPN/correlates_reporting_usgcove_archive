@@ -1,0 +1,30 @@
+---
+title: "COVID correlates analysis report Nonlinear CoR"
+shorttitle: "COVID correlates analysis Nonlinear CoR"
+author:
+header-includes:
+   - \usepackage{float}
+date: "`r Sys.Date()`"
+output:
+  bookdown::pdf_document2:
+    citation_package: natbib
+    number_sections: true
+    extra_dependencies: ["caption", "subcaption", "graphicx"]
+    toc: false
+linkcolor: blue
+bibliography: ref.bib
+---
+
+
+<!-- ```{r cor-coxph-setup, echo = FALSE, message = FALSE} -->
+<!-- library(here) -->
+<!-- library(latex2exp) -->
+<!-- here::i_am("cor_coxph/report.Rmd") -->
+<!-- ``` -->
+
+
+\newcommand{\studyname}{mock}
+\newcommand{\pathCoRNonlinearoutput}{output}
+
+```{r, child=c('report.Rmd')}
+```

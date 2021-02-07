@@ -41,7 +41,7 @@ nrow(subset(dat.mock.vacc.seroneg, TwophasesampInd==1& EventIndPrimaryD57==1))
     
 # important subset of data
 dat.mock.vacc.seroneg.D57=subset(dat.mock.vacc.seroneg, EventTimePrimaryD57>=7)
-#    # this is not needed
+#    # this is not needed because survey package computes weights inside design objects
 #    # redefine wt for D57 forward
 #    wts_table <- with(dat.mock.vacc.seroneg.D57, table(Wstratum, TwophasesampInd))
 #    wts_norm <- rowSums(wts_table) / wts_table[, 2]

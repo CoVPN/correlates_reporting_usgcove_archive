@@ -7,7 +7,7 @@
 
 # Nonlinear association
 
-To explore nonlinear association and threshold modeling, we fit smoothing spline models using the mgcv R package and segmented models using the chngpt R package.
+To explore nonlinear association and threshold modeling, we fit smoothing spline models using the mgcv R package and two-phase models using the chngpt R package.
 
 \begin{figure}[H]
     \centering

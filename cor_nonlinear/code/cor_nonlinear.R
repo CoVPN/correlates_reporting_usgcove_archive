@@ -59,8 +59,20 @@ p.cov=length(terms(form.0))
 
 mypdf(oma=c(1,0,0,0), onefile=F, file=paste0(save.results.to, "gam", "_"%.%study.name), mfrow=.mfrow)
 for (a in assays) {
+#a=assays[1]
     fit <- mgcv::gam(update(form.0.logistic, as.formula("~.+s(Day57"%.%a%.%")")), data=dat.mock.vacc.seroneg.D57.ph2, family=binomial, weights=dat.mock.vacc.seroneg.D57.ph2$wt)
-    plot(fit, xlab=labels.axis["Day57",a], main="Smoothed Effect on logit (COVID Risk)")
+    
+    plot(fit, main="Smoothed Effect on logit (COVID Risk)", xlab=labels.assays.short[a]%.%" (=s)", xaxt="n")
+    # x axis
+    xlim=range(dat.mock.vacc.seroneg.D57.ph2[["Day57"%.%a]])        
+    xx=seq(floor(xlim[1]), ceiling(xlim[2]))
+    for (x in xx) axis(1, at=x, labels=if (x>=3) bquote(10^.(x)) else 10^x )
+    
+    # add histogram
+    par(new=TRUE) 
+    col <- c(col2rgb("olivedrab3")) # orange, darkgoldenrod2
+    col <- rgb(col[1], col[2], col[3], alpha=255*0.4, maxColorValue=255)
+    hist(dat.mock.vacc.seroneg.D57[["Day57"%.%a]],col=col,axes=F,labels=F,main="",xlab="",ylab="",breaks=10,border=0,freq=F)    #,ylim=ylim    
 }
 mtext(toTitleCase(study.name), side = 1, line = 0, outer = T, at = NA, adj = NA, padj = NA, cex = NA, col = NA, font = NA)
 dev.off()

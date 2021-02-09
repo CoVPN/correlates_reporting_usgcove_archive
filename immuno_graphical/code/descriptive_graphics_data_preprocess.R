@@ -158,7 +158,7 @@ dat.long$demo_lab <-
   with(dat.long, factor(paste0(age.geq.65, HighRiskInd),
     levels = c("00", "01", "10", "11"),
     labels = c(
-      "Age < 65 not at tisk",
+      "Age < 65 not at risk",
       "Age < 65 at risk",
       "Age >= 65 not at risk",
       "Age >= 65 at risk"
@@ -204,7 +204,7 @@ dat.long.twophase.sample$age_risk_label <-
     factor(paste0(age.geq.65, HighRiskInd),
       levels = c("00", "01", "10", "11"),
       labels = c(
-        "Age < 65 not at tisk",
+        "Age < 65 not at risk",
         "Age < 65 at risk",
         "Age >= 65 not at risk",
         "Age >= 65 at risk"

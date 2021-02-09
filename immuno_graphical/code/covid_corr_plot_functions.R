@@ -824,15 +824,15 @@ covid_corr_spaghetti_facets <- function(plot_dat,
                                         lwd = 0.4,
                                         point_size = 1.4,
                                         plot_title,
-                                        plot_title_size = 10,
+                                        plot_title_size = 12,
                                         legend = levels(plot_dat[, color]),
                                         legend_position = "bottom",
                                         legend_nrow = ceiling(
                                           nlevels(plot_dat[, color]) / 2
                                         ),
                                         legend_size = 10,
-                                        axis_size = 10,
-                                        axis_title_size = 9,
+                                        axis_size = 12,
+                                        axis_title_size = 12,
                                         ylim = c(0, 8),
                                         ybreaks = seq(0, 8, by = 2),
                                         arrange_nrow = ceiling(

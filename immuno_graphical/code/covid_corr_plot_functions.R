@@ -823,6 +823,8 @@ covid_corr_spaghetti_facets <- function(plot_dat,
                                         ),
                                         lwd = 0.4,
                                         point_size = 1.4,
+                                        plot_title,
+                                        plot_title_size = 10,
                                         legend = levels(plot_dat[, color]),
                                         legend_position = "bottom",
                                         legend_nrow = ceiling(
@@ -847,9 +849,9 @@ covid_corr_spaghetti_facets <- function(plot_dat,
   
   
   output_plot <- ggplot(
-    plot_dat, aes_string(x = x, y = y, group = id, color = color)
+    plot_dat, aes_string(x = x, y = y, group = id, color = color, shape = color)
   ) +
-    geom_point(size = point_size, shape = 17) +
+    geom_point(size = point_size) +
     geom_line(lwd = lwd) +
     guides(
       color = guide_legend(nrow = legend_nrow, byrow = TRUE)
@@ -863,8 +865,10 @@ covid_corr_spaghetti_facets <- function(plot_dat,
     ylab(ylab) +
     xlab(xlab) +
     scale_color_manual(values = palette, labels = legend) +
+    scale_shape_manual(values = c(19, 17)) +
+    ggtitle(plot_title) +
     theme(
-      plot.title = element_text(hjust = 0.5, size = panel_title_size),
+      plot.title = element_text(hjust = 0.5, size = plot_title_size),
       strip.text = element_text(size = panel_title_size),
       panel.border = element_rect(fill = NA),
       panel.grid.minor.y = element_line(),

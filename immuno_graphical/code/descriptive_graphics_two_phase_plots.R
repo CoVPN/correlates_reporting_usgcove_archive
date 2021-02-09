@@ -421,6 +421,11 @@ for (bstatus in 1:2) {
                               id = "Ptid",
                               color = "Trt",
                               facet_by = "assay_label",
+                              plot_title = paste0(
+                                "Baseline ",
+                                c("Negative", "Positive")[bstatus],
+                                " PP Placebo + Vaccine group"
+                              ),
                               filename = paste0(
                                 save.results.to, "/spaghetti_plot_",
                                 bstatus.labels.2[bstatus], "_",

@@ -23,9 +23,13 @@ The Pipeline of Using the Code
 ==============================
 
 sbatch run\_cvsl\_riskscore.sh
+
 sbatch createRDAfiles\_fromSLobjects.sh
+
 sbatch tables\_figures.sh
+
 sbatch constructSL\_predict\_on\_vaccine.sh
+
 sbatch get\_SLweights\_Modelpredictors.sh
 
 

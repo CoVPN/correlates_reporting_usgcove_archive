@@ -15,9 +15,6 @@ linkcolor: blue
 bibliography: ref.bib
 ---
 
-
-
-
 \newcommand{\studyname}{mock}
 \newcommand{\pathCoRoutput}{output}
 

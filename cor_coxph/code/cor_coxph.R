@@ -2,10 +2,10 @@
 rm(list=ls())       
 study.name="mock" # study.name is used in figure/table file names and printed in tables/figures as well
 save.results.to="../output/"; if (!dir.exists(save.results.to))  dir.create(save.results.to)
-
+    
 # if .Rdata already exists, don't rerun
 rerun.time.consuming.steps=!file.exists(paste0(save.results.to, "risks.all.1.mock.Rdata"))
-
+    
 # 1e3 bootstraps take 8 min with 30 CPUS. The results are saved in several .Rdata files.
 numCores=30 # number of cores available on the machine
 B=1000 # number of bootstrap replicates
@@ -15,7 +15,7 @@ library(COVIDcorr); stopifnot(packageVersion("COVIDcorr")>="2021.01.25")
     
 # the order of these packages matters
 # kyotil mostly contains code for formatting, but may also contain code for some estimation tasks
-library(kyotil);           stopifnot(packageVersion("kyotil")>="2021.2-2")
+library(kyotil);           stopifnot(packageVersion("kyotil")>="2021.2-13")
 #remotes::install_github("youyifong/kyotil")
 # marginalizedRisk contains logic for computing marginalized risk curves
 library(marginalizedRisk); stopifnot(packageVersion("marginalizedRisk")>="2021.2-4")
@@ -102,31 +102,6 @@ rows=1+p.cov
 est=getFormattedSummary(fits, exp=T, robust=T, rows=rows, type=1)
 ci= getFormattedSummary(fits, exp=T, robust=T, rows=rows, type=13)
 p=  getFormattedSummary(fits, exp=T, robust=T, rows=rows, type=10); p=sub("0.000","<0.001",p)
-p.1=getFormattedSummary(fits, exp=T, robust=T, rows=rows, type=11, p.adj.method="fdr"); p.1=sub("0.000","<0.001",p.1)
-p.2=getFormattedSummary(fits, exp=T, robust=T, rows=rows, type=11, p.adj.method="holm"); p.2=sub("0.000","<0.001",p.2)
-#
-tab=cbind(paste0(nevents, "/", format(natrisk, big.mark=",")), t(est), t(ci), t(p), t(p.1), t(p.2))
-#
-rownames(tab)=c(labels.axis["Day57", assays])#, labels.axis["Delta57overB", assays])
-tab
-
-# save D57 only
-mytex(tab, file.name="CoR_D57_univariable_svycoxph_pretty_"%.%study.name, align="c", include.colnames = F, save2input.only=T, input.foldername=save.results.to,
-    col.headers=paste0("\\hline\n 
-         \\multicolumn{1}{l}{", toTitleCase(study.name), "} & \\multicolumn{1}{c}{No. cases /}   & \\multicolumn{2}{c}{HR per 10-fold incr.}                     & \\multicolumn{1}{c}{P-value}   & \\multicolumn{1}{c}{q-value}   & \\multicolumn{1}{c}{FWER} \\\\ 
-         \\multicolumn{1}{l}{Immunologic Marker}            & \\multicolumn{1}{c}{No. at-risk**} & \\multicolumn{1}{c}{Pt. Est.} & \\multicolumn{1}{c}{95\\% CI} & \\multicolumn{1}{c}{(2-sided)} & \\multicolumn{1}{c}{} & \\multicolumn{1}{c}{} \\\\ 
-         \\hline\n 
-    ")
-)
-
-
-# make quick table
-tab=getFormattedSummary(fits, exp=T, robust=T)
-rownames(tab)[nrow(tab)]="marker"
-#colnames(tab)=labels.axis[c("Day57"%.%assays, "Delta57overB"%.%assays)]
-tab
-mytex(tab, file.name="CoR_univariable_svycoxph_"%.%study.name, input.foldername=save.results.to, align="c", save2input.only=TRUE)
-
 
 
 ######################################
@@ -142,20 +117,61 @@ for (a in c("Day57"%.%assays, "Delta57overB"%.%assays)) {
 fits.tri=fits.tri[1:length(assays)]
 rows=rows=1:2+p.cov
 # get generalized Wald p values
-overall.p=sapply(fits.tri, function(fit) {
+overall.p.tri=sapply(fits.tri, function(fit) {
     stat=coef(fit)[rows] %*% solve(vcov(fit,robust=T)[rows,rows]) %*% coef(fit)[rows]
     pchisq(stat, length(rows), lower.tail = FALSE)
 })
-overall.p.0=formatDouble(c(rbind(overall.p, NA,NA)), digits=3, remove.leading0 = F);   overall.p.0=sub("0.000","<0.001",overall.p.0)
-overall.p.1=formatDouble(c(rbind(p.adjust(overall.p, method="fdr"), NA,NA)), digits=3, remove.leading0 = F);   overall.p.1=sub("0.000","<0.001",overall.p.1)
-overall.p.2=formatDouble(c(rbind(p.adjust(overall.p, method="holm"), NA,NA)), digits=3, remove.leading0 = F);   overall.p.2=sub("0.000","<0.001",overall.p.2)
+overall.p.0=formatDouble(c(rbind(overall.p.tri, NA,NA)), digits=3, remove.leading0 = F);   overall.p.0=sub("0.000","<0.001",overall.p.0)
+
+
+#######################################################################
+# do multitesting adj for continuous and trichotomized markers together
+
+pvals.cont = sapply(fits, function(x) {
+    tmp=getFixedEf(x)
+    p.val.col=which(startsWith(tolower(colnames(tmp)),"p"))
+    tmp[nrow(tmp),p.val.col]
+})
+
+pvals.adj.fdr=p.adjust(c(pvals.cont, overall.p.tri), method="fdr")
+pvals.adj.hol=p.adjust(c(pvals.cont, overall.p.tri), method="holm")
+
+
+######################################
+# make continuous markers table
+
+p.1=formatDouble(pvals.adj.fdr[1:length(assays)], 3); p.1=sub(".000","<0.001",p.1)
+p.2=formatDouble(pvals.adj.hol[1:length(assays)], 3); p.2=sub(".000","<0.001",p.2)
+
+tab.1=cbind(paste0(nevents, "/", format(natrisk, big.mark=",")), t(est), t(ci), t(p), p.1, p.2)
+rownames(tab.1)=c(labels.axis["Day57", assays])#, labels.axis["Delta57overB", assays])
+tab.1
+
+# save D57 only, not delta
+mytex(tab.1, file.name="CoR_D57_univariable_svycoxph_pretty_"%.%study.name, align="c", include.colnames = F, save2input.only=T, input.foldername=save.results.to,
+    col.headers=paste0("\\hline\n 
+         \\multicolumn{1}{l}{", toTitleCase(study.name), "} & \\multicolumn{1}{c}{No. cases /}   & \\multicolumn{2}{c}{HR per 10-fold incr.}                     & \\multicolumn{1}{c}{P-value}   & \\multicolumn{1}{c}{q-value}   & \\multicolumn{1}{c}{FWER} \\\\ 
+         \\multicolumn{1}{l}{Immunologic Marker}            & \\multicolumn{1}{c}{No. at-risk**} & \\multicolumn{1}{c}{Pt. Est.} & \\multicolumn{1}{c}{95\\% CI} & \\multicolumn{1}{c}{(2-sided)} & \\multicolumn{1}{c}{} & \\multicolumn{1}{c}{} \\\\ 
+         \\hline\n 
+    ")
+)
+
+
+######################################
+# make trichotomized markers table
+
+overall.p.1=formatDouble(pvals.adj.fdr[1:length(assays)+length(assays)], 3);   overall.p.1=sub(".000","<0.001",overall.p.1)
+overall.p.2=formatDouble(pvals.adj.fdr[1:length(assays)+length(assays)], 3);   overall.p.2=sub(".000","<0.001",overall.p.2)
+# add NA
+overall.p.1=c(rbind(overall.p.1, NA,NA))
+overall.p.2=c(rbind(overall.p.2, NA,NA))
+
 
 # n cases and n at risk
 natrisk = round(c(sapply (c("Day57"%.%assays, "Delta57overB"%.%assays)%.%"cat", function(a) aggregate(dat.mock.vacc.seroneg.D57$wt, dat.mock.vacc.seroneg.D57[a], sum, na.rm=T)[,2] )))
 colSums(matrix(natrisk, nrow=3))
 nevents = round(c(sapply (c("Day57"%.%assays, "Delta57overB"%.%assays)%.%"cat", function(a) aggregate(subset(dat.mock.vacc.seroneg.D57,EventIndPrimaryD57==1,wt,drop=T), 
                                                                                                 subset(dat.mock.vacc.seroneg.D57,EventIndPrimaryD57==1)[a], sum, na.rm=T)[,2] )))
-
 # regression parameters
 est=c(rbind(1.00,  getFormattedSummary(fits.tri, exp=T, robust=T, rows=rows, type=1)))
 ci= c(rbind("N/A", getFormattedSummary(fits.tri, exp=T, robust=T, rows=rows, type=13)))
@@ -176,7 +192,6 @@ tmp=rbind(c(labels.axis["Day57", assays], labels.axis["Delta57overB", assays]), 
 rownames(tab)=c(tmp)
 tab
 
-# save D57
 mytex(tab[1:(nrow(tab)/2),], file.name="CoR_D57_univariable_svycoxph_cat_pretty_"%.%study.name, align="c", include.colnames = F, save2input.only=T, input.foldername=save.results.to,
     col.headers=paste0("\\hline\n 
          \\multicolumn{1}{l}{", toTitleCase(study.name), "} & \\multicolumn{1}{c}{Tertile}   & \\multicolumn{1}{c}{No. cases /}   & \\multicolumn{1}{c}{Attack}   & \\multicolumn{2}{c}{Haz. Ratio}                     & \\multicolumn{1}{c}{P-value}   & \\multicolumn{1}{c}{Overall P-}      & \\multicolumn{1}{c}{Overall q-}   & \\multicolumn{1}{c}{Overall} \\\\ 
@@ -193,12 +208,6 @@ mytex(tab[1:(nrow(tab)/2),], file.name="CoR_D57_univariable_svycoxph_cat_pretty_
          )
     )
 )
-
-
-
-
-
-
 
 
 

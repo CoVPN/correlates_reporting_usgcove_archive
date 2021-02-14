@@ -13,6 +13,7 @@ cor_coxph: cor_coxph1 report
 cor_coxph1: 
 	cd code; Rscript cor_coxph.R
 
+
 ## standalone report
 report:  
 	Rscript -e "rmarkdown::render('cor_coxph_report.Rmd')"
@@ -20,7 +21,8 @@ report:
 
 ## type 'make help' to show all make commands
 help: Makefile
-    @sed -n 's/^##//p' $<
+	@sed -n 's/^##//p' $<
+
 
 # define PHONYS
 .PHONY: help clean cor_coxph

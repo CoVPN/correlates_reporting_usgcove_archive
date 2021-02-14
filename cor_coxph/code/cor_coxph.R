@@ -1,3 +1,5 @@
+# This script takes 10 min to run with 30 CPUS
+
 # start R inside the code folder or make sure working directory is here
 rm(list=ls())       
 study.name="mock" # study.name is used in figure/table file names and printed in tables/figures as well
@@ -7,7 +9,8 @@ save.results.to="../output/"; if (!dir.exists(save.results.to))  dir.create(save
 rerun.time.consuming.steps=!file.exists(paste0(save.results.to, "risks.all.1.mock.Rdata"))
     
 # 1e3 bootstraps take 8 min with 30 CPUS. The results are saved in several .Rdata files.
-numCores=30 # number of cores available on the machine
+# permutation also takes time
+numCores=if(Sys.info()['sysname']=="Windows") 1 else 30 # number of cores available on the machine
 B=1000 # number of bootstrap replicates
     
 library(COVIDcorr); stopifnot(packageVersion("COVIDcorr")>="2021.01.25")
@@ -15,7 +18,7 @@ library(COVIDcorr); stopifnot(packageVersion("COVIDcorr")>="2021.01.25")
     
 # the order of these packages matters
 # kyotil mostly contains code for formatting, but may also contain code for some estimation tasks
-library(kyotil);           stopifnot(packageVersion("kyotil")>="2021.2-13")
+library(kyotil);           stopifnot(packageVersion("kyotil")>="2021.2-13") # p.adj.perm
 #remotes::install_github("youyifong/kyotil")
 # marginalizedRisk contains logic for computing marginalized risk curves
 library(marginalizedRisk); stopifnot(packageVersion("marginalizedRisk")>="2021.2-4")
@@ -72,6 +75,8 @@ for (a in assays) {
         write(paste0(labels.axis[1,a], " [", concatList(round(q.a, 2), ", "), ")%"), file=paste0(save.results.to, "cutpoints_",t,a, "_"%.%study.name))
     }
 }
+#
+time.start=Sys.time()
 
 
 
@@ -103,6 +108,12 @@ est=getFormattedSummary(fits, exp=T, robust=T, rows=rows, type=1)
 ci= getFormattedSummary(fits, exp=T, robust=T, rows=rows, type=13)
 p=  getFormattedSummary(fits, exp=T, robust=T, rows=rows, type=10); p=sub("0.000","<0.001",p)
 
+pvals.cont = sapply(fits, function(x) {
+    tmp=getFixedEf(x)
+    p.val.col=which(startsWith(tolower(colnames(tmp)),"p"))
+    tmp[nrow(tmp),p.val.col]
+})
+
 
 ######################################
 # regression for trichotomized markers
@@ -121,27 +132,75 @@ overall.p.tri=sapply(fits.tri, function(fit) {
     stat=coef(fit)[rows] %*% solve(vcov(fit,robust=T)[rows,rows]) %*% coef(fit)[rows]
     pchisq(stat, length(rows), lower.tail = FALSE)
 })
+#
 overall.p.0=formatDouble(c(rbind(overall.p.tri, NA,NA)), digits=3, remove.leading0 = F);   overall.p.0=sub("0.000","<0.001",overall.p.0)
 
 
 #######################################################################
 # do multitesting adj for continuous and trichotomized markers together
 
-pvals.cont = sapply(fits, function(x) {
-    tmp=getFixedEf(x)
-    p.val.col=which(startsWith(tolower(colnames(tmp)),"p"))
-    tmp[nrow(tmp),p.val.col]
-})
+
+#### Holm and FDR
 
 pvals.adj.fdr=p.adjust(c(pvals.cont, overall.p.tri), method="fdr")
 pvals.adj.hol=p.adjust(c(pvals.cont, overall.p.tri), method="holm")
 
 
+#### Westfall and Young permutation test
+
+dat.ph2 = design.vacc.seroneg$phase1$sample$variables
+design.vacc.seroneg.perm=design.vacc.seroneg
+#design.vacc.seroneg.perm$phase1$full$variables
+
+seeds=1:1e4
+out=mclapply(seeds, mc.cores = numCores, FUN=function(seed) {   
+    # store the current rng state 
+    save.seed <- try(get(".Random.seed", .GlobalEnv), silent=TRUE) 
+    if (class(save.seed)=="try-error") {set.seed(1); save.seed <- get(".Random.seed", .GlobalEnv) }          
+    set.seed(seed)        
+    
+    # permute markers in design.vacc.seroneg.perm
+    new.idx=sample(1:nrow(dat.ph2))
+    tmp=dat.ph2
+    for (a in "Day57"%.%assays) {
+        tmp[[a]]=tmp[[a]][new.idx]
+        tmp[[a%.%"cat"]]=tmp[[a%.%"cat"]][new.idx]
+    }
+    design.vacc.seroneg.perm$phase1$sample$variables = tmp
+    
+    out=c(
+        sapply ("Day57"%.%assays, function(a) {
+            f= update(form.0, as.formula(paste0("~.+", a)))
+            fit=svycoxph(f, design=design.vacc.seroneg.perm) 
+            last(c(getFixedEf(fit)))
+        })        
+        ,    
+        sapply ("Day57"%.%assays, function(a) {
+            f= update(form.0, as.formula(paste0("~.+", a, "cat")))
+            fit=svycoxph(f, design=design.vacc.seroneg.perm) 
+            last(c(getFixedEf(fit)))
+        })
+    )
+    
+    # restore rng state 
+    assign(".Random.seed", save.seed, .GlobalEnv)    
+    
+    out
+})
+pvals.perm=do.call(rbind, out)
+
+pvals.adj.perm = p.adj.perm (c(pvals.cont, overall.p.tri), pvals.perm)
+
+
+
 ######################################
 # make continuous markers table
 
-p.1=formatDouble(pvals.adj.fdr[1:length(assays)], 3); p.1=sub(".000","<0.001",p.1)
-p.2=formatDouble(pvals.adj.hol[1:length(assays)], 3); p.2=sub(".000","<0.001",p.2)
+#p.1=formatDouble(pvals.adj.fdr[1:length(assays)], 3); p.1=sub(".000","<0.001",p.1)
+#p.2=formatDouble(pvals.adj.hol[1:length(assays)], 3); p.2=sub(".000","<0.001",p.2)
+# or
+p.1=formatDouble(pvals.adj.perm[1:length(assays),"p.FWER"], 3); p.1=sub(".000","<0.001",p.1)
+p.2=formatDouble(pvals.adj.perm[1:length(assays),"p.FDR" ], 3); p.2=sub(".000","<0.001",p.2)
 
 tab.1=cbind(paste0(nevents, "/", format(natrisk, big.mark=",")), t(est), t(ci), t(p), p.1, p.2)
 rownames(tab.1)=c(labels.axis["Day57", assays])#, labels.axis["Delta57overB", assays])
@@ -160,9 +219,14 @@ mytex(tab.1, file.name="CoR_D57_univariable_svycoxph_pretty_"%.%study.name, alig
 ######################################
 # make trichotomized markers table
 
-overall.p.1=formatDouble(pvals.adj.fdr[1:length(assays)+length(assays)], 3);   overall.p.1=sub(".000","<0.001",overall.p.1)
-overall.p.2=formatDouble(pvals.adj.fdr[1:length(assays)+length(assays)], 3);   overall.p.2=sub(".000","<0.001",overall.p.2)
-# add NA
+#overall.p.1=formatDouble(pvals.adj.fdr[1:length(assays)+length(assays)], 3);   overall.p.1=sub(".000","<0.001",overall.p.1)
+#overall.p.2=formatDouble(pvals.adj.fdr[1:length(assays)+length(assays)], 3);   overall.p.2=sub(".000","<0.001",overall.p.2)
+# or
+overall.p.1=formatDouble(pvals.adj.perm[1:length(assays)+length(assays),"p.FWER"], 3);   overall.p.1=sub(".000","<0.001",overall.p.1)
+overall.p.2=formatDouble(pvals.adj.perm[1:length(assays)+length(assays),"p.FDR" ], 3);   overall.p.2=sub(".000","<0.001",overall.p.2)
+
+
+# add space
 overall.p.1=c(rbind(overall.p.1, NA,NA))
 overall.p.2=c(rbind(overall.p.2, NA,NA))
 
@@ -492,7 +556,6 @@ marginalized.risk.svycoxph.boot=function(formula, marker.name, type, data, t, we
 
 # bootstrap marginalized risk is a time-consumming step
 if(rerun.time.consuming.steps) {
-    time.start=Sys.time()
     
     #################
     # vaccine arm
@@ -553,7 +616,6 @@ if(rerun.time.consuming.steps) {
     
     
     
-    print(Sys.time()-time.start)
     
 } else {
     load(file=paste0(save.results.to, "risks.all.1", "."%.%study.name, ".Rdata"))
@@ -912,3 +974,5 @@ mytex(tab, file.name="CoR_Day57pseudoneutid80_5cases_Firth_"%.%study.name, input
 #rownames(tab.3)=gsub("age.geq.65", "Age>=65", rownames(tab.3))
 #tab.3
 #mytex(tab.3, file.name="CoR_univariable_tps", input.foldername=save.results.to, align="c", save2input.only=TRUE)
+
+print(Sys.time()-time.start)

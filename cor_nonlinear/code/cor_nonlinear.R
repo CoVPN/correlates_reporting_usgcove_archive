@@ -1,16 +1,19 @@
+#-----------------------------------------------
+# obligatory to append to the top of each script
+renv::activate(project = here::here(".."))
+source(here::here("..", "_common.R"))
+#-----------------------------------------------
+source(here::here("code", "params.R"))
+
 # start R inside the code folder or make sure working directory is here
-rm(list=ls())       
-study.name="mock" # study.name is used in figure/table file names and printed in tables/figures as well
-save.results.to="../output/"; if (!dir.exists(save.results.to))  dir.create(save.results.to)
-    
+save.results.to = paste0(here::here("output"), "/")
+if (!dir.exists(save.results.to))  dir.create(save.results.to)
+
 # if .Rdata already exists, don't rerun
 rerun.time.consuming.steps=!file.exists(paste0(save.results.to, "risks.all.1.mock.Rdata"))
-numCores=30 # number of cores available on the machine
-B=1000 # number of bootstrap replicates
     
 library(COVIDcorr); stopifnot(packageVersion("COVIDcorr")>="2021.01.25")
 #remotes::install_github("CoVPN/correlates_mockdata", auth_token="e09062bae8d9a4acf4ba7e7c587c5d3fbe1abd69")
-    
 # the order of these packages matters
 library(mgcv) # gam
 #library(nnet)# multinom, for estimating trichotomous markers probability, make sure this comes after mgcv since mgcv also has multinom
@@ -28,11 +31,7 @@ library(Hmisc)# wtd.quantile, biconf
 library(forestplot)
 library(svyVGAM) # Firth penalized glm
     
-#assays=c("bindSpike","bindRBD","pseudoneutid50","liveneutmn50","pseudoneutid80")
-assays=c("bindSpike","bindRBD","pseudoneutid50","pseudoneutid80")
 .mfrow=if(length(assays)==4) c(2,2) else if(length(assays)==5) c(3,2) else stop("pls redefine .mfrows")
-trt.labels=c("Placebo","Vaccine")
-bstatus.labels=c("Baseline Neg","Pos")
 max.stratum=max(dat.mock$Bstratum)
     
 # important subset of data

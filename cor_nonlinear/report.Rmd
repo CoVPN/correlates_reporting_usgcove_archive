@@ -1,0 +1,25 @@
+<!-- ```{r cor-coxph-setup, echo = FALSE, message = FALSE} -->
+<!-- library(here) -->
+<!-- library(latex2exp) -->
+<!-- here::i_am("cor_coxph/report.Rmd") -->
+<!-- ``` -->
+
+
+# Nonlinear association
+
+To explore nonlinear association and threshold modeling, we fit smoothing spline models using the mgcv R package and two-phase models using the chngpt R package.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{\pathCoRNonlinearoutput/gam_\studyname}
+    \caption{GAM fit of risk of infection versus markers with clinical covariates adjustment. Histograms of the immunological markers in the vaccine arm are overlaid.}
+    \label{fig:gam_\studyname}
+\end{figure}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{\pathCoRNonlinearoutput/step_\studyname}
+    \caption{Step model fits with clinical covariates adjustment. Histograms of the immunological markers in the vaccine arm are overlaid.}
+    \label{fig:segmented_\studyname}
+\end{figure}

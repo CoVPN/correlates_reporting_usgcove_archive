@@ -1,0 +1,23 @@
+---
+title: "COVID correlates analysis report CoR"
+shorttitle: "COVID correlates analysis CoR"
+author:
+header-includes:
+   - \usepackage{float}
+date: "`r Sys.Date()`"
+output:
+  bookdown::pdf_document2:
+    citation_package: natbib
+    number_sections: true
+    extra_dependencies: ["caption", "subcaption", "graphicx"]
+    toc: false
+linkcolor: blue
+bibliography: ref.bib
+---
+
+\newcommand{\studyname}{mock}
+\newcommand{\pathCoRoutput}{output}
+
+
+```{r, child=c('report.Rmd')}
+```

@@ -125,8 +125,9 @@ for (typ in c("line","violin")) {
 
             plot_dat_long_stacked_plot2 <- 
               plot_dat_long_stacked %>% group_by_at(groupby_vars2) %>%
-              mutate(num = sum(value>=(ifelse(marker %in% c("pseudoneutid50","pseudoneutid80"), log10(20), 
-                                              ifelse(marker %in% c("bindSpike","bindRBD"), log10(34), NA)))), denom=n(), RespRate = paste0(num,"/",denom,"=\n",round(num/denom*100, 1),"%"))
+              mutate(num = sum(response), 
+                     denom=n(), 
+                     RespRate = paste0(num,"/",denom,"=\n",round(num/denom*100, 1),"%"))
             
             # make subset for strata RaceEthnic and Dich_RaceEthnic, only present two categories out of three
             if (s=="RaceEthnic") {

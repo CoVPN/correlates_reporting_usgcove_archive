@@ -1,9 +1,5 @@
-<!-- ```{r cor-coxph-setup, echo = FALSE, message = FALSE} -->
-<!-- library(here) -->
-<!-- library(latex2exp) -->
-<!-- here::i_am("cor_coxph/report.Rmd") -->
-<!-- ``` -->
-
+\newcommand{\studyname}{mock}
+\newcommand{\pathCoRNonlinearoutput}{output}
 
 # Nonlinear association
 

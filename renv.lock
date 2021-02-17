@@ -196,6 +196,13 @@
       "Repository": "CRAN",
       "Hash": "84dffc44f23c419537c1c79cc46347a5"
     },
+    "VGAM": {
+      "Package": "VGAM",
+      "Version": "1.1-5",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "457a2a08a76cc33cb5510c94d2006e02"
+    },
     "abind": {
       "Package": "abind",
       "Version": "1.4-5",
@@ -249,8 +256,8 @@
       "Package": "bookdown",
       "Version": "0.21.6",
       "Source": "GitHub",
-      "Remotes": "rstudio/bslib, rstudio/rmarkdown, r-lib/downlit",
       "RemoteType": "github",
+      "Remotes": "rstudio/bslib, rstudio/rmarkdown, r-lib/downlit",
       "RemoteHost": "api.github.com",
       "RemoteRepo": "bookdown",
       "RemoteUsername": "rstudio",
@@ -353,6 +360,18 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "a667800d5f0350371bedeb8b8b950289"
+    },
+    "chngpt": {
+      "Package": "chngpt",
+      "Version": "2021.2-9",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteRepo": "chngpt",
+      "RemoteUsername": "youyifong",
+      "RemoteRef": "HEAD",
+      "RemoteSha": "d11900ded1726307b6abeda25fb45b991bfe9ea2",
+      "Hash": "1441b9c209c9a0fb14adec37db7a2929"
     },
     "class": {
       "Package": "class",
@@ -596,6 +615,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "74628ea7a3be5ee8a7b5bb0a8e84882e"
+    },
+    "forestplot": {
+      "Package": "forestplot",
+      "Version": "1.10.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "eea9600665b26b513e3c20d9b83f6780"
     },
     "fs": {
       "Package": "fs",
@@ -909,10 +935,15 @@
     },
     "kyotil": {
       "Package": "kyotil",
-      "Version": "2020.10-12",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "5c2d225c428f60a27497eff81b041180"
+      "Version": "2021.2-13",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteRepo": "kyotil",
+      "RemoteUsername": "youyifong",
+      "RemoteRef": "HEAD",
+      "RemoteSha": "35db57a71f3c9f5926e06bac3273c84af5cb88fb",
+      "Hash": "842ae258442c6176dc748e669c073dd8"
     },
     "labeling": {
       "Package": "labeling",
@@ -1011,6 +1042,18 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "1cb5cb7bbab76318944e3794ff2512ae"
+    },
+    "marginalizedRisk": {
+      "Package": "marginalizedRisk",
+      "Version": "2021.2-4",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteRepo": "marginalizedRisk",
+      "RemoteUsername": "youyifong",
+      "RemoteRef": "HEAD",
+      "RemoteSha": "a33f807f9510fc299a380b7b7e898e5e055d8cff",
+      "Hash": "aca84af528655beda99bd8b942e48bbc"
     },
     "markdown": {
       "Package": "markdown",
@@ -1422,8 +1465,8 @@
       "Package": "rmarkdown",
       "Version": "2.6.6",
       "Source": "GitHub",
-      "Remotes": "rstudio/bslib, rstudio/shiny",
       "RemoteType": "github",
+      "Remotes": "rstudio/bslib, rstudio/shiny",
       "RemoteHost": "api.github.com",
       "RemoteRepo": "rmarkdown",
       "RemoteUsername": "rstudio",
@@ -1608,6 +1651,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "39c4ac6d22dad33db0ee37b40810ea12"
+    },
+    "svyVGAM": {
+      "Package": "svyVGAM",
+      "Version": "0.222-2",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "b349265cf7245fb13fb6b91d2c4e839a"
     },
     "sys": {
       "Package": "sys",

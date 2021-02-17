@@ -6,3 +6,16 @@
 *.reg
 _book
 _bookdown_files
+cor_coxph/output/*.tex
+cor_coxph/output/*.pdf
+cor_coxph/output/*.Rdata
+cor_coxph/output/risks.all.1.mock.Rdata.Rdata
+cor_coxph/output/cutpoints*
+cor_coxph/cor_coxph_report.pdf
+cor_coxph/output/timepoints_cum_risk_mock
+cor_coxph/report.knit.md
+cor_coxph/report.utf8.md
+cor_coxph/report.pdf
+cor_coxph/cor_coxph_report.pdf
+cor_nonlinear/output/*.pdf
+cor_nonlinear/cor_nonlinear_report.pdf

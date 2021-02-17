@@ -1,27 +1,25 @@
-# This script takes 10 min to run with 30 CPUS
+#-----------------------------------------------
+# obligatory to append to the top of each script
+renv::activate(project = here::here(".."))
+source(here::here("..", "_common.R"))
+#-----------------------------------------------
+source(here::here("code", "params.R"))
 
 # start R inside the code folder or make sure working directory is here
-rm(list=ls())       
-study.name="mock" # study.name is used in figure/table file names and printed in tables/figures as well
-save.results.to="../output/"; if (!dir.exists(save.results.to))  dir.create(save.results.to)
+save.results.to = paste0(here::here("output"), "/")
+if (!dir.exists(save.results.to))  dir.create(save.results.to)
     
 # if .Rdata already exists, don't rerun
 rerun.time.consuming.steps=!file.exists(paste0(save.results.to, "risks.all.1.mock.Rdata"))
     
-# 1e3 bootstraps take 8 min with 30 CPUS. The results are saved in several .Rdata files.
-# permutation also takes time
-numCores=if(Sys.info()['sysname']=="Windows") 1 else 30 # number of cores available on the machine
-B=1000 # number of bootstrap replicates
-    
-library(COVIDcorr); stopifnot(packageVersion("COVIDcorr")>="2021.01.25")
+library(COVIDcorr)
 #remotes::install_github("CoVPN/correlates_mockdata", auth_token="e09062bae8d9a4acf4ba7e7c587c5d3fbe1abd69")
-    
 # the order of these packages matters
 # kyotil mostly contains code for formatting, but may also contain code for some estimation tasks
-library(kyotil);           stopifnot(packageVersion("kyotil")>="2021.2-13") # p.adj.perm
+library(kyotil)      
 #remotes::install_github("youyifong/kyotil")
 # marginalizedRisk contains logic for computing marginalized risk curves
-library(marginalizedRisk); stopifnot(packageVersion("marginalizedRisk")>="2021.2-4")
+library(marginalizedRisk)
 #remotes::install_github("youyifong/marginalizedRisk")
 library(tools) # toTitleCase
 library(survey)
@@ -30,17 +28,15 @@ library(parallel)
 library(Hmisc)# wtd.quantile, biconf
 library(forestplot)
 library(svyVGAM) # Firth penalized glm
-    
-#assays=c("bindSpike","bindRBD","pseudoneutid50","liveneutmn50","pseudoneutid80")
-assays=c("bindSpike","bindRBD","pseudoneutid50","pseudoneutid80")
+library(xtable)
+
 .mfrow=if(length(assays)==4) c(2,2) else if(length(assays)==5) c(3,2) else stop("pls redefine .mfrows")
-trt.labels=c("Placebo","Vaccine")
-bstatus.labels=c("Baseline Neg","Pos")
 max.stratum=max(dat.mock$Bstratum)
-    
-# intercurrent cases
-nrow(subset(dat.mock.vacc.seroneg, TwophasesampInd==1& EventIndPrimaryD29==1))
-nrow(subset(dat.mock.vacc.seroneg, TwophasesampInd==1& EventIndPrimaryD57==1))
+  
+# DB: can be deleted?    
+# # intercurrent cases
+# nrow(subset(dat.mock.vacc.seroneg, TwophasesampInd==1& EventIndPrimaryD29==1))
+# nrow(subset(dat.mock.vacc.seroneg, TwophasesampInd==1& EventIndPrimaryD57==1))
     
 # important subset of data
 dat.mock.vacc.seroneg.D57=subset(dat.mock.vacc.seroneg, EventTimePrimaryD57>=7)
@@ -152,7 +148,7 @@ dat.ph2 = design.vacc.seroneg$phase1$sample$variables
 design.vacc.seroneg.perm=design.vacc.seroneg
 #design.vacc.seroneg.perm$phase1$full$variables
 
-seeds=1:1e4
+# DB: seeds is number of permutations?
 out=mclapply(seeds, mc.cores = numCores, FUN=function(seed) {   
     # store the current rng state 
     save.seed <- try(get(".Random.seed", .GlobalEnv), silent=TRUE) 

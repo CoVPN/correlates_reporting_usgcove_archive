@@ -1,24 +1,19 @@
-## all              
-all: clean cor_nonlinear1
+## all           : clean saved results and get results to populate report
+all: clean cor_nonlinear
 
-
-## delete saved bootstrap results
+## clean         : delete saved bootstrap results
 clean:
 	rm -f output/*
 
-
-## cor_nonlinear         
-cor_nonlinear: cor_nonlinear1 report
-
-cor_nonlinear1: 
+## cor_nonlinear : create output figures
+cor_nonlinear: 
 	cd code; Rscript cor_nonlinear.R
 
-## standalone report
+## report        : create a standalone report
 report:  
 	Rscript -e "rmarkdown::render('cor_nonlinear_report.Rmd')"
 
-
-## type 'make help' to show all make commands
+# type 'make help' to show all make commands
 help: Makefile
 	@sed -n 's/^##//p' $<
 

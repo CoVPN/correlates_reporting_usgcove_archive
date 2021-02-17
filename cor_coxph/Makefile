@@ -1,28 +1,21 @@
-## all              
-all: clean cor_coxph1
+## all           : clean saved results and get results to populate report
+all: clean cor_coxph
 
-
-## delete saved bootstrap results
+## clean         : delete saved bootstrap results
 clean:
 	rm -f output/*
 
-
-## cor_coxph         
-cor_coxph: cor_coxph1 report
-
-cor_coxph1: 
+## cor_coxph     : create tables and figures
+cor_coxph: 
 	cd code; Rscript cor_coxph.R
 
-
-## standalone report
+## report        : create a standalone report
 report:  
 	Rscript -e "rmarkdown::render('cor_coxph_report.Rmd')"
 
-
-## type 'make help' to show all make commands
+# type 'make help' to show all make commands
 help: Makefile
 	@sed -n 's/^##//p' $<
-
 
 # define PHONYS
 .PHONY: help clean cor_coxph

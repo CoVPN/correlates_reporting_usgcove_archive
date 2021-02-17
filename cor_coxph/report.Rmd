@@ -1,9 +1,5 @@
-<!-- ```{r cor-coxph-setup, echo = FALSE, message = FALSE} -->
-<!-- library(here) -->
-<!-- library(latex2exp) -->
-<!-- here::i_am("cor_coxph/report.Rmd") -->
-<!-- ``` -->
-
+\newcommand{\studyname}{mock}
+\newcommand{\pathCoRoutput}{output}
 
 # Univariate CoR: Cox Proportional Hazards Modeling of Relative and Absolute Risk {#cor-coxph}
 

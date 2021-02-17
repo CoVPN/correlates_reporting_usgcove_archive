@@ -15,9 +15,5 @@ linkcolor: blue
 bibliography: ref.bib
 ---
 
-\newcommand{\studyname}{mock}
-\newcommand{\pathCoRoutput}{output}
-
-
 ```{r, child=c('report.Rmd')}
 ```

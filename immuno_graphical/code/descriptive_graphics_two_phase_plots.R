@@ -23,6 +23,7 @@ source(here("code", "ggally_cor_resample.R"))
 source(here("code", "covid_corr_plot_functions.R"))
 source(here("code", "params.R"))
 
+set.seed(12345)
 # load cleaned data
 dat.long.twophase.sample <- readRDS(here(
   "data_clean",

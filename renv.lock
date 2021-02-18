@@ -459,10 +459,10 @@
     },
     "crayon": {
       "Package": "crayon",
-      "Version": "1.4.0",
+      "Version": "1.4.1",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "fcff9126a4928a96c94e3df85b024899"
+      "Hash": "e75525c55c70e5f4f78c9960a4b402e9"
     },
     "credentials": {
       "Package": "credentials",
@@ -548,10 +548,10 @@
     },
     "dplyr": {
       "Package": "dplyr",
-      "Version": "1.0.3",
+      "Version": "1.0.4",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "365f8c3650ab95582e600f160fd5fb88"
+      "Hash": "01c82e3b053eb7660a8ace8d932265b8"
     },
     "dummies": {
       "Package": "dummies",
@@ -793,7 +793,7 @@
       "RemoteUsername": "nhejazi",
       "RemoteRef": "master",
       "RemoteSha": "9c7bcbdfbeb7099afff81ac340c4eb7382c698a2",
-      "Hash": "895bc6a1c256916e493647fd4ffab48a"
+      "Hash": "2c15425b5dfebbdb6b40517a6f9aea7e"
     },
     "haven": {
       "Package": "haven",
@@ -996,10 +996,10 @@
     },
     "lifecycle": {
       "Package": "lifecycle",
-      "Version": "0.2.0",
+      "Version": "1.0.0",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "361811f31f71f8a617a9a68bf63f1f42"
+      "Hash": "3471fb65971f1a7b2d4ae7848cf2db8d"
     },
     "listenv": {
       "Package": "listenv",
@@ -1419,13 +1419,6 @@
       "Repository": "CRAN",
       "Hash": "4e614ef02b992c8f429a359dae976f93"
     },
-    "repr": {
-      "Package": "repr",
-      "Version": "1.1.0",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "466aee1b69232becb73769daa894c171"
-    },
     "reprex": {
       "Package": "reprex",
       "Version": "0.3.0",
@@ -1603,7 +1596,6 @@
       "Version": "1.4.1",
       "Source": "GitHub",
       "RemoteType": "github",
-      "Remotes": "github::osofr/condensier, github::tlverse/hal9001,\ngithub::nhejazi/haldensify, github::tpospisi/RFCDE/r",
       "RemoteHost": "api.github.com",
       "RemoteRepo": "sl3",
       "RemoteUsername": "tlverse",

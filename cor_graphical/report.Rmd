@@ -1591,4 +1591,3 @@ study_name = "mock"
     knitr::include_graphics(here::here("cor_graphical", "figs", "scatter_pnAb_id80_all_Day57_", study_name, ".png"))
     knitr::include_graphics(here::here("cor_graphical", "figs", "
 ```
-

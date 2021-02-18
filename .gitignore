@@ -6,6 +6,11 @@
 *.reg
 _book
 _bookdown_files
+
+cor_graphical/figs/*.pdf
+cor_graphical/figs/*.png
+cor_graphical/data_clean/*.rds
+
 cor_coxph/output/*.tex
 cor_coxph/output/*.pdf
 cor_coxph/output/*.Rdata
@@ -17,5 +22,6 @@ cor_coxph/report.knit.md
 cor_coxph/report.utf8.md
 cor_coxph/report.pdf
 cor_coxph/cor_coxph_report.pdf
+
 cor_nonlinear/output/*.pdf
 cor_nonlinear/cor_nonlinear_report.pdf

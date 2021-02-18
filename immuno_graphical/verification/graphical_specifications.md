@@ -32,7 +32,7 @@
 13. In `dat.long.twophase.sample`, create a new field `age_minority_label`, which is defined as the cross product of `age.geq.65` and `MinorityInd` fields converted to a character.
 
 ## Immunogenicity Plots for the Overall Two-phase Sample
-### Pair Plots
+### RCDF Plots
 1. For each treatment and baseline seroviral status group, make pairplots for Day 29 binding-Spike, binding-RBD, Pseudo-virus nAb ID50 and Pseudo-virus nAb ID80 assay readouts. Make the same pair plots for Day 57 assay readouts, Day 29 fold-rise over baseline and Day 57 fold-rise over baseline.
 
 2. For each baseline seroviral status group, make pairplots for Day 29 binding-Spike, binding-RBD, Pseudo-virus nAb ID50 and Pseudo-virus nAb ID80 assay readouts. Make the same pair plots for Day 57 assay readouts, Day 29 fold-rise over baseline and Day 57 fold-rise over baseline.
@@ -40,14 +40,73 @@
 3. For each baseline seroviral status group, make pairplots for baseline binding-Spike, binding-RBD, Pseudo-virus nAb ID50 and Pseudo-virus nAb ID80 assay readouts. 
 
 4. For each baseline seroviral status group, make pair plots for baseline, Day 29, and Day 57 binding-Spike assay readouts. Make the same plots for other three assays.
-## Responder Proportion Table
 
-title: Responder rates
-Column names: Group, Baseline, Vsit, Endpoint, N, Responder, 2-Fold Rise, 4-Fold Rise
-Footers:
- - Neutralization Responders are defined as participants who had baseline values below the lower limit of quantification (LLOQ) with detectable ID50 neutralization titer above the assay LLOQ, or as participants with baseline values above the LLOQ with a 4-fold increase in ID50
-- Binding Antibody Responders are defined as participants who had baseline values below the LLOQ with detectable antibody concentration above the assay LLOQ, or as participants with baseline values above the LLOQ with a 4-fold increase in antibody concentration.
-- bAb LLOQ = 34; nAb ID50 LLOQ = 49; nAb ID80 LLOQ = 43
-- All calculations were weighted by the inverse probability sampling (IPS), defined based on the subcohort sampling strata.
-- T1: Vaccination
-- P2: Placebo
+### RCDF Plots
+1. Make weighted RCDF plots that consists of four panels of baseline assay readouts, each panel for one type of assay. There are four RCDF lines in each panel with different colors, representing "vaccine group, baseline negative", "vaccine group, baseline positive", "placebo group, baseline negative", and "placebo group, baseline positive". The weights are given by the `wt` field. Make the same plots for Day 29 assay readouts, Day 57 assay readouts, Day 29 fold-rise over baseline and Day 57 fold-rise over baseline.
+
+2. Make weighted RCDF plots for vaccine group that consists of Day 29 assay readouts. There are eight RCDF lines, which are the four assay readouts for baseline negative subjects and the four assay readouts for baseline positive subjects. Use different colors to indicate different assays and different line types to indicate baseline seroviral status. Make the same plots for Day 57 assay readouts, Day 29 fold-rise over baseline and Day 57 fold-rise over baseline.
+
+3. Repeat the plots in 2 but only make plots for vaccine group baseline negative subjects.
+
+## Immunogenicity Plots for the Overall Two-phase Sample
+
+### Box Plots
+1.  For baseline negative subjects, make box plots that consists of four panels of baseline assay readouts, each panel for one type of assay. Each panel contains two bars, representing "vaccine group" and "placebo group". Each box plot is overlaid with 30 randomly chosen sample points. Use dashline to indicate LLOQ. Make the same plots for Day 29 assay readouts, Day 57 assay readouts, Day 29 fold-rise over baseline and Day 57 fold-rise over baseline. There is no LLOQ line in the plots of Day 29 fold-rise over baseline and Day 57 fold-rise over baseline. 
+bAb LLOQ = log10(34); nAb ID50 LLOQ = log10(49); nAb ID80 LLOQ = log10(43).
+
+2. Repeat 1 for baseline positive subjects.
+
+3. For vaccine group subjects, make box plots that consists of four panels of baseline assay readouts, each panel for one type of assay. Each panel contains two bars, representing "baseline negative" and "baseline positive". Each box plot is overlaid with 30 randomly chosen sample points. Use dashline to indicate LLOQ. The weights are given by the `wt` field. Make the same plots for Day 29 assay readouts, Day 57 assay readouts, Day 29 fold-rise over baseline and Day 57 fold-rise over baseline. There is no LLOQ line in the plots of Day 29 fold-rise over baseline and Day 57 fold-rise over baseline.
+
+4. Repeat 1 for placebo group subjects.
+
+### Spaghetti Plots
+1. For baseline negative subjects, randomly choose 10 placebo group subjects and 20 vaccine group subjects. Make spaghetti plots that consists of four panels of assay readouts at baseline, Day 29 and Day 57, each panel for one type of assay. 
+
+2. Repeat 1 for baseline positive subjects.
+
+
+## Immunogenicity Plots by demographics
+### RCDF plots
+1. For baseline negative vaccine group subjects, make weighted RCDF plots that consists of four panels of baseline assay readouts, each panel for one type of assay. Each panel consists weighted RCDF lines with different colors, indicating different values of the `age_geq_65_label` field. The weights are given by the `wt` field. Make the same plots for Day 29 assay readouts, Day 57 assay readouts, Day 29 fold-rise over baseline and Day 57 fold-rise over baseline.
+
+2. Repeat 1 for baseline positive vaccine group subjects.
+
+3. Repeat 1 and 2, except the lines in each panel represents subjects with different values of the `high_risk_label` field.
+
+4. Repeat 1 and 2, except the lines in each panel represents subjects with different values of the `age_risk_label` field.
+
+5. Repeat 1 and 2, except the lines in each panel represents subjects with different values of the `sex_label` field.
+
+5. Repeat 1 and 2, except the lines in each panel represents subjects with different values of the `age_sex_label` field.
+
+6. Repeat 1 and 2, except the lines in each panel represents subjects with different values of the `ethnicity` field.
+
+7. Repeat 1 and 2, except the lines in each panel represents subjects with different values of the `race` field.
+
+8. Repeat 1 and 2, except the lines in each panel represents subjects with different values of the `minority_label` field.
+
+9. Repeat 1 and 2, except the lines in each panel represents subjects with different values of the `age_minority_label` field.
+
+### Box plots
+1.  For baseline negative vaccine group subjects, make box plots that consists of four panels of baseline assay readouts, each panel for one type of assay. Each panel contains bars representing subjects with different values of the `age_geq_65_label` field. Each box plot is overlaid with 30 randomly chosen sample points. Use dashline to indicate LLOQ. Make the same plots for Day 29 assay readouts, Day 57 assay readouts, Day 29 fold-rise over baseline and Day 57 fold-rise over baseline. There is no LLOQ line in the plots of Day 29 fold-rise over baseline and Day 57 fold-rise over baseline. 
+bAb LLOQ = log10(34); nAb ID50 LLOQ = log10(49); nAb ID80 LLOQ = log10(43).
+
+
+2. Repeat 1 for baseline positive vaccine group subjects.
+
+3. Repeat 1 and 2, except the boxes in each panel represents subjects with different values of the `high_risk_label` field.
+
+4. Repeat 1 and 2, except the boxes in each panel represents subjects with different values of the `age_risk_label` field.
+
+5. Repeat 1 and 2, except the boxes in each panel represents subjects with different values of the `sex_label` field.
+
+5. Repeat 1 and 2, except the boxes in each panel represents subjects with different values of the `age_sex_label` field.
+
+6. Repeat 1 and 2, except the boxes in each panel represents subjects with different values of the `ethnicity` field.
+
+7. Repeat 1 and 2, except the boxes in each panel represents subjects with different values of the `race` field.
+
+8. Repeat 1 and 2, except the boxes in each panel represents subjects with different values of the `minority_label` field.
+
+9. Repeat 1 and 2, except the boxes in each panel represents subjects with different values of the `age_minority_label` field.

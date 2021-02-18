@@ -25,3 +25,5 @@ cor_coxph/cor_coxph_report.pdf
 
 cor_nonlinear/output/*.pdf
 cor_nonlinear/cor_nonlinear_report.pdf
+cor_coxph/output/CoR_D57_mean_followup_time_vacc_mock
+cor_coxph/output/CoR_D57_max_followup_time_vacc_mock

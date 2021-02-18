@@ -33,6 +33,7 @@
 
 ## Immunogenicity Plots for the Overall Two-phase Sample
 ### RCDF Plots
+Set the random seed to be `12345`.
 1. For each treatment and baseline seroviral status group, make pairplots for Day 29 binding-Spike, binding-RBD, Pseudo-virus nAb ID50 and Pseudo-virus nAb ID80 assay readouts. Make the same pair plots for Day 57 assay readouts, Day 29 fold-rise over baseline and Day 57 fold-rise over baseline.
 
 2. For each baseline seroviral status group, make pairplots for Day 29 binding-Spike, binding-RBD, Pseudo-virus nAb ID50 and Pseudo-virus nAb ID80 assay readouts. Make the same pair plots for Day 57 assay readouts, Day 29 fold-rise over baseline and Day 57 fold-rise over baseline.
@@ -67,6 +68,7 @@ bAb LLOQ = log10(34); nAb ID50 LLOQ = log10(49); nAb ID80 LLOQ = log10(43).
 
 
 ## Immunogenicity Plots by demographics
+Set the random seed to be `12345`.
 ### RCDF plots
 1. For baseline negative vaccine group subjects, make weighted RCDF plots that consists of four panels of baseline assay readouts, each panel for one type of assay. Each panel consists weighted RCDF lines with different colors, indicating different values of the `age_geq_65_label` field. The weights are given by the `wt` field. Make the same plots for Day 29 assay readouts, Day 57 assay readouts, Day 29 fold-rise over baseline and Day 57 fold-rise over baseline.
 

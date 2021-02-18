@@ -1,3 +1,18 @@
-# Specifications for CoR_coxph
+# Specifications for CoR_COXPH
 
-## 
+There are two main sets of results in the CoR_COXPH section of the report: (i) Cox regression model coefficients, and (ii) marginalized risk curves based on Cox models. 
+
+The population of interest for the D57 CoR study is defined as baseline negative, per-protocol, at risk at 7 days post the Day 57 visit. We are for the most part interested in the vaccine arm, but the placebo arm is sometimes also of interest as a comparison.
+
+## Cox regression model coefficients
+
+Cox regression model coefficients are presented in two places: (a) two tables of regression results for the overall population (defined above), one for continuous markers and one for trichotomized markers, (b) forest plots showing regression results for subpopulations defined by key clinical covariates. 
+
+Due to the two-phase sampling design, the survey package svycoxph function will be used for fitting Cox models and getting confidence intervals and P values. 
+
+Four biomarkers will be studied: Day57bindSpike, Day57bindRBD, Day57pseudoneutid50, Day57pseudoneutid80. Their trichotomized version is Day57bindSpikecat, Day57bindRBDcat, Day57pseudoneutid50cat, Day57pseudoneutid80cat.
+
+Explain more about the count data in the trichotomized table ...
+
+Save table object as R binary ...
+

@@ -4,7 +4,7 @@ renv::activate(project = here::here(".."))
 source(here::here("..", "_common.R"))
 #-----------------------------------------------
 source(here::here("code", "params.R"))
-
+    
 # start R inside the code folder or make sure working directory is here
 save.results.to = paste0(here::here("output"), "/")
 if (!dir.exists(save.results.to))  dir.create(save.results.to)
@@ -29,15 +29,10 @@ library(Hmisc)# wtd.quantile, biconf
 library(forestplot)
 library(svyVGAM) # Firth penalized glm
 library(xtable)
-
+    
 .mfrow=if(length(assays)==4) c(2,2) else if(length(assays)==5) c(3,2) else stop("pls redefine .mfrows")
 max.stratum=max(dat.mock$Bstratum)
   
-# DB: can be deleted?    
-# # intercurrent cases
-# nrow(subset(dat.mock.vacc.seroneg, TwophasesampInd==1& EventIndPrimaryD29==1))
-# nrow(subset(dat.mock.vacc.seroneg, TwophasesampInd==1& EventIndPrimaryD57==1))
-    
 # important subset of data
 dat.mock.vacc.seroneg.D57=subset(dat.mock.vacc.seroneg, EventTimePrimaryD57>=7)
 #    # this is not needed because survey package computes weights inside design objects
@@ -46,6 +41,7 @@ dat.mock.vacc.seroneg.D57=subset(dat.mock.vacc.seroneg, EventTimePrimaryD57>=7)
 #    wts_norm <- rowSums(wts_table) / wts_table[, 2]
 #    dat.mock.vacc.seroneg.D57$wt.2 <- wts_norm[dat.mock.vacc.seroneg.D57$Wstratum%.%""]
 dat.mock.plac.seroneg=subset(dat.mock, Trt==0 & Bserostatus==0 & Perprotocol)
+dat.mock.plac.seroneg.D57=subset(dat.mock.plac.seroneg, EventTimePrimaryD57>=7)
 dat.mock.vacc.seroneg.5 <- dat.mock.vacc.seroneg.subsample[["cases_5"]]
 # design objects, the two give slightly different results, twophase is better, but slower
 design.vacc.seroneg<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd, data=dat.mock.vacc.seroneg.D57)
@@ -110,6 +106,10 @@ pvals.cont = sapply(fits, function(x) {
     tmp[nrow(tmp),p.val.col]
 })
 
+# mean and max followup time in the vaccine arm
+write(round(mean(dat.mock.vacc.seroneg.D57$EventTimePrimaryD57)), file=paste0(save.results.to, "CoR_D57_mean_followup_time_vacc_"%.%study.name))
+write(round(max (dat.mock.vacc.seroneg.D57$EventTimePrimaryD57)), file=paste0(save.results.to, "CoR_D57_max_followup_time_vacc_"%.% study.name))
+
 
 ######################################
 # regression for trichotomized markers
@@ -148,8 +148,7 @@ dat.ph2 = design.vacc.seroneg$phase1$sample$variables
 design.vacc.seroneg.perm=design.vacc.seroneg
 #design.vacc.seroneg.perm$phase1$full$variables
 
-# DB: seeds is number of permutations?
-out=mclapply(seeds, mc.cores = numCores, FUN=function(seed) {   
+out=mclapply(1:numPerm, mc.cores = numCores, FUN=function(seed) {   
     # store the current rng state 
     save.seed <- try(get(".Random.seed", .GlobalEnv), silent=TRUE) 
     if (class(save.seed)=="try-error") {set.seed(1); save.seed <- get(".Random.seed", .GlobalEnv) }          
@@ -261,8 +260,8 @@ mytex(tab[1:(nrow(tab)/2),], file.name="CoR_D57_univariable_svycoxph_cat_pretty_
     add.to.row=list(list(nrow(tab)/2), # insert at the beginning of table, and at the end of, say, the first table
         c(paste0(" \n \\multicolumn{8}{l}{} \\\\ \n", 
                   "\n \\multicolumn{2}{l}{Placebo} & ", 
-                 paste0(sum(dat.mock.plac.seroneg$EventIndPrimaryD57), "/", format(nrow(dat.mock.plac.seroneg), big.mark=",")), "&",  
-                 formatDouble(mean(dat.mock.plac.seroneg$EventIndPrimaryD57), digit=4, remove.leading0=F), "&",  
+                 paste0(sum(dat.mock.plac.seroneg.D57$EventIndPrimaryD57), "/", format(nrow(dat.mock.plac.seroneg.D57), big.mark=",")), "&",  
+                 formatDouble(mean(dat.mock.plac.seroneg.D57$EventIndPrimaryD57), digit=4, remove.leading0=F), "&",  
                  "\\multicolumn{4}{l}{}  \\\\ \n")
           #"\\hline\n \\multicolumn{4}{l}{Standard Deviation 1 mcg/mL}\\\\ \n"
          )
@@ -786,10 +785,9 @@ for (a in assays) {
 }
 
 
-tt=sort(unique(dat.mock.plac.seroneg$EventTimePrimaryD57[dat.mock.vacc.seroneg.D57$EventIndPrimaryD57==1]))
-fit.0=coxph(Surv(EventTimePrimaryD57, EventIndPrimaryD57) ~ 1, dat.mock.plac.seroneg)
+fit.0=coxph(Surv(EventTimePrimaryD57, EventIndPrimaryD57) ~ 1, dat.mock.plac.seroneg.D57)
 risk.0= 1 - exp(-predict(fit.0, type="expected"))
-time.0= dat.mock.plac.seroneg$EventTimePrimaryD57
+time.0= dat.mock.plac.seroneg.D57$EventTimePrimaryD57
 
 lwd=2
 ylim=c(0,max(risk.0))
@@ -916,6 +914,15 @@ summary(fit.3)
 tab=getFormattedSummary(list(fit, fit.2, fit.3), robust=T, exp=F)
 colnames(tab)=c("svyglm", "svy_vglm", "svy_vglm rescaled wt")
 mytex(tab, file.name="CoR_Day57pseudoneutid80_5cases_Firth_"%.%study.name, input.foldername=save.results.to, align="c", save2input.only=T)
+
+
+
+###################################################################################################
+# view intercurrent cases
+
+nrow(subset(dat.mock.vacc.seroneg, TwophasesampInd==1& EventIndPrimaryD29==1))
+nrow(subset(dat.mock.vacc.seroneg, TwophasesampInd==1& EventIndPrimaryD57==1))
+    
 
 
 

@@ -12,8 +12,10 @@ The main regression model is the Cox proportional hazards model. All plots are m
 \begin{center}
     \input{\pathCoRoutput/CoR_D57_univariable_svycoxph_pretty_\studyname}\\
 \end{center}
-*Baseline covariates adjusted for: age in years, at risk or not, community of color or not, baseline risk score. Average follow-up time 175 days, maximum follow-up time 185 days.\\
-**No. at-risk = number of per-protocol baseline negative vaccine recipients at-risk for COVID at Day 57; no. cases = number of this cohort with an observed COVID endpoints.
+*Baseline covariates adjusted for: age in years, at risk or not, community of color or not
+%, baseline risk score
+. Average follow-up time \input{\pathCoRoutput/CoR_D57_mean_followup_time_vacc_\studyname} days, maximum follow-up time \input{\pathCoRoutput/CoR_D57_max_followup_time_vacc_\studyname} days.\\
+**No. at-risk = number of per-protocol baseline negative vaccine recipients at-risk for COVID at 7 days post Day 57 visit; no. cases = number of this cohort with an observed COVID endpoints.
 
     \label{tab:CoR_D57_univariable_svycoxph_pretty_\studyname}
 \end{table}
@@ -25,7 +27,9 @@ The main regression model is the Cox proportional hazards model. All plots are m
 \setlength{\tabcolsep}{.5ex}
 \input{\pathCoRoutput/CoR_D57_univariable_svycoxph_cat_pretty_\studyname}\\
 \end{center}
-*Baseline covariates adjusted for: age in years, at risk or not, community of color or not, baseline risk score. Average follow-up time 175 days, maximum follow-up time 185 days. 
+*Baseline covariates adjusted for: age in years, at risk or not, community of color or not
+%, baseline risk score
+. Average follow-up time \input{\pathCoRoutput/CoR_D57_mean_followup_time_vacc_\studyname} days, maximum follow-up time \input{\pathCoRoutput/CoR_D57_max_followup_time_vacc_\studyname} days. 
 Cutpoints: 
 %Day 57 cutpoints: 
 \input{\pathCoRoutput/cutpoints_Day57bindSpike_\studyname},  
@@ -38,7 +42,7 @@ Cutpoints:
 %\input{\pathCoRoutput/cutpoints_Delta57overBpseudoneutid50_\studyname},  
 %\input{\pathCoRoutput/cutpoints_Delta57overBpseudoneutid80_\studyname}.  
 \\
-**No. at-risk = number of per-protocol baseline negative vaccine recipients at-risk for COVID at Day 57; no. cases = number of this cohort with an observed COVID endpoints.\\
+**No. at-risk = number of per-protocol baseline negative vaccine recipients at-risk for COVID at 7 days post Day 57 visit; no. cases = number of this cohort with an observed COVID endpoints.\\
 ***Generalized Wald-test p-value of the null hypothesis that the hazard rate is constant across the Lower, Middle, and Upper tertile groups.
 
     \label{tab:CoR_D57_univariable_svycoxph_cat_pretty_\studyname}

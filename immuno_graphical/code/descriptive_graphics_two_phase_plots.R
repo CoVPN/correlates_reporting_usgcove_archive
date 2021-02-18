@@ -170,7 +170,7 @@ for (bserostatus in 0:1) {
   )
 }
 
-# RCDF PLOTS
+
 ## pairplots of assay readouts for multiple timepoints
 ## pairplots by baseline serostatus
 for (bserostatus in 0:1) {

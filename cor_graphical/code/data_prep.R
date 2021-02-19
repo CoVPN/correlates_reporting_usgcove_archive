@@ -34,8 +34,8 @@ plot_dat_long <- plot_dat %>%
   mutate(AgeInd = ifelse(Age>=65, "Age>=65","Age<65"),
          HighRiskInd = factor(HighRiskInd, levels = c(0, 1), labels = c("Not at risk","At risk")),
          Sex = factor(Sex, levels = c(0, 1), labels = c("Male","Female")),
-         RaceEthnic = factor(ifelse(WhiteNonHispanic==1 & !is.na(WhiteNonHispanic), 1, ifelse(WhiteNonHispanic==0 & !is.na(WhiteNonHispanic), 0, 99))),
-         Dich_RaceEthnic = factor(ethnicity)) %>%
+         RaceEthnic = ifelse(WhiteNonHispanic==1, "White Non-Hispanic", ifelse(WhiteNonHispanic==0, "Comm. of Color", NA)),
+         Dich_RaceEthnic = ifelse(EthnicityHispanic==1, "Hispanic or Latino", ifelse(EthnicityHispanic==0 & EthnicityNotreported==0 & EthnicityUnknown==0, "Not Hispanic or Latino", NA))) %>%
   mutate(AgeInd_HighRiskInd = paste(AgeInd, HighRiskInd))
 saveRDS(plot_dat_long, file = here("data_clean", "plot_dat_long.rds"))
 
@@ -66,6 +66,7 @@ plot_dat_long_stacked <-  plot_dat_long %>%
               mutate(CohortInd="PP") %>%
               mutate(Event = ifelse(EventIndPrimaryD29==1 & EventIndPrimaryD57==1, 1, 0))) %>%
   mutate(Event = factor(Event, levels = c(1, 0), labels = c("Cases","Non-cases"))) %>%
+  mutate(cohort_event = paste(CohortInd, Event)) %>%
   mutate(HalfLLoQ = ifelse(marker=="pseudoneutid50", log10(25), 
                            ifelse(marker=="pseudoneutid80", log10(22), 
                                   ifelse(marker %in% c("bindSpike","bindRBD"), log10(17), NA))),
@@ -78,22 +79,20 @@ plot_dat_long_stacked <-  plot_dat_long %>%
                                 ifelse(marker %in% c("pseudoneutid50","pseudoneutid80"), log10(20), NA)),
          
          baseline_lt_thres = ifelse(time=="Day 1" & value >= pos_threshold, 1, 0),
-         increase_4F_D29 = ifelse(time=="Delta29overB" & value>4, 1, 0), 
-         increase_4F_D57 = ifelse(time=="Delta57overB" & value>4, 1, 0)) %>%
+         increase_4F_D29 = ifelse(time=="Delta29overB" & value>log10(4), 1, 0), 
+         increase_4F_D57 = ifelse(time=="Delta57overB" & value>log10(4), 1, 0)) %>%
   group_by(Ptid, marker) %>%
   mutate(baseline_lt_thres_ptid=max(baseline_lt_thres),
          increase_4F_D29_ptid=max(increase_4F_D29),
          increase_4F_D57_ptid=max(increase_4F_D57)) %>%
   ungroup() %>%
-  mutate(response = ifelse(time %in% c("Day 1","Day 29","Day 57") & baseline_lt_thres_ptid == 0 & value >= pos_threshold, 1,
+  filter(time %in% c("Day 1","Day 29","Day 57")) %>%
+  mutate(response = ifelse(baseline_lt_thres_ptid == 0 & value >= pos_threshold, 1,
                            ifelse(baseline_lt_thres_ptid == 1 & time == "Day 1", 1, 
                                   ifelse(baseline_lt_thres_ptid == 1 & time == "Day 29" & increase_4F_D29_ptid==1, 1, 
-                                         ifelse(baseline_lt_thres_ptid == 1 & time == "Day 57" & increase_4F_D57_ptid==1, 1,
-                                                ifelse(time %in% c("Day 1","Day 29","Day 57"), 0, NA))))),
+                                         ifelse(baseline_lt_thres_ptid == 1 & time == "Day 57" & increase_4F_D57_ptid==1, 1,0)))),
          value2 = ifelse(value<LLoQ, HalfLLoQ, 
-                         ifelse(!is.na(ULoQ) & value>ULoQ, ULoQ, value))) %>%  # value2 is the truncated version of value
-  mutate(cohort_event = paste(CohortInd, Event)) %>%
-  filter(time %in% c("Day 1","Day 29","Day 57"))
+                         ifelse(!is.na(ULoQ) & value>ULoQ, ULoQ, value)))  # value2 is the truncated version of value
 saveRDS(plot_dat_long_stacked, file = here("data_clean", "plot_dat_long_stacked.rds"))  
 
 #### figure specific data prep

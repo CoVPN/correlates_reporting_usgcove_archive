@@ -1,9 +1,15 @@
+#-----------------------------------------------
+# obligatory to append to the top of each script
+renv::activate(project = here::here(".."))
+source(here::here("..", "_common.R"))
+#-----------------------------------------------
+
 library(scales)
 library(tidyverse)
 library(COVIDcorr)
 library(here)
-source(here("cor_graphical","..","_common.R"))
-source(here("cor_graphical","data_clean","data_prep.R"))
+library(cowplot)
+
 study.name="mock"
 
 ### variables for looping
@@ -13,7 +19,17 @@ trt <- c("Placebo","Vaccine")
 plots_ytitles <- c("Anti-Spike IgG (IU/ml)","Anti-RBD IgG (IU/ml)","Pseudovirus-nAb ID50","Pseudovirus-nAb ID80")
 plots_titles <- c("Binding Antibody to Spike","Binding Antibody to RBD","Pseudovirus Neutralization ID50","Pseudovirus Neutralization ID80")
 times <- list(c("Day 29","Day 57"), c("Day 1","Day 29","Day 57"))
+#### for Figure 3. intercurrent vs pp, case vs non-case, (Day 1) Day 29 Day 57, by if Age >=65 and if at risk
+groupby_vars3 <- c("Trt", "Bserostatus", "Event", "CohortInd", "time", "marker", "AgeInd", "HighRiskInd")
 
+## load data 
+plot_dat <- readRDS(here("data_clean", "plot_data.rds"))
+plot_dat_long <- readRDS(here("data_clean", "plot_dat_long.rds"))
+plot_dat_long_stacked <- readRDS(here("data_clean", "plot_dat_long_stacked.rds"))  
+plot_dat_long_stacked_plot1 <- readRDS(here("data_clean", "plot_dat_long_stacked_plot1.rds"))  
+plot.25sample1 <- readRDS(here("data_clean", "plot.25sample1.rds"))  
+plot_dat_long_stacked_plot3 <- readRDS(here("data_clean", "plot_dat_long_stacked_plot3.rds"))  
+plot.25sample3 <- readRDS(here("data_clean", "plot.25sample3.rds"))
 
 #' A function to create a plot that shows violin + box or line + box figures
 #' 
@@ -103,7 +119,7 @@ for (typ in c("line","violin")) {
                        rate.y.pos=7.7
           )
           file_name <- paste0(typ, "box_", gsub("bind","",gsub("pseudoneut","pnAb_",plots[i])), "_", trt[k], "_", gsub(" ","",bstatus[j]), "_",length(unlist(times[t])),"tp","_", study.name, ".pdf")
-          ggsave2(plot = p, filename = here("cor_graphical", "figs", file_name))
+          ggsave2(plot = p, filename = here("figs", file_name))
         }
       }
     }
@@ -125,17 +141,16 @@ for (typ in c("line","violin")) {
 
             plot_dat_long_stacked_plot2 <- 
               plot_dat_long_stacked %>% group_by_at(groupby_vars2) %>%
-              mutate(num = sum(value>=(ifelse(marker %in% c("pseudoneutid50","pseudoneutid80"), log10(20), 
-                                              ifelse(marker %in% c("bindSpike","bindRBD"), log10(34), NA)))), denom=n(), RespRate = paste0(num,"/",denom,"=\n",round(num/denom*100, 1),"%"))
+              mutate(num = sum(response), 
+                     denom=n(), 
+                     RespRate = paste0(num,"/",denom,"=\n",round(num/denom*100, 1),"%"))
             
-            # make subset for strata RaceEthnic and Dich_RaceEthnic, only present two categories out of three
+            # make subset for strata RaceEthnic and Dich_RaceEthnic, only present non-NA categories
             if (s=="RaceEthnic") {
-              plot_dat_long_stacked_sub2 <- subset(plot_dat_long_stacked_plot2, RaceEthnic %in% c(1,0))
-              plot_dat_long_stacked_sub2$RaceEthnic <- factor(plot_dat_long_stacked_sub2$RaceEthnic, levels=c(1,0), labels=c("White Non-Hispanic","Comm. of Color"))
+              plot_dat_long_stacked_sub2 <- subset(plot_dat_long_stacked_plot2, RaceEthnic %in% c("White Non-Hispanic","Comm. of Color"))
               
             } else if(s=="Dich_RaceEthnic"){
               plot_dat_long_stacked_sub2 <- subset(plot_dat_long_stacked_plot2, Dich_RaceEthnic %in% c("Hispanic or Latino","Not Hispanic or Latino"))
-              plot_dat_long_stacked_sub2$Dich_RaceEthnic <- factor(plot_dat_long_stacked_sub2$Dich_RaceEthnic)
               
             } else {plot_dat_long_stacked_sub2 <- plot_dat_long_stacked_plot2}
             
@@ -158,7 +173,7 @@ for (typ in c("line","violin")) {
                          inpanel.cex=5.5,
                          rate.y.pos=7.9)
             file_name <- paste0(typ, "box_", gsub("bind","",gsub("pseudoneut","pnAb_",plots[i])), "_", trt[k], "_", gsub(" ","",bstatus[j]), "_", gsub("Ind|High","",s), "_",length(unlist(times[t])),"tp","_", study.name, ".pdf")
-            ggsave2(plot = p, filename = here("cor_graphical", "figs", file_name))
+            ggsave2(plot = p, filename = here("figs", file_name))
             
           }
         }
@@ -187,7 +202,7 @@ for (typ in c("line","violin")) {
                        rate.y.pos=8.5
           )
           file_name <- paste0(typ, "box_", gsub("bind","",gsub("pseudoneut","pnAb_",plots[i])), "_", trt[k], "_", gsub(" ","",bstatus[j]), "_Age_Risk_", length(unlist(times[t])),"tp","_", study.name, ".pdf")
-          ggsave2(plot = p, filename = here("cor_graphical", "figs", file_name))
+          ggsave2(plot = p, filename = here("figs", file_name))
         }
       }
     }
@@ -227,7 +242,7 @@ for (i in 1:length(plots)) {
               plot.title = element_text(hjust = 0.5))
       
       file_name <- paste0("scatter_",gsub("bind","",gsub("pseudoneut","pnAb_",plots[i])),"_",c,"_",gsub(" ","",times[[2]][d]),"_", study.name, ".pdf")
-      ggsave2(plot = p, filename = here("cor_graphical", "figs", file_name))
+      ggsave2(plot = p, filename = here("figs", file_name))
       
     }
   }

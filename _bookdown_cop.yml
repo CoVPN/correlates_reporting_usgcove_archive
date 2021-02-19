@@ -1,0 +1,20 @@
+delete_merged_file: true
+book_filename: "covpn_correlates_cop"
+before_chapter_script: "_common.R"
+clean: packages.bib
+
+language:
+  label:
+    fig: "FIGURE "
+    tab: "TABLE "
+  ui:
+    chapter_name: "Section "
+
+rmd_files: [
+  "index.Rmd",
+  "cop_prinstrat/report.Rmd",
+  "cop_controlled/report.Rmd",
+  "cop_stochastic/report.Rmd",
+  "cop_mediation/report.Rmd",
+  "references.Rmd"
+]

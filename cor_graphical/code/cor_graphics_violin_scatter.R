@@ -145,14 +145,12 @@ for (typ in c("line","violin")) {
                      denom=n(), 
                      RespRate = paste0(num,"/",denom,"=\n",round(num/denom*100, 1),"%"))
             
-            # make subset for strata RaceEthnic and Dich_RaceEthnic, only present two categories out of three
+            # make subset for strata RaceEthnic and Dich_RaceEthnic, only present non-NA categories
             if (s=="RaceEthnic") {
-              plot_dat_long_stacked_sub2 <- subset(plot_dat_long_stacked_plot2, RaceEthnic %in% c(1,0))
-              plot_dat_long_stacked_sub2$RaceEthnic <- factor(plot_dat_long_stacked_sub2$RaceEthnic, levels=c(1,0), labels=c("White Non-Hispanic","Comm. of Color"))
+              plot_dat_long_stacked_sub2 <- subset(plot_dat_long_stacked_plot2, RaceEthnic %in% c("White Non-Hispanic","Comm. of Color"))
               
             } else if(s=="Dich_RaceEthnic"){
               plot_dat_long_stacked_sub2 <- subset(plot_dat_long_stacked_plot2, Dich_RaceEthnic %in% c("Hispanic or Latino","Not Hispanic or Latino"))
-              plot_dat_long_stacked_sub2$Dich_RaceEthnic <- factor(plot_dat_long_stacked_sub2$Dich_RaceEthnic)
               
             } else {plot_dat_long_stacked_sub2 <- plot_dat_long_stacked_plot2}
             

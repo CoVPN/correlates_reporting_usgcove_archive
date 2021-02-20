@@ -1,9 +1,9 @@
-#-----------------------------------------------
-# obligatory to append to the top of each script
-renv::activate(project = here::here(".."))
-renv::restore()
-# after updating a package, run renv::snapshot() to override the global library record with your changes
-# .libPaths() shows the path for libraries
+##-----------------------------------------------
+## obligatory to append to the top of each script
+#renv::activate(project = here::here(".."))
+#renv::restore()
+## after updating a package, run renv::snapshot() to override the global library record with your changes
+## .libPaths() shows the path for libraries
 
 source(here::here("..", "_common.R"))
 #-----------------------------------------------
@@ -57,15 +57,12 @@ write(t0, file=paste0(save.results.to, "timepoints_cum_risk_"%.%study.name))
 # trial-specific formula
 form.s = Surv(EventTimePrimaryD57, EventIndPrimaryD57) ~ 1
 if (study.name == "mock") {
-    form.a = ~. + Age # + BRiskScore
-    form.0 =            update (update (form.s, ~.+ MinorityInd + HighRiskInd), form.a)
-    form.0.logistic = update (EventIndPrimaryD57  ~ MinorityInd + HighRiskInd, form.a)
+    form.0 =            update (form.s, ~.+ MinorityInd + HighRiskInd + Age) #  Age is to be replaced by BRiskScore
+    form.0.logistic = EventIndPrimaryD57  ~ MinorityInd + HighRiskInd + Age  #  Age is to be replaced by BRiskScore
 } else if (study.name == "moderna") {
-    form.a = ~. + BRiskScore #
-    form.0 = update (update (form.s, ~.+MinorityInd + HighRiskInd), form.a)
-    form.0.logistic = update (EventIndPrimaryD57  ~ MinorityInd + HighRiskInd, form.a)
+    form.0 =            update (form.s, ~.+ MinorityInd + HighRiskInd + BRiskScore)
+    form.0.logistic = EventIndPrimaryD57  ~ MinorityInd + HighRiskInd + BRiskScore
 } else stop("")
-form.1 = update (form.s, form.a) 
 # covariate length without markers
 p.cov=length(terms(form.0))
     
@@ -368,7 +365,7 @@ for (a in assays) {
             design<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd, data=subset(dat.mock.vacc.seroneg.D57, Bstratum==k))            
             if (k==1) {
                 f = update(form.0, as.formula(paste0("~.+Day57", a)))
-            else {
+            } else {
                 f = update(update(form.0, ~.-HighRiskInd), as.formula(paste0("~.+Day57", a)))
             }
             fit=svycoxph(f, design=design) 
@@ -474,8 +471,6 @@ for (a in assays) {
 
 
 
-
-
 ####################################################################################################
 # Marginalized Risk Curves and Controlled VE Curves
 ####################################################################################################
@@ -496,22 +491,11 @@ marginalized.risk.svycoxph.boot=function(formula, marker.name, type, data, t, we
     if (class(save.seed)=="try-error") {set.seed(1); save.seed <- get(".Random.seed", .GlobalEnv) }      
     
     if (type==1) {
-    # conditional on s
-    
-        ss=quantile(data[[marker.name]], seq(.05,.95,by=0.01), na.rm=TRUE) # this is a fine grid because we may need to read points off the curve
-    
-        f1=update(formula, as.formula(paste0("~.+",marker.name)))
-        f2=update(formula, as.formula(paste0(marker.name,"~."))) # it is ok to have strata in there if it is binary, not sure if it is okay if there are more than two strata
-        
+    # conditional on s    
+        ss=quantile(data[[marker.name]], seq(.05,.95,by=0.01), na.rm=TRUE) # this is a fine grid because we may need to read points off the curve    
+        f1=update(formula, as.formula(paste0("~.+",marker.name)))        
         tmp.design=twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd, data=data)
-        fit.risk=svycoxph(f1, design=tmp.design)
-        ## since we are not using se from fit.risk, it does not matter if the se is not correct, but the weights computed by svycoxph are a little different from the coxph
-        ## environment(f1) <- list2env(list(data=data));  # may have to set env if prediction inside marginalized.risk fails, but should not happen if the weights variable is part of the data frame
-        # fit.risk=coxph(f1, subset(data, TwophasesampInd==1), weights=wt) 
-     
-        fit.s=svyglm(f2, tmp.design) 
-        #fit.s=lm(f2, subset(data, TwophasesampInd==1)) 
-        
+        fit.risk=svycoxph(f1, design=tmp.design) # since we don't need se, we could use coxph, but the weights computed by svycoxph are a little different from the coxph due to fpc
         prob=marginalized.risk(fit.risk, marker.name, data=subset(data, TwophasesampInd==1), ss=ss, weights=weights[data$TwophasesampInd==1], t=t, categorical.s=F)        
     
     } else if (type==2) {

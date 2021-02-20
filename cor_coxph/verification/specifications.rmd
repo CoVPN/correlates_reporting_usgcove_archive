@@ -1,3 +1,6 @@
+\newcommand{\studyname}{mock}
+\newcommand{\pathCoRoutput}{output}
+
 # Specifications for CoR_COXPH
 
 There are two main sets of results in the CoR_COXPH section of the report: (i) Cox regression model coefficients, and (ii) marginalized risk curves based on Cox models. 
@@ -6,14 +9,62 @@ The population of interest for the D57 CoR study is defined as baseline negative
 
 ## Cox regression model coefficients
 
-Cox regression model coefficients are presented in two places: (a) two tables of regression results for the overall population (defined above), one for continuous markers and one for trichotomized markers, (b) forest plots showing regression results for subpopulations defined by key clinical covariates. 
+Due to the two-phase sampling design, the survey package svycoxph function (using twophase function to create the design object) will be used for fitting Cox models and getting confidence intervals and P values. 
 
-Due to the two-phase sampling design, the survey package svycoxph function will be used for fitting Cox models and getting confidence intervals and P values. 
+Four biomarkers will be studied:
+\begin{itemize}
+    \item Day57bindSpike
+    \item Day57bindRBD
+    \item Day57pseudoneutid50
+    \item Day57pseudoneutid80.
+\end{itemize}
+Their trichotomized version adds cat at the end, e.g. Day57bindSpikecat.
 
-Four biomarkers will be studied: Day57bindSpike, Day57bindRBD, Day57pseudoneutid50, Day57pseudoneutid80. Their trichotomized version is Day57bindSpikecat, Day57bindRBDcat, Day57pseudoneutid50cat, Day57pseudoneutid80cat.
+Cox regression models are fit to both the baseline negative, vaccinee population (defined in more details above) and subgroups therein. All models adjust for the following baseline covariates: 
+\begin{itemize}
+    \item at risk or not
+    \item community of color or not
+\end{itemize}
 
-Explain more about the count data in the trichotomized table ...
 
-Save table object as R binary ...
+\clearpage
 
-work with Renv
+The following two tables contain results to be verified, one for the continuous markers and the other for the trichotomized markers.
+
+\begin{center}
+    \input{../output/CoR_D57_univariable_svycoxph_pretty_\studyname}\\
+    \vspace{10pt}
+    \setlength{\tabcolsep}{.5ex}
+    \input{../output/CoR_D57_univariable_svycoxph_cat_pretty_\studyname}\\
+\end{center}
+Average follow-up time \input{../output/CoR_D57_mean_followup_time_vacc_\studyname} days, maximum follow-up time \input{../output/CoR_D57_max_followup_time_vacc_\studyname} days.
+
+$\ast\ast$ No. at-risk = number of per-protocol baseline negative vaccine recipients at-risk for COVID at 7 days post Day 57 visit; no. cases = number of this cohort with an observed COVID endpoints. The No. at-risk in the trichotomized table are weighted estimates based on the phase 2 samples.
+
+$\ast\ast\ast$ Generalized Wald-test p-value of the null hypothesis that the hazard rate is constant across the Lower, Middle, and Upper tertile groups.
+
+The q-values and FWER are computed using Sue Li's implementation of the Westfall and Young permutation-based method (kyotil::p.adj.perm) for the continuous and trichotomized markers together. We verify Sue's implementation through a Monte Carlo study that is outside of this verification plan.
+
+
+\bigskip
+
+For each of the continuous markers, we also fit the Cox model for the following subgroups. Note that we cannot adjust for all baseline demographic variables in all cases.
+\begin{itemize}
+    \item age >= 65
+    \item age<65 and at risk
+    \item age<65 and not at risk
+    \item at risk
+    \item Not at risk
+    \item Comm of color
+    \item White non-Hispanic
+    \item Men
+    \item Women
+\end{itemize}
+
+
+
+## Marginalized risk
+
+The primary implementation of marginalized risk uses functions from the package marginalizedRisk on CRAN. The marginalizedRisk package is written for a more general purpose. The verification will double program the specific algorithm used to compute the marginalized risk in this report.
+
+

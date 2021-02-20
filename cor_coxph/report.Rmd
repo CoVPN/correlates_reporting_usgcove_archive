@@ -48,6 +48,53 @@ Cutpoints:
     \label{tab:CoR_D57_univariable_svycoxph_cat_pretty_\studyname}
 \end{table}
 
+
+\begin{figure}[H]
+    (a) Day 57 binding Ab to spike\\
+    \includegraphics[width=1\textwidth]{\pathCoRoutput/hr_forest_bindSpike_\studyname}
+    (b) Day 57 binding Ab to RBD\\
+    \includegraphics[width=1\textwidth]{\pathCoRoutput/hr_forest_bindRBD_\studyname}
+    (c) Day 57 pseudo neut ID50\\
+    \includegraphics[width=1\textwidth]{\pathCoRoutput/hr_forest_pseudoneutid50_\studyname}
+    (d) Day 57 pseudo neut ID80\\
+    \includegraphics[width=1\textwidth]{\pathCoRoutput/hr_forest_pseudoneutid80_\studyname}
+    \caption{Forest plots of hazard ratios among baseline seronegative vaccine recipients and subgroups with 95\% point-wise confidence intervals.}
+\end{figure}
+
+\clearpage
+
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{\pathCoRoutput/hr_forest_marginal_bindSpike_\studyname}
+    \caption{Forest plots of hazard ratios of Day 57 binding Ab to spike markers among baseline seronegative vaccine recipients (top row) and eight subpopulations (row 2-9) with 95\% point-wise confidence intervals.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{\pathCoRoutput/hr_forest_marginal_bindRBD_\studyname}
+    \caption{Forest plots of hazard ratios of Day 57 binding Ab to RBD markers among baseline seronegative vaccine recipients (top row) and eight subpopulations (row 2-9) with 95\% point-wise confidence intervals.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{\pathCoRoutput/hr_forest_marginal_pseudoneutid50_\studyname}
+    \caption{Forest plots of hazard ratios of Day 57 pseudo neut ID50 markers among baseline seronegative vaccine recipients (top row) and eight subpopulations (row 2-9) with 95\% point-wise confidence intervals.}
+\end{figure}
+
+<!-- \begin{figure}[H] -->
+<!--     \centering -->
+<!--     \includegraphics[width=1\textwidth]{\pathCoRoutput/hr_forest_marginal_liveneutmn50_\studyname} -->
+<!--     \caption{Forest plots of hazard ratios of Day 57 live neut MN50 markers among baseline seronegative vaccine recipients (top row) and eight subpopulations (row 2-9) with 95\% point-wise confidence intervals.} -->
+<!-- \end{figure} -->
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{\pathCoRoutput/hr_forest_marginal_pseudoneutid80_\studyname}
+    \caption{Forest plots of hazard ratios of Day 57 pseudo neut ID80 markers among baseline seronegative vaccine recipients (top row) and eight subpopulations (row 2-9) with 95\% point-wise confidence intervals.}
+\end{figure}
+
 \clearpage
 
 <!-- \begin{table}[H] -->
@@ -125,73 +172,6 @@ Cutpoints:
     \centering
     \includegraphics[width=1\textwidth]{\pathCoRoutput/marginalized_risks_cat_\studyname}
     \caption{Marginalized cumulative incidence rate curves for trichotomized Day 57 markers among baseline seronegative vaccine recipients. The gray line is the overall cumulative incidence rate curve in the placebo arm.}
-\end{figure}
-
-
-
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=1\textwidth]{\pathCoRoutput/hr_forest_bindSpike_\studyname}
-    \caption{Forest plots of hazard ratios of Day 57 binding Ab to spike markers among baseline seronegative vaccine recipients (top row) and each of the 3 randomization strata with 95\% point-wise confidence intervals.}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=1\textwidth]{\pathCoRoutput/hr_forest_bindRBD_\studyname}
-    \caption{Forest plots of hazard ratios of Day 57 binding Ab to RBD markers among baseline seronegative vaccine recipients (top row) and each of the 3 randomization strata with 95\% point-wise confidence intervals.}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=1\textwidth]{\pathCoRoutput/hr_forest_pseudoneutid50_\studyname}
-    \caption{Forest plots of hazard ratios of Day 57 pseudo neut ID50 markers among baseline seronegative vaccine recipients (top row) and each of the 3 randomization strata with 95\% point-wise confidence intervals.}
-\end{figure}
-
-<!-- \begin{figure}[H] -->
-<!--     \centering -->
-<!--     \includegraphics[width=1\textwidth]{\pathCoRoutput/hr_forest_liveneutmn50_\studyname} -->
-<!--     \caption{Forest plots of hazard ratios of Day 57 live neut MN50 markers among baseline seronegative vaccine recipients (top row) and each of the 3 randomization strata with 95\% point-wise confidence intervals.} -->
-<!-- \end{figure} -->
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=1\textwidth]{\pathCoRoutput/hr_forest_pseudoneutid80_\studyname}
-    \caption{Forest plots of hazard ratios of Day 57 pseudo neut ID80 markers among baseline seronegative vaccine recipients (top row) and each of the 3 randomization strata with 95\% point-wise confidence intervals.}
-\end{figure}
-
-\clearpage
-
-
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=1\textwidth]{\pathCoRoutput/hr_forest_marginal_bindSpike_\studyname}
-    \caption{Forest plots of hazard ratios of Day 57 binding Ab to spike markers among baseline seronegative vaccine recipients (top row) and eight subpopulations (row 2-9) with 95\% point-wise confidence intervals.}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=1\textwidth]{\pathCoRoutput/hr_forest_marginal_bindRBD_\studyname}
-    \caption{Forest plots of hazard ratios of Day 57 binding Ab to RBD markers among baseline seronegative vaccine recipients (top row) and eight subpopulations (row 2-9) with 95\% point-wise confidence intervals.}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=1\textwidth]{\pathCoRoutput/hr_forest_marginal_pseudoneutid50_\studyname}
-    \caption{Forest plots of hazard ratios of Day 57 pseudo neut ID50 markers among baseline seronegative vaccine recipients (top row) and eight subpopulations (row 2-9) with 95\% point-wise confidence intervals.}
-\end{figure}
-
-<!-- \begin{figure}[H] -->
-<!--     \centering -->
-<!--     \includegraphics[width=1\textwidth]{\pathCoRoutput/hr_forest_marginal_liveneutmn50_\studyname} -->
-<!--     \caption{Forest plots of hazard ratios of Day 57 live neut MN50 markers among baseline seronegative vaccine recipients (top row) and eight subpopulations (row 2-9) with 95\% point-wise confidence intervals.} -->
-<!-- \end{figure} -->
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=1\textwidth]{\pathCoRoutput/hr_forest_marginal_pseudoneutid80_\studyname}
-    \caption{Forest plots of hazard ratios of Day 57 pseudo neut ID80 markers among baseline seronegative vaccine recipients (top row) and eight subpopulations (row 2-9) with 95\% point-wise confidence intervals.}
 \end{figure}
 
 

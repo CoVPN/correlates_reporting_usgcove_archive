@@ -1,6 +1,10 @@
 #-----------------------------------------------
 # obligatory to append to the top of each script
 renv::activate(project = here::here(".."))
+renv::restore()
+# after updating a package, run renv::snapshot() to override the global library record with your changes
+# .libPaths() shows the path for libraries
+
 source(here::here("..", "_common.R"))
 #-----------------------------------------------
 source(here::here("code", "params.R"))
@@ -50,11 +54,17 @@ dstrat<-svydesign(id=~1,strata=~Wstratum, weights=~wt, data=dat.mock.vacc.serone
 t0=max(dat.mock.vacc.seroneg.D57$EventTimePrimaryD57[dat.mock.vacc.seroneg.D57$EventIndPrimaryD57==1]); myprint(t0)
 write(t0, file=paste0(save.results.to, "timepoints_cum_risk_"%.%study.name))
     
-# base formula
-form.a = ~. + Age # + BRiskScore
+# trial-specific formula
 form.s = Surv(EventTimePrimaryD57, EventIndPrimaryD57) ~ 1
-form.0 = update (update (form.s, ~.+MinorityInd + HighRiskInd), form.a)
-form.0.logistic = update (EventIndPrimaryD57  ~ MinorityInd + HighRiskInd, form.a)
+if (study.name == "mock") {
+    form.a = ~. + Age # + BRiskScore
+    form.0 =            update (update (form.s, ~.+ MinorityInd + HighRiskInd), form.a)
+    form.0.logistic = update (EventIndPrimaryD57  ~ MinorityInd + HighRiskInd, form.a)
+} else if (study.name == "moderna") {
+    form.a = ~. + BRiskScore #
+    form.0 = update (update (form.s, ~.+MinorityInd + HighRiskInd), form.a)
+    form.0.logistic = update (EventIndPrimaryD57  ~ MinorityInd + HighRiskInd, form.a)
+} else stop("")
 form.1 = update (form.s, form.a) 
 # covariate length without markers
 p.cov=length(terms(form.0))
@@ -339,6 +349,9 @@ theforestplot <- function(cohort=NA,group,nEvents=NA,totFU=NA,rate=NA,point.esti
 
 ####################################################################################
 # fit models for different phase one baseline strata subgroups and make forest plots
+#  "Age >= 65",
+#  "Age < 65, At risk",
+#  "Age < 65, Not at risk"
 
 fits.all=list()
 for (a in assays) {
@@ -353,7 +366,12 @@ for (a in assays) {
             fits[[k+1]]=NA
         } else {
             design<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd, data=subset(dat.mock.vacc.seroneg.D57, Bstratum==k))            
-            fit=svycoxph(update(form.1, as.formula(paste0("~.+Day57", a))), design=design) # no need to adjust for binary baseline demog b/c it is within stratum
+            if (k==1) {
+                f = update(form.0, as.formula(paste0("~.+Day57", a)))
+            else {
+                f = update(update(form.0, ~.-HighRiskInd), as.formula(paste0("~.+Day57", a)))
+            }
+            fit=svycoxph(f, design=design) 
             fits[[k+1]]=fit
         }
     }       

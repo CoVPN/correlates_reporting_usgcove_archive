@@ -1,5 +1,4 @@
-SuperLearner Code
-=================
+# `SuperLearner` Code
 
 There are 8 important files in this folder:
 
@@ -31,5 +30,4 @@ sbatch tables\_figures.sh
 sbatch constructSL\_predict\_on\_vaccine.sh
 
 sbatch get\_SLweights\_Modelpredictors.sh
-
 

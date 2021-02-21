@@ -25,15 +25,15 @@
     },
     "COVIDcorr": {
       "Package": "COVIDcorr",
-      "Version": "2021.01.26",
+      "Version": "2021.02.20",
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
       "RemoteRepo": "correlates_mockdata",
       "RemoteUsername": "CoVPN",
       "RemoteRef": "HEAD",
-      "RemoteSha": "ecc2c9551f4940f9be5abaff9c2196c16a686081",
-      "Hash": "50ad69faa0f421a5234cab5c95fa9759"
+      "RemoteSha": "419e52808704cc196c7f408e9e50847cd62e9add",
+      "Hash": "d4aa72adecde8404773df91832efec5c"
     },
     "DBI": {
       "Package": "DBI",

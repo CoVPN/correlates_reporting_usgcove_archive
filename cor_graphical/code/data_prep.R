@@ -19,7 +19,8 @@ saveRDS(plot_dat, file = here("data_clean", "plot_data.rds"))
 # define strata: age >= 65, risk, sex at birth(1=female, 0=male), RaceEthnic, Dich_RaceEthnic, age x risk
 plot_dat_long <- plot_dat %>%
   select(Ptid, Trt, Bserostatus, EventIndPrimaryD29, EventIndPrimaryD57, Perprotocol, 
-         Age, HighRiskInd, Sex, ethnicity, WhiteNonHispanic,
+         Age, HighRiskInd, Sex, EthnicityHispanic,
+         EthnicityNotreported, EthnicityUnknown, WhiteNonHispanic,
          BbindSpike, Day29bindSpike, Day57bindSpike, Delta29overBbindSpike, Delta57overBbindSpike,
          BbindRBD, Day29bindRBD, Day57bindRBD, Delta29overBbindRBD, Delta57overBbindRBD,
          Bpseudoneutid50, Day29pseudoneutid50, Day57pseudoneutid50, Delta29overBpseudoneutid50, Delta57overBpseudoneutid50,

@@ -1,6 +1,6 @@
 {
   "R": {
-    "Version": "4.0.4",
+    "Version": "4.0.3",
     "Repositories": [
       {
         "Name": "CRAN",
@@ -256,8 +256,8 @@
       "Package": "bookdown",
       "Version": "0.21.6",
       "Source": "GitHub",
-      "Remotes": "rstudio/bslib, rstudio/rmarkdown, r-lib/downlit",
       "RemoteType": "github",
+      "Remotes": "rstudio/bslib, rstudio/rmarkdown, r-lib/downlit",
       "RemoteHost": "api.github.com",
       "RemoteRepo": "bookdown",
       "RemoteUsername": "rstudio",
@@ -518,6 +518,13 @@
       "RemoteSha": "77c19b1b7f9c5e49d17a0bac060bed86b89cc377",
       "Hash": "30c10b949aa67ff029916191fca5ed3c"
     },
+    "deldir": {
+      "Package": "deldir",
+      "Version": "0.2-10",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "6ba6a411bdd4c1b297bd54e2c5c98385"
+    },
     "desc": {
       "Package": "desc",
       "Version": "1.2.0",
@@ -734,6 +741,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "6efd734b14c6471cfe443345f3e35e29"
+    },
+    "goftest": {
+      "Package": "goftest",
+      "Version": "1.2-2",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "3c9209bce1b10900155ea37ce954cf30"
     },
     "gower": {
       "Package": "gower",
@@ -1265,6 +1279,13 @@
       "Repository": "CRAN",
       "Hash": "e2f59df0b9a4ca41c276474bba383fce"
     },
+    "polyclip": {
+      "Package": "polyclip",
+      "Version": "1.10-0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "cb167f328b3ada4ec5cf67a7df4c900a"
+    },
     "polynom": {
       "Package": "polynom",
       "Version": "1.4-0",
@@ -1465,8 +1486,8 @@
       "Package": "rmarkdown",
       "Version": "2.6.6",
       "Source": "GitHub",
-      "Remotes": "rstudio/bslib, rstudio/shiny",
       "RemoteType": "github",
+      "Remotes": "rstudio/bslib, rstudio/shiny",
       "RemoteHost": "api.github.com",
       "RemoteRepo": "rmarkdown",
       "RemoteUsername": "rstudio",
@@ -1610,6 +1631,27 @@
       "Repository": "CRAN",
       "Hash": "dfd843ee98246cf932823acf613b05dd"
     },
+    "spatstat": {
+      "Package": "spatstat",
+      "Version": "1.64-1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "bf01485c922fd3bb6af165b9304539dd"
+    },
+    "spatstat.data": {
+      "Package": "spatstat.data",
+      "Version": "2.0-0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "582315d096bd9187bda3bb4dc64cefa8"
+    },
+    "spatstat.utils": {
+      "Package": "spatstat.utils",
+      "Version": "2.0-0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "8bda137ccec577888f478735987221ec"
+    },
     "speedglm": {
       "Package": "speedglm",
       "Version": "0.3-3",
@@ -1665,6 +1707,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "b227d13e29222b4574486cfcbde077fa"
+    },
+    "tensor": {
+      "Package": "tensor",
+      "Version": "1.5",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "25cfab6cf405c15bccf7e69ec39df090"
     },
     "testthat": {
       "Package": "testthat",

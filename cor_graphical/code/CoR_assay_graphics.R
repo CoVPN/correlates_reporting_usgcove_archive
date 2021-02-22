@@ -1,3 +1,9 @@
+#-----------------------------------------------
+# obligatory to append to the top of each script
+renv::activate(project = here::here(".."))
+source(here::here("..", "_common.R"))
+#-----------------------------------------------
+
 source(here::here("code", "cor_data_preprocess.R"))
 library(ggpubr)
 library(scales)

@@ -6,6 +6,7 @@ source(here::here("..", "_common.R"))
 
 library(here)
 library(COVIDcorr)
+library(tidyr)
 library(dplyr)
 library(stringr)
 library(ggplot2)
@@ -22,6 +23,7 @@ source(here("code", "ggally_cor_resample.R"))
 source(here("code", "covid_corr_plot_functions.R"))
 source(here("code", "params.R"))
 
+set.seed(12345)
 # load cleaned data
 dat.long.twophase.sample <- readRDS(here(
   "data_clean",
@@ -170,8 +172,36 @@ for (bserostatus in 0:1) {
 }
 
 
+## pairplots of assay readouts for multiple timepoints
+## pairplots by baseline serostatus
+for (bserostatus in 0:1) {
+  subdat <- dat.twophase.sample %>%
+    dplyr::filter(Bserostatus == bserostatus)
+  
+  for (aa in assays) {
+    covid_corr_pairplots_by_time(
+      plot_dat = subdat,
+      times = c("B", "Day29", "Day57"),
+      assay = aa,
+      strata = "Bstratum",
+      weight = "wt",
+      plot_title = paste0(
+        labels.assays[aa], ": baseline ",
+        ifelse(bserostatus, "positive", "negative"),
+        ", vaccine + placebo arm"
+      ),
+      column_labels = paste(c("D1", "D29", "D57"), labels.axis[, aa][1]),
+      filename = paste0(
+        save.results.to, "/pairs_", aa, "_by_times_",
+        bstatus.labels.2[bserostatus + 1], "_",
+        study.name, ".png"
+      )
+    )
+  }
+}
+
+
 #-----------------------------------------------
-# RCDF PLOTS
 #-----------------------------------------------
 # - Reverse empirical cdf (rcdf) plots for the Baseline, Day 57, and
 #   Baseline-subtracted Day 57 assay readouts, stratified by treatment group
@@ -282,48 +312,6 @@ for (day in c("29", "57")) {
 }
 
 
-#-----------------------------------------------
-# SCATTER PLOTS
-#-----------------------------------------------
-# - Scatter plots for correlation between Day29/Day57/Delta29overB/Delta57overB
-#   and baseline, stratified by treatment, assay type and baseline serostatus.
-# - We created four ggplot objects, each for one assay.
-# - Each ggplot object is the scatter plot of Day 57 assay readout or
-#   increase/fold-raise from baseline versus the baseline assay readouts,
-#   stratified by the treatment group.
-#-----------------------------------------------
-
-for (tt in seq_along(times)) {
-  for (bserostatus in 1:2) {
-    for (trt in 1:2) {
-      covid_corr_scatter_facets(
-        plot_dat = subset(
-          dat.long.twophase.sample,
-          as.numeric(Bserostatus) == bserostatus &
-            as.numeric(Trt) == trt
-        )[, c(
-          times, "assay", "Trt",
-          "Bstratum", "wt"
-        )],
-        x = "B",
-        y = times[tt],
-        facet_by = "assay",
-        strata = "Bstratum",
-        weight = "wt",
-        panel_titles = labels.assays.short %>% unlist(),
-        x_axis_titles = labels.axis[1, ] %>% unlist(),
-        y_axis_titles = labels.axis[tt, ] %>% unlist(),
-        filename = paste0(
-          save.results.to, "/scatterplots_", times[tt], "vB_",
-          bstatus.labels.2[bserostatus],
-          c("_placebo_arm_", "_vaccine_arm_")[trt], study.name,
-          ".png"
-        )
-      )
-    }
-  }
-}
-
 
 #-----------------------------------------------
 # BOX PLOTS
@@ -388,4 +376,60 @@ for (trt in 1:2) {
       )
     )
   }
+}
+
+
+#-----------------------------------------------
+# Spaghetti PLOTS
+#-----------------------------------------------
+# - Spaghetti plots of antibody marker change over time
+#-----------------------------------------------
+
+## in each baseline serostatus group, randomly select 10 placebo recipients and 20 vaccine recipients
+var_names <- expand.grid(times = c("B", "Day29", "Day57"),
+                          assays = assays) %>%
+  mutate(var_names = paste0(times, assays)) %>%
+  .[, "var_names"]
+
+spaghetti_ptid <- dat.twophase.sample[, c("Ptid", "Bserostatus", "Trt", var_names)] %>%
+  filter(., complete.cases(.)) %>%
+  transmute(BT = paste0(Bserostatus, Trt),
+            Ptid = Ptid) %>%
+  split(., .$BT) %>%
+  lapply(function(xx) {
+    if (xx$BT[1] %in% c("10", "00")) {
+      sample(xx$Ptid, 10)  ## sample 10 placebo recipients
+    } else {
+      sample(xx$Ptid, 20)  ## sample 20 vaccine recipients
+    }
+  }) %>% unlist %>% as.numeric
+
+spaghetti_dat <- dat.long.twophase.sample[, c("Ptid", "Bserostatus", "Trt", 
+                                              "B", "Day29", "Day57", "assay")] %>%
+  filter(Ptid %in% spaghetti_ptid) %>%
+  pivot_longer(cols = c("B", "Day29", "Day57"),
+               names_to = "time") %>%
+  mutate(assay_label = factor(assay, levels = assays, labels = labels.assays.short),
+         time_label = factor(time, levels = c("B", "Day29", "Day57"),
+                             labels = c("D1", "D29", "D57"))) %>%
+  as.data.frame
+
+for (bstatus in 1:2) {
+  subdat <- subset(spaghetti_dat, Bserostatus == bstatus.labels[bstatus])
+  covid_corr_spaghetti_facets(plot_dat = subdat,
+                              x = "time_label",
+                              y = "value",
+                              id = "Ptid",
+                              color = "Trt",
+                              facet_by = "assay_label",
+                              plot_title = paste0(
+                                "Baseline ",
+                                c("Negative", "Positive")[bstatus],
+                                " PP Placebo + Vaccine group"
+                              ),
+                              filename = paste0(
+                                save.results.to, "/spaghetti_plot_",
+                                bstatus.labels.2[bstatus], "_",
+                                study.name, ".png"
+                              ))
 }

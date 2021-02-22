@@ -1,7 +1,8 @@
 # Graphical Description of Immunogenicity Data {#immuno-graphical}
 
-## Pairs plots
+## Pairs plots of antibody markers for overall per-protocal cohort
 
+### Baseline SARS-CoV-2 Negative
 ```{r immuno-graphical-setup, echo = FALSE, message = FALSE}
 library(here)
 library(latex2exp)
@@ -12,7 +13,7 @@ here::i_am("immuno_graphical/report.Rmd")
 study_name <- "mock"
 ```
 
-```{r, fig.cap = "(Mock data) Pairs plots of D1 Ab markers: baseline negative vaccine + placebo arms"}
+```{r, fig.cap = "(Mock data) Pair plots of D1 Ab markers: baseline negative vaccine + placebo arms"}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0(
@@ -22,17 +23,7 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Pairs plots of D1 Ab markers: baseline positive vaccine + placebo arms"}
-include_graphics(here(
-  "immuno_graphical", "figs",
-  paste0(
-    "pairs_baselineMarkers_BaselinePos_",
-    study_name, ".png"
-  )
-))
-```
-
-```{r, fig.cap = "(Mock data) Pairs plots of D29 Ab markers: baseline negative vaccine arm"}
+```{r, fig.cap = "(Mock data) Pair plots of D29 Ab markers: baseline negative vaccine arm"}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0(
@@ -42,17 +33,8 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Pairs plots of D29 Ab markers: baseline positive vaccine arm"}
-include_graphics(here(
-  "immuno_graphical", "figs",
-  paste0(
-    "pairs_Day29_Markers_BaselinePos_vaccine_arm_",
-    study_name, ".png"
-  )
-))
-```
 
-```{r, fig.cap = "(Mock data) Pairs plots of D57 Ab markers: baseline negative vaccine arm"}
+```{r, fig.cap = "(Mock data) Pair plots of D57 Ab markers: baseline negative vaccine arm"}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0(
@@ -62,17 +44,8 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Pairs plots of D57 Ab markers: baseline positive vaccine arm"}
-include_graphics(here(
-  "immuno_graphical", "figs",
-  paste0(
-    "pairs_Day57_Markers_BaselinePos_vaccine_arm_",
-    study_name, ".png"
-  )
-))
-```
 
-```{r, fig.cap = "(Mock data) Pairs plots of D29 fold-rise over D1 Ab markers: baseline negative vaccine arm"}
+```{r, fig.cap = "(Mock data) Pair plots of D29 fold-rise over D1 Ab markers: baseline negative vaccine arm"}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0(
@@ -82,17 +55,8 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Pairs plots of D29 fold-rise over D1 Ab markers: Baseline positive vaccine arm"}
-include_graphics(here(
-  "immuno_graphical", "figs",
-  paste0(
-    "pairs_Delta29overB_Markers_BaselinePos_vaccine_arm_",
-    study_name, ".png"
-  )
-))
-```
 
-```{r, fig.cap = "(Mock data) Pairs plots of D57 fold-rise over D1 Ab markers: baseline negative vaccine arm"}
+```{r, fig.cap = "(Mock data) Pair plots of D57 fold-rise over D1 Ab markers: baseline negative vaccine arm"}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0(
@@ -102,7 +66,97 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Pairs plots of D57 fold-rise over D1 Ab markers: Baseline positive vaccine arm"}
+```{r, fig.cap = "(Mock data) Pair plots of D1, D29 and D57 Binding Antibody to Spike: baseline negative vaccine + placebo arm"}
+include_graphics(here(
+  "immuno_graphical", "figs",
+  paste0(
+    "pairs_bindSpike_by_times_BaselineNeg_",
+    study_name, ".png"
+  )
+))
+```
+
+```{r, fig.cap = "(Mock data) Pair plots of D1, D29 and D57 Binding Antibody to RBD: baseline negative vaccine + placebo arm"}
+include_graphics(here(
+  "immuno_graphical", "figs",
+  paste0(
+    "pairs_bindRBD_by_times_BaselineNeg_",
+    study_name, ".png"
+  )
+))
+```
+
+```{r, fig.cap = "(Mock data) Pair plots of D1, D29 and D57 PsV Neutralization 50% Titer: baseline negative vaccine + placebo arm"}
+include_graphics(here(
+  "immuno_graphical", "figs",
+  paste0(
+    "pairs_pseudoneutid50_by_times_BaselineNeg_",
+    study_name, ".png"
+  )
+))
+```
+
+
+```{r, fig.cap = "(Mock data) Pair plots of D1, D29 and D57 PsV Neutralization 80% Titer: Baseline negative vaccine + placebo arm"}
+include_graphics(here(
+  "immuno_graphical", "figs",
+  paste0(
+    "pairs_pseudoneutid80_by_times_BaselineNeg_",
+    study_name, ".png"
+  )
+))
+```
+
+
+
+### Baseline SARS-CoV-2 Positive
+
+```{r, fig.cap = "(Mock data) Pair plots of D1 Ab markers: baseline positive vaccine + placebo arms"}
+include_graphics(here(
+  "immuno_graphical", "figs",
+  paste0(
+    "pairs_baselineMarkers_BaselinePos_",
+    study_name, ".png"
+  )
+))
+```
+
+
+
+```{r, fig.cap = "(Mock data) Pair plots of D29 Ab markers: baseline positive vaccine arm"}
+include_graphics(here(
+  "immuno_graphical", "figs",
+  paste0(
+    "pairs_Day29_Markers_BaselinePos_vaccine_arm_",
+    study_name, ".png"
+  )
+))
+```
+
+
+```{r, fig.cap = "(Mock data) Pair plots of D57 Ab markers: baseline positive vaccine arm"}
+include_graphics(here(
+  "immuno_graphical", "figs",
+  paste0(
+    "pairs_Day57_Markers_BaselinePos_vaccine_arm_",
+    study_name, ".png"
+  )
+))
+```
+
+
+```{r, fig.cap = "(Mock data) Pair plots of D29 fold-rise over D1 Ab markers: baseline positive vaccine arm"}
+include_graphics(here(
+  "immuno_graphical", "figs",
+  paste0(
+    "pairs_Delta29overB_Markers_BaselinePos_vaccine_arm_",
+    study_name, ".png"
+  )
+))
+```
+
+
+```{r, fig.cap = "(Mock data) Pair plots of D57 fold-rise over D1 Ab markers: baseline positive vaccine arm"}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0(
@@ -112,7 +166,49 @@ include_graphics(here(
 ))
 ```
 
-## RCDF plots
+```{r, fig.cap = "(Mock data) Pair plots of D1, D29 and D57 Binding Antibody to Spike: baseline positive vaccine + placebo arm"}
+include_graphics(here(
+  "immuno_graphical", "figs",
+  paste0(
+    "pairs_bindSpike_by_times_BaselinePos_",
+    study_name, ".png"
+  )
+))
+```
+
+```{r, fig.cap = "(Mock data) Pair plots of D1, D29 and D57 Binding Antibody to RBD: baseline positive vaccine + placebo arm"}
+include_graphics(here(
+  "immuno_graphical", "figs",
+  paste0(
+    "pairs_bindRBD_by_times_BaselinePos_",
+    study_name, ".png"
+  )
+))
+```
+
+```{r, fig.cap = "(Mock data) Pair plots of D1, D29 and D57 PsV Neutralization 50% Titer: baseline positive vaccine + placebo arm"}
+include_graphics(here(
+  "immuno_graphical", "figs",
+  paste0(
+    "pairs_pseudoneutid50_by_times_BaselinePos_",
+    study_name, ".png"
+  )
+))
+```
+
+
+```{r, fig.cap = "(Mock data) Pair plots of D1, D29 and D57 PsV Neutralization 80% Titer: baseline positive vaccine + placebo arm"}
+include_graphics(here(
+  "immuno_graphical", "figs",
+  paste0(
+    "pairs_pseudoneutid80_by_times_BaselinePos_",
+    study_name, ".png"
+  )
+))
+```
+
+
+## RCDF plots of antibody markers for overall per-protocol cohort
 
 ```{r, fig.cap = "(Mock data) RCDF plots for D29 Ab markers: by baseline status x randomization arm"}
 include_graphics(here(
@@ -233,6 +329,158 @@ include_graphics(here(
   )
 ))
 ```
+
+
+## Box plots of antibody markers for overall per-protocol cohort
+
+### Baseline SARS-CoV-2 negative
+
+```{r, fig.cap = "(Mock data) Boxplots of D29 Ab markers: baseline negative vaccine + placebo arms"}
+include_graphics(here(
+  "immuno_graphical", "figs",
+  paste0("boxplots_Day29_x_trt_BaselineNeg_", study_name, ".png")
+))
+```
+
+```{r, fig.cap = "(Mock data) Boxplots of D57 Ab markers: baseline negative vaccine + placebo arms"}
+include_graphics(here(
+  "immuno_graphical", "figs",
+  paste0("boxplots_Day57_x_trt_BaselineNeg_", study_name, ".png")
+))
+```
+
+```{r, fig.cap = "(Mock data) Boxplots of D29 fold-rise over D1 Ab markers: baseline negative vaccine + placebo arms"}
+include_graphics(here(
+  "immuno_graphical", "figs",
+  paste0("boxplots_Delta29overB_x_trt_BaselineNeg_", study_name, ".png")
+))
+```
+
+```{r, fig.cap = "(Mock data) Boxplots of D57 fold-rise over D1 Ab markers: baseline negative vaccine + placebo arms"}
+include_graphics(here(
+  "immuno_graphical", "figs",
+  paste0("boxplots_Delta57overB_x_trt_BaselineNeg_", study_name, ".png")
+))
+```
+
+### Baseline SARS-CoV-2 positive
+
+
+```{r, fig.cap = "(Mock data) Boxplots of D29 Ab markers: baseline positive vaccine + placebo arms"}
+include_graphics(here(
+  "immuno_graphical", "figs",
+  paste0("boxplots_Day29_x_trt_BaselinePos_", study_name, ".png")
+))
+```
+
+```{r, fig.cap = "(Mock data) Boxplots of D57 Ab markers: baseline positive vaccine + placebo arms"}
+include_graphics(here(
+  "immuno_graphical", "figs",
+  paste0("boxplots_Day57_x_trt_BaselinePos_", study_name, ".png")
+))
+```
+
+```{r, fig.cap = "(Mock data) Boxplots of D29 fold-rise over D1 Ab markers: baseline positive vaccine + placebo arms"}
+include_graphics(here(
+  "immuno_graphical", "figs",
+  paste0("boxplots_Delta29overB_x_trt_BaselinePos_", study_name, ".png")
+))
+```
+
+```{r, fig.cap = "(Mock data) Boxplots of D57 fold-rise over D1 Ab markers: baseline positive vaccine + placebo arms"}
+include_graphics(here(
+  "immuno_graphical", "figs",
+  paste0("boxplots_Delta57overB_x_trt_BaselinePos_", study_name, ".png")
+))
+```
+
+
+### Baseline negative vs. positive vaccine recipients
+
+
+```{r, fig.cap = "(Mock data) Boxplots of D29 Ab markers: baseline positive + negative vaccine arm"}
+include_graphics(here(
+  "immuno_graphical", "figs",
+  paste0("boxplots_Day29_x_bstatus_vaccine_arm_", study_name, ".png")
+))
+```
+
+```{r, fig.cap = "(Mock data) Boxplots of D57 Ab markers: baseline positive + negative vaccine arm"}
+include_graphics(here(
+  "immuno_graphical", "figs",
+  paste0("boxplots_Day57_x_bstatus_vaccine_arm_", study_name, ".png")
+))
+```
+
+```{r, fig.cap = "(Mock data) Boxplots of D29 fold-rise over D1 Ab markers: baseline positive + negative vaccine arm"}
+include_graphics(here(
+  "immuno_graphical", "figs",
+  paste0("boxplots_Delta29overB_x_bstatus_vaccine_arm_", study_name, ".png")
+))
+```
+
+```{r, fig.cap = "(Mock data) Boxplots of D57 fold-rise over D1 Ab markers: baseline positive + negative vaccine arm"}
+include_graphics(here(
+  "immuno_graphical", "figs",
+  paste0("boxplots_Delta57overB_x_bstatus_vaccine_arm_", study_name, ".png")
+))
+```
+
+
+### Baseline negative vs. positive placebo recipients
+
+
+
+```{r, fig.cap = "(Mock data) Boxplots of D29 Ab markers: baseline positive + negative placebo arm"}
+include_graphics(here(
+  "immuno_graphical", "figs",
+  paste0("boxplots_Day29_x_bstatus_placebo_arm_", study_name, ".png")
+))
+```
+
+```{r, fig.cap = "(Mock data) Boxplots of D57 Ab markers: baseline positive + negative placebo arm"}
+include_graphics(here(
+  "immuno_graphical", "figs",
+  paste0("boxplots_Day57_x_bstatus_placebo_arm_", study_name, ".png")
+))
+```
+
+```{r, fig.cap = "(Mock data) Boxplots of D29 fold-rise over D1 Ab markers: baseline positive + negative placebo arm"}
+include_graphics(here(
+  "immuno_graphical", "figs",
+  paste0("boxplots_Delta29overB_x_bstatus_placebo_arm_", study_name, ".png")
+))
+```
+
+```{r, fig.cap = "(Mock data) Boxplots of D57 fold-rise over D1 Ab markers: baseline positive + negative placebo arm"}
+include_graphics(here(
+  "immuno_graphical", "figs",
+  paste0("boxplots_Delta57overB_x_bstatus_placebo_arm_", study_name, ".png")
+))
+```
+
+## Spaghetti plots of antibody markers over time for the overall per-protocol cohort
+
+### Baseline SARS-CoV-2 negative
+```{r, fig.cap = "(Mock data) Spaghetti plots of Ab markers over time: baseline negative vaccine + placebo arm"}
+include_graphics(here(
+  "immuno_graphical", "figs",
+  paste0("spaghetti_plot_BaselineNeg_", study_name, ".png")
+))
+```
+
+### Baseline SARS-CoV-2 positive
+```{r, fig.cap = "(Mock data) Spaghetti plots of Ab markers over time: baseline positive vaccine + placebo arm"}
+include_graphics(here(
+  "immuno_graphical", "figs",
+  paste0("spaghetti_plot_BaselinePos_", study_name, ".png")
+))
+```
+
+
+## RCDF plots of antibody markers by demographics for per-protocol cohort
+
+### Baseline SARS-CoV-2 negative
 
 ```{r, fig.cap = "(Mock data) RCDF plots for D29 Ab markers: baseline negative vaccine arm by age groups."}
 include_graphics(here(
@@ -604,6 +852,11 @@ include_graphics(here(
 ))
 ```
 
+
+### Baseline SARS-CoV-2 positive
+
+
+
 ```{r, fig.cap = "(Mock data) RCDF plots for D29 Ab markers: baseline positive vaccine arm by age groups."}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -964,205 +1217,10 @@ include_graphics(here(
 ))
 ```
 
-## Scatterplots
 
-```{r, fig.cap = "(Mock data) Scatterplots of D29 vs. D1 Ab markers: baseline negative vaccine arm"}
-include_graphics(here(
-  "immuno_graphical", "figs",
-  paste0(
-    "scatterplots_Day29vB_BaselineNeg_vaccine_arm_",
-    study_name, ".png"
-  )
-))
-```
+## Boxplots of antibody markers by demographics for per-protocol cohort
 
-```{r, fig.cap = "(Mock data) Scatterplots of D57 vs. D1 Ab markers: baseline negative vaccine arm"}
-include_graphics(here(
-  "immuno_graphical", "figs",
-  paste0(
-    "scatterplots_Day57vB_BaselineNeg_vaccine_arm_",
-    study_name, ".png"
-  )
-))
-```
-
-```{r, fig.cap = "(Mock data) Scatterplot of D29 fold-rise over D1 vs. D1 Ab markers: baseline negative vaccine arm"}
-include_graphics(here(
-  "immuno_graphical", "figs",
-  paste0(
-    "scatterplots_Delta29overBvB_BaselineNeg_vaccine_arm_",
-    study_name, ".png"
-  )
-))
-```
-
-```{r, fig.cap = "(Mock data) Scatterplot of D57 fold-rise over D1 vs. D1 Ab markers: baseline negative vaccine arm"}
-include_graphics(here(
-  "immuno_graphical", "figs",
-  paste0(
-    "scatterplots_Delta57overBvB_BaselineNeg_vaccine_arm_",
-    study_name, ".png"
-  )
-))
-```
-
-
-```{r, fig.cap = "(Mock data) Scatterplot of D29 vs. D1 Ab markers: baseline positive vaccine arm"}
-include_graphics(here(
-  "immuno_graphical", "figs",
-  paste0(
-    "scatterplots_Day29vB_BaselinePos_vaccine_arm_",
-    study_name, ".png"
-  )
-))
-```
-
-```{r, fig.cap = "(Mock data) Scatterplot of D57 vs. D1 Ab markers: baseline positive vaccine arm"}
-include_graphics(here(
-  "immuno_graphical", "figs",
-  paste0(
-    "scatterplots_Day57vB_BaselinePos_vaccine_arm_",
-    study_name, ".png"
-  )
-))
-```
-
-```{r, fig.cap = "(Mock data) Scatterplot of D29 fold-rise over D1 vs. D1 Ab markers: baseline positive vaccine arm"}
-include_graphics(here(
-  "immuno_graphical", "figs",
-  paste0(
-    "scatterplots_Delta29overBvB_BaselinePos_vaccine_arm_",
-    study_name, ".png"
-  )
-))
-```
-
-```{r, fig.cap = "(Mock data) Scatterplot of D57 fold-rise over D1 vs. D1 Ab markers: baseline positive vaccine arm"}
-include_graphics(here(
-  "immuno_graphical", "figs",
-  paste0(
-    "scatterplots_Delta57overBvB_BaselinePos_vaccine_arm_",
-    study_name, ".png"
-  )
-))
-```
-
-## Box plots
-
-```{r, fig.cap = "(Mock data) Boxplots of D29 Ab markers: baseline negative vaccine + placebo arms"}
-include_graphics(here(
-  "immuno_graphical", "figs",
-  paste0("boxplots_Day29_x_trt_BaselineNeg_", study_name, ".png")
-))
-```
-
-```{r, fig.cap = "(Mock data) Boxplots of D57 Ab markers: baseline negative vaccine + placebo arms"}
-include_graphics(here(
-  "immuno_graphical", "figs",
-  paste0("boxplots_Day57_x_trt_BaselineNeg_", study_name, ".png")
-))
-```
-
-```{r, fig.cap = "(Mock data) Boxplots of D29 fold-rise over D1 Ab markers: baseline negative vaccine + placebo arms"}
-include_graphics(here(
-  "immuno_graphical", "figs",
-  paste0("boxplots_Delta29overB_x_trt_BaselineNeg_", study_name, ".png")
-))
-```
-
-```{r, fig.cap = "(Mock data) Boxplots of D57 fold-rise over D1 Ab markers: baseline negative vaccine + placebo arms"}
-include_graphics(here(
-  "immuno_graphical", "figs",
-  paste0("boxplots_Delta57overB_x_trt_BaselineNeg_", study_name, ".png")
-))
-```
-
-```{r, fig.cap = "(Mock data) Boxplots of D29 Ab markers: baseline positive vaccine + placebo arms"}
-include_graphics(here(
-  "immuno_graphical", "figs",
-  paste0("boxplots_Day29_x_trt_BaselinePos_", study_name, ".png")
-))
-```
-
-```{r, fig.cap = "(Mock data) Boxplots of D57 Ab markers: baseline positive vaccine + placebo arms"}
-include_graphics(here(
-  "immuno_graphical", "figs",
-  paste0("boxplots_Day57_x_trt_BaselinePos_", study_name, ".png")
-))
-```
-
-```{r, fig.cap = "(Mock data) Boxplots of D29 fold-rise over D1 Ab markers: baseline positive vaccine + placebo arms"}
-include_graphics(here(
-  "immuno_graphical", "figs",
-  paste0("boxplots_Delta29overB_x_trt_BaselinePos_", study_name, ".png")
-))
-```
-
-```{r, fig.cap = "(Mock data) Boxplots of D57 fold-rise over D1 Ab markers: baseline positive vaccine + placebo arms"}
-include_graphics(here(
-  "immuno_graphical", "figs",
-  paste0("boxplots_Delta57overB_x_trt_BaselinePos_", study_name, ".png")
-))
-```
-
-```{r, fig.cap = "(Mock data) Boxplots of D29 Ab markers: Baseline status vaccine arm"}
-include_graphics(here(
-  "immuno_graphical", "figs",
-  paste0("boxplots_Day29_x_bstatus_vaccine_arm_", study_name, ".png")
-))
-```
-
-```{r, fig.cap = "(Mock data) Boxplots of D57 Ab markers: Baseline status vaccine arm"}
-include_graphics(here(
-  "immuno_graphical", "figs",
-  paste0("boxplots_Day57_x_bstatus_vaccine_arm_", study_name, ".png")
-))
-```
-
-```{r, fig.cap = "(Mock data) Boxplots of D29 fold-rise over D1 Ab markers: Baseline status vaccine arm"}
-include_graphics(here(
-  "immuno_graphical", "figs",
-  paste0("boxplots_Delta29overB_x_bstatus_vaccine_arm_", study_name, ".png")
-))
-```
-
-```{r, fig.cap = "(Mock data) Boxplots of D57 fold-rise over D1 Ab markers: Baseline status vaccine arm"}
-include_graphics(here(
-  "immuno_graphical", "figs",
-  paste0("boxplots_Delta57overB_x_bstatus_vaccine_arm_", study_name, ".png")
-))
-```
-
-```{r, fig.cap = "(Mock data) Boxplots of D29 Ab markers: Baseline status placebo arm"}
-include_graphics(here(
-  "immuno_graphical", "figs",
-  paste0("boxplots_Day29_x_bstatus_placebo_arm_", study_name, ".png")
-))
-```
-
-```{r, fig.cap = "(Mock data) Boxplots of D57 Ab markers: Baseline status placebo arm"}
-include_graphics(here(
-  "immuno_graphical", "figs",
-  paste0("boxplots_Day57_x_bstatus_placebo_arm_", study_name, ".png")
-))
-```
-
-```{r, fig.cap = "(Mock data) Boxplots of D29 fold-rise over D1 Ab markers: Baseline status placebo arm"}
-include_graphics(here(
-  "immuno_graphical", "figs",
-  paste0("boxplots_Delta29overB_x_bstatus_placebo_arm_", study_name, ".png")
-))
-```
-
-```{r, fig.cap = "(Mock data) Boxplots of D57 fold-rise over D1 Ab markers: Baseline status placebo arm"}
-include_graphics(here(
-  "immuno_graphical", "figs",
-  paste0("boxplots_Delta57overB_x_bstatus_placebo_arm_", study_name, ".png")
-))
-```
-
-
-
+### Baseline SARS-CoV-2 negative
 
 ```{r, fig.cap = "(Mock data) Boxplots of D29 Ab markers: Baseline negative vaccine arm by age group.", eval=FALSE}
 include_graphics(here(
@@ -1523,6 +1581,8 @@ include_graphics(here(
   )
 ))
 ```
+
+### Baseline SARS-CoV-2 positive
 
 ```{r, fig.cap = "(Mock data) Boxplots of D29 Ab markers: baseline positive vaccine arm by age group.", eval=FALSE}
 include_graphics(here(

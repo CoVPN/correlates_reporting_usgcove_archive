@@ -14,6 +14,7 @@ library(SWIM)
 library(ggplot2)
 library(scales)
 
+set.seed(12345)
 # load helper scripts and parameters
 source(here("code", "ggally_cor_resample.R"))
 source(here("code", "covid_corr_plot_functions.R"))

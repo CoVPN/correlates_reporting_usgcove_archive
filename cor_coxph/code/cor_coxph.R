@@ -1,9 +1,15 @@
-##-----------------------------------------------
-## obligatory to append to the top of each script
-#renv::activate(project = here::here(".."))
-#renv::restore()
-## after updating a package, run renv::snapshot() to override the global library record with your changes
-## .libPaths() shows the path for libraries
+# There is a bug on Windows that prevents renv from working properly. The following provides a workaround:
+if (.Platform$OS.type == "windows") saved.system.libPaths=.libPaths()
+#-----------------------------------------------
+# obligatory to append to the top of each script
+renv::activate(project = here::here(".."))
+
+if (.Platform$OS.type == "windows") {
+    options(renv.config.install.transactional = FALSE)
+    renv::restore(library=saved.system.libPaths, prompt=FALSE) # for a quick test, add: packages="backports"
+} else renv::restore(prompt=FALSE) 
+
+# after updating a package, run renv::snapshot() to override the global library record with your changes
 
 source(here::here("..", "_common.R"))
 #-----------------------------------------------
@@ -526,7 +532,7 @@ marginalized.risk.svycoxph.boot=function(formula, marker.name, type, data, t, we
         # conditional on s
             tmp.design=twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd, data=dat.b)
             fit.risk=svycoxph(f1, design=tmp.design)
-            fit.s=svyglm(f2, tmp.design)      
+            #fit.s=svyglm(f2, tmp.design)      
             marginalized.risk(fit.risk, marker.name, subset(dat.b,TwophasesampInd==1), t=t, ss=ss, weights=dat.b$wt[dat.b$TwophasesampInd==1], categorical.s=F)
             
         } else if (type==2) {
@@ -777,11 +783,11 @@ dev.off()
 risks.all.ter=list()
 for (a in assays) {        
     marker.name="Day57"%.%a%.%"cat"    
-    f1=update(form.0, as.formula(paste0("~.+",marker.name)))
-    f2=update(form.0, as.formula(paste0(marker.name,"~.")))
-        
+    f1=update(form.0, as.formula(paste0("~.+",marker.name)))        
     fit.risk=svycoxph(f1, design=twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd, data=dat.mock.vacc.seroneg.D57))
-    fit.s=nnet::multinom(f2, dat.mock.vacc.seroneg.D57, weights=dat.mock.vacc.seroneg.D57$wt) 
+
+#    f2=update(form.0, as.formula(paste0(marker.name,"~.")))
+#    fit.s=nnet::multinom(f2, dat.mock.vacc.seroneg.D57, weights=dat.mock.vacc.seroneg.D57$wt) 
     
     risks.all.ter[[a]]=marginalized.risk(fit.risk, marker.name, subset(dat.mock.vacc.seroneg.D57,TwophasesampInd==1), weights=dat.mock.vacc.seroneg.D57$wt[dat.mock.vacc.seroneg.D57$TwophasesampInd==1], categorical.s=T)
 }

@@ -1286,7 +1286,6 @@ study_name = "mock"
 ```{r, fig.cap = "(Mock data) lineplots of Binding Antibody to Spike: baseline negative vaccine arm by dichotomous classification of race and ethnic group (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", "linebox_Spike_Vaccine_BaselineNeg_Dich_RaceEthnic_2tp_", study_name, ".png"))
-    knitr::include_graphics(here::here("cor_graphical", "figs", "
 ```
 
 ```{r, fig.cap = "(Mock data) lineplots of Binding Antibody to RBD: baseline negative placebo arm by dichotomous classification of race and ethnic group (2 timepoints)"}

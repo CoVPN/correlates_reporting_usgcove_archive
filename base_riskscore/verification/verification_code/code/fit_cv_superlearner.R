@@ -1,3 +1,5 @@
+#! /usr/bin/env/Rscript
+
 # This script executes code under the heading of: Input to CV-SuperLearner 
 # run on placebo arm data (CV-SL fit)
 
@@ -34,17 +36,15 @@ y <- readRDS(here::here("data_clean", "y.rds"))
 x <- readRDS(here::here("data_clean", "x.rds"))
 
 inner_validation_folds <- ifelse(sum(y) <= 30, sum(y) - 1, 5)
+print(paste0("Super learners built using ", inner_validation_folds," folds of CV."))
 
-# 
+# super learner library
 if(this_library == "demo"){
   sl_library <- list(
     c("screen_all", "SL.mean"),
     c("screen_all", "SL.glm"),
-	c("screen_glmnet", "SL.mean"),
     c("screen_glmnet", "SL.glm"),
-    c("screen_univariate_logistic_pval", "SL.mean"),
     c("screen_univariate_logistic_pval", "SL.glm"),
-    c("screen_highcor_random", "SL.mean"),
     c("screen_highcor_random", "SL.glm")
   )
 }else if(this_library == "prod"){
@@ -54,25 +54,25 @@ if(this_library == "demo"){
     c("screen_all", "SL.bayesglm"),
     c("screen_all", "SL.glm.interaction"),
     c("screen_glmnet", "SL.glm"),
-    c("screen_glmnet", "SL.bayesglm"),
-    c("screen_glmnet", "SL.glm.interaction"),
-	c("screen_glmnet", "SL.glmnet"),
-	c("screen_glmnet", "SL.gam"),
-    c("screen_glmnet", "SL.xgboost"),
-    c("screen_glmnet", "SL.cforest"),
     c("screen_univariate_logistic_pval", "SL.glm"),
-    c("screen_univariate_logistic_pval", "SL.bayesglm"),
-    c("screen_univariate_logistic_pval", "SL.glm.interaction"),
-	c("screen_univariate_logistic_pval", "SL.glmnet"),
-	c("screen_univariate_logistic_pval", "SL.gam"),
-    c("screen_univariate_logistic_pval", "SL.xgboost"),
-    c("screen_univariate_logistic_pval", "SL.cforest"),
     c("screen_highcor_random", "SL.glm"),
+    c("screen_glmnet", "SL.bayesglm"),
+    c("screen_univariate_logistic_pval", "SL.bayesglm"),
     c("screen_highcor_random", "SL.bayesglm"),
+    c("screen_glmnet", "SL.glm.interaction"),
+    c("screen_univariate_logistic_pval", "SL.glm.interaction"),
     c("screen_highcor_random", "SL.glm.interaction"),
-	c("screen_highcor_random", "SL.glmnet"),
-	c("screen_highcor_random", "SL.gam"),
+    c("screen_glmnet", "SL.glmnet"),
+    c("screen_univariate_logistic_pval", "SL.glmnet"),
+    c("screen_highcor_random", "SL.glmnet"),
+    c("screen_glmnet", "SL.gam"),
+    c("screen_univariate_logistic_pval", "SL.gam"),
+    c("screen_highcor_random", "SL.gam"),
+    c("screen_glmnet", "SL.xgboost"),
+    c("screen_univariate_logistic_pval", "SL.xgboost"),
     c("screen_highcor_random", "SL.xgboost"),
+    c("screen_glmnet", "SL.cforest"),
+    c("screen_univariate_logistic_pval", "SL.cforest"),
     c("screen_highcor_random", "SL.cforest")
   )
 }
@@ -88,7 +88,4 @@ cv_sl_fit <- CV.SuperLearner(
   innerCvControl = list(V = inner_validation_folds)
 )
 
-
-
-
-
+saveRDS(cv_sl_fit, file = here::here("output", paste0("cv_sl_fit_", this_seed, ".rds")))

@@ -1596,6 +1596,4 @@ study_name = "mock"
 ```{r, fig.cap = "(Mock data) scatterplots of Pseudovirus Neutralization ID80: by arm at day 57"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", "scatter_pnAb_id80_all_Day57_", study_name, ".png"))
-
 ```
-

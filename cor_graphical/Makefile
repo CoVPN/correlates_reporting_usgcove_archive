@@ -1,12 +1,17 @@
-common_code: ../_common.R
-data_prep_code: data_clean/data_prep.R
-fig_code: code/cor_graphics_violin_scatter.R
+## all            : clear current results and make figures
+all: clean figs cor_boxplots cor_wrcdf
+
+## clean_data     : saves data sets for plotting in data_clean
+clean_data: code/data_prep.R
+	Rscript code/data_prep.R
+
+## figs           : make figures
+figs: fig_code clean_data
+	Rscript code/cor_graphics_violin_scatter.R
+
 fig_generation: fig_code data_prep common
     Rscript code/cor_graphics_violin_scatter.R
 
-
-
-all: cor_boxplots cor_wrcdf
 
 ## boxplots by case and non-case
 cor_boxplots: code/cor_data_preprocess.R \
@@ -26,8 +31,13 @@ plot_data: code/cor_data_preprocess.R params
 # parameters that may vary across runs
 params: code/params.R
 
-## clean            : delete contents of data_clean/ and figs/
-clean:
-	rm -f data_clean/*.rds
-	rm -f figs/*.png
-	rm -f Rplots.pdf
+## clean          : clean up data_clean and output folder
+clean: 
+	rm -f data_clean/* && rm -f output/*
+
+# type 'make help' to show all make commands
+help: Makefile
+	@sed -n 's/^##//p' $<
+
+.PHONY: fig_code figs clean all clean_data
+

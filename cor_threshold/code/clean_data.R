@@ -1,4 +1,4 @@
-#install.packages("~/CovidCorrSAP/R_packages/COVIDcorr")
+# install.packages("~/CovidCorrSAP/R_packages/COVIDcorr")
 print(getwd())
 #-----------------------------------------------
 # obligatory to append to the top of each script
@@ -20,33 +20,37 @@ outcome <-
   data[[Event_Ind_variable]] == 1 & data[[Event_Time_variable]] <= tf
 Delta <-
   1 - (data[[Event_Ind_variable]] == 0 &
-         data[[Event_Time_variable]] < tf)
+    data[[Event_Time_variable]] < tf)
 data$outcome <- outcome
 data$Delta <- Delta
 data$TwophasesampInd <- data[[twophaseind_variable]]
 data$wt <- data[[weight_variable]]
 data$grp <- data[[twophasegroup_variable]]
 
-#Subset data
+# Subset data
 variables_to_keep <-
-  c(covariates,
+  c(
+    covariates,
     assays,
     "TwophasesampInd",
     "grp",
     "wt",
     "outcome",
-    "Delta")
-keep <-   data$Trt == 1 & data$Bserostatus == 0 &
+    "Delta"
+  )
+keep <- data$Trt == 1 & data$Bserostatus == 0 &
   data$Perprotocol == 1
 data_firststage <- data[keep, variables_to_keep]
 data_secondstage <- data_firststage[data_firststage$TwophasesampInd == 1, ]
 
 write.csv(data_firststage,
-          here::here("data_clean", "data_firststage.csv"),
-          row.names = F)
+  here::here("data_clean", "data_firststage.csv"),
+  row.names = F
+)
 write.csv(data_secondstage,
-          here::here("data_clean", "data_secondstage.csv"),
-          row.names = F)
+  here::here("data_clean", "data_secondstage.csv"),
+  row.names = F
+)
 
 thresholds_list <- list()
 for (marker in assays) {
@@ -64,9 +68,8 @@ for (marker in assays) {
   } else {
     thresh_grid <- sort(unique(data_secondstage[[marker]]))
   }
-  
-  write.csv(data.frame(thresh = thresh_grid), here("data_clean", "Thresholds_by_marker", paste0("thresholds_", marker,".csv")), row.names=F)
-  
+
+  write.csv(data.frame(thresh = thresh_grid), here("data_clean", "Thresholds_by_marker", paste0("thresholds_", marker, ".csv")), row.names = F)
+
   thresholds_list[[marker]] <- thresh_grid
-  
 }

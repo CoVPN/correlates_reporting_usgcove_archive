@@ -21,13 +21,12 @@ ident <- function(x) x
 main <- paste0("Cumulative Risk of COVID by Day ", tf)
 
 
-for(marker in assays) {
-  get_plot(marker, simultaneous_CI = F, monotone = F )
-  get_plot(marker, simultaneous_CI = T, monotone = F )
-  get_plot(marker, simultaneous_CI = F, monotone = T )
-  get_plot(marker, simultaneous_CI = T, monotone = T )
+for (marker in assays) {
+  get_plot(marker, simultaneous_CI = F, monotone = F)
+  get_plot(marker, simultaneous_CI = T, monotone = F)
+  get_plot(marker, simultaneous_CI = F, monotone = T)
+  get_plot(marker, simultaneous_CI = T, monotone = T)
   generate_tables(marker, num_show = 10)
-  get_inverse_plot(marker,F)
-  get_inverse_plot(marker,T)
-  
+  get_inverse_plot(marker, F)
+  get_inverse_plot(marker, T)
 }

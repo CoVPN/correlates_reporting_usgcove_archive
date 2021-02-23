@@ -1,10 +1,10 @@
 ## all              : run threshold analysis and get plots
-all: threshold 
+all: params data threshold plot
 
 
 ## threshold   : run threshold analysis and get plots
 threshold: code/run_Threshold_analysis.R \
-  data plot params
+  params  
 	Rscript code/run_Threshold_analysis.R
 
 ## data   : prepare data for analysis

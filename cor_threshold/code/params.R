@@ -19,7 +19,7 @@ tf <- 170 # Reference time to perform analysis. Y = 1(T <= tf) where T is event 
 covariate_adjusted <- T #### Estimate threshold-response function with covariate adjustment
 fast_analysis <- TRUE  ### Perform a fast analysis using glmnet
 include_interactions <- FALSE #### Include algorithms that model interactions between covariates
-threshold_grid_size <- 15   ### Number of thresholds to estimate (equally spaced in quantiles). Should be 15 at least for the plots of the threshold-response and its inverse to be representative of the true functions.
+threshold_grid_size <- 20   ### Number of thresholds to estimate (equally spaced in quantiles). Should be 15 at least for the plots of the threshold-response and its inverse to be representative of the true functions.
 
 
 # Marker variables to generate results for

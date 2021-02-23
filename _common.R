@@ -1,6 +1,64 @@
 library(methods)
 set.seed(98109)
 
+###############################################################################
+# reading in data set
+###############################################################################
+data_name <- "mock_data.csv"
+
+###############################################################################
+# figure labels and titles for markers
+###############################################################################
+
+# re-define times variable here as needed here
+times <- c(
+  "B", "Day29", "Day57", "Delta29overB", "Delta57overB",
+  "Delta57over29"
+)
+
+labels.axis <- outer(
+  c("", "", "", "", "", ""),
+  c(
+    "Spike IgG (IU/ml)", "RBD IgG (IU/ml)", "PsV-nAb ID50", "WT LV-nAb MN50",
+    "PsV-nAb ID80", "WT LV-nAb MN80"
+  ),
+  "%.%"
+)
+labels.axis <- as.data.frame(labels.axis)
+rownames(labels.axis) <- times
+# NOTE: hacky solution to deal with changes in the number of markers
+colnames(labels.axis)[seq_along(assays)] <- assays
+labels.axis <- labels.axis[, -ncol(labels.axis)]
+
+labels.title <- outer(
+  c(
+    "Binding Antibody to Spike", "Binding Antibody to RBD",
+    "PsV Neutralization 50% Titer", "WT LV Neutralization 50% Titer",
+    "PsV Neutralization 80% Titer", "WT LV Neutralization 80% Titer"
+  ),
+  ": " %.%
+    c(
+      "Day 1", "Day 29", "Day 57", "D29 fold-rise over D1",
+      "D57 fold-rise over D1", "D57 fold-rise over D29"
+    ),
+  "%.%"
+)
+labels.title <- as.data.frame(labels.title)
+colnames(labels.title) <- times
+# NOTE: hacky solution to deal with changes in the number of markers
+rownames(labels.title)[seq_along(assays)] <- assays
+labels.title <- labels.title[-nrow(labels.title), ]
+labels.title <- as.data.frame(t(labels.title))
+
+# creating short and long labels
+labels.assays.short <- labels.axis[1, ]
+labels.assays.long <- labels.title
+
+
+###############################################################################
+# theme options
+###############################################################################
+
 # fixed knitr chunk options
 knitr::opts_chunk$set(
   comment = "#>",

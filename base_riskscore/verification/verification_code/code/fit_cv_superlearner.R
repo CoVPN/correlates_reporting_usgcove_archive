@@ -1,4 +1,4 @@
-#! /usr/bin/env/Rscript
+#! /app/software/R/4.0.2-foss-2019b/bin/Rscript
 
 # This script executes code under the heading of: Input to CV-SuperLearner 
 # run on placebo arm data (CV-SL fit)
@@ -39,53 +39,55 @@ inner_validation_folds <- ifelse(sum(y) <= 30, sum(y) - 1, 5)
 print(paste0("Super learners built using ", inner_validation_folds," folds of CV."))
 
 # super learner library
+source(here::here("code", "sl_screen_fn.R"))
 if(this_library == "demo"){
   sl_library <- list(
-    c("screen_all", "SL.mean"),
-    c("screen_all", "SL.glm"),
-    c("screen_glmnet", "SL.glm"),
-    c("screen_univariate_logistic_pval", "SL.glm"),
-    c("screen_highcor_random", "SL.glm")
+    c("SL.mean", "screen_all"),
+    c("SL.glm", "screen_all"),
+    c("SL.glm", "screen_glmnet"),
+    c("SL.glm", "screen_univariate_logistic_pval"),
+    c("SL.glm", "screen_highcor_random")
   )
 }else if(this_library == "prod"){
   sl_library <- list(
-    c("screen_all", "SL.mean"),
-    c("screen_all", "SL.glm"),
-    c("screen_all", "SL.bayesglm"),
-    c("screen_all", "SL.glm.interaction"),
-    c("screen_glmnet", "SL.glm"),
-    c("screen_univariate_logistic_pval", "SL.glm"),
-    c("screen_highcor_random", "SL.glm"),
-    c("screen_glmnet", "SL.bayesglm"),
-    c("screen_univariate_logistic_pval", "SL.bayesglm"),
-    c("screen_highcor_random", "SL.bayesglm"),
-    c("screen_glmnet", "SL.glm.interaction"),
-    c("screen_univariate_logistic_pval", "SL.glm.interaction"),
-    c("screen_highcor_random", "SL.glm.interaction"),
-    c("screen_glmnet", "SL.glmnet"),
-    c("screen_univariate_logistic_pval", "SL.glmnet"),
-    c("screen_highcor_random", "SL.glmnet"),
-    c("screen_glmnet", "SL.gam"),
-    c("screen_univariate_logistic_pval", "SL.gam"),
-    c("screen_highcor_random", "SL.gam"),
-    c("screen_glmnet", "SL.xgboost"),
-    c("screen_univariate_logistic_pval", "SL.xgboost"),
-    c("screen_highcor_random", "SL.xgboost"),
-    c("screen_glmnet", "SL.cforest"),
-    c("screen_univariate_logistic_pval", "SL.cforest"),
-    c("screen_highcor_random", "SL.cforest")
+    c("SL.mean", "screen_all"),
+    c("SL.glm", "screen_all"),
+    c("SL.bayesglm", "screen_all"),
+    c("SL.glm.interaction", "screen_all"),
+    c("SL.glm", "screen_glmnet"),
+    c("SL.glm", "screen_univariate_logistic_pval"),
+    c("SL.glm", "screen_highcor_random"),
+    c("SL.bayesglm", "screen_glmnet"),
+    c("SL.bayesglm", "screen_univariate_logistic_pval"),
+    c("SL.bayesglm", "screen_highcor_random"),
+    c("SL.glm.interaction", "screen_glmnet"),
+    c("SL.glm.interaction", "screen_univariate_logistic_pval"),
+    c("SL.glm.interaction", "screen_highcor_random"),
+    c("SL.glmnet", "screen_glmnet"),
+    c("SL.glmnet", "screen_univariate_logistic_pval"),
+    c("SL.glmnet", "screen_highcor_random"),
+    c("SL.gam", "screen_glmnet"),
+    c("SL.gam", "screen_univariate_logistic_pval"),
+    c("SL.gam", "screen_highcor_random"),
+    c("SL.xgboost", "screen_glmnet"),
+    c("SL.xgboost", "screen_univariate_logistic_pval"),
+    c("SL.xgboost", "screen_highcor_random"),
+    c("SL.cforest", "screen_glmnet"),
+    c("SL.cforest", "screen_univariate_logistic_pval"),
+    c("SL.cforest", "screen_highcor_random")
   )
 }
 
 set.seed(seeds[this_seed])
 cv_sl_fit <- CV.SuperLearner(
   Y = y,
-  X = x,
+  X = data.frame(x),
+  SL.library = sl_library,
   family = binomial(),
   obsWeights = rep(1, length(y)), 
   method = "method.CC_nloglik",
   cvControl = list(V = 5, stratifyCV = TRUE),
-  innerCvControl = list(V = inner_validation_folds)
+  innerCvControl = list(list(V = inner_validation_folds))
 )
 
 saveRDS(cv_sl_fit, file = here::here("output", paste0("cv_sl_fit_", this_seed, ".rds")))

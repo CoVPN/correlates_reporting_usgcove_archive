@@ -7,9 +7,18 @@ seeds: code/get_cv_sl_seeds.R
 	Rscript code/get_cv_sl_seeds.R
 
 ## cvsl_out_slurm_demo : submit jobs to cluster to run cv super learner with demo library
-cvsl_out_slurm_demo: code/fit_cv_superlearner.R seeds clean_data
+cvsl_out_slurm_demo: code/fit_cv_superlearner.R seeds clean_data code/submit_jobs.sh
 	chmod +x code/fit_cv_superlearner.R && chmod +x code/submit_jobs.sh && code/submit_jobs.sh demo
+
+## cvsl_out_local_demo : run jobs locally to fit cv super learner with demo library
+cvsl_out_local_demo: code/fit_cv_superlearner.R seeds clean_data code/submit_jobs_local.sh
+	chmod +x code/fit_cv_superlearner.R && chmod +x code/submit_jobs_local.sh && code/submit_jobs_local.sh demo
 
 ## cvsl_out_slurm_prod : submit jobs to cluster to run cv super learner with production library
 cvsl_out_slurm_prod: code/fit_cv_superlearner.R seeds clean_data
 	chmod +x code/fit_cv_superlearner.R && chmod +x code/submit_jobs.sh && code/submit_jobs.sh prod
+
+
+## clean           : remove contents of output and data_clean
+clean:
+	rm -f output/* data_clean/*

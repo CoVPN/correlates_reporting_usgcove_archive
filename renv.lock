@@ -23,18 +23,6 @@
       "Repository": "CRAN",
       "Hash": "e4c04affc2cac20c8fec18385cd14691"
     },
-    "COVIDcorr": {
-      "Package": "COVIDcorr",
-      "Version": "2021.02.20",
-      "Source": "GitHub",
-      "RemoteType": "github",
-      "RemoteHost": "api.github.com",
-      "RemoteRepo": "correlates_mockdata",
-      "RemoteUsername": "CoVPN",
-      "RemoteRef": "HEAD",
-      "RemoteSha": "419e52808704cc196c7f408e9e50847cd62e9add",
-      "Hash": "d4aa72adecde8404773df91832efec5c"
-    },
     "DBI": {
       "Package": "DBI",
       "Version": "1.1.1",

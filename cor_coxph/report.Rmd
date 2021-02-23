@@ -1,5 +1,5 @@
 \newcommand{\studyname}{mock}
-\newcommand{\pathCoRoutput}{output}
+\newcommand{\pathCoRoutput}{cor_coxph/output}
 
 # Univariate CoR: Cox Proportional Hazards Modeling of Relative and Absolute Risk {#cor-coxph}
 

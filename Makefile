@@ -18,7 +18,8 @@ cor_analysis:
 
 ## cor_report             : builds the CoVPN correlates of risk report
 cor_report: cor_analysis
-	bash ./_build.sh cor
+	Rscript -e "bookdown::render_book('index.Rmd', 'bookdown::pdf_document2', config_file = '_bookdown_cor.yml')"
+# 	bash ./_build.sh cor
 
 ## cop_analysis           : builds Correlates of Protection analyses
 cop_analysis:

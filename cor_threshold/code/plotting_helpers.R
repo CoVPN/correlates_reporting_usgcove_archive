@@ -41,7 +41,8 @@ get_plot <- function(marker, simultaneous_CI = F, monotone = F) {
     scale_y_continuous(
       name = laby,
       sec.axis = sec_axis(~ . / scale_coef, name = "Reverse CDF"), n.breaks = 10
-    ) + geom_vline(xintercept = max_thresh, colour = "red", linetype = "longdash") #+  geom_text(aes(x=max_thresh *(1.01), label="No observed events", y=0.002), colour="black", angle=90, text=element_text(size=11))
+    ) + geom_vline(xintercept = max_thresh, colour = "red", linetype = "longdash")  +
+    theme(plot.title = element_text(size = 15))#+  geom_text(aes(x=max_thresh *(1.01), label="No observed events", y=0.002), colour="black", angle=90, text=element_text(size=11))
   append_end <- ""
   append_start <- "PLOT"
   folder <- ""
@@ -102,7 +103,7 @@ generate_tables <- function(marker, num_show = 10) {
       "figs", "simultaneous_CI",
       paste0("TABLE_", marker, "_simultCI.pdf")
     ))
-  return()
+  return(list(pointwise = esttmle_table[index_to_show, c(1, 2, 3, 4, 5)], simult = esttmle_table[index_to_show, c(1, 2, 3, 6, 7)]))
 }
 #' Generate plot and table of inverse threshold response. ASSUMES MONOTONICITY.
 #' WEIRD BEHAVIOR IF INITIAL ESTIMATES DEVIATE GREATLY FROM MONOTONE NONINCREASING.
@@ -170,12 +171,11 @@ get_inverse_plot <- function(marker, simultaneous_CI = F) {
 
 
   # Save plot of inverse threshold response function
-  print(plot$plot)
-  print(laby)
+  
   plot <- plot$plot + scale_y_continuous(
     labels = trans_format("ident", math_format(10^.x))
-  ) + scale_x_continuous(n.breaks = 7) + xlab(main) + theme(axis.text.x = element_text(angle = 45, hjust = 1)) + ylab(laby) + theme(plot.title = element_text(size = 12))
-  print(plot)
+  ) + scale_x_continuous(n.breaks = 7) + xlab(main) + theme(axis.text.x = element_text(angle = 45, hjust = 1)) + ylab(laby) + theme(plot.title = element_text(size = 16))
+
   ggsave(
     filename = here::here(
       "figs", folder,
@@ -183,4 +183,5 @@ get_inverse_plot <- function(marker, simultaneous_CI = F) {
     ),
     plot = plot, height = 7, width = 9
   )
+  return(plot)
 }

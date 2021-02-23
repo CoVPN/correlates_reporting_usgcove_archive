@@ -14,7 +14,7 @@ output:
 
 
 ```{r cor-threshold-setup}
-getwd()
+
 ```
 
 
@@ -45,13 +45,13 @@ For the estimates and inference of the threshold of protection at each risk leve
 \begin{figure}[H]
 
 \centering
-\includegraphics[width=0.7\textwidth]{figs/pointwise_CI/PLOT_Day57bindSpike_pointwiseCI.pdf}
+\includegraphics[width=0.9\textwidth]{figs/pointwise_CI/PLOT_Day57bindSpike_pointwiseCI.pdf}
 
   \caption{Adjusted threshold-response function for a range of thresholds of the Spike protein antibody activity levels with point-wise 95\% confidence intervals. The dashed red line marks the threshold after which no more COVID events are observed. }
 \end{figure}
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.7\textwidth]{figs/pointwise_CI/TABLE_Day57bindSpike_pointwise.pdf}
+\includegraphics[width=0.9\textwidth]{figs/pointwise_CI/TABLE_Day57bindSpike_pointwise.pdf}
 
   \caption{Table of risk estimates for range of thresholds of Spike protein antibody activity levels with point-wise 95\% confidence intervals. }
 
@@ -64,13 +64,13 @@ For the estimates and inference of the threshold of protection at each risk leve
 \begin{figure}[H]
 
 \centering
-\includegraphics[width=0.7\textwidth]{figs/simultaneous_CI/PLOT_Day57bindSpike_simultCI.pdf}
+\includegraphics[width=0.9\textwidth]{figs/simultaneous_CI/PLOT_Day57bindSpike_simultCI.pdf}
   \caption{Adjusted threshold-response function for a range of thresholds of the Spike protein antibody activity levels with simultaneous 95\% confidence bands. The dashed red line marks the threshold after which no more COVID events are observed. }
 \end{figure}
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.7\textwidth]{figs/simultaneous_CI/TABLE_Day57bindSpike_simult.pdf}
+\includegraphics[width=0.9\textwidth]{figs/simultaneous_CI/TABLE_Day57bindSpike_simult.pdf}
   \caption{Table of risk estimates for range of thresholds of Spike protein antibody activity levels with simultaneous 95\% confidence bands }
 
 \end{figure}
@@ -99,14 +99,14 @@ For the estimates and inference of the threshold of protection at each risk leve
 
 \centering
 
-\includegraphics[width=0.7\textwidth]{figs/pointwise_CI/PLOT_INVERSE_Day57bindSpike_pointwiseCI.pdf}
+\includegraphics[width=0.8\textwidth]{figs/pointwise_CI/PLOT_INVERSE_Day57bindSpike_pointwiseCI.pdf}
 
   \caption{The inverse adjusted threshold-response function with pointwise 95\% confidence intervals.}
 \end{figure}
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.7\textwidth]{figs/pointwise_CI/TABLE_INVERSE_Day57bindSpike_pointwiseCI.pdf}
+\includegraphics[width=0.8\textwidth]{figs/pointwise_CI/TABLE_INVERSE_Day57bindSpike_pointwiseCI.pdf}
   \caption{ This analysis assumes monotonicity of the true function. The table displays the estimated threshold of protection of Spike protein antibody activity level at a range of risk levels with pointwise 95\% confidence intervals. }
 
 \end{figure}
@@ -119,14 +119,14 @@ For the estimates and inference of the threshold of protection at each risk leve
 
 \centering
 
-\includegraphics[width=0.7\textwidth]{figs/simultaneous_CI/PLOT_INVERSE_Day57bindSpike_simultCI.pdf}
+\includegraphics[width=0.8\textwidth]{figs/simultaneous_CI/PLOT_INVERSE_Day57bindSpike_simultCI.pdf}
 
   \caption{This analysis assumes monotonicity of the true function. The plot shows the inverse adjusted threshold-response function with simultaneous 95\% confidence intervals.}
 \end{figure}
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.7\textwidth]{figs/simultaneous_CI/TABLE_INVERSE_Day57bindSpike_simultCI.pdf}
+\includegraphics[width=0.8\textwidth]{figs/simultaneous_CI/TABLE_INVERSE_Day57bindSpike_simultCI.pdf}
   \caption{ This analysis assumes monotonicity of the true function. The table displays the estimated threshold of protection of Spike protein antibody activity level at a range of risk levels with simultaneous 95\% confidence bands }
 
 \end{figure}
@@ -139,14 +139,14 @@ For the estimates and inference of the threshold of protection at each risk leve
 \begin{figure}[H]
 
 \centering
-\includegraphics[width=0.7\textwidth]{figs/pointwise_CI/PLOT_Day57bindRBD_pointwiseCI.pdf}
+\includegraphics[width=0.9\textwidth]{figs/pointwise_CI/PLOT_Day57bindRBD_pointwiseCI.pdf}
 
 
   \caption{Adjusted threshold-response function for a range of thresholds of the RBD binding antibody activity levels with point-wise 95\% confidence intervals. The dashed red line marks the threshold after which no more COVID events are observed. }
 \end{figure}
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.7\textwidth]{figs/pointwise_CI/TABLE_Day57bindRBD_pointwiseCI.pdf}
+\includegraphics[width=0.9\textwidth]{figs/pointwise_CI/TABLE_Day57bindRBD_pointwiseCI.pdf}
   \caption{Table of risk estimates for range of thresholds of RBD binding antibody activity levels with point-wise 95\% confidence intervals }
 
 \end{figure}
@@ -154,13 +154,13 @@ For the estimates and inference of the threshold of protection at each risk leve
 \begin{figure}[H]
 
 \centering
-\includegraphics[width=0.7\textwidth]{figs/simultaneous_CI/PLOT_Day57bindRBD_simultCI.pdf}
+\includegraphics[width=0.9\textwidth]{figs/simultaneous_CI/PLOT_Day57bindRBD_simultCI.pdf}
   \caption{Adjusted threshold-response function for a range of thresholds of the RBD binding antibody activity levels with simultaneous 95\% confidence bands. The dashed red line marks the threshold after which no more COVID events are observed. }
 \end{figure}
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.7\textwidth]{figs/simultaneous_CI/TABLE_Day57bindRBD_simultCI.pdf}
+\includegraphics[width=0.9\textwidth]{figs/simultaneous_CI/TABLE_Day57bindRBD_simultCI.pdf}
   \caption{Table of risk estimates for range of thresholds of RBD binding antibody activity levels with simultaneous 95\% confidence bands. }
 
 \end{figure}
@@ -172,7 +172,7 @@ For the estimates and inference of the threshold of protection at each risk leve
 \begin{figure}[H]
 
 \centering
-\includegraphics[width=0.6\textwidth]{figs/pointwise_CI/PLOT_monotone_Day57bindRBD_pointwiseCI.pdf}
+\includegraphics[width=0.7\textwidth]{figs/pointwise_CI/PLOT_monotone_Day57bindRBD_pointwiseCI.pdf}
 
   \caption{Assuming nonincreasing monotonicity of the true function, the plot shows the estimated (monotone) adjusted threshold-response function for a range of thresholds of the RBD binding antibody activity levels with point-wise 95\% confidence intervals. The dashed red line marks the threshold after which no more COVID events are observed. }
 \end{figure}
@@ -180,7 +180,7 @@ For the estimates and inference of the threshold of protection at each risk leve
 \begin{figure}[H]
 
 \centering
-\includegraphics[width=0.6\textwidth]{figs/simultaneous_CI/PLOT_monotone_Day57bindRBD_simultCI.pdf}
+\includegraphics[width=0.7\textwidth]{figs/simultaneous_CI/PLOT_monotone_Day57bindRBD_simultCI.pdf}
 
   \caption{Assuming nonincreasing monotonicity of the true function, the plot shows the estimated (monotone) adjusted threshold-response function for a range of thresholds of the RBD binding antibody activity levels with simultaneous 95\% confidence intervals. The dashed red line marks the threshold after which no more COVID events are observed. }
 \end{figure}
@@ -189,14 +189,14 @@ For the estimates and inference of the threshold of protection at each risk leve
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.7\textwidth]{figs/pointwise_CI/PLOT_INVERSE_Day57bindRBD_pointwiseCI.pdf}
+\includegraphics[width=0.8\textwidth]{figs/pointwise_CI/PLOT_INVERSE_Day57bindRBD_pointwiseCI.pdf}
   \caption{This analysis assumes monotonicity of the true function. The plot shows the inverse adjusted threshold-response function with point-wise 95\% confidence intervals.}
 \end{figure}
 
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.7\textwidth]{figs/pointwise_CI/TABLE_INVERSE_Day57bindRBD_pointwiseCI.pdf}
+\includegraphics[width=0.8\textwidth]{figs/pointwise_CI/TABLE_INVERSE_Day57bindRBD_pointwiseCI.pdf}
   \caption{ This analysis assumes monotonicity of the true function. The table displays the estimated threshold of protection of RBD binding antibody activity level at a range of risk levels with point-wise 95\% confidence intervals. }
 \end{figure}
 
@@ -210,14 +210,14 @@ For the estimates and inference of the threshold of protection at each risk leve
 
 \centering
 
-\includegraphics[width=0.7\textwidth]{figs/simultaneous_CI/PLOT_INVERSE_Day57bindRBD_simultCI.pdf}
+\includegraphics[width=0.8\textwidth]{figs/simultaneous_CI/PLOT_INVERSE_Day57bindRBD_simultCI.pdf}
 
   \caption{This analysis assumes monotonicity of the true function. The plot shows the inverse adjusted threshold-response function with simultaneous 95\% confidence intervals.}
 \end{figure}
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.7\textwidth]{figs/simultaneous_CI/TABLE_INVERSE_Day57bindRBD_simultCI.pdf}
+\includegraphics[width=0.8\textwidth]{figs/simultaneous_CI/TABLE_INVERSE_Day57bindRBD_simultCI.pdf}
   \caption{ This analysis assumes monotonicity of the true function. The table displays the estimated threshold of protection of RBD binding antibody activity level at a range of risk levels with simultaneous 95\% confidence bands. }
 
 \end{figure}
@@ -230,13 +230,13 @@ For the estimates and inference of the threshold of protection at each risk leve
 \begin{figure}[H]
 
 \centering
-\includegraphics[width=0.7\textwidth]{figs/pointwise_CI/PLOT_Day57pseudoneutid50_pointwiseCI.pdf}
+\includegraphics[width=0.9\textwidth]{figs/pointwise_CI/PLOT_Day57pseudoneutid50_pointwiseCI.pdf}
 
   \caption{Adjusted threshold-response function for a range of thresholds of the Pseudo virus-neutralizing antibody activity levels with point-wise 95\% confidence intervals. The dashed red line marks the threshold after which no more COVID events are observed. }
 \end{figure}
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.7\textwidth]{figs/pointwise_CI/TABLE_Day57pseudoneutid50_pointwiseCI.pdf}
+\includegraphics[width=0.9\textwidth]{figs/pointwise_CI/TABLE_Day57pseudoneutid50_pointwiseCI.pdf}
   \caption{Table of risk estimates for range of thresholds of Pseudo virus-neutralizing antibody activity levels with point-wise 95\% confidence intervals. }
 
 \end{figure}
@@ -244,13 +244,13 @@ For the estimates and inference of the threshold of protection at each risk leve
 \begin{figure}[H]
 
 \centering
-\includegraphics[width=0.7\textwidth]{figs/simultaneous_CI/PLOT_Day57pseudoneutid50_simultCI.pdf}
+\includegraphics[width=0.9\textwidth]{figs/simultaneous_CI/PLOT_Day57pseudoneutid50_simultCI.pdf}
   \caption{Adjusted threshold-response function for a range of thresholds of the Pseudo virus-neutralizing antibody activity levels with simultaneous 95\% confidence bands. The dashed red line marks the threshold after which no more COVID events are observed. }
 \end{figure}
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.7\textwidth]{figs/simultaneous_CI/TABLE_Day57pseudoneutid50_simultCI.pdf}
+\includegraphics[width=0.9\textwidth]{figs/simultaneous_CI/TABLE_Day57pseudoneutid50_simultCI.pdf}
   \caption{Table of risk estimates for range of thresholds of Pseudo virus-neutralizing antibody activity levels with simultaneous 95\% confidence bands. }
 
 \end{figure}
@@ -260,7 +260,7 @@ For the estimates and inference of the threshold of protection at each risk leve
 \begin{figure}[H]
 
 \centering
-\includegraphics[width=0.6\textwidth]{figs/pointwise_CI/PLOT_monotone_Day57pseudoneutid50_pointwiseCI.pdf}
+\includegraphics[width=0.7\textwidth]{figs/pointwise_CI/PLOT_monotone_Day57pseudoneutid50_pointwiseCI.pdf}
 
   \caption{Assuming nonincreasing monotonicity of the true function, the plot shows the estimated (monotone) adjusted threshold-response function for a range of thresholds of the Pseudo virus-neutralizing antibody activity levels with point-wise 95\% confidence intervals. The dashed red line marks the threshold after which no more COVID events are observed. }
 \end{figure}
@@ -268,7 +268,7 @@ For the estimates and inference of the threshold of protection at each risk leve
 \begin{figure}[H]
 
 \centering
-\includegraphics[width=0.6\textwidth]{figs/simultaneous_CI/PLOT_monotone_Day57pseudoneutid50_simultCI.pdf}
+\includegraphics[width=0.7\textwidth]{figs/simultaneous_CI/PLOT_monotone_Day57pseudoneutid50_simultCI.pdf}
 
   \caption{Assuming nonincreasing monotonicity of the true function, the plot shows the estimated (monotone) adjusted threshold-response function for a range of thresholds of the Pseudo virus-neutralizing antibody activity levels with simultaneous 95\% confidence intervals. The dashed red line marks the threshold after which no more COVID events are observed. }
 \end{figure}
@@ -280,7 +280,7 @@ For the estimates and inference of the threshold of protection at each risk leve
 
 \centering
 
-\includegraphics[width=0.7\textwidth]{figs/pointwise_CI/PLOT_INVERSE_Day57pseudoneutid50_pointwiseCI.pdf}
+\includegraphics[width=0.8\textwidth]{figs/pointwise_CI/PLOT_INVERSE_Day57pseudoneutid50_pointwiseCI.pdf}
 
   \caption{This analysis assumes monotonicity of the true function. The plot shows the inverse adjusted threshold-response function with point-wise 95\% confidence intervals.}
 \end{figure}
@@ -288,7 +288,7 @@ For the estimates and inference of the threshold of protection at each risk leve
 \begin{figure}[H]
 \centering
 
-\includegraphics[width=0.7\textwidth]{figs/pointwise_CI/TABLE_INVERSE_Day57pseudoneutid50_pointwiseCI.pdf}
+\includegraphics[width=0.8\textwidth]{figs/pointwise_CI/TABLE_INVERSE_Day57pseudoneutid50_pointwiseCI.pdf}
 
   \caption{ This analysis assumes monotonicity of the true function. The table displays the estimated threshold of protection of Pseudo virus-neutralizing antibody activity level at a range of risk levels with point-wise 95\% confidence intervals }
 
@@ -302,14 +302,14 @@ For the estimates and inference of the threshold of protection at each risk leve
 
 \centering
 
-\includegraphics[width=0.7\textwidth]{figs/simultaneous_CI/PLOT_INVERSE_Day57pseudoneutid50_simultCI.pdf}
+\includegraphics[width=0.8\textwidth]{figs/simultaneous_CI/PLOT_INVERSE_Day57pseudoneutid50_simultCI.pdf}
 
   \caption{This analysis assumes monotonicity of the true function. The plot shows the inverse adjusted threshold-response function with simultaneous 95\% confidence intervals.}
 \end{figure}
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.7\textwidth]{figs/simultaneous_CI/TABLE_INVERSE_Day57pseudoneutid50_simultCI.pdf}
+\includegraphics[width=0.8\textwidth]{figs/simultaneous_CI/TABLE_INVERSE_Day57pseudoneutid50_simultCI.pdf}
   \caption{ This analysis assumes monotonicity of the true function. The table displays the estimated threshold of protection of Pseudo virus-neutralizing antibody activity level at a range of risk levels with simultaneous 95\% confidence bands. }
 
 \end{figure}
@@ -322,13 +322,13 @@ For the estimates and inference of the threshold of protection at each risk leve
 \begin{figure}[H]
 
 \centering
-\includegraphics[width=0.7\textwidth]{figs/pointwise_CI/PLOT_Day57pseudoneutid80_pointwiseCI.pdf}
+\includegraphics[width=0.9\textwidth]{figs/pointwise_CI/PLOT_Day57pseudoneutid80_pointwiseCI.pdf}
 
   \caption{Adjusted threshold-response function for a range of thresholds of the Pseudo virus-neutralizing antibody activity levels with point-wise 95\% confidence intervals. The dashed red line marks the threshold after which no more COVID events are observed. }
 \end{figure}
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.7\textwidth]{figs/pointwise_CI/TABLE_Day57pseudoneutid80_pointwiseCI.pdf}
+\includegraphics[width=0.9\textwidth]{figs/pointwise_CI/TABLE_Day57pseudoneutid80_pointwiseCI.pdf}
   \caption{Table of risk estimates for range of thresholds of Pseudo virus-neutralizing antibody activity levels with point-wise 95\% confidence intervals. }
 
 \end{figure}
@@ -336,13 +336,13 @@ For the estimates and inference of the threshold of protection at each risk leve
 \begin{figure}[H]
 
 \centering
-\includegraphics[width=0.7\textwidth]{figs/simultaneous_CI/PLOT_Day57pseudoneutid80_simultCI.pdf}
+\includegraphics[width=0.9\textwidth]{figs/simultaneous_CI/PLOT_Day57pseudoneutid80_simultCI.pdf}
   \caption{Adjusted threshold-response function for a range of thresholds of the Pseudo virus-neutralizing antibody activity levels with simultaneous 95\% confidence bands. The dashed red line marks the threshold after which no more COVID events are observed. }
 \end{figure}
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.7\textwidth]{figs/simultaneous_CI/TABLE_Day57pseudoneutid80_simultCI.pdf}
+\includegraphics[width=0.9\textwidth]{figs/simultaneous_CI/TABLE_Day57pseudoneutid80_simultCI.pdf}
   \caption{Table of risk estimates for range of thresholds of Pseudo virus-neutralizing antibody activity levels with simultaneous 95\% confidence bands }
 
 \end{figure}
@@ -353,7 +353,7 @@ For the estimates and inference of the threshold of protection at each risk leve
 \begin{figure}[H]
 
 \centering
-\includegraphics[width=0.6\textwidth]{figs/pointwise_CI/PLOT_monotone_Day57pseudoneutid80_pointwiseCI.pdf}
+\includegraphics[width=0.7\textwidth]{figs/pointwise_CI/PLOT_monotone_Day57pseudoneutid80_pointwiseCI.pdf}
 
   \caption{Assuming nonincreasing monotonicity of the true function, the plot shows the estimated (monotone) adjusted threshold-response function for a range of thresholds of the Pseudo virus-neutralizing antibody activity levels with point-wise 95\% confidence intervals. The dashed red line marks the threshold after which no more COVID events are observed. }
 \end{figure}
@@ -361,7 +361,7 @@ For the estimates and inference of the threshold of protection at each risk leve
 \begin{figure}[H]
 
 \centering
-\includegraphics[width=0.6\textwidth]{figs/simultaneous_CI/PLOT_monotone_Day57pseudoneutid80_simultCI.pdf}
+\includegraphics[width=0.7\textwidth]{figs/simultaneous_CI/PLOT_monotone_Day57pseudoneutid80_simultCI.pdf}
 
   \caption{Assuming nonincreasing monotonicity of the true function, the plot shows the estimated (monotone) adjusted threshold-response function for a range of thresholds of the Pseudo virus-neutralizing antibody activity levels with simultaneous 95\% confidence intervals. The dashed red line marks the threshold after which no more COVID events are observed. }
 \end{figure}
@@ -374,14 +374,14 @@ For the estimates and inference of the threshold of protection at each risk leve
 
 \centering
 
-\includegraphics[width=0.7\textwidth]{figs/pointwise_CI/PLOT_INVERSE_Day57pseudoneutid80_pointwiseCI.pdf}
+\includegraphics[width=0.8\textwidth]{figs/pointwise_CI/PLOT_INVERSE_Day57pseudoneutid80_pointwiseCI.pdf}
 
   \caption{The inverse adjusted threshold-response function with 95\% point-wise confidence bands.}
 \end{figure}
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.7\textwidth]{figs/pointwise_CI/TABLE_INVERSE_Day57pseudoneutid80_pointwiseCI.pdf}
+\includegraphics[width=0.8\textwidth]{figs/pointwise_CI/TABLE_INVERSE_Day57pseudoneutid80_pointwiseCI.pdf}
   \caption{ This analysis assumes monotonicity of the true function. The table displays the estimated threshold of protection of Pseudo virus-neutralizing antibody activity level at a range of risk levels with 95\% point-wise confidence intervals. }
 
 \end{figure}
@@ -394,14 +394,14 @@ For the estimates and inference of the threshold of protection at each risk leve
 
 \centering
 
-\includegraphics[width=0.7\textwidth]{figs/simultaneous_CI/PLOT_INVERSE_Day57pseudoneutid80_simultCI.pdf}
+\includegraphics[width=0.8\textwidth]{figs/simultaneous_CI/PLOT_INVERSE_Day57pseudoneutid80_simultCI.pdf}
 
   \caption{The inverse adjusted threshold-response function with 95\% simultaneous confidence bands.}
 \end{figure}
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.7\textwidth]{figs/simultaneous_CI/TABLE_INVERSE_Day57pseudoneutid80_simultCI.pdf}
+\includegraphics[width=0.8\textwidth]{figs/simultaneous_CI/TABLE_INVERSE_Day57pseudoneutid80_simultCI.pdf}
   \caption{ This analysis assumes monotonicity of the true function. The table displays the estimated threshold of protection of Pseudo virus-neutralizing antibody activity level at a range of risk levels with 95\% simultaneous confidence intervals. }
 
 \end{figure}
@@ -414,13 +414,13 @@ For the estimates and inference of the threshold of protection at each risk leve
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.7\textwidth]{figs/pointwise_CI/PLOT_Day57liveneutid50_pointwiseCI.pdf}
+\includegraphics[width=0.9\textwidth]{figs/pointwise_CI/PLOT_Day57liveneutid50_pointwiseCI.pdf}
   \caption{Adjusted threshold-response function for a range of thresholds of the Live virus-neutralizing antibody activity levels with point-wise 95\% confidence intervals. The dashed red line marks the threshold after which no more COVID events are observed. }
 \end{figure}
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.7\textwidth]{figs/pointwise_CI/TABLE_Day57liveneutid50_pointwiseCI.pdf}
+\includegraphics[width=0.9\textwidth]{figs/pointwise_CI/TABLE_Day57liveneutid50_pointwiseCI.pdf}
   \caption{Table of risk estimates for range of thresholds of Live virus-neutralizing antibody activity levels with point-wise 95\% point-wise intervals. }
 \end{figure}
 
@@ -428,13 +428,13 @@ For the estimates and inference of the threshold of protection at each risk leve
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.7\textwidth]{figs/simultaneous_CI/PLOT_Day57liveneutid50_simultCI.pdf}
+\includegraphics[width=0.9\textwidth]{figs/simultaneous_CI/PLOT_Day57liveneutid50_simultCI.pdf}
   \caption{Adjusted threshold-response function for a range of thresholds of the Live virus-neutralizing antibody activity levels with simultaneous 95\% confidence bands. The dashed red line marks the threshold after which no more COVID events are observed. }
 \end{figure}
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.7\textwidth]{figs/simultaneous_CI/TABLE_Day57liveneutid50_simultCI.pdf}
+\includegraphics[width=0.9\textwidth]{figs/simultaneous_CI/TABLE_Day57liveneutid50_simultCI.pdf}
   \caption{Table of risk estimates for range of thresholds of Live virus-neutralizing antibody activity levels with simultaneous 95\% confidence bands. }
 \end{figure}
 \newpage
@@ -443,7 +443,7 @@ For the estimates and inference of the threshold of protection at each risk leve
 \begin{figure}[H]
 
 \centering
-\includegraphics[width=0.6\textwidth]{figs/pointwise_CI/PLOT_monotone_Day57liveneutid50_pointwiseCI.pdf}
+\includegraphics[width=0.7\textwidth]{figs/pointwise_CI/PLOT_monotone_Day57liveneutid50_pointwiseCI.pdf}
 
   \caption{Assuming nonincreasing monotonicity of the true function, the plot shows the estimated (monotone) adjusted threshold-response function for a range of thresholds of the Live virus-neutralizing antibody activity levels with point-wise 95\% confidence intervals. The dashed red line marks the threshold after which no more COVID events are observed. }
 \end{figure}
@@ -461,13 +461,13 @@ For the estimates and inference of the threshold of protection at each risk leve
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.7\textwidth]{figs/pointwise_CI/PLOT_INVERSE_Day57liveneutid50_pointwiseCI.pdf}
+\includegraphics[width=0.8\textwidth]{figs/pointwise_CI/PLOT_INVERSE_Day57liveneutid50_pointwiseCI.pdf}
   \caption{This analysis assumes monotonicity of the true function. The plot shows the inverse adjusted threshold-response function with point-wise 95\% confidence intervals.}
 \end{figure}
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.7\textwidth]{figs/pointwise_CI/TABLE_INVERSE_Day57liveneutid50_pointwiseCI.pdf}
+\includegraphics[width=0.8\textwidth]{figs/pointwise_CI/TABLE_INVERSE_Day57liveneutid50_pointwiseCI.pdf}
   \caption{ This analysis assumes monotonicity of the true function. The table displays the estimated threshold of protection of Live virus-neutralizing antibody activity level at a range of risk levels with point-wise 95\% confidence intervals }
 \end{figure}
 
@@ -479,13 +479,13 @@ For the estimates and inference of the threshold of protection at each risk leve
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.7\textwidth]{figs/simultaneous_CI/PLOT_INVERSE_Day57liveneutid50_simultCI.pdf}
+\includegraphics[width=0.8\textwidth]{figs/simultaneous_CI/PLOT_INVERSE_Day57liveneutid50_simultCI.pdf}
   \caption{This analysis assumes monotonicity of the true function. The plot shows the inverse adjusted threshold-response function with simultaneous 95\% confidence intervals.}
 \end{figure}
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.7\textwidth]{figs/simultaneous_CI/TABLE_INVERSE_Day57liveneutid50_simultCI.pdf}
+\includegraphics[width=0.8\textwidth]{figs/simultaneous_CI/TABLE_INVERSE_Day57liveneutid50_simultCI.pdf}
   \caption{ This analysis assumes monotonicity of the true function. The table displays the estimated threshold of protection of Live virus-neutralizing antibody activity level at a range of risk levels with simultaneous 95\% confidence bands }
 \end{figure}
 
@@ -497,25 +497,25 @@ For the estimates and inference of the threshold of protection at each risk leve
 ### Live virus-neutralizing antibody (80\% titer)
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.7\textwidth]{figs/pointwise_CI/PLOT_Day57liveneutid80_pointwiseCI.pdf}
+\includegraphics[width=0.9\textwidth]{figs/pointwise_CI/PLOT_Day57liveneutid80_pointwiseCI.pdf}
   \caption{Adjusted threshold-response function for a range of thresholds of the Live virus-neutralizing antibody activity levels with point-wise 95\% confidence intervals. The dashed red line marks the threshold after which no more COVID events are observed. }
 \end{figure}
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.7\textwidth]{figs/pointwise_CI/TABLE_Day57liveneutid80_pointwiseCI.pdf}
+\includegraphics[width=0.9\textwidth]{figs/pointwise_CI/TABLE_Day57liveneutid80_pointwiseCI.pdf}
   \caption{Table of risk estimates for range of thresholds of Live virus-neutralizing antibody activity levels with point-wise 95\% confidence intervals. }
 \end{figure}
 
 \newpage
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.7\textwidth]{figs/simultaneous_CI/PLOT_Day57liveneutid80_simultCI.pdf}
+\includegraphics[width=0.9\textwidth]{figs/simultaneous_CI/PLOT_Day57liveneutid80_simultCI.pdf}
   \caption{Adjusted threshold-response function for a range of thresholds of the Live virus-neutralizing antibody activity levels with simultaneous 95\% confidence bands. The dashed red line marks the threshold after which no more COVID events are observed.  }
 \end{figure}
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.7\textwidth]{figs/simultaneous_CI/TABLE_Day57liveneutid80_simultCI.pdf}
+\includegraphics[width=0.9\textwidth]{figs/simultaneous_CI/TABLE_Day57liveneutid80_simultCI.pdf}
   \caption{Table of risk estimates for range of thresholds of Live virus-neutralizing antibody activity levels with simultaneous 95\% confidence bands.  }
 
 \end{figure}
@@ -526,7 +526,7 @@ For the estimates and inference of the threshold of protection at each risk leve
 \begin{figure}[H]
 
 \centering
-\includegraphics[width=0.6\textwidth]{figs/pointwise_CI/PLOT_monotone_Day57liveneutid80_pointwiseCI.pdf}
+\includegraphics[width=0.7\textwidth]{figs/pointwise_CI/PLOT_monotone_Day57liveneutid80_pointwiseCI.pdf}
 
   \caption{Assuming nonincreasing monotonicity of the true function, the plot shows the estimated adjusted threshold-response function for a range of thresholds of the Live virus-neutralizing antibody activity levels with point-wise 95\% confidence intervals. The dashed red line marks the threshold after which no more COVID events are observed. }
 \end{figure}
@@ -534,7 +534,7 @@ For the estimates and inference of the threshold of protection at each risk leve
 \begin{figure}[H]
 
 \centering
-\includegraphics[width=0.6\textwidth]{figs/simultaneous_CI/PLOT_monotone_Day57liveneutid80_simultCI.pdf}
+\includegraphics[width=0.7\textwidth]{figs/simultaneous_CI/PLOT_monotone_Day57liveneutid80_simultCI.pdf}
 
   \caption{Assuming nonincreasing monotonicity of the true function, the plot shows the estimated (monotone)  adjusted threshold-response function for a range of thresholds of the Live virus-neutralizing antibody activity levels with simultaneous 95\% confidence intervals. The dashed red line marks the threshold after which no more COVID events are observed. }
 \end{figure}
@@ -546,14 +546,14 @@ For the estimates and inference of the threshold of protection at each risk leve
 
 \centering
 
-\includegraphics[width=0.7\textwidth]{figs/pointwise_CI/PLOT_INVERSE_Day57liveneutid80_pointwiseCI.pdf}
+\includegraphics[width=0.8\textwidth]{figs/pointwise_CI/PLOT_INVERSE_Day57liveneutid80_pointwiseCI.pdf}
 
   \caption{This analysis assumes monotonicity of the true function. The plot shows the inverse adjusted threshold-response function with point-wise 95\% confidence intervals.}
 \end{figure}
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.7\textwidth]{figs/pointwise_CI/TABLE_INVERSE_Day57liveneutid80_pointwiseCI.pdf}
+\includegraphics[width=0.8\textwidth]{figs/pointwise_CI/TABLE_INVERSE_Day57liveneutid80_pointwiseCI.pdf}
   \caption{This analysis assumes monotonicity of the true function. The table shows the estimated threshold of protection of Live virus-neutralizing antibody activity level at a range of risk levels with point-wise 95\% confidence intervals. }
 
 \end{figure}
@@ -567,14 +567,14 @@ For the estimates and inference of the threshold of protection at each risk leve
 
 \centering
 
-\includegraphics[width=0.7\textwidth]{figs/simultaneous_CI/PLOT_INVERSE_Day57liveneutid80_simultCI.pdf}
+\includegraphics[width=0.8\textwidth]{figs/simultaneous_CI/PLOT_INVERSE_Day57liveneutid80_simultCI.pdf}
 
   \caption{This analysis assumes monotonicity of the true function. The plot shows the inverse adjusted threshold-response function with simultaneous 95\% confidence intervals.}
 \end{figure}
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.7\textwidth]{figs/simultaneous_CI/TABLE_INVERSE_Day57liveneutid80_simultCI.pdf}
+\includegraphics[width=0.8\textwidth]{figs/simultaneous_CI/TABLE_INVERSE_Day57liveneutid80_simultCI.pdf}
   \caption{ This analysis assumes monotonicity of the true function. The table displays the estimated threshold of protection of Live virus-neutralizing antibody activity level at a range of risk levels with simultaneous 95\% confidence bands. }
 
 \end{figure}

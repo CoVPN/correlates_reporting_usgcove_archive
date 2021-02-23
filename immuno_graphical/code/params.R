@@ -1,16 +1,18 @@
 library(here)
 library(stringr)
-library(COVIDcorr)
+# DB: Scheduled for deletion
+# library(COVIDcorr)
 save.results.to <- here("figs")
 
 # load mock data and labels
-data(dat.mock)
-data(labels.axis)
-data(labels.title)
-data(labels.race)
-data(labels.ethnicity)
-data(labels.assays.long)
-data(labels.assays.short)
+# DB: Scheduled for deletion
+# data(dat.mock)
+# data(labels.axis)
+# data(labels.title)
+# data(labels.race)
+# data(labels.ethnicity)
+# data(labels.assays.long)
+# data(labels.assays.short)
 labels.assays <- c("Binding Antibody to Spike", "Binding Antibody to RBD",
                    "PsV Neutralization 50% Titer", "WT LV Neutralization 50% Titer",
                    "PsV Neutralization 80% Titer")

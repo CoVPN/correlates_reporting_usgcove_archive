@@ -6,17 +6,20 @@ source(here::here("..", "_common.R"))
 
 library(here)
 library(stringr)
-library(COVIDcorr)
+# DB: Scheduled for deletion
+# library(COVIDcorr)
 save.results.to <- here("figs")
+dat.mock <- read.csv(here("..", "data_raw", data_name))
 
 # load mock data and labels
-data(dat.mock)
-data(labels.axis)
-data(labels.title)
-data(labels.race)
-data(labels.ethnicity)
-data(labels.assays.long)
-data(labels.assays.short)
+# DB: Scheduled for deletion
+# data(dat.mock)
+# data(labels.axis)
+# data(labels.title)
+# data(labels.race)
+# data(labels.ethnicity)
+# data(labels.assays.long)
+# data(labels.assays.short)
 
 # color palatte throughout the report
 study.name <- "mock"

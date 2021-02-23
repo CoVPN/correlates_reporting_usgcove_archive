@@ -3,6 +3,7 @@
 renv::activate(project = here::here(".."))
 source(here::here("..", "_common.R"))
 #-----------------------------------------------
+
 source(here::here("code", "params.R"))
 
 # start R inside the code folder or make sure working directory is here
@@ -12,7 +13,10 @@ if (!dir.exists(save.results.to))  dir.create(save.results.to)
 # if .Rdata already exists, don't rerun
 rerun.time.consuming.steps=!file.exists(paste0(save.results.to, "risks.all.1.mock.Rdata"))
     
-library(COVIDcorr)
+# DB: Scheduled for deletion    
+# library(COVIDcorr)
+dat.mock <- read.csv(here::here("..", "data_raw", data_name))
+
 #remotes::install_github("CoVPN/correlates_mockdata", auth_token="e09062bae8d9a4acf4ba7e7c587c5d3fbe1abd69")
 # the order of these packages matters
 # kyotil mostly contains code for formatting, but may also contain code for some estimation tasks

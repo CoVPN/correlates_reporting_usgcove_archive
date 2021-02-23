@@ -1,0 +1,21 @@
+---
+title: risk score verification code
+output: html_document
+---
+
+```{r setup, echo = FALSE, warning = FALSE, error = FALSE}
+#-----------------------------------------------
+# obligatory to append to the top of each script
+renv::activate(project = here::here("..", "..", ".."))
+source(here::here("..", "..", "..", "_common.R"))
+#-----------------------------------------------
+```
+
+### CV-AUC results
+
+```{r cvauc-tab, echo = FALSE}
+cv_auc_tab <- readRDS(here::here("output", "cv_auc_tab.rds"))
+seeds <- readRDS(here::here("output", "seeds.rds"))
+
+knitr::kable(data.frame(seed = seeds, cv_auc_tab), digits = 4)
+```

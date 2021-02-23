@@ -1,3 +1,5 @@
 *.Rout
+*.html
+*.bib
 data_clean/*.rds
 output/*.rds

@@ -167,7 +167,7 @@ get_inverse_plot <- function(marker, simultaneous_CI = F) {
     ))
   day <- ""
   laby <- plotting_assay_label_generator(marker)
-  
+
 
   # Save plot of inverse threshold response function
   print(plot$plot)

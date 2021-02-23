@@ -22,31 +22,31 @@ include_interactions <- FALSE #### Include algorithms that model interactions be
 threshold_grid_size <- 30 ### Number of thresholds to estimate (equally spaced in quantiles). Should be 15 at least for the plots of the threshold-response and its inverse to be representative of the true functions.
 
 plotting_assay_label_generator <- function(marker) {
-  day = ""
+  day <- ""
   if (marker == "Day57liveneutid80") {
     labx <- paste0(day, "Live nAb ID80")
   }
-  
+
   if (marker == "Day57pseudoneutid80") {
     labx <- paste0(day, "PsV -nAb ID80")
   }
   if (marker == "Day57liveneutid50") {
     labx <- paste0(day, " Live nAb ID50")
   }
-  
+
   if (marker == "Day57pseudoneutid50") {
     labx <- paste0(day, "PsV -nAb ID50")
   }
-  
+
   if (marker == "Day57bindRBD") {
     labx <- paste0(day, "RBD IgG (IU/ml)")
   }
-  
+
   if (marker == "Day57bindSpike") {
     labx <- paste0(day, "Spike IgG (IU/ml)")
   }
   labx <- paste0(labx, " (>=s)")
-  
+
   return(labx)
 }
 

@@ -49,13 +49,7 @@ dat <- dat.mock %>%
   )
 
 
-# For immunogenicity characterization, complete ignore any information on cases
-# vs. non-cases.  The goal is to characterize immunogenicity in the random
-# subcohort, which is a stratified sample of enrolled participants. So,
-# immunogenicity analysis is always done in ppts that meet all of the criteria.
-dat.twophase.sample <- dat %>%
-  dplyr::filter(TwophasesampInd == 1 & SubcohortInd == 1 & Perprotocol == 1)
-twophase_sample_id <- dat.twophase.sample$Ptid
+
 
 # First focus on baseline negative pooling over all baseline demog strata. This
 # is the primary cohort for CoR analysis. So, all plots and tables relative to
@@ -126,11 +120,21 @@ dat.long$Bserostatus <- factor(dat.long$Bserostatus,
 )
 dat.long$assay <- factor(dat.long$assay, levels = assays, labels = assays)
 
-dat.long.twophase.sample <- dat.long[dat.long$Ptid %in% twophase_sample_id, ]
-dat.twophase.sample <- subset(dat, Ptid %in% twophase_sample_id)
+
+
+# For immunogenicity characterization, complete ignore any information on cases
+# vs. non-cases.  The goal is to characterize immunogenicity in the random
+# subcohort, which is a stratified sample of enrolled participants. So,
+# immunogenicity analysis is always done in ppts that meet all of the criteria.
+dat.cor.subset <- dat %>%
+  dplyr::filter(Bserostatus == 0 & Perprotocol == 1)
+cor.subset.id <- dat.cor.subset$Ptid
+
+
+dat.long.cor.subset <- dat.long[dat.long$Ptid %in% cor.subset.id, ]
 
 ## label the subjects according to their case-control status
-dat.long.twophase.sample <- dat.long.twophase.sample %>%
+dat.long.cor.subset <- dat.long.cor.subset %>%
   mutate(
     EventD29 = factor(EventIndPrimaryD29,
       levels = c(0, 1),
@@ -154,11 +158,11 @@ dat.long <- dat.long %>%
   )
 
 # # matrix to decide the sampling strata
-dat.long$demo_lab <-
-  with(dat.long, factor(paste0(age.geq.65, HighRiskInd),
+dat.long.cor.subset$demo_lab <-
+  with(dat.long.cor.subset, factor(paste0(age.geq.65, HighRiskInd),
     levels = c("00", "01", "10", "11"),
     labels = c(
-      "Age < 65 not at risk",
+      "Age < 65 not at tisk",
       "Age < 65 at risk",
       "Age >= 65 not at risk",
       "Age >= 65 at risk"
@@ -166,9 +170,9 @@ dat.long$demo_lab <-
   ))
 
 # labels of the demographic strata for the subgroup plotting
-dat.long.twophase.sample$trt_bstatus_label <-
+dat.long.cor.subset$trt_bstatus_label <-
   with(
-    dat.long.twophase.sample,
+    dat.long.cor.subset,
     factor(paste0(as.numeric(Trt), as.numeric(Bserostatus)),
       levels = c("11", "12", "21", "22"),
       labels = c(
@@ -180,31 +184,31 @@ dat.long.twophase.sample$trt_bstatus_label <-
     )
   )
 
-dat.long.twophase.sample$age_geq_65_label <-
+dat.long.cor.subset$age_geq_65_label <-
   with(
-    dat.long.twophase.sample,
+    dat.long.cor.subset,
     factor(age.geq.65,
       levels = c(0, 1),
       labels = c("Age >= 65", "Age < 65")
     )
   )
 
-dat.long.twophase.sample$highrisk_label <-
+dat.long.cor.subset$highrisk_label <-
   with(
-    dat.long.twophase.sample,
+    dat.long.cor.subset,
     factor(HighRiskInd,
       levels = c(0, 1),
       labels = c("Not at risk", "At risk")
     )
   )
 
-dat.long.twophase.sample$age_risk_label <-
+dat.long.cor.subset$age_risk_label <-
   with(
-    dat.long.twophase.sample,
+    dat.long.cor.subset,
     factor(paste0(age.geq.65, HighRiskInd),
       levels = c("00", "01", "10", "11"),
       labels = c(
-        "Age < 65 not at risk",
+        "Age < 65 not at tisk",
         "Age < 65 at risk",
         "Age >= 65 not at risk",
         "Age >= 65 at risk"
@@ -212,18 +216,18 @@ dat.long.twophase.sample$age_risk_label <-
     )
   )
 
-dat.long.twophase.sample$sex_label <-
+dat.long.cor.subset$sex_label <-
   with(
-    dat.long.twophase.sample,
+    dat.long.cor.subset,
     factor(Sex,
       levels = c(0, 1),
       labels = c("Female", "Male")
     )
   )
 
-dat.long.twophase.sample$age_sex_label <-
+dat.long.cor.subset$age_sex_label <-
   with(
-    dat.long.twophase.sample,
+    dat.long.cor.subset,
     factor(paste0(age.geq.65, Sex),
       levels = c("00", "01", "10", "11"),
       labels = c(
@@ -235,18 +239,18 @@ dat.long.twophase.sample$age_sex_label <-
     )
   )
 
-dat.long.twophase.sample$minority_label <-
+dat.long.cor.subset$minority_label <-
   with(
-    dat.long.twophase.sample,
+    dat.long.cor.subset,
     factor(MinorityInd,
       levels = c(0, 1),
       labels = c("White Non-Hispanic", "Comm. of Color")
     )
   )
 
-dat.long.twophase.sample$age_minority_label <-
+dat.long.cor.subset$age_minority_label <-
   with(
-    dat.long.twophase.sample,
+    dat.long.cor.subset,
     factor(paste0(age.geq.65, MinorityInd),
       levels = c("00", "01", "10", "11"),
       labels = c(
@@ -258,9 +262,11 @@ dat.long.twophase.sample$age_minority_label <-
     )
   )
 
-saveRDS(as.data.frame(dat.long.twophase.sample),
-  file = here("data_clean", "long_twophase_data.rds")
+
+
+saveRDS(as.data.frame(dat.long.cor.subset),
+  file = here("data_clean", "long_cor_data.rds")
 )
-saveRDS(as.data.frame(dat.twophase.sample),
-  file = here("data_clean", "twophase_data.rds")
+saveRDS(as.data.frame(dat.cor.subset),
+  file = here("data_clean", "cor_data.rds")
 )

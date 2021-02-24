@@ -67,9 +67,11 @@ For code review, the tester will review the programmers code directly from the c
 
 The plots targeted for independent double programming include:
 
-  - Plot 1; Plot title
-  - Plot 3; Plot title
-  - Plot 45; Plot title
+  - Fig 1.3; RCDF plots for D57 Ab markers: baseline negative by treatment arm and D57 case/non-case.
+  - Fig 1.6; Boxplots of D57 Ab markers: baseline negative vaccine arm by cases and non-cases
+  - Fig 1.14; lineplots of Binding Antibody to Spike: baseline negative vaccine arm (2 timepoints)
+  - Fig 1.18; lineplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm (2 timepoints)
+  - Fig 1.30; lineplots of Binding Antibody to Spike: baseline negative vaccine arm (3 timepoints)
 
 Mock data used in the verification can be found in the `COVIDcorr` R package, available at https://github.com/CoVPN/correlates_mockdata. Any use of this code outside of the mock data is not guaranteed and is subject to additional verification.
 

@@ -30,10 +30,10 @@
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
       "RemoteRepo": "correlates_mockdata",
-      "RemoteUsername": "CoVPN",
+      "RemoteUsername": "covpn",
       "RemoteRef": "HEAD",
       "RemoteSha": "419e52808704cc196c7f408e9e50847cd62e9add",
-      "Hash": "d4aa72adecde8404773df91832efec5c"
+      "Hash": "d9dd16e62b45a5d3bbbf071a6fe0d278"
     },
     "DBI": {
       "Package": "DBI",
@@ -1232,10 +1232,10 @@
     },
     "pillar": {
       "Package": "pillar",
-      "Version": "1.4.7",
+      "Version": "1.5.0",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "3b3dd89b2ee115a8b54e93a34cd546b4"
+      "Hash": "39a778e4e487ded8b1bf5bb617c567b3"
     },
     "pkgbuild": {
       "Package": "pkgbuild",
@@ -1873,6 +1873,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "6c85f015dee9cc7710ddd20f86881f58"
+    },
+    "xtable": {
+      "Package": "xtable",
+      "Version": "1.8-4",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "b8acdf8af494d9ec19ccb2481a9b11c2"
     },
     "yaml": {
       "Package": "yaml",

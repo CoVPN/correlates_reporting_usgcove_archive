@@ -10,3 +10,6 @@ assays=c("bindSpike","bindRBD","pseudoneutid50","pseudoneutid80")
 
 trt.labels=c("Placebo","Vaccine")
 bstatus.labels=c("Baseline Neg","Pos")
+
+
+llods=c(bindSpike=20, bindRBD=20, pseudoneutid50=20, pseudoneutid80=20, liveneutmn50=62.16)

@@ -3,14 +3,16 @@ if (.Platform$OS.type == "windows") saved.system.libPaths=.libPaths()
 #-----------------------------------------------
 # obligatory to append to the top of each script
 renv::activate(project = here::here(".."))
-
+    
 if (.Platform$OS.type == "windows") {
     options(renv.config.install.transactional = FALSE)
     renv::restore(library=saved.system.libPaths, prompt=FALSE) # for a quick test, add: packages="backports"
+    .libPaths(c(saved.system.libPaths, .libPaths()))
 } else renv::restore(prompt=FALSE) 
-
+    
 # after updating a package, run renv::snapshot() to override the global library record with your changes
 
+#
 source(here::here("..", "_common.R"))
 #-----------------------------------------------
 source(here::here("code", "params.R"))
@@ -18,10 +20,7 @@ source(here::here("code", "params.R"))
 # start R inside the code folder or make sure working directory is here
 save.results.to = paste0(here::here("output"), "/")
 if (!dir.exists(save.results.to))  dir.create(save.results.to)
-    
-# if .Rdata already exists, don't rerun
-rerun.time.consuming.steps=!file.exists(paste0(save.results.to, "risks.all.1.mock.Rdata"))
-    
+        
 library(COVIDcorr)
 #remotes::install_github("CoVPN/correlates_mockdata", auth_token="e09062bae8d9a4acf4ba7e7c587c5d3fbe1abd69")
 # the order of these packages matters
@@ -39,7 +38,7 @@ library(Hmisc)# wtd.quantile, biconf
 library(forestplot)
 library(svyVGAM) # Firth penalized glm
 library(xtable)
-    
+
 .mfrow=if(length(assays)==4) c(2,2) else if(length(assays)==5) c(3,2) else stop("pls redefine .mfrows")
 max.stratum=max(dat.mock$Bstratum)
   
@@ -149,53 +148,60 @@ overall.p.0=formatDouble(c(rbind(overall.p.tri, NA,NA)), digits=3, remove.leadin
 # do multitesting adj for continuous and trichotomized markers together
 
 
-#### Holm and FDR
+#### Holm and FDR adjustment
 
 pvals.adj.fdr=p.adjust(c(pvals.cont, overall.p.tri), method="fdr")
 pvals.adj.hol=p.adjust(c(pvals.cont, overall.p.tri), method="holm")
 
 
-#### Westfall and Young permutation test
+#### Westfall and Young permutation-based adjustment
+if(!file.exists(paste0(save.results.to, "pvals.perm",study.name,".Rdata"))) {
+    
+    dat.ph2 = design.vacc.seroneg$phase1$sample$variables
+    design.vacc.seroneg.perm=design.vacc.seroneg
+    #design.vacc.seroneg.perm$phase1$full$variables
+    out=mclapply(1:numPerm, mc.cores = numCores, FUN=function(seed) {   
+        # store the current rng state 
+        save.seed <- try(get(".Random.seed", .GlobalEnv), silent=TRUE) 
+        if (class(save.seed)=="try-error") {set.seed(1); save.seed <- get(".Random.seed", .GlobalEnv) }          
+        set.seed(seed)        
+        
+        # permute markers in design.vacc.seroneg.perm
+        new.idx=sample(1:nrow(dat.ph2))
+        tmp=dat.ph2
+        for (a in "Day57"%.%assays) {
+            tmp[[a]]=tmp[[a]][new.idx]
+            tmp[[a%.%"cat"]]=tmp[[a%.%"cat"]][new.idx]
+        }
+        design.vacc.seroneg.perm$phase1$sample$variables = tmp
+        
+        out=c(
+            sapply ("Day57"%.%assays, function(a) {
+                f= update(form.0, as.formula(paste0("~.+", a)))
+                fit=svycoxph(f, design=design.vacc.seroneg.perm) 
+                last(c(getFixedEf(fit)))
+            })        
+            ,    
+            sapply ("Day57"%.%assays, function(a) {
+                f= update(form.0, as.formula(paste0("~.+", a, "cat")))
+                fit=svycoxph(f, design=design.vacc.seroneg.perm) 
+                last(c(getFixedEf(fit)))
+            })
+        )
+        
+        # restore rng state 
+        assign(".Random.seed", save.seed, .GlobalEnv)    
+        
+        out
+    })
+    pvals.perm=do.call(rbind, out)
+    save(pvals.perm, file=paste0(save.results.to, "pvals.perm"%.%study.name%.%".Rdata"))
+    
+} else {
 
-dat.ph2 = design.vacc.seroneg$phase1$sample$variables
-design.vacc.seroneg.perm=design.vacc.seroneg
-#design.vacc.seroneg.perm$phase1$full$variables
+    load(file=paste0(save.results.to, "pvals.perm"%.%study.name%.%".Rdata"))
 
-out=mclapply(1:numPerm, mc.cores = numCores, FUN=function(seed) {   
-    # store the current rng state 
-    save.seed <- try(get(".Random.seed", .GlobalEnv), silent=TRUE) 
-    if (class(save.seed)=="try-error") {set.seed(1); save.seed <- get(".Random.seed", .GlobalEnv) }          
-    set.seed(seed)        
-    
-    # permute markers in design.vacc.seroneg.perm
-    new.idx=sample(1:nrow(dat.ph2))
-    tmp=dat.ph2
-    for (a in "Day57"%.%assays) {
-        tmp[[a]]=tmp[[a]][new.idx]
-        tmp[[a%.%"cat"]]=tmp[[a%.%"cat"]][new.idx]
-    }
-    design.vacc.seroneg.perm$phase1$sample$variables = tmp
-    
-    out=c(
-        sapply ("Day57"%.%assays, function(a) {
-            f= update(form.0, as.formula(paste0("~.+", a)))
-            fit=svycoxph(f, design=design.vacc.seroneg.perm) 
-            last(c(getFixedEf(fit)))
-        })        
-        ,    
-        sapply ("Day57"%.%assays, function(a) {
-            f= update(form.0, as.formula(paste0("~.+", a, "cat")))
-            fit=svycoxph(f, design=design.vacc.seroneg.perm) 
-            last(c(getFixedEf(fit)))
-        })
-    )
-    
-    # restore rng state 
-    assign(".Random.seed", save.seed, .GlobalEnv)    
-    
-    out
-})
-pvals.perm=do.call(rbind, out)
+}
 
 pvals.adj.perm = p.adj.perm (c(pvals.cont, overall.p.tri), pvals.perm)
 
@@ -398,7 +404,7 @@ for (a in assays) {
             tmp[nrow(tmp),c("HR", "(lower", "upper)", "p.value")]
         })
         theforestplot (point.estimates=est.ci[1,], lower.bounds=est.ci[2,], upper.bounds=est.ci[3,], p.values=NA, graphwidth=unit(120, "mm"), fontsize=1.2,
-            table.labels = c("Group", "HR (95% CI)","No. Events"), group=colnames(est.ci), decimal.places=2, nEvents=nevents, title=toTitleCase(study.name))
+            table.labels = c("Group", "HR (95% CI)","No. Events"), group=colnames(est.ci), decimal.places=2, nEvents=nevents, title=paste0(labels.assays.long["Day57",a]))
     dev.off()
 }
 
@@ -469,7 +475,7 @@ for (a in assays) {
     })
     mypdf(onefile=F, file=paste0(save.results.to, "hr_forest_marginal_", a, "_", study.name), width=10,height=4) #width and height decide margin
         theforestplot (lineheight=unit(.75,"cm"), point.estimates=est.ci[1,], lower.bounds=est.ci[2,], upper.bounds=est.ci[3,], p.values=NA, graphwidth=unit(120, "mm"), fontsize=1.2,
-            table.labels = c("Group (Baseline Negative)", "HR (95% CI)","No. Events"), group=colnames(est.ci), decimal.places=2, nEvents=nevents, title=toTitleCase(study.name))
+            table.labels = c("Group (Baseline Negative)", "HR (95% CI)","No. Events"), group=colnames(est.ci), decimal.places=2, nEvents=nevents, title=paste0(labels.assays.long["Day57",a]))
     dev.off()    
 }
 
@@ -558,7 +564,7 @@ marginalized.risk.svycoxph.boot=function(formula, marker.name, type, data, t, we
 
 
 # bootstrap marginalized risk is a time-consumming step
-if(rerun.time.consuming.steps) {
+if(!file.exists(paste0(save.results.to, "risks.all.1.",study.name,".Rdata"))) {
     
     #################
     # vaccine arm
@@ -615,24 +621,19 @@ if(rerun.time.consuming.steps) {
             res.vacc.cont=c(est=prob, boot)
             save(res.vacc.cont, file=paste0(save.results.to, "risks_vacc_cont_", study.name, ".Rdata"))
         }
-    }
-    
-    
-    
+    }    
     
 } else {
+
     load(file=paste0(save.results.to, "risks.all.1", "."%.%study.name, ".Rdata"))
     load(file=paste0(save.results.to, "risks.all.2", "."%.%study.name, ".Rdata"))
     load(file=paste0(save.results.to, "risks_plac_cont_", study.name, ".Rdata"))
     load(file=paste0(save.results.to, "risks_vacc_cont_", study.name, ".Rdata"))
+
 }
 
 
 # marginalized risk curves for continuous s
-# repeat two times for both conditional on s and conditional on S>=s: 
-#   idx=1, with placebo lines
-#   idx=2, without placebo lines
-#   Implementation-wise, only difference is in ylim
 
 # these results are close to bootstrap results. they are not used later and only for sanity check
 # compute overall risk regardless of markers in both arms by integrating over form.0. 
@@ -672,8 +673,9 @@ myprint(prev.vacc)
 
 
 
-for (ii in 1:2) { # 1 is conditional on s and 2 is conditional on S>=s
-for (idx in 1:2) {
+for (ii in 1:2) {  # 1 conditional on s,   2 is conditional on S>=s
+for (idx in 1:2) { # 1 with placebo lines, 2 without placebo lines. Implementation-wise, only difference is in ylim
+# ii=2; idx=1; a=assays[3]
     risks.all=get("risks.all."%.%ii)
     ylim=range(sapply(risks.all, function(x) x$prob), if(idx==1) prev.plac, prev.vacc, 0)
     lwd=2
@@ -681,14 +683,17 @@ for (idx in 1:2) {
     mypdf(oma=c(1,0,0,0), onefile=F, file=paste0(save.results.to, "marginalized_risks", ii, ifelse(idx==1,"","_woplacebo"), "_"%.%study.name), mfrow=.mfrow)
     for (a in assays) {        
         risks=risks.all[[a]]
+        xlim=quantile(dat.mock.vacc.seroneg.D57[["Day57"%.%a]],if(ii==1) c(.025,.975) else c(0,.95), na.rm=T) 
         
         ncases=sapply(risks$marker, function(s) sum(dat.mock.vacc.seroneg.D57$EventIndPrimaryD57[dat.mock.vacc.seroneg.D57[["Day57"%.%a]]>=s], na.rm=T))
         
-        plot(prob~marker, risks, xlab=labels.assays.short[a]%.%ifelse(ii==1," (=s)"," (>=s)"), 
+        plot(prob~marker, risks, xlab=labels.assays.short[a]%.%ifelse(ii==1," (=s)"," (>=s)"), xlim=xlim, 
             ylab="Marginalized Probability of COVID", lwd=lwd, ylim=ylim, type="n", main=paste0("Cumulative Risk of COVID by Day ",t0), xaxt="n")
         # x axis
         xx=seq(floor(min(risks$marker)), ceiling(max(risks$marker)))
         for (x in xx) axis(1, at=x, labels=if (x>=3) bquote(10^.(x)) else 10^x )
+        axis(1, at=log10(llods[a]), labels="L")
+        
         # prevelance lines
         abline(h=prev.plac, col="gray", lty=c(1,3,3), lwd=lwd)
         abline(h=prev.vacc, col="gray", lty=c(1,3,3), lwd=lwd)
@@ -714,7 +719,8 @@ for (idx in 1:2) {
         par(new=TRUE) 
         col <- c(col2rgb("olivedrab3")) # orange, darkgoldenrod2
         col <- rgb(col[1], col[2], col[3], alpha=255*0.4, maxColorValue=255)
-        hist(dat.mock.vacc.seroneg.D57[["Day57"%.%a]],col=col,axes=F,labels=F,main="",xlab="",ylab="",breaks=10,border=0,freq=F)    #,ylim=ylim    
+        tmp=hist(dat.mock.vacc.seroneg.D57[["Day57"%.%a]], breaks=15, plot=F)
+        plot(tmp,col=col,axes=F,labels=F,main="",xlab="",ylab="",border=0,freq=F, xlim=xlim, ylim=c(0,max(tmp$density*1.25)))
         #axis(side=4, at=axTicks(side=4)[1:5])
         #mtext("Density", side=4, las=0, line=2, cex=1, at=.3)  
         #mylegend(x=6, fill=col, border=col, legend="Vaccine Group", bty="n", cex=0.7)      
@@ -734,6 +740,7 @@ mypdf(onefile=F, file=paste0(save.results.to, "controlled_ve_curves_"%.%study.na
     par(las=1, cex.axis=0.9, cex.lab=1)# axis label orientation
     for (a in assays) {        
         risks=risks.all.1[[a]]
+        xlim=quantile(dat.mock.vacc.seroneg.D57[["Day57"%.%a]],c(.025,.975),na.rm=T)
         
         # compute Bias as a vector, which is a function of s
         # choose a reference marker value
@@ -744,7 +751,6 @@ mypdf(onefile=F, file=paste0(save.results.to, "controlled_ve_curves_"%.%study.na
         Bias=controlled.risk.bias.factor(ss=risks$marker, s.cent=s.ref, s1=risks$marker[s1], s2=risks$marker[s2], RRud) 
     
         ylim=c(0.5, 1)
-        xlim=NULL#log10(c(20,3000))
     
         # CVE
         est = 1 - risks$prob*Bias/res.plac.cont["est"]
@@ -765,12 +771,14 @@ mypdf(onefile=F, file=paste0(save.results.to, "controlled_ve_curves_"%.%study.na
         # x axis
         xx=seq(floor(min(risks$marker)), ceiling(max(risks$marker)))
         for (x in xx) axis(1, at=x, labels=if (x>=3) bquote(10^.(x)) else 10^x )
+        axis(1, at=log10(llods[a]), labels="L")
     
         # add histogram
         par(new=TRUE) 
         col <- c(col2rgb("olivedrab3")) # orange, darkgoldenrod2
         col <- rgb(col[1], col[2], col[3], alpha=255*0.4, maxColorValue=255)
-        hist(dat.mock.vacc.seroneg.D57[["Day57"%.%a]],col=col,axes=F,labels=F,main="",xlab="",ylab="",breaks=10,border=0,freq=F)    #,ylim=ylim    
+        tmp=hist(dat.mock.vacc.seroneg.D57[["Day57"%.%a]],breaks=15,plot=F)
+        plot(tmp,col=col,axes=F,labels=F,main="",xlab="",ylab="",border=0,freq=F,xlim=xlim, ylim=c(0,max(tmp$density*1.25))) 
     
     }
 dev.off()    
@@ -801,7 +809,7 @@ lwd=2
 ylim=c(0,max(risk.0))
 x.time<-seq(0,t0,by=30); if(t0-last(x.time)>15) x.time=c(x.time, t0) else x.time[length(x.time)]=t0
 #
-mypdf(oma=c(1,0,0,0), onefile=F, file=paste0(save.results.to, "marginalized_risks_cat", "_"%.%study.name), mfrow=.mfrow, width=7*1.3, height = 7.5/2*.mfrow[1]*1.3, mar=c(11,4,4,2))
+mypdf(oma=c(1,0,0,0), onefile=F, file=paste0(save.results.to, "marginalized_risks_cat_", study.name), mfrow=.mfrow, width=7*1.3, height = 7.5/2*.mfrow[1]*1.3, mar=c(11,4,4,2))
 for (a in assays) {        
     marker.name="Day57"%.%a%.%"cat"    
     

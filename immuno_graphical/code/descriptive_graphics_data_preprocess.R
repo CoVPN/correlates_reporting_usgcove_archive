@@ -4,6 +4,13 @@ renv::activate(project = here::here(".."))
 source(here::here("..", "_common.R"))
 #-----------------------------------------------
 
+### reset the floor values
+### set the ULOQ values
+### set the ethnicity value
+### add 
+
+
+
 library(here)
 library(dplyr)
 library(stringr)
@@ -238,8 +245,8 @@ dat.long.twophase.sample$age_sex_label <-
 dat.long.twophase.sample$minority_label <-
   with(
     dat.long.twophase.sample,
-    factor(MinorityInd,
-      levels = c(0, 1),
+    factor(WhiteNonHispanic,
+      levels = c(1, 0),
       labels = c("White Non-Hispanic", "Comm. of Color")
     )
   )
@@ -247,7 +254,7 @@ dat.long.twophase.sample$minority_label <-
 dat.long.twophase.sample$age_minority_label <-
   with(
     dat.long.twophase.sample,
-    factor(paste0(age.geq.65, MinorityInd),
+    factor(paste0(age.geq.65, WhiteNonHispanic),
       levels = c("00", "01", "10", "11"),
       labels = c(
         "Age < 65 Comm. of Color",

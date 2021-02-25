@@ -16,6 +16,9 @@ data(dat.mock)
 source(here("code", "params.R"))
 
 ## setting the floor values
+
+################################################ follow the email, change numbers and change ULOQ
+################################################
 dat <- dat.mock %>%
   mutate(
     BbindSpike = ifelse(BbindSpike >= log10(17), BbindSpike, log10(17)),

@@ -30,10 +30,10 @@
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
       "RemoteRepo": "correlates_mockdata",
-      "RemoteUsername": "CoVPN",
+      "RemoteUsername": "covpn",
       "RemoteRef": "HEAD",
       "RemoteSha": "419e52808704cc196c7f408e9e50847cd62e9add",
-      "Hash": "d4aa72adecde8404773df91832efec5c"
+      "Hash": "d9dd16e62b45a5d3bbbf071a6fe0d278"
     },
     "DBI": {
       "Package": "DBI",
@@ -518,6 +518,13 @@
       "RemoteSha": "77c19b1b7f9c5e49d17a0bac060bed86b89cc377",
       "Hash": "30c10b949aa67ff029916191fca5ed3c"
     },
+    "deldir": {
+      "Package": "deldir",
+      "Version": "0.2-10",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "6ba6a411bdd4c1b297bd54e2c5c98385"
+    },
     "desc": {
       "Package": "desc",
       "Version": "1.2.0",
@@ -734,6 +741,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "6efd734b14c6471cfe443345f3e35e29"
+    },
+    "goftest": {
+      "Package": "goftest",
+      "Version": "1.2-2",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "3c9209bce1b10900155ea37ce954cf30"
     },
     "gower": {
       "Package": "gower",
@@ -1225,10 +1239,10 @@
     },
     "pillar": {
       "Package": "pillar",
-      "Version": "1.4.7",
+      "Version": "1.5.0",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "3b3dd89b2ee115a8b54e93a34cd546b4"
+      "Hash": "39a778e4e487ded8b1bf5bb617c567b3"
     },
     "pkgbuild": {
       "Package": "pkgbuild",
@@ -1271,6 +1285,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "e2f59df0b9a4ca41c276474bba383fce"
+    },
+    "polyclip": {
+      "Package": "polyclip",
+      "Version": "1.10-0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "cb167f328b3ada4ec5cf67a7df4c900a"
     },
     "polynom": {
       "Package": "polynom",
@@ -1617,6 +1638,27 @@
       "Repository": "CRAN",
       "Hash": "dfd843ee98246cf932823acf613b05dd"
     },
+    "spatstat": {
+      "Package": "spatstat",
+      "Version": "1.64-1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "bf01485c922fd3bb6af165b9304539dd"
+    },
+    "spatstat.data": {
+      "Package": "spatstat.data",
+      "Version": "2.0-0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "582315d096bd9187bda3bb4dc64cefa8"
+    },
+    "spatstat.utils": {
+      "Package": "spatstat.utils",
+      "Version": "2.0-0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "8bda137ccec577888f478735987221ec"
+    },
     "speedglm": {
       "Package": "speedglm",
       "Version": "0.3-3",
@@ -1672,6 +1714,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "b227d13e29222b4574486cfcbde077fa"
+    },
+    "tensor": {
+      "Package": "tensor",
+      "Version": "1.5",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "25cfab6cf405c15bccf7e69ec39df090"
     },
     "testthat": {
       "Package": "testthat",
@@ -1831,6 +1880,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "6c85f015dee9cc7710ddd20f86881f58"
+    },
+    "xtable": {
+      "Package": "xtable",
+      "Version": "1.8-4",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "b8acdf8af494d9ec19ccb2481a9b11c2"
     },
     "yaml": {
       "Package": "yaml",

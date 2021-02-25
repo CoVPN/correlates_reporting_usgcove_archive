@@ -18,25 +18,6 @@ bl_demo_var <- c("MinorityInd", "EthnicityHispanic", "EthnicityNotreported",
                  "WhiteNonHispanic", "Multiracial", "Other", "Notreported", 
                  "Unknown", "HighRiskInd", "Sex", "Age", "BMI")
 
-# Remove risk variables that have more than 5% missing values. 
-# Also, remove risk variables with fewer than 10 endpoint cases.
-keep_bl_demo_var <- NULL
-n <- nrow(dat)
-for(b in bl_demo_var){
-	# pct missing
-	num_na <- sum(is.na(dat[,b]))
-	pct_na <- num_na / n
-	pct_na_more_5 <- pct_na > 0.05
-	# fewer than 10 endpoints
-	less_ten_ones <- FALSE
-	if(all(dat[,b] %in% c(0,1))){
-		less_ten_ones <- sum(dat[,b] < 10)
-	}
-	if(!pct_na_more_5 & !less_ten_ones){
-		keep_bl_demo_var <- c(keep_bl_demo_var, b)
-	}
-}
-
 # Endpoint (input)	EventIndPrimaryD57	
 end_pt <- "EventIndPrimaryD57"
 
@@ -44,8 +25,27 @@ end_pt <- "EventIndPrimaryD57"
 # All ptids in the placebo arm AND as “per protocol”. 
 # Drop records with missing values for Ptid, Trt, and endpoint columns.
 include_ph1_placebo <- !is.na(dat$Ptid) & !is.na(dat$Trt) & !is.na(dat[ , end_pt, drop = TRUE])
-include_ph1_placebo <- include_ph1_placebo & dat$Trt == 1 & dat$Perprotocol == 1
+include_ph1_placebo <- include_ph1_placebo & dat$Trt == 0 & dat$Perprotocol == 1
 ph1_placebo <- dat[include_ph1_placebo, ]
+
+# Remove risk variables that have more than 5% missing values. 
+# Also, remove risk variables with fewer than 10 endpoint cases.
+keep_bl_demo_var <- NULL
+n <- nrow(dat)
+for(b in bl_demo_var){
+	# pct missing
+	num_na <- sum(is.na(ph1_placebo[,b]))
+	pct_na <- num_na / n
+	pct_na_more_5 <- pct_na > 0.05
+	# fewer than 10 endpoints
+	less_ten_ones <- FALSE
+	if(all(ph1_placebo[,b] %in% c(0,1))){
+		less_ten_ones <- sum(dat[,b] < 10)
+	}
+	if(!pct_na_more_5 & !less_ten_ones){
+		keep_bl_demo_var <- c(keep_bl_demo_var, b)
+	}
+}
 
 # Identify np
 # Total cases (defined by endpoint) in phase 1 dataset

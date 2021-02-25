@@ -84,6 +84,24 @@ conflict across all affected files, ensure the code still runs as intended.
 Commit the edits, push, and voila...the PR should no longer indicate any merge
 conflicts.
 
+### Rules for pull requests
+
+Please adhere to the following rules before submitting a pull request.
+- As noted above, do not submit a PR that has merge conflicts.
+- Do not add compiled graphics and PDFs to your pull requests (with the
+possible exception of verification documentation). Pull requests should only be
+code. If you need to store compiled files locally, add them to `.gitignore`.
+- Update the `Makefile` to include relevant documentation for how to
+execute the code and dependencies between scripts.
+- Include a rule `all` at the top of the `Makefile` that compiles all of the
+output that is needed to build the report for your subdirectory.
+- Include a rule `clean` that removes all compiled graphs and data sets from
+your subdirectory.
+- Confirm that after executing your `make clean` command (to remove any
+compiled results from your local directory), your `make all` command executes on
+your system.
+
+
 ### Git Resources
 
 Here are a few useful notes and readings that may be useful in remedying any

@@ -6,8 +6,12 @@ clean:
 	rm -f output/*
 
 ## cor_coxph     : create tables and figures
-cor_coxph: 
+cor_coxph: dat_seroneg
 	cd code; Rscript cor_coxph.R
+
+## dat_seroneg   : create seronegative data set used in analysis
+dat_seroneg:
+	Rscript code/make_dat_seroneg.R
 
 ## report        : create a standalone report
 report:  

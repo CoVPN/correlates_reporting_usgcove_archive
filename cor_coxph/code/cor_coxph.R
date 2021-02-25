@@ -16,6 +16,7 @@ rerun.time.consuming.steps=!file.exists(paste0(save.results.to, "risks.all.1.moc
 # DB: Scheduled for deletion    
 # library(COVIDcorr)
 dat.mock <- read.csv(here::here("..", "data_raw", data_name))
+dat.mock.vacc.seroneg <- readRDS(here::here("data_clean", "dat.mock.vacc.seroneg.rds"))
 
 #remotes::install_github("CoVPN/correlates_mockdata", auth_token="e09062bae8d9a4acf4ba7e7c587c5d3fbe1abd69")
 # the order of these packages matters

@@ -1,4 +1,5 @@
 library(methods)
+library(dplyr)
 set.seed(98109)
 
 ###############################################################################
@@ -13,7 +14,8 @@ library(kyotil)
 
 # define useful constants
 assays <- c(
-  "bindSpike", "bindRBD", "pseudoneutid50", "liveneutmn50", "pseudoneutid80"
+  "bindSpike", "bindRBD", "pseudoneutid50", "pseudoneutid80"
+  # "liveneutmn50", 
 )
 times <- c("B", "Day29", "Day57")
 markers <- c(outer(times, assays, "%.%"))

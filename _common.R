@@ -9,6 +9,14 @@ data_name <- "mock_data.csv"
 ###############################################################################
 # figure labels and titles for markers
 ###############################################################################
+library(kyotil)
+
+# define useful constants
+assays <- c(
+  "bindSpike", "bindRBD", "pseudoneutid50", "liveneutmn50", "pseudoneutid80"
+)
+times <- c("B", "Day29", "Day57")
+markers <- c(outer(times, assays, "%.%"))
 
 # re-define times variable here as needed here
 times <- c(

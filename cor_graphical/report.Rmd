@@ -2,7 +2,7 @@
 ```{r cor-graphical-setup, echo = FALSE, message = FALSE}
 library(here)
 library(latex2exp)
-here::i_am("cor-graphical/report.Rmd")
+here::i_am("cor_graphical/report.Rmd")
 
 ## define study name
 study_name = "mock"

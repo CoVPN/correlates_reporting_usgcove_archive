@@ -337,8 +337,8 @@ for (bstatus in 1:2) {
       y = times[tt],
       color = "Trt",
       facet_by = "assay",
-      plot_LLOQ = (tt <= 3),
-      LLOQ = LLOQ,
+      plot_LLOD = (tt <= 3),
+      LLOD = LLOD,
       legend = c("Placebo", "Vaccine"),
       axis_titles_y = labels.axis[tt, ] %>% unlist(),
       panel_titles = labels.title2[tt, ] %>% unlist(),
@@ -364,8 +364,8 @@ for (trt in 1:2) {
       y = times[tt],
       color = "Bserostatus",
       facet_by = "assay",
-      plot_LLOQ = (tt <= 3),
-      LLOQ = LLOQ,
+      plot_LLOD = (tt <= 3),
+      LLOD = LLOD,
       legend = c("Baseline Negative", "Baseline Positive"),
       axis_titles_y = labels.axis[tt, ] %>% unlist(),
       panel_titles = labels.title2[tt, ] %>% unlist(),
@@ -386,6 +386,7 @@ for (trt in 1:2) {
 #-----------------------------------------------
 
 ## in each baseline serostatus group, randomly select 10 placebo recipients and 20 vaccine recipients
+set.seed(12345)
 var_names <- expand.grid(times = c("B", "Day29", "Day57"),
                           assays = assays) %>%
   mutate(var_names = paste0(times, assays)) %>%

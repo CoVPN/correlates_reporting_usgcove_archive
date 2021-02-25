@@ -81,7 +81,9 @@ knitr::opts_chunk$set(
   dpi = 300,
   echo = FALSE,
   message = FALSE,
-  warning = FALSE
+  warning = FALSE,
+  fig.pos = "ht",
+  out.extra = ""
 )
 
 # global options

@@ -6,7 +6,7 @@
 *.reg
 _book
 _bookdown_files
-
+packages.bib
 cor_graphical/figs/*.pdf
 cor_graphical/figs/*.png
 cor_graphical/data_clean/*.rds

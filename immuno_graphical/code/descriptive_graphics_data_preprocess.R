@@ -7,10 +7,12 @@ source(here::here("..", "_common.R"))
 library(here)
 library(dplyr)
 library(stringr)
-library(COVIDcorr)
+# DB: Scheduled for deletion
+# library(COVIDcorr)
+# # load data
+# data(dat.mock)
 
-# load data
-data(dat.mock)
+dat.mock <- read.csv(here("..", "data_raw", data_name), header = TRUE)
 
 # load parameters
 source(here("code", "params.R"))
@@ -257,6 +259,11 @@ dat.long.twophase.sample$age_minority_label <-
       )
     )
   )
+dat.long.twophase.sample$ethnicity <- as.factor(dat.long.twophase.sample$ethnicity)
+dat.twophase.sample$ethnicity <- as.factor(dat.twophase.sample$ethnicity)
+dat.long.twophase.sample$race <- as.factor(dat.long.twophase.sample$race)
+dat.twophase.sample$race <- as.factor(dat.twophase.sample$race)
+
 
 saveRDS(as.data.frame(dat.long.twophase.sample),
   file = here("data_clean", "long_twophase_data.rds")

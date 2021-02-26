@@ -29,22 +29,27 @@ times <- c(
 labels.axis <- outer(
   c("", "", "", "", "", ""),
   c(
-    "Spike IgG (IU/ml)", "RBD IgG (IU/ml)", "PsV-nAb ID50", "WT LV-nAb MN50",
-    "PsV-nAb ID80", "WT LV-nAb MN80"
+    "Spike IgG (IU/ml)", "RBD IgG (IU/ml)", "PsV-nAb ID50", 
+    #"WT LV-nAb MN50",
+    "PsV-nAb ID80"#, 
+    #"WT LV-nAb MN80"
   ),
   "%.%"
 )
+
 labels.axis <- as.data.frame(labels.axis)
 rownames(labels.axis) <- times
 # NOTE: hacky solution to deal with changes in the number of markers
 colnames(labels.axis)[seq_along(assays)] <- assays
-labels.axis <- labels.axis[, -ncol(labels.axis)]
+# labels.axis <- labels.axis[, -ncol(labels.axis)]
 
 labels.title <- outer(
   c(
     "Binding Antibody to Spike", "Binding Antibody to RBD",
-    "PsV Neutralization 50% Titer", "WT LV Neutralization 50% Titer",
-    "PsV Neutralization 80% Titer", "WT LV Neutralization 80% Titer"
+    "PsV Neutralization 50% Titer", 
+    # "WT LV Neutralization 50% Titer",
+    "PsV Neutralization 80% Titer" #, 
+    #"WT LV Neutralization 80% Titer"
   ),
   ": " %.%
     c(
@@ -57,7 +62,7 @@ labels.title <- as.data.frame(labels.title)
 colnames(labels.title) <- times
 # NOTE: hacky solution to deal with changes in the number of markers
 rownames(labels.title)[seq_along(assays)] <- assays
-labels.title <- labels.title[-nrow(labels.title), ]
+# labels.title <- labels.title[-nrow(labels.title), ]
 labels.title <- as.data.frame(t(labels.title))
 
 # creating short and long labels

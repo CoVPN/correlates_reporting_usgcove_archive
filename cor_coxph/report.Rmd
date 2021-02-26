@@ -1,23 +1,23 @@
 \newcommand{\studyname}{mock}
 
 
-\newcommand{\pathCoRoutput}{output/D57}
+\newcommand{\pathCoRoutput}{cor_coxph/output/D57}
 
 ```{r, include=FALSE}
 Day <- 57
 ```
 
-```{r, child=c('report_sub.Rmd')}
+```{r, child=c(here::here('cor_coxph', 'report_sub.Rmd'))}
 ```
 
 \clearpage
 
-\renewcommand{\pathCoRoutput}{output/D29}
+\renewcommand{\pathCoRoutput}{cor_coxph/output/D29}
 
 ```{r, include=FALSE}
 Day <- 29
 ```
 
-```{r, child=c('report_sub.Rmd')}
+```{r, child=c(here::here('cor_coxph', 'report_sub.Rmd'))}
 ```
 

@@ -758,7 +758,7 @@ covid_corr_boxplot_facets <- function(plot_dat,
     filename = filename, plot = output_plot, width = width,
     height = height, units = units
   )
-  return(output_plot)
+  # return(output_plot)
 }
 
 
@@ -884,5 +884,5 @@ covid_corr_spaghetti_facets <- function(plot_dat,
     filename = filename, plot = output_plot, width = width,
     height = height, units = units
   )
-  return(output_plot)
+  # return(output_plot)
 }

@@ -8,10 +8,11 @@ library(here)
 library(dplyr)
 library(tidyverse)
 library(stringr)
-library(COVIDcorr)
-
-# load data
-data(dat.mock)
+# DB: Scheduled for deletion
+# library(COVIDcorr)
+# # load data
+# data(dat.mock)
+dat.mock <- read.csv(here("..", "data_raw", data_name))
 
 # load parameters
 source(here("code", "params.R"))

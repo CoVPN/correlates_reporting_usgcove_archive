@@ -6,7 +6,8 @@ source(here::here("..", "_common.R"))
 
 library(scales)
 library(tidyverse)
-library(COVIDcorr)
+# DB: Scheduled for deletion
+# library(COVIDcorr)
 library(here)
 library(cowplot)
 

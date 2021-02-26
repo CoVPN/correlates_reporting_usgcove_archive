@@ -3,11 +3,11 @@ all: clean cor_coxph
 
 ## clean         : delete saved bootstrap results
 clean:
-	rm -f output/*
+	rm -rf output/*
 
 ## cor_coxph     : create tables and figures
-cor_coxph: dat_seroneg
-	cd code; Rscript cor_coxph.R
+cor_coxph: 
+	Rscript code/cor_coxph.R 57 && Rscript code/cor_coxph.R 29
 
 ## dat_seroneg   : create seronegative data set used in analysis
 dat_seroneg:

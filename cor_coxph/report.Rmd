@@ -1,178 +1,23 @@
 \newcommand{\studyname}{mock}
-\newcommand{\pathCoRoutput}{output}
-
-# Univariate CoR: Cox Proportional Hazards Modeling of Relative and Absolute Risk {#cor-coxph}
-
-All analyses for D57 markers are run on the population with EventTimePrimaryD57>=7.
-The main regression model is the Cox proportional hazards model. All plots are made with Cox models fit unless specified otherwise. The trichotomized variables in Table \ref{tab:CoR_D57_univariable_svycoxph_pretty_\studyname} are defined with respect to inverse probability weighted quantiles computed using the Hmisc::wtd.quantile function.
 
 
-\begin{table}[H]
-\caption{Inference for Day 57 antibody marker covariate-adjusted correlates of risk of COVID in the vaccine group: Hazard ratios per 10-fold increment in the marker*}
-\begin{center}
-    \input{\pathCoRoutput/CoR_D57_univariable_svycoxph_pretty_\studyname}\\
-\end{center}
-*Baseline covariates adjusted for: age in years, at risk or not, community of color or not
-%, baseline risk score
-. Average follow-up time \input{\pathCoRoutput/CoR_D57_mean_followup_time_vacc_\studyname} days, maximum follow-up time \input{\pathCoRoutput/CoR_D57_max_followup_time_vacc_\studyname} days.\\
-**No. at-risk = number of per-protocol baseline negative vaccine recipients at-risk for COVID at 7 days post Day 57 visit; no. cases = number of this cohort with an observed COVID endpoints.
+\newcommand{\pathCoRoutput}{output/D57}
 
-    \label{tab:CoR_D57_univariable_svycoxph_pretty_\studyname}
-\end{table}
+```{r, include=FALSE}
+Day <- 57
+```
 
-
-\begin{table}[H]
-\caption{Inference for Day 57 antibody marker covariate-adjusted correlates of risk of COVID in the vaccine group: Hazard ratios for Middle vs. Upper tertile vs. Lower tertile*}
-\begin{center}
-\setlength{\tabcolsep}{.5ex}
-\input{\pathCoRoutput/CoR_D57_univariable_svycoxph_cat_pretty_\studyname}\\
-\end{center}
-*Baseline covariates adjusted for: age in years, at risk or not, community of color or not
-%, baseline risk score
-. Average follow-up time \input{\pathCoRoutput/CoR_D57_mean_followup_time_vacc_\studyname} days, maximum follow-up time \input{\pathCoRoutput/CoR_D57_max_followup_time_vacc_\studyname} days. 
-Cutpoints: 
-%Day 57 cutpoints: 
-\input{\pathCoRoutput/cutpoints_Day57bindSpike_\studyname},  
-\input{\pathCoRoutput/cutpoints_Day57bindRBD_\studyname},  
-\input{\pathCoRoutput/cutpoints_Day57pseudoneutid50_\studyname},  
-\input{\pathCoRoutput/cutpoints_Day57pseudoneutid80_\studyname}.
-%fold-rise cutpoints: 
-%\input{\pathCoRoutput/cutpoints_Delta57overBbindSpike_\studyname},  
-%\input{\pathCoRoutput/cutpoints_Delta57overBbindRBD_\studyname},  
-%\input{\pathCoRoutput/cutpoints_Delta57overBpseudoneutid50_\studyname},  
-%\input{\pathCoRoutput/cutpoints_Delta57overBpseudoneutid80_\studyname}.  
-\\
-**No. at-risk = number of per-protocol baseline negative vaccine recipients at-risk for COVID at 7 days post Day 57 visit; no. cases = number of this cohort with an observed COVID endpoints.\\
-***Generalized Wald-test p-value of the null hypothesis that the hazard rate is constant across the Lower, Middle, and Upper tertile groups.
-
-    \label{tab:CoR_D57_univariable_svycoxph_cat_pretty_\studyname}
-\end{table}
-
-
-\begin{figure}[H]
-    (a) Day 57 binding Ab to spike\\
-    \includegraphics[width=1\textwidth]{\pathCoRoutput/hr_forest_bindSpike_\studyname}
-    (b) Day 57 binding Ab to RBD\\
-    \includegraphics[width=1\textwidth]{\pathCoRoutput/hr_forest_bindRBD_\studyname}
-    (c) Day 57 pseudo neut ID50\\
-    \includegraphics[width=1\textwidth]{\pathCoRoutput/hr_forest_pseudoneutid50_\studyname}
-    (d) Day 57 pseudo neut ID80\\
-    \includegraphics[width=1\textwidth]{\pathCoRoutput/hr_forest_pseudoneutid80_\studyname}
-    \caption{Forest plots of hazard ratios among baseline seronegative vaccine recipients and subgroups with 95\% point-wise confidence intervals.}
-\end{figure}
+```{r, child=c('report_sub.Rmd')}
+```
 
 \clearpage
 
+\renewcommand{\pathCoRoutput}{output/D29}
 
+```{r, include=FALSE}
+Day <- 29
+```
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=1\textwidth]{\pathCoRoutput/hr_forest_marginal_bindSpike_\studyname}
-    \caption{Forest plots of hazard ratios of Day 57 binding Ab to spike markers among baseline seronegative vaccine recipients (top row) and eight subpopulations (row 2-9) with 95\% point-wise confidence intervals.}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=1\textwidth]{\pathCoRoutput/hr_forest_marginal_bindRBD_\studyname}
-    \caption{Forest plots of hazard ratios of Day 57 binding Ab to RBD markers among baseline seronegative vaccine recipients (top row) and eight subpopulations (row 2-9) with 95\% point-wise confidence intervals.}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=1\textwidth]{\pathCoRoutput/hr_forest_marginal_pseudoneutid50_\studyname}
-    \caption{Forest plots of hazard ratios of Day 57 pseudo neut ID50 markers among baseline seronegative vaccine recipients (top row) and eight subpopulations (row 2-9) with 95\% point-wise confidence intervals.}
-\end{figure}
-
-<!-- \begin{figure}[H] -->
-<!--     \centering -->
-<!--     \includegraphics[width=1\textwidth]{\pathCoRoutput/hr_forest_marginal_liveneutmn50_\studyname} -->
-<!--     \caption{Forest plots of hazard ratios of Day 57 live neut MN50 markers among baseline seronegative vaccine recipients (top row) and eight subpopulations (row 2-9) with 95\% point-wise confidence intervals.} -->
-<!-- \end{figure} -->
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=1\textwidth]{\pathCoRoutput/hr_forest_marginal_pseudoneutid80_\studyname}
-    \caption{Forest plots of hazard ratios of Day 57 pseudo neut ID80 markers among baseline seronegative vaccine recipients (top row) and eight subpopulations (row 2-9) with 95\% point-wise confidence intervals.}
-\end{figure}
-
-\clearpage
-
-<!-- \begin{table}[H] -->
-<!--     \setlength{\tabcolsep}{.5ex} -->
-<!-- \scriptsize{ -->
-<!--     \input{\pathCoRoutput/CoR_univariable_svycoxph_\studyname} -->
-<!-- } -->
-<!-- \caption{CoR models among baseline seronegative vaccine recipients. Each column corresponds to one Cox model fitted by survey::svycoxph.} -->
-<!--     \label{tab:CoR_univariable_svycoxph_\studyname} -->
-<!-- \end{table} -->
-
-
-<!-- \begin{table}[H] -->
-<!--     \setlength{\tabcolsep}{.5ex} -->
-<!--     \input{\pathCoRoutput/CoR_Day57pseudoneutid80_sens_noCases_\studyname} -->
-<!-- \caption{CoR models for Day 57 pseudo neut ID80 among baseline seronegative vaccine recipients. Each row corresponds to one Cox model fitted by survey::svycoxph.For each model, a different dataset that keeps a random subset of the cases is used. The original dataset has 66 cases.} -->
-<!--     \label{tab:CoR_Day57pseudoneutid80_sens_noCases_\studyname} -->
-<!-- \end{table} -->
-
-<!-- \begin{table}[H] -->
-<!--     \setlength{\tabcolsep}{.5ex} -->
-<!--     \input{\pathCoRoutput/CoR_Day57pseudoneutid80_5cases_\studyname} -->
-<!-- \caption{CoR models for Day 57 pseudo neut ID80 among baseline seronegative vaccine recipients. Each row corresponds to one Cox model fitted by survey::svycoxph.For each model, a different dataset that keeps a random subset of 5 cases is used.} -->
-<!--     \label{tab:CoR_Day57pseudoneutid80_5cases_\studyname} -->
-<!-- \end{table} -->
-
-
-<!-- \begin{table}[H] -->
-<!--     \input{\pathCoRoutput/CoR_univariable_tps} -->
-<!--     \caption{CoR models among baseline seronegative vaccine recipients. Each column corresponds to one logistic regression model fitted by osDesign::tps. } -->
-<!--     \label{tab:CoR_univariable_tps} -->
-<!-- \end{table} -->
-
-<!-- \begin{table}[H] -->
-<!--     \input{\pathCoRoutput/CoR_univariable_hingelogistic} -->
-<!--     \caption{CoR models among baseline seronegative vaccine recipients. Each column corresponds to one logistic regression model with hinge fitted by chgnpt::chngptm. } -->
-<!--     \label{tab:CoR_univariable_hingelogistic} -->
-<!-- \end{table} -->
-
-
-
-<!-- \begin{figure}[H] -->
-<!--     \centering -->
-<!--     \includegraphics[width=1\textwidth]{\pathCoRoutput/marginalized_risks1_woplacebo_\studyname} -->
-<!--     \caption{Marginalized cumulative risk by Day \protect\input{\pathCoRoutput/timepoints_cum_risk_\studyname} as functions of Day 57 markers (=s) among baseline seronegative vaccine recipients with 95\% bootstrap point-wise confidence bands. The horizontal lines indicate the overall cumulative risk of the vaccine arm by Day \protect\input{\pathCoRoutput/timepoints_cum_risk_\studyname} and its 95\% point-wise confidence interval. Histograms of the immunological markers in the vaccine arm are overlaid.} -->
-<!-- \end{figure} -->
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=1\textwidth]{\pathCoRoutput/marginalized_risks1_\studyname}
-    \caption{Marginalized cumulative risk by Day \protect\input{\pathCoRoutput/timepoints_cum_risk_\studyname} as functions of Day 57 markers (=s) among baseline seronegative vaccine recipients with 95\% bootstrap point-wise confidence bands. The horizontal lines indicate the overall cumulative risk of the placebo and vaccine arms by Day \protect\input{\pathCoRoutput/timepoints_cum_risk_\studyname} and its 95\% point-wise confidence interval. Histograms of the immunological markers in the vaccine arm are overlaid. L: lower limit of detection.}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=1\textwidth]{\pathCoRoutput/marginalized_risks2_woplacebo_\studyname}
-    \caption{Marginalized cumulative risk by Day \protect\input{\pathCoRoutput/timepoints_cum_risk_\studyname} as functions of Day 57 markers above a threshold (>=s) among baseline seronegative vaccine recipients with 95\% bootstrap point-wise confidence bands (at least 5 cases are required). The horizontal lines indicate the overall cumulative risk of the vaccine arm by Day \protect\input{\pathCoRoutput/timepoints_cum_risk_\studyname} and its 95\% point-wise confidence interval. Histograms of the immunological markers in the vaccine arm are overlaid. L: lower limit of detection.}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=1\textwidth]{\pathCoRoutput/controlled_ve_curves_\studyname}
-    \caption{Controlled VE with sensitivity analysis as functions of Day 57 markers (=s) among baseline seronegative vaccine recipients with 95\% bootstrap point-wise confidence bands. Histograms of the immunological markers in the vaccine arm are overlaid. L: lower limit of detection.}
-\end{figure}
-
-
-<!-- \begin{figure}[H] -->
-<!--     \centering -->
-<!--     \includegraphics[width=1\textwidth]{\pathCoRoutput/marginalized_risks2_\studyname} -->
-<!--     \caption{Marginalized cumulative risk by Day \protect\input{\pathCoRoutput/timepoints_cum_risk_\studyname} as functions of Day 57 markers above a threshold (>=s) among baseline seronegative vaccine recipients with 95\% bootstrap point-wise confidence bands (at least 5 cases are required). The horizontal lines indicate the overall cumulative risk of the placebo and vaccine arms by Day \protect\input{\pathCoRoutput/timepoints_cum_risk_\studyname} and its 95\% point-wise confidence interval. Histograms of the immunological markers in the vaccine arm are overlaid.} -->
-<!-- \end{figure} -->
-
-
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=1\textwidth]{\pathCoRoutput/marginalized_risks_cat_\studyname}
-    \caption{Marginalized cumulative incidence rate curves for trichotomized Day 57 markers among baseline seronegative vaccine recipients. The gray line is the overall cumulative incidence rate curve in the placebo arm.}
-\end{figure}
-
+```{r, child=c('report_sub.Rmd')}
+```
 

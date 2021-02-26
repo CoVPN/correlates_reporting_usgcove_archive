@@ -3,11 +3,11 @@ all: clean cor_coxph
 
 ## clean         : delete saved bootstrap results
 clean:
-	rm -f output/*
+	rm -rf output/*
 
 ## cor_coxph     : create tables and figures
 cor_coxph: 
-	cd code; Rscript cor_coxph.R
+	cd code; Rscript cor_coxph.R 57; Rscript cor_coxph.R 29
 
 ## report        : create a standalone report
 report:  

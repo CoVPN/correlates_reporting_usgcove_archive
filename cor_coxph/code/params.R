@@ -16,3 +16,10 @@ assays=c("bindSpike","bindRBD","pseudoneutid50","pseudoneutid80")
 
 trt.labels=c("Placebo","Vaccine")
 bstatus.labels=c("Baseline Neg","Pos")
+
+Bstratum.labels <- c(
+  "Age >= 65",
+  "Age < 65, At risk",
+  "Age < 65, Not at risk"
+)
+names(Bstratum.labels) <- Bstratum.labels

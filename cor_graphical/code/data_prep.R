@@ -4,11 +4,14 @@ renv::activate(project = here::here(".."))
 source(here::here("..", "_common.R"))
 #-----------------------------------------------
 
-library(COVIDcorr)
-data(dat.mock)
 library(here)
 library(dplyr)
 library(tidyr)
+
+# DB: Scheduled for deletion
+# library(COVIDcorr)
+# data(dat.mock)
+dat.mock <- read.csv(here("..", "data_raw", data_name))
 
 # select subset: two phase samples
 plot_dat <- subset(dat.mock, TwophasesampInd==1)

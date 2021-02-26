@@ -32,6 +32,10 @@ cop_analysis:
 cop_report:
 	bash ./_build.sh cop
 
+## mock_data_raw          : install mock data package and save mock data in data_raw
+mock_data_raw:
+	Rscript -e "renv::activate(); credentials::set_github_pat(); remotes::install_github('covpn/correlates_mockdata'); library(COVIDcorr); data(dat.mock); write.csv(dat.mock, here::here('data_raw', 'mock_data.csv'))"
+
 ## style                  : re-styles the codebase for consistent formatting
 style:
 	Rscript -e "styler::style_dir(filetype = 'rmd')"

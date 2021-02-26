@@ -33,7 +33,7 @@ cop_report:
 
 ## data_processed         : create processed data from raw data
 data_processed:
-	Rscript -e "renv::activate(); credentials::set_github_pat(); remotes::install_github('covpn/correlates_mockdata'); library(COVIDcorr); data(dat.mock); write.csv(dat.mock, here::here('data_raw', 'mock_data.csv'))"
+	Rscript -e "source('data_clean/make_dat_proc.R')"
 
 ## style                  : re-styles the codebase for consistent formatting
 style:

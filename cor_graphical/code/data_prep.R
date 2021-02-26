@@ -11,7 +11,7 @@ library(tidyr)
 # DB: Scheduled for deletion
 # library(COVIDcorr)
 # data(dat.mock)
-dat.mock <- read.csv(here("..", "data_raw", data_name))
+dat.mock <- read.csv(here("..", "data_clean", data_name))
 
 # select subset: two phase samples
 plot_dat <- subset(dat.mock, TwophasesampInd==1)

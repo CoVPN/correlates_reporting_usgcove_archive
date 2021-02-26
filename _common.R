@@ -6,6 +6,8 @@ set.seed(98109)
 ###############################################################################
 # reading in data set
 ###############################################################################
+# NOTE: `data_in_file` must exist in the top-level data_raw subdirectory
+data_in_file <- "COVID_VEtrial_practicedata_primarystage1.csv"
 data_name <- "practice_data.csv"
 
 ###############################################################################

@@ -9,7 +9,7 @@ library(stringr)
 # DB: Scheduled for deletion
 # library(COVIDcorr)
 save.results.to <- here("figs")
-dat.mock <- read.csv(here("..", "data_raw", data_name))
+dat.mock <- read.csv(here("..", "data_clean", data_name))
 
 # load mock data and labels
 # DB: Scheduled for deletion

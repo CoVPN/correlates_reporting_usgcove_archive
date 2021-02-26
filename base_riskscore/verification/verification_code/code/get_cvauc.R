@@ -10,9 +10,14 @@ library(cvAUC)
 library(dplyr)
 
 cv_auc_from_sl <- function(sl){
-  	cvAUC::ci.cvAUC(predictions = sl$SL.predict,
-  	                labels = sl$Y,
-  	                folds = sl$folds)
+  	out <- cvAUC::ci.cvAUC(predictions = sl$SL.predict,
+  	                       labels = sl$Y,
+  	                       folds = sl$folds)
+  	# replace ci with CI on logit scale
+  	grad <- 1/(out$cvAUC - out$cvAUC^2)
+    ci.logit <- plogis(qlogis(out$cvAUC) + sqrt(out$se^2 * grad^2) %o% c(-1.96, 1.96))
+    out$ci <- as.numeric(ci.logit)
+    return(out)
 }
 
 rslt <- matrix(NA, nrow = 10, ncol = 5)

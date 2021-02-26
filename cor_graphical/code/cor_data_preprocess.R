@@ -321,3 +321,6 @@ saveRDS(as.data.frame(dat.long.cor.subset),
 saveRDS(as.data.frame(dat.cor.subset),
   file = here("data_clean", "cor_data.rds")
 )
+
+saveRDS(as.data.frame(dat.longer.cor.subset),
+        file = here("data_clean", "longer_cor_data.rds"))

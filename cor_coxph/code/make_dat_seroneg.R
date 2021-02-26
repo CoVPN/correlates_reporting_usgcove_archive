@@ -119,6 +119,7 @@ for (a in assays) {
 }
 
 saveRDS(dat.mock.vacc.seroneg, file = here::here("data_clean", "dat.mock.vacc.seroneg.rds"))
+saveRDS(marker.cutpoints, file = here::here("data_clean", "marker.cutpoints.rds"))
 
 ###############################################################################
 # subsampling to study sample size dependence

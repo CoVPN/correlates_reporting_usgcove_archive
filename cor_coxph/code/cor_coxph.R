@@ -14,13 +14,6 @@ source(here::here("..", "_common.R"))
 #-----------------------------------------------
 
 source(here::here("code", "params.R"))
-
-# start R inside the code folder or make sure working directory is here
-save.results.to = paste0(here::here("output"), "/")
-if (!dir.exists(save.results.to))  dir.create(save.results.to)
-    
-# if .Rdata already exists, don't rerun
-rerun.time.consuming.steps=!file.exists(paste0(save.results.to, "risks.all.1.mock.Rdata"))
     
 # DB: Scheduled for deletion    
 # library(COVIDcorr)

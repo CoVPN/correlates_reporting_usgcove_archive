@@ -1,10 +1,9 @@
 ---
-title: "COVID correlates analysis report CoR"
-shorttitle: "COVID correlates analysis CoR"
+title: "CoR_COXPH Specifications"
+shorttitle: "CoR_COXPH Specifications"
 author:
 header-includes:
    - \usepackage{float}
-date: "`r Sys.Date()`"
 output:
   bookdown::pdf_document2:
     citation_package: natbib
@@ -15,6 +14,5 @@ linkcolor: blue
 bibliography: ref.bib
 ---
 
-
-```{r, child=c('report.Rmd')}
+```{r, child=c('specifications.Rmd')}
 ```

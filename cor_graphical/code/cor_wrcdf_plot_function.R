@@ -67,7 +67,7 @@ covid_corr_rcdf_ve_lines <- function(
   
   
   output_plot <- ggplot(dat_ecdf, aes(x = x, y = rcdf)) +
-    geom_line() +
+    geom_step() +
     geom_rect(data = data.frame(x = min(xgrid), rcdf = 1), 
               aes(xmin = min(xgrid),xmax = line_top, ymin = VE_lb, ymax = VE_ub), 
               fill = "grey", alpha = 0.3) +

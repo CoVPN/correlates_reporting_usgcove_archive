@@ -311,7 +311,7 @@ covid_corr_rcdf_facets <- function(plot_dat,
         levels(plot_dat[, facet_by])[aa]),
       aes_string(x = x, color = color, weight = weight)
     ) +
-      geom_line(aes(y = 1 - ..y..), stat = "ecdf", lwd = lwd) +
+      geom_step(aes(y = 1 - ..y..), stat = "ecdf", lwd = lwd) +
       theme_pubr(legend = "none") +
       ylab("Reverse ECDF") +
       xlab(axis_titles[aa]) +
@@ -413,7 +413,7 @@ covid_corr_rcdf <- function(plot_dat,
       weight = weight
     )
   ) +
-    geom_line(aes(y = 1 - ..y..), stat = "ecdf", lwd = lwd) +
+    geom_step(aes(y = 1 - ..y..), stat = "ecdf", lwd = lwd) +
     theme_pubr() +
     scale_x_continuous(
       limits = xlim, labels = label_math(10^.x),

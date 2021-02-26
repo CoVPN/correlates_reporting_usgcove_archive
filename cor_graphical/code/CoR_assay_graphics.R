@@ -22,7 +22,8 @@ for (bstatus in 1:2) {
       rcdf_list[[aa]] <- ggplot(subset(subdat, assay == assays[aa]), 
                                 aes_string(x = times[tt], colour = "Trt:cohort_event", 
                                            linetype = "Trt:cohort_event", weight = "wt")) +
-        geom_line(aes(y = 1 - ..y..), stat='ecdf', lwd = 1) +  theme_pubr(legend = "none") +
+        geom_step(aes(y = 1 - ..y..), stat = "ecdf", lwd = 1) +
+        theme_pubr(legend = "none") +
         ylab("Reverse ECDF") + xlab(labels.axis[tt, aa]) +
         scale_x_continuous(labels = label_math(10^.x), limits = c(-2, 10), breaks = seq(-2, 10, 2)) +
         scale_color_manual(values = c("#1749FF", "#D92321", "#0AB7C9", "#FF6F1B", "#810094", "#378252", "#FF5EBF", "#3700A5", "#8F8F8F", "#787873")) +

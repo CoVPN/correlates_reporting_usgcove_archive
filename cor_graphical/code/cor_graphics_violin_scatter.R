@@ -56,7 +56,7 @@ myplot <- function(dat,
                    y="value", 
                    colby="cohort_event", 
                    shaby="cohort_event",
-                   ylim=c(1,7), 
+                   ylim=c(0.5,7), 
                    ybreaks=c(1,2,3,4,5,6),
                    ytitle=NULL,
                    xtitle="Time",
@@ -114,7 +114,7 @@ for (typ in c("line","violin")) {
                       ytitle=plots_ytitles[i],toptitle=plots_titles[i],
                       type=typ,
                       facetby=vars(cohort_event),
-                      ylim=c(1, 7.71),
+                      ylim=c(0.5, 7.71),
                       ybreaks=seq(1, 7),
                       inpanel.cex=6.5,
                       rate.y.pos=7.7
@@ -170,7 +170,7 @@ for (typ in c("line","violin")) {
                         ytitle=plots_ytitles[i],toptitle=plots_titles[i],
                         type=typ,
                         facetby=as.formula(paste("~",s,"+cohort_event")),
-                        ylim=c(1, 8.2),
+                        ylim=c(0.5, 8.2),
                         ybreaks=seq(1, 7),
                         inpanel.cex=5.5,
                         rate.y.pos=7.9)
@@ -199,7 +199,7 @@ for (typ in c("line","violin")) {
                       ytitle=plots_ytitles[i],toptitle=plots_titles[i],
                       type=typ,
                       facetby=as.formula("age_risk_label~cohort_event"),
-                      ylim=c(1, 9.2),
+                      ylim=c(0.5, 9.2),
                       ybreaks=seq(1, 8, 2),
                       facetopt = "grid",
                       inpanel.cex=5,
@@ -225,7 +225,7 @@ for (i in 1:length(plots)) {
       if (c=="Vaccine_BaselineNeg"){ds.tmp <- subset(ds.tmp, Bserostatus=="Baseline Neg" & Trt=="Vaccine")}
       
       y.breaks <- seq(1, ifelse(plots[i] %in% c("bindSpike","bindRBD"), 7, 5))
-      y.lim=c(1, ifelse(plots[i] %in% c("bindSpike","bindRBD"), 7.7, 5))
+      y.lim=c(0.5, ifelse(plots[i] %in% c("bindSpike","bindRBD"), 7.7, 5))
       
       p <- ggplot(ds.tmp, aes(x = Age, y = value))
       

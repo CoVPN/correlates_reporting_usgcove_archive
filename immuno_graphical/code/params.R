@@ -14,9 +14,11 @@ save.results.to <- here("figs")
 # data(labels.assays.long)
 # data(labels.assays.short)
 labels.assays <- c("Binding Antibody to Spike", "Binding Antibody to RBD",
-                   "PsV Neutralization 50% Titer", "WT LV Neutralization 50% Titer",
+                   "PsV Neutralization 50% Titer", 
+                   # "WT LV Neutralization 50% Titer",
                    "PsV Neutralization 80% Titer")
-names(labels.assays) <- c("bindSpike", "bindRBD", "pseudoneutid50", "liveneutmn50",
+names(labels.assays) <- c("bindSpike", "bindRBD", "pseudoneutid50", 
+                          #"liveneutmn50",
                           "pseudoneutid80")
 # color palatte throughout the report
 study.name <- "mock"
@@ -32,7 +34,6 @@ assays <- c("bindSpike", "bindRBD", "pseudoneutid50", "pseudoneutid80")
 
 
 # for now exclude the liveneut results
-
 labels.assays <- labels.assays[assays]
 labels.assays.long <- labels.assays.long[, assays]
 labels.assays.short <- labels.assays.short[, assays]

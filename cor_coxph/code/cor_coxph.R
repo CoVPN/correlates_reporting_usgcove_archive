@@ -50,8 +50,8 @@ if (pop=="57") {
     dat.vacc.pop=dat.mock.vacc.seroneg[dat.mock.vacc.seroneg[["EventTimePrimaryD"%.%pop]]>=7, ] #dat.mock.vacc.seroneg has trichotomized variables defined
     dat.plac.pop=subset(dat.mock, Trt==0 & Bserostatus==0 & Perprotocol & EventTimePrimaryD57>=7)
 } else if (pop=="29") {
-    dat.vacc.pop=subset(dat.mock, Trt==1 & Bserostatus == 0 & EventTimePrimaryD29>=7 & (EventTimePrimaryD29>=14 & Perprotocol == 1 | EventTimePrimaryD29<13 & Fullvaccine==1))
-    dat.plac.pop=subset(dat.mock, Trt==0 & Bserostatus == 0 & EventTimePrimaryD29>=7 & (EventTimePrimaryD29>=14 & Perprotocol == 1 | EventTimePrimaryD29<13 & Fullvaccine==1))    
+    dat.vacc.pop=subset(dat.mock, Trt==1 & Bserostatus == 0 & EventTimePrimaryD29>=7 & (EventTimePrimaryD29>=14 & Perprotocol == 1 | EventTimePrimaryD29<=13 & Fullvaccine==1))
+    dat.plac.pop=subset(dat.mock, Trt==0 & Bserostatus == 0 & EventTimePrimaryD29>=7 & (EventTimePrimaryD29>=14 & Perprotocol == 1 | EventTimePrimaryD29<=13 & Fullvaccine==1))    
     # define trichotomized markers
     for (a in assays) {    
       q.a <- wtd.quantile(dat.vacc.pop[["Day29" %.% a]], weights = dat.vacc.pop$wt, probs = c(1 / 3, 2 / 3))

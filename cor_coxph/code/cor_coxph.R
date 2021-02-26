@@ -27,6 +27,7 @@ rerun.time.consuming.steps=!file.exists(paste0(save.results.to, "risks.all.1.moc
 dat.mock <- read.csv(here::here("..", "data_raw", data_name))
 dat.mock.vacc.seroneg <- readRDS(here::here("data_clean", "dat.mock.vacc.seroneg.rds"))
 dat.mock.vacc.seroneg.subsample <- readRDS(here::here("data_clean", "dat.mock.vacc.seroneg.subsample.rds"))
+marker.cutpoints <- readRDS(here::here("data_clean", "marker.cutpoints.rds"))
 #remotes::install_github("CoVPN/correlates_mockdata", auth_token="e09062bae8d9a4acf4ba7e7c587c5d3fbe1abd69")
 # the order of these packages matters
 # kyotil mostly contains code for formatting, but may also contain code for some estimation tasks

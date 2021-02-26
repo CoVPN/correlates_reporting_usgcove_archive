@@ -3,6 +3,7 @@
 renv::activate(project = here::here(".."))
 source(here::here("..", "_common.R"))
 #-----------------------------------------------
+library(Hmisc)
 
 source(here::here("code", "params.R"))
 
@@ -118,3 +119,25 @@ for (a in assays) {
 }
 
 saveRDS(dat.mock.vacc.seroneg, file = here::here("data_clean", "dat.mock.vacc.seroneg.rds"))
+
+###############################################################################
+# subsampling to study sample size dependence
+###############################################################################
+
+# randomly select 20, 25, 30, or 40 cases from dat.mock.vacc.seroneg
+cases <- subset(dat.mock.vacc.seroneg, EventIndPrimaryD57 == 1, Ptid,
+  drop = TRUE
+)
+cases_subsample <- c(5, 10, 15, 20, 25, 30, 40)
+dat.mock.vacc.seroneg.subsample <- lapply(cases_subsample, function(n_cases) {
+  print(paste("Subsampling", n_cases, "cases."))
+  subsampled_cases <- sample(cases, n_cases, replace = FALSE)
+  subset(
+    dat.mock.vacc.seroneg,
+    EventIndPrimaryD57 == 0 | Ptid %in% subsampled_cases
+  )
+})
+names(dat.mock.vacc.seroneg.subsample) <- paste("cases", cases_subsample,
+  sep = "_"
+)
+saveRDS(dat.mock.vacc.seroneg.subsample, file = here::here("data_clean", "dat.mock.vacc.seroneg.subsample.rds"))

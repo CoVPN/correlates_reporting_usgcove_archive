@@ -311,7 +311,7 @@ covid_corr_rcdf_facets <- function(plot_dat,
         levels(plot_dat[, facet_by])[aa]),
       aes_string(x = x, color = color, weight = weight)
     ) +
-      geom_line(aes(y = 1 - ..y..), stat = "ecdf", lwd = lwd) +
+      geom_step(aes(y = 1 - ..y..), stat = "ecdf", lwd = lwd) +
       theme_pubr(legend = "none") +
       ylab("Reverse ECDF") +
       xlab(axis_titles[aa]) +
@@ -413,7 +413,7 @@ covid_corr_rcdf <- function(plot_dat,
       weight = weight
     )
   ) +
-    geom_line(aes(y = 1 - ..y..), stat = "ecdf", lwd = lwd) +
+    geom_step(aes(y = 1 - ..y..), stat = "ecdf", lwd = lwd) +
     theme_pubr() +
     scale_x_continuous(
       limits = xlim, labels = label_math(10^.x),
@@ -758,7 +758,7 @@ covid_corr_boxplot_facets <- function(plot_dat,
     filename = filename, plot = output_plot, width = width,
     height = height, units = units
   )
-  # return(output_plot)
+  return(output_plot)
 }
 
 
@@ -825,10 +825,9 @@ covid_corr_spaghetti_facets <- function(plot_dat,
                                         point_size = 1.4,
                                         plot_title,
                                         plot_title_size = 12,
-                                        legend = levels(plot_dat[, color]),
                                         legend_position = "bottom",
                                         legend_nrow = ceiling(
-                                          nlevels(plot_dat[, color]) / 2
+                                          length(unique(plot_dat[, color])) / 2
                                         ),
                                         legend_size = 10,
                                         axis_size = 12,
@@ -836,8 +835,8 @@ covid_corr_spaghetti_facets <- function(plot_dat,
                                         ylim = c(0, 8),
                                         ybreaks = seq(0, 8, by = 2),
                                         arrange_nrow = ceiling(
-                                          nlevels(plot_dat[, facet_by]) / 2
-                                        ),
+                                          length(unique(plot_dat[, facet_by]))/2
+                                          ),
                                         arrange_ncol = 2,
                                         panel_title_size = 10,
                                         height = 5,
@@ -854,7 +853,8 @@ covid_corr_spaghetti_facets <- function(plot_dat,
     geom_point(size = point_size) +
     geom_line(lwd = lwd) +
     guides(
-      color = guide_legend(nrow = legend_nrow, byrow = TRUE)
+      color = guide_legend(nrow = legend_nrow, byrow = TRUE),
+      shape = "none"
     ) +
     facet_wrap(facet_by, nrow = arrange_nrow) +
     scale_y_continuous(
@@ -864,8 +864,8 @@ covid_corr_spaghetti_facets <- function(plot_dat,
     theme_pubr() +
     ylab(ylab) +
     xlab(xlab) +
-    scale_color_manual(values = palette, labels = legend) +
-    scale_shape_manual(values = c(19, 17)) +
+    scale_color_manual(values = palette) +
+    scale_shape_manual(values = rep(19, nlevels(plot_dat[, color]))) +
     ggtitle(plot_title) +
     theme(
       plot.title = element_text(hjust = 0.5, size = plot_title_size),
@@ -884,5 +884,5 @@ covid_corr_spaghetti_facets <- function(plot_dat,
     filename = filename, plot = output_plot, width = width,
     height = height, units = units
   )
-  # return(output_plot)
+  return(output_plot)
 }

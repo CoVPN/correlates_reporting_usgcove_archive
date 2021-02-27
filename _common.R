@@ -17,6 +17,8 @@ data_name <- "practice_data.csv"
 # define useful constants
 assays <- c(
   "bindSpike", "bindRBD", "pseudoneutid50", "pseudoneutid80"
+  # NOTE: the live neutralization marker will eventually be available
+  #"liveneutmn50"
 )
 times <- c("B", "Day29", "Day57")
 markers <- c(outer(times, assays, "%.%"))

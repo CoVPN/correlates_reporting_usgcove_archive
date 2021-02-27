@@ -5,7 +5,11 @@
 
 The population of interest for the D57 CoR study is defined as baseline negative, per-protocol, at risk at 7 days post the Day 57 visit, vaccine recipients. In the rest of this specification we will refer to this population as baseline negative vaccine recipients for simplicity. For comparison, we are also interested in the baseline negative, per-protocol, at risk at 7 days post the Day 57 visit, placebo recipients.
 
-There are two main sets of results in the CoR_COXPH section of the report: (i) Cox regression model coefficients, and (ii) marginalized risk curves based on Cox models. 
+The population of interest for the D29 CoR study is defined similarly, but per-protocol AND at risk at 7 days post the Day 57 visit needs to replaced by (at risk at 14 days post the Day 29 visit AND per-protocol) OR (at risk between 7 and 13 days post the Day 29 visit AND per-protocol AND receiving both vaccine doses).
+
+
+
+There are two main sets of results in the CoR_COXPH section of the report: (i) Cox regression model coefficients, and (ii) marginalized risk functions based on Cox models. 
 
 ## Cox regression model fits
 
@@ -19,7 +23,7 @@ The following continuous biomarkers will be studied. Their trichotomized version
     \item Day57pseudoneutid80.
 \end{itemize}
 
-We first fit Cox regression models to the baseline negative, vaccinee population (defined in more details above), one for each continuous or trichotomized marker. All models adjust for the following baseline covariates: 
+We first fit Cox regression models to the baseline negative, vaccinee population (defined in more details above), one for each continuous or trichotomized marker. All models adjust for the following baseline covariates. These results will be double programmed.
 \begin{itemize}
     \item at risk or not
     \item community of color or not
@@ -48,7 +52,7 @@ Notes:
 <!-- $\ast\ast\ast$ Generalized Wald-test p-value of the null hypothesis that the hazard rate is constant across the Lower, Middle, and Upper tertile groups. -->
 
 
-Second, we fit Cox regression models to the following subgroups for continuous markers only. Note that in some subgroups we cannot adjust for all baseline demographic variables. For example, for the at risk subgroup, we cannot include the at-risk indicator.
+Second, we fit Cox regression models to the following subgroups for continuous markers only. Note that in some subgroups we cannot adjust for all baseline demographic variables. For example, for the at risk subgroup, we cannot include the at-risk indicator. These results will be code-reviewed.
 \begin{itemize}
     \item age >= 65
     \item age<65 and at risk

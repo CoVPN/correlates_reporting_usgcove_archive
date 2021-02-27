@@ -1,4 +1,4 @@
-# Univariate CoR Day `r Day`: Cox Proportional Hazards Modeling of Relative and Absolute Risk {#cor-coxph}
+## Day `r Day` CoR
 
 The main regression model is the Cox proportional hazards model. All plots are made with Cox models fit unless specified otherwise. 
 
@@ -143,7 +143,7 @@ Cutpoints:
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{\pathCoRoutput/marginalized_risks2_woplacebo_\studyname}
-    \caption{Marginalized cumulative risk by Day \protect\input{\pathCoRoutput/timepoints_cum_risk_\studyname} as functions of Day `r Day` markers above a threshold (>=s) among baseline seronegative vaccine recipients with 95\% bootstrap point-wise confidence bands (at least 5 cases are required). The horizontal lines indicate the overall cumulative risk of the vaccine arm by Day \protect\input{\pathCoRoutput/timepoints_cum_risk_\studyname} and its 95\% point-wise confidence interval. Histograms of the immunological markers in the vaccine arm are overlaid. L: lower limit of detection.}
+    \caption{Marginalized cumulative risk by Day \protect\input{\pathCoRoutput/timepoints_cum_risk_\studyname} as functions of Day `r Day` markers above a threshold ($\geq s$) among baseline seronegative vaccine recipients with 95\% bootstrap point-wise confidence bands (at least 5 cases are required). The horizontal lines indicate the overall cumulative risk of the vaccine arm by Day \protect\input{\pathCoRoutput/timepoints_cum_risk_\studyname} and its 95\% point-wise confidence interval. Histograms of the immunological markers in the vaccine arm are overlaid. L: lower limit of detection.}
 \end{figure}
 
 \begin{figure}[H]

@@ -21,7 +21,6 @@ dat.mock <- read.csv(here::here("..", "data_raw", data_name))
 dat.mock.vacc.seroneg <- readRDS(here::here("data_clean", "dat.mock.vacc.seroneg.rds"))
 dat.mock.vacc.seroneg.subsample <- readRDS(here::here("data_clean", "dat.mock.vacc.seroneg.subsample.rds"))
 marker.cutpoints <- readRDS(here::here("data_clean", "marker.cutpoints.rds"))
-#remotes::install_github("CoVPN/correlates_mockdata", auth_token="e09062bae8d9a4acf4ba7e7c587c5d3fbe1abd69")
 # the order of these packages matters
 # kyotil mostly contains code for formatting, but may also contain code for some estimation tasks
 library(kyotil)      
@@ -50,8 +49,8 @@ if (pop=="57") {
     dat.vacc.pop=dat.mock.vacc.seroneg[dat.mock.vacc.seroneg[["EventTimePrimaryD"%.%pop]]>=7, ] #dat.mock.vacc.seroneg has trichotomized variables defined
     dat.plac.pop=subset(dat.mock, Trt==0 & Bserostatus==0 & Perprotocol & EventTimePrimaryD57>=7)
 } else if (pop=="29") {
-    dat.vacc.pop=subset(dat.mock, Trt==1 & Bserostatus == 0 & EventTimePrimaryD29>=7 & (EventTimePrimaryD29>=14 & Perprotocol == 1 | EventTimePrimaryD29<=13 & Fullvaccine==1))
-    dat.plac.pop=subset(dat.mock, Trt==0 & Bserostatus == 0 & EventTimePrimaryD29>=7 & (EventTimePrimaryD29>=14 & Perprotocol == 1 | EventTimePrimaryD29<=13 & Fullvaccine==1))    
+    dat.vacc.pop=subset(dat.mock, Trt==1 & Bserostatus == 0 & (EventTimePrimaryD29>=14 & Perprotocol == 1 | EventTimePrimaryD29>=7 & EventTimePrimaryD29<=13 & Fullvaccine==1))
+    dat.plac.pop=subset(dat.mock, Trt==0 & Bserostatus == 0 & (EventTimePrimaryD29>=14 & Perprotocol == 1 | EventTimePrimaryD29>=7 & EventTimePrimaryD29<=13 & Fullvaccine==1))    
     # define trichotomized markers
     for (a in assays) {    
       q.a <- wtd.quantile(dat.vacc.pop[["Day29" %.% a]], weights = dat.vacc.pop$wt, probs = c(1 / 3, 2 / 3))
@@ -815,6 +814,7 @@ x.time<-seq(0,t0,by=30); if(t0-last(x.time)>15) x.time=c(x.time, t0) else x.time
 #
 mypdf(oma=c(1,0,0,0), onefile=F, file=paste0(save.results.to, "marginalized_risks_cat_", study.name), mfrow=.mfrow, width=7*1.3, height = 7.5/2*.mfrow[1]*1.3, mar=c(11,4,4,2))
 for (a in assays) {        
+    par(las=1, cex.axis=0.9, cex.lab=1)# axis label 
     marker.name="Day"%.%pop%.%a%.%"cat"    
     
     out=risks.all.ter[[a]]

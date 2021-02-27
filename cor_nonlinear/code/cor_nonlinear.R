@@ -13,7 +13,6 @@ if (!dir.exists(save.results.to))  dir.create(save.results.to)
 rerun.time.consuming.steps=!file.exists(paste0(save.results.to, "risks.all.1.mock.Rdata"))
     
 library(COVIDcorr); stopifnot(packageVersion("COVIDcorr")>="2021.01.25")
-#remotes::install_github("CoVPN/correlates_mockdata", auth_token="e09062bae8d9a4acf4ba7e7c587c5d3fbe1abd69")
 # the order of these packages matters
 library(mgcv) # gam
 #library(nnet)# multinom, for estimating trichotomous markers probability, make sure this comes after mgcv since mgcv also has multinom

@@ -24,9 +24,8 @@ dat.mock <- read.csv(here("..", "data_clean", data_name))
 # color palatte throughout the report
 study.name <- "mock"
 
-# LLOQ for boxplots. This LLOQ is 49 for ID50, is 43 for ID80, and is 34 for
-# the bAb variabes.
-LLOQ <- log10(c(34, 34, 49, 43))
+# LLOD for boxplots. 
+LLOD <- log10(c(62, 62, 10, 10))
 
 # defining labels of the subgroups
 times <- c("B", "Day29", "Day57", "Delta29overB", "Delta57overB")

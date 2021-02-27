@@ -1,12 +1,12 @@
 ---
-title: CoR Plots Verification Documentation
+title: Correlates of Risk Plots Verification Documentation
 date: "`r format(Sys.time(), '%B %d, %Y')`"
 output: pdf_document
 ---
 
 # Overview
 
-This document indicates the script, author, verification script, and verification author of the files contained within the parent folder. To verify the images generated, the two processes use the same base mock data. Then the input data used to generate the plots was recreated, and compared to ensure they are the same. Any statistics shown in the final plots were recreated manually and verified.
+This document indicates the script, author, verification script, and verification author of the files contained within the parent folder. To verify the images generated, the two scripts use the same base mock data. Then the input data used to generate the plots was recreated, and compared to ensure they are the same. Any statistics shown in the final plots were recreated manually and verified.
 
 ## Signatures
 
@@ -42,7 +42,8 @@ tibble::tribble(
   "Dr. David Benkeser", "Programmer",
   "Nima Hejazi",        "Programmer",
   "Kendric Li",         "Programmer",
-  "Yiwen",         "Tester" 
+  "Yiwen Lu",           "Programmer",
+  "Di Lu",              "Tester" 
 ) %>% 
   signature_table()
 
@@ -52,43 +53,38 @@ tibble::tribble(
 
 ## Original Scripts
 
-The scripts used to generate the original outputs. These live within the `cor_graphical/code` folder.
+The scripts used to generate the original outputs. These live within the `immuno_graphical/code` folder.
 
 ----
 - Script: params.R
-- Author(s): 
-- Last Edit Date: 
+- Author(s): Kendric Li, Nima Hejazi, David Benkeser
+- Last Edit Date: January 21, 2021
 - Description: 
 
 ----
 - Script: cor_data_preprocess.R
-- Author(s): 
-- Last Edit Date: 
+- Author(s): Kendric Li, Yiwen Lu, Nima Hejazi, David Benkeser
+- Last Edit Date: February 25, 2021
 - Description: 
 
 ----
-- Script: data_prep.R
-- Author(s): 
-- Last Edit Date: 
-- Description: 
-
-----
-- Script: cor_graphics_violin_scatter.R
-- Author(s): 
-- Last Edit Date: 
-- Description: 
-
-----
-- Script: CoR_assay_graphics.R
-- Author(s):
-- Last Edit Date:
+- Script: cor_wrcdf_plot_function.R
+- Author(s): Kendric Li, Nima Hejazi, David Benkeser
+- Last Edit Date: January 21, 2021
 - Description: 
 
 ----
 - Script: CoR_wrcdf_with_VE_lines.R
-- Author(s):
-- Last Edit Date: 
+- Author(s): Kendric Li, Nima Hejazi, David Benkeser
+- Last Edit Date: January 21, 2021
 - Description: 
+
+----
+- Script: cor_graphics_violin_scatter.R
+- Author(s): Yiwen Lu, Nima Hejazi, David Benkeser
+- Last Edit Date: February 25, 2021
+- Description: 
+
 
 ## Verification Scripts
 

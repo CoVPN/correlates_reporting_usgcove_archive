@@ -2,8 +2,7 @@
 all: clean figs
 
 ## clean_data     : saves data sets for plotting in data_clean
-clean_data: code/data_prep.R
-	Rscript code/data_prep.R
+clean_data: code/cor_data_preprocess.R
 	Rscript code/cor_data_preprocess.R
 
 ## figs           : make figures

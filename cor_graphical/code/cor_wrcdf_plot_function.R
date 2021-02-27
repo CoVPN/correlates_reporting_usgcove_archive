@@ -21,11 +21,10 @@ covid_corr_rcdf_ve_lines <- function(
   VE, 
   VE_lb, VE_ub,
   conf.level = 0.95,
-  xlim = c(-2, 8),
-  xbreaks = seq(-2, 8, 2),
+  xlim = c(-2, 10),
+  xbreaks = seq(-2, 10, 2),
   xlab,
   ylab = "Vaccine Efficacy",
-  
   legend_position = "right",
   legend_size = 10,
   axis_title_size = 10,
@@ -42,9 +41,9 @@ covid_corr_rcdf_ve_lines <- function(
   dat_ecdf <- data.frame(x = xgrid, ecdf_value = ecdf_value) %>% 
     mutate(rcdf = 1 - ecdf_value)
   
-  line_low <- xgrid[which(ecdf_value >= 1 - VE_lb)[1]]
+  line_low <- min(xgrid[which(ecdf_value >= 1 - VE_lb)[1]], xlim[2], na.rm = T)
   line_mid <- xgrid[which(ecdf_value >= 1 - VE)[1]]
-  line_top <- xgrid[which(ecdf_value >= 1 - VE_ub)[1]]
+  line_top <- max(xgrid[which(ecdf_value >= 1 - VE_ub)[1]], xlim[1], na.rm = T)
   
   dat_areaV <- filter(dat_ecdf, x < line_low, x > line_top)
   
@@ -55,8 +54,8 @@ covid_corr_rcdf_ve_lines <- function(
                                  " (", conf.level * 100, "% CI ", format_number(10 ^ line_top), " - ",
                                  format_number(10 ^ line_low), ")\n",
                                  "calculated from vaccine efficacy of ", round(VE * 100, 1), "%, \n",
-                                 conf.level * 100, "% CI (", round(VE_lb * 100, 1), " - ", 
-                                 round(VE_ub * 100, 1), ")")
+                                 conf.level * 100, "% CI (", round(max(VE_lb, 0) * 100, 1), " - ", 
+                                 round(min(VE_ub, 1) * 100, 1), ")")
   
   dat_seg <- data.frame(x = c(min(xgrid), min(xgrid), min(xgrid), line_low, line_top, line_mid),
                         y = c(VE_lb, VE_ub, VE, VE_lb, VE_ub, VE),
@@ -68,12 +67,12 @@ covid_corr_rcdf_ve_lines <- function(
   
   
   output_plot <- ggplot(dat_ecdf, aes(x = x, y = rcdf)) +
-    geom_line() +
+    geom_step() +
     geom_rect(data = data.frame(x = min(xgrid), rcdf = 1), 
               aes(xmin = min(xgrid),xmax = line_top, ymin = VE_lb, ymax = VE_ub), 
               fill = "grey", alpha = 0.3) +
     geom_ribbon(data = dat_areaV, aes(ymin = 0, ymax = rcdf), 
-                alpha = 0.3, fill = "grey")+
+                alpha = 0.3, fill = "grey") +
     geom_segment(data = dat_seg,
                  aes(x = x, y = y, xend = xend, yend = yend, linetype = type),
                  color = "red",

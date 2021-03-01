@@ -10,9 +10,20 @@ if (.Platform$OS.type == "windows") {
 } else renv::restore(prompt=FALSE)     
 # after updating a package, run renv::snapshot() to override the global library record with your changes
 source(here::here("..", "_common.R"))
-source(here::here("code", "params.R"))
 
-save.results.to = paste0(here::here("output"), "/"); if (!dir.exists(save.results.to))  dir.create(save.results.to)
+source(here::here("code", "params.R"))
+dat.mock <- read.csv(here::here("..", "data_clean", data_name))
+dat.mock.vacc.seroneg <- readRDS(here::here("data_clean", "dat.mock.vacc.seroneg.rds"))
+dat.mock.vacc.seroneg.subsample <- readRDS(here::here("data_clean", "dat.mock.vacc.seroneg.subsample.rds"))
+
+# population is either 57 or 29
+Args <- commandArgs(trailingOnly=TRUE) 
+if (length(Args)==0) Args=c(pop="29") 
+pop=Args[1]; print(pop)
+#
+save.results.to = paste0(here::here("output"), "/D", pop,"/"); 
+if (!dir.exists(save.results.to))  dir.create(save.results.to)
+
 
 # the order of these packages may matter
 library(COVIDcorr)

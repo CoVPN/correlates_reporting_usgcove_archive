@@ -16,7 +16,6 @@ source(here::here("..", "_common.R"))
 source(here::here("code", "params.R"))
 dat.mock <- read.csv(here::here("..", "data_clean", data_name))
 dat.mock.vacc.seroneg <- readRDS(here::here("data_clean", "dat.mock.vacc.seroneg.rds"))
-dat.mock.vacc.seroneg.subsample <- readRDS(here::here("data_clean", "dat.mock.vacc.seroneg.subsample.rds"))
 marker.cutpoints <- readRDS(here::here("data_clean", "marker.cutpoints.rds"))
 
 # the order of these packages matters

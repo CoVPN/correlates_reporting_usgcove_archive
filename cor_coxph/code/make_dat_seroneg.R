@@ -31,6 +31,7 @@ for (a in assays) {
     weights = dat.mock.vacc.seroneg$wt,
     probs = c(1 / 3, 2 / 3)
   )
+  q.a[1]=q.a[1]+1e-6 # if 33% is the minimial value, this helps avoid an error
   tmp[["D57"]] <- q.a
   q.a <- c(-Inf, q.a, Inf)
   dat.mock.vacc.seroneg[["Day57" %.% a %.% "cat"]] <-
@@ -48,6 +49,7 @@ for (a in assays) {
     weights = dat.mock.vacc.seroneg$wt,
     probs = c(1 / 3, 2 / 3)
   )
+  q.a[1]=q.a[1]+1e-6 # if 33% is the minimial value, this helps avoid an error
   tmp[["D29"]] <- q.a
   q.a <- c(-Inf, q.a, Inf)
   dat.mock.vacc.seroneg[["Day29" %.% a %.% "cat"]] <-
@@ -65,6 +67,7 @@ for (a in assays) {
     weights = dat.mock.vacc.seroneg$wt,
     probs = c(1 / 3, 2 / 3)
   )
+  q.a[1]=q.a[1]+1e-6 # if 33% is the minimial value, this helps avoid an error
   tmp[["D29overB"]] <- q.a
   q.a <- c(-Inf, q.a, Inf)
   dat.mock.vacc.seroneg[["Delta29overB" %.% a %.% "cat"]] <-
@@ -83,6 +86,7 @@ for (a in assays) {
     weights = dat.mock.vacc.seroneg$wt,
     probs = c(1 / 3, 2 / 3)
   )
+  q.a[1]=q.a[1]+1e-6 # if 33% is the minimial value, this helps avoid an error
   tmp[["D57verB"]] <- q.a
   q.a <- c(-Inf, q.a, Inf)
   dat.mock.vacc.seroneg[["Delta57overB" %.% a %.% "cat"]] <-
@@ -101,6 +105,7 @@ for (a in assays) {
     weights = dat.mock.vacc.seroneg$wt,
     probs = c(1 / 3, 2 / 3)
   )
+  q.a[1]=q.a[1]+1e-6 # if 33% is the minimial value, this helps avoid an error
   tmp[["D57over29"]] <- q.a
   q.a <- c(-Inf, q.a, Inf)
   dat.mock.vacc.seroneg[["Delta57over29" %.% a %.% "cat"]] <-
@@ -121,6 +126,8 @@ saveRDS(dat.mock.vacc.seroneg,
         file = here::here("data_clean", "dat.mock.vacc.seroneg.rds"))
 saveRDS(marker.cutpoints,
         file = here::here("data_clean", "marker.cutpoints.rds"))
+
+
 
 ###############################################################################
 # subsampling to study sample size dependence

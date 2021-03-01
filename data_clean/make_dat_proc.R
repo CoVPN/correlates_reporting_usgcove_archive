@@ -21,7 +21,7 @@ dat_proc <- dat_proc %>%
   mutate(
     age.geq.65 = as.integer(Age >= 65),
     # create two-phase sampling indicator
-    TwophasesampInd = Perprotocol == 1 &
+    TwophasesampInd = Fullvaccine == 1 &
       (SubcohortInd | EventIndPrimaryD29 == 1) &
       complete.cases(cbind(
         BbindSpike, Day29bindSpike, Day57bindSpike,
@@ -108,11 +108,20 @@ dat_proc <- dat_proc %>%
 ###############################################################################
 
 wts_table <- with(
-  subset(dat_proc, Perprotocol == 1),
+  subset(dat_proc, Perprotocol == 1 & EventTimePrimaryD57>=7),
   table(Wstratum, TwophasesampInd)
 )
 wts_norm <- rowSums(wts_table) / wts_table[, 2]
 dat_proc$wt <- wts_norm[dat_proc$Wstratum]
+dat_proc$wt[!with(dat_proc, Perprotocol == 1 & EventTimePrimaryD57>=7)] <- NA
+
+wts_table2 <- with(
+  subset(dat_proc, EventTimePrimaryD29>=14 & Perprotocol == 1 | EventTimePrimaryD29>=7 & EventTimePrimaryD29<=13 & Fullvaccine==1),
+  table(Wstratum, TwophasesampInd)
+)
+wts_norm2 <- rowSums(wts_table2) / wts_table2[, 2]
+dat_proc$wt.2 <- wts_norm2[dat_proc$Wstratum]
+dat_proc$wt.2[!with(dat_proc, EventTimePrimaryD29>=14 & Perprotocol == 1 | EventTimePrimaryD29>=7 & EventTimePrimaryD29<=13 & Fullvaccine==1] <- NA
 
 
 ###############################################################################

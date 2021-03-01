@@ -165,6 +165,10 @@ covid_corr_pairplots_by_time <- function(plot_dat, ## data for plotting
   dat.tmp <- plot_dat[, paste0(times, assay)]
   rr <- range(dat.tmp, na.rm = TRUE)
   
+  if (rr[1] == rr[2]) {
+    rr <- c(rr[1] - 1, rr[2] + 1)
+  }
+  
   if (rr[2] - rr[1] < 2) {
     rr <- floor(rr[1]):ceiling(rr[2])
   }

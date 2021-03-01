@@ -19,7 +19,7 @@ library(stringr)
 # # load data
 # data(dat.mock)
 
-dat.mock <- read.csv(here("..", "data_raw", data_name), header = TRUE)
+dat.mock <- read.csv(here("..", "data_clean", data_name), header = TRUE)
 
 # load parameters
 source(here("code", "params.R"))
@@ -77,7 +77,7 @@ dat.long.subject_level <- dat[, c(
   "Bserostatus", "Fullvaccine", "Perprotocol", "EventIndPrimaryD29",
   "EventIndPrimaryD57", "SubcohortInd", "age.geq.65", "TwophasesampInd",
   "Bstratum", "wt", "race",
-  "EthnicityHispanic","EthnicityNotreported", "EthnicityUnknown"
+  "EthnicityHispanic","EthnicityNotreported", "EthnicityUnknown",
   "WhiteNonHispanic"
 )] %>%
   replicate(length(assays), ., simplify = FALSE) %>%

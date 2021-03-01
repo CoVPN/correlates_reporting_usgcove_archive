@@ -1,6 +1,6 @@
 {
   "R": {
-    "Version": "4.0.4",
+    "Version": "4.0.3",
     "Repositories": [
       {
         "Name": "CRAN",
@@ -244,8 +244,8 @@
       "Package": "bookdown",
       "Version": "0.21.6",
       "Source": "GitHub",
-      "Remotes": "rstudio/bslib, rstudio/rmarkdown, r-lib/downlit",
       "RemoteType": "github",
+      "Remotes": "rstudio/bslib, rstudio/rmarkdown, r-lib/downlit",
       "RemoteHost": "api.github.com",
       "RemoteRepo": "bookdown",
       "RemoteUsername": "rstudio",
@@ -1481,8 +1481,8 @@
       "Package": "rmarkdown",
       "Version": "2.6.6",
       "Source": "GitHub",
-      "Remotes": "rstudio/bslib, rstudio/shiny",
       "RemoteType": "github",
+      "Remotes": "rstudio/bslib, rstudio/shiny",
       "RemoteHost": "api.github.com",
       "RemoteRepo": "rmarkdown",
       "RemoteUsername": "rstudio",

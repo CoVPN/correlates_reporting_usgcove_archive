@@ -1,14 +1,13 @@
-# install.packages("~/CovidCorrSAP/R_packages/COVIDcorr")
+
 
 #-----------------------------------------------
 # obligatory to append to the top of each script
 renv::activate(project = here::here(".."))
 source(here::here("..", "_common.R"))
 #-----------------------------------------------
-library(COVIDcorr)
 library(here)
 # load data
-data(dat.mock)
+dat.mock <- read.csv(here::here("..", "data_clean", data_name))
 data <- dat.mock
 
 # load parameters

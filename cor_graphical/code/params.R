@@ -42,3 +42,4 @@ labels.title2 <- apply(labels.title, c(1, 2), function(st) {
 trt.labels <- c("Placebo", "Vaccine")
 bstatus.labels <- c("Baseline Neg", "Baseline Pos")
 bstatus.labels.2 <- c("BaselineNeg", "BaselinePos")
+

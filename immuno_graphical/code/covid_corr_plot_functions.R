@@ -312,6 +312,8 @@ covid_corr_rcdf_facets <- function(plot_dat,
                                    width = 6.5,
                                    units = "in",
                                    filename) {
+  
+  plot_dat <- plot_dat[!is.na(plot_dat[, color]), ]
   rcdf_list <- vector("list", nlevels(plot_dat[, facet_by]))
   for (aa in 1:nlevels(plot_dat[, facet_by])) {
     rcdf_list[[aa]] <- ggplot(
@@ -414,6 +416,7 @@ covid_corr_rcdf <- function(plot_dat,
                             width = 8,
                             units = "in",
                             filename) {
+  plot_dat <- plot_dat[!is.na(plot_dat[, color]), ]
   output_plot <- ggplot(
     plot_dat,
     aes_string(
@@ -509,6 +512,8 @@ covid_corr_scatter_facets <- function(plot_dat,
                                       width = 7,
                                       units = "in",
                                       filename) {
+  
+  
   scatterplot_list <- vector("list", length(assays))
 
   ## make the plot axis limits adaptive to the data range
@@ -649,7 +654,7 @@ covid_corr_boxplot_facets <- function(plot_dat,
                                       LLOD_label_size = 3.5,
                                       LLOW_lwd = 1,
                                       lwd = 1,
-                                      point_size = 1.4,
+                                      point_size = 1.2,
                                       box_width = 0.6,
                                       errorbar_width = 0.45,
                                       jitter_width = 0.15,
@@ -677,6 +682,7 @@ covid_corr_boxplot_facets <- function(plot_dat,
                                       width = 6.5,
                                       units = "in",
                                       filename) {
+  plot_dat <- plot_dat[!is.na(plot_dat[, x]), ]
   # make a subset of data with 30 sample points for the jitter in each subgroup
   # defined by Trt:Bserostatus
   if (xlab_use_letters) {
@@ -720,7 +726,8 @@ covid_corr_boxplot_facets <- function(plot_dat,
           boxplot_jitter_points[, facet_by] ==
             levels(boxplot_jitter_points[, facet_by])[aa]
         ),
-        width = jitter_width, size = point_size
+        width = jitter_width, size = point_size,
+        alpha = 0.4
       ) +
       scale_x_discrete(labels = xlabels) +
       scale_y_continuous(
@@ -751,7 +758,7 @@ covid_corr_boxplot_facets <- function(plot_dat,
           lwd = LLOW_lwd
         ) +
         geom_text(
-          x = 0.65 + 0.025 * nlevels(plot_dat[, x]), vjust = "right",
+          x = 0.65 + 0.05 * nlevels(plot_dat[, x]), vjust = "right",
           y = LLOD[aa] - 0.5, label = "LLOD", size = LLOD_label_size,
           color = "black", show.legend = FALSE
         )
@@ -855,7 +862,7 @@ covid_corr_spaghetti_facets <- function(plot_dat,
   # make a subset of data with 30 sample points for the jitter in each subgroup
   # defined by Trt:Bserostatus
   
-  
+  plot_dat <- plot_dat[!is.na(plot_dat[, x]), ]
   output_plot <- ggplot(
     plot_dat, aes_string(x = x, y = y, group = id, color = color, shape = color)
   ) +

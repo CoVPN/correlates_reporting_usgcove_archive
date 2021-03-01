@@ -1085,6 +1085,13 @@
       "Repository": "CRAN",
       "Hash": "eb7b6439bc6d812eed2cddba5edc6be3"
     },
+    "mice": {
+      "Package": "mice",
+      "Version": "3.13.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "ad5d45cfde1d122001e0dca07f80182a"
+    },
     "mime": {
       "Package": "mime",
       "Version": "0.9",
@@ -1861,13 +1868,6 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "6c85f015dee9cc7710ddd20f86881f58"
-    },
-    "xtable": {
-      "Package": "xtable",
-      "Version": "1.8-4",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "b8acdf8af494d9ec19ccb2481a9b11c2"
     },
     "yaml": {
       "Package": "yaml",

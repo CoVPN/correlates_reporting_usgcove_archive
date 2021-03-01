@@ -14,10 +14,10 @@ figs: fig_code clean_data
 fig_code: code/cor_graphics_violin_scatter.R \
   code/CoR_assay_graphics.R \
   code/CoR_wrcdf_with_VE_lines.R \
-  code/params.R  
+  code/params.R
 
 ## clean          : clean up data_clean and output folder
-clean: 
+clean:
 	rm -f data_clean/* && rm -f output/*
 
 # type 'make help' to show all make commands

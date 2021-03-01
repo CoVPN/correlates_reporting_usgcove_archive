@@ -5,8 +5,6 @@ source(here::here("..", "_common.R"))
 #-----------------------------------------------
 
 library(here)
-# DB: Scheduled for deletion
-# library(COVIDcorr)
 library(tidyr)
 library(dplyr)
 library(stringr)

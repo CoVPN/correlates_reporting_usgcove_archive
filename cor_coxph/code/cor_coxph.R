@@ -7,24 +7,21 @@ if (.Platform$OS.type == "windows") {
     options(renv.config.install.transactional = FALSE)
     renv::restore(library=saved.system.libPaths, prompt=FALSE) # for a quick test, add: packages="backports"
     .libPaths(c(saved.system.libPaths, .libPaths()))
-} else renv::restore(prompt=FALSE)     
+} else renv::restore(prompt=FALSE)
 
 # after updating a package, run renv::snapshot() to override the global library record with your changes
 source(here::here("..", "_common.R"))
 #-----------------------------------------------
 
 source(here::here("code", "params.R"))
-    
-# DB: Scheduled for deletion    
-# library(COVIDcorr)
-dat.mock <- read.csv(here::here("..", "data_raw", data_name))
+dat.mock <- read.csv(here::here("..", "data_clean", data_name))
 dat.mock.vacc.seroneg <- readRDS(here::here("data_clean", "dat.mock.vacc.seroneg.rds"))
 dat.mock.vacc.seroneg.subsample <- readRDS(here::here("data_clean", "dat.mock.vacc.seroneg.subsample.rds"))
 marker.cutpoints <- readRDS(here::here("data_clean", "marker.cutpoints.rds"))
 
 # the order of these packages matters
 # kyotil mostly contains code for formatting, but may also contain code for some estimation tasks
-library(kyotil)      
+library(kyotil)
 #remotes::install_github("youyifong/kyotil")
 # marginalizedRisk contains logic for computing marginalized risk curves
 library(marginalizedRisk)
@@ -43,6 +40,7 @@ pop=Args[1]; print(pop)
 #
 save.results.to = paste0(here::here("output"), "/D", pop,"/"); 
 if (!dir.exists(save.results.to))  dir.create(save.results.to)
+
 # important subsets of data
 if (pop=="57") {
     dat.vacc.pop=dat.mock.vacc.seroneg[dat.mock.vacc.seroneg[["EventTimePrimaryD"%.%pop]]>=7, ] #dat.mock.vacc.seroneg has trichotomized variables defined

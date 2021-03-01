@@ -6,8 +6,6 @@ source(here::here("..", "_common.R"))
 
 library(here)
 library(stringr)
-# DB: Scheduled for deletion
-# library(COVIDcorr)
 save.results.to <- here("figs")
 dat.mock <- read.csv(here("..", "data_clean", data_name))
 

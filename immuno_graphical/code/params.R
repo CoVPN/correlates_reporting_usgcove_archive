@@ -1,7 +1,5 @@
 library(here)
 library(stringr)
-# DB: Scheduled for deletion
-# library(COVIDcorr)
 save.results.to <- here("figs")
 
 # load mock data and labels
@@ -14,10 +12,10 @@ save.results.to <- here("figs")
 # data(labels.assays.long)
 # data(labels.assays.short)
 labels.assays <- c("Binding Antibody to Spike", "Binding Antibody to RBD",
-                   "PsV Neutralization 50% Titer", 
+                   "PsV Neutralization 50% Titer",
                    # "WT LV Neutralization 50% Titer",
                    "PsV Neutralization 80% Titer")
-names(labels.assays) <- c("bindSpike", "bindRBD", "pseudoneutid50", 
+names(labels.assays) <- c("bindSpike", "bindRBD", "pseudoneutid50",
                           #"liveneutmn50",
                           "pseudoneutid80")
 # color palatte throughout the report

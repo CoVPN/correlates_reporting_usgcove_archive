@@ -7,7 +7,7 @@ if (.Platform$OS.type == "windows") {
     options(renv.config.install.transactional = FALSE)
     renv::restore(library=saved.system.libPaths, prompt=FALSE) # for a quick test, add: packages="backports"
     .libPaths(c(saved.system.libPaths, .libPaths()))
-} else renv::restore(prompt=FALSE)     
+} else renv::restore(prompt=FALSE)
 
 # after updating a package, run renv::snapshot() to override the global library record with your changes
 source(here::here("..", "_common.R"))
@@ -18,12 +18,10 @@ source(here::here("code", "params.R"))
 # start R inside the code folder or make sure working directory is here
 save.results.to = paste0(here::here("output"), "/")
 if (!dir.exists(save.results.to))  dir.create(save.results.to)
-    
+
 # if .Rdata already exists, don't rerun
 rerun.time.consuming.steps=!file.exists(paste0(save.results.to, "risks.all.1.mock.Rdata"))
-    
-# DB: Scheduled for deletion    
-# library(COVIDcorr)
+
 dat.mock <- read.csv(here::here("..", "data_clean", data_name))
 dat.mock.vacc.seroneg <- readRDS(here::here("data_clean", "dat.mock.vacc.seroneg.rds"))
 dat.mock.vacc.seroneg.subsample <- readRDS(here::here("data_clean", "dat.mock.vacc.seroneg.subsample.rds"))
@@ -31,7 +29,7 @@ marker.cutpoints <- readRDS(here::here("data_clean", "marker.cutpoints.rds"))
 #remotes::install_github("CoVPN/correlates_mockdata", auth_token="e09062bae8d9a4acf4ba7e7c587c5d3fbe1abd69")
 # the order of these packages matters
 # kyotil mostly contains code for formatting, but may also contain code for some estimation tasks
-library(kyotil)      
+library(kyotil)
 #remotes::install_github("youyifong/kyotil")
 # marginalizedRisk contains logic for computing marginalized risk curves
 library(marginalizedRisk)
@@ -50,7 +48,7 @@ pop=Args[1]; print(pop)
 
 save.results.to = paste0(here::here("output"), "/D", pop,"/"); 
 if (!dir.exists(save.results.to))  dir.create(save.results.to)
-    
+
 
 # important subsets of data
 if (pop=="57") {

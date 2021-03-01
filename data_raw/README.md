@@ -19,13 +19,6 @@ This `README` file describes the variables in the mock data sets
 * `COVID_VEtrial_practicedata_primarystage1.csv`
 * `COVID_VEtrial_practicedata_longerterm.csv`
 
-Each of the data sets may be loaded into `R` using
-```r
-# load the package then the cleaned up VE trial mock data set:
-library(COVIDcorr)
-data(dat.mock)
-```
-
 The first data set represents an expected data set that would be available for
 the first Stage 1 correlates analysis of a Phase 3 trial, which takes place at
 some point after the primary analysis of vaccine efficacy that took place after

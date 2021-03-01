@@ -6,12 +6,10 @@ source(here::here("..", "_common.R"))
 
 library(scales)
 library(tidyverse)
-# DB: Scheduled for deletion
-# library(COVIDcorr)
 library(here)
 library(cowplot)
 
-study.name="mock"
+study.name <- "mock"
 
 ### variables for looping
 plots <- c("bindSpike","bindRBD","pseudoneutid50","pseudoneutid80")
@@ -23,9 +21,9 @@ times <- list(c("Day 29","Day 57"), c("Day 1","Day 29","Day 57"))
 
 ## load data 
 longer_cor_data <- readRDS(here("data_clean", "longer_cor_data.rds"))
-longer_cor_data_plot1 <- readRDS(here("data_clean", "longer_cor_data_plot1.rds"))  
-plot.25sample1 <- readRDS(here("data_clean", "plot.25sample1.rds"))  
-longer_cor_data_plot3 <- readRDS(here("data_clean", "longer_cor_data_plot3.rds"))  
+longer_cor_data_plot1 <- readRDS(here("data_clean", "longer_cor_data_plot1.rds"))
+plot.25sample1 <- readRDS(here("data_clean", "plot.25sample1.rds"))
+longer_cor_data_plot3 <- readRDS(here("data_clean", "longer_cor_data_plot3.rds"))
 plot.25sample3 <- readRDS(here("data_clean", "plot.25sample3.rds"))
 
 #' A function to create a plot that shows violin + box or line + box figures

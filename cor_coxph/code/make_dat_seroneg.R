@@ -6,8 +6,7 @@ source(here::here("..", "_common.R"))
 library(Hmisc)
 
 source(here::here("code", "params.R"))
-
-dat.mock <- read.csv(here::here("..", "data_raw", data_name))
+dat.mock <- read.csv(here::here("..", "data_clean", data_name))
 
 ###############################################################################
 # define trichotomized markers for dat.mock.vacc.seroneg
@@ -118,8 +117,10 @@ for (a in assays) {
   marker.cutpoints[[a]] <- tmp
 }
 
-saveRDS(dat.mock.vacc.seroneg, file = here::here("data_clean", "dat.mock.vacc.seroneg.rds"))
-saveRDS(marker.cutpoints, file = here::here("data_clean", "marker.cutpoints.rds"))
+saveRDS(dat.mock.vacc.seroneg,
+        file = here::here("data_clean", "dat.mock.vacc.seroneg.rds"))
+saveRDS(marker.cutpoints,
+        file = here::here("data_clean", "marker.cutpoints.rds"))
 
 ###############################################################################
 # subsampling to study sample size dependence
@@ -141,4 +142,5 @@ dat.mock.vacc.seroneg.subsample <- lapply(cases_subsample, function(n_cases) {
 names(dat.mock.vacc.seroneg.subsample) <- paste("cases", cases_subsample,
   sep = "_"
 )
-saveRDS(dat.mock.vacc.seroneg.subsample, file = here::here("data_clean", "dat.mock.vacc.seroneg.subsample.rds"))
+saveRDS(dat.mock.vacc.seroneg.subsample,
+        file = here::here("data_clean", "dat.mock.vacc.seroneg.subsample.rds"))

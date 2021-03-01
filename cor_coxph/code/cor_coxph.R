@@ -24,7 +24,7 @@ rerun.time.consuming.steps=!file.exists(paste0(save.results.to, "risks.all.1.moc
     
 # DB: Scheduled for deletion    
 # library(COVIDcorr)
-dat.mock <- read.csv(here::here("..", "data_raw", data_name))
+dat.mock <- read.csv(here::here("..", "data_clean", data_name))
 dat.mock.vacc.seroneg <- readRDS(here::here("data_clean", "dat.mock.vacc.seroneg.rds"))
 dat.mock.vacc.seroneg.subsample <- readRDS(here::here("data_clean", "dat.mock.vacc.seroneg.subsample.rds"))
 marker.cutpoints <- readRDS(here::here("data_clean", "marker.cutpoints.rds"))

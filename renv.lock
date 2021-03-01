@@ -1,6 +1,6 @@
 {
   "R": {
-    "Version": "4.0.4",
+    "Version": "4.0.3",
     "Repositories": [
       {
         "Name": "CRAN",
@@ -244,8 +244,8 @@
       "Package": "bookdown",
       "Version": "0.21.6",
       "Source": "GitHub",
-      "Remotes": "rstudio/bslib, rstudio/rmarkdown, r-lib/downlit",
       "RemoteType": "github",
+      "Remotes": "rstudio/bslib, rstudio/rmarkdown, r-lib/downlit",
       "RemoteHost": "api.github.com",
       "RemoteRepo": "bookdown",
       "RemoteUsername": "rstudio",
@@ -1085,6 +1085,13 @@
       "Repository": "CRAN",
       "Hash": "eb7b6439bc6d812eed2cddba5edc6be3"
     },
+    "mice": {
+      "Package": "mice",
+      "Version": "3.13.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "ad5d45cfde1d122001e0dca07f80182a"
+    },
     "mime": {
       "Package": "mime",
       "Version": "0.9",
@@ -1474,8 +1481,8 @@
       "Package": "rmarkdown",
       "Version": "2.6.6",
       "Source": "GitHub",
-      "Remotes": "rstudio/bslib, rstudio/shiny",
       "RemoteType": "github",
+      "Remotes": "rstudio/bslib, rstudio/shiny",
       "RemoteHost": "api.github.com",
       "RemoteRepo": "rmarkdown",
       "RemoteUsername": "rstudio",
@@ -1861,13 +1868,6 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "6c85f015dee9cc7710ddd20f86881f58"
-    },
-    "xtable": {
-      "Package": "xtable",
-      "Version": "1.8-4",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "b8acdf8af494d9ec19ccb2481a9b11c2"
     },
     "yaml": {
       "Package": "yaml",

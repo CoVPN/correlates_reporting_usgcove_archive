@@ -1,5 +1,27 @@
-common_code: ../_common.R
-data_prep_code: data_clean/data_prep.R
-fig_code: code/cor_graphics_violin_scatter.R
-fig_generation: fig_code data_prep common
-    Rscript code/cor_graphics_violin_scatter.R
+## all            : clear current results and make figures
+all: clean figs
+
+## clean_data     : saves data sets for plotting in data_clean
+clean_data: code/cor_data_preprocess.R
+	Rscript code/cor_data_preprocess.R
+
+## figs           : make figures
+figs: fig_code clean_data
+	Rscript code/cor_graphics_violin_scatter.R
+	Rscript code/CoR_assay_graphics.R
+	Rscript code/CoR_wrcdf_with_VE_lines.R
+
+fig_code: code/cor_graphics_violin_scatter.R \
+  code/CoR_assay_graphics.R \
+  code/CoR_wrcdf_with_VE_lines.R \
+  code/params.R
+
+## clean          : clean up data_clean and output folder
+clean:
+	rm -f data_clean/* && rm -f output/*
+
+# type 'make help' to show all make commands
+help: Makefile
+	@sed -n 's/^##//p' $<
+
+.PHONY: fig_code figs clean all clean_data

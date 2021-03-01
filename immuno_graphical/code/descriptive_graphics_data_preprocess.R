@@ -4,47 +4,49 @@ renv::activate(project = here::here(".."))
 source(here::here("..", "_common.R"))
 #-----------------------------------------------
 
+### reset the floor values
+### set the ULOQ values
+### set the ethnicity value
+### add 
+
 library(here)
 library(dplyr)
 library(stringr)
-library(COVIDcorr)
-
-# load data
-data(dat.mock)
+dat.mock <- read.csv(here("..", "data_clean", data_name), header = TRUE)
 
 # load parameters
 source(here("code", "params.R"))
+dat <- dat.mock
 
 ## setting the floor values
-dat <- dat.mock %>%
-  mutate(
-    BbindSpike = ifelse(BbindSpike >= log10(17), BbindSpike, log10(17)),
-    Day29bindSpike = ifelse(Day29bindSpike >= log10(17), Day29bindSpike,
-      log10(17)
+dat <- dat %>% mutate(
+    BbindSpike = ifelse(BbindSpike >= log10(20), BbindSpike, log10(10)),
+    Day29bindSpike = ifelse(Day29bindSpike >= log10(20), Day29bindSpike,
+      log10(10)
     ),
-    Day57bindSpike = ifelse(Day57bindSpike >= log10(17), Day57bindSpike,
-      log10(17)
+    Day57bindSpike = ifelse(Day57bindSpike >= log10(20), Day57bindSpike,
+      log10(10)
     ),
-    BbindRBD = ifelse(BbindRBD >= log10(17), BbindRBD, log10(17)),
-    Day29bindRBD = ifelse(Day29bindRBD >= log10(17), Day29bindRBD, log10(17)),
-    Day57bindRBD = ifelse(Day57bindRBD >= log10(17), Day57bindRBD, log10(17)),
-    Bpseudoneutid50 = ifelse(Bpseudoneutid50 >= log10(25), Bpseudoneutid50,
-      log10(25)
+    BbindRBD = ifelse(BbindRBD >= log10(20), BbindRBD, log10(10)),
+    Day29bindRBD = ifelse(Day29bindRBD >= log10(20), Day29bindRBD, log10(10)),
+    Day57bindRBD = ifelse(Day57bindRBD >= log10(20), Day57bindRBD, log10(10)),
+    Bpseudoneutid50 = ifelse(Bpseudoneutid50 >= log10(20), Bpseudoneutid50,
+      log10(10)
     ),
-    Day29pseudoneutid50 = ifelse(Day29pseudoneutid50 >= log10(25),
-      Day29pseudoneutid50, log10(25)
+    Day29pseudoneutid50 = ifelse(Day29pseudoneutid50 >= log10(20),
+      Day29pseudoneutid50, log10(10)
     ),
-    Day57pseudoneutid50 = ifelse(Day57pseudoneutid50 >= log10(25),
-      Day57pseudoneutid50, log10(25)
+    Day57pseudoneutid50 = ifelse(Day57pseudoneutid50 >= log10(20),
+      Day57pseudoneutid50, log10(10)
     ),
-    Bpseudoneutid80 = ifelse(Bpseudoneutid80 >= log10(22), Bpseudoneutid80,
-      log10(22)
+    Bpseudoneutid80 = ifelse(Bpseudoneutid80 >= log10(20), Bpseudoneutid80,
+      log10(10)
     ),
-    Day29pseudoneutid80 = ifelse(Day29pseudoneutid80 >= log10(22),
-      Day29pseudoneutid80, log10(22)
+    Day29pseudoneutid80 = ifelse(Day29pseudoneutid80 >= log10(20),
+      Day29pseudoneutid80, log10(10)
     ),
-    Day57pseudoneutid80 = ifelse(Day57pseudoneutid80 >= log10(22),
-      Day57pseudoneutid80, log10(22)
+    Day57pseudoneutid80 = ifelse(Day57pseudoneutid80 >= log10(20),
+      Day57pseudoneutid80, log10(10)
     )
   )
 
@@ -57,22 +59,6 @@ dat.twophase.sample <- dat %>%
   dplyr::filter(TwophasesampInd == 1 & SubcohortInd == 1 & Perprotocol == 1)
 twophase_sample_id <- dat.twophase.sample$Ptid
 
-# First focus on baseline negative pooling over all baseline demog strata. This
-# is the primary cohort for CoR analysis. So, all plots and tables relative to
-# this could be shown first in the pdf. Second output contrasting results
-# baseline negative vs. baseline positive, again pooling over all baseline
-# demog strata.
-# Supp material that expands
-#  1. for the individual baseline demog cells, for completeness.
-#  2. for the individual baseline demog cells, for completeness.
-dat$EventLabelD29 <- factor(dat$EventIndPrimaryD29,
-  levels = c(0, 1),
-  labels = c("D29 Non-Case", "D29 Case")
-)
-dat$EventLabelD57 <- factor(dat$EventIndPrimaryD57,
-  levels = c(0, 1),
-  labels = c("D57 Non-Case", "D57 Case")
-)
 
 ## arrange the dataset in the long form, expand by assay types
 ## dat.long.subject_level is the subject level covariates;
@@ -81,7 +67,8 @@ dat.long.subject_level <- dat[, c(
   "Ptid", "Trt", "MinorityInd", "HighRiskInd", "Age", "Sex",
   "Bserostatus", "Fullvaccine", "Perprotocol", "EventIndPrimaryD29",
   "EventIndPrimaryD57", "SubcohortInd", "age.geq.65", "TwophasesampInd",
-  "Bstratum", "wt", "EventLabelD29", "EventLabelD57", "race", "ethnicity",
+  "Bstratum", "wt", "race",
+  "EthnicityHispanic","EthnicityNotreported", "EthnicityUnknown",
   "WhiteNonHispanic"
 )] %>%
   replicate(length(assays), ., simplify = FALSE) %>%
@@ -158,7 +145,7 @@ dat.long$demo_lab <-
   with(dat.long, factor(paste0(age.geq.65, HighRiskInd),
     levels = c("00", "01", "10", "11"),
     labels = c(
-      "Age < 65 not at tisk",
+      "Age < 65 not at risk",
       "Age < 65 at risk",
       "Age >= 65 not at risk",
       "Age >= 65 at risk"
@@ -204,7 +191,7 @@ dat.long.twophase.sample$age_risk_label <-
     factor(paste0(age.geq.65, HighRiskInd),
       levels = c("00", "01", "10", "11"),
       labels = c(
-        "Age < 65 not at tisk",
+        "Age < 65 not at risk",
         "Age < 65 at risk",
         "Age >= 65 not at risk",
         "Age >= 65 at risk"
@@ -235,11 +222,28 @@ dat.long.twophase.sample$age_sex_label <-
     )
   )
 
+
+dat.long.twophase.sample$ethnicity_label <-
+  with(
+    dat.long.twophase.sample,
+    ifelse(EthnicityHispanic == 1,
+           "Hispanic or Latino",
+           ifelse(
+             EthnicityNotreported == 0 & EthnicityUnknown == 0,
+             "Not Hispanic or Latino",
+             "Not reported and unknown"
+           ))
+  ) %>% factor(
+    levels = c("Hispanic or Latino", "Not Hispanic or Latino", "Not reported and unknown")
+  )
+
+
+
 dat.long.twophase.sample$minority_label <-
   with(
     dat.long.twophase.sample,
-    factor(MinorityInd,
-      levels = c(0, 1),
+    factor(WhiteNonHispanic,
+      levels = c(1, 0),
       labels = c("White Non-Hispanic", "Comm. of Color")
     )
   )
@@ -247,7 +251,7 @@ dat.long.twophase.sample$minority_label <-
 dat.long.twophase.sample$age_minority_label <-
   with(
     dat.long.twophase.sample,
-    factor(paste0(age.geq.65, MinorityInd),
+    factor(paste0(age.geq.65, WhiteNonHispanic),
       levels = c("00", "01", "10", "11"),
       labels = c(
         "Age < 65 Comm. of Color",
@@ -257,6 +261,11 @@ dat.long.twophase.sample$age_minority_label <-
       )
     )
   )
+dat.long.twophase.sample$ethnicity <- as.factor(dat.long.twophase.sample$ethnicity)
+dat.twophase.sample$ethnicity <- as.factor(dat.twophase.sample$ethnicity)
+dat.long.twophase.sample$race <- as.factor(dat.long.twophase.sample$race)
+dat.twophase.sample$race <- as.factor(dat.twophase.sample$race)
+
 
 saveRDS(as.data.frame(dat.long.twophase.sample),
   file = here("data_clean", "long_twophase_data.rds")
@@ -264,3 +273,5 @@ saveRDS(as.data.frame(dat.long.twophase.sample),
 saveRDS(as.data.frame(dat.twophase.sample),
   file = here("data_clean", "twophase_data.rds")
 )
+
+

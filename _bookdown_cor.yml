@@ -1,6 +1,7 @@
 delete_merged_file: true
 book_filename: "covpn_correlates_cor"
 before_chapter_script: "_common.R"
+output_dir: "_report_cor"
 clean: packages.bib
 
 language:
@@ -10,12 +11,21 @@ language:
   ui:
     chapter_name: "Section "
 
+# abbreviated cor report
 rmd_files: [
   "index.Rmd",
   "cor_graphical/report.Rmd",
   "cor_coxph/report.Rmd",
-  "cor_nonpar/report.Rmd",
-  "cor_threshold/report.Rmd",
-  "cor_surrogates/report.Rmd",
   "references.Rmd"
 ]
+
+# # full cor report
+# rmd_files: [
+#   "index.Rmd",
+#   "cor_graphical/report.Rmd",
+#   "cor_coxph/report.Rmd",
+#   "cor_nonpar/report.Rmd",
+#   "cor_threshold/report.Rmd",
+#   "cor_surrogates/report.Rmd",
+#   "references.Rmd"
+# ]

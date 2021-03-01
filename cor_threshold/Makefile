@@ -1,5 +1,5 @@
 ## all              : run threshold analysis and get plots
-all: params data threshold plot
+all: clean params data threshold plot
 
 
 ## threshold   : run threshold analysis and get plots

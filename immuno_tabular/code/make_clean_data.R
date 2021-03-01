@@ -5,11 +5,12 @@ source(here::here("..", "_common.R")) #
 ##################################################
 
 library(tidyverse)
-library(COVIDcorr)
-load(here::here("data_clean", "params.Rdata"))
+library(here)
+load(here("data_clean", "params.Rdata"))
 
 # Read in original data
-data(dat.mock)
+dat.mock <- read.csv(here("..", "data_clean", data_name))
+
 ds_o <- dat.mock
 # The stratified random cohort for immunogenicity
 ds_s <- ds_o %>%

@@ -1,8 +1,23 @@
-# Univariate CoR: Cox Proportional Hazards Modeling of Risk {#cor-coxph}
+\newcommand{\studyname}{mock}
 
-TO FILL IN
 
-```{r cor-coxph-setup}
-# TODO
+\newcommand{\pathCoRoutput}{cor_coxph/output/D57}
+
+```{r, include=FALSE}
+Day <- 57
+```
+
+```{r, child=c(here::here('cor_coxph', 'report_sub.Rmd'))}
+```
+
+\clearpage
+
+\renewcommand{\pathCoRoutput}{cor_coxph/output/D29}
+
+```{r, include=FALSE}
+Day <- 29
+```
+
+```{r, child=c(here::here('cor_coxph', 'report_sub.Rmd'))}
 ```
 

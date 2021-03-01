@@ -1,0 +1,25 @@
+# CoR_COXPH Verification Documentation
+
+This document indicates the script, author, verification script, and verification author of the files contained within the parent folder. The two scripts use the same base mock data. To verify the tables generated in the original scripts, all the tables were re-created and their values compared. Only when they all matched was it marked as verified accepted.
+
+## Original Scripts
+
+The scripts used to generate the original outputs. These live within the `cor_coxph/code` folder.
+
+----
+- Script: code/cor_coxph.R
+- Author(s): Youyi Fong
+- Last Edit Date: 
+- Description:
+
+
+
+## Verification Scripts
+
+The scripts used to verify the outputs of the original outputs. These live within the `cor_coxph/verification` folder.
+
+----
+Verification Script:
+Verification Author:
+Verification Date:
+Verification Description:

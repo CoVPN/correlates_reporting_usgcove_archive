@@ -4,6 +4,10 @@ title: "CoVPN COVID-19 Correlates Analysis"
 author: "the CoVPN Biostatistics Team"
 date: "`r format(Sys.time(), '%B %d, %Y')`"
 documentclass: book
+output:
+  bookdown::pdf_document2:
+    includes:
+      in_header: preamble.tex
 site: bookdown::bookdown_site
 bibliography: [book.bib, packages.bib]
 biblio-style: apalike

@@ -1,0 +1,119 @@
+\newcommand{\studyname}{mock}
+\newcommand{\pathCoRoutput}{output}
+
+# Specifications for CoR_COXPH
+
+The population of interest for the D57 CoR study is defined as baseline negative, per-protocol, at risk at 7 days post the Day 57 visit, vaccine recipients. In the rest of this specification we will refer to this population as baseline negative vaccine recipients for simplicity. For comparison, we are also interested in the baseline negative, per-protocol, at risk at 7 days post the Day 57 visit, placebo recipients.
+
+There are two main sets of results in the CoR_COXPH section of the report: (i) Cox regression model coefficients, and (ii) marginalized risk curves based on Cox models. 
+
+## Cox regression model fits
+
+Due to the two-phase sampling design, the survey package svycoxph function (using twophase function to create the design object) will be used for fitting Cox models and getting confidence intervals and P values. 
+
+The following continuous biomarkers will be studied. Their trichotomized version adds cat at the end, e.g. Day57bindSpikecat.
+\begin{itemize}
+    \item Day57bindSpike
+    \item Day57bindRBD
+    \item Day57pseudoneutid50
+    \item Day57pseudoneutid80.
+\end{itemize}
+
+We first fit Cox regression models to the baseline negative, vaccinee population (defined in more details above), one for each continuous or trichotomized marker. All models adjust for the following baseline covariates: 
+\begin{itemize}
+    \item at risk or not
+    \item community of color or not
+    \item age (to be replace by SL risk score)
+\end{itemize}
+
+Notes:
+\begin{itemize}
+    \item The No. at-risk in the trichotomized table are weighted estimates based on the phase 2 samples.
+    \item The q-values and FWER are computed using Sue Li's implementation of the Westfall and Young permutation-based method (kyotil::p.adj.perm) for the continuous and trichotomized markers together. We verify Sue's implementation through a Monte Carlo study that is outside of this verification plan.
+\end{itemize}
+
+<!-- \clearpage -->
+<!-- The following two tables contain results to be verified, one for the continuous markers and the other for the trichotomized markers. -->
+
+<!-- \begin{center} -->
+<!--     \input{../output/CoR_D57_univariable_svycoxph_pretty_\studyname}\\ -->
+<!--     \vspace{10pt} -->
+<!--     \setlength{\tabcolsep}{.5ex} -->
+<!--     \input{../output/CoR_D57_univariable_svycoxph_cat_pretty_\studyname}\\ -->
+<!-- \end{center} -->
+<!-- Average follow-up time \input{../output/CoR_D57_mean_followup_time_vacc_\studyname} days, maximum follow-up time \input{../output/CoR_D57_max_followup_time_vacc_\studyname} days. -->
+
+<!-- $\ast\ast$ No. at-risk = number of per-protocol baseline negative vaccine recipients at-risk for COVID at 7 days post Day 57 visit; no. cases = number of this cohort with an observed COVID endpoints.  -->
+
+<!-- $\ast\ast\ast$ Generalized Wald-test p-value of the null hypothesis that the hazard rate is constant across the Lower, Middle, and Upper tertile groups. -->
+
+
+Second, we fit Cox regression models to the following subgroups for continuous markers only. Note that in some subgroups we cannot adjust for all baseline demographic variables. For example, for the at risk subgroup, we cannot include the at-risk indicator.
+\begin{itemize}
+    \item age >= 65
+    \item age<65 and at risk
+    \item age<65 and not at risk
+    \item at risk
+    \item Not at risk
+    \item Comm of color
+    \item White non-Hispanic
+    \item Men
+    \item Women
+\end{itemize}
+
+
+
+## Marginalized risk
+
+The primary implementation of marginalized risk uses functions from the package marginalizedRisk on CRAN. The marginalizedRisk package is written for a more general purpose. The verification will double program the specific algorithm used to compute the marginalized risk in this report. Because of the specialized nature of the R functions required to implement these methods, the tester will first review the primary programmer's code to gain familiarity with the basic functions for working with survival analysis in R, but will write the program independently after that.
+
+There are four types of curves based on marginalized risks. The first three are for continuous markers and the risk here refers to the marginalized cumulative risk by (inclusive) $t_F$, which is defined as the time of the last observed outcome in the vaccine arm.
+
+
+Marginalized risk function conditional on $S=s$ for a continuous marker:
+\begin{itemize}
+  \item Fit a two-phase Cox model to the baseline negative vaccine recipients with baseline covariates and the continuous marker
+  \item For each $s$,
+  \begin{itemize}
+    \item Compute the risk for all phase 2 subjects, but with their marker value set to $s$ instead of their original $S$
+    \item Return the weighted mean of the risk
+  \end{itemize}
+\end{itemize}
+
+Controlled VE function conditional on $S=s$ for a continuous marker:
+\begin{itemize}
+  \item Fit a two-phase Cox model to the baseline negative vaccine recipients with baseline covariates and the continuous marker 
+  \item For each $s$,
+  \begin{itemize}
+    \item Compute the risk for all phase 2 subjects, but with their marker value set to $s$ instead of their original $S$
+    \item Return  1-  (weighted mean of the risk) / (placebo overall risk)
+  \end{itemize}
+\end{itemize}
+
+Marginalized risk function conditional on $S>=s$ for a continuous marker:
+\begin{itemize}
+  \item For each $s$,
+  \begin{itemize}
+    \item Fit a two-phase Cox model to the baseline negative vaccine recipients with baseline covariates using the subset of samples satisfying $S>=s$
+    \item Compute the risk for all phase 2 subjects, not just the subset with $S>=s$
+    \item Return the weighted mean of the risk
+  \end{itemize}
+\end{itemize}
+
+The last curve is for discrete markers, and it plots the marginalized cumulative incidence rate as a function of time for each subpopulation defined by the discrete marker. The risk here refers to the marginalized cumulative risk at a series of time points.
+
+Marginalized cumulative incidence rate function conditional on $S=s$ for a discrete marker:
+\begin{itemize}
+  \item Fit a two-phase Cox model to the baseline negative vaccine recipients with baseline covariates and the discrete marker
+  \item For each $s$,
+  \begin{itemize}
+    \item For each time $t$ of interest,
+    \begin{itemize}
+      \item Compute the risk by (inclusive) time $t$ for all phase 2 subjects, but with their marker value set to $s$ instead of their original $S$
+      \item Return the weighted mean of the risk
+    \end{itemize}
+  \end{itemize}
+\end{itemize}
+
+
+

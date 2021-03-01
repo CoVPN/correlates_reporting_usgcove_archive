@@ -21,6 +21,7 @@ dat.mock <- read.csv(here::here("..", "data_raw", data_name))
 dat.mock.vacc.seroneg <- readRDS(here::here("data_clean", "dat.mock.vacc.seroneg.rds"))
 dat.mock.vacc.seroneg.subsample <- readRDS(here::here("data_clean", "dat.mock.vacc.seroneg.subsample.rds"))
 marker.cutpoints <- readRDS(here::here("data_clean", "marker.cutpoints.rds"))
+
 # the order of these packages matters
 # kyotil mostly contains code for formatting, but may also contain code for some estimation tasks
 library(kyotil)      
@@ -39,11 +40,9 @@ library(Hmisc) # wtd.quantile, cut2
 Args <- commandArgs(trailingOnly=TRUE) 
 if (length(Args)==0) Args=c(pop="29") 
 pop=Args[1]; print(pop)
-
+#
 save.results.to = paste0(here::here("output"), "/D", pop,"/"); 
 if (!dir.exists(save.results.to))  dir.create(save.results.to)
-    
-
 # important subsets of data
 if (pop=="57") {
     dat.vacc.pop=dat.mock.vacc.seroneg[dat.mock.vacc.seroneg[["EventTimePrimaryD"%.%pop]]>=7, ] #dat.mock.vacc.seroneg has trichotomized variables defined
@@ -72,8 +71,6 @@ design.vacc.seroneg<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subse
 #
 t0=max(dat.vacc.pop[dat.vacc.pop[["EventIndPrimaryD"%.%pop]]==1, "EventTimePrimaryD"%.%pop]); myprint(t0)
 write(t0, file=paste0(save.results.to, "timepoints_cum_risk_"%.%study.name))
-
-
 # trial-specific formula
 form.s = as.formula(paste0("Surv(EventTimePrimaryD",pop,", EventIndPrimaryD",pop,") ~ 1"))
 if (study.name == "mock") {
@@ -667,6 +664,7 @@ if(!file.exists(paste0(save.results.to, "marginalized.risk.2.",study.name,".Rdat
 #myprint(prev.plac)
 #myprint(prev.vacc)
 
+
 prev.plac=c(res.plac.cont[1], quantile(res.plac.cont[-1], c(.025,.975)))
 prev.vacc=c(res.vacc.cont[1], quantile(res.vacc.cont[-1], c(.025,.975)))
 myprint(prev.plac)
@@ -693,8 +691,9 @@ for (idx in 1:2) { # 1 with placebo lines, 2 without placebo lines. Implementati
             ylab=paste0("Probability* of COVID by Day ", t0), lwd=lwd, ylim=ylim, type="n", main=paste0(labels.assays.long["Day"%.%pop,a]), xaxt="n")
         # x axis
         xx=seq(floor(min(risks$marker)), ceiling(max(risks$marker)))
-        for (x in xx) axis(1, at=x, labels=if (x>=3) bquote(10^.(x)) else 10^x )
-        axis(1, at=log10(llods[a]), labels="L")
+        for (x in xx) axis(1, at=x, labels=if (log10(llods[a])==x) "lod" else if (x>=3) bquote(10^.(x)) else 10^x )
+        if(!any(log10(llods[a])==xx)) axis(1, at=log10(llods[a]), labels="lod")
+        
         
         # prevelance lines
         abline(h=prev.plac, col="gray", lty=c(1,3,3), lwd=lwd)

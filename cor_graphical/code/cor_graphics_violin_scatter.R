@@ -72,12 +72,12 @@ myplot <- function(dat,
   p <- ggplot(data=dat, aes_string(x=x, y=y, color=colby, shape=shaby))
   
   if (type=="line") {
-    p <- p + geom_violin() + 
+    p <- p + geom_violin(scale="width") + 
       geom_line(data=dat.sample, aes(group = Ptid)) + 
       geom_point(data = dat.sample, size = 5, show.legend = TRUE) +
       geom_boxplot(width=0.25, lwd=1.5, alpha = 0.3, outlier.shape=NA, show.legend = FALSE)
   } else if (type=="violin") {
-    p <- p + geom_violin() +
+    p <- p + geom_violin(scale="width") +
       geom_jitter(data = dat.sample,  width = 0.1, height = 0, size = 5, show.legend = TRUE) +
       geom_boxplot(width=0.25, lwd=1.5, alpha = 0.3, outlier.shape=NA, show.legend = FALSE)}
   
@@ -114,8 +114,8 @@ for (typ in c("line","violin")) {
                       ytitle=plots_ytitles[i],toptitle=plots_titles[i],
                       type=typ,
                       facetby=vars(cohort_event),
-                      ylim=c(0.5, 7.71),
-                      ybreaks=seq(1, 7),
+                      ylim=c(0, 7.71),
+                      ybreaks=seq(0, 7),
                       inpanel.cex=6.5,
                       rate.y.pos=7.7
                       
@@ -170,8 +170,8 @@ for (typ in c("line","violin")) {
                         ytitle=plots_ytitles[i],toptitle=plots_titles[i],
                         type=typ,
                         facetby=as.formula(paste("~",s,"+cohort_event")),
-                        ylim=c(0.5, 8.2),
-                        ybreaks=seq(1, 7),
+                        ylim=c(0, 8.2),
+                        ybreaks=seq(0, 7),
                         inpanel.cex=5.5,
                         rate.y.pos=7.9)
             
@@ -199,8 +199,8 @@ for (typ in c("line","violin")) {
                       ytitle=plots_ytitles[i],toptitle=plots_titles[i],
                       type=typ,
                       facetby=as.formula("age_risk_label~cohort_event"),
-                      ylim=c(0.5, 9.2),
-                      ybreaks=seq(1, 8, 2),
+                      ylim=c(0, 9.2),
+                      ybreaks=seq(0, 8, 2),
                       facetopt = "grid",
                       inpanel.cex=5,
                       rate.y.pos=8.5
@@ -224,16 +224,16 @@ for (i in 1:length(plots)) {
       # subset for vaccine baseline neg arm
       if (c=="Vaccine_BaselineNeg"){ds.tmp <- subset(ds.tmp, Bserostatus=="Baseline Neg" & Trt=="Vaccine")}
       
-      y.breaks <- seq(1, ifelse(plots[i] %in% c("bindSpike","bindRBD"), 7, 5))
-      y.lim=c(0.5, ifelse(plots[i] %in% c("bindSpike","bindRBD"), 7.7, 5))
+      y.breaks <- seq(0, ifelse(plots[i] %in% c("bindSpike","bindRBD"), 7, 5))
+      y.lim=c(0, ifelse(plots[i] %in% c("bindSpike","bindRBD"), 7.7, 5))
       
       p <- ggplot(ds.tmp, aes(x = Age, y = value))
       
       # if show all four arms, multiple panels are needed
       if (c=="all") {p <- p + facet_wrap(~Bserostatus+Trt, nrow = 1)}
       
-      p <- p + geom_point(size = 5, alpha = 1, aes(color = cohort_event, shape = cohort_event)) + 
-        geom_smooth(aes(group = cohort_event), method = 'loess', se= TRUE, span = 1, color = "darkgray") + 
+      p <- p + geom_point(size = 2.5, alpha = 0.4, aes(color = cohort_event, shape = cohort_event)) + 
+        geom_smooth(aes(group = cohort_event, color = cohort_event), size=1.5, method = 'loess', se= F, span = 1) + 
         scale_y_continuous(limits=y.lim, breaks=y.breaks, labels=math_format(10^.x)) +
         scale_x_continuous(breaks = seq(from=18, to=86, by=17)) +
         scale_color_manual(values = c("#0AB7C9","#FF6F1B","#810094")) +

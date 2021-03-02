@@ -3,6 +3,7 @@
 ## Pairs plots of antibody markers for overall per-protocal cohort
 
 ### Baseline SARS-CoV-2 Negative
+
 ```{r immuno-graphical-setup, echo = FALSE, message = FALSE}
 library(here)
 library(latex2exp)
@@ -33,7 +34,6 @@ include_graphics(here(
 ))
 ```
 
-
 ```{r, fig.cap = "(Mock data) Pair plots of D57 Ab markers: baseline negative vaccine arm"}
 include_graphics(here(
   "immuno_graphical", "figs",
@@ -44,7 +44,6 @@ include_graphics(here(
 ))
 ```
 
-
 ```{r, fig.cap = "(Mock data) Pair plots of D29 fold-rise over D1 Ab markers: baseline negative vaccine arm"}
 include_graphics(here(
   "immuno_graphical", "figs",
@@ -54,7 +53,6 @@ include_graphics(here(
   )
 ))
 ```
-
 
 ```{r, fig.cap = "(Mock data) Pair plots of D57 fold-rise over D1 Ab markers: baseline negative vaccine arm"}
 include_graphics(here(
@@ -96,7 +94,6 @@ include_graphics(here(
 ))
 ```
 
-
 ```{r, fig.cap = "(Mock data) Pair plots of D1, D29 and D57 PsV Neutralization 80% Titer: Baseline negative vaccine + placebo arm"}
 include_graphics(here(
   "immuno_graphical", "figs",
@@ -106,8 +103,6 @@ include_graphics(here(
   )
 ))
 ```
-
-
 
 ### Baseline SARS-CoV-2 Positive
 
@@ -121,8 +116,6 @@ include_graphics(here(
 ))
 ```
 
-
-
 ```{r, fig.cap = "(Mock data) Pair plots of D29 Ab markers: baseline positive vaccine arm"}
 include_graphics(here(
   "immuno_graphical", "figs",
@@ -132,7 +125,6 @@ include_graphics(here(
   )
 ))
 ```
-
 
 ```{r, fig.cap = "(Mock data) Pair plots of D57 Ab markers: baseline positive vaccine arm"}
 include_graphics(here(
@@ -144,7 +136,6 @@ include_graphics(here(
 ))
 ```
 
-
 ```{r, fig.cap = "(Mock data) Pair plots of D29 fold-rise over D1 Ab markers: baseline positive vaccine arm"}
 include_graphics(here(
   "immuno_graphical", "figs",
@@ -154,7 +145,6 @@ include_graphics(here(
   )
 ))
 ```
-
 
 ```{r, fig.cap = "(Mock data) Pair plots of D57 fold-rise over D1 Ab markers: baseline positive vaccine arm"}
 include_graphics(here(
@@ -196,7 +186,6 @@ include_graphics(here(
 ))
 ```
 
-
 ```{r, fig.cap = "(Mock data) Pair plots of D1, D29 and D57 PsV Neutralization 80% Titer: baseline positive vaccine + placebo arm"}
 include_graphics(here(
   "immuno_graphical", "figs",
@@ -206,7 +195,6 @@ include_graphics(here(
   )
 ))
 ```
-
 
 ## RCDF plots of antibody markers for overall per-protocol cohort
 
@@ -330,7 +318,6 @@ include_graphics(here(
 ))
 ```
 
-
 ## Box plots of antibody markers for overall per-protocol cohort
 
 ### Baseline SARS-CoV-2 negative
@@ -365,7 +352,6 @@ include_graphics(here(
 
 ### Baseline SARS-CoV-2 positive
 
-
 ```{r, fig.cap = "(Mock data) Boxplots of D29 Ab markers: baseline positive vaccine + placebo arms"}
 include_graphics(here(
   "immuno_graphical", "figs",
@@ -394,9 +380,7 @@ include_graphics(here(
 ))
 ```
 
-
 ### Baseline negative vs. positive vaccine recipients
-
 
 ```{r, fig.cap = "(Mock data) Boxplots of D29 Ab markers: baseline positive + negative vaccine arm"}
 include_graphics(here(
@@ -426,10 +410,7 @@ include_graphics(here(
 ))
 ```
 
-
 ### Baseline negative vs. positive placebo recipients
-
-
 
 ```{r, fig.cap = "(Mock data) Boxplots of D29 Ab markers: baseline positive + negative placebo arm"}
 include_graphics(here(
@@ -462,6 +443,7 @@ include_graphics(here(
 ## Spaghetti plots of antibody markers over time for the overall per-protocol cohort
 
 ### Baseline SARS-CoV-2 negative
+
 ```{r, fig.cap = "(Mock data) Spaghetti plots of Ab markers over time: baseline negative vaccine + placebo arm"}
 include_graphics(here(
   "immuno_graphical", "figs",
@@ -476,7 +458,6 @@ include_graphics(here(
   paste0("spaghetti_plot_BaselinePos_", study_name, ".png")
 ))
 ```
-
 
 ## RCDF plots of antibody markers by demographics for per-protocol cohort
 
@@ -852,10 +833,7 @@ include_graphics(here(
 ))
 ```
 
-
 ### Baseline SARS-CoV-2 positive
-
-
 
 ```{r, fig.cap = "(Mock data) RCDF plots for D29 Ab markers: baseline positive vaccine arm by age groups."}
 include_graphics(here(
@@ -1216,7 +1194,6 @@ include_graphics(here(
   )
 ))
 ```
-
 
 ## Boxplots of antibody markers by demographics for per-protocol cohort
 

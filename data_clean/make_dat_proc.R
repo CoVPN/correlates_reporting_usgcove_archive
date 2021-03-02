@@ -1,14 +1,20 @@
 #-----------------------------------------------
-# obligatory to append to the top of each script
-# There is a bug on Windows that prevents renv from working properly. saved.system.libPaths provides a workaround:
-if (.Platform$OS.type == "windows") saved.system.libPaths=.libPaths()
-renv::activate(project = here::here(".."))
+# NOTE: There is a bug on Windows that prevents renv from working properly.
+# saved.system.libPaths provides a workaround:
 if (.Platform$OS.type == "windows") {
-    options(renv.config.install.transactional = FALSE)
-    renv::restore(library=saved.system.libPaths, prompt=FALSE) # for a quick test, add: packages="backports"
-    .libPaths(c(saved.system.libPaths, .libPaths()))
-} else renv::restore(prompt=FALSE)
-
+  saved.system.libPaths <- .libPaths()
+}
+renv::activate(project = here::here())
+# NOTE: I don't think we want to renv::restore() everytime, this is better
+#       done manually while developing analysis code -Nima
+# if (.Platform$OS.type == "windows") {
+#   options(renv.config.install.transactional = FALSE)
+#   # for a quick test, add: packages="backports"
+#   renv::restore(library = saved.system.libPaths, prompt = FALSE)
+#   .libPaths(c(saved.system.libPaths, .libPaths()))
+# } else {
+#   renv::restore(prompt = FALSE)
+# }
 source(here::here("_common.R"))
 #-----------------------------------------------
 

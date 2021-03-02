@@ -1,7 +1,8 @@
-# Day `r Day` CoR: Cox Models of Risk {#cor-coxph}
+# Day `r Day` Univariate CoR: Cox Models of Risk {#cor-coxph}
 
 The main regression model is the Cox proportional hazards model. All plots are made with Cox models fit unless specified otherwise. 
 
+## Hazard ratios
 
 \begin{table}[H]
 \caption{Inference for Day `r Day` antibody marker covariate-adjusted correlates of risk of COVID in the vaccine group: Hazard ratios per 10-fold increment in the marker*}
@@ -126,6 +127,7 @@ Cutpoints:
 <!--     \label{tab:CoR_univariable_hingelogistic} -->
 <!-- \end{table} -->
 
+## Marginalized risk and controlled vaccine efficacy plots
 
 
 <!-- \begin{figure}[H] -->
@@ -137,19 +139,19 @@ Cutpoints:
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{\pathCoRoutput/marginalized_risks1_\studyname}
-    \caption{Marginalized cumulative risk by Day \protect\input{\pathCoRoutput/timepoints_cum_risk_\studyname} as functions of Day `r Day` markers (=s) among baseline seronegative vaccine recipients with 95\% bootstrap point-wise confidence bands. The horizontal lines indicate the overall cumulative risk of the placebo and vaccine arms by Day \protect\input{\pathCoRoutput/timepoints_cum_risk_\studyname} and its 95\% point-wise confidence interval. Histograms of the immunological markers in the vaccine arm are overlaid. L: lower limit of detection.}
+    \caption{Marginalized cumulative risk by Day \protect\input{\pathCoRoutput/timepoints_cum_risk_\studyname} as functions of Day `r Day` markers (=s) among baseline seronegative vaccine recipients with 95\% bootstrap point-wise confidence bands. The horizontal lines indicate the overall cumulative risk of the placebo and vaccine arms by Day \protect\input{\pathCoRoutput/timepoints_cum_risk_\studyname} and its 95\% point-wise confidence interval. Histograms of the immunological markers in the vaccine arm are overlaid. lod: lower limit of detection.}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{\pathCoRoutput/marginalized_risks2_woplacebo_\studyname}
-    \caption{Marginalized cumulative risk by Day \protect\input{\pathCoRoutput/timepoints_cum_risk_\studyname} as functions of Day `r Day` markers above a threshold (>=s) among baseline seronegative vaccine recipients with 95\% bootstrap point-wise confidence bands (at least 5 cases are required). The horizontal lines indicate the overall cumulative risk of the vaccine arm by Day \protect\input{\pathCoRoutput/timepoints_cum_risk_\studyname} and its 95\% point-wise confidence interval. Histograms of the immunological markers in the vaccine arm are overlaid. L: lower limit of detection.}
+    \caption{Marginalized cumulative risk by Day \protect\input{\pathCoRoutput/timepoints_cum_risk_\studyname} as functions of Day `r Day` markers above a threshold ($\geq s$) among baseline seronegative vaccine recipients with 95\% bootstrap point-wise confidence bands (at least 5 cases are required). The horizontal lines indicate the overall cumulative risk of the vaccine arm by Day \protect\input{\pathCoRoutput/timepoints_cum_risk_\studyname} and its 95\% point-wise confidence interval. Histograms of the immunological markers in the vaccine arm are overlaid. lod: lower limit of detection.}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{\pathCoRoutput/controlled_ve_curves_\studyname}
-    \caption{Controlled VE with sensitivity analysis as functions of Day `r Day` markers (=s) among baseline seronegative vaccine recipients with 95\% bootstrap point-wise confidence bands. Histograms of the immunological markers in the vaccine arm are overlaid. L: lower limit of detection.}
+    \caption{Controlled VE with sensitivity analysis as functions of Day `r Day` markers (=s) among baseline seronegative vaccine recipients with 95\% bootstrap point-wise confidence bands. Histograms of the immunological markers in the vaccine arm are overlaid. lod: lower limit of detection.}
 \end{figure}
 
 

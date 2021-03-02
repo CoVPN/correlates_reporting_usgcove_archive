@@ -14,19 +14,10 @@ source(here::here("..", "_common.R"))
 #-----------------------------------------------
 
 source(here::here("code", "params.R"))
-
-# start R inside the code folder or make sure working directory is here
-save.results.to = paste0(here::here("output"), "/")
-if (!dir.exists(save.results.to))  dir.create(save.results.to)
-
-# if .Rdata already exists, don't rerun
-rerun.time.consuming.steps=!file.exists(paste0(save.results.to, "risks.all.1.mock.Rdata"))
-
 dat.mock <- read.csv(here::here("..", "data_clean", data_name))
 dat.mock.vacc.seroneg <- readRDS(here::here("data_clean", "dat.mock.vacc.seroneg.rds"))
-dat.mock.vacc.seroneg.subsample <- readRDS(here::here("data_clean", "dat.mock.vacc.seroneg.subsample.rds"))
 marker.cutpoints <- readRDS(here::here("data_clean", "marker.cutpoints.rds"))
-#remotes::install_github("CoVPN/correlates_mockdata", auth_token="e09062bae8d9a4acf4ba7e7c587c5d3fbe1abd69")
+
 # the order of these packages matters
 # kyotil mostly contains code for formatting, but may also contain code for some estimation tasks
 library(kyotil)
@@ -45,18 +36,17 @@ library(Hmisc) # wtd.quantile, cut2
 Args <- commandArgs(trailingOnly=TRUE) 
 if (length(Args)==0) Args=c(pop="29") 
 pop=Args[1]; print(pop)
-
+#
 save.results.to = paste0(here::here("output"), "/D", pop,"/"); 
 if (!dir.exists(save.results.to))  dir.create(save.results.to)
-
 
 # important subsets of data
 if (pop=="57") {
     dat.vacc.pop=dat.mock.vacc.seroneg[dat.mock.vacc.seroneg[["EventTimePrimaryD"%.%pop]]>=7, ] #dat.mock.vacc.seroneg has trichotomized variables defined
     dat.plac.pop=subset(dat.mock, Trt==0 & Bserostatus==0 & Perprotocol & EventTimePrimaryD57>=7)
 } else if (pop=="29") {
-    dat.vacc.pop=subset(dat.mock, Trt==1 & Bserostatus == 0 & EventTimePrimaryD29>=7 & (EventTimePrimaryD29>=14 & Perprotocol == 1 | EventTimePrimaryD29<13 & Fullvaccine==1))
-    dat.plac.pop=subset(dat.mock, Trt==0 & Bserostatus == 0 & EventTimePrimaryD29>=7 & (EventTimePrimaryD29>=14 & Perprotocol == 1 | EventTimePrimaryD29<13 & Fullvaccine==1))    
+    dat.vacc.pop=subset(dat.mock, Trt==1 & Bserostatus == 0 & (EventTimePrimaryD29>=14 & Perprotocol == 1 | EventTimePrimaryD29>=7 & EventTimePrimaryD29<=13 & Fullvaccine==1))
+    dat.plac.pop=subset(dat.mock, Trt==0 & Bserostatus == 0 & (EventTimePrimaryD29>=14 & Perprotocol == 1 | EventTimePrimaryD29>=7 & EventTimePrimaryD29<=13 & Fullvaccine==1))    
     # define trichotomized markers
     for (a in assays) {    
       q.a <- wtd.quantile(dat.vacc.pop[["Day29" %.% a]], weights = dat.vacc.pop$wt, probs = c(1 / 3, 2 / 3))
@@ -78,8 +68,6 @@ design.vacc.seroneg<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subse
 #
 t0=max(dat.vacc.pop[dat.vacc.pop[["EventIndPrimaryD"%.%pop]]==1, "EventTimePrimaryD"%.%pop]); myprint(t0)
 write(t0, file=paste0(save.results.to, "timepoints_cum_risk_"%.%study.name))
-
-
 # trial-specific formula
 form.s = as.formula(paste0("Surv(EventTimePrimaryD",pop,", EventIndPrimaryD",pop,") ~ 1"))
 if (study.name == "mock") {
@@ -673,6 +661,7 @@ if(!file.exists(paste0(save.results.to, "marginalized.risk.2.",study.name,".Rdat
 #myprint(prev.plac)
 #myprint(prev.vacc)
 
+
 prev.plac=c(res.plac.cont[1], quantile(res.plac.cont[-1], c(.025,.975)))
 prev.vacc=c(res.vacc.cont[1], quantile(res.vacc.cont[-1], c(.025,.975)))
 myprint(prev.plac)
@@ -699,8 +688,9 @@ for (idx in 1:2) { # 1 with placebo lines, 2 without placebo lines. Implementati
             ylab=paste0("Probability* of COVID by Day ", t0), lwd=lwd, ylim=ylim, type="n", main=paste0(labels.assays.long["Day"%.%pop,a]), xaxt="n")
         # x axis
         xx=seq(floor(min(risks$marker)), ceiling(max(risks$marker)))
-        for (x in xx) axis(1, at=x, labels=if (x>=3) bquote(10^.(x)) else 10^x )
-        axis(1, at=log10(llods[a]), labels="L")
+        for (x in xx) axis(1, at=x, labels=if (log10(llods[a])==x) "lod" else if (x>=3) bquote(10^.(x)) else 10^x )
+        if(!any(log10(llods[a])==xx)) axis(1, at=log10(llods[a]), labels="lod")
+        
         
         # prevelance lines
         abline(h=prev.plac, col="gray", lty=c(1,3,3), lwd=lwd)
@@ -820,6 +810,7 @@ x.time<-seq(0,t0,by=30); if(t0-last(x.time)>15) x.time=c(x.time, t0) else x.time
 #
 mypdf(oma=c(1,0,0,0), onefile=F, file=paste0(save.results.to, "marginalized_risks_cat_", study.name), mfrow=.mfrow, width=7*1.3, height = 7.5/2*.mfrow[1]*1.3, mar=c(11,4,4,2))
 for (a in assays) {        
+    par(las=1, cex.axis=0.9, cex.lab=1)# axis label 
     marker.name="Day"%.%pop%.%a%.%"cat"    
     
     out=risks.all.ter[[a]]

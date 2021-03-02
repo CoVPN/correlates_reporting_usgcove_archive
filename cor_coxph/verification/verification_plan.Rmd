@@ -62,7 +62,7 @@ For independent double programming, the tester will independently generate the s
 
 For code review, the tester will review the programmers code directly from the code folder. The review will consist of checking the programming logic of the code for consistency with the specifications, verifying the assumptions in the source data. The tester will confirm that the code does not produce errors or unexpected warnings, check the output for nonsensical or unexpected results, and finally review the output headers, footers and formatting for consistency.
 
-All tables contain in the `cor_coxph` section of the correlates report are determined to be high risk, and thus will all be independently double programmed.
+All tables contain in the `cor_coxph` section of the correlates report are determined to be high risk, and thus will all be independently double programmed. Some figures will also be independently double programmed while others will be code-reviewed. We will make this clear in the the specifications document.
 
 Mock data used in the verification can be found in the `COVIDcorr` R package, available at https://github.com/CoVPN/correlates_mockdata. Any use of this code outside of the mock data is not guaranteed and is subject to additional verification.
 

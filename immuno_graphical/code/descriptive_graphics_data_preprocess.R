@@ -226,15 +226,17 @@ dat.long.twophase.sample$age_sex_label <-
 dat.long.twophase.sample$ethnicity_label <-
   with(
     dat.long.twophase.sample,
-    ifelse(EthnicityHispanic == 1,
-           "Hispanic or Latino",
-           ifelse(
-             EthnicityNotreported == 0 & EthnicityUnknown == 0,
-             "Not Hispanic or Latino",
-             "Not reported and unknown"
-           ))
+    ifelse(
+      EthnicityHispanic == 1,
+      "Hispanic or Latino",
+      ifelse(
+        EthnicityNotreported == 0 & EthnicityUnknown == 0,
+        "Not Hispanic or Latino",
+        "Not reported and unknown"
+      )
+    )
   ) %>% factor(
-    levels = c("Hispanic or Latino", "Not Hispanic or Latino", "Not reported and unknown")
+    levels = c("Hispanic or Latino", "Not Hispanic or Latino", "Not reported and unknown", "Others")
   )
 
 
@@ -261,8 +263,8 @@ dat.long.twophase.sample$age_minority_label <-
       )
     )
   )
-dat.long.twophase.sample$ethnicity <- as.factor(dat.long.twophase.sample$ethnicity)
-dat.twophase.sample$ethnicity <- as.factor(dat.twophase.sample$ethnicity)
+\
+
 dat.long.twophase.sample$race <- as.factor(dat.long.twophase.sample$race)
 dat.twophase.sample$race <- as.factor(dat.twophase.sample$race)
 

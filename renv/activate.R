@@ -123,7 +123,7 @@ local({
     if (fixup)
       mode <- "w+b"
   
-    utils::download.file(
+    download.file(
       url      = url,
       destfile = destfile,
       mode     = mode,
@@ -138,6 +138,7 @@ local({
   
     message("* Downloading renv ", version, " ... ", appendLF = FALSE)
   
+
     downloader <- function(type) {
   
       tryCatch(
@@ -187,10 +188,7 @@ local({
     for (repos in all) {
   
       db <- tryCatch(
-        as.data.frame(
-          x = utils::available.packages(repos = repos),
-          stringsAsFactors = FALSE
-        ),
+        as.data.frame(available.packages(repos = repos), stringsAsFactors = FALSE),
         error = identity
       )
   
@@ -276,7 +274,7 @@ local({
       return(FALSE)
     }
   
-    message("OK")
+    message("Done!")
     return(destfile)
   
   }

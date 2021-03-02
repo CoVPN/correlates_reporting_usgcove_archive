@@ -19,15 +19,16 @@ cache:
 install:
 - echo $TRAVIS_BUILD_DIR
 - ls -a
-- Rscript -e "if (!requireNamespace('renv', quietly = TRUE)) install.packages('renv')"
+- cd .. && Rscript -e "if (!requireNamespace('renv', quietly = TRUE)) install.packages('renv')"
 - ls -a
-- cat $TRAVIS_BUILD_DIR/.Rprofile
 - Rscript -e "renv::restore()"
 before_script:
 - sed -i '/B=/c\B=20' $TRAVIS_BUILD_DIR/cor_coxph/code/params.R
 - sed -i '/numPerm=/c\numPerm=20' $TRAVIS_BUILD_DIR/cor_coxph/code/params.R
 - cat $TRAVIS_BUILD_DIR/cor_coxph/code/params.R
 script:
+- ls $TRAVIS_BUILD_DIR/renv/library
+- Rscript -e "renv::activate(); library(glmnet)"
 - make data_processed && make immuno_analysis && make immuno_report
 - make cor_analysis && make cor_report
 after_script:

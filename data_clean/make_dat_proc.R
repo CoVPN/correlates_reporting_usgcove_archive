@@ -1,4 +1,6 @@
 #-----------------------------------------------
+renv::activate(project = here::here(".."))
+
 # obligatory to append to the top of each script
 # There is a bug on Windows that prevents renv from working properly. saved.system.libPaths provides a workaround:
 if (.Platform$OS.type == "windows") saved.system.libPaths=.libPaths()

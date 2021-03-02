@@ -13,7 +13,7 @@ get_plot <- function(marker, simultaneous_CI = F, monotone = F) {
   time <- marker_to_time[[marker]]
   data <- read.csv(here::here("data_clean", paste0("data_secondstage_", time, ".csv")))
   main <- paste0("Cumulative Risk of COVID by Day ", tf[time])
-  
+
   ident <- function(x) x
   col <- c(col2rgb("olivedrab3")) # orange, darkgoldenrod2
   col <- rgb(col[1], col[2], col[3], alpha = 255 * 0.4, maxColorValue = 255)

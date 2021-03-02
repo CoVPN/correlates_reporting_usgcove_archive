@@ -18,7 +18,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 
-An extension of the unadjusted nonparametric threshold-searching approach developed in @Donovan, the covariate-adjusted TMLE-based approach developed by van der Laan, Zhang, Gilbert (in progress) is used to estimate the so-called threshold-response function $E_X[ E[Y|S \geq s, X, A = 1]|A=1]$ for a range of thresholds $s$. Here, $X$ is a set of baseline characteristics, $A=1$ represents the vaccine group, $S$ is the biomarker/immune-response/correlate of interest, and $Y$ is the indicator of COVID disease before some time point $t_f$. Intuitively, the threshold-response at a given threshold is the expected probability of obtaining COVID disease if one experiences a marker/immune-response value above that threshold. The threshold-response function is estimated for each of the four Day 57 antibody markers, in each case adjusting for the baseline covariates  --> age, baseline risk score, high risk indicator, and underrepresented minority status.A parametric learner, selected via cross-validation, is used for the covariate adjustment. A number of plots and tables are reported:
+An extension of the unadjusted nonparametric threshold-searching approach developed in @Donovan, the covariate-adjusted TMLE-based approach developed by van der Laan, Zhang, Gilbert (in progress) is used to estimate the so-called threshold-response function $E_X[ E[Y|S \geq s, X, A = 1]|A=1]$ for a range of thresholds $s$.Here, $X$ is a set of baseline characteristics, $A=1$ represents the vaccine group, $S$ is the biomarker/immune-response/correlate of interest, and $Y$ is the indicator of COVID disease before some time point $t_f$. This parameter can be viewed as a causal version of the parameter $P(Y=1|S \geq s, A=1)$ Intuitively, the threshold-response at a given threshold is the expected probability of obtaining COVID disease if one experiences a marker/immune-response value above that threshold. The threshold-response function is estimated for each of the four Day 57 antibody markers, in each case adjusting for the baseline covariates  --> age, baseline risk score, high risk indicator, and underrepresented minority status.A parametric learner, selected via cross-validation, is used for the covariate adjustment. A number of plots and tables are reported:
 \begin{enumerate}
   \item A plot and table with risk estimates and point-wise 95\% confidence intervals for the threshold-response at a grid of thresholds.
    \item A plot and table with risk estimates and simultaneous 95\% confidence bands for the threshold-response at a grid of thresholds.
@@ -77,6 +77,60 @@ day <- 57
 marker <- "Pseudo virus-neutralizing antibody (80\\% titer)"
 key <- "pseudoneutid80"
 day <- 57
+```
+
+```{r, child=c('sub_report.Rmd')}
+
+
+```
+
+
+
+\newpage
+```{r, include = F}
+# DAY 29
+marker <- "Spike protein antibody"
+key <- "bindSpike"
+day <- 29
+```
+
+```{r, child=c('sub_report.Rmd')}
+
+
+```
+
+\newpage 
+```{r, include = F}
+marker <- "RBD binding antibody"
+key <- "bindRBD"
+day <- 29
+```
+
+```{r, child=c('sub_report.Rmd')}
+
+
+```
+
+\newpage 
+
+```{r, include = F}
+marker <- "Pseudo virus-neutralizing antibody (50\\% titer)"
+key <- "pseudoneutid50"
+day <- 29
+```
+
+```{r, child=c('sub_report.Rmd')}
+
+
+```
+
+\newpage 
+
+
+```{r, include = F}
+marker <- "Pseudo virus-neutralizing antibody (80\\% titer)"
+key <- "pseudoneutid80"
+day <- 29
 ```
 
 ```{r, child=c('sub_report.Rmd')}

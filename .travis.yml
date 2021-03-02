@@ -28,7 +28,7 @@ before_script:
 - cat $TRAVIS_BUILD_DIR/cor_coxph/code/params.R
 script:
 - ls $TRAVIS_BUILD_DIR/renv/library/R-4.0/x86_64-pc-linux-gnu
-- Rscript -e "renv::activate(); library(glmnet)"
+- pwd && cd $TRAVIS_BUILD_DIR && pwd & Rscript -e "renv::activate(); library(glmnet)"
 - make data_processed && make immuno_analysis && make immuno_report
 - make cor_analysis && make cor_report
 after_script:

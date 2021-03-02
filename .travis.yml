@@ -15,11 +15,15 @@ cache:
 install:
   - Rscript -e "if (!requireNamespace('renv', quietly = TRUE)) install.packages('renv')"
   - Rscript -e "renv::restore()"
-  
+
+# turn down number of bootstraps and permutations for faster builds
+before_script:
+  - sed -i '/B=/c\B=20' $TRAVIS_BUILD_DIR/cor_coxph/code/params.R
+  - sed -i '/num_perm=/c\num_perm=20' $TRAVIS_BUILD_DIR/cor_coxph/code/params.R
+
 script:
   - make immuno_report
   - make cor_report
 
 after_script:
   - chmod +x _deploy_reports.sh && ./_deploy_reports.sh
-

@@ -1,7 +1,7 @@
 #-----------------------------------------------
 # obligatory to append to the top of each script
 # There is a bug on Windows that prevents renv from working properly. saved.system.libPaths provides a workaround:
-if (.Platform$OS.type == "windows") saved.system.libPaths=.libPaths()
+if (.Platform$OS.type == "windows") saved.system.libPaths=paste0(Sys.getenv ("R_HOME"), "/library")
 renv::activate(project = here::here(".."))
 if (.Platform$OS.type == "windows") {
     options(renv.config.install.transactional = FALSE)

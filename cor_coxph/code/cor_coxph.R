@@ -1,7 +1,7 @@
 #-----------------------------------------------
 # obligatory to append to the top of each script
 # There is a bug on Windows that prevents renv from working properly. saved.system.libPaths provides a workaround:
-if (.Platform$OS.type == "windows") saved.system.libPaths=.libPaths()
+if (.Platform$OS.type == "windows") saved.system.libPaths=paste0(Sys.getenv ("R_HOME"), "/library")
 renv::activate(project = here::here(".."))
 if (.Platform$OS.type == "windows") {
     options(renv.config.install.transactional = FALSE)
@@ -18,7 +18,6 @@ dat.mock <- read.csv(here::here("..", "data_clean", data_name))
 dat.mock.vacc.seroneg <- readRDS(here::here("data_clean", "dat.mock.vacc.seroneg.rds"))
 marker.cutpoints <- readRDS(here::here("data_clean", "marker.cutpoints.rds"))
 
-# the order of these packages matters
 # kyotil mostly contains code for formatting, but may also contain code for some estimation tasks
 library(kyotil)
 #remotes::install_github("youyifong/kyotil")
@@ -49,12 +48,12 @@ if (pop=="57") {
     dat.plac.pop=subset(dat.mock, Trt==0 & Bserostatus == 0 & (EventTimePrimaryD29>=14 & Perprotocol == 1 | EventTimePrimaryD29>=7 & EventTimePrimaryD29<=13 & Fullvaccine==1))    
     # define trichotomized markers
     for (a in assays) {    
-      q.a <- wtd.quantile(dat.vacc.pop[["Day29" %.% a]], weights = dat.vacc.pop$wt, probs = c(1 / 3, 2 / 3))
+      q.a <- wtd.quantile(dat.vacc.pop[["Day29" %.% a]], weights = dat.vacc.pop$wt.2, probs = c(1 / 3, 2 / 3))
       q.a <- c(-Inf, q.a, Inf) # therwise cut2 may assign the rows with the minimum value NA
       dat.vacc.pop[["Day29" %.% a %.% "cat"]] <- factor(cut2(dat.vacc.pop[["Day29" %.% a]], cuts = q.a))
       stopifnot( length(table(dat.vacc.pop[["Day29" %.% a %.% "cat"]])) == 3)
       #
-      q.a <- wtd.quantile(dat.vacc.pop[["Delta29overB" %.% a]], weights = dat.vacc.pop$wt, probs = c(1 / 3, 2 / 3))
+      q.a <- wtd.quantile(dat.vacc.pop[["Delta29overB" %.% a]], weights = dat.vacc.pop$wt.2, probs = c(1 / 3, 2 / 3))
       q.a <- c(-Inf, q.a, Inf) # therwise cut2 may assign the rows with the minimum value NA
       dat.vacc.pop[["Delta29overB" %.% a %.% "cat"]] <- factor(cut2(dat.vacc.pop[["Delta29overB" %.% a]], cuts = q.a))
       stopifnot( length(table(dat.vacc.pop[["Delta29overB" %.% a %.% "cat"]])) == 3)
@@ -79,7 +78,9 @@ if (study.name == "mock") {
 } else stop("")
 # covariate length without markers
 p.cov=length(terms(form.0))
-    
+#
+wts=if(pop=="57") dat.vacc.pop$wt else dat.vacc.pop$wt.2    
+
 time.start=Sys.time()
 
     
@@ -241,9 +242,9 @@ overall.p.2=c(rbind(overall.p.2, NA,NA))
 
 
 # n cases and n at risk
-natrisk = round(c(sapply (c("Day"%.%pop%.%assays, "Delta"%.%pop%.%"overB"%.%assays)%.%"cat", function(a) aggregate(dat.vacc.pop$wt, dat.vacc.pop[a], sum, na.rm=T)[,2] )))
+natrisk = round(c(sapply (c("Day"%.%pop%.%assays, "Delta"%.%pop%.%"overB"%.%assays)%.%"cat", function(a) aggregate(wts, dat.vacc.pop[a], sum, na.rm=T)[,2] )))
 colSums(matrix(natrisk, nrow=3))
-nevents = round(c(sapply (c("Day"%.%pop%.%assays, "Delta"%.%pop%.%"overB"%.%assays)%.%"cat", function(a) aggregate(subset(dat.vacc.pop,yy==1,wt,drop=T), 
+nevents = round(c(sapply (c("Day"%.%pop%.%assays, "Delta"%.%pop%.%"overB"%.%assays)%.%"cat", function(a) aggregate(subset(dat.vacc.pop,yy==1)[[if(pop=="57") "wt" else "wt.2"]], 
                                                                                                                    subset(dat.vacc.pop,yy==1)[a], sum, na.rm=T)[,2] )))
 # regression parameters
 est=c(rbind(1.00,  getFormattedSummary(fits.tri, exp=T, robust=T, rows=rows, type=1)))
@@ -566,7 +567,7 @@ if(!file.exists(paste0(save.results.to, "marginalized.risk.1.",study.name,".Rdat
     print("make marginalized.risk.1")
     risks.all.1=list()
     for (a in assays) {
-        risks.all.1[[a]]=marginalized.risk.svycoxph.boot(formula=form.0, marker.name="Day"%.%pop%.%a, type=1, data=dat.vacc.pop, t0, weights=dat.vacc.pop$wt, B=B, ci.type="quantile", numCores=numCores)        
+        risks.all.1[[a]]=marginalized.risk.svycoxph.boot(formula=form.0, marker.name="Day"%.%pop%.%a, type=1, data=dat.vacc.pop, t0, weights=wts, B=B, ci.type="quantile", numCores=numCores)        
     }
     save(risks.all.1, file=paste0(save.results.to, "marginalized.risk.1."%.%study.name%.%".Rdata"))
     
@@ -585,7 +586,7 @@ if(!file.exists(paste0(save.results.to, "marginalized.risk.2.",study.name,".Rdat
     risks.all.2=list()
     for (a in assays) {
         myprint(a)
-        risks.all.2[[a]]=marginalized.risk.svycoxph.boot(formula=form.0, marker.name="Day"%.%pop%.%a, type=2, data=dat.vacc.pop, t0, weights=dat.vacc.pop$wt, B=B, ci.type="quantile", numCores=numCores)        
+        risks.all.2[[a]]=marginalized.risk.svycoxph.boot(formula=form.0, marker.name="Day"%.%pop%.%a, type=2, data=dat.vacc.pop, t0, weights=wts, B=B, ci.type="quantile", numCores=numCores)        
     }    
     
     # marginalized risk without marker in both arms
@@ -796,7 +797,7 @@ for (a in assays) {
 #    f2=update(form.0, as.formula(paste0(marker.name,"~.")))
 #    fit.s=nnet::multinom(f2, dat.vacc.pop, weights=dat.vacc.pop$wt) 
     
-    risks.all.ter[[a]]=marginalized.risk(fit.risk, marker.name, subset(dat.vacc.pop,TwophasesampInd==1), weights=dat.vacc.pop$wt[dat.vacc.pop$TwophasesampInd==1], categorical.s=T)
+    risks.all.ter[[a]]=marginalized.risk(fit.risk, marker.name, subset(dat.vacc.pop,TwophasesampInd==1), weights=wts[dat.vacc.pop$TwophasesampInd==1], categorical.s=T)
 }
 
 
@@ -827,7 +828,7 @@ for (a in assays) {
     
     # add data ribbon    
     f1=update(form.s, as.formula(paste0("~.+",marker.name)))
-    km <- survfit(f1, subset(dat.vacc.pop, TwophasesampInd==1), weights=wt)
+    km <- survfit(f1, subset(dat.vacc.pop, TwophasesampInd==1), weights=if(pop=="57") wt else wt.2)
     tmp=summary(km, times=x.time)            
     
     n.risk.L <- round(tmp$n.risk[1:length(x.time)])

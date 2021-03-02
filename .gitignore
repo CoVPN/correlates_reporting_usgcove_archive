@@ -91,3 +91,7 @@ cor_coxph/output/D29/cutpoints_D29overBpseudoneutid80_mock
 cor_coxph/output/D29/cutpoints_D29pseudoneutid50_mock
 cor_coxph/output/D29/cutpoints_D29pseudoneutid80_mock
 cor_coxph/cor_coxph_report.log
+cor_nonlinear/output/D29/gam_mock.pdf
+cor_nonlinear/output/D29/step_mock.pdf
+cor_nonlinear/output/D57/gam_mock.pdf
+cor_nonlinear/output/D57/step_mock.pdf

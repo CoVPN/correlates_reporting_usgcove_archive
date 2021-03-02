@@ -1,4 +1,6 @@
-data_clean/*
-figs/*
-figs/demographics/*
+data_clean/*.Rdata
+figs/*.png
+figs/*.pdf
+figs/demographics/*.png
+figs/demographics/*.pdf
 Rplots*

@@ -1,6 +1,6 @@
-data_clean/*.RData
-data_clean/*.rda
-data_clean/*.rds
-data_clean/*.csv
-figs/*.png
-figs/*.pdf
+data_clean/**.RData
+data_clean/**.rda
+data_clean/**.rds
+data_clean/**.csv
+figs/**.png
+figs/**.pdf

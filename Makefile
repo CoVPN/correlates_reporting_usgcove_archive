@@ -33,7 +33,7 @@ cop_report:
 
 ## data_processed         : create processed data from raw data
 data_processed:
-	Rscript -e "source('data_clean/make_dat_proc.R')"
+	Rscript data_clean/make_dat_proc.R
 
 ## style                  : re-styles the codebase for consistent formatting
 style:

@@ -22,6 +22,7 @@ install:
 before_script:
 - sed -i '/B=/c\B=20' $TRAVIS_BUILD_DIR/cor_coxph/code/params.R
 - sed -i '/num_perm=/c\num_perm=20' $TRAVIS_BUILD_DIR/cor_coxph/code/params.R
+- cat $TRAVIS_BUILD_DIR/cor_coxph/code/params.R
 script:
 - make data_processed && make immuno_analysis && make immuno_report
 - make cor_analysis && make cor_report

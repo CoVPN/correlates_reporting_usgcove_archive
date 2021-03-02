@@ -19,6 +19,7 @@ cache:
 install:
 - cd .. && pwd && Rscript -e "install.packages('renv')"
 - Rscript -e "install.packages('here')"
+- Rscript -e ".libPaths(); row.names(installed.packages())"
 - Rscript -e "library(here)"
 - Rscript -e "library(renv)"
 - cd $TRAVIS_BUILD_DIR && Rscript -e "renv::restore()"

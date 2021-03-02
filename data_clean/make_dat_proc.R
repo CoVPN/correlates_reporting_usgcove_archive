@@ -1,4 +1,6 @@
 #-----------------------------------------------
+print(getwd())
+
 renv::activate(project = here::here(".."))
 
 # obligatory to append to the top of each script

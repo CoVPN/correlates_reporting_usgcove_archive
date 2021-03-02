@@ -1,7 +1,13 @@
 #-----------------------------------------------
 print(getwd())
 
+print("Before activate my libPaths are:")
+print(.libPaths())
+
 renv::activate(project = here::here(".."))
+
+print("After activate my libPaths are:")
+print(.libPaths())
 
 # obligatory to append to the top of each script
 # There is a bug on Windows that prevents renv from working properly. saved.system.libPaths provides a workaround:

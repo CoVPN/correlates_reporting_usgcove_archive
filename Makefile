@@ -32,8 +32,10 @@ cop_report:
 	bash ./_build.sh cop
 
 ## data_processed         : create processed data from raw data
+# make_dat_proc.R needs to be executed in data_clean folder to correctly
+# active renv
 data_processed:
-	Rscript data_clean/make_dat_proc.R
+	cd data_clean && Rscript make_dat_proc.R
 
 ## style                  : re-styles the codebase for consistent formatting
 style:

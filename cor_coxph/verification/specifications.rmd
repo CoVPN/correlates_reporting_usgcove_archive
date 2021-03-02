@@ -52,15 +52,15 @@ Notes:
 <!-- $\ast\ast\ast$ Generalized Wald-test p-value of the null hypothesis that the hazard rate is constant across the Lower, Middle, and Upper tertile groups. -->
 
 
-Second, we fit Cox regression models to the following subgroups for continuous markers only. Note that in some subgroups we cannot adjust for all baseline demographic variables. For example, for the at risk subgroup, we cannot include the at-risk indicator. These results will be code-reviewed.
+Second, we fit Cox regression models to the following subgroups for continuous markers only. Note that for some analyses we cannot adjust for all baseline demographic variables, e.g. in the second bullet we cannot include the at-risk indicator, HighRiskInd, as a covariate. The clinical covariates to be excluded  These results will be code-reviewed.
 \begin{itemize}
     \item age >= 65
-    \item age<65 and at risk
-    \item age<65 and not at risk
-    \item at risk
-    \item Not at risk
-    \item Comm of color
-    \item White non-Hispanic
+    \item age<65 and at risk (-HighRiskInd)
+    \item age<65 and not at risk (-HighRiskInd)
+    \item at risk (-HighRiskInd)
+    \item Not at risk (-HighRiskInd)
+    \item Comm of color (-MinorityInd)
+    \item White non-Hispanic (-MinorityInd)
     \item Men
     \item Women
 \end{itemize}

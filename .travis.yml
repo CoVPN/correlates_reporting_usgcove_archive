@@ -15,14 +15,12 @@ apt_packages:
 cache:
   directories:
   - "$HOME/.local/share/renv"
-  - "$TRAVIS_BUILD_DIR/renv/library"
+  - "$TRAVIS_BUILD_DIR/correlates_reporting/renv/library"
 install:
-- cd .. && pwd && Rscript -e "install.packages('renv')"
-- Rscript -e "install.packages('here')"
-- Rscript -e ".libPaths(); row.names(installed.packages())"
-- Rscript -e "library(here)"
+- echo $TRAVIS_BUILD_DIR
+- Rscript -e "install.packages('renv')"
 - Rscript -e "library(renv)"
-- cd $TRAVIS_BUILD_DIR && Rscript -e "renv::restore()"
+- cd $TRAVIS_BUILD_DIR/correlates_reporting && Rscript -e "renv::restore()"
 before_script:
 - sed -i '/B=/c\B=20' $TRAVIS_BUILD_DIR/cor_coxph/code/params.R
 - sed -i '/numPerm=/c\numPerm=20' $TRAVIS_BUILD_DIR/cor_coxph/code/params.R

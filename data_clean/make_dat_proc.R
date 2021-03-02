@@ -12,6 +12,9 @@ print(.libPaths())
 print("After activate my installed.packages are:")
 print(row.names(installed.packages()))
 
+print("Now I have these files in my renv folder")
+list.files("/home/travis/build/CoVPN/renv/library/R-4.0/x86_64-pc-linux-gnu")
+
 print("If I call restore again then I have installed packages:")
 renv::restore()
 print(row.names(installed.packages()))

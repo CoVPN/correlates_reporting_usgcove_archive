@@ -19,7 +19,9 @@ cache:
 install:
 - echo $TRAVIS_BUILD_DIR
 - ls -a
-- Rscript -e "if (!requireNamespace('renv', quietly = TRUE)) install.packages('renv')"
+- cd .. & Rscript -e "if (!requireNamespace('renv', quietly = TRUE)) install.packages('renv')"
+- Rscript -e "if (!requireNamespace('here', quietly = TRUE)) install.packages('renv')"
+- cd $TRAVIS_BUILD_DIR
 - ls -a
 - Rscript -e "renv::restore()"
 before_script:

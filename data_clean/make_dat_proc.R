@@ -9,6 +9,13 @@ renv::activate(project = here::here(".."))
 print("After activate my libPaths are:")
 print(.libPaths())
 
+print("After activate my installed.packages are:")
+print(row.names(installed.packages()))
+
+print("If I call restore again then I have installed packages:")
+renv::restore()
+print(row.names(installed.packages()))
+
 # obligatory to append to the top of each script
 # There is a bug on Windows that prevents renv from working properly. saved.system.libPaths provides a workaround:
 if (.Platform$OS.type == "windows") saved.system.libPaths=.libPaths()

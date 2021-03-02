@@ -2,7 +2,7 @@
 all: clean params data threshold plot
 
 
-## threshold   : run threshold analysis and get plots
+## threshold   : run threshold analysis 
 threshold: code/run_Threshold_analysis.R \
   params  
 	Rscript code/run_Threshold_analysis.R

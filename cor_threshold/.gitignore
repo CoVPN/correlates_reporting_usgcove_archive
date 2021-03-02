@@ -2,7 +2,13 @@ data_clean/*.RData
 data_clean/*.rda
 data_clean/*.rds
 data_clean/*.csv
+data_clean/Thresholds_by_marker/*.csv
 figs/*.png
 figs/*.pdf
+figs/simultaneous_CI/*.pdf
+figs/pointwise_CI/*.pdf
 output/*.csv
 output/*.pdf
+output/*.RData
+output/*.rda
+output/*.rds

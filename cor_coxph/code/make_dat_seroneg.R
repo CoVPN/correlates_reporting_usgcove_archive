@@ -9,8 +9,13 @@ if (.Platform$OS.type == "windows") {
     .libPaths(c(saved.system.libPaths, .libPaths()))
 } else renv::restore(prompt=FALSE)
 
+source(here::here("..", "_common.R"))
+#-----------------------------------------------
+
 source(here::here("code", "params.R"))
 dat.mock <- read.csv(here::here("..", "data_clean", data_name))
+
+library(Hmisc) # wtd.quantile, cut2
 
 ###############################################################################
 # define trichotomized markers for dat.mock.vacc.seroneg

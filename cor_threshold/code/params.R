@@ -20,16 +20,23 @@ source(here::here("..", "_common.R"))
 
 
 
-tf <- 170 # Reference time to perform analysis. Y = 1(T <= tf) where T is event time of Covid.
+tf <- list("Day57" = 170, "Day29" = 200) # Reference time to perform analysis. Y = 1(T <= tf) where T is event time of Covid.
 # tf should be large enough that most events are observed but small enough so that not many people are right censored. For the practice dataset, tf = 170 works.
 # Right-censoring is taken into account for  this analysis.
-covariate_adjusted <- T #### Estimate threshold-response function with covariate adjustment
+covariate_adjusted <- FALSE #### Estimate threshold-response function with covariate adjustment
 fast_analysis <- TRUE ### Perform a fast analysis using glmnet
 include_interactions <- FALSE #### Include algorithms that model interactions between covariates
-threshold_grid_size <- 35 ### Number of thresholds to estimate (equally spaced in quantiles). Should be 15 at least for the plots of the threshold-response and its inverse to be representative of the true functions.
+threshold_grid_size <- 15 ### Number of thresholds to estimate (equally spaced in quantiles). Should be 15 at least for the plots of the threshold-response and its inverse to be representative of the true functions.
 
 plotting_assay_label_generator <- function(marker) {
   day <- ""
+  time <- marker_to_time[marker]
+  assay <- marker_to_assay[marker]
+  labx <- labels.axis[time, assay]
+  labx <- paste0(labx, " (>=s)")
+  return(labx)
+  
+  strsplit("Day57liveneutid80", "[0-9]")
   if (marker == "Day57liveneutid80") {
     labx <- paste0(day, "Live nAb ID80")
   }
@@ -57,15 +64,23 @@ plotting_assay_label_generator <- function(marker) {
   return(labx)
 }
 
+times <- c("Day57", "Day29")
 # Marker variables to generate results for
-assays <- c("bindSpike", "bindRBD", "pseudoneutid80", "liveneutid80", "pseudoneutid80", "liveneutid80", "pseudoneutid50", "liveneutid50")
-assays <- paste0("Day57", assays) # Quick way to switch between days
+#assays <- c("bindSpike", "bindRBD", "pseudoneutid80", "liveneutid80", "pseudoneutid80", "liveneutid80", "pseudoneutid50", "liveneutid50")
+#assays <- paste0("Day57", assays) # Quick way to switch between days
+markers <- markers
+markers <- grep("^[^B].*", markers, value = T)
+markers
+marker_to_time <- sapply(markers, function(v) {times[stringr::str_detect(v, times)]})
+marker_to_assay <- sapply(markers, function(v) {assays[stringr::str_detect(v, assays)]})
+
 # Covariates to adjust for. SHOULD BE AT LEAST TWO VARIABLES OR GLMNET WILL ERROR
-covariates <- c("MinorityInd", "HighRiskInd", "BRiskScore") # Add "age"?
+
+covariates <- c("MinorityInd", "HighRiskInd")#, "BRiskScore") # Add "age"?
 # Indicator variable for whether an event was observed (0 is censored or end of study, 1 is COVID endpoint)
-Event_Ind_variable <- "EventIndPrimaryD57"
+Event_Ind_variable <- list("Day57" = "EventIndPrimaryD57", "Day29" = "EventIndPrimaryD29") #"B" = "EventIndPrimaryD57")
 # Time until event (censoring, end of study, or COVID infection)
-Event_Time_variable <- "EventTimePrimaryD57"
+Event_Time_variable <- list("Day57" = "EventTimePrimaryD57", "Day29" = "EventTimePrimaryD29")
 # Variable containing the two stage sampling weights
 weight_variable <- "wt"
 # Indicator variable that is 1 if selected for second stage

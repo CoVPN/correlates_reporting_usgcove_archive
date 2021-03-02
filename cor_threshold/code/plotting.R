@@ -19,9 +19,9 @@ ident <- function(x) x
 
 # Plotting arguments
 main <- paste0("Cumulative Risk of COVID by Day ", tf)
+names(main) <- names(tf)
 
-
-for (marker in assays) {
+for (marker in markers) {
   get_plot(marker, simultaneous_CI = F, monotone = F)
   get_plot(marker, simultaneous_CI = T, monotone = F)
   get_plot(marker, simultaneous_CI = F, monotone = T)

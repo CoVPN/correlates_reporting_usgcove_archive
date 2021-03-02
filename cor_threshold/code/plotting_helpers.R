@@ -10,8 +10,10 @@ get_plot <- function(marker, simultaneous_CI = F, monotone = F) {
   laby <- "Marginalized Probability of COVID"
   labx <- plotting_assay_label_generator(marker)
   # subtitle_main <- "Nonparametric estimate of Threshold-response function"
-  data <- read.csv(here::here("data_clean", "data_secondstage.csv"))
-
+  time <- marker_to_time[[marker]]
+  data <- read.csv(here::here("data_clean", paste0("data_secondstage_", time, ".csv")))
+  main <- paste0("Cumulative Risk of COVID by Day ", tf[time])
+  
   ident <- function(x) x
   col <- c(col2rgb("olivedrab3")) # orange, darkgoldenrod2
   col <- rgb(col[1], col[2], col[3], alpha = 255 * 0.4, maxColorValue = 255)
@@ -117,7 +119,7 @@ get_inverse_plot <- function(marker, simultaneous_CI = F) {
     folder <- "pointwise_CI"
   }
   load(file = here::here("output", paste0("tmleThresh_", marker, ".RData")))
-  main <- paste0("Cumulative Risk of COVID by Day ", tf)
+  main <- paste0("Cumulative Risk of COVID by Day ", tf[marker_to_time[[marker]]])
   risks <- risks_to_estimate_thresh_of_protection
   if (is.null(risks)) {
     risks <- unique(round(seq(max(min(esttmle[esttmle[, 2] > 0.0005, 2]), 0.001), max(esttmle[, 2]), length.out = 15), 4))

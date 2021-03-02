@@ -14,7 +14,8 @@ lrnr <- get_learner(fast_analysis = fast_analysis, include_interactions = includ
 run_threshold_analysis <- function(marker) {
   thresholds <- read.csv(here::here("data_clean", "Thresholds_by_marker", paste0("thresholds_", marker, ".csv")))
   thresholds <- as.vector(unlist(thresholds[, 1]))
-  data_full <- read.csv(here::here("data_clean", "data_firststage.csv"))
+  time <- marker_to_time[[marker]]
+  data_full <- read.csv(here::here("data_clean", paste0("data_firststage_", time, ".csv")))
   node_list <- list(W = covariates, Y = "outcome", A = marker, weights = "wt", Delta = "Delta")
   nodes <- unlist(node_list, use.names = F)
 
@@ -36,6 +37,7 @@ run_threshold_analysis <- function(marker) {
   return(esttmle)
 }
 
-for (marker in assays) {
+for (marker in markers) {
+  print(marker)
   v <- run_threshold_analysis(marker)
 }

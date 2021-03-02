@@ -1,0 +1,25 @@
+language: r
+
+r: 4.0.4
+
+apt_packages:
+  - libxml2-dev
+  - libssl-dev 
+  - libcurl4-openssl-dev
+
+cache:
+  directories:
+  - $HOME/.local/share/renv
+  - $TRAVIS_BUILD_DIR/renv/library
+
+install:
+  - Rscript -e "if (!requireNamespace('renv', quietly = TRUE)) install.packages('renv')"
+  - Rscript -e "renv::restore()"
+  
+script:
+  - make immuno_report
+  - make cor_report
+
+after_script:
+  - chmod +x _deploy_reports.sh && ./_deploy_reports.sh
+

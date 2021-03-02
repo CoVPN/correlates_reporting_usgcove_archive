@@ -1,5 +1,5 @@
 ## all              : twophase_plots + demog_plots
-all: twophase_plots demog_plots
+all: clean twophase_plots demog_plots
 
 ## twophase_plots   : rcdfs, boxplots, scatter plots of assays saved in figs/
 twophase_plots: code/descriptive_graphics_two_phase_plots.R \

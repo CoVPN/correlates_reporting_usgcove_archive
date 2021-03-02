@@ -10,6 +10,8 @@ load(here("data_clean", "params.Rdata"))
 
 # Read in original data
 dat.mock <- read.csv(here("..", "data_clean", data_name))
+dat.mock$wt[is.na(dat.mock$wt)] <- 0
+dat.mock$wt.2[is.na(dat.mock$wt.2)] <- 0
 
 ds_o <- dat.mock
 # The stratified random cohort for immunogenicity

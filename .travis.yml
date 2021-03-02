@@ -17,12 +17,11 @@ cache:
   - "$HOME/.local/share/renv"
   - "$TRAVIS_BUILD_DIR/renv/library"
 install:
-- Rscript -e "if (!requireNamespace('renv', quietly = TRUE)) install.packages('renv')"
-- Rscript -e "if (!requireNamespace('here', quietly = TRUE)) install.packages('here')"
+- Rscript -e "install.packages('renv')"
+- Rscript -e "install.packages('here')"
 - Rscript -e "renv::restore()"
 - Rscript -e "library(here)"
-- Rscript -e "library(mice)"
-- Rscript -e "library(dplyr)"
+- Rscript -e "library(renv)"
 before_script:
 - sed -i '/B=/c\B=20' $TRAVIS_BUILD_DIR/cor_coxph/code/params.R
 - sed -i '/numPerm=/c\numPerm=20' $TRAVIS_BUILD_DIR/cor_coxph/code/params.R

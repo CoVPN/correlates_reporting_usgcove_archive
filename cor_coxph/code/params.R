@@ -18,4 +18,3 @@ Bstratum.labels <- c(
   "Age < 65, Not at risk"
 )
 names(Bstratum.labels) <- Bstratum.labels
-llods=c(bindSpike=20, bindRBD=20, pseudoneutid50=10, pseudoneutid80=10, liveneutmn50=62)

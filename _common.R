@@ -92,6 +92,10 @@ Bstratum.labels <- c(
   "Age < 65, Not at risk"
 )
 
+llods <- c(bindSpike=20, bindRBD=20, pseudoneutid50=10, pseudoneutid80=10) 
+# live neut to be added
+#, liveneutmn50=62)
+
 ###############################################################################
 # theme options
 ###############################################################################

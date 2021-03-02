@@ -35,7 +35,7 @@ cop_report:
 # make_dat_proc.R needs to be executed in data_clean folder to correctly
 # active renv
 data_processed:
-	cd data_clean && Rscript make_dat_proc.R
+	Rscript data_clean/make_dat_proc.R
 
 ## style                  : re-styles the codebase for consistent formatting
 style:

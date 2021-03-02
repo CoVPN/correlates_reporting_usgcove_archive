@@ -1,6 +1,14 @@
 #-----------------------------------------------
 # obligatory to append to the top of each script
-renv::activate(project = here::here())
+# There is a bug on Windows that prevents renv from working properly. saved.system.libPaths provides a workaround:
+if (.Platform$OS.type == "windows") saved.system.libPaths=.libPaths()
+renv::activate(project = here::here(".."))
+if (.Platform$OS.type == "windows") {
+    options(renv.config.install.transactional = FALSE)
+    renv::restore(library=saved.system.libPaths, prompt=FALSE) # for a quick test, add: packages="backports"
+    .libPaths(c(saved.system.libPaths, .libPaths()))
+} else renv::restore(prompt=FALSE)
+
 source(here::here("_common.R"))
 #-----------------------------------------------
 
@@ -121,7 +129,7 @@ wts_table2 <- with(
 )
 wts_norm2 <- rowSums(wts_table2) / wts_table2[, 2]
 dat_proc$wt.2 <- wts_norm2[dat_proc$Wstratum]
-dat_proc$wt.2[!with(dat_proc, EventTimePrimaryD29>=14 & Perprotocol == 1 | EventTimePrimaryD29>=7 & EventTimePrimaryD29<=13 & Fullvaccine==1] <- NA
+dat_proc$wt.2[!with(dat_proc, EventTimePrimaryD29>=14 & Perprotocol == 1 | EventTimePrimaryD29>=7 & EventTimePrimaryD29<=13 & Fullvaccine==1)] <- NA
 
 
 ###############################################################################

@@ -6,13 +6,9 @@ source(here::here("..", "_common.R")) #
 
 library(tidyverse)
 library(here)
-# DB: Scheduled for deletion
-# library(COVIDcorr)
 load(here("data_clean", "params.Rdata"))
 
-# DB: Scheduled for deletion
-# # Read in original data
-# data(dat.mock)
+# Read in original data
 dat.mock <- read.csv(here("..", "data_clean", data_name))
 
 ds_o <- dat.mock

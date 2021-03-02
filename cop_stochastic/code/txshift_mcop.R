@@ -14,7 +14,6 @@ library(hal9001)
 library(sl3)
 library(SuperLearner)
 library(txshift)
-library(COVIDcorr)  # data package
 source(here("..", "_common.R"))
 source(here("code", "sl_libs.R"))
 plan(multiprocess, workers = 4)

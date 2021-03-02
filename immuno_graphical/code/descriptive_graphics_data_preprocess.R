@@ -9,23 +9,14 @@ source(here::here("..", "_common.R"))
 ### set the ethnicity value
 ### add 
 
-
-
 library(here)
 library(dplyr)
 library(stringr)
-# DB: Scheduled for deletion
-# library(COVIDcorr)
-# # load data
-# data(dat.mock)
-
 dat.mock <- read.csv(here("..", "data_clean", data_name), header = TRUE)
 
 # load parameters
 source(here("code", "params.R"))
-
-
-dat <- dat.mock 
+dat <- dat.mock
 
 ## setting the floor values
 dat <- dat %>% mutate(

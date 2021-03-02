@@ -4,8 +4,6 @@ renv::activate(project = here::here("..")) #
 source(here::here("..", "_common.R")) #
 ##################################################
 
-# DB: Scheduled for deletion
-# library(COVIDcorr)
 library(tidyverse)
 source(here::here("code", "make_functions.R"))
 

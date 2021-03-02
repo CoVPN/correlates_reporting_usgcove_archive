@@ -1,6 +1,6 @@
 {
   "R": {
-    "Version": "4.0.4",
+    "Version": "4.0.3",
     "Repositories": [
       {
         "Name": "CRAN",
@@ -251,8 +251,8 @@
       "Package": "bookdown",
       "Version": "0.21.6",
       "Source": "GitHub",
-      "Remotes": "rstudio/bslib, rstudio/rmarkdown, r-lib/downlit",
       "RemoteType": "github",
+      "Remotes": "rstudio/bslib, rstudio/rmarkdown, r-lib/downlit",
       "RemoteHost": "api.github.com",
       "RemoteRepo": "bookdown",
       "RemoteUsername": "rstudio",
@@ -1030,6 +1030,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "1ebfdc8a3cfe8fe19184f5481972b092"
+    },
+    "magick": {
+      "Package": "magick",
+      "Version": "2.6.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "ffc87958461a1d2a5ec4b36035b87b94"
     },
     "magrittr": {
       "Package": "magrittr",
@@ -1834,6 +1841,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "29df52c781e572c967f90de9713423c4"
+    },
+    "webshot": {
+      "Package": "webshot",
+      "Version": "0.5.2",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "e99d80ad34457a4853674e89d5e806de"
     },
     "whisker": {
       "Package": "whisker",

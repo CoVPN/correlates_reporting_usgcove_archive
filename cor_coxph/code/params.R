@@ -9,5 +9,3 @@ numCores=if(Sys.info()['sysname']=="Windows") 1 else parallel::detectCores()
 
 trt.labels=c("Placebo","Vaccine")
 bstatus.labels=c("Baseline Neg","Pos")
-
-llods=c(bindSpike=20, bindRBD=20, pseudoneutid50=10, pseudoneutid80=10, liveneutmn50=62)

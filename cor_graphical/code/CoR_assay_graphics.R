@@ -15,8 +15,11 @@ library(ggplot2)
 # We made four ggplot objects, each for one assay, and combine them with ggarrange
 #=========================================================================================================================
 for (bstatus in 1:2) {
-  subdat <- subset(dat.long.cor.subset, Bserostatus == bstatus.labels[bstatus])
   for (tt in 1:5){
+    subdat <- subset(dat.long.cor.subset, Bserostatus == bstatus.labels[bstatus])
+    if (tt %in% c(3, 5)) {  ## day 57 analysis don't include intercurrent cases
+      subdat <- subdat %>% filter(cohort_event != "Intercurrent Cases")
+    }
     rcdf_list <- vector("list", 4)
     for (aa in 1:4) {
       rcdf_list[[aa]] <- ggplot(subset(subdat, assay == assays[aa]), 
@@ -86,9 +89,13 @@ dat.sample4 <-  dat.long.cor.subset[, c("Trt", times, "assay", "cohort_event", "
 
 
 for (bstatus in 1:2) {
-  subdat <- subset(dat.long.cor.subset, Bserostatus == bstatus.labels[bstatus])
-  subdat_jitter <- subset(dat.sample4, Bserostatus == bstatus.labels[bstatus])
   for (tt in 2:5){
+    subdat <- subset(dat.long.cor.subset, Bserostatus == bstatus.labels[bstatus])
+    subdat_jitter <- subset(dat.sample4, Bserostatus == bstatus.labels[bstatus])
+    if (tt %in% c(3, 5)) {
+      subdat <- subdat %>% filter(cohort_event != "Intercurrent Cases")
+      subdat_jitter <- subdat_jitter %>% filter(cohort_event != "Intercurrent Cases")
+    }
     boxplot_list <- vector("list", 4)
     for (aa in 1:4) {
       boxplot_list[[aa]] <-  ggplot(subset(subdat, assay == assays[aa] & Trt == "Vaccine"), 
@@ -139,7 +146,7 @@ for (bstatus in 1:2) {
 
 
 ##===============================================================================================================
-## Box plots, overplayed with boxplots and jittered sample points, for the distribution of baseline, day 57, or 
+## Box plots, overlayed with boxplots and jittered sample points, for the distribution of baseline, day 57, or 
 ## fold-rise in assay readouts versus the case-control status among the vaccine recipients, 
 ## stratified by the baseline serostatus, age group and risk group
 ##===============================================================================================================
@@ -156,9 +163,13 @@ dat.sample5 <-  dat.long.cor.subset[, c("Trt", times, "assay", "cohort_event", "
 
 
 for (bstatus in 1:2) {
-  subdat <- subset(dat.long.cor.subset, Bserostatus == bstatus.labels[bstatus])
-  subdat_jitter <- subset(dat.sample4, Bserostatus == bstatus.labels[bstatus])
   for (tt in 2:5){
+    subdat <- subset(dat.long.cor.subset, Bserostatus == bstatus.labels[bstatus])
+    subdat_jitter <- subset(dat.sample4, Bserostatus == bstatus.labels[bstatus])
+    if (tt %in% c(3, 5)) {
+      subdat <- subdat %>% filter(cohort_event != "Intercurrent Cases")
+      subdat_jitter <- subdat_jitter %>% filter(cohort_event != "Intercurrent Cases")
+    }
     for (aa in 1:4) {
       boxplots <-  ggplot(subset(subdat, assay == assays[aa] & Trt == "Vaccine"), aes_string(x = "cohort_event", y = times[tt])) +
         geom_boxplot(aes(colour = cohort_event), width = 0.6, lwd = 1) + 

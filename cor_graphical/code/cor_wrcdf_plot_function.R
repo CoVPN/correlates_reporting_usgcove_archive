@@ -30,8 +30,8 @@ covid_corr_rcdf_ve_lines <- function(
   axis_title_size = 10,
   axis_size = 10,
   filename,
-  width = 8,
-  height = 3.5,
+  width = 7,
+  height = 4,
   units = "in"
 ) {
   xgrid <- seq(xlim[1], xlim[2], 0.001)
@@ -50,12 +50,12 @@ covid_corr_rcdf_ve_lines <- function(
   ci_label <- paste0(conf.level * 100, "% CIs")
   ve_line_label <- "VE lines"
   
-  ve_line_label_legend <- paste0("Antibody CoP threshold of ", format_number(10 ^ line_mid),
-                                 " (", conf.level * 100, "% CI ", format_number(10 ^ line_top), " - ",
-                                 format_number(10 ^ line_low), ")\n",
-                                 "calculated from vaccine efficacy of ", round(VE * 100, 1), "%, \n",
-                                 conf.level * 100, "% CI (", round(max(VE_lb, 0) * 100, 1), " - ", 
-                                 round(min(VE_ub, 1) * 100, 1), ")")
+  ve_line_label_legend <- paste0("Ab CoP threshold of ", format_number(10 ^ line_mid),
+                                 ",\n", conf.level * 100, "% CI: ", format_number(10 ^ line_top), " - ",
+                                 format_number(10 ^ line_low), "\n",
+                                 "From VE of ", round(VE * 100, 1), "%, \n",
+                                 conf.level * 100, "% CI: ", round(max(VE_lb, 0) * 100, 1), " - ", 
+                                 round(min(VE_ub, 1) * 100, 1), ".")
   
   dat_seg <- data.frame(x = c(min(xgrid), min(xgrid), min(xgrid), line_low, line_top, line_mid),
                         y = c(VE_lb, VE_ub, VE, VE_lb, VE_ub, VE),

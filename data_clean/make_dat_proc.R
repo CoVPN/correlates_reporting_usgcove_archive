@@ -175,15 +175,8 @@ dat_proc["Delta57over29" %.% assays] <-
 
 ###############################################################################
 # censoring values below LLOD
+# llods defined in _common.R
 ###############################################################################
-
-llods <- c(
-  bindSpike = 20,
-  bindRBD = 20,
-  pseudoneutid50 = 10,
-  pseudoneutid80 = 10
-  #liveneutmn50 = 62
-)
 
 for (a in assays) {
   for (t in times) {

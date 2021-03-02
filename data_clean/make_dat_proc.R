@@ -1,4 +1,25 @@
 #-----------------------------------------------
+print(getwd())
+
+print("Before activate my libPaths are:")
+print(.libPaths())
+
+renv::activate()
+
+print("After activate my libPaths are:")
+print(.libPaths())
+
+print("After activate my installed.packages are:")
+print(row.names(installed.packages()))
+
+print("Now I have these files in my renv folder")
+list.files("/home/travis/build/CoVPN/correlates_reporting/renv/library/R-4.0/x86_64-pc-linux-gnu")
+list.files("/home/travis/build/CoVPN/renv/library/R-4.0/x86_64-pc-linux-gnu")
+
+print("If I call restore again then I have installed packages:")
+renv::restore()
+print(row.names(installed.packages()))
+
 # # obligatory to append to the top of each script
 # # There is a bug on Windows that prevents renv from working properly. saved.system.libPaths provides a workaround:
 # if (.Platform$OS.type == "windows") saved.system.libPaths=.libPaths()
@@ -8,8 +29,6 @@
 #     renv::restore(library=saved.system.libPaths, prompt=FALSE) # for a quick test, add: packages="backports"
 #     .libPaths(c(saved.system.libPaths, .libPaths()))
 # } else renv::activate(project = here::here(".."))
-
-renv::activate()
 
 # packages and settings
 library(here)

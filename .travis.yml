@@ -19,7 +19,7 @@ cache:
 install:
 - echo $TRAVIS_BUILD_DIR
 - ls -a
-- cd .. & Rscript -e "install.packages('renv')"
+- cd .. && Rscript -e "install.packages('renv')"
 - Rscript -e "install.packages('here')"
 - cd $TRAVIS_BUILD_DIR
 - ls -a

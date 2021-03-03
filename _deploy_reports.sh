@@ -15,9 +15,9 @@ cd correlates_reporting
 git rm -rf *
 echo "All files in /correlates_reporting after git rm"
 ls -l 
-# replace with contents from master branch /website
+# replace with reports
 cp -r ../_report_cor/* ./
-# move tmp_lectures and tmp_homeworks in and rename
+# replace with reports
 cp -r ../_report_immuno/* ./
 
 echo "All files in /correlates_reporting after copies"

@@ -1,22 +1,25 @@
 #-----------------------------------------------
-# obligatory to append to the top of each script
-# There is a bug on Windows that prevents renv from working properly. saved.system.libPaths provides a workaround:
-if (.Platform$OS.type == "windows") saved.system.libPaths=.libPaths()
-renv::activate(project = here::here(".."))
-if (.Platform$OS.type == "windows") {
-    options(renv.config.install.transactional = FALSE)
-    renv::restore(library=saved.system.libPaths, prompt=FALSE) # for a quick test, add: packages="backports"
-    .libPaths(c(saved.system.libPaths, .libPaths()))
-} else renv::restore(prompt=FALSE)
+renv::activate()
 
-source(here::here("_common.R"))
-#-----------------------------------------------
+# # obligatory to append to the top of each script
+# # There is a bug on Windows that prevents renv from working properly. saved.system.libPaths provides a workaround:
+# if (.Platform$OS.type == "windows") saved.system.libPaths=.libPaths()
+# renv::activate(project = here::here(".."))
+# if (.Platform$OS.type == "windows") {
+#     options(renv.config.install.transactional = FALSE)
+#     renv::restore(library=saved.system.libPaths, prompt=FALSE) # for a quick test, add: packages="backports"
+#     .libPaths(c(saved.system.libPaths, .libPaths()))
+# } else renv::activate(project = here::here(".."))
 
 # packages and settings
 library(here)
 library(tidyverse)
 library(Hmisc) # wtd.quantile, cut2
 library(mice)
+library(dplyr)
+
+source(here::here("_common.R"))
+#-----------------------------------------------
 
 # load data and rename first column (ID)
 dat_proc <- read_csv(here(

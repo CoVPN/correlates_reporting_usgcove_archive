@@ -8,11 +8,7 @@ library(here)
 library(dplyr)
 library(tidyverse)
 library(stringr)
-# DB: Scheduled for deletion
-# library(COVIDcorr)
-# # load data
-# data(dat.mock)
-dat.mock <- read.csv(here("..", "data_raw", data_name))
+dat.mock <- read.csv(here("..", "data_clean", data_name))
 
 # load parameters
 source(here("code", "params.R"))
@@ -21,7 +17,7 @@ source(here("code", "params.R"))
 
 ################################################ follow the email, change numbers and change ULOQ
 ################################################
-dat <- as.data.frame(dat.mock) 
+dat <- as.data.frame(dat.mock)
 
 ## label the subjects according to their case-control status
 # add case vs non-case indicators

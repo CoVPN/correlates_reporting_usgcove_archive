@@ -1,0 +1,31 @@
+language: r
+r: 4.0.4
+branches:
+  only:
+  - master
+  - travis
+before_install:
+  - sudo add-apt-repository -y ppa:cran/imagemagick
+  - sudo apt-get update
+  - sudo apt-get install -y libmagick++-dev
+apt_packages:
+- libxml2-dev
+- libssl-dev
+- libcurl4-openssl-dev
+cache:
+  directories:
+  - "$HOME/.local/share/renv"
+  - "$TRAVIS_BUILD_DIR/renv/library"
+install:
+- Rscript -e "if (!requireNamespace('renv', quietly = TRUE)) install.packages('renv')"
+- Rscript -e "renv::restore()"
+before_script:
+- sed -i '/B=/c\B=20' $TRAVIS_BUILD_DIR/cor_coxph/code/params.R
+- sed -i '/num_perm=/c\num_perm=20' $TRAVIS_BUILD_DIR/cor_coxph/code/params.R
+script:
+- make immuno_report
+- make cor_report
+after_script:
+- chmod +x _deploy_reports.sh && ./_deploy_reports.sh
+545ce2cc338ea96a0e9ac2a1856fcd86b01e01c6:
+  secure: MhWKjsDbJVv0ke3l1GpaeN+b8A8zNUTV4yXARLnGAWULqWxqSUh14Yex4qZwSAqTZfipK8fSvLWoqfhHacaxKtfKi1M9ypfj1NwYSYEt4pVPXmnlGI/4XiSLl9V/W69RU1z25CHwXTnm7YcUq730Wo6CimDZwTmfTf/m4SEjN1c9s18GvlQUKkVEsSPudY+S3xpKnxjPmOA17Gjx1KZvSZ2kqII2NvN358l+hqQO9fIszV/ygKzWJhSOP2ev5vqL/EzRtvcAXIPK+aMsm55eZR0UJFgYy6AO90kKAcltjW+ItD1U9JjgI+Sid5Iyjg6soJH6ScvCowAvOy9hu+9IKMuB3Fv5CZgJt1mqiflB2Y5BGjEJklLBvbBJg8GbdhXEbVBF6vRYn6ry6ktY24ZQ892BU16GUKLNThRQY1dnMcKGOK8A9oRwFkOObzvELtTBTgYCShcfTDk4ILWmuqPgo3RvVIg0OFTYhgncGEzyKQ5//EQ/DeDeAGvKQ2kUwE0Q2BBKUzVwUUOKy6KVopkFbeQ13Vwr0Cdy0wIxTWG3Ag8bxp3u/S8N6e5BmyWeiZmSYQuVPbbkBad2GmtILBvmpsHjKa3BUeGSboTquXLcdrfBtowg8h6lYaAWsnNuza5h4KC8C4hGHJgqDUtQPV/SC2eQGdQ4NygXg8LwnUpMVzM=

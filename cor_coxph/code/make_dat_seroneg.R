@@ -1,13 +1,21 @@
 #-----------------------------------------------
 # obligatory to append to the top of each script
+# There is a bug on Windows that prevents renv from working properly. saved.system.libPaths provides a workaround:
+if (.Platform$OS.type == "windows") saved.system.libPaths=.libPaths()
 renv::activate(project = here::here(".."))
+if (.Platform$OS.type == "windows") {
+    options(renv.config.install.transactional = FALSE)
+    renv::restore(library=saved.system.libPaths, prompt=FALSE) # for a quick test, add: packages="backports"
+    .libPaths(c(saved.system.libPaths, .libPaths()))
+} else renv::restore(prompt=FALSE)
+
 source(here::here("..", "_common.R"))
 #-----------------------------------------------
-library(Hmisc)
 
 source(here::here("code", "params.R"))
+dat.mock <- read.csv(here::here("..", "data_clean", data_name))
 
-dat.mock <- read.csv(here::here("..", "data_raw", data_name))
+library(Hmisc) # wtd.quantile, cut2
 
 ###############################################################################
 # define trichotomized markers for dat.mock.vacc.seroneg
@@ -32,6 +40,7 @@ for (a in assays) {
     weights = dat.mock.vacc.seroneg$wt,
     probs = c(1 / 3, 2 / 3)
   )
+  q.a[1]=q.a[1]+1e-6 # if 33% is the minimial value, this helps avoid an error
   tmp[["D57"]] <- q.a
   q.a <- c(-Inf, q.a, Inf)
   dat.mock.vacc.seroneg[["Day57" %.% a %.% "cat"]] <-
@@ -49,6 +58,7 @@ for (a in assays) {
     weights = dat.mock.vacc.seroneg$wt,
     probs = c(1 / 3, 2 / 3)
   )
+  q.a[1]=q.a[1]+1e-6 # if 33% is the minimial value, this helps avoid an error
   tmp[["D29"]] <- q.a
   q.a <- c(-Inf, q.a, Inf)
   dat.mock.vacc.seroneg[["Day29" %.% a %.% "cat"]] <-
@@ -66,6 +76,7 @@ for (a in assays) {
     weights = dat.mock.vacc.seroneg$wt,
     probs = c(1 / 3, 2 / 3)
   )
+  q.a[1]=q.a[1]+1e-6 # if 33% is the minimial value, this helps avoid an error
   tmp[["D29overB"]] <- q.a
   q.a <- c(-Inf, q.a, Inf)
   dat.mock.vacc.seroneg[["Delta29overB" %.% a %.% "cat"]] <-
@@ -84,6 +95,7 @@ for (a in assays) {
     weights = dat.mock.vacc.seroneg$wt,
     probs = c(1 / 3, 2 / 3)
   )
+  q.a[1]=q.a[1]+1e-6 # if 33% is the minimial value, this helps avoid an error
   tmp[["D57verB"]] <- q.a
   q.a <- c(-Inf, q.a, Inf)
   dat.mock.vacc.seroneg[["Delta57overB" %.% a %.% "cat"]] <-
@@ -102,6 +114,7 @@ for (a in assays) {
     weights = dat.mock.vacc.seroneg$wt,
     probs = c(1 / 3, 2 / 3)
   )
+  q.a[1]=q.a[1]+1e-6 # if 33% is the minimial value, this helps avoid an error
   tmp[["D57over29"]] <- q.a
   q.a <- c(-Inf, q.a, Inf)
   dat.mock.vacc.seroneg[["Delta57over29" %.% a %.% "cat"]] <-
@@ -118,8 +131,12 @@ for (a in assays) {
   marker.cutpoints[[a]] <- tmp
 }
 
-saveRDS(dat.mock.vacc.seroneg, file = here::here("data_clean", "dat.mock.vacc.seroneg.rds"))
-saveRDS(marker.cutpoints, file = here::here("data_clean", "marker.cutpoints.rds"))
+saveRDS(dat.mock.vacc.seroneg,
+        file = here::here("data_clean", "dat.mock.vacc.seroneg.rds"))
+saveRDS(marker.cutpoints,
+        file = here::here("data_clean", "marker.cutpoints.rds"))
+
+
 
 ###############################################################################
 # subsampling to study sample size dependence
@@ -141,4 +158,5 @@ dat.mock.vacc.seroneg.subsample <- lapply(cases_subsample, function(n_cases) {
 names(dat.mock.vacc.seroneg.subsample) <- paste("cases", cases_subsample,
   sep = "_"
 )
-saveRDS(dat.mock.vacc.seroneg.subsample, file = here::here("data_clean", "dat.mock.vacc.seroneg.subsample.rds"))
+saveRDS(dat.mock.vacc.seroneg.subsample,
+        file = here::here("data_clean", "dat.mock.vacc.seroneg.subsample.rds"))

@@ -5,9 +5,9 @@ branches:
   - master
   - travis
 before_install:
-  - sudo add-apt-repository -y ppa:cran/imagemagick
-  - sudo apt-get update
-  - sudo apt-get install -y libmagick++-dev
+- sudo add-apt-repository -y ppa:cran/imagemagick
+- sudo apt-get update
+- sudo apt-get install -y libmagick++-dev
 apt_packages:
 - libxml2-dev
 - libssl-dev
@@ -17,24 +17,20 @@ cache:
   - "$HOME/.local/share/renv"
   - "$TRAVIS_BUILD_DIR/renv/library"
 install:
-- echo $TRAVIS_BUILD_DIR
-- ls -a
 - cd .. && Rscript -e "install.packages('renv')"
 - Rscript -e "install.packages('here')"
 - cd $TRAVIS_BUILD_DIR
-- ls -a
 - Rscript -e "renv::restore()"
+# turn down number of bootstraps and permutations for the build
 before_script:
 - sed -i '/B=/c\B=20' $TRAVIS_BUILD_DIR/cor_coxph/code/params.R
 - sed -i '/numPerm=/c\numPerm=20' $TRAVIS_BUILD_DIR/cor_coxph/code/params.R
-- cat $TRAVIS_BUILD_DIR/cor_coxph/code/params.R
+# - cat $TRAVIS_BUILD_DIR/cor_coxph/code/params.R
 script:
-- ls $TRAVIS_BUILD_DIR/renv/library/R-4.0/x86_64-pc-linux-gnu
-- pwd && cd $TRAVIS_BUILD_DIR && pwd & Rscript -e ".libPaths(); renv::activate(here::here()); .libPaths(); library(glmnet)"
-- Rscript -e ".libPaths(); renv::activate(); .libPaths(); library(glmnet)"
 - make data_processed && make immuno_analysis && make immuno_report
 - make cor_analysis && make cor_report
 after_script:
 - chmod +x _deploy_reports.sh && ./_deploy_reports.sh
-545ce2cc338ea96a0e9ac2a1856fcd86b01e01c6:
-  secure: MhWKjsDbJVv0ke3l1GpaeN+b8A8zNUTV4yXARLnGAWULqWxqSUh14Yex4qZwSAqTZfipK8fSvLWoqfhHacaxKtfKi1M9ypfj1NwYSYEt4pVPXmnlGI/4XiSLl9V/W69RU1z25CHwXTnm7YcUq730Wo6CimDZwTmfTf/m4SEjN1c9s18GvlQUKkVEsSPudY+S3xpKnxjPmOA17Gjx1KZvSZ2kqII2NvN358l+hqQO9fIszV/ygKzWJhSOP2ev5vqL/EzRtvcAXIPK+aMsm55eZR0UJFgYy6AO90kKAcltjW+ItD1U9JjgI+Sid5Iyjg6soJH6ScvCowAvOy9hu+9IKMuB3Fv5CZgJt1mqiflB2Y5BGjEJklLBvbBJg8GbdhXEbVBF6vRYn6ry6ktY24ZQ892BU16GUKLNThRQY1dnMcKGOK8A9oRwFkOObzvELtTBTgYCShcfTDk4ILWmuqPgo3RvVIg0OFTYhgncGEzyKQ5//EQ/DeDeAGvKQ2kUwE0Q2BBKUzVwUUOKy6KVopkFbeQ13Vwr0Cdy0wIxTWG3Ag8bxp3u/S8N6e5BmyWeiZmSYQuVPbbkBad2GmtILBvmpsHjKa3BUeGSboTquXLcdrfBtowg8h6lYaAWsnNuza5h4KC8C4hGHJgqDUtQPV/SC2eQGdQ4NygXg8LwnUpMVzM=
+env:
+  global:
+    secure: qi7eIEkOEJsuuUj3WwkAGe+kWr3zeDrDz8GYnPQhVOzYAtEWTbImylZYEHhkhBruIipHjzPTIpOM3xfm9SKKnJEQzpCbSLSbKZwMtwHTn3f2Dfd9KZ8dLgVdXG34+8CChksH4zWQkn/7Sgx7rCB3VJvxquOiQA05TsroLnZiJKxxVsBYjww7m4iuYjFc6HsWSLoT/XicZi7GUqN9m+C0eoSJ5kUWfXopSZLCiusTT1+Lc/wdKI9g3QckOINznmZ2ZptaBbdkBeOzzSQhGFuOufnyZD6qJ7RpfCg8nxnQ9ksNOi6SohCBWyRp4TmvPLPsmszZhYkRhmB0K0hoTsYXkEgsSHVMzInRfHk3VHbYz1SFbksHzVM+ZEEDhIFJEoCbwd5n31y9RotzePVKEVIajS3pgxWWAyjiQiRC/dwe7clO5Ser0URPulPuWjURZId8fhOkZK8gJAKVBEmr5Qr3VTKFUSntSa+0rDulHL/TmM2MZnAnVKkeJl9qB5qYB/Q7DjkESAUmNo8IwHnBkFW/6eXB0IleV4gfTej0WeMgR/64XWKCRcLCX5vGtF/dgG8eCAThSgpJmHzzO2iw0gkuJ0sgpRecqUYK+aNRarRw5DSYFgd51WkEaMx8bAHYuhb8lMytmBWI+rilYwXTZC82klNZvzQC/Xj2+NMzmeU/UPo=

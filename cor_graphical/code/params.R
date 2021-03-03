@@ -7,17 +7,6 @@ source(here::here("..", "_common.R"))
 library(here)
 library(stringr)
 save.results.to <- here("figs")
-dat.mock <- read.csv(here("..", "data_clean", data_name))
-
-# load mock data and labels
-# DB: Scheduled for deletion
-# data(dat.mock)
-# data(labels.axis)
-# data(labels.title)
-# data(labels.race)
-# data(labels.ethnicity)
-# data(labels.assays.long)
-# data(labels.assays.short)
 
 # color palatte throughout the report
 study.name <- "mock"

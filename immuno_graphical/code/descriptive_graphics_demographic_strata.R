@@ -422,6 +422,8 @@ for (tt in seq_along(times)) {
           study.name, ".png"
         )
       )
+      print(paste0("Done with loop of tt=", tt, ", trt=",
+                   trt," and bstatus=", bstatus))
     }
   }
 }

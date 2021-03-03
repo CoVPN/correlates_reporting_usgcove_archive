@@ -27,11 +27,9 @@ before_script:
 - sed -i '/numPerm=/c\numPerm=20' $TRAVIS_BUILD_DIR/cor_coxph/code/params.R
 # - cat $TRAVIS_BUILD_DIR/cor_coxph/code/params.R
 script:
-- make data_processed > $TRAVIS_BUILD_DIR/make_data_processed.log 2>&1
-- make immuno_analysis > $TRAVIS_BUILD_DIR/make_immuno_analysis.log 2>&1
-- make immuno_report > $TRAVIS_BUILD_DIR/make_immuno_analysis.log 2>&1
-- make cor_analysis > $TRAVIS_BUILD_DIR/make_cor_analysis.log 2>&1
-- make cor_report > $TRAVIS_BUILD_DIR/make_cor_report.log 2>&1
+- make data_processed 
+- make immuno_report 
+- make cor_report 
 after_script:
 - chmod +x _deploy_reports.sh && ./_deploy_reports.sh
 env:

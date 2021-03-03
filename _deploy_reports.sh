@@ -19,8 +19,6 @@ ls -l
 cp -r ../_report_cor/* ./
 # replace with reports
 cp -r ../_report_immuno/* ./
-# copy logs
-cp ../*.log ./
 
 echo "All files in /correlates_reporting after copies"
 ls -l 

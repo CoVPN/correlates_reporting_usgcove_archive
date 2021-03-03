@@ -2,15 +2,6 @@ library(here)
 library(stringr)
 save.results.to <- here("figs")
 
-# load mock data and labels
-# DB: Scheduled for deletion
-# data(dat.mock)
-# data(labels.axis)
-# data(labels.title)
-# data(labels.race)
-# data(labels.ethnicity)
-# data(labels.assays.long)
-# data(labels.assays.short)
 labels.assays <- c("Binding Antibody to Spike", "Binding Antibody to RBD",
                    "PsV Neutralization 50% Titer",
                    # "WT LV Neutralization 50% Titer",

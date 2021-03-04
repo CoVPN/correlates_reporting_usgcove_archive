@@ -34,14 +34,13 @@ before_install:
   - sudo apt-get update
   - sudo apt-get install -y libmagick++-dev
 
+# R packages cannot be installed in TRAVIS_BUILD_DIR; they need to be installed
+# separately from the lockfile
+# tiny tex installs tlmgr to a directory that is sym-linked to $HOME/bin
 install:
   - cd .. && Rscript -e "install.packages(c('here', 'renv', 'tinytex'))"
   - Rscript -e "tinytex::install_tinytex()"
-  - echo $PATH
-  - which tlmgr
   - export PATH=$HOME/bin:${PATH}
-  - echo $PATH
-  - which tlmgr
   - tlmgr install threeparttablex
   - cd $TRAVIS_BUILD_DIR && Rscript -e "renv::restore()"
 

@@ -17,12 +17,21 @@ run_threshold_analysis <- function(marker) {
   time <- marker_to_time[[marker]]
   data_full <- read.csv(here::here("data_clean", paste0("data_firststage_", time, ".csv")))
   node_list <- list(W = covariates, Y = "outcome", A = marker, weights = "wt", Delta = "Delta")
+  lrnr_Delta <- Lrnr_mean$new()
+  if(all(data_full$Delta)==1 || !adjust_for_censoring) {
+    node_list$Delta <- NULL
+    lrnr_Delta <- NULL
+  }
+  if(covariate_adjusted && adjust_for_censoring) {
+    lrnr_Delta <- Lrnr_glmnet$new()
+  }
+  print(lrnr_Delta)
   nodes <- unlist(node_list, use.names = F)
 
   ####################################################
   # Run thresholdTMLE
   ####################################################
-  esttmle <- suppressWarnings(thresholdTMLE(data_full, node_list, thresholds = thresholds, biased_sampling_strata = "grp", biased_sampling_indicator = "TwophasesampInd", lrnr_A = lrnr, lrnr_Y = lrnr, lrnr_Delta = Lrnr_glmnet$new()))
+  esttmle <- suppressWarnings(thresholdTMLE(data_full, node_list, thresholds = thresholds, biased_sampling_strata = "grp", biased_sampling_indicator = "TwophasesampInd", lrnr_A = lrnr, lrnr_Y = lrnr, lrnr_Delta = lrnr_Delta))
 
   # Save estimates and CI of threshold-response function
   save(esttmle, file = here::here(

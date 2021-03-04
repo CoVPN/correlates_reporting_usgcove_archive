@@ -37,6 +37,9 @@ before_install:
 install:
   - cd .. && Rscript -e "install.packages(c('here', 'renv', 'tinytex'))"
   - Rscript -e "tinytex::install_tinytex()"
+  - echo $PATH
+  - export PATH=${PATH}:$HOME/bin
+  - echo $PATH
   - sudo tlmgr install threeparttablex
   - cd $TRAVIS_BUILD_DIR && Rscript -e "renv::restore()"
 

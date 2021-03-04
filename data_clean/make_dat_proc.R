@@ -1,5 +1,7 @@
 #-----------------------------------------------
 renv::activate()
+source(here::here("_common.R"))
+#-----------------------------------------------
 
 # # obligatory to append to the top of each script
 # # There is a bug on Windows that prevents renv from working properly. saved.system.libPaths provides a workaround:
@@ -10,6 +12,7 @@ renv::activate()
 #     renv::restore(library=saved.system.libPaths, prompt=FALSE) # for a quick test, add: packages="backports"
 #     .libPaths(c(saved.system.libPaths, .libPaths()))
 # } else renv::activate(project = here::here(".."))
+#-----------------------------------------------
 
 # packages and settings
 library(here)
@@ -17,9 +20,6 @@ library(tidyverse)
 library(Hmisc) # wtd.quantile, cut2
 library(mice)
 library(dplyr)
-
-source(here::here("_common.R"))
-#-----------------------------------------------
 
 # load data and rename first column (ID)
 dat_proc <- read_csv(here(
@@ -118,21 +118,23 @@ dat_proc <- dat_proc %>%
 # observation-level weights
 ###############################################################################
 
-wts_table <- with(
-  subset(dat_proc, Perprotocol == 1 & EventTimePrimaryD57>=7),
-  table(Wstratum, TwophasesampInd)
-)
+wts_table <- dat_proc %>%
+  dplyr::filter(Perprotocol == 1 & EventTimePrimaryD57 >= 7) %>%
+  with(table(Wstratum, TwophasesampInd))
 wts_norm <- rowSums(wts_table) / wts_table[, 2]
 dat_proc$wt <- wts_norm[dat_proc$Wstratum]
 dat_proc$wt[!with(dat_proc, Perprotocol == 1 & EventTimePrimaryD57>=7)] <- NA
 
-wts_table2 <- with(
-  subset(dat_proc, EventTimePrimaryD29>=14 & Perprotocol == 1 | EventTimePrimaryD29>=7 & EventTimePrimaryD29<=13 & Fullvaccine==1),
-  table(Wstratum, TwophasesampInd)
-)
+wts_table2 <- dat_proc %>%
+  dplyr::filter(EventTimePrimaryD29 >= 14 & Perprotocol == 1 |
+                EventTimePrimaryD29 >= 7 & EventTimePrimaryD29 <= 13 &
+                Fullvaccine == 1) %>%
+  with(table(Wstratum, TwophasesampInd))
 wts_norm2 <- rowSums(wts_table2) / wts_table2[, 2]
 dat_proc$wt.2 <- wts_norm2[dat_proc$Wstratum]
-dat_proc$wt.2[!with(dat_proc, EventTimePrimaryD29>=14 & Perprotocol == 1 | EventTimePrimaryD29>=7 & EventTimePrimaryD29<=13 & Fullvaccine==1)] <- NA
+dat_proc$wt.2[!with(dat_proc, EventTimePrimaryD29 >= 14 & Perprotocol == 1 |
+                    EventTimePrimaryD29 >= 7 & EventTimePrimaryD29 <= 13 &
+                    Fullvaccine == 1)] <- NA
 
 
 ###############################################################################

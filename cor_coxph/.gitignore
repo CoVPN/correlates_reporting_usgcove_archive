@@ -1,3 +1,4 @@
 data_clean/*.RData
+verification/*.RData
 data_clean/*.rda
 data_clean/*.rds

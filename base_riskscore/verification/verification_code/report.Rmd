@@ -3,7 +3,7 @@ title: risk score verification code
 output: html_document
 ---
 
-```{r setup, echo = FALSE, warning = FALSE, error = FALSE}
+```{r setup, echo = FALSE, message = FALSE, warning = FALSE, error = FALSE}
 #-----------------------------------------------
 # obligatory to append to the top of each script
 renv::activate(project = here::here("..", "..", ".."))

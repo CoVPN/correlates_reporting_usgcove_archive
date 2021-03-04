@@ -8,9 +8,7 @@ source(here::here("..", "..", "..", "_common.R"))
 #-----------------------------------------------
 
 # Input dataset
-library(COVIDcorr)
-data(dat.mock)
-dat <- dat.mock
+dat <- read.csv(here::here("..", "..", "..", "data_clean", data_name))
 
 # Baseline demographic variables considered for risk score development (input)
 bl_demo_var <- c("MinorityInd", "EthnicityHispanic", "EthnicityNotreported", 
@@ -40,7 +38,7 @@ for(b in bl_demo_var){
 	# fewer than 10 endpoints
 	less_ten_ones <- FALSE
 	if(all(ph1_placebo[,b] %in% c(0,1))){
-		less_ten_ones <- sum(dat[,b] < 10)
+		less_ten_ones <- sum(dat[,b]) < 10
 	}
 	if(!pct_na_more_5 & !less_ten_ones){
 		keep_bl_demo_var <- c(keep_bl_demo_var, b)

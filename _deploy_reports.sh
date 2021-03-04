@@ -17,9 +17,9 @@ echo "All files in /correlates_reporting after git rm"
 ls -l
 
 # replace with reports
-cp -r ../_report_cor/* ./
-# replace with reports
-cp -r ../_report_immuno/* ./
+cp -r $TRAVIS_BUILD_DIR/_report_immuno/* ./
+cp -r $TRAVIS_BUILD_DIR/_report_cor/* ./
+# cp -r $TRAVIS_BUILD_DIR/_report_cop/* ./
 
 echo "All files in /correlates_reporting after copies"
 ls -l

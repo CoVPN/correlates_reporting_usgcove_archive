@@ -1,5 +1,5 @@
 \newcommand{\studyname}{mock}
-\newcommand{\pathCoRNonlinearoutput}{output}
+\newcommand{\pathCoRNonlinearoutput}{output/D57}
 
 # Nonlinear association
 

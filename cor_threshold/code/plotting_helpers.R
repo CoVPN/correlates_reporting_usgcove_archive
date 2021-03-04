@@ -36,15 +36,15 @@ get_plot <- function(marker, simultaneous_CI = F, monotone = F) {
     main <- paste0(main, " with simultaneous confidence bands")
   }
   plot <- v + scale_x_continuous(
-    n.breaks = 7,
+   breaks = union(floor(esttmle[, 1]), ceiling(esttmle[, 1])),
     labels = trans_format("ident", math_format(10^.x)), limits = c(min(esttmle[, 1]) - 0.1, max(esttmle[, 1]) + 0.1)
-  ) + xlab(paste0(marker, " threshold")) + ylab(laby) + theme(axis.text.x = element_text(angle = 0, hjust = 1)) + xlab(labx) + ggtitle(main) +
+  ) + xlab(paste0(marker, " threshold")) + ylab(laby)  + xlab(labx) + ggtitle(main) +
     stat_function(fun = RCDF, color = col, geom = "area", fill = col, alpha = 0.2) +
     scale_y_continuous(
       name = laby,
       sec.axis = sec_axis(~ . / scale_coef, name = "Reverse CDF"), n.breaks = 10
     ) + geom_vline(xintercept = max_thresh, colour = "red", linetype = "longdash") +
-    theme(plot.title = element_text(size = 15)) #+  geom_text(aes(x=max_thresh *(1.01), label="No observed events", y=0.002), colour="black", angle=90, text=element_text(size=11))
+    theme(plot.title = element_text(size = 15), axis.text.x = element_text(angle = 0, hjust = 1, size = 18), axis.text.y = element_text(angle = 0, hjust = 1, size = 18)) #+  geom_text(aes(x=max_thresh *(1.01), label="No observed events", y=0.002), colour="black", angle=90, text=element_text(size=11))
   append_end <- ""
   append_start <- "PLOT"
   folder <- ""

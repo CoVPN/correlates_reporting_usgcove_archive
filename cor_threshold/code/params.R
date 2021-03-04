@@ -26,14 +26,14 @@ source(here::here("..", "_common.R"))
 
 
 
-tf <- list("Day57" = 170, "Day29" = 200) # Reference time to perform analysis. Y = 1(T <= tf) where T is event time of Covid.
+tf <- list("Day57" = 183, "Day29" = 211) # Reference time to perform analysis. Y = 1(T <= tf) where T is event time of Covid.
 # tf should be large enough that most events are observed but small enough so that not many people are right censored. For the practice dataset, tf = 170 works.
 # Right-censoring is taken into account for  this analysis.
 covariate_adjusted <- TRUE #### Estimate threshold-response function with covariate adjustment
 fast_analysis <- TRUE ### Perform a fast analysis using glmnet
 include_interactions <- FALSE #### Include algorithms that model interactions between covariates
 threshold_grid_size <- 25 ### Number of thresholds to estimate (equally spaced in quantiles). Should be 15 at least for the plots of the threshold-response and its inverse to be representative of the true functions.
-
+adjust_for_censoring <- FALSE # For now, set to FALSE. If set to TRUE, make sure you set tf well before we lose too many people to "end of study"
 plotting_assay_label_generator <- function(marker) {
   day <- ""
   time <- marker_to_time[marker]
@@ -105,8 +105,8 @@ twophasegroup_variable <- "Wstratum"
 # Threshold grid is generated equally spaced (on the quantile level)
 # between the threshold at lower_quantile and threshold at upper_quantile
 # Best to have these be away from 0 and 1.
-lower_quantile <- 0.01
-upper_quantile <- 0.98
+lower_quantile <- 0.05
+upper_quantile <- 0.95
 risks_to_estimate_thresh_of_protection <- NULL ### Risk values at which to estimate threshold of protection...
 ###                Leaving at NULL (default) is recommended to ensure risks fall in range of estimate. Example: c(0, 0.0005, 0.001, 0.002, 0.003)
 threshold_grid_size <- max(threshold_grid_size, 15)

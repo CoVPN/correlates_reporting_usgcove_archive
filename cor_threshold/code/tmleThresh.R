@@ -23,10 +23,17 @@ library(mvtnorm)
 thresholdTMLE <- function(data_full, node_list, thresholds = NULL, biased_sampling_strata = NULL, biased_sampling_indicator = NULL, lrnr_A = Lrnr_glmnet$new(), lrnr_Y = Lrnr_glmnet$new(), lrnr_Delta = Lrnr_glmnet$new()) {
   upper_list <- list()
   lower_list <- list()
-
   thresholds_above <- sort(thresholds)
   thresholds_below <- NULL
   data_full <- as.data.table(data_full)
+  if(!is.null(node_list[["weights"]])){
+    if(any(is.na(data_full[[node_list[["weights"]]]]))) {
+      warning("NA values found in weights. Dropping samples.")
+    }
+    data_full <- data_full[!is.na(data_full[[node_list[["weights"]]]])]
+  }
+  print(unlist(node_list))
+  data_full <- data_full[,union(unlist(node_list),c( biased_sampling_strata, biased_sampling_indicator)),with = F]
   data_full$id <- seq_len(nrow(data_full))
   if (!is.null(biased_sampling_indicator)) {
     data <- data_full[data_full[[biased_sampling_indicator]] == 1]
@@ -36,6 +43,8 @@ thresholdTMLE <- function(data_full, node_list, thresholds = NULL, biased_sampli
     biased_sampling <- FALSE
     data <- data_full
   }
+  
+  
 
   ###### A >=v
   for (i in seq_along(thresholds_above)) {
@@ -50,14 +59,14 @@ thresholdTMLE <- function(data_full, node_list, thresholds = NULL, biased_sampli
     if (biased_sampling) {
       IC_full <- matrix(0, nrow = nrow(data_full), ncol = ncol(IC))
       IC_full[data_full[[biased_sampling_indicator]] == 1, ] <- IC * ests$weights
-      proj_dat <- data.table(grp = data[[biased_sampling_strata]], IC = IC)
-      IC_names <- setdiff(colnames(proj_dat), "grp")
-      proj_dat <- proj_dat[, lapply(.SD, mean), by = "grp"]
-      data_proj <- merge(data_full, proj_dat, by = "grp")
-      data_proj <- data_proj[order(data_proj$id)]
-      IC_proj <- data_proj[, IC_names, with = F] * (as.numeric(data_full[[biased_sampling_indicator]] == 1) * data_full[[node_list$weights]] - 1)
+      #proj_dat <- data.table(grp = data[[biased_sampling_strata]], IC = IC)
+      #IC_names <- setdiff(colnames(proj_dat), "grp")
+      #proj_dat <- proj_dat[, lapply(.SD, mean), by = "grp"]
+      #data_proj <- merge(data_full, proj_dat, by = "grp")
+      #data_proj <- data_proj[order(data_proj$id)]
+      #IC_proj <- data_proj[, IC_names, with = F] * (as.numeric(data_full[[biased_sampling_indicator]] == 1) * data_full[[node_list$weights]] - 1)
       ests$IC_IPCW <- as.matrix(IC_full)
-      IC_full <- IC_full - IC_proj
+      #IC_full <- IC_full - IC_proj
       ests$IC <- as.matrix(IC_full)
     }
     ests$preds <- preds
@@ -66,9 +75,20 @@ thresholdTMLE <- function(data_full, node_list, thresholds = NULL, biased_sampli
   }
   if (length(upper_list) != 0) {
     psi <- unlist(lapply(upper_list, `[[`, "psi"), use.names = F)
-
+    remove <- which(is.na(psi))
     IC <- do.call(cbind, lapply(upper_list, `[[`, "IC"))
     IC_IPCW <- do.call(cbind, lapply(upper_list, `[[`, "IC_IPCW"))
+    remove <- union(remove, which(apply(IC_IPCW, 2, function(v){any(is.na(v))})))
+    #print(remove)
+    #print(head(IC_IPCW))
+    if(length(remove) > 0) {
+      warning("Na's found in estimates for some thresholds. Removing these thresholds from output.")
+      thresholds_above <- thresholds_above[-remove]
+      IC_IPCW <- IC_IPCW[,-remove,drop = F]
+      IC <- IC[,-remove,drop = F]
+      psi <- psi[-remove]
+      upper_list <- upper_list[-remove]
+    }
     thresholds <- thresholds_above
     upper_list <- list()
     upper_list$thresholds <- thresholds
@@ -78,10 +98,12 @@ thresholdTMLE <- function(data_full, node_list, thresholds = NULL, biased_sampli
     # Simultaneous bands
     if (ncol(IC_IPCW) > 1) {
       var_D <- cov(IC_IPCW)
+      var_D[is.na(var_D)] <- 0
+      #print(head(var_D))
       n <- nrow(IC_IPCW)
       se <- sqrt(diag(var_D) / n)
       level <- 0.95
-      rho_D <- var_D / sqrt(tcrossprod(diag(var_D)))
+      rho_D <- as.matrix(var_D / sqrt(tcrossprod(diag(var_D))))
 
       q <- mvtnorm::qmvnorm(level, tail = "both", corr = rho_D)$quantile
       ci <- as.matrix(wald_ci(psi, se, q = q))
@@ -99,12 +121,14 @@ thresholdTMLE <- function(data_full, node_list, thresholds = NULL, biased_sampli
     no_event <- sapply(thresholds, function(v) {
       all(Y[A >= v] == 0)
     })
+    print(no_event)
+    no_event <- as.vector(no_event)
     attr(estimates_upper, "no_event") <- as.vector(no_event)
     estimates_upper[no_event, intersect(1:ncol(estimates_upper), c(3))] <- NA
     estimates_upper[, intersect(1:ncol(estimates_upper), c(4, 6))] <- pmax(0, estimates_upper[, intersect(1:ncol(estimates_upper), c(4, 6))])
-    estimates_upper[no_event, intersect(1:ncol(estimates_upper), c(5))] <- 1
+    estimates_upper[no_event, intersect(1:ncol(estimates_upper), c(5))] <- NA
     if (ncol(estimates_upper) == 7) {
-      estimates_upper[no_event, intersect(1:ncol(estimates_upper), c(7))] <- 1
+      estimates_upper[no_event, intersect(1:ncol(estimates_upper), c(7))] <- NA
     }
     setattr(estimates_upper, "IC", IC_IPCW)
     # min(estimates_upper[!no_event, intersect(1:ncol(estimates_upper), c(7))])}
@@ -332,8 +356,21 @@ get_preds_TSM <- function(task_list, lrnr_A = NULL, lrnr_Y = NULL, lrnr_Delta = 
     if (length(unique(task_Y_train$Y)) == 1) {
       lrnr_Y <- Lrnr_mean$new()
     }
+    tryCatch({
     lrnr_A_u <- lrnr_A$train(task_list[["A"]][["train_u"]])
-    lrnr_Y_u <- lrnr_Y$train(task_list[["Y"]][["train_u"]])
+    }, error = function(cond) {
+      print(head(task_list[["A"]][["train_u"]]$data))
+      print(apply(task_list[["A"]][["train_u"]]$data,2, function(v){table(is.na(v))}))
+      print("Failed on training treatment learner")
+    }
+    )
+    tryCatch({
+      lrnr_Y_u <- lrnr_Y$train(task_list[["Y"]][["train_u"]])
+    }, error = function(cond) {
+      print("Failed on training outcome learner")
+    }
+    )
+    
     g1_u <- lrnr_A_u$predict(task_list[["A"]][["train_u"]])
     Q_u <- lrnr_Y_u$predict(task_list[["Y"]][["pred_u"]])
     Q1_u <- lrnr_Y_u$predict(task_list[["Y"]][["cfu"]])

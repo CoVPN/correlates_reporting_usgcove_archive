@@ -244,6 +244,9 @@ dat.longer.cor.subset <- dat.long.cor.subset %>% select(Ptid, Trt, Bserostatus, 
                                                         B, Day29, Day57, Delta29overB, Delta57overB) %>%
   pivot_longer(!Ptid:LLoD, names_to = "time", values_to = "value") 
 
+# only keep cases and non-cases
+dat.longer.cor.subset <- dat.longer.cor.subset %>% filter(!is.na(cohort_event))
+
 # define response rates
 # for binding antibody, positive responses are defined as participants who had baseline concentration values below the LLOQ with detectable concentration above the assay LLOQ (34 IU/ml), or as participants with baseline values above the LLOQ with a 4-fold increase in concentration.
 # Pseudovirus neutralization responders at each pre-defined timepoint are defined as participants who had baseline ID50 values below the LLOD with detectable ID50 neutralization titer above the assay LLOD (value 10), or as participants with baseline values above the LLOD with a 4-fold increase in neutralizing antibody titer.
@@ -322,3 +325,4 @@ saveRDS(as.data.frame(dat.cor.subset),
 
 saveRDS(as.data.frame(dat.longer.cor.subset),
         file = here("data_clean", "longer_cor_data.rds"))
+

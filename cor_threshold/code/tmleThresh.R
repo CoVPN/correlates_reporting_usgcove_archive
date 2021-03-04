@@ -28,11 +28,16 @@ thresholdTMLE <- function(data_full, node_list, thresholds = NULL, biased_sampli
   data_full <- as.data.table(data_full)
   if(!is.null(node_list[["weights"]])){
     if(any(is.na(data_full[[node_list[["weights"]]]]))) {
-      warning("NA values found in weights. Dropping samples.")
+      warning("NA values found in weights. Dropping samples with NA chosen in biased sample.")
     }
-    data_full <- data_full[!is.na(data_full[[node_list[["weights"]]]])]
+    if(!is.null(biased_sampling_indicator)) {
+      data_full <- data_full[!(data_full[[biased_sampling_indicator]]==1 & is.na(data_full[[node_list[["weights"]]]]))]
+      
+    } else {
+      data_full <- data_full[!( is.na(data_full[[node_list[["weights"]]]]))]
+      
+    }
   }
-  print(unlist(node_list))
   data_full <- data_full[,union(unlist(node_list),c( biased_sampling_strata, biased_sampling_indicator)),with = F]
   data_full$id <- seq_len(nrow(data_full))
   if (!is.null(biased_sampling_indicator)) {
@@ -121,7 +126,6 @@ thresholdTMLE <- function(data_full, node_list, thresholds = NULL, biased_sampli
     no_event <- sapply(thresholds, function(v) {
       all(Y[A >= v] == 0)
     })
-    print(no_event)
     no_event <- as.vector(no_event)
     attr(estimates_upper, "no_event") <- as.vector(no_event)
     estimates_upper[no_event, intersect(1:ncol(estimates_upper), c(3))] <- NA
@@ -359,8 +363,6 @@ get_preds_TSM <- function(task_list, lrnr_A = NULL, lrnr_Y = NULL, lrnr_Delta = 
     tryCatch({
     lrnr_A_u <- lrnr_A$train(task_list[["A"]][["train_u"]])
     }, error = function(cond) {
-      print(head(task_list[["A"]][["train_u"]]$data))
-      print(apply(task_list[["A"]][["train_u"]]$data,2, function(v){table(is.na(v))}))
       print("Failed on training treatment learner")
     }
     )

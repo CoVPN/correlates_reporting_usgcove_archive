@@ -39,10 +39,10 @@ install:
   - Rscript -e "tinytex::install_tinytex()"
   - echo $PATH
   - which tlmgr
-  - export PATH=${PATH}:$HOME/bin
+  - export PATH=$HOME/bin:${PATH}
   - echo $PATH
   - which tlmgr
-  - sudo tlmgr install threeparttablex
+  - tlmgr install threeparttablex
   - cd $TRAVIS_BUILD_DIR && Rscript -e "renv::restore()"
 
 # turn down number of bootstraps and permutations in CoR for faster builds

@@ -37,8 +37,9 @@ Args <- commandArgs(trailingOnly=TRUE)
 if (length(Args)==0) Args=c(pop="29") 
 pop=Args[1]; print(pop)
 #
-save.results.to = paste0(here::here("output"), "/D", pop,"/"); 
+save.results.to = paste0(here::here("output"), "/D", pop,"/");
 if (!dir.exists(save.results.to))  dir.create(save.results.to)
+print(paste0("save.results.to equals ", save.results.to))
 
 # important subsets of data
 if (pop=="57") {

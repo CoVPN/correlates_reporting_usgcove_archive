@@ -113,7 +113,11 @@ the folder to version control.
 This is important because if your code expects a folder to exist and does not 
 check first if it needs to create it, it will cause the code to stop running. 
 Since the goal of this project is to run seamlessly, adding the `.gitkeep` file
-will make this possible with minimal effort.
+will make this possible with minimal effort. 
+
+`.gitkeep` can be created a few different ways. Through the command line, use 
+`touch /path/to/folder/.gitkeep`; or through R, use 
+`file.create("/path/to/folder/.gitkeep")`.
 
 
 ### Git Resources

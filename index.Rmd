@@ -1,7 +1,6 @@
 ---
 knit: "bookdown::render_book"
-title: "CoVPN COVID-19 Correlates Analysis"
-author: "the CoVPN Biostatistics Team"
+author: "COVID-19 Prevention Network (CoVPN) Biostatistics Team"
 date: "`r format(Sys.time(), '%B %d, %Y')`"
 documentclass: book
 output:

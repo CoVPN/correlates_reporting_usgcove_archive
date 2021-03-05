@@ -1,82 +1,92 @@
 #-----------------------------------------------
 # obligatory to append to the top of each script
 renv::activate(project = here::here(".."))
+
+## There is a bug on Windows that prevents renv from working properly. saved.system.libPaths provides a workaround:
+#if (.Platform$OS.type == "windows") saved.system.libPaths=paste0(Sys.getenv ("R_HOME"), "/library")
+#if (.Platform$OS.type == "windows") {
+#    options(renv.config.install.transactional = FALSE)
+#    renv::restore(library=saved.system.libPaths, prompt=FALSE) # for a quick test, add: packages="backports"
+#    .libPaths(c(saved.system.libPaths, .libPaths()))
+#} else renv::restore(prompt=FALSE)
+
+# after updating a package, run renv::snapshot() to override the global library record with your changes
 source(here::here("..", "_common.R"))
 #-----------------------------------------------
-source(here::here("code", "params.R"))
 
-# start R inside the code folder or make sure working directory is here
-save.results.to = paste0(here::here("output"), "/")
-if (!dir.exists(save.results.to))  dir.create(save.results.to)
-    
-# if .Rdata already exists, don't rerun
-rerun.time.consuming.steps=!file.exists(paste0(save.results.to, "risks.all.1.mock.Rdata"))
-    
-library(COVIDcorr)
-#remotes::install_github("CoVPN/correlates_mockdata", auth_token="e09062bae8d9a4acf4ba7e7c587c5d3fbe1abd69")
-# the order of these packages matters
+source(here::here("code", "params.R"))
+dat.mock <- read.csv(here::here("..", "data_clean", data_name))
+dat.mock.vacc.seroneg <- readRDS(here::here("data_clean", "dat.mock.vacc.seroneg.rds"))
+marker.cutpoints <- readRDS(here::here("data_clean", "marker.cutpoints.rds"))
+
 # kyotil mostly contains code for formatting, but may also contain code for some estimation tasks
-library(kyotil)      
+library(kyotil)
 #remotes::install_github("youyifong/kyotil")
 # marginalizedRisk contains logic for computing marginalized risk curves
 library(marginalizedRisk)
 #remotes::install_github("youyifong/marginalizedRisk")
 library(tools) # toTitleCase
 library(survey)
-library(splines)
 library(parallel)
-library(Hmisc)# wtd.quantile, biconf
 library(forestplot)
-library(svyVGAM) # Firth penalized glm
-library(xtable)
+library(Hmisc) # wtd.quantile, cut2
+library(xtable) # this is a dependency of kyotil
 
-.mfrow=if(length(assays)==4) c(2,2) else if(length(assays)==5) c(3,2) else stop("pls redefine .mfrows")
-max.stratum=max(dat.mock$Bstratum)
-  
-# DB: can be deleted?    
-# # intercurrent cases
-# nrow(subset(dat.mock.vacc.seroneg, TwophasesampInd==1& EventIndPrimaryD29==1))
-# nrow(subset(dat.mock.vacc.seroneg, TwophasesampInd==1& EventIndPrimaryD57==1))
-    
-# important subset of data
-dat.mock.vacc.seroneg.D57=subset(dat.mock.vacc.seroneg, EventTimePrimaryD57>=7)
-#    # this is not needed because survey package computes weights inside design objects
-#    # redefine wt for D57 forward
-#    wts_table <- with(dat.mock.vacc.seroneg.D57, table(Wstratum, TwophasesampInd))
-#    wts_norm <- rowSums(wts_table) / wts_table[, 2]
-#    dat.mock.vacc.seroneg.D57$wt.2 <- wts_norm[dat.mock.vacc.seroneg.D57$Wstratum%.%""]
-dat.mock.plac.seroneg=subset(dat.mock, Trt==0 & Bserostatus==0 & Perprotocol)
-dat.mock.vacc.seroneg.5 <- dat.mock.vacc.seroneg.subsample[["cases_5"]]
-# design objects, the two give slightly different results, twophase is better, but slower
-design.vacc.seroneg<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd, data=dat.mock.vacc.seroneg.D57)
-dstrat<-svydesign(id=~1,strata=~Wstratum, weights=~wt, data=dat.mock.vacc.seroneg.D57)
+# population is either 57 or 29
+Args <- commandArgs(trailingOnly=TRUE) 
+if (length(Args)==0) Args=c(pop="29") 
+pop=Args[1]; print(pop)
 #
-t0=max(dat.mock.vacc.seroneg.D57$EventTimePrimaryD57[dat.mock.vacc.seroneg.D57$EventIndPrimaryD57==1]); myprint(t0)
+save.results.to = paste0(here::here("output"), "/D", pop,"/");
+if (!dir.exists(save.results.to))  dir.create(save.results.to)
+print(paste0("save.results.to equals ", save.results.to))
+
+# important subsets of data
+if (pop=="57") {
+    dat.vacc.pop=dat.mock.vacc.seroneg[dat.mock.vacc.seroneg[["EventTimePrimaryD"%.%pop]]>=7, ] #dat.mock.vacc.seroneg has trichotomized variables defined
+    dat.plac.pop=subset(dat.mock, Trt==0 & Bserostatus==0 & Perprotocol & EventTimePrimaryD57>=7)
+} else if (pop=="29") {
+    dat.vacc.pop=subset(dat.mock, Trt==1 & Bserostatus == 0 & (EventTimePrimaryD29>=14 & Perprotocol == 1 | EventTimePrimaryD29>=7 & EventTimePrimaryD29<=13 & Fullvaccine==1))
+    dat.plac.pop=subset(dat.mock, Trt==0 & Bserostatus == 0 & (EventTimePrimaryD29>=14 & Perprotocol == 1 | EventTimePrimaryD29>=7 & EventTimePrimaryD29<=13 & Fullvaccine==1))    
+    # define trichotomized markers
+    for (a in assays) {    
+      q.a <- wtd.quantile(dat.vacc.pop[["Day29" %.% a]], weights = dat.vacc.pop$wt.2, probs = c(1 / 3, 2 / 3))
+      q.a <- c(-Inf, q.a, Inf) # therwise cut2 may assign the rows with the minimum value NA
+      dat.vacc.pop[["Day29" %.% a %.% "cat"]] <- factor(cut2(dat.vacc.pop[["Day29" %.% a]], cuts = q.a))
+      stopifnot( length(table(dat.vacc.pop[["Day29" %.% a %.% "cat"]])) == 3)
+      #
+      q.a <- wtd.quantile(dat.vacc.pop[["Delta29overB" %.% a]], weights = dat.vacc.pop$wt.2, probs = c(1 / 3, 2 / 3))
+      q.a <- c(-Inf, q.a, Inf) # therwise cut2 may assign the rows with the minimum value NA
+      dat.vacc.pop[["Delta29overB" %.% a %.% "cat"]] <- factor(cut2(dat.vacc.pop[["Delta29overB" %.% a]], cuts = q.a))
+      stopifnot( length(table(dat.vacc.pop[["Delta29overB" %.% a %.% "cat"]])) == 3)
+    }
+} else stop("wrong pop")
+# define an alias for EventIndPrimaryDxx
+dat.vacc.pop$yy=dat.vacc.pop[["EventIndPrimaryD"%.%pop]]
+dat.plac.pop$yy=dat.plac.pop[["EventIndPrimaryD"%.%pop]]
+#
+design.vacc.seroneg<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd, data=dat.vacc.pop)
+#
+t0=max(dat.vacc.pop[dat.vacc.pop[["EventIndPrimaryD"%.%pop]]==1, "EventTimePrimaryD"%.%pop]); myprint(t0)
 write(t0, file=paste0(save.results.to, "timepoints_cum_risk_"%.%study.name))
-    
-# base formula
-form.a = ~. + Age # + BRiskScore
-form.s = Surv(EventTimePrimaryD57, EventIndPrimaryD57) ~ 1
-form.0 = update (update (form.s, ~.+MinorityInd + HighRiskInd), form.a)
-form.0.logistic = update (EventIndPrimaryD57  ~ MinorityInd + HighRiskInd, form.a)
-form.1 = update (form.s, form.a) 
+# trial-specific formula
+form.s = as.formula(paste0("Surv(EventTimePrimaryD",pop,", EventIndPrimaryD",pop,") ~ 1"))
+if (study.name == "mock") {
+    form.0 =            update (form.s, ~.+ MinorityInd + HighRiskInd + Age) #  Age is to be replaced by BRiskScore
+    form.0.logistic = as.formula(paste0("EventIndPrimaryD",pop,"  ~ MinorityInd + HighRiskInd + Age"))  #  Age is to be replaced by BRiskScore
+} else if (study.name == "moderna") {
+    form.0 =            update (form.s, ~.+ MinorityInd + HighRiskInd + BRiskScore)
+    form.0.logistic = as.formula(paste0("EventIndPrimaryD",pop,"  ~ MinorityInd + HighRiskInd + BRiskScore"))
+} else stop("")
 # covariate length without markers
 p.cov=length(terms(form.0))
-    
-# save cutpoints to files
-cutpoints=list()
-for (a in assays) {        
-    for (t in c("Day57", "Delta57overB")) {
-        q.a=wtd.quantile(dat.mock.vacc.seroneg.D57[[t%.%a]], weights=dat.mock.vacc.seroneg.D57$wt, probs=c(1/3, 2/3))
-        write(paste0(labels.axis[1,a], " [", concatList(round(q.a, 2), ", "), ")%"), file=paste0(save.results.to, "cutpoints_",t,a, "_"%.%study.name))
-    }
-}
 #
+wts=if(pop=="57") dat.vacc.pop$wt else dat.vacc.pop$wt.2    
+
 time.start=Sys.time()
 
-
-
-
+rv=list() # results for verification
+    
 ####################################################################################################
 # Main regression results tables
 ####################################################################################################
@@ -85,19 +95,19 @@ time.start=Sys.time()
 ###################################
 # Regression for continuous markers
 
-# Report point and 95\% confidence interval estimates for the hazard ratio per 10-fold change in the Day 57 antibody marker, 
+# Report point and 95\% confidence interval estimates for the hazard ratio per 10-fold change in the antibody marker, 
 # for the entire baseline negative vaccine cohort
 
 fits=list()
-for (a in c("Day57"%.%assays, "Delta57overB"%.%assays)) {
+for (a in c("Day"%.%pop%.%assays, "Delta"%.%pop%.%"overB"%.%assays)) {
     f= update(form.0, as.formula(paste0("~.+", a)))
     fits[[a]]=svycoxph(f, design=design.vacc.seroneg) 
 }
 
-natrisk=nrow(dat.mock.vacc.seroneg.D57)
-nevents=nrow(subset(dat.mock.vacc.seroneg.D57, EventIndPrimaryD57==1))
+natrisk=nrow(dat.vacc.pop)
+nevents=sum(dat.vacc.pop$yy==1)
 
-# make pretty table for D57 only
+# make pretty table
 fits=fits[1:length(assays)] # for now, we don't need the delta (multitesting adjustment results are affected)
 rows=1+p.cov
 est=getFormattedSummary(fits, exp=T, robust=T, rows=rows, type=1)
@@ -110,17 +120,23 @@ pvals.cont = sapply(fits, function(x) {
     tmp[nrow(tmp),p.val.col]
 })
 
+# mean and max followup time in the vaccine arm
+write(round(mean(dat.vacc.pop[["EventTimePrimaryD"%.%pop]])), file=paste0(save.results.to, "CoR_mean_followup_time_vacc_"%.%study.name))
+write(round(max (dat.vacc.pop[["EventTimePrimaryD"%.%pop]])), file=paste0(save.results.to, "CoR_max_followup_time_vacc_"%.% study.name))
+rv$CoR_mean_followup_time_vacc=mean((dat.vacc.pop[["EventTimePrimaryD"%.%pop]]))
+rv$CoR_max_followup_time_vacc= max ((dat.vacc.pop[["EventTimePrimaryD"%.%pop]]))
+
 
 ######################################
 # regression for trichotomized markers
 
 fits.tri=list()
-for (a in c("Day57"%.%assays, "Delta57overB"%.%assays)) {
+for (a in c("Day"%.%pop%.%assays, "Delta"%.%pop%.%"overB"%.%assays)) {
     f= update(form.0, as.formula(paste0("~.+", a, "cat")))
     fits.tri[[a]]=svycoxph(f, design=design.vacc.seroneg) 
 }
 
-# make pretty table for D57
+# make pretty table 
 fits.tri=fits.tri[1:length(assays)]
 rows=rows=1:2+p.cov
 # get generalized Wald p values
@@ -136,54 +152,58 @@ overall.p.0=formatDouble(c(rbind(overall.p.tri, NA,NA)), digits=3, remove.leadin
 # do multitesting adj for continuous and trichotomized markers together
 
 
-#### Holm and FDR
+#### Holm and FDR adjustment
 
 pvals.adj.fdr=p.adjust(c(pvals.cont, overall.p.tri), method="fdr")
 pvals.adj.hol=p.adjust(c(pvals.cont, overall.p.tri), method="holm")
 
 
-#### Westfall and Young permutation test
-
-dat.ph2 = design.vacc.seroneg$phase1$sample$variables
-design.vacc.seroneg.perm=design.vacc.seroneg
-#design.vacc.seroneg.perm$phase1$full$variables
-
-# DB: seeds is number of permutations?
-out=mclapply(seeds, mc.cores = numCores, FUN=function(seed) {   
-    # store the current rng state 
-    save.seed <- try(get(".Random.seed", .GlobalEnv), silent=TRUE) 
-    if (class(save.seed)=="try-error") {set.seed(1); save.seed <- get(".Random.seed", .GlobalEnv) }          
-    set.seed(seed)        
+#### Westfall and Young permutation-based adjustment
+if(!file.exists(paste0(save.results.to, "pvals.perm.",study.name,".Rdata"))) {
     
-    # permute markers in design.vacc.seroneg.perm
-    new.idx=sample(1:nrow(dat.ph2))
-    tmp=dat.ph2
-    for (a in "Day57"%.%assays) {
-        tmp[[a]]=tmp[[a]][new.idx]
-        tmp[[a%.%"cat"]]=tmp[[a%.%"cat"]][new.idx]
-    }
-    design.vacc.seroneg.perm$phase1$sample$variables = tmp
+    dat.ph2 = design.vacc.seroneg$phase1$sample$variables
+    design.vacc.seroneg.perm=design.vacc.seroneg
+    #design.vacc.seroneg.perm$phase1$full$variables
+    out=mclapply(1:numPerm, mc.cores = numCores, FUN=function(seed) {   
+        # store the current rng state 
+        save.seed <- try(get(".Random.seed", .GlobalEnv), silent=TRUE) 
+        if (class(save.seed)=="try-error") {set.seed(1); save.seed <- get(".Random.seed", .GlobalEnv) }          
+        set.seed(seed)        
+        
+        # permute markers in design.vacc.seroneg.perm
+        new.idx=sample(1:nrow(dat.ph2))
+        tmp=dat.ph2
+        for (a in "Day"%.%pop%.%assays) {
+            tmp[[a]]=tmp[[a]][new.idx]
+            tmp[[a%.%"cat"]]=tmp[[a%.%"cat"]][new.idx]
+        }
+        design.vacc.seroneg.perm$phase1$sample$variables = tmp
+        
+        out=c(
+            sapply ("Day"%.%pop%.%assays, function(a) {
+                f= update(form.0, as.formula(paste0("~.+", a)))
+                fit=svycoxph(f, design=design.vacc.seroneg.perm) 
+                last(c(getFixedEf(fit)))
+            })        
+            ,    
+            sapply ("Day"%.%pop%.%assays, function(a) {
+                f= update(form.0, as.formula(paste0("~.+", a, "cat")))
+                fit=svycoxph(f, design=design.vacc.seroneg.perm) 
+                last(c(getFixedEf(fit)))
+            })
+        )
+        
+        # restore rng state 
+        assign(".Random.seed", save.seed, .GlobalEnv)    
+        
+        out
+    })
+    pvals.perm=do.call(rbind, out)
+    save(pvals.perm, file=paste0(save.results.to, "pvals.perm."%.%study.name%.%".Rdata"))
     
-    out=c(
-        sapply ("Day57"%.%assays, function(a) {
-            f= update(form.0, as.formula(paste0("~.+", a)))
-            fit=svycoxph(f, design=design.vacc.seroneg.perm) 
-            last(c(getFixedEf(fit)))
-        })        
-        ,    
-        sapply ("Day57"%.%assays, function(a) {
-            f= update(form.0, as.formula(paste0("~.+", a, "cat")))
-            fit=svycoxph(f, design=design.vacc.seroneg.perm) 
-            last(c(getFixedEf(fit)))
-        })
-    )
-    
-    # restore rng state 
-    assign(".Random.seed", save.seed, .GlobalEnv)    
-    
-    out
-})
-pvals.perm=do.call(rbind, out)
+} else {
+    load(file=paste0(save.results.to, "pvals.perm."%.%study.name%.%".Rdata"))
+}
 
 pvals.adj.perm = p.adj.perm (c(pvals.cont, overall.p.tri), pvals.perm)
 
@@ -199,17 +219,19 @@ p.1=formatDouble(pvals.adj.perm[1:length(assays),"p.FWER"], 3); p.1=sub(".000","
 p.2=formatDouble(pvals.adj.perm[1:length(assays),"p.FDR" ], 3); p.2=sub(".000","<0.001",p.2)
 
 tab.1=cbind(paste0(nevents, "/", format(natrisk, big.mark=",")), t(est), t(ci), t(p), p.1, p.2)
-rownames(tab.1)=c(labels.axis["Day57", assays])#, labels.axis["Delta57overB", assays])
+rownames(tab.1)=c(labels.axis["Day"%.%pop, assays])
 tab.1
 
-# save D57 only, not delta
-mytex(tab.1, file.name="CoR_D57_univariable_svycoxph_pretty_"%.%study.name, align="c", include.colnames = F, save2input.only=T, input.foldername=save.results.to,
+mytex(tab.1, file.name="CoR_univariable_svycoxph_pretty_"%.%study.name, align="c", include.colnames = F, save2input.only=T, input.foldername=save.results.to,
     col.headers=paste0("\\hline\n 
          \\multicolumn{1}{l}{", toTitleCase(study.name), "} & \\multicolumn{1}{c}{No. cases /}   & \\multicolumn{2}{c}{HR per 10-fold incr.}                     & \\multicolumn{1}{c}{P-value}   & \\multicolumn{1}{c}{q-value}   & \\multicolumn{1}{c}{FWER} \\\\ 
          \\multicolumn{1}{l}{Immunologic Marker}            & \\multicolumn{1}{c}{No. at-risk**} & \\multicolumn{1}{c}{Pt. Est.} & \\multicolumn{1}{c}{95\\% CI} & \\multicolumn{1}{c}{(2-sided)} & \\multicolumn{1}{c}{} & \\multicolumn{1}{c}{} \\\\ 
          \\hline\n 
     ")
 )
+
+rv$tab.1=tab.1
+
 
 
 ######################################
@@ -228,10 +250,10 @@ overall.p.2=c(rbind(overall.p.2, NA,NA))
 
 
 # n cases and n at risk
-natrisk = round(c(sapply (c("Day57"%.%assays, "Delta57overB"%.%assays)%.%"cat", function(a) aggregate(dat.mock.vacc.seroneg.D57$wt, dat.mock.vacc.seroneg.D57[a], sum, na.rm=T)[,2] )))
+natrisk = round(c(sapply (c("Day"%.%pop%.%assays, "Delta"%.%pop%.%"overB"%.%assays)%.%"cat", function(a) aggregate(wts, dat.vacc.pop[a], sum, na.rm=T)[,2] )))
 colSums(matrix(natrisk, nrow=3))
-nevents = round(c(sapply (c("Day57"%.%assays, "Delta57overB"%.%assays)%.%"cat", function(a) aggregate(subset(dat.mock.vacc.seroneg.D57,EventIndPrimaryD57==1,wt,drop=T), 
-                                                                                                subset(dat.mock.vacc.seroneg.D57,EventIndPrimaryD57==1)[a], sum, na.rm=T)[,2] )))
+nevents = round(c(sapply (c("Day"%.%pop%.%assays, "Delta"%.%pop%.%"overB"%.%assays)%.%"cat", function(a) aggregate(subset(dat.vacc.pop,yy==1)[[if(pop=="57") "wt" else "wt.2"]], 
+                                                                                                                   subset(dat.vacc.pop,yy==1)[a], sum, na.rm=T)[,2] )))
 # regression parameters
 est=c(rbind(1.00,  getFormattedSummary(fits.tri, exp=T, robust=T, rows=rows, type=1)))
 ci= c(rbind("N/A", getFormattedSummary(fits.tri, exp=T, robust=T, rows=rows, type=13)))
@@ -244,15 +266,15 @@ tab=cbind(
     est, ci, p, overall.p.0, overall.p.1, overall.p.2
 )
 ## move unit to another row if too long, code depends on length of assay
-#tmp=rbind(c(labels.axis["Day57", assays], labels.axis["Delta57overB", assays]), c("(IU/ml)", "(IU/ml)", "ID50", "ID80"), "")
+#tmp=rbind(c(labels.axis["Day"%.%pop, assays], labels.axis["Delta"%.%pop%.%"overB", assays]), c("(IU/ml)", "(IU/ml)", "ID50", "ID80"), "")
 #tmp[1,]=sub(" \\(IU/ml)","", tmp[1,])
 #tmp[1,]=sub(" ID50","", tmp[1,])
 #tmp[1,]=sub(" ID80","", tmp[1,])
-tmp=rbind(c(labels.axis["Day57", assays], labels.axis["Delta57overB", assays]), "", "")
+tmp=rbind(c(labels.axis["Day"%.%pop, assays], labels.axis["Delta"%.%pop%.%"overB", assays]), "", "")
 rownames(tab)=c(tmp)
 tab
 
-mytex(tab[1:(nrow(tab)/2),], file.name="CoR_D57_univariable_svycoxph_cat_pretty_"%.%study.name, align="c", include.colnames = F, save2input.only=T, input.foldername=save.results.to,
+mytex(tab[1:(nrow(tab)/2),], file.name="CoR_univariable_svycoxph_cat_pretty_"%.%study.name, align="c", include.colnames = F, save2input.only=T, input.foldername=save.results.to,
     col.headers=paste0("\\hline\n 
          \\multicolumn{1}{l}{", toTitleCase(study.name), "} & \\multicolumn{1}{c}{Tertile}   & \\multicolumn{1}{c}{No. cases /}   & \\multicolumn{1}{c}{Attack}   & \\multicolumn{2}{c}{Haz. Ratio}                     & \\multicolumn{1}{c}{P-value}   & \\multicolumn{1}{c}{Overall P-}      & \\multicolumn{1}{c}{Overall q-}   & \\multicolumn{1}{c}{Overall} \\\\ 
          \\multicolumn{1}{l}{Immunologic Marker}            & \\multicolumn{1}{c}{}          & \\multicolumn{1}{c}{No. at-risk**} & \\multicolumn{1}{c}{rate}   & \\multicolumn{1}{c}{Pt. Est.} & \\multicolumn{1}{c}{95\\% CI} & \\multicolumn{1}{c}{(2-sided)} & \\multicolumn{1}{c}{value***} & \\multicolumn{1}{c}{value} & \\multicolumn{1}{c}{FWER} \\\\ 
@@ -261,14 +283,15 @@ mytex(tab[1:(nrow(tab)/2),], file.name="CoR_D57_univariable_svycoxph_cat_pretty_
     add.to.row=list(list(nrow(tab)/2), # insert at the beginning of table, and at the end of, say, the first table
         c(paste0(" \n \\multicolumn{8}{l}{} \\\\ \n", 
                   "\n \\multicolumn{2}{l}{Placebo} & ", 
-                 paste0(sum(dat.mock.plac.seroneg$EventIndPrimaryD57), "/", format(nrow(dat.mock.plac.seroneg), big.mark=",")), "&",  
-                 formatDouble(mean(dat.mock.plac.seroneg$EventIndPrimaryD57), digit=4, remove.leading0=F), "&",  
+                 paste0(sum(dat.plac.pop$yy), "/", format(nrow(dat.plac.pop), big.mark=",")), "&",  
+                 formatDouble(mean(dat.plac.pop$yy), digit=4, remove.leading0=F), "&",  
                  "\\multicolumn{4}{l}{}  \\\\ \n")
           #"\\hline\n \\multicolumn{4}{l}{Standard Deviation 1 mcg/mL}\\\\ \n"
          )
     )
 )
 
+rv$tab.2=tab
 
 
 
@@ -340,21 +363,29 @@ theforestplot <- function(cohort=NA,group,nEvents=NA,totFU=NA,rate=NA,point.esti
 
 ####################################################################################
 # fit models for different phase one baseline strata subgroups and make forest plots
+#  "Age >= 65",
+#  "Age < 65, At risk",
+#  "Age < 65, Not at risk"
 
 fits.all=list()
 for (a in assays) {
     fits=list()
     
-    fit=svycoxph(update(form.0, as.formula(paste0("~.+Day57", a))), design=design.vacc.seroneg) 
+    fit=svycoxph(update(form.0, as.formula(paste0("~.+Day",pop, a))), design=design.vacc.seroneg) 
     fits[[1]]=fit
     
-    for (k in 1:max.stratum) {
-        if(sum (subset(dat.mock.vacc.seroneg.D57, Bstratum==k, EventIndPrimaryD57))<=2) {
+    for (k in 1:max(dat.mock$Bstratum)) {
+        if(sum (subset(dat.vacc.pop, Bstratum==k, yy))<=2) {
             # 0-2 cases
             fits[[k+1]]=NA
         } else {
-            design<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd, data=subset(dat.mock.vacc.seroneg.D57, Bstratum==k))            
-            fit=svycoxph(update(form.1, as.formula(paste0("~.+Day57", a))), design=design) # no need to adjust for binary baseline demog b/c it is within stratum
+            design<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd, data=subset(dat.vacc.pop, Bstratum==k))            
+            if (k==1) {
+                f = update(form.0, as.formula(paste0("~.+Day",pop, a)))
+            } else {
+                f = update(update(form.0, ~.-HighRiskInd), as.formula(paste0("~.+Day",pop, a)))
+            }
+            fit=svycoxph(f, design=design) 
             fits[[k+1]]=fit
         }
     }       
@@ -362,10 +393,11 @@ for (a in assays) {
     fits.all[[a]]=fits
 }
 
-nevents=c(nrow(subset(dat.mock.vacc.seroneg.D57, EventIndPrimaryD57==1)),
-          sapply(1:max.stratum, function (k) nrow(subset(dat.mock.vacc.seroneg.D57, EventIndPrimaryD57==1 & Bstratum==k))) 
+nevents=c(nrow(subset(dat.vacc.pop, yy==1)),
+          sapply(1:max(dat.mock$Bstratum), function (k) nrow(subset(dat.vacc.pop, yy==1 & Bstratum==k))) 
 )
 
+rv$fr.1=list(nevents=nevents)
 for (a in assays) {
     #width and height decide margin
     # to make CI wider, make width bigger and graphwidth larger # onefile has to be F otherwise there will be an empty page inserted
@@ -378,8 +410,10 @@ for (a in assays) {
             tmp[nrow(tmp),c("HR", "(lower", "upper)", "p.value")]
         })
         theforestplot (point.estimates=est.ci[1,], lower.bounds=est.ci[2,], upper.bounds=est.ci[3,], p.values=NA, graphwidth=unit(120, "mm"), fontsize=1.2,
-            table.labels = c("Group", "HR (95% CI)","No. Events"), group=colnames(est.ci), decimal.places=2, nEvents=nevents, title=toTitleCase(study.name))
+            table.labels = c("Group", "HR (95% CI)","No. Events"), group=colnames(est.ci), decimal.places=2, nEvents=nevents, title=paste0(labels.assays.long["Day"%.%pop,a]))
     dev.off()
+    
+    rv$fr.1[[a]]=est.ci
 }
 
 
@@ -390,38 +424,38 @@ designs=list()
 for (i in 1:4) {    
     designs[[i]]=list()
     if(i==1) {
-        designs[[i]][[1]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd, data=subset(dat.mock.vacc.seroneg.D57, age.geq.65==1))
-        designs[[i]][[2]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd, data=subset(dat.mock.vacc.seroneg.D57, age.geq.65==0))        
+        designs[[i]][[1]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd, data=subset(dat.vacc.pop, age.geq.65==1))
+        designs[[i]][[2]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd, data=subset(dat.vacc.pop, age.geq.65==0))        
     } else if(i==2) {
-        designs[[i]][[1]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd, data=subset(dat.mock.vacc.seroneg.D57, HighRiskInd==1))
-        designs[[i]][[2]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd, data=subset(dat.mock.vacc.seroneg.D57, HighRiskInd==0))
+        designs[[i]][[1]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd, data=subset(dat.vacc.pop, HighRiskInd==1))
+        designs[[i]][[2]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd, data=subset(dat.vacc.pop, HighRiskInd==0))
     } else if(i==3) {
-        designs[[i]][[1]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd, data=subset(dat.mock.vacc.seroneg.D57, MinorityInd==1))
-        designs[[i]][[2]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd, data=subset(dat.mock.vacc.seroneg.D57, MinorityInd==0))
+        designs[[i]][[1]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd, data=subset(dat.vacc.pop, MinorityInd==1))
+        designs[[i]][[2]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd, data=subset(dat.vacc.pop, MinorityInd==0))
     } else if(i==4) {
-        designs[[i]][[1]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd, data=subset(dat.mock.vacc.seroneg.D57, Sex==1))
-        designs[[i]][[2]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd, data=subset(dat.mock.vacc.seroneg.D57, Sex==0))
+        designs[[i]][[1]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd, data=subset(dat.vacc.pop, Sex==1))
+        designs[[i]][[2]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd, data=subset(dat.vacc.pop, Sex==0))
     }
 }
 
 fits.all.2=vector("list", length(assays));names(fits.all.2)=assays
 for (a in assays) {
     fits.all.2[[a]]=list()        
-    fits.all.2[[a]][[1]]=svycoxph(update(form.0, as.formula(paste0("~.+Day57", a))), design=design.vacc.seroneg) 
+    fits.all.2[[a]][[1]]=svycoxph(update(form.0, as.formula(paste0("~.+Day",pop, a))), design=design.vacc.seroneg) 
     
-    f= update(form.0,                         as.formula(paste0("~.+Day57", a)))
+    f= update(form.0,                         as.formula(paste0("~.+Day",pop, a)))
     fits.all.2[[a]][[2]]=svycoxph(f, design=designs[[1]][[1]]) 
     fits.all.2[[a]][[3]]=svycoxph(f, design=designs[[1]][[2]]) 
     
-    f= update(update(form.0, ~.-HighRiskInd), as.formula(paste0("~.+Day57", a)))
+    f= update(update(form.0, ~.-HighRiskInd), as.formula(paste0("~.+Day",pop, a)))
     fits.all.2[[a]][[4]]=svycoxph(f, design=designs[[2]][[1]]) 
     fits.all.2[[a]][[5]]=svycoxph(f, design=designs[[2]][[2]]) 
     
-    f= update(update(form.0, ~.-MinorityInd), as.formula(paste0("~.+Day57", a)))
+    f= update(update(form.0, ~.-MinorityInd), as.formula(paste0("~.+Day",pop, a)))
     fits.all.2[[a]][[6]]=svycoxph(f, design=designs[[3]][[1]]) 
     fits.all.2[[a]][[7]]=svycoxph(f, design=designs[[3]][[2]]) 
     
-    f= update(form.0,                         as.formula(paste0("~.+Day57", a)))
+    f= update(form.0,                         as.formula(paste0("~.+Day",pop, a)))
     fits.all.2[[a]][[8]]=svycoxph(f, design=designs[[4]][[1]]) 
     fits.all.2[[a]][[9]]=svycoxph(f, design=designs[[4]][[2]]) 
 }
@@ -429,17 +463,18 @@ for (a in assays) {
     names(fits.all.2[[a]])=c("All Vaccine", "Age >= 65", "Age < 65", "At risk", "Not at risk", "Comm. of color", "White Non-Hispanic", "Men", "Women")
 }    
 
-nevents=c(nrow(subset(dat.mock.vacc.seroneg.D57, EventIndPrimaryD57==1)),
-          nrow(subset(dat.mock.vacc.seroneg.D57, EventIndPrimaryD57==1 & age.geq.65==1)), 
-          nrow(subset(dat.mock.vacc.seroneg.D57, EventIndPrimaryD57==1 & age.geq.65==0)), 
-          nrow(subset(dat.mock.vacc.seroneg.D57, EventIndPrimaryD57==1 & HighRiskInd==1)), 
-          nrow(subset(dat.mock.vacc.seroneg.D57, EventIndPrimaryD57==1 & HighRiskInd==0)), 
-          nrow(subset(dat.mock.vacc.seroneg.D57, EventIndPrimaryD57==1 & MinorityInd==1)), 
-          nrow(subset(dat.mock.vacc.seroneg.D57, EventIndPrimaryD57==1 & MinorityInd==0)), 
-          nrow(subset(dat.mock.vacc.seroneg.D57, EventIndPrimaryD57==1 & Sex==1)), 
-          nrow(subset(dat.mock.vacc.seroneg.D57, EventIndPrimaryD57==1 & Sex==0))
+nevents=c(nrow(subset(dat.vacc.pop, yy==1)),
+          nrow(subset(dat.vacc.pop, yy==1 & age.geq.65==1)), 
+          nrow(subset(dat.vacc.pop, yy==1 & age.geq.65==0)), 
+          nrow(subset(dat.vacc.pop, yy==1 & HighRiskInd==1)), 
+          nrow(subset(dat.vacc.pop, yy==1 & HighRiskInd==0)), 
+          nrow(subset(dat.vacc.pop, yy==1 & MinorityInd==1)), 
+          nrow(subset(dat.vacc.pop, yy==1 & MinorityInd==0)), 
+          nrow(subset(dat.vacc.pop, yy==1 & Sex==1)), 
+          nrow(subset(dat.vacc.pop, yy==1 & Sex==0))
 )
 
+rv$fr.2=list(nevents=nevents)
 for (a in assays) {
     fits = fits.all.2[[a]]
     est.ci = sapply(fits, function (fit) {
@@ -449,11 +484,11 @@ for (a in assays) {
     })
     mypdf(onefile=F, file=paste0(save.results.to, "hr_forest_marginal_", a, "_", study.name), width=10,height=4) #width and height decide margin
         theforestplot (lineheight=unit(.75,"cm"), point.estimates=est.ci[1,], lower.bounds=est.ci[2,], upper.bounds=est.ci[3,], p.values=NA, graphwidth=unit(120, "mm"), fontsize=1.2,
-            table.labels = c("Group (Baseline Negative)", "HR (95% CI)","No. Events"), group=colnames(est.ci), decimal.places=2, nEvents=nevents, title=toTitleCase(study.name))
+            table.labels = c("Group (Baseline Negative)", "HR (95% CI)","No. Events"), group=colnames(est.ci), decimal.places=2, nEvents=nevents, title=paste0(labels.assays.long["Day"%.%pop,a]))
     dev.off()    
+    
+    rv$fr.2[[a]]=est.ci
 }
-
-
 
 
 
@@ -472,29 +507,18 @@ for (a in assays) {
 # data is ph1 data
 # t is a time point near to the time of the last observed outcome will be defined
 marginalized.risk.svycoxph.boot=function(formula, marker.name, type, data, t, weights, B, ci.type="quantile", numCores=1) {  
-# formula=form.0; marker.name="Day57bindSpike"; data=dat.mock.vacc.seroneg.D57; t=t0; weights=dat.mock.vacc.seroneg.D57$wt; B=2; ci.type="quantile"; numCores=1; type=2
+# formula=form.0; marker.name="Day"%.%pop%.%"bindSpike"; data=dat.vacc.pop; t=t0; weights=dat.vacc.pop$wt; B=2; ci.type="quantile"; numCores=1; type=2
     
     # store the current rng state 
     save.seed <- try(get(".Random.seed", .GlobalEnv), silent=TRUE) 
     if (class(save.seed)=="try-error") {set.seed(1); save.seed <- get(".Random.seed", .GlobalEnv) }      
     
     if (type==1) {
-    # conditional on s
-    
-        ss=quantile(data[[marker.name]], seq(.05,.95,by=0.01), na.rm=TRUE) # this is a fine grid because we may need to read points off the curve
-    
-        f1=update(formula, as.formula(paste0("~.+",marker.name)))
-        f2=update(formula, as.formula(paste0(marker.name,"~."))) # it is ok to have strata in there if it is binary, not sure if it is okay if there are more than two strata
-        
+    # conditional on s    
+        ss=quantile(data[[marker.name]], seq(.05,.95,by=0.01), na.rm=TRUE) # this is a fine grid because we may need to read points off the curve    
+        f1=update(formula, as.formula(paste0("~.+",marker.name)))        
         tmp.design=twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd, data=data)
-        fit.risk=svycoxph(f1, design=tmp.design)
-        ## since we are not using se from fit.risk, it does not matter if the se is not correct, but the weights computed by svycoxph are a little different from the coxph
-        ## environment(f1) <- list2env(list(data=data));  # may have to set env if prediction inside marginalized.risk fails, but should not happen if the weights variable is part of the data frame
-        # fit.risk=coxph(f1, subset(data, TwophasesampInd==1), weights=wt) 
-     
-        fit.s=svyglm(f2, tmp.design) 
-        #fit.s=lm(f2, subset(data, TwophasesampInd==1)) 
-        
+        fit.risk=svycoxph(f1, design=tmp.design) # since we don't need se, we could use coxph, but the weights computed by svycoxph are a little different from the coxph due to fpc
         prob=marginalized.risk(fit.risk, marker.name, data=subset(data, TwophasesampInd==1), ss=ss, weights=weights[data$TwophasesampInd==1], t=t, categorical.s=F)        
     
     } else if (type==2) {
@@ -506,6 +530,7 @@ marginalized.risk.svycoxph.boot=function(formula, marker.name, type, data, t, we
     
     # for use in bootstrap
     strat=sort(unique(data$tps.stratum))
+    # tps.stratum does include a separate stratum for cases
     ptids.by.stratum=lapply(strat, function (i) list(subcohort=subset(data, tps.stratum==i & SubcohortInd==1, Ptid, drop=TRUE), nonsubcohort=subset(data, tps.stratum==i & SubcohortInd==0, Ptid, drop=TRUE)))
     
     # bootstrap
@@ -525,16 +550,18 @@ marginalized.risk.svycoxph.boot=function(formula, marker.name, type, data, t, we
         # conditional on s
             tmp.design=twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd, data=dat.b)
             fit.risk=svycoxph(f1, design=tmp.design)
-            fit.s=svyglm(f2, tmp.design)      
+            #fit.s=svyglm(f2, tmp.design)      
             marginalized.risk(fit.risk, marker.name, subset(dat.b,TwophasesampInd==1), t=t, ss=ss, weights=dat.b$wt[dat.b$TwophasesampInd==1], categorical.s=F)
             
         } else if (type==2) {
         # conditional on S>=s
-            marginalized.risk.threshold (formula, marker.name, data=subset(dat.b, TwophasesampInd==1), weights=dat.b$wt[dat.b$TwophasesampInd==1], t=t, ss=ss)
+            tmp=try(marginalized.risk.threshold (formula, marker.name, data=subset(dat.b, TwophasesampInd==1), weights=dat.b$wt[dat.b$TwophasesampInd==1], t=t, ss=ss))
+            if (class(tmp) != "try-error" ) tmp else rep(NA,length(ss))
             
         } else stop("wrong type")
     })
     res=do.call(cbind, out)
+    res=res[,!is.na(res[1,])] # remove NA's
     
     # restore rng state 
     assign(".Random.seed", save.seed, .GlobalEnv)    
@@ -550,39 +577,45 @@ marginalized.risk.svycoxph.boot=function(formula, marker.name, type, data, t, we
 
 
 
-# bootstrap marginalized risk is a time-consumming step
-if(rerun.time.consuming.steps) {
-    
-    #################
-    # vaccine arm
-    
-    # conditional on s
+# vaccine arm, conditional on S=s
+if(!file.exists(paste0(save.results.to, "marginalized.risk.1.",study.name,".Rdata"))) {    
+    print("make marginalized.risk.1")
     risks.all.1=list()
     for (a in assays) {
-        risks.all.1[[a]]=marginalized.risk.svycoxph.boot(formula=form.0, marker.name="Day57"%.%a, type=1, data=dat.mock.vacc.seroneg.D57, t0, weights=dat.mock.vacc.seroneg.D57$wt, B=B, ci.type="quantile", numCores=numCores)        
+        risks.all.1[[a]]=marginalized.risk.svycoxph.boot(formula=form.0, marker.name="Day"%.%pop%.%a, type=1, data=dat.vacc.pop, t0, weights=wts, B=B, ci.type="quantile", numCores=numCores)                
     }
-    save(risks.all.1, file=paste0(save.results.to, "risks.all.1."%.%study.name%.%".Rdata"))
+    save(risks.all.1, file=paste0(save.results.to, "marginalized.risk.1."%.%study.name%.%".Rdata"))    
+} else {
+    load(paste0(save.results.to, "marginalized.risk.1."%.%study.name%.%".Rdata"))
+}
+
+rv$marginalized.risk.S.eq.s=list()
+for (a in assays) rv$marginalized.risk.S.eq.s[[a]] = risks.all.1[[a]][c("marker","prob")]
+
+
+# vaccine arm, conditional on S>=s    
+# vaccine and placebo arm, no markers
+if(!file.exists(paste0(save.results.to, "marginalized.risk.2.",study.name,".Rdata"))) {    
     
-    # conditional on S>=s
+    print("make marginalized.risk.2")
+    
+    # vaccine arm, conditional on S>=s
     risks.all.2=list()
     for (a in assays) {
-        risks.all.2[[a]]=marginalized.risk.svycoxph.boot(formula=form.0, marker.name="Day57"%.%a, type=2, data=dat.mock.vacc.seroneg.D57, t0, weights=dat.mock.vacc.seroneg.D57$wt, B=B, ci.type="quantile", numCores=numCores)        
-    }
-    save(risks.all.2, file=paste0(save.results.to, "risks.all.2."%.%study.name%.%".Rdata"))
+        myprint(a)
+        risks.all.2[[a]]=marginalized.risk.svycoxph.boot(formula=form.0, marker.name="Day"%.%pop%.%a, type=2, data=dat.vacc.pop, t0, weights=wts, B=B, ci.type="quantile", numCores=numCores)        
+    }    
     
-    
-    ####################################################################
-    # get marginalized risk without marker 
-    
+    # marginalized risk without marker in both arms
     get.marginalized.risk=function(dat){
         fit.risk = coxph(form.0, dat, model=T) # model=T is required because the type of prediction requires it, see Note on ?predict.coxph
-        dat$EventTimePrimaryD57=t0
+        dat[["EventTimePrimaryD"%.%pop]]=t0
         risks = 1 - exp(-predict(fit.risk, newdata=dat, type="expected"))
         mean(risks)
     }
     
     for (.trt in 0:1) {
-        dat.tmp=subset(dat.mock, Trt==.trt & Bserostatus==0 & Perprotocol==1 & EventTimePrimaryD57>=7)
+        dat.tmp=if(.trt==1) dat.vacc.pop else dat.plac.pop
         prob=get.marginalized.risk(dat.tmp)
         
         # bootstrapping
@@ -591,8 +624,8 @@ if(rerun.time.consuming.steps) {
         if (class(save.seed)=="try-error") {set.seed(1); save.seed <- get(".Random.seed", .GlobalEnv) }   
         # bootstrap use
         ptids.by.stratum=lapply(sort(unique(dat.tmp$tps.stratum)), function (i) list(subcohort=subset(dat.tmp, tps.stratum==i & SubcohortInd==1, Ptid, drop=TRUE), nonsubcohort=subset(dat.tmp, tps.stratum==i & SubcohortInd==0, Ptid, drop=TRUE)))
-        # 
-        out=mclapply(1:B, mc.cores = numCores, FUN=function(seed) {   
+        # if mc.cores is >1 here, the process will be stuck in coxph for some unknown reason
+        out=mclapply(1:B, mc.cores = 1, FUN=function(seed) {   
             set.seed(seed)         
             dat.b=dat.tmp[match(unlist(lapply(ptids.by.stratum, function(x) c(sample(x$subcohort, r=TRUE), sample(x$nonsubcohort, r=TRUE)))), dat.tmp$Ptid),]        
             get.marginalized.risk(dat.b)    
@@ -603,60 +636,52 @@ if(rerun.time.consuming.steps) {
         
         if (.trt==0) {
             res.plac.cont=c(est=prob, boot)
-            save(res.plac.cont, file=paste0(save.results.to, "risks_plac_cont_", study.name, ".Rdata"))
         } else {
             res.vacc.cont=c(est=prob, boot)
-            save(res.vacc.cont, file=paste0(save.results.to, "risks_vacc_cont_", study.name, ".Rdata"))
         }
-    }
+    }    
     
-    
-    
+    save(risks.all.2, res.plac.cont, res.vacc.cont, file=paste0(save.results.to, "marginalized.risk.2."%.%study.name%.%".Rdata"))
     
 } else {
-    load(file=paste0(save.results.to, "risks.all.1", "."%.%study.name, ".Rdata"))
-    load(file=paste0(save.results.to, "risks.all.2", "."%.%study.name, ".Rdata"))
-    load(file=paste0(save.results.to, "risks_plac_cont_", study.name, ".Rdata"))
-    load(file=paste0(save.results.to, "risks_vacc_cont_", study.name, ".Rdata"))
+    load(file=paste0(save.results.to, "marginalized.risk.2."%.%study.name%.%".Rdata"))
 }
 
+rv$marginalized.risk.S.geq.s=list()
+for (a in assays) rv$marginalized.risk.S.geq.s[[a]] = risks.all.2[[a]][c("marker","prob")]
 
-# marginalized risk curves for continuous s
-# repeat two times for both conditional on s and conditional on S>=s: 
-#   idx=1, with placebo lines
-#   idx=2, without placebo lines
-#   Implementation-wise, only difference is in ylim
 
-# these results are close to bootstrap results. they are not used later and only for sanity check
-# compute overall risk regardless of markers in both arms by integrating over form.0. 
-# placebo arm
-# the point estimate matche the results in res.plac.cont
-# the variance is asymptotic and is close to that estimated by bootstrap based on res.plabo.cont
-dat.tmp=subset(dat.mock, Trt==0 & Bserostatus==0 & Perprotocol==1 & EventTimePrimaryD57>=7)
-fit.tmp = coxph(form.0, dat.tmp)
-dat.tmp$EventTimePrimaryD57=t0
-pred.tmp=predict(fit.tmp, newdata=dat.tmp, type="expected", se.fit=T)    
-sd.tmp=exp(mean(log(pred.tmp$se.fit)))
-prev.plac=numeric(3)
-prev.plac[1] = mean (1 - exp(-pred.tmp$fit))    
-prev.plac[2:3] = prev.plac[1] + c(-1,1)*1.96*sd.tmp        
-# vaccine arm
-# variance is asymptotic
-dat.tmp=dat.mock.vacc.seroneg.D57
-fit.tmp = coxph(form.0, dat.tmp)
-dat.tmp$EventTimePrimaryD57=t0
-pred.tmp=predict(fit.tmp, newdata=dat.tmp, type="expected", se.fit=T)    
-sd.tmp=exp(mean(log(pred.tmp$se.fit)))
-prev.vacc=numeric(3)
-prev.vacc[1] = mean (1 - exp(-pred.tmp$fit))    
-prev.vacc[2:3] = prev.vacc[1] + c(-1,1)*1.96*sd.tmp        
-#        # simple method, not accurate
-#        tmp=subset(dat.mock, Trt==0 & Bserostatus==0 & Perprotocol==1, EventIndPrimaryD57, drop=T)    
-#        prev.plac=binconf(sum(tmp), length(tmp))
-#        tmp=subset(dat.mock.vacc.seroneg.D57, select=EventIndPrimaryD57, drop=T)    
-#        prev.vacc=binconf(sum(tmp), length(tmp))    
-myprint(prev.plac)
-myprint(prev.vacc)
+## these results are close to bootstrap results. they are not used later and only for sanity check
+## compute overall risk regardless of markers in both arms by integrating over form.0. 
+## placebo arm
+## the point estimate matche the results in res.plac.cont
+## the variance is asymptotic and is close to that estimated by bootstrap based on res.plabo.cont
+#dat.tmp=subset(dat.mock, Trt==0 & Bserostatus==0 & Perprotocol==1 & EventTimePrimaryD57>=7)
+#fit.tmp = coxph(form.0, dat.tmp)
+#dat.tmp$EventTimePrimaryD57=t0
+#pred.tmp=predict(fit.tmp, newdata=dat.tmp, type="expected", se.fit=T)    
+#sd.tmp=exp(mean(log(pred.tmp$se.fit)))
+#prev.plac=numeric(3)
+#prev.plac[1] = mean (1 - exp(-pred.tmp$fit))    
+#prev.plac[2:3] = prev.plac[1] + c(-1,1)*1.96*sd.tmp        
+## vaccine arm
+## variance is asymptotic
+#dat.tmp=dat.vacc.pop
+#fit.tmp = coxph(form.0, dat.tmp)
+#dat.tmp$EventTimePrimaryD57=t0
+#pred.tmp=predict(fit.tmp, newdata=dat.tmp, type="expected", se.fit=T)    
+#sd.tmp=exp(mean(log(pred.tmp$se.fit)))
+#prev.vacc=numeric(3)
+#prev.vacc[1] = mean (1 - exp(-pred.tmp$fit))    
+#prev.vacc[2:3] = prev.vacc[1] + c(-1,1)*1.96*sd.tmp        
+##        # simple method, not accurate
+##        tmp=subset(dat.mock, Trt==0 & Bserostatus==0 & Perprotocol==1, yy, drop=T)    
+##        prev.plac=binconf(sum(tmp), length(tmp))
+##        tmp=subset(dat.vacc.pop, select=yy, drop=T)    
+##        prev.vacc=binconf(sum(tmp), length(tmp))    
+#myprint(prev.plac)
+#myprint(prev.vacc)
+
 
 prev.plac=c(res.plac.cont[1], quantile(res.plac.cont[-1], c(.025,.975)))
 prev.vacc=c(res.vacc.cont[1], quantile(res.vacc.cont[-1], c(.025,.975)))
@@ -664,9 +689,11 @@ myprint(prev.plac)
 myprint(prev.vacc)
 
 
+# marginalized risk curves for continuous s
 
-for (ii in 1:2) { # 1 is conditional on s and 2 is conditional on S>=s
-for (idx in 1:2) {
+for (ii in 1:2) {  # 1 conditional on s,   2 is conditional on S>=s
+for (idx in 1:2) { # 1 with placebo lines, 2 without placebo lines. Implementation-wise, only difference is in ylim
+# ii=2; idx=1; a=assays[3]
     risks.all=get("risks.all."%.%ii)
     ylim=range(sapply(risks.all, function(x) x$prob), if(idx==1) prev.plac, prev.vacc, 0)
     lwd=2
@@ -674,14 +701,18 @@ for (idx in 1:2) {
     mypdf(oma=c(1,0,0,0), onefile=F, file=paste0(save.results.to, "marginalized_risks", ii, ifelse(idx==1,"","_woplacebo"), "_"%.%study.name), mfrow=.mfrow)
     for (a in assays) {        
         risks=risks.all[[a]]
+        xlim=quantile(dat.vacc.pop[["Day"%.%pop%.%a]],if(ii==1) c(.025,.975) else c(0,.95), na.rm=T) 
         
-        ncases=sapply(risks$marker, function(s) sum(dat.mock.vacc.seroneg.D57$EventIndPrimaryD57[dat.mock.vacc.seroneg.D57[["Day57"%.%a]]>=s], na.rm=T))
+        ncases=sapply(risks$marker, function(s) sum(dat.vacc.pop$yy[dat.vacc.pop[["Day"%.%pop%.%a]]>=s], na.rm=T))
         
-        plot(prob~marker, risks, xlab=labels.assays.short[a]%.%ifelse(ii==1," (=s)"," (>=s)"), 
-            ylab="Marginalized Probability of COVID", lwd=lwd, ylim=ylim, type="n", main=paste0("Cumulative Risk of COVID by Day ",t0), xaxt="n")
+        plot(prob~marker, risks, xlab=labels.assays.short[a]%.%ifelse(ii==1," (=s)"," (>=s)"), xlim=xlim, 
+            ylab=paste0("Probability* of COVID by Day ", t0), lwd=lwd, ylim=ylim, type="n", main=paste0(labels.assays.long["Day"%.%pop,a]), xaxt="n")
         # x axis
         xx=seq(floor(min(risks$marker)), ceiling(max(risks$marker)))
-        for (x in xx) axis(1, at=x, labels=if (x>=3) bquote(10^.(x)) else 10^x )
+        for (x in xx) axis(1, at=x, labels=if (log10(llods[a])==x) "lod" else if (x>=3) bquote(10^.(x)) else 10^x )
+        if(!any(log10(llods[a])==xx)) axis(1, at=log10(llods[a]), labels="lod")
+        
+        
         # prevelance lines
         abline(h=prev.plac, col="gray", lty=c(1,3,3), lwd=lwd)
         abline(h=prev.vacc, col="gray", lty=c(1,3,3), lwd=lwd)
@@ -707,7 +738,8 @@ for (idx in 1:2) {
         par(new=TRUE) 
         col <- c(col2rgb("olivedrab3")) # orange, darkgoldenrod2
         col <- rgb(col[1], col[2], col[3], alpha=255*0.4, maxColorValue=255)
-        hist(dat.mock.vacc.seroneg.D57[["Day57"%.%a]],col=col,axes=F,labels=F,main="",xlab="",ylab="",breaks=10,border=0,freq=F)    #,ylim=ylim    
+        tmp=hist(dat.vacc.pop[["Day"%.%pop%.%a]], breaks=15, plot=F)
+        plot(tmp,col=col,axes=F,labels=F,main="",xlab="",ylab="",border=0,freq=F, xlim=xlim, ylim=c(0,max(tmp$density*1.25)))
         #axis(side=4, at=axTicks(side=4)[1:5])
         #mtext("Density", side=4, las=0, line=2, cex=1, at=.3)  
         #mylegend(x=6, fill=col, border=col, legend="Vaccine Group", bty="n", cex=0.7)      
@@ -722,29 +754,29 @@ for (idx in 1:2) {
 # controlled VE curves
 s2="85%"; s1="15%" # these two reference quantiles are used in the next two blocks of code
 RRud=RReu=4
-mypdf(onefile=F, file=paste0(save.results.to, "controlled_ve_curves_"%.%study.name), mfrow=.mfrow, oma=c(0,0,1,0))
+mypdf(onefile=F, file=paste0(save.results.to, "controlled_ve_curves_"%.%study.name), mfrow=.mfrow, oma=c(1,0,0,0))
     lwd=2.5
     par(las=1, cex.axis=0.9, cex.lab=1)# axis label orientation
     for (a in assays) {        
         risks=risks.all.1[[a]]
+        xlim=quantile(dat.vacc.pop[["Day"%.%pop%.%a]],c(.025,.975),na.rm=T)
         
         # compute Bias as a vector, which is a function of s
         # choose a reference marker value
-        tmp=subset(dat.mock.vacc.seroneg.D57, select=EventIndPrimaryD57, drop=T)    
+        tmp=subset(dat.vacc.pop, select=yy, drop=T)    
         mean(tmp)
         which=which.min(abs(risks$prob-mean(tmp)))
         s.ref=risks$marker[which]
         Bias=controlled.risk.bias.factor(ss=risks$marker, s.cent=s.ref, s1=risks$marker[s1], s2=risks$marker[s2], RRud) 
     
         ylim=c(0.5, 1)
-        xlim=NULL#log10(c(20,3000))
     
         # CVE
         est = 1 - risks$prob*Bias/res.plac.cont["est"]
         boot = 1 - t( t(risks$boot*Bias)/res.plac.cont[2:(1+ncol(risks$boot))] ) # res.plac.cont may have more bootstrap replicates than risks$boot
         ci.band=apply(boot, 1, function (x) quantile(x, c(.025,.975)))
-        mymatplot(risks$marker, t(rbind(est, ci.band)), type="l", lty=c(1,2,2), col="red", lwd=lwd, make.legend=F, ylab="Vaccine Efficacy", main="",xlab=labels.assays.short[a]%.%" (=s)", ylim=ylim, 
-            xlim=xlim, yaxt="n", xaxt="n", draw.x.axis=F)
+        mymatplot(risks$marker, t(rbind(est, ci.band)), type="l", lty=c(1,2,2), col="red", lwd=lwd, make.legend=F, ylab=paste0("Controlled VE against COVID by Day ",t0), main=paste0(labels.assays.long["Day"%.%pop,a]),
+            xlab=labels.assays.short[a]%.%" (=s)", ylim=ylim, xlim=xlim, yaxt="n", xaxt="n", draw.x.axis=F)
         # VE
         est = 1 - risks$prob/res.plac.cont["est"]
         boot = 1 - t( t(risks$boot)/res.plac.cont[2:(1+ncol(risks$boot))] )                         
@@ -754,17 +786,21 @@ mypdf(onefile=F, file=paste0(save.results.to, "controlled_ve_curves_"%.%study.na
         # labels
         yat=seq(.5,1,by=.1)
         axis(side=2,at=yat,labels=(yat*100)%.%"%")
-        title(main="Controlled Vaccine Efficacy against COVID by Antibody Titer", outer=T, line=-1)    
         # x axis
         xx=seq(floor(min(risks$marker)), ceiling(max(risks$marker)))
-        for (x in xx) axis(1, at=x, labels=if (x>=3) bquote(10^.(x)) else 10^x )
-    
+        for (x in xx) axis(1, at=x, labels=if (log10(llods[a])==x) "lod" else if (x>=3) bquote(10^.(x)) else 10^x )
+        if(!any(log10(llods[a])==xx)) axis(1, at=log10(llods[a]), labels="lod")
+
         # add histogram
         par(new=TRUE) 
         col <- c(col2rgb("olivedrab3")) # orange, darkgoldenrod2
         col <- rgb(col[1], col[2], col[3], alpha=255*0.4, maxColorValue=255)
-        hist(dat.mock.vacc.seroneg.D57[["Day57"%.%a]],col=col,axes=F,labels=F,main="",xlab="",ylab="",breaks=10,border=0,freq=F)    #,ylim=ylim    
-    
+        tmp=hist(dat.vacc.pop[["Day"%.%pop%.%a]],breaks=15,plot=F) # 15 is treated as a suggestion and the actual number of breaks is determined by pretty()
+        #tmp=hist(dat.vacc.pop[["Day"%.%pop%.%a]],breaks=seq(min(dat.vacc.pop[["Day"%.%pop%.%a]],na.rm=T), max(dat.vacc.pop[["Day"%.%pop%.%a]],na.rm=T), len = 15),plot=F)
+        plot(tmp,col=col,axes=F,labels=F,main="",xlab="",ylab="",border=0,freq=F,xlim=xlim, ylim=c(0,max(tmp$density*1.25))) 
+        
+        # outer title
+        #title(main="Controlled Vaccine Efficacy against COVID by Antibody Titer", outer=T, line=-1)    
     }
 dev.off()    
 
@@ -775,37 +811,40 @@ dev.off()
 
 risks.all.ter=list()
 for (a in assays) {        
-    marker.name="Day57"%.%a%.%"cat"    
-    f1=update(form.0, as.formula(paste0("~.+",marker.name)))
-    f2=update(form.0, as.formula(paste0(marker.name,"~.")))
-        
-    fit.risk=svycoxph(f1, design=twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd, data=dat.mock.vacc.seroneg.D57))
-    fit.s=nnet::multinom(f2, dat.mock.vacc.seroneg.D57, weights=dat.mock.vacc.seroneg.D57$wt) 
+    marker.name="Day"%.%pop%.%a%.%"cat"    
+    f1=update(form.0, as.formula(paste0("~.+",marker.name)))        
+    fit.risk=svycoxph(f1, design=twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd, data=dat.vacc.pop))
+
+#    f2=update(form.0, as.formula(paste0(marker.name,"~.")))
+#    fit.s=nnet::multinom(f2, dat.vacc.pop, weights=dat.vacc.pop$wt) 
     
-    risks.all.ter[[a]]=marginalized.risk(fit.risk, marker.name, subset(dat.mock.vacc.seroneg.D57,TwophasesampInd==1), weights=dat.mock.vacc.seroneg.D57$wt[dat.mock.vacc.seroneg.D57$TwophasesampInd==1], categorical.s=T)
+    risks.all.ter[[a]]=marginalized.risk(fit.risk, marker.name, subset(dat.vacc.pop,TwophasesampInd==1), weights=wts[dat.vacc.pop$TwophasesampInd==1], categorical.s=T)
 }
 
+#rv$marginalized.risk.over.time=list()
+#for (a in assays) rv$marginalized.risk.over.time[[a]] = risks.all.ter[[a]]
 
-tt=sort(unique(dat.mock.plac.seroneg$EventTimePrimaryD57[dat.mock.vacc.seroneg.D57$EventIndPrimaryD57==1]))
-fit.0=coxph(Surv(EventTimePrimaryD57, EventIndPrimaryD57) ~ 1, dat.mock.plac.seroneg)
+
+fit.0=coxph(form.s, dat.plac.pop) 
 risk.0= 1 - exp(-predict(fit.0, type="expected"))
-time.0= dat.mock.plac.seroneg$EventTimePrimaryD57
+time.0= dat.plac.pop[["EventTimePrimaryD"%.%pop]]
 
 lwd=2
 ylim=c(0,max(risk.0))
 x.time<-seq(0,t0,by=30); if(t0-last(x.time)>15) x.time=c(x.time, t0) else x.time[length(x.time)]=t0
 #
-mypdf(oma=c(1,0,0,0), onefile=F, file=paste0(save.results.to, "marginalized_risks_cat", "_"%.%study.name), mfrow=.mfrow, width=7*1.3, height = 7.5/2*.mfrow[1]*1.3, mar=c(11,4,4,2))
+mypdf(oma=c(1,0,0,0), onefile=F, file=paste0(save.results.to, "marginalized_risks_cat_", study.name), mfrow=.mfrow, width=7*1.3, height = 7.5/2*.mfrow[1]*1.3, mar=c(11,4,4,2))
 for (a in assays) {        
-    marker.name="Day57"%.%a%.%"cat"    
+    par(las=1, cex.axis=0.9, cex.lab=1)# axis label 
+    marker.name="Day"%.%pop%.%a%.%"cat"    
     
     out=risks.all.ter[[a]]
     # cutpoints
-    q.a=wtd.quantile(dat.mock.vacc.seroneg.D57[["Day57"%.%a]], weights=dat.mock.vacc.seroneg.D57$wt, probs=c(1/3, 2/3))
+    q.a=marker.cutpoints[[a]][["D"%.%pop]]
     
-    mymatplot(out$time, out$risk, lty=1:3, col=c("green3","green","darkgreen"), type="l", lwd=lwd, make.legend=F, ylab="Cumulative COVID Rate", ylim=ylim, xlab="", las=1, xlim=c(0,t0), at=x.time, xaxt="n")
-    title(xlab="Days Since Day 57 Visit", line=2)
-    title(main=labels.title["Day57",a], cex.main=.9, line=2)
+    mymatplot(out$time, out$risk, lty=1:3, col=c("green3","green","darkgreen"), type="l", lwd=lwd, make.legend=F, ylab="Probability* of COVID by Day t", ylim=ylim, xlab="", las=1, xlim=c(0,t0), at=x.time, xaxt="n")
+    title(xlab="Days Since Day "%.%pop%.%" Visit", line=2)
+    title(main=labels.title["Day"%.%pop,a], cex.main=.9, line=2)
     mtext(bquote(cutpoints: list(.(formatDouble(10^q.a[1]/10^floor(q.a[1]),1)) %*% 10^ .(floor(q.a[1])), .(formatDouble(10^q.a[2]/10^floor(q.a[2]),1)) %*% 10^ .(floor(q.a[2])))), line= .25, cex=.8)   
     legend=c("Vaccine low","Vaccine medium","Vaccine high","Placebo")
     mylegend(x=1, legend=legend, lty=c(1:3,1), col=c("green3","green","darkgreen","gray"), lwd=2)
@@ -813,7 +852,7 @@ for (a in assays) {
     
     # add data ribbon    
     f1=update(form.s, as.formula(paste0("~.+",marker.name)))
-    km <- survfit(f1, subset(dat.mock.vacc.seroneg.D57, TwophasesampInd==1), weights=wt)
+    km <- survfit(f1, subset(dat.vacc.pop, TwophasesampInd==1), weights=if(pop=="57") wt else wt.2)
     tmp=summary(km, times=x.time)            
     
     n.risk.L <- round(tmp$n.risk[1:length(x.time)])
@@ -847,128 +886,26 @@ for (a in assays) {
 mtext(toTitleCase(study.name), side = 1, line = 2, outer = T, at = NA, adj = NA, padj = NA, cex = .8, col = NA, font = NA)
 dev.off()    
 #
-cumsum(summary(survfit(form.s, subset(dat.mock.vacc.seroneg.D57, TwophasesampInd==1)), times=x.time)$n.event)
-with(subset(dat.mock.vacc.seroneg.D57, EventIndPrimaryD57==1), table(Day57pseudoneutid80cat))
-
-
-
-####################################################################################################
-# sensitivity study to the number of cases
-####################################################################################################
-
-dat.list=c(list(dat.mock.vacc.seroneg.D57), rev(dat.mock.vacc.seroneg.subsample))
-names(dat.list)=c(nrow(subset(dat.mock.vacc.seroneg.D57,TwophasesampInd==1 & EventIndPrimaryD57==1)),40,30,25,20,15,10,5)%.%" cases"
-
-fit.1=lapply(dat.list, function (data) {
-    f= update(form.0, ~.+Day57pseudoneutid80)
-    design<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd, data=data)
-    svycoxph(f, design=design) 
-})
-tab.sens.1=getFormattedSummary(fit.1, exp=T, robust=T); tab.sens.1
-
-tabs=list(t(tab.sens.1)[,1:3], t(tab.sens.1)[,4:(1+p.cov),drop=F]); names(tabs)=c("","")
-mytex(tabs, file.name="CoR_Day57pseudoneutid80_sens_noCases_"%.%study.name, input.foldername=save.results.to, align="c", save2input.only=TRUE)
-
-
-cases=subset(dat.mock.vacc.seroneg.D57, EventIndPrimaryD57==1, Ptid, drop=T)
-fit.2=lapply(2:6, function(seed) {
-    set.seed(seed)
-    # resample 5
-    data = subset(dat.mock.vacc.seroneg.D57, EventIndPrimaryD57==0 | Ptid %in% sample(cases, 5, replace=F))
-    with(data, table(EventIndPrimaryD57, HighRiskInd))
-    with(data, table(EventIndPrimaryD57, MinorityInd))
-    f= update(form.0, ~.+Day57pseudoneutid80)
-    design<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd, data=data)
-    svycoxph(f, design=design) 
-})
-tab.sens.2=getFormattedSummary(fit.2, exp=T, robust=T); tab.sens.2
-colnames(tab.sens.2)="seed "%.%2:6
-
-tabs=list(t(tab.sens.2)[,1:3], t(tab.sens.2)[,4:(1+p.cov),drop=F]); names(tabs)=c("","")
-mytex(tabs, file.name="CoR_Day57pseudoneutid80_5cases_"%.%study.name, input.foldername=save.results.to, align="c", save2input.only=TRUE)
-
-
-coef.sens.1=sapply(fit.1, simplify="array", function(fit) getFixedEf(fit, exp=T, robust=T))
-dimnames(coef.sens.1)[[3]]=c(66,40,30,25,20,15,10,5)%.%" cases"
-coef.sens.2=sapply(fit.2, simplify="array", function(fit) getFixedEf(fit, exp=T, robust=T))
-dimnames(coef.sens.2)[[3]]="seed "%.%2:6
-#save(coef.sens.1, coef.sens.2, file=save.results.to%.%"coef.sens."%.%study.name%.%".Rdata")
-
-
-# Firth survey
-with(dat.mock.vacc.seroneg.5, table(EventIndPrimaryD57, HighRiskInd))
-with(dat.mock.vacc.seroneg.5, table(EventIndPrimaryD57, MinorityInd))
-
-design<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd, data=dat.mock.vacc.seroneg.5)
-fit=svyglm(update(form.0.logistic, ~.+Day57pseudoneutid80), family=binomial, design=design)
-summary(fit)
-
-design.2<-svydesign(id=~1,strata=~Wstratum, weights=~wt, data=dat.mock.vacc.seroneg.5)
-fit.2=svy_vglm(update(form.0.logistic, ~.+Day57pseudoneutid80), family=binomialff(bred=TRUE), design=design.2)
-summary(fit.2)
-
-dat.mock.vacc.seroneg.5$wt.2 = dat.mock.vacc.seroneg.5$wt/sum(dat.mock.vacc.seroneg.5$wt) * sum(dat.mock.vacc.seroneg.5$TwophasesampInd)
-design.3<-svydesign(id=~1,strata=~Wstratum, weights=~wt.2, data=dat.mock.vacc.seroneg.5)
-fit.3=svy_vglm(update(form.0.logistic, ~.+Day57pseudoneutid80), family=binomialff(bred=TRUE), design=design.3)
-summary(fit.3)
-
-
-tab=getFormattedSummary(list(fit, fit.2, fit.3), robust=T, exp=F)
-colnames(tab)=c("svyglm", "svy_vglm", "svy_vglm rescaled wt")
-mytex(tab, file.name="CoR_Day57pseudoneutid80_5cases_Firth_"%.%study.name, input.foldername=save.results.to, align="c", save2input.only=T)
+cumsum(summary(survfit(form.s, subset(dat.vacc.pop, TwophasesampInd==1)), times=x.time)$n.event)
+table(subset(dat.vacc.pop, yy==1)[["Day"%.%pop%.%"pseudoneutid80cat"]])
 
 
 
 
-###### sample code for calibration weighted two phase methods
-## limit to vaccine only
-#dat=subset(dat.elispot, !is.na(log_adj_gag_norm) & !is.na(log_adj_nef_norm) & !is.na(log_adj_pol_norm) & trt=="VACCINE" & !is.na(f_crcm))
-#dat=subset(dat, ad5_crcm_4 %in% c(4))
-#dat$stra.2 = 4*(dat$d+1)+as.numeric(dat$ad5_crcm_4)
+###################################################################################################
+# misc
+
+# save cutpoints to files
+cutpoints=list()
+for (a in assays) {        
+    for (t in c("D"%.%pop, "D"%.%pop%.%"overB")) {
+        q.a=marker.cutpoints[[a]][["D"%.%pop]]
+        write(paste0(labels.axis[1,a], " [", concatList(round(q.a, 2), ", "), ")%"), file=paste0(save.results.to, "cutpoints_",t,a, "_"%.%study.name))
+    }
+}
 #
-#p="pol"; cd=4; family="PH"; encode="log"    
-#myprint(p, cd, family, encode)
-#
-#form=Surv(X,d) ~ num_male_part+log.pol.cd4 # num_male_part is added for illustration
-#form.impt=log.pol.cd4 ~ log_adj_pol_norm
-#
-##
-#cox.fit.2 = enhanced.ipw.coxph (formula=form, dat, strata.formula=~stra.2, subset=dat$ph2.ind.pol.cd4, imputation.formulae=form.impt, verbose=T)
-#
-#s<-predict(cox.fit.2,se=TRUE, type="curve", newdata=data.frame(log.pol.cd4=c(2,3), num_male_part=c(10,10)))
-#plot(s[[2]],ci=TRUE,col="sienna", ylim=c(.9,1))
-#lines(s[[2]], ci=TRUE,col="royalblue")
-#
-#newdata=
-#r<-predict(cox.fit.2,se=TRUE, type="expected", newdata=data.frame(X=c(200,200), d=c(1,1), log.pol.cd4=c(2,3), num_male_part=c(10,10)))
-#surv.prob=exp(-r$fit)
-
-
-
-# comparing results with svyglm (before adding strata(age.geq.65)), also this uses a slightly different design object
-#fits.2=list()
-#dstrat<-svydesign(id=~1,strata=~Wstratum, weights=~wt, data=dat.mock.vacc.seroneg.D57)
-#for (a in assays) {
-#    f= update(EventIndPrimaryD57~I(Age>65) + MinorityInd + HighRiskInd + BRiskScore, as.formula(paste0("~.+Day57", a)))
-#    fits.2[[a]]=svyglm(f, design=dstrat, family="binomial")
-#}
-#getFormattedSummary(fits.2, exp=T, robust=T)
-
-
-## cannot run if there are zero cell counts
-## comparing results with logistic regression
-#fits.3=list()
-#for (a in assays) {
-#    f= update(form.0.logistic, as.formula(paste0("~.+Day57", a)))
-#    fits.3[[a]]=tps.covid(formula=f, data=dat.mock.vacc.seroneg.D57)
-#}
-#tab.3=getFormattedSummary(fits.3, exp=T, robust=T)
-##getFormattedSummary(fits.3, exp=T, robust=F)
-#tab.3=tab.3[-1,]# remove intercept
-#colnames(tab.3)=assay.labels[assays]
-#rownames(tab.3)=gsub("Day57bind", "Day 57 marker", rownames(tab.3))
-#rownames(tab.3)=gsub("age.geq.65", "Age>=65", rownames(tab.3))
-#tab.3
-#mytex(tab.3, file.name="CoR_univariable_tps", input.foldername=save.results.to, align="c", save2input.only=TRUE)
 
 print(Sys.time()-time.start)
+
+
+save(rv, file=paste0(here::here("verification"), "/D", pop, ".rv."%.%study.name%.%".Rdata"))

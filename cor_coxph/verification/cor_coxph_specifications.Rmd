@@ -1,0 +1,18 @@
+---
+title: "CoR_COXPH Specifications"
+shorttitle: "CoR_COXPH Specifications"
+author:
+header-includes:
+   - \usepackage{float}
+output:
+  bookdown::pdf_document2:
+    citation_package: natbib
+    number_sections: true
+    extra_dependencies: ["caption", "subcaption", "graphicx"]
+    toc: false
+linkcolor: blue
+bibliography: ref.bib
+---
+
+```{r, child=c('specifications.Rmd')}
+```

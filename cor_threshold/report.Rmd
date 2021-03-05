@@ -1,8 +1,18 @@
-# Univariate CoR: Nonparametric Threshold Modeling {#cor-threshold}
+---
+header-includes:
+   - \usepackage{float}
+output:
+  pdf_document: default
+  html_document: default
+  citation_package: natbib
+  number_sections: true
+  extra_dependencies: ["caption", "subcaption", "graphicx"]
+  toc: true
+---
 
-TO FILL IN
 
-```{r cor-threshold-setup}
-# TODO
+
+```{r, child=c('cor_threshold_report.Rmd')}
+
+
 ```
-

@@ -4,7 +4,6 @@ renv::activate(project = here::here("..")) #
 source(here::here("..", "_common.R")) #
 ##################################################
 
-library(COVIDcorr)
 library(tidyverse)
 source(here::here("code", "make_functions.R"))
 
@@ -16,9 +15,10 @@ bAb_uloq <- 19136250
 nAb50_lloq <- 49
 nAb80_lloq <- 43
 
-# Variable Names by Assay
-data(labels.assays.short)
-data(labels.assays.long)
+# DB: Scheduled for deletion
+# # Variable Names by Assay
+# data(labels.assays.short)
+# data(labels.assays.long)
 
 # c("bindSpike", "bindRBD")
 bAb <- grep("bind", names(labels.assays.short), value = TRUE)

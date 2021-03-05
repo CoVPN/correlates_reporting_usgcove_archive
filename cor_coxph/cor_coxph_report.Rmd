@@ -14,6 +14,24 @@ output:
 linkcolor: blue
 bibliography: ref.bib
 ---
+\newcommand{\studyname}{mock}
 
-```{r, child=c('report.Rmd')}
+\newcommand{\pathCoRoutput}{output/D57}
+
+```{r, echo=FALSE}
+Day <- 57
+```
+
+```{r, child=c(here::here('.', 'report_sub.Rmd'))}
+```
+
+\clearpage
+
+\renewcommand{\pathCoRoutput}{output/D29}
+
+```{r, echo=FALSE}
+Day <- 29
+```
+
+```{r, child=c(here::here('.', 'report_sub.Rmd'))}
 ```

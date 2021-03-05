@@ -1,3 +1,9 @@
+#-----------------------------------------------
+# obligatory to append to the top of each script
+renv::activate(project = here::here("..", "..", ".."))
+source(here::here("..", "..", "..", "_common.R"))
+#-----------------------------------------------
+
 # For reproducibility of CV-Superlearner results, use seed “20210217” 
 # and generate 10 seeds by round(runif(10, 1000, 10000)) to run 10 random CV-SL runs.
 set.seed(20210217)

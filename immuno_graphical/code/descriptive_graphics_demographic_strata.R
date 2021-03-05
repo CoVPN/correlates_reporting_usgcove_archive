@@ -5,7 +5,6 @@ source(here::here("..", "_common.R"))
 #-----------------------------------------------
 
 library(here)
-library(COVIDcorr)
 library(dplyr)
 library(stringr)
 library(GGally)
@@ -14,6 +13,7 @@ library(SWIM)
 library(ggplot2)
 library(scales)
 
+set.seed(12345)
 # load helper scripts and parameters
 source(here("code", "ggally_cor_resample.R"))
 source(here("code", "covid_corr_plot_functions.R"))
@@ -55,8 +55,8 @@ for (tt in seq_along(times)) {
         x = "age_geq_65_label",
         y = times[tt],
         facet_by = "assay",
-        plot_LLOQ = (tt <= 3),
-        LLOQ = LLOQ,
+        plot_LLOD = (tt <= 3),
+        LLOD = LLOD,
         axis_titles_y = labels.axis[tt, ] %>% unlist(),
         panel_titles = labels.title2[tt, ] %>% unlist(),
         filename = paste0(
@@ -95,8 +95,8 @@ for (tt in seq_along(times)) {
         x = "highrisk_label",
         y = times[tt],
         facet_by = "assay",
-        plot_LLOQ = (tt <= 3),
-        LLOQ = LLOQ,
+        plot_LLOD = (tt <= 3),
+        LLOD = LLOD,
         axis_titles_y = labels.axis[tt, ] %>% unlist(),
         panel_titles = labels.title2[tt, ] %>% unlist(),
         filename = paste0(
@@ -135,8 +135,8 @@ for (tt in seq_along(times)) {
         x = "age_risk_label",
         y = times[tt],
         facet_by = "assay",
-        plot_LLOQ = (tt <= 3),
-        LLOQ = LLOQ,
+        plot_LLOD = (tt <= 3),
+        LLOD = LLOD,
         axis_titles_y = labels.axis[tt, ] %>% unlist(),
         panel_titles = labels.title2[tt, ] %>% unlist(),
         height = 7,
@@ -177,8 +177,8 @@ for (tt in seq_along(times)) {
         x = "sex_label",
         y = times[tt],
         facet_by = "assay",
-        plot_LLOQ = (tt <= 3),
-        LLOQ = LLOQ,
+        plot_LLOD = (tt <= 3),
+        LLOD = LLOD,
         axis_titles_y = labels.axis[tt, ] %>% unlist(),
         panel_titles = labels.title2[tt, ] %>% unlist(),
         filename = paste0(
@@ -217,8 +217,8 @@ for (tt in seq_along(times)) {
         x = "age_sex_label",
         y = times[tt],
         facet_by = "assay",
-        plot_LLOQ = (tt <= 3),
-        LLOQ = LLOQ,
+        plot_LLOD = (tt <= 3),
+        LLOD = LLOD,
         axis_titles_y = labels.axis[tt, ] %>% unlist(),
         panel_titles = labels.title2[tt, ] %>% unlist(),
         height = 7,
@@ -256,11 +256,11 @@ for (tt in seq_along(times)) {
       # (6) ethnicity
       covid_corr_boxplot_facets(
         plot_dat = subdat,
-        x = "ethnicity",
+        x = "ethnicity_label",
         y = times[tt],
         facet_by = "assay",
-        plot_LLOQ = (tt <= 3),
-        LLOQ = LLOQ,
+        plot_LLOD = (tt <= 3),
+        LLOD = LLOD,
         axis_titles_y = labels.axis[tt, ] %>% unlist(),
         panel_titles = labels.title2[tt, ] %>% unlist(),
         height = 7,
@@ -279,7 +279,7 @@ for (tt in seq_along(times)) {
         plot_dat = subdat,
         x = times[tt],
         facet_by = "assay",
-        color = "ethnicity",
+        color = "ethnicity_label",
         weight = "wt",
         panel_titles = labels.title2[tt, ] %>% unlist(),
         axis_titles = labels.axis[tt, ] %>% unlist(),
@@ -303,8 +303,8 @@ for (tt in seq_along(times)) {
         x = "race",
         y = times[tt],
         facet_by = "assay",
-        plot_LLOQ = (tt <= 3),
-        LLOQ = LLOQ,
+        plot_LLOD = (tt <= 3),
+        LLOD = LLOD,
         axis_titles_y = labels.axis[tt, ] %>% unlist(),
         panel_titles = labels.title2[tt, ] %>% unlist(),
         height = 7.5,
@@ -347,8 +347,8 @@ for (tt in seq_along(times)) {
         x = "minority_label",
         y = times[tt],
         facet_by = "assay",
-        plot_LLOQ = (tt <= 3),
-        LLOQ = LLOQ,
+        plot_LLOD = (tt <= 3),
+        LLOD = LLOD,
         axis_titles_y = labels.axis[tt, ] %>% unlist(),
         panel_titles = labels.title2[tt, ] %>% unlist(),
         filename = paste0(
@@ -387,8 +387,8 @@ for (tt in seq_along(times)) {
         x = "age_minority_label",
         y = times[tt],
         facet_by = "assay",
-        plot_LLOQ = (tt <= 3),
-        LLOQ = LLOQ,
+        plot_LLOD = (tt <= 3),
+        LLOD = LLOD,
         axis_titles_y = labels.axis[tt, ] %>% unlist(),
         panel_titles = labels.title2[tt, ] %>% unlist(),
         height = 7,
@@ -422,6 +422,8 @@ for (tt in seq_along(times)) {
           study.name, ".png"
         )
       )
+      print(paste0("Done with loop of tt=", tt, ", trt=",
+                   trt," and bstatus=", bstatus))
     }
   }
 }

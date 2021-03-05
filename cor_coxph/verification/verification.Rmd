@@ -1,4 +1,4 @@
-# Immunogenicity Table Verification Documentation
+# CoR_COXPH Verification Documentation
 
 This document indicates the script, author, verification script, and verification author of the files contained within the parent folder. The two scripts use the same base mock data. To verify the tables generated in the original scripts, all the tables were re-created and their values compared. Only when they all matched was it marked as verified accepted.
 

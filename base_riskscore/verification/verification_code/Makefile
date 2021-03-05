@@ -18,7 +18,15 @@ cvsl_out_local_demo: code/fit_cv_superlearner.R seeds clean_data code/submit_job
 cvsl_out_slurm_prod: code/fit_cv_superlearner.R seeds clean_data
 	chmod +x code/fit_cv_superlearner.R && chmod +x code/submit_jobs.sh && code/submit_jobs.sh prod
 
+## cvauc_table         :  summarize results of cv super learner and save table
+cvauc_table: code/get_cvauc.R
+	@echo "~~~~~~~~~~\nMake sure you've saved cvSuperLearner results\n~~~~~~~~~~\n" 
+	Rscript code/get_cvauc.R
 
-## clean           : remove contents of output and data_clean
+## report              : report results
+report: report.Rmd
+	Rscript -e "rmarkdown::render('report.Rmd')"
+
+## clean               : remove contents of output and data_clean
 clean:
 	rm -f output/* data_clean/*

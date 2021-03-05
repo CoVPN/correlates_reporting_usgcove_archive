@@ -4,24 +4,15 @@
 .Ruserdata
 .DS_Store
 *.reg
+*.log
 _book
 _bookdown_files
+packages.bib
 
-cor_graphical/figs/*.pdf
-cor_graphical/figs/*.png
-cor_graphical/data_clean/*.rds
-
-cor_coxph/output/*.tex
-cor_coxph/output/*.pdf
-cor_coxph/output/*.Rdata
-cor_coxph/output/risks.all.1.mock.Rdata.Rdata
-cor_coxph/output/cutpoints*
-cor_coxph/cor_coxph_report.pdf
-cor_coxph/output/timepoints_cum_risk_mock
-cor_coxph/report.knit.md
-cor_coxph/report.utf8.md
-cor_coxph/report.pdf
-cor_coxph/cor_coxph_report.pdf
-
-cor_nonlinear/output/*.pdf
-cor_nonlinear/cor_nonlinear_report.pdf
+# ignore build directories
+_report_immuno/*.pdf
+_report_immuno/*.html
+_report_cor/*.pdf
+_report_cor/*.html
+_report_cop/*.pdf
+_report_cop/*.html

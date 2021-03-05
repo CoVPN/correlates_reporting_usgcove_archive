@@ -174,7 +174,7 @@ covid_corr_pairplots_by_time <- function(plot_dat, ## data for plotting
   }
   
   if (rr[2] - rr[1] < 2) {
-    rr <- floor(rr[1]):ceiling(rr[2])
+    rr <- c(floor(rr[1]), ceiling(rr[2]))
   }
   
   breaks <- floor(rr[1]):ceiling(rr[2])

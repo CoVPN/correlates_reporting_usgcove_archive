@@ -73,7 +73,7 @@ labels.title <- outer(
       "Day 1", "Day 29", "Day 57", "D29 fold-rise over D1",
       "D57 fold-rise over D1", "D57 fold-rise over D29"
     ),
-  "%.%"
+  paste0
 )
 labels.title <- as.data.frame(labels.title)
 colnames(labels.title) <- times
@@ -92,7 +92,7 @@ Bstratum.labels <- c(
   "Age < 65, Not at risk"
 )
 
-llods <- c(bindSpike=20, bindRBD=20, pseudoneutid50=10, pseudoneutid80=10) 
+llods <- c(bindSpike=20, bindRBD=20, pseudoneutid50=10, pseudoneutid80=10)
 # live neut to be added
 #, liveneutmn50=62)
 
@@ -185,3 +185,4 @@ ggsave_custom <- function(filename = default_name(plot),
                           height= 15, width = 21, ...) {
   ggsave(filename = filename, height = height, width = width, ...)
 }
+

@@ -14,25 +14,7 @@ here::i_am("immuno_graphical/report.Rmd")
 study_name <- "mock"
 ```
 
-```{r, fig.cap = "(Mock data) Pair plots of D1 Ab markers: baseline negative vaccine + placebo arms"}
-include_graphics(here(
-  "immuno_graphical", "figs",
-  paste0(
-    "pairs_baselineMarkers_BaselineNeg_",
-    study_name, ".png"
-  )
-))
-```
 
-```{r, fig.cap = "(Mock data) Pair plots of D29 Ab markers: baseline negative vaccine arm"}
-include_graphics(here(
-  "immuno_graphical", "figs",
-  paste0(
-    "pairs_Day29_Markers_BaselineNeg_vaccine_arm_",
-    study_name, ".png"
-  )
-))
-```
 
 ```{r, fig.cap = "(Mock data) Pair plots of D57 Ab markers: baseline negative vaccine arm"}
 include_graphics(here(
@@ -64,57 +46,52 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Pair plots of D1, D29 and D57 Binding Antibody to Spike: baseline negative vaccine + placebo arm"}
+```{r, fig.cap = "(Mock data) Pair plots of D1, D29 and D57 Binding Antibody to Spike: baseline negative vaccine arm"}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0(
-    "pairs_bindSpike_by_times_BaselineNeg_",
+    "pairs_bindSpike_by_times_BaselineNeg_vaccine_",
     study_name, ".png"
   )
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Pair plots of D1, D29 and D57 Binding Antibody to RBD: baseline negative vaccine + placebo arm"}
+```{r, fig.cap = "(Mock data) Pair plots of D1, D29 and D57 Binding Antibody to RBD: baseline negative vaccine arm"}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0(
-    "pairs_bindRBD_by_times_BaselineNeg_",
+    "pairs_bindRBD_by_times_BaselineNeg_vaccine_",
     study_name, ".png"
   )
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Pair plots of D1, D29 and D57 PsV Neutralization 50% Titer: baseline negative vaccine + placebo arm"}
+```{r, fig.cap = "(Mock data) Pair plots of D1, D29 and D57 PsV Neutralization 50% Titer: baseline negative vaccine arm"}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0(
-    "pairs_pseudoneutid50_by_times_BaselineNeg_",
+    "pairs_pseudoneutid50_by_times_BaselineNeg_vaccine_",
     study_name, ".png"
   )
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Pair plots of D1, D29 and D57 PsV Neutralization 80% Titer: Baseline negative vaccine + placebo arm"}
+
+```{r, fig.cap = "(Mock data) Pair plots of D1, D29 and D57 PsV Neutralization 80% Titer: Baseline negative vaccine arm"}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0(
-    "pairs_pseudoneutid80_by_times_BaselineNeg_",
+    "pairs_pseudoneutid80_by_times_BaselineNeg_vaccine_",
     study_name, ".png"
   )
 ))
 ```
+
+
 
 ### Baseline SARS-CoV-2 Positive
 
-```{r, fig.cap = "(Mock data) Pair plots of D1 Ab markers: baseline positive vaccine + placebo arms"}
-include_graphics(here(
-  "immuno_graphical", "figs",
-  paste0(
-    "pairs_baselineMarkers_BaselinePos_",
-    study_name, ".png"
-  )
-))
-```
+
 
 ```{r, fig.cap = "(Mock data) Pair plots of D29 Ab markers: baseline positive vaccine arm"}
 include_graphics(here(
@@ -156,41 +133,42 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Pair plots of D1, D29 and D57 Binding Antibody to Spike: baseline positive vaccine + placebo arm"}
+```{r, fig.cap = "(Mock data) Pair plots of D1, D29 and D57 Binding Antibody to Spike: baseline negative placebo arm"}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0(
-    "pairs_bindSpike_by_times_BaselinePos_",
+    "pairs_bindSpike_by_times_BaselineNeg_placebo_",
     study_name, ".png"
   )
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Pair plots of D1, D29 and D57 Binding Antibody to RBD: baseline positive vaccine + placebo arm"}
+```{r, fig.cap = "(Mock data) Pair plots of D1, D29 and D57 Binding Antibody to RBD: baseline negative placebo arm"}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0(
-    "pairs_bindRBD_by_times_BaselinePos_",
+    "pairs_bindRBD_by_times_BaselineNeg_placebo_",
     study_name, ".png"
   )
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Pair plots of D1, D29 and D57 PsV Neutralization 50% Titer: baseline positive vaccine + placebo arm"}
+```{r, fig.cap = "(Mock data) Pair plots of D1, D29 and D57 PsV Neutralization 50% Titer: baseline negative placebo arm"}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0(
-    "pairs_pseudoneutid50_by_times_BaselinePos_",
+    "pairs_pseudoneutid50_by_times_BaselineNeg_placebo_",
     study_name, ".png"
   )
 ))
 ```
 
-```{r, fig.cap = "(Mock data) Pair plots of D1, D29 and D57 PsV Neutralization 80% Titer: baseline positive vaccine + placebo arm"}
+
+```{r, fig.cap = "(Mock data) Pair plots of D1, D29 and D57 PsV Neutralization 80% Titer: Baseline negative placebo arm"}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0(
-    "pairs_pseudoneutid80_by_times_BaselinePos_",
+    "pairs_pseudoneutid80_by_times_BaselineNeg_placebo_",
     study_name, ".png"
   )
 ))
@@ -317,6 +295,54 @@ include_graphics(here(
   )
 ))
 ```
+
+## Scatter plots of antibody markers versus age for overall per-protocol cohort
+
+### Baseline SARS-CoV-2 negative
+
+```{r, fig.cap = "(Mock data) Scatter plots for D29 Ab markers vs. age: baseline negative vaccine arm"}
+include_graphics(here(
+  "immuno_graphical", "figs",
+  paste0(
+    "scatter_Day29_vs_age_trt_Vaccine_BaselineNeg_",
+    study_name, ".png"
+  )
+))
+```
+
+```{r, fig.cap = "(Mock data) Scatter plots for D57 Ab markers vs. age: baseline negative vaccine arm"}
+include_graphics(here(
+  "immuno_graphical", "figs",
+  paste0(
+    "scatter_Day57_vs_age_trt_Vaccine_BaselineNeg_",
+    study_name, ".png"
+  )
+))
+```
+
+### Baseline SARS-CoV-2 positive
+
+```{r, fig.cap = "(Mock data) Scatter plots for D29 Ab markers vs. age: baseline positive vaccine arm"}
+include_graphics(here(
+  "immuno_graphical", "figs",
+  paste0(
+    "scatter_Day29_vs_age_trt_Vaccine_BaselinePos_",
+    study_name, ".png"
+  )
+))
+```
+
+```{r, fig.cap = "(Mock data) Scatter plots for D57 Ab markers vs. age: baseline positive vaccine arm"}
+include_graphics(here(
+  "immuno_graphical", "figs",
+  paste0(
+    "scatter_Day57_vs_age_trt_Vaccine_BaselinePos_",
+    study_name, ".png"
+  )
+))
+```
+
+
 
 ## Box plots of antibody markers for overall per-protocol cohort
 

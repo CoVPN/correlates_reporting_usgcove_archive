@@ -3,7 +3,8 @@
 renv::activate(project = here::here(".."))
 source(here::here("..", "_common.R"))
 #-----------------------------------------------
-
+# install.packages(c("ggpubr", "GGally", "SWIM", "scales", "dummies",
+# "gridExtra", "PResiduals"))
 library(here)
 library(tidyr)
 library(dplyr)
@@ -76,40 +77,6 @@ for (tt in 1:4) {
   }
 }
 
-for (tt in 1:4) {
-  for (bserostatus in 0:1) {
-    subdat <- dat.twophase.sample %>%
-      dplyr::filter(Bserostatus == bserostatus)
-
-    covid_corr_pairplots(
-      plot_dat = subdat,
-      time = times[tt + 1],
-      assays = assays,
-      strata = "Bstratum",
-      weight = "wt",
-      plot_title = paste0(
-        c(
-          "D29", "D57", "D29 Fold-rise over D1",
-          "D57 Fold-rise over D1"
-        )[tt],
-        " Ab markers: baseline ",
-        ifelse(bserostatus, "positive", "negative"),
-        ", placebo + vaccine arm"
-      ),
-      column_labels = labels.axis[tt + 1, 1:4] %>% unlist(),
-      filename = paste0(
-        save.results.to, "/pairs_",
-        c(
-          "Day29", "Day57", "Delta29overB",
-          "Delta57overB"
-        )[tt], "_Markers_",
-        bstatus.labels.2[bserostatus + 1], "_", study.name,
-        ".png"
-      )
-    )
-  }
-}
-
 #-----------------------------------------------
 # The correlation of each pair of Day 1 antibody marker readouts are compared
 # within each of the baseline demographic subgroups and baseline serostratum,
@@ -145,60 +112,37 @@ for (bserostatus in 0:1) {
   }
 }
 
-## pairplots by baseline serostatus
-for (bserostatus in 0:1) {
-  subdat <- dat.twophase.sample %>%
-    dplyr::filter(Bserostatus == bserostatus)
-
-  covid_corr_pairplots(
-    plot_dat = subdat,
-    time = "B",
-    assays = assays,
-    strata = "Bstratum",
-    weight = "wt",
-    plot_title = paste0(
-      "D1 Ab markers: baseline ",
-      ifelse(bserostatus, "positive", "negative"),
-      ", vaccine + placebo arm"
-    ),
-    column_labels = labels.axis[tt + 1, 1:4] %>% unlist(),
-    filename = paste0(
-      save.results.to, "/pairs_baselineMarkers_",
-      bstatus.labels.2[bserostatus + 1], "_",
-      study.name, ".png"
-    )
-  )
-}
 
 
 ## pairplots of assay readouts for multiple timepoints
 ## pairplots by baseline serostatus
 for (bserostatus in 0:1) {
-  subdat <- dat.twophase.sample %>%
-    dplyr::filter(Bserostatus == bserostatus)
-  
-  for (aa in assays) {
-    covid_corr_pairplots_by_time(
-      plot_dat = subdat,
-      times = c("B", "Day29", "Day57"),
-      assay = aa,
-      strata = "Bstratum",
-      weight = "wt",
-      plot_title = paste0(
-        labels.assays[aa], ": baseline ",
-        ifelse(bserostatus, "positive", "negative"),
-        ", vaccine + placebo arm"
-      ),
-      column_labels = paste(c("D1", "D29", "D57"), labels.axis[, aa][1]),
-      filename = paste0(
-        save.results.to, "/pairs_", aa, "_by_times_",
-        bstatus.labels.2[bserostatus + 1], "_",
-        study.name, ".png"
+  for (trt in 0:1) {
+    subdat <- dat.twophase.sample %>%
+      dplyr::filter(Bserostatus == bserostatus & Trt == trt)
+    
+    for (aa in assays) {
+      covid_corr_pairplots_by_time(
+        plot_dat = subdat,
+        times = c("B", "Day29", "Day57"),
+        assay = aa,
+        strata = "Bstratum",
+        weight = "wt",
+        plot_title = paste0(
+          labels.assays[aa], ": baseline ",
+          ifelse(bserostatus, "positive ", "negative "),
+          c("placebo", "vaccine")[trt + 1], " arm"
+        ),
+        column_labels = paste(c("D1", "D29", "D57"), labels.axis[, aa][1]),
+        filename = paste0(
+          save.results.to, "/pairs_", aa, "_by_times_",
+          bstatus.labels.2[bserostatus + 1], "_", c("placebo_", "vaccine_")[trt + 1],
+          study.name, ".png"
+        )
       )
-    )
+    }
   }
 }
-
 
 #-----------------------------------------------
 #-----------------------------------------------
@@ -337,7 +281,7 @@ for (bstatus in 1:2) {
       color = "Trt",
       facet_by = "assay",
       plot_LLOD = (tt <= 3),
-      LLOD = LLOD,
+      LLOD = llods,
       legend = c("Placebo", "Vaccine"),
       axis_titles_y = labels.axis[tt, ] %>% unlist(),
       panel_titles = labels.title2[tt, ] %>% unlist(),
@@ -364,7 +308,7 @@ for (trt in 1:2) {
       color = "Bserostatus",
       facet_by = "assay",
       plot_LLOD = (tt <= 3),
-      LLOD = LLOD,
+      LLOD = llods,
       legend = c("Baseline Negative", "Baseline Positive"),
       axis_titles_y = labels.axis[tt, ] %>% unlist(),
       panel_titles = labels.title2[tt, ] %>% unlist(),

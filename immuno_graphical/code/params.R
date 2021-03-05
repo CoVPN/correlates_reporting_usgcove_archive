@@ -12,8 +12,7 @@ names(labels.assays) <- c("bindSpike", "bindRBD", "pseudoneutid50",
 # color palatte throughout the report
 study.name <- "mock"
 
-# LLOD for boxplots. 
-LLOD <- log10(c(62, 62, 10, 10))
+
 
 # defining labels of the subgroups
 times <- c("B", "Day29", "Day57", "Delta29overB", "Delta57overB")
@@ -35,3 +34,4 @@ labels.title2 <- apply(labels.title, c(1, 2), function(st) {
 trt.labels <- c("Placebo", "Vaccine")
 bstatus.labels <- c("Baseline Neg", "Baseline Pos")
 bstatus.labels.2 <- c("BaselineNeg", "BaselinePos")
+

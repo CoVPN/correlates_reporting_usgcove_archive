@@ -1,6 +1,5 @@
 data_clean/*.Rdata
 data_clean/*.rds
-data_clean/practice_data.csv
 figs/*.png
 figs/*.pdf
 figs/demographics/*.png

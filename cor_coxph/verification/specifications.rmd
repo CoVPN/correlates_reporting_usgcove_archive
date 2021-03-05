@@ -77,7 +77,7 @@ There are four types of curves based on marginalized risks. The first three are 
 Marginalized risk function conditional on $S=s$ for a continuous marker:
 \begin{itemize}
   \item Fit a two-phase Cox model to the baseline negative vaccine recipients with baseline covariates and the continuous marker
-  \item For each $s$,
+  \item For each $s$ in 5\%, 6\%, 95\% percentile of the marker values (defined ignoring weights),
   \begin{itemize}
     \item Compute the risk for all phase 2 subjects, but with their marker value set to $s$ instead of their original $S$
     \item Return the weighted mean of the risk
@@ -87,7 +87,7 @@ Marginalized risk function conditional on $S=s$ for a continuous marker:
 Controlled VE function conditional on $S=s$ for a continuous marker:
 \begin{itemize}
   \item Fit a two-phase Cox model to the baseline negative vaccine recipients with baseline covariates and the continuous marker 
-  \item For each $s$,
+  \item For each $s$ in 5\%, 6\%, ..., 95\% percentile of the marker values (defined ignoring weights),
   \begin{itemize}
     \item Compute the risk for all phase 2 subjects, but with their marker value set to $s$ instead of their original $S$
     \item Return  1-  (weighted mean of the risk) / (placebo overall risk)
@@ -96,7 +96,7 @@ Controlled VE function conditional on $S=s$ for a continuous marker:
 
 Marginalized risk function conditional on $S>=s$ for a continuous marker:
 \begin{itemize}
-  \item For each $s$,
+  \item For each $s$ in 0\%, 5\%, ..., 90\% percentile of the marker values (defined ignoring weights),
   \begin{itemize}
     \item Fit a two-phase Cox model to the baseline negative vaccine recipients with baseline covariates using the subset of samples satisfying $S>=s$
     \item Compute the risk for all phase 2 subjects, not just the subset with $S>=s$
@@ -109,7 +109,7 @@ The last curve is for discrete markers, and it plots the marginalized cumulative
 Marginalized cumulative incidence rate function conditional on $S=s$ for a discrete marker:
 \begin{itemize}
   \item Fit a two-phase Cox model to the baseline negative vaccine recipients with baseline covariates and the discrete marker
-  \item For each $s$,
+  \item For each $s$ in 5\%, 6\%, ..., 95\% percentile of the marker values (defined ignoring weights),
   \begin{itemize}
     \item For each time $t$ of interest,
     \begin{itemize}

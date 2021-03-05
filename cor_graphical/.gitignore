@@ -1,3 +1,4 @@
 figs/*.png
 figs/*.pdf
+data_clean/*.rds
 Rplots.pdf

@@ -14,14 +14,14 @@ study_name = "mock"
 
 ```{r, fig.cap = "(Mock data) Boxplots of D29 Ab markers: baseline negative vaccine arm by event status"}
     
-    knitr::include_graphics(here::here("cor_graphical", "figs", paste0("boxplots_day29_trt_vaccine_x_cc_BaselineNeg_", study_name, ".png")))
+    knitr::include_graphics(here::here("cor_graphical", "figs", paste0("boxplots_Day29_trt_vaccine_x_cc_BaselineNeg_", study_name, ".png")))
     
 ```
 
 ```{r, fig.cap = "(Mock data) Boxplots of D57 Ab markers: baseline negative vaccine arm by event status"}
     
 
-    knitr::include_graphics(here::here("cor_graphical", "figs", paste0("boxplots_day57_trt_vaccine_x_cc_BaselineNeg_", study_name, ".png")))
+    knitr::include_graphics(here::here("cor_graphical", "figs", paste0("boxplots_Day57_trt_vaccine_x_cc_BaselineNeg_", study_name, ".png")))
 
     
 ```
@@ -44,14 +44,14 @@ study_name = "mock"
 
 ```{r, fig.cap = "(Mock data) Boxplots of D29 Ab markers: baseline positive vaccine arm by event status"}
 
-    knitr::include_graphics(here::here("cor_graphical", "figs", paste0("boxplots_day29_trt_vaccine_x_cc_BaselinePos_", study_name, ".png")))
+    knitr::include_graphics(here::here("cor_graphical", "figs", paste0("boxplots_Day29_trt_vaccine_x_cc_BaselinePos_", study_name, ".png")))
 
     
 ```
 
 ```{r, fig.cap = "(Mock data) Boxplots of D57 Ab markers: baseline positive vaccine arm by event status"}
     
-    knitr::include_graphics(here::here("cor_graphical", "figs", paste0("boxplots_day57_trt_vaccine_x_cc_BaselinePos_", study_name, ".png")))
+    knitr::include_graphics(here::here("cor_graphical", "figs", paste0("boxplots_Day57_trt_vaccine_x_cc_BaselinePos_", study_name, ".png")))
     
 ```
 

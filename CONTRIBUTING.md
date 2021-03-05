@@ -101,6 +101,24 @@ your subdirectory.
 compiled results from your local directory), your `make all` command executes on
 your system.
 
+### Subfolders
+Git has an interesting approach to tracking how folder structures behave in that
+it does not look at the directory structure of the repository, but tracks files
+and their paths. What this means is that folders that do not contain files
+are not added to git for tracking and there for will not get added to be
+shared with the remote repository. The way to get around that is by adding a 
+simple file `.gitkeep` to the folder. Now git has a file to track and will add
+the folder to version control. 
+
+This is important because if your code expects a folder to exist and does not 
+check first if it needs to create it, it will cause the code to stop running. 
+Since the goal of this project is to run seamlessly, adding the `.gitkeep` file
+will make this possible with minimal effort. 
+
+`.gitkeep` can be created a few different ways. Through the command line, use 
+`touch /path/to/folder/.gitkeep`; or through R, use 
+`file.create("/path/to/folder/.gitkeep")`.
+
 
 ### Git Resources
 
@@ -159,7 +177,7 @@ changes specific and manageable, and commit/push regularly._
 
 Follow this flow closely:
 1. Check out `master` if not there already. If using RStudio, select the `master`
-   branch; if on the command line: `git checkout master` will do.)
+   branch; if on the command line: `git checkout master` will do.
 2. Pull any updates from the GitHub repo. If in RStudio, click the "pull"
    button; if on the command line, simply `git pull`.
 3. Make a new branch, check it out, and push to GitHub. If using RStudio, make
@@ -170,7 +188,11 @@ Follow this flow closely:
     by calling `renv::restore()`. Resolve any issues as necessary.
 5. Write your code and commit regularly. Install packages as needed. Alternate
    between `renv::restore()` and `renv::snapshot()` to capture changes to the
-   active library.
+   active library. To add folders that do not have content in them, or whose 
+   content are ignored through `.gitignore`, add a `.gitkeep` to the folder and 
+   add the folder to be tracked. If using RStudio, use the git pane and add the
+   folder; if on the command line, use `git add /path/to/folder/.gitkeep`. 
+   Commit the file to complete the addition to tracking the folder through git.
 6. At the beginning of starting work on a branch for the day or reverting back
    to prior work, make sure as much of the code is up-to-date with the remote.
    Make sure all your edits are committed, `checkout master`, pull updates from

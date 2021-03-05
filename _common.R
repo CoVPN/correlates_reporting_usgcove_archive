@@ -9,7 +9,7 @@ set.seed(98109)
 # NOTE: `data_in_file` must exist in the top-level data_raw subdirectory
 data_in_file <- "COVID_VEtrial_practicedata_primarystage1.csv"
 data_name <- "practice_data.csv"
-
+study_name <- "mock"
 ###############################################################################
 # figure labels and titles for markers
 ###############################################################################

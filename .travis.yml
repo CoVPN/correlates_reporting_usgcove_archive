@@ -50,7 +50,7 @@ before_script:
 
 # build reports via included Make recipes
 script:
-  # - make data_processed # !!! TMP !!!
+  - make data_processed
   # - make immuno_report # !!! TMP !!!
   - ls -a $TRAVIS_BUILD_DIR/cor_coxph/output/D29
   - ls -a $TRAVIS_BUILD_DIR/cor_coxph/output/D57

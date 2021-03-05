@@ -1,5 +1,3 @@
-
-
 #-----------------------------------------------
 # obligatory to append to the top of each script
 renv::activate(project = here::here(".."))
@@ -19,15 +17,23 @@ for (time in times) {
   data <- dat.mock
   outcome <-
     data[[Event_Ind_variable[[time]]]] == 1 & data[[Event_Time_variable[[time]]]] <= tf[[time]]
+  outcome <- as.numeric(outcome)
+  # TO CHANGE
+  
+  if(adjust_for_censoring) {
   Delta <-
     1 - (data[[Event_Ind_variable[[time]]]] == 0 &
       data[[Event_Time_variable[[time]]]] < tf[[time]])
+  } else {
+    Delta <- rep(1, length(outcome))
+  }
+  Delta <- as.numeric(Delta)
   data$outcome <- outcome
   data$Delta <- Delta
-  data$TwophasesampInd <- data[[twophaseind_variable]]
+  data$TwophasesampInd <- as.numeric(data[[twophaseind_variable]])
   data$wt <- data[[weight_variable]]
   data$grp <- data[[twophasegroup_variable]]
-
+  
   # Subset data
   variables_to_keep <-
     c(
@@ -43,7 +49,8 @@ for (time in times) {
   keep <- data$Trt == 1 & data$Bserostatus == 0 &
     data$Perprotocol == 1
   data_firststage <- data[keep, variables_to_keep]
-  data_secondstage <- data_firststage[data_firststage$TwophasesampInd == 1, ]
+  #data_firststage <- na.omit(data_firststage)
+  data_secondstage <- na.omit(data_firststage[data_firststage$TwophasesampInd == 1, ])
 
   write.csv(data_firststage,
     here::here("data_clean", paste0("data_firststage_", time, ".csv")),

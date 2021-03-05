@@ -37,7 +37,7 @@ dat.long.subject_level <- dat[, c(
   "EthnicityUnknown", "HighRiskInd", "Age", "BMI", "Sex",
   "Bserostatus", "Fullvaccine", "Perprotocol", "EventIndPrimaryD29",
   "EventIndPrimaryD57", "SubcohortInd", "age.geq.65", "TwophasesampInd",
-  "Bstratum", "wt", "race",
+  "Bstratum", "wt", "wt.2", "race",
   "WhiteNonHispanic", "cohort_event"
 )] %>%
   replicate(length(assays),., simplify = FALSE) %>%

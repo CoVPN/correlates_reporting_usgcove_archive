@@ -51,9 +51,11 @@ before_script:
 
 # build reports via included Make recipes
 script:
-  - make data_processed
-  - make immuno_report
-  - make cor_report
+  # - make data_processed # !!! TMP !!!
+  # - make immuno_report # !!! TMP !!!
+  - make cor_analysis
+  - ls -a $TRAVIS_BUILD_DIR/cor_coxph/D29
+  - ls -a $TRAVIS_BUILD_DIR/cor_coxph/D57
 
 # push reports to gh-pages branch
 after_script:

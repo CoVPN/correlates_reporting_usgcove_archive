@@ -32,6 +32,7 @@ before_install:
   - sudo add-apt-repository -y ppa:cran/imagemagick
   - sudo apt-get update
   - sudo apt-get install -y libmagick++-dev
+  - sudo apt-get install -y texlive-extra-utils ghostscript
 
 # R packages cannot be installed in TRAVIS_BUILD_DIR; they need to be installed
 # separately from the lockfile

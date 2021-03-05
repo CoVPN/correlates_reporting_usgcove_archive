@@ -18,7 +18,7 @@ bibliography: ref.bib
 
 \newcommand{\pathCoRoutput}{output/D57}
 
-```{r, include=FALSE}
+```{r, echo=FALSE}
 Day <- 57
 ```
 
@@ -29,7 +29,7 @@ Day <- 57
 
 \renewcommand{\pathCoRoutput}{output/D29}
 
-```{r, include=FALSE}
+```{r, echo=FALSE}
 Day <- 29
 ```
 

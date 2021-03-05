@@ -1,6 +1,6 @@
 # Day `r Day` Univariate CoR: Cox Models of Risk {#cor-coxph}
 
-The main regression model is the Cox proportional hazards model. All plots are made with Cox models fit unless specified otherwise. 
+The main regression model is the Cox proportional hazards model. All plots are made with Cox models fit unless specified otherwise.
 
 ## Hazard ratios
 
@@ -26,14 +26,14 @@ The main regression model is the Cox proportional hazards model. All plots are m
 \end{center}
 *Baseline covariates adjusted for: age in years, at risk or not, community of color or not
 %, baseline risk score
-. Average follow-up time \input{\pathCoRoutput/CoR_mean_followup_time_vacc_\studyname} days, maximum follow-up time \input{\pathCoRoutput/CoR_max_followup_time_vacc_\studyname} days. 
-Cutpoints: 
-%Day `r Day` cutpoints: 
+. Average follow-up time \input{\pathCoRoutput/CoR_mean_followup_time_vacc_\studyname} days, maximum follow-up time \input{\pathCoRoutput/CoR_max_followup_time_vacc_\studyname} days.
+Cutpoints:
+%Day `r Day` cutpoints:
 \input{\pathCoRoutput/cutpoints_D`r Day`bindSpike_\studyname},  
 \input{\pathCoRoutput/cutpoints_D`r Day`bindRBD_\studyname},  
 \input{\pathCoRoutput/cutpoints_D`r Day`pseudoneutid50_\studyname},  
 \input{\pathCoRoutput/cutpoints_D`r Day`pseudoneutid80_\studyname}.
-%fold-rise cutpoints: 
+%fold-rise cutpoints:
 %\input{\pathCoRoutput/cutpoints_D`r Day`overBbindSpike_\studyname},  
 %\input{\pathCoRoutput/cutpoints_D`r Day`overBbindRBD_\studyname},  
 %\input{\pathCoRoutput/cutpoints_D`r Day`overBpseudoneutid50_\studyname},  

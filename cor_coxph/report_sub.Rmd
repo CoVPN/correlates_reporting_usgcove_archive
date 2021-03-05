@@ -83,7 +83,7 @@ knitr::include_graphics(forest_plot_paths)
 
 <!-- No way to make this generalizable to different assays -->
 
-```{r, fig.cap='Forest plots of hazard ratios of Day `r Day` binding Ab to spike markers among baseline seronegative vaccine recipients (top row) and eight subpopulations (row 2-9) with 95\\% point-wise confidence intervals.'}
+```{r, fig.cap= paste0('Forest plots of hazard ratios of Day ', Day, ' binding Ab to spike markers among baseline seronegative vaccine recipients (top row) and eight subpopulations (row 2-9) with 95\\% point-wise confidence intervals.')}
 
 knitr::include_graphics(
   here::here("cor_coxph", "output", paste0('D', Day),
@@ -93,7 +93,7 @@ knitr::include_graphics(
 ```
 
 
-```{r, fig.cap='Forest plots of hazard ratios of Day `r Day` binding Ab to RBD markers among baseline seronegative vaccine recipients (top row) and eight subpopulations (row 2-9) with 95\\% point-wise confidence intervals.'}
+```{r, fig.cap=paste0('Forest plots of hazard ratios of Day', Day, 'binding Ab to RBD markers among baseline seronegative vaccine recipients (top row) and eight subpopulations (row 2-9) with 95\\% point-wise confidence intervals.')}
 
 knitr::include_graphics(
   here::here("cor_coxph", "output", paste0('D', Day),
@@ -103,7 +103,7 @@ knitr::include_graphics(
 ```
 
 
-```{r, fig.cap='Forest plots of hazard ratios of Day `r Day` pseudo neut ID50 markers among baseline seronegative vaccine recipients (top row) and eight subpopulations (row 2-9) with 95\\% point-wise confidence intervals.'}
+```{r, fig.cap=paste0('Forest plots of hazard ratios of Day ', Day, ' pseudo neut ID50 markers among baseline seronegative vaccine recipients (top row) and eight subpopulations (row 2-9) with 95\\% point-wise confidence intervals.')}
 
 knitr::include_graphics(
   here::here("cor_coxph", "output", paste0('D', Day),
@@ -119,7 +119,7 @@ knitr::include_graphics(
 <!-- \end{figure} -->
 
 
-```{r, fig.cap='Forest plots of hazard ratios of Day `r Day` pseudo neut ID80 markers among baseline seronegative vaccine recipients (top row) and eight subpopulations (row 2-9) with 95\\% point-wise confidence intervals.'}
+```{r, fig.cap=paste0('Forest plots of hazard ratios of Day ', Day, ' pseudo neut ID80 markers among baseline seronegative vaccine recipients (top row) and eight subpopulations (row 2-9) with 95\\% point-wise confidence intervals.')}
 
 knitr::include_graphics(
   here::here("cor_coxph", "output", paste0('D', Day),
@@ -179,8 +179,8 @@ knitr::include_graphics(
 <!-- \end{figure} -->
 
 ```{r}
-cap_marg1 <- 'Marginalized cumulative risk by Day `r tp` as functions of Day `r Day` markers (=s) among baseline seronegative vaccine recipients with 95\\% bootstrap point-wise confidence bands. The horizontal lines indicate the overall cumulative risk of the placebo and vaccine arms by Day `r tp` and its 95\\% point-wise confidence interval. Histograms of the immunological markers in the vaccine arm are overlaid. lod: lower limit of detection.'
-cap_marg2 <- 'Marginalized cumulative risk by Day `r tp` as functions of Day `r Day` markers above a threshold ($\\geq s$) among baseline seronegative vaccine recipients with 95\\% bootstrap point-wise confidence bands (at least 5 cases are required). The horizontal lines indicate the overall cumulative risk of the vaccine arm by Day `r tp` and its 95\\% point-wise confidence interval. Histograms of the immunological markers in the vaccine arm are overlaid. lod: lower limit of detection.'
+cap_marg1 <- paste0('Marginalized cumulative risk by Day `r tp` as functions of Day ', Day, ' markers (=s) among baseline seronegative vaccine recipients with 95\\% bootstrap point-wise confidence bands. The horizontal lines indicate the overall cumulative risk of the placebo and vaccine arms by Day `r tp` and its 95\\% point-wise confidence interval. Histograms of the immunological markers in the vaccine arm are overlaid. lod: lower limit of detection.')
+cap_marg2 <- paste0('Marginalized cumulative risk by Day `r tp` as functions of Day ', Day, ' markers above a threshold ($\\geq s$) among baseline seronegative vaccine recipients with 95\\% bootstrap point-wise confidence bands (at least 5 cases are required). The horizontal lines indicate the overall cumulative risk of the vaccine arm by Day `r tp` and its 95\\% point-wise confidence interval. Histograms of the immunological markers in the vaccine arm are overlaid. lod: lower limit of detection.')
 
 ```
 
@@ -203,7 +203,7 @@ knitr::include_graphics(here::here(
 
 ```
 
-```{r, fig.cap = "Controlled VE with sensitivity analysis as functions of Day `r Day` markers (=s) among baseline seronegative vaccine recipients with 95\\% bootstrap point-wise confidence bands. Histograms of the immunological markers in the vaccine arm are overlaid. lod: lower limit of detection."}
+```{r, fig.cap = paste0("Controlled VE with sensitivity analysis as functions of Day ", Day, " markers (=s) among baseline seronegative vaccine recipients with 95\\% bootstrap point-wise confidence bands. Histograms of the immunological markers in the vaccine arm are overlaid. lod: lower limit of detection."}
 
 knitr::include_graphics(here::here(
   "cor_coxph", 'output', paste0('D',Day), 
@@ -218,7 +218,7 @@ knitr::include_graphics(here::here(
 <!--     \caption{Marginalized cumulative risk by Day \protect\input{\pathCoRoutput/timepoints_cum_risk_\studyname} as functions of Day `r Day` markers above a threshold (>=s) among baseline seronegative vaccine recipients with 95\% bootstrap point-wise confidence bands (at least 5 cases are required). The horizontal lines indicate the overall cumulative risk of the placebo and vaccine arms by Day \protect\input{\pathCoRoutput/timepoints_cum_risk_\studyname} and its 95\% point-wise confidence interval. Histograms of the immunological markers in the vaccine arm are overlaid.} -->
 <!-- \end{figure} -->
 
-```{r, fig.cap = "Marginalized cumulative incidence rate curves for trichotomized Day `r Day` markers among baseline seronegative vaccine recipients. The gray line is the overall cumulative incidence rate curve in the placebo arm."}
+```{r, fig.cap = paste0("Marginalized cumulative incidence rate curves for trichotomized Day ", Day, " markers among baseline seronegative vaccine recipients. The gray line is the overall cumulative incidence rate curve in the placebo arm."}
 
 knitr::include_graphics(here::here(
   "cor_coxph", 'output', paste0('D',Day), 

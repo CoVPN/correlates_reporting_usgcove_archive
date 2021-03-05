@@ -5,6 +5,7 @@
 
 ```{r, include=FALSE}
 Day <- 57
+here::i_am("cor_coxph/report.Rmd")
 ```
 
 ```{r, child=c(here::here('cor_coxph', 'report_sub.Rmd'))}

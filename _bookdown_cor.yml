@@ -14,7 +14,7 @@ language:
 # abbreviated cor report
 rmd_files: [
   "index.Rmd",
-  # "cor_graphical/report.Rmd",
+  "cor_graphical/report.Rmd",
   "cor_coxph/report.Rmd",
   "references.Rmd"
 ]

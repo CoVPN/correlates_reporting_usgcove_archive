@@ -90,6 +90,7 @@ Imports:
   stringr,
   knitr,
   kableExtra,
+  xtable,
   latex2exp,
   mvtnorm,
   skimr,

@@ -53,8 +53,6 @@ before_script:
 script:
   - make data_processed
   - make immuno_report
-  - ls -a $TRAVIS_BUILD_DIR/cor_coxph/output/D29
-  - ls -a $TRAVIS_BUILD_DIR/cor_coxph/output/D57
   - make cor_report
   # - make cop_report
 

@@ -27,7 +27,8 @@ The data sets represent an expected COVID-19 vaccine efficacy
 * `Wstratum`: Stratum indicator 1-(4k+1). Differs from `tps.stratum` in
   that cases are in a separate stratum 33. Useful for computing sampling
   probabilities.
-* `wt`: Inverse sampling probability weight.
+* `wt`: Inverse sampling probability weight for the population for the D57 analyses (Perprotocol == 1 & EventTimePrimaryD57>=7). Set to NA for subjects outside that population.
+* `wt.2`: Inverse sampling probability weight for the population for the D29 analyses (EventTimePrimaryD29>=14 & Perprotocol == 1 | EventTimePrimaryD29>=7 & EventTimePrimaryD29<=13 & Fullvaccine==1). Set to NA for subjects outside that population.
 
 ## Derived variables for immunologic markers
 
@@ -88,11 +89,10 @@ The data sets represent an expected COVID-19 vaccine efficacy
    these variables are defined and used by the companies for making sampling
    lists, so in a way "this is what it is" and it cannot include info on
    whether Ab data values are available.
-* `Twophasesampind` = indicator of have Day 1, 57 MSD data for both Spike
+* `Twophasesampind` = indicator of having both shots, being in a case or in the subcohort, and having Day 1, 57 MSD data for both Spike
    and RBD. We know we should have 100% complete data on MSD, or very close.
 * For each of the other marker variables, do single hard imputation, such
    that after the data set is constructed. Thus, `Twophasesampind == 1` means
    that all markers have Day 1, 57 data, and the ppt is included in IPWCC
    analysis.
-* `Twophasesamplind == 0` means that all markers are missing Day 1 and/or 57
-   data, and the ppt is excluded from IPWCC analysis.
+

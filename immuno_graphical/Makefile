@@ -4,8 +4,7 @@ all: clean twophase_plots demog_plots
 ## twophase_plots   : rcdfs, boxplots, scatter plots of assays saved in figs/
 twophase_plots: code/descriptive_graphics_two_phase_plots.R \
   plot_data params
-	Rscript code/descriptive_graphics_two_phase_plots.R \
-	Rscript code/descriptive_graphics_scatter_age.R
+	Rscript code/descriptive_graphics_two_phase_plots.R & Rscript code/descriptive_graphics_scatter_age.R
 
 ## demog_plots      : rcdfs, boxplots by demographics saved in figs/demographics
 demog_plots: code/descriptive_graphics_demographic_strata.R \

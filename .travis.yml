@@ -2,7 +2,6 @@
 branches:
   only:
   - master
-  - travis
 
 # language settings
 language: r
@@ -36,7 +35,7 @@ before_install:
 
 # R packages cannot be installed in TRAVIS_BUILD_DIR; they need to be installed
 # separately from the lockfile
-# tiny tex installs tlmgr to a directory that is sym-linked to $HOME/bin
+# tinytex installs tlmgr to a directory that is symlinked to $HOME/bin
 install:
   - cd .. && Rscript -e "install.packages(c('here', 'renv', 'tinytex'))"
   - Rscript -e "tinytex::install_tinytex()"
@@ -56,6 +55,7 @@ script:
   - ls -a $TRAVIS_BUILD_DIR/cor_coxph/output/D29
   - ls -a $TRAVIS_BUILD_DIR/cor_coxph/output/D57
   - make cor_report
+  # - make cop_report
 
 # push reports to gh-pages branch
 after_script:
@@ -68,8 +68,8 @@ env:
 
 notifications:
   email:
-    recipients:
-      - benkeser@emory.edu
-      - nhejazi@berkeley.edu
     on_success: change
     on_failure: always
+    recipients:
+      - benkeser@emory.edu
+      - nh@nimahejazi.org

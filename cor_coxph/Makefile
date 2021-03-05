@@ -3,7 +3,8 @@ all: clean cor_coxph
 
 ## clean         : delete saved bootstrap results
 clean:
-	rm -rf output/*
+	rm -f output/D29/*
+	rm -f output/D57/*
 
 ## cor_coxph     : create tables and figures
 cor_coxph: dat_seroneg

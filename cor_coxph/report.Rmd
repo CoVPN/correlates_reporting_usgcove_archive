@@ -15,4 +15,3 @@ Day <- 29
 
 ```{r, child=c(here::here('cor_coxph', 'report_sub.Rmd'))}
 ```
-

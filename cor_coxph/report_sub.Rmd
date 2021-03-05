@@ -1,6 +1,6 @@
 # Day `r Day` Univariate CoR: Cox Models of Risk {#cor-coxph}
 
-The main regression model is the Cox proportional hazards model. All plots are made with Cox models fit unless specified otherwise. 
+The main regression model is the Cox proportional hazards model. All plots are made with Cox models fit unless specified otherwise.
 
 ```{r, include = FALSE}
 mean_fup <- read.table(here::here("cor_coxph",

@@ -2,7 +2,6 @@
 branches:
   only:
   - master
-  - travis
 
 # language settings
 language: r
@@ -33,10 +32,11 @@ before_install:
   - sudo add-apt-repository -y ppa:cran/imagemagick
   - sudo apt-get update
   - sudo apt-get install -y libmagick++-dev
+  - sudo apt-get install -y texlive-extra-utils ghostscript
 
 # R packages cannot be installed in TRAVIS_BUILD_DIR; they need to be installed
 # separately from the lockfile
-# tiny tex installs tlmgr to a directory that is sym-linked to $HOME/bin
+# tinytex installs tlmgr to a directory that is symlinked to $HOME/bin
 install:
   - cd .. && Rscript -e "install.packages(c('here', 'renv', 'tinytex'))"
   - Rscript -e "tinytex::install_tinytex()"
@@ -51,11 +51,12 @@ before_script:
 
 # build reports via included Make recipes
 script:
-  # - make data_processed # !!! TMP !!!
+  - make data_processed
   # - make immuno_report # !!! TMP !!!
   - ls -a $TRAVIS_BUILD_DIR/cor_coxph/output/D29
   - ls -a $TRAVIS_BUILD_DIR/cor_coxph/output/D57
   - make cor_report
+  # - make cop_report
 
 # push reports to gh-pages branch
 after_script:
@@ -68,8 +69,8 @@ env:
 
 notifications:
   email:
-    recipients:
-      - benkeser@emory.edu
-      - nhejazi@berkeley.edu
     on_success: change
     on_failure: always
+    recipients:
+      - benkeser@emory.edu
+      - nh@nimahejazi.org

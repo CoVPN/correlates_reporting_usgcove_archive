@@ -5,7 +5,7 @@
 
 2. Create a new data.frame `dat.long`. In `dat.long` there is a new field `assay` that takes the string values "bindSpike", "bindRBD", "pseudoneutid50" and "pseudoneutid80", corresponding to four types of assays. Additionally, there are new fields `B`, `Day29`, `Day27`, `Delta29overB`, `Delta57overB` and `Delta57over29`, with values equal to the assay readouts indicated by the field name. Each row of `dat.long` corresponds to the assay readouts of one type of assays, indicated by `assay`, at different time points for for different fold-rise comparisons. Therefore, each individual has four rows for four different types of assay readouts. Additionally, there are fields in the original data.frame `dat` with the individual-level information, including `Ptid`, `Trt`, `MinorityInd`, `HighRiskInd`, `Age`, `Sex`, `Bserostatus`, `Fullvaccine`, `Perprotocol`, `EventIndPrimaryD29`,
   `EventIndPrimaryD57`, `SubcohortInd`, `age.geq.65`, `TwophasesampInd`,
-  `Bstratum`, `wt`,  `race`, `ethnicity`, `EthnicityHispanic`, `EthnicityNotreported`, `EthnicityUnknown`,`WhiteNonHispanic`.
+  `Bstratum`, `wt`, `wt.2`,  `race`, `ethnicity`, `EthnicityHispanic`, `EthnicityNotreported`, `EthnicityUnknown`,`WhiteNonHispanic`.
   
 5. Subset `dat` to keep the cohort identified for immunogenicity (`SubcohortInd` = 1, `TwophasesampInd` = 1, `Perprotocol` = 1) and name the subset data.frame `dat.twophase.sample`. Subset `dat.long` similarly and name the resulted data.frane
 `dat.long.twophase.sample`.
@@ -29,17 +29,22 @@
 14. In `dat.long.twophase.sample`, create a new field `age_minority_label`, which is defined as the cross product of `age.geq.65` and `MinorityInd` fields converted to a character.
 
 ## Immunogenicity Plots for the Overall Two-phase Sample
-### RCDF Plots
+### Pair Plots
 Set the random seed to be `12345`.
-1. For each treatment and baseline seroviral status group, make pairplots for Day 29 binding-Spike, binding-RBD, Pseudo-virus nAb ID50 and Pseudo-virus nAb ID80 assay readouts. Make the same pair plots for Day 57 assay readouts, Day 29 fold-rise over baseline and Day 57 fold-rise over baseline.
+1. For each treatment and baseline seroviral status group, make pairplots for Day 29 binding-Spike, binding-RBD, Pseudo-virus nAb ID50 and Pseudo-virus nAb ID80 assay readouts. Make the same pair plots for Day 57 assay readouts, Day 29 fold-rise over baseline and Day 57 fold-rise over baseline. The correlations are calculated as following:
+	(1) Resample the rows with replacement where the resampling probabilities given by the `wt.2` field for Day 29 readouts and Day 29 fold-rise over baseline and `wt` for Day 57 readouts and Day 57 over baseline. 
+	(2) For each resample, compute the correlation.
+	(3) Compute the algorithmic correlation across all the resamples.
 
 
-2. For each treatment and baseline seroviral status group, make pair plots for baseline, Day 29, and Day 57 binding-Spike assay readouts. Make the same plots for other three assays.
+2. For each treatment and baseline seroviral status group, make pair plots for baseline, Day 29, and Day 57 binding-Spike assay readouts. Make the same plots for other three assays. Use the method in 1 when calculating the weighted correlation, where the weights are given by the `wt` field.
 
 ### RCDF Plots
-1. Make weighted RCDF plots that consists of four panels of baseline assay readouts, each panel for one type of assay. There are four RCDF lines in each panel with different colors, representing "vaccine group, baseline negative", "vaccine group, baseline positive", "placebo group, baseline negative", and "placebo group, baseline positive". The weights are given by the `wt` field. Make the same plots for Day 29 assay readouts, Day 57 assay readouts, Day 29 fold-rise over baseline and Day 57 fold-rise over baseline.
+1. Make weighted RCDF plots that consists of four panels of baseline assay readouts, each panel for one type of assay. There are four RCDF lines in each panel with different colors, representing "vaccine group, baseline negative", "vaccine group, baseline positive", "placebo group, baseline negative", and "placebo group, baseline positive". Make the same plots for Day 29 assay readouts, Day 57 assay readouts, Day 29 fold-rise over baseline and Day 57 fold-rise over baseline.  The weights are given by the `wt.2` field for Day 29 readouts and Day 29 fold-rise over baseline and `wt` for Day 57 readouts and Day 57 over baseline. 
 
-2. Make weighted RCDF plots for vaccine group that consists of Day 29 assay readouts. There are eight RCDF lines, which are the four assay readouts for baseline negative subjects and the four assay readouts for baseline positive subjects. Use different colors to indicate different assays and different line types to indicate baseline seroviral status. Make the same plots for Day 57 assay readouts, Day 29 fold-rise over baseline and Day 57 fold-rise over baseline.
+
+2. Make weighted RCDF plots for vaccine group that consists of Day 29 assay readouts. There are eight RCDF lines, which are the four assay readouts for baseline negative subjects and the four assay readouts for baseline positive subjects. Use different colors to indicate different assays and different line types to indicate baseline seroviral status. Make the same plots for Day 57 assay readouts, Day 29 fold-rise over baseline and Day 57 fold-rise over baseline.  The weights are given by the `wt.2` field for Day 29 readouts and Day 29 fold-rise over baseline and `wt` for Day 57 readouts and Day 57 over baseline. 
+
 
 3. Repeat the plots in 2 but only make plots for vaccine group baseline negative subjects.
 
@@ -64,7 +69,8 @@ bAb LLOQ = log10(34); nAb ID50 LLOQ = log10(49); nAb ID80 LLOQ = log10(43).
 ## Immunogenicity Plots by demographics
 Set the random seed to be `12345`.
 ### RCDF plots
-1. For baseline negative vaccine group subjects, make weighted RCDF plots that consists of four panels of baseline assay readouts, each panel for one type of assay. Each panel consists weighted RCDF lines with different colors, indicating different values of the `age_geq_65_label` field. The weights are given by the `wt` field. Make the same plots for Day 29 assay readouts, Day 57 assay readouts, Day 29 fold-rise over baseline and Day 57 fold-rise over baseline.
+1. For baseline negative vaccine group subjects, make weighted RCDF plots that consists of four panels of baseline assay readouts, each panel for one type of assay. Each panel consists weighted RCDF lines with different colors, indicating different values of the `age_geq_65_label` field. Make the same plots for Day 29 assay readouts, Day 57 assay readouts, Day 29 fold-rise over baseline and Day 57 fold-rise over baseline.  The weights are given by the `wt.2` field for Day 29 readouts and Day 29 fold-rise over baseline and `wt` for Day 57 readouts and Day 57 over baseline. 
+
 
 2. Repeat 1 for baseline positive vaccine group subjects.
 

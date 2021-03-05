@@ -10,7 +10,7 @@
 
 4. Create a new data.frame `dat.long`. In `dat.long` there is a new field `assay` that takes the string values "bindSpike", "bindRBD", "pseudoneutid50" and "pseudoneutid80", corresponding to four types of assays. Additionally, there are new fields `B`, `Day29`, `Day27`, `Delta29overB`, `Delta57overB` and `Delta57over29`, with values equal to the assay readouts at time points indicated by the field name. Each row of `dat.long` corresponds to the assay readouts of one type of assays, indicated by `assay`, at different time points or for different fold-rise comparisons. Therefore, each individual has four rows for four different types of assay readouts. Additionally, there are fields in the original data.frame `dat` with the individual-level information, including `Ptid`, `Trt`, `MinorityInd`, `HighRiskInd`, `Age`, `Sex`, `Bserostatus`, `Fullvaccine`, `Perprotocol`, `EventIndPrimaryD29`,
   `EventIndPrimaryD57`, `SubcohortInd`, `age.geq.65`, `TwophasesampInd`,
-  `Bstratum`, `wt`, `race`, `ethnicity`,
+  `Bstratum`, `wt`, `wt.2`, `race`, `ethnicity`,
   `WhiteNonHispanic`, and `cohort_event`.
 
 5. Take the subset of `dat` and `dat.long` with `TwophasesampInd`==1, and rename the datasets as `dat.cor.subset` and `dat.long.cor.subset`, correspondingly.
@@ -42,7 +42,7 @@
 
 ## CoR Plots 
 ### RCDF Plots
-1.  For baseline negative subjects, make a weighted RCDF plot that consists of four panels of baseline assay readouts, each panel for one type of assay. Each panel consists of weighted RCDF lines with different colors, indicating different combination of `Trt` and `cohort_event` fields. The weights are given by the `wt` field. Make the same plots for Day 29 assay readouts, Day 57 assay readouts, Day 29 fold-rise over baseline and Day 57 fold-rise over baseline.
+1.  For baseline negative subjects, make a weighted RCDF plot that consists of four panels of baseline assay readouts, each panel for one type of assay. Each panel consists of weighted RCDF lines with different colors, indicating different combination of `Trt` and `cohort_event` fields. Make the same plots for Day 29 assay readouts, Day 57 assay readouts, Day 29 fold-rise over baseline and Day 57 fold-rise over baseline. The weights are given by the `wt.2` field for Day 29 readouts and Day 29 fold-rise over baseline and `wt` for Day 57 readouts and Day 57 over baseline. 
 
 2. Repeat 1 for baseline positive subjects.
 

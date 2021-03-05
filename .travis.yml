@@ -57,7 +57,7 @@ script:
   - ls -a $TRAVIS_BUILD_DIR/cor_coxph/output/D29
   - ls -a $TRAVIS_BUILD_DIR/cor_coxph/output/D57
   - ls -a $TRAVIS_BUILD_DIR/cor_coxph/output/D29
-  - Rscript -e "rmarkdown::render('cor_coxph/report.Rmd', output_format=bookdown::pdf_document2)"
+  - Rscript -e "rmarkdown::render('cor_coxph/report.Rmd', output_format=bookdown::pdf_document2())"
 
 # push reports to gh-pages branch
 after_script:

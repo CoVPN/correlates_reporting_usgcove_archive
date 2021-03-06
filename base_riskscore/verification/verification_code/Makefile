@@ -18,6 +18,14 @@ cvsl_out_local_demo: code/fit_cv_superlearner.R seeds clean_data code/submit_job
 cvsl_out_slurm_prod: code/fit_cv_superlearner.R seeds clean_data
 	chmod +x code/fit_cv_superlearner.R && chmod +x code/submit_jobs.sh && code/submit_jobs.sh prod
 
+## sl_out_local_demo : run jobs locally to fit cv super learner with demo library
+sl_out_local_demo: code/fit_superlearner.R seeds clean_data code/submit_jobs_local.sh
+	Rscript code/fit_superlearner.R 1234 demo
+
+## sl_out_slurm_prod : submit jobs to cluster to run cv super learner with production library
+sl_out_slurm_prod: code/fit_superlearner.R seeds clean_data
+	sbatch --output "sl_log${SEED}.Rout" --wrap="code/fit_superlearner.R 1234 prod"
+
 ## cvauc_table         :  summarize results of cv super learner and save table
 cvauc_table: code/get_cvauc.R
 	@echo "~~~~~~~~~~\nMake sure you've saved cvSuperLearner results\n~~~~~~~~~~\n" 

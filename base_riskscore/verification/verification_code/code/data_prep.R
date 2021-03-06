@@ -75,3 +75,23 @@ ph1_placebo_imp_scaled <- apply(ph1_placebo_imp, 2, function(x){
 # save predictor data 
 x <- ph1_placebo_imp_scaled
 saveRDS(x, here::here("data_clean", "x.rds"))
+
+
+# prepare vaccine data that will be used for predictions
+# All ptids in the vaccine arm AND as “per protocol”. Drop records with missing values for Ptid, Trt, and endpoint columns.
+include_ph1_vax <- !is.na(dat$Ptid) & !is.na(dat$Trt) & !is.na(dat[ , end_pt, drop = TRUE])
+include_ph1_vax <- include_ph1_vax & dat$Trt == 1 & dat$Perprotocol == 1
+ph1_vax <- dat[include_ph1_vax, ]
+
+# Conduct imputations on missing values in risk variables using mice package	
+covariate_data <- ph1_vax[ , keep_bl_demo_var]
+imp_data <- mice(covariate_data, m = 10, seed = 20210216)
+ph1_vax_imp <- complete(imp_data, 1)
+
+# Scale all risk variables to have mean 0, sd 1
+ph1_vax_imp_scaled <- apply(ph1_vax_imp, 2, function(x){
+	(x - mean(x)) / sd(x)
+})
+
+newx <- ph1_vax_imp_scaled
+saveRDS(newx, here::here("data_clean", "newx.rds"))

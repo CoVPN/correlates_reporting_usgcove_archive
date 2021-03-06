@@ -9,6 +9,7 @@ output: html_document
 renv::activate(project = here::here("..", "..", ".."))
 source(here::here("..", "..", "..", "_common.R"))
 #-----------------------------------------------
+library(here)
 ```
 ### Data cleaning results
 
@@ -59,3 +60,32 @@ knitr::kable(data.frame(seed = seeds, cv_auc_tab), digits = 4)
 ```
 
 The average AUC across the ten runs was `r mean(cv_auc_tab$cvAUC)`.
+
+
+### Super learner results
+
+Below is the fitted super learner object on the full data.
+
+```{r, show-sl, echo = FALSE}
+sl_fit <- readRDS(here("output", "sl_fit.rds"))
+sl_fit
+```
+
+Below are summary statistics of the risk score.
+
+```{r summary-stat-risk, echo = FALSE}
+risk_scores <- readRDS(here("output", "risk_scores.rds"))
+summary(risk_scores)
+```
+
+Here is a histogram:
+
+```{r hist-risk}
+hist(risk_scores)
+```
+
+Here are the first 50 risk scores.
+
+```{r show-risks}
+head(risk_scores, 50)
+```

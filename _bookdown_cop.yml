@@ -3,7 +3,6 @@ book_filename: "covpn_correlates_cop"
 before_chapter_script: "_common.R"
 output_dir: "_report_cop"
 clean: packages.bib
-title: "COVID-19 Correlates of Protection Analysis Report"
 
 language:
   label:

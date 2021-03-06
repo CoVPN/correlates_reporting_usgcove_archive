@@ -19,12 +19,12 @@ ls -l
 # replace with reports
 cp -r $TRAVIS_BUILD_DIR/_report_immuno/* ./
 cp -r $TRAVIS_BUILD_DIR/_report_cor/* ./
-# cp -r $TRAVIS_BUILD_DIR/_report_cop/* ./
+#cp -r $TRAVIS_BUILD_DIR/_report_cop/* ./
 
 echo "All files in /correlates_reporting after copies"
 ls -l
 
-COMMIT_MESSAGE="update the test build reports."
+COMMIT_MESSAGE="Update report test builds via PR ${TRAVIS_PULL_REQUEST}."
 git add --all *
 git commit -m "${COMMIT_MESSAGE}"
 git push -q origin gh-pages

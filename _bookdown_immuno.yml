@@ -3,7 +3,6 @@ book_filename: "covpn_correlates_immuno"
 before_chapter_script: "_common.R"
 output_dir: "_report_immuno"
 clean: packages.bib
-title: "COVID-19 Immunogenicity Analysis Report"
 
 language:
   label:

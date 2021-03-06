@@ -3,7 +3,8 @@
 renv::activate(project = here::here(".."))
 source(here::here("..", "_common.R"))
 #-----------------------------------------------
-
+# install.packages(c("ggpubr", "GGally", "SWIM", "scales", "dummies",
+# "gridExtra", "PResiduals"))
 library(here)
 library(tidyr)
 library(dplyr)
@@ -30,7 +31,7 @@ dat.long.twophase.sample <- readRDS(here(
 ))
 dat.twophase.sample <- readRDS(here("data_clean", "twophase_data.rds"))
 
-
+wts <- c("wt", "wt.2", "wt", "wt.2", "wt")
 #-----------------------------------------------
 # PAIR PLOTS
 #-----------------------------------------------
@@ -54,7 +55,7 @@ for (tt in 1:4) {
         time = times[tt + 1],
         assays = assays,
         strata = "Bstratum",
-        weight = "wt",
+        weight = wts[tt + 1],
         plot_title = paste0(
           c(
             "D29", "D57", "D29 Fold-rise over D1",
@@ -73,40 +74,6 @@ for (tt in 1:4) {
         )
       )
     }
-  }
-}
-
-for (tt in 1:4) {
-  for (bserostatus in 0:1) {
-    subdat <- dat.twophase.sample %>%
-      dplyr::filter(Bserostatus == bserostatus)
-
-    covid_corr_pairplots(
-      plot_dat = subdat,
-      time = times[tt + 1],
-      assays = assays,
-      strata = "Bstratum",
-      weight = "wt",
-      plot_title = paste0(
-        c(
-          "D29", "D57", "D29 Fold-rise over D1",
-          "D57 Fold-rise over D1"
-        )[tt],
-        " Ab markers: baseline ",
-        ifelse(bserostatus, "positive", "negative"),
-        ", placebo + vaccine arm"
-      ),
-      column_labels = labels.axis[tt + 1, 1:4] %>% unlist(),
-      filename = paste0(
-        save.results.to, "/pairs_",
-        c(
-          "Day29", "Day57", "Delta29overB",
-          "Delta57overB"
-        )[tt], "_Markers_",
-        bstatus.labels.2[bserostatus + 1], "_", study.name,
-        ".png"
-      )
-    )
   }
 }
 
@@ -145,60 +112,37 @@ for (bserostatus in 0:1) {
   }
 }
 
-## pairplots by baseline serostatus
-for (bserostatus in 0:1) {
-  subdat <- dat.twophase.sample %>%
-    dplyr::filter(Bserostatus == bserostatus)
-
-  covid_corr_pairplots(
-    plot_dat = subdat,
-    time = "B",
-    assays = assays,
-    strata = "Bstratum",
-    weight = "wt",
-    plot_title = paste0(
-      "D1 Ab markers: baseline ",
-      ifelse(bserostatus, "positive", "negative"),
-      ", vaccine + placebo arm"
-    ),
-    column_labels = labels.axis[tt + 1, 1:4] %>% unlist(),
-    filename = paste0(
-      save.results.to, "/pairs_baselineMarkers_",
-      bstatus.labels.2[bserostatus + 1], "_",
-      study.name, ".png"
-    )
-  )
-}
 
 
 ## pairplots of assay readouts for multiple timepoints
 ## pairplots by baseline serostatus
 for (bserostatus in 0:1) {
-  subdat <- dat.twophase.sample %>%
-    dplyr::filter(Bserostatus == bserostatus)
-  
-  for (aa in assays) {
-    covid_corr_pairplots_by_time(
-      plot_dat = subdat,
-      times = c("B", "Day29", "Day57"),
-      assay = aa,
-      strata = "Bstratum",
-      weight = "wt",
-      plot_title = paste0(
-        labels.assays[aa], ": baseline ",
-        ifelse(bserostatus, "positive", "negative"),
-        ", vaccine + placebo arm"
-      ),
-      column_labels = paste(c("D1", "D29", "D57"), labels.axis[, aa][1]),
-      filename = paste0(
-        save.results.to, "/pairs_", aa, "_by_times_",
-        bstatus.labels.2[bserostatus + 1], "_",
-        study.name, ".png"
+  for (trt in 0:1) {
+    subdat <- dat.twophase.sample %>%
+      dplyr::filter(Bserostatus == bserostatus & Trt == trt)
+    
+    for (aa in assays) {
+      covid_corr_pairplots_by_time(
+        plot_dat = subdat,
+        times = c("B", "Day29", "Day57"),
+        assay = aa,
+        strata = "Bstratum",
+        weight = "wt",
+        plot_title = paste0(
+          labels.assays[aa], ": baseline ",
+          ifelse(bserostatus, "positive ", "negative "),
+          c("placebo", "vaccine")[trt + 1], " arm"
+        ),
+        column_labels = paste(c("D1", "D29", "D57"), labels.axis[, aa][1]),
+        filename = paste0(
+          save.results.to, "/pairs_", aa, "_by_times_",
+          bstatus.labels.2[bserostatus + 1], "_", c("placebo_", "vaccine_")[trt + 1],
+          study.name, ".png"
+        )
       )
-    )
+    }
   }
 }
-
 
 #-----------------------------------------------
 #-----------------------------------------------
@@ -215,7 +159,7 @@ for (tt in seq_along(times)) {
     x = times[tt],
     facet_by = "assay",
     color = "trt_bstatus_label",
-    weight = "wt",
+    weight = wts[tt],
     panel_titles = labels.title2[tt, ] %>% unlist(),
     axis_titles = labels.axis[tt, ] %>% unlist(),
     filename = paste0(
@@ -236,7 +180,7 @@ for (day in c("29", "57")) {
     x = paste0("Day", day),
     color = "assay",
     lty = "Bserostatus",
-    weight = "wt",
+    weight = ifelse(day == "29", "wt.2", "wt"),
     xlab = paste0(
       "D", day,
       " Binding Ab (IU/ml) / Pseudovirus nAb ID50 or ID80"
@@ -259,7 +203,7 @@ for (day in c("29", "57")) {
     x = paste0("Delta", day, "overB"),
     color = "assay",
     lty = "Bserostatus",
-    weight = "wt",
+    weight = ifelse(day == "29", "wt.2", "wt"),
     xlab = paste0("D", day, " Fold-rise over D1 Binding Ab (IU/ml) / Pseudovirus nAb ID50 or ID80"),
     filename = paste0(
       save.results.to, "/Marker_Rcdf_Delta", day,
@@ -280,7 +224,7 @@ for (day in c("29", "57")) {
     x = paste0("Day", day),
     color = "assay",
     lty = NULL,
-    weight = "wt",
+    weight = ifelse(day == "29", "wt.2", "wt"),
     xlab = paste0(
       "D", day,
       " Binding Ab (IU/ml) / Pseudovirus nAb ID50 or ID80"
@@ -298,7 +242,7 @@ for (day in c("29", "57")) {
     x = paste0("Delta", day, "overB"),
     color = "assay",
     lty = NULL,
-    weight = "wt",
+    weight = ifelse(day == "29", "wt.2", "wt"),
     xlab = paste0(
       "D", day,
       " Fold-rise over D1 Binding Ab (IU/ml) / Pseudovirus nAb ID50 or ID80"
@@ -337,7 +281,7 @@ for (bstatus in 1:2) {
       color = "Trt",
       facet_by = "assay",
       plot_LLOD = (tt <= 3),
-      LLOD = LLOD,
+      LLOD = llods,
       legend = c("Placebo", "Vaccine"),
       axis_titles_y = labels.axis[tt, ] %>% unlist(),
       panel_titles = labels.title2[tt, ] %>% unlist(),
@@ -364,7 +308,7 @@ for (trt in 1:2) {
       color = "Bserostatus",
       facet_by = "assay",
       plot_LLOD = (tt <= 3),
-      LLOD = LLOD,
+      LLOD = llods,
       legend = c("Baseline Negative", "Baseline Positive"),
       axis_titles_y = labels.axis[tt, ] %>% unlist(),
       panel_titles = labels.title2[tt, ] %>% unlist(),
@@ -433,3 +377,91 @@ for (bstatus in 1:2) {
                                 study.name, ".png"
                               ))
 }
+
+
+
+
+
+#### Scatter plot, assay vs. age in years, (Day 1) Day 29 Day 57
+
+
+for (tt in 1:3) {
+  for (bstatus in 1:2) {
+    for (trt in 1:2) {
+      subdat <- dat.long.twophase.sample %>%
+        filter(Bserostatus == bstatus.labels[bstatus], Trt == trt.labels[trt])
+      
+      ## setting the range of the axes
+      xrange <- range(dat.long.twophase.sample$Age)
+      rr <- range(subdat[, times[tt]], na.rm = TRUE)
+      
+      if (rr[1] == rr[2]) {
+        rr <- c(rr[1] - 1, rr[2] + 1)
+      }
+      
+      if (rr[2] - rr[1] < 2) {
+        rr <- c(floor(rr[1]), ceiling(rr[2]))
+      }
+      
+      ybreaks <- floor(rr[1]):ceiling(rr[2])
+      
+      if (rr[2] > ceiling(rr[1])) {
+        ybreaks <- ceiling(rr[1]):floor(rr[2])
+      } else {
+        ybreaks <- floor(rr[1]):ceiling(rr[2]) ## breaks on the axis
+      }
+      
+      if (max(ybreaks) - min(ybreaks) >= 6) {
+        ybreaks <- ybreaks[ybreaks %% 2 == 0]
+      }
+      
+      scatter_plot_list <- vector("list", length = length(assays))
+      
+      for (aa in 1:length(assays)) {
+        scatter_plot_list[[aa]] <- ggplot(data = subset(subdat, assay == assays[aa]),
+                                          mapping = aes_string("Age", times[tt])) +
+          geom_point() +
+          xlab("Age") +
+          ylab(labels.axis[tt, aa]) +
+          ggtitle(labels.title[tt, aa]) +
+          stat_smooth(method = "loess", color = "red", se = TRUE, lwd = 1) +
+          scale_x_continuous(limits = xrange) +
+          scale_y_continuous(
+            labels = label_math(10^.x), limits = rr,
+            breaks = ybreaks
+          ) +
+          theme_pubr() +
+          theme(
+            plot.title = element_text(hjust = 0.5, size = 10),
+            panel.border = element_rect(fill = NA),
+            panel.grid.minor.y = element_line(),
+            panel.grid.major.y = element_line(),
+            axis.title = element_text(size = 10),
+            axis.text = element_text(size = 10),
+            legend.title = element_blank()
+          )
+      }
+      
+      output_plot <- ggarrange(
+        plotlist = scatter_plot_list, ncol = 2,
+        nrow = ceiling(length(assays) / 2),
+        legend = "none", align = "h"
+      )
+      
+      ggsave(
+        filename = paste0(
+          save.results.to, "/scatter_", times[tt], "_vs_age_",
+          "trt_", trt.labels[trt], "_", bstatus.labels.2[bstatus],
+          "_", study.name, ".png"
+        ), 
+        plot = output_plot, 
+        width = 7,
+        height = 7, 
+        units = "in"
+      )
+      
+    }
+  }
+}
+
+

@@ -73,7 +73,7 @@ labels.title <- outer(
       "Day 1", "Day 29", "Day 57", "D29 fold-rise over D1",
       "D57 fold-rise over D1", "D57 fold-rise over D29"
     ),
-  "%.%"
+  paste0
 )
 labels.title <- as.data.frame(labels.title)
 colnames(labels.title) <- times
@@ -190,3 +190,4 @@ ggsave_custom <- function(filename = default_name(plot),
                           height= 15, width = 21, ...) {
   ggsave(filename = filename, height = height, width = width, ...)
 }
+

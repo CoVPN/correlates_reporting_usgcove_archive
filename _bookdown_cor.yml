@@ -13,7 +13,7 @@ language:
 
 # abbreviated cor report
 rmd_files: [
-  "index.Rmd",
+  "index_cor.Rmd",
   "cor_graphical/report.Rmd",
   "cor_coxph/report.Rmd",
   "cor_threshold/report.Rmd",
@@ -22,7 +22,7 @@ rmd_files: [
 
 # # full cor report
 # rmd_files: [
-#   "index.Rmd",
+#   "index_cor.Rmd",
 #   "cor_graphical/report.Rmd",
 #   "cor_coxph/report.Rmd",
 #   "cor_nonpar/report.Rmd",

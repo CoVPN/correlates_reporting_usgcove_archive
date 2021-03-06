@@ -1,4 +1,4 @@
-# CoVPN COVID-19 Correlates Analyses
+# CoVPN COVID-19 Correlates Analysis Reporting
 
 The _Statistical Analysis Plan_ is available
   * [on Figshare](https://doi.org/10.6084/m9.figshare.13198595)
@@ -16,4 +16,5 @@ which outlines most aspects of our project organization recommendations.
   [`here`](https://here.r-lib.org/) for path resolution.
 * Package version control and virtual environments using
   [`renv`](https://rstudio.github.io/renv/).
-* Code review procedure: TBD
+* Code review procedure: see our [contribution
+   guidelines](https://github.com/CoVPN/correlates_reporting/blob/master/CONTRIBUTING.md).

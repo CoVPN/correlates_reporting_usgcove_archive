@@ -3,7 +3,7 @@
 renv::activate(project = here::here(".."))
 source(here::here("..", "_common.R"))
 #-----------------------------------------------
-
+source(here::here("code", "params.R"))
 source(here::here("code", "cor_data_preprocess.R"))
 source(here::here("code", "covid_corr_plot_functions.R"))
 library(ggpubr)

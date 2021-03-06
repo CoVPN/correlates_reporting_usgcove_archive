@@ -90,6 +90,7 @@ Imports:
   stringr,
   knitr,
   kableExtra,
+  xtable,
   latex2exp,
   mvtnorm,
   skimr,
@@ -99,7 +100,9 @@ Imports:
   SuperLearner,
   sl3,
   haldensify,
-  txshift
+  txshift,
+  VGAM,
+  svyVGAM
 Suggests:
   nnls,
   Rsolnp,

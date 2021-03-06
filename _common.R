@@ -9,7 +9,7 @@ set.seed(98109)
 # NOTE: `data_in_file` must exist in the top-level data_raw subdirectory
 data_in_file <- "COVID_VEtrial_practicedata_primarystage1.csv"
 data_name <- "practice_data.csv"
-
+study_name <- "mock"
 ###############################################################################
 # figure labels and titles for markers
 ###############################################################################
@@ -92,7 +92,12 @@ Bstratum.labels <- c(
   "Age < 65, Not at risk"
 )
 
-llods <- c(bindSpike=20, bindRBD=20, pseudoneutid50=10, pseudoneutid80=10)
+llods <- c(
+  bindSpike = 20,
+  bindRBD = 20,
+  pseudoneutid50 = 10,
+  pseudoneutid80 = 10
+)
 # live neut to be added
 #, liveneutmn50=62)
 

@@ -1,28 +1,21 @@
 ## all              : run threshold analysis and get plots
 all: clean params data threshold plot
 
-
-## threshold   : run threshold analysis 
-threshold: code/run_Threshold_analysis.R \
+## threshold        : run threshold analysis 
+threshold: code/Run_Threshold_analysis.R \
   params  
-	Rscript code/run_Threshold_analysis.R
+	Rscript code/Run_Threshold_analysis.R
 
-## data   : prepare data for analysis
-data: code/clean_data.R \
-	params
+## data             : prepare data for analysis
+data: code/clean_data.R params
 	Rscript code/clean_data.R
 	
-	
-	
-## plot        : plot results
-
-plot: code/plotting.R \
-	params
+## plot             : plot results
+plot: code/plotting.R params
 	Rscript code/plotting.R
 
 # parameters that may vary across runs
 params: code/params.R 
-
 
 ## clean            : delete contents of data_clean/ and figs/
 clean:

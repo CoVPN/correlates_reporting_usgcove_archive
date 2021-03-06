@@ -3,11 +3,11 @@ all: clean cor_nonlinear
 
 ## clean         : delete saved bootstrap results
 clean:
-	rm -f output/*
+	rm -rf output/*
 
 ## cor_nonlinear : create output figures
 cor_nonlinear: 
-	cd code; Rscript cor_nonlinear.R
+	cd code; Rscript cor_nonlinear.R 57
 
 ## report        : create a standalone report
 report:  

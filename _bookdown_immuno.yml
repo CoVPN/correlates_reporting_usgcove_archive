@@ -12,7 +12,7 @@ language:
     chapter_name: "Section "
 
 rmd_files: [
-  "index.Rmd",
+  "index_immuno.Rmd",
   "immuno_graphical/report.Rmd",
   "immuno_tabular/report.Rmd",
   #"immuno_engin/report.Rmd",

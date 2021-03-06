@@ -27,8 +27,9 @@ The data sets represent an expected COVID-19 vaccine efficacy
 * `Wstratum`: Stratum indicator 1-(4k+1). Differs from `tps.stratum` in
   that cases are in a separate stratum 33. Useful for computing sampling
   probabilities.
-* `wt`: Inverse sampling probability weight for the population for the D57 analyses (Perprotocol == 1 & EventTimePrimaryD57>=7). Set to NA for subjects outside that population.
-* `wt.2`: Inverse sampling probability weight for the population for the D29 analyses (EventTimePrimaryD29>=14 & Perprotocol == 1 | EventTimePrimaryD29>=7 & EventTimePrimaryD29<=13 & Fullvaccine==1). Set to NA for subjects outside that population.
+* `wt`: Inverse sampling probability weight for the D57 CoR analyses. Defined on the population (Perprotocol == 1 & EventTimePrimaryD57>=7). Set to NA for subjects outside that population.
+* `wt.2`: Inverse sampling probability weight for the D29 CoR analyses Defined on the population (EventTimePrimaryD29>=14 & Perprotocol == 1 | EventTimePrimaryD29>=7 & EventTimePrimaryD29<=13 & Fullvaccine==1). Set to NA for subjects outside that population.
+* `wt.subcohort`: Inverse sampling probability weight for the immunogenicity analyses. Defined on the population (Perprotocol == 1 & EventTimePrimaryD57>=7 & SubcohortInd==1). Set to NA for subjects outside that population.
 
 ## Derived variables for immunologic markers
 

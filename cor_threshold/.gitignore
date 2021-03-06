@@ -5,11 +5,17 @@ data_clean/*.csv
 data_clean/Thresholds_by_marker/*.csv
 figs/*.png
 figs/*.pdf
+figs/simultaneous_CI/*.png
 figs/simultaneous_CI/*.pdf
+figs/pointwise_CI/*.png
 figs/pointwise_CI/*.pdf
+figs/pointwise_CI/output/*.png
+figs/pointwise_CI/output/*.pdf
 output/*.csv
 output/*.pdf
 output/*.RData
 output/*.rda
 output/*.rds
 report_old.Rmd
+report.pdf
+cor_threshold_report.pdf

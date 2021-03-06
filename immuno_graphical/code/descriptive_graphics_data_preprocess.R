@@ -4,11 +4,6 @@ renv::activate(project = here::here(".."))
 source(here::here("..", "_common.R"))
 #-----------------------------------------------
 
-### reset the floor values
-### set the ULOQ values
-### set the ethnicity value
-### add 
-
 library(here)
 library(dplyr)
 library(stringr)
@@ -17,39 +12,6 @@ dat.mock <- read.csv(here("..", "data_clean", data_name), header = TRUE)
 # load parameters
 source(here("code", "params.R"))
 dat <- dat.mock
-
-## setting the floor values
-dat <- dat %>% mutate(
-    BbindSpike = ifelse(BbindSpike >= log10(20), BbindSpike, log10(10)),
-    Day29bindSpike = ifelse(Day29bindSpike >= log10(20), Day29bindSpike,
-      log10(10)
-    ),
-    Day57bindSpike = ifelse(Day57bindSpike >= log10(20), Day57bindSpike,
-      log10(10)
-    ),
-    BbindRBD = ifelse(BbindRBD >= log10(20), BbindRBD, log10(10)),
-    Day29bindRBD = ifelse(Day29bindRBD >= log10(20), Day29bindRBD, log10(10)),
-    Day57bindRBD = ifelse(Day57bindRBD >= log10(20), Day57bindRBD, log10(10)),
-    Bpseudoneutid50 = ifelse(Bpseudoneutid50 >= log10(20), Bpseudoneutid50,
-      log10(10)
-    ),
-    Day29pseudoneutid50 = ifelse(Day29pseudoneutid50 >= log10(20),
-      Day29pseudoneutid50, log10(10)
-    ),
-    Day57pseudoneutid50 = ifelse(Day57pseudoneutid50 >= log10(20),
-      Day57pseudoneutid50, log10(10)
-    ),
-    Bpseudoneutid80 = ifelse(Bpseudoneutid80 >= log10(20), Bpseudoneutid80,
-      log10(10)
-    ),
-    Day29pseudoneutid80 = ifelse(Day29pseudoneutid80 >= log10(20),
-      Day29pseudoneutid80, log10(10)
-    ),
-    Day57pseudoneutid80 = ifelse(Day57pseudoneutid80 >= log10(20),
-      Day57pseudoneutid80, log10(10)
-    )
-  )
-
 
 # For immunogenicity characterization, complete ignore any information on cases
 # vs. non-cases.  The goal is to characterize immunogenicity in the random
@@ -67,7 +29,7 @@ dat.long.subject_level <- dat[, c(
   "Ptid", "Trt", "MinorityInd", "HighRiskInd", "Age", "Sex",
   "Bserostatus", "Fullvaccine", "Perprotocol", "EventIndPrimaryD29",
   "EventIndPrimaryD57", "SubcohortInd", "age.geq.65", "TwophasesampInd",
-  "Bstratum", "wt", "race",
+  "Bstratum", "wt", "wt.2", "race",
   "EthnicityHispanic","EthnicityNotreported", "EthnicityUnknown",
   "WhiteNonHispanic"
 )] %>%
@@ -275,4 +237,5 @@ saveRDS(as.data.frame(dat.twophase.sample),
   file = here("data_clean", "twophase_data.rds")
 )
 
+## "longer" dataset
 

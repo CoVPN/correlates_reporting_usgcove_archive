@@ -22,7 +22,7 @@ output:
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.9\textwidth]{`r here::here("cor_threshold", "figs", "pointwise_CI", paste0("TABLE_Day", day, key, "_pointwiseCI.pdf"))`}
-  \caption{Table of risk estimates for range of thresholds of Day `r day` `r marker` activity levels with point-wise 95\% confidence intervals. }
+\caption{Table of risk estimates for range of thresholds of Day `r day` `r marker` activity levels with point-wise 95\% confidence intervals. }
 
 \end{figure}
 

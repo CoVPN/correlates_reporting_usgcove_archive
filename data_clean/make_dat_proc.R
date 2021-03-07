@@ -3,16 +3,8 @@ renv::activate()
 source(here::here("_common.R"))
 #-----------------------------------------------
 
-# # obligatory to append to the top of each script
-# # There is a bug on Windows that prevents renv from working properly. saved.system.libPaths provides a workaround:
-# if (.Platform$OS.type == "windows") saved.system.libPaths=.libPaths()
-# renv::activate(project = here::here(".."))
-# if (.Platform$OS.type == "windows") {
-#     options(renv.config.install.transactional = FALSE)
-#     renv::restore(library=saved.system.libPaths, prompt=FALSE) # for a quick test, add: packages="backports"
-#     .libPaths(c(saved.system.libPaths, .libPaths()))
-# } else renv::activate(project = here::here(".."))
-#-----------------------------------------------
+# # There is a bug on Windows that prevents renv from working properly. The following code provides a workaround:
+if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
 
 # packages and settings
 library(here)
@@ -87,24 +79,26 @@ dat_proc$WhiteNonHispanic <-
 
 ###############################################################################
 # stratum variables
+# The code for Bstratum is trial specifc
+# The code for tps.stratum and Wstratum are not trial specific since they are constructed on top of Bstratum
 ###############################################################################
 
-# For Moderna
-# Bstratum, 1-3, defines the 3 baseline strata within trt/serostatus
+# Bstratum
+# Moderna: 1 ~ 3, defines the 3 baseline strata within trt/serostatus
 dat_proc <- dat_proc %>%
   mutate(
     Bstratum = ifelse(Age >= 65, 1, ifelse(HighRiskInd == 1, 2, 3))
   )
 names(Bstratum.labels) <- Bstratum.labels
 
-# tps stratum, 1-12, used in tps regression
+# tps stratum, 1 ~ 4*max(Bstratum), used in tps regression
 dat_proc <- dat_proc %>%
   mutate(
     tps.stratum = Bstratum + strtoi(paste0(Trt, Bserostatus), base = 2) *
       length(Bstratum.labels)
   )
 
-# Wstratum, 1-13. Differs from tps stratum in that case is a separate stratum;
+# Wstratum, 1 ~ 4*max(Bstratum)+1. Differs from tps stratum in that case is a separate stratum;
 # used to compute sampling weights. NOTE: the case is defined using D29 status
 dat_proc <- dat_proc %>%
   mutate(
@@ -119,6 +113,7 @@ dat_proc <- dat_proc %>%
 ###############################################################################
 
 
+# wt, for D57 correlates analyses
 wts_table <- dat_proc %>%
   dplyr::filter(Perprotocol == 1 & EventTimePrimaryD57 >= 7) %>%
   with(table(Wstratum, TwophasesampInd))
@@ -126,6 +121,8 @@ wts_norm <- rowSums(wts_table) / wts_table[, 2]
 dat_proc$wt <- wts_norm[dat_proc$Wstratum]
 dat_proc$wt[!with(dat_proc, Perprotocol == 1 & EventTimePrimaryD57>=7)] <- NA
 
+
+# wt.2, for D28 correlates analyses
 wts_table2 <- dat_proc %>%
   dplyr::filter(EventTimePrimaryD29 >= 14 & Perprotocol == 1 |
                 EventTimePrimaryD29 >= 7 & EventTimePrimaryD29 <= 13 &
@@ -136,6 +133,17 @@ dat_proc$wt.2 <- wts_norm2[dat_proc$Wstratum]
 dat_proc$wt.2[!with(dat_proc, EventTimePrimaryD29 >= 14 & Perprotocol == 1 |
                     EventTimePrimaryD29 >= 7 & EventTimePrimaryD29 <= 13 &
                     Fullvaccine == 1)] <- NA
+
+
+# wt.subcohort, for immunogenicity analyses that are use subcohort only and are not enriched by cases outside subcohort
+wts_table <- dat_proc %>%
+  dplyr::filter(Perprotocol == 1 & EventTimePrimaryD57 >= 7) %>%
+  with(table(tps.stratum, TwophasesampInd))
+wts_norm <- rowSums(wts_table) / wts_table[, 2]
+dat_proc$wt.subcohort <- wts_norm[dat_proc$tps.stratum]
+dat_proc$wt.subcohort[!with(dat_proc, Perprotocol == 1 & EventTimePrimaryD57>=7)] <- NA
+
+
 
 
 ###############################################################################

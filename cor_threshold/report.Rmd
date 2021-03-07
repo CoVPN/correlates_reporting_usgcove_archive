@@ -10,9 +10,11 @@ output:
   toc: true
 ---
 
+```{r, include = FALSE}
+library(here)
+here::i_am("cor_threshold/report.Rmd")
+```
 
-
-```{r, child=c('cor_threshold_report.Rmd')}
-
+```{r, child=here("cor_threshold", 'cor_threshold_report.Rmd')}
 
 ```

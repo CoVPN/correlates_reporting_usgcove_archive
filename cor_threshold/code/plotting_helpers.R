@@ -92,6 +92,8 @@ generate_tables <- function(marker, num_show = 10) {
   colnames(esttmle_table) <- c("log10-Threshold", "Threshold", "Risk estimate", "CI left", "CI right", "CI left", "CI right")
   # Save nice latex table
   index_to_show <- unique(round(seq.int(1, nrow(esttmle_table), length.out = num_show)))
+  print(esttmle_table)
+  print(paste0("I'm in the function running tables for ", marker ))
   rownames(esttmle_table) <- NULL
   kable(esttmle_table[index_to_show, c(1, 2, 3, 4, 5)], format = "latex", row.names = F, booktabs = TRUE) %>%
     kable_styling(latex_options = c("scaled_down", "striped"), ) %>%

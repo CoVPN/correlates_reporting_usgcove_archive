@@ -120,3 +120,4 @@ Remotes:
 URL: https://github.com/CoVPN/correlates_reporting
 BugReports: https://github.com/CoVPN/correlates_reporting/issues
 RoxygenNote: 7.1.1
+License: GPL (>= 3)

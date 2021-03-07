@@ -6,7 +6,7 @@ output: pdf_document
 
 Project directory: `correlates_reporting/immuno_graphical`
 
-Specifications:
+Specifications: `correlates_reporting/immuno_graphical/verification/graphical_specifications.md`
 
 Other Background Information: N/A 
 
@@ -46,12 +46,12 @@ signature_table <- function(people){
 
 tibble::tribble(
   ~ name,                ~ role,
-  "Dr. Peter Gilbert",  "Specifier/Manager",
+  "Dr. Peter Gilbert",  "Manager",
   "Dr. David Benkeser", "Programmer",
   "Nima Hejazi",        "Programmer",
   "Chenchen Yu",        "Programmer",
-  "Kendric Li",         "Programmer",
-  "",                   "Tester" 
+  "Kendric Li",         "Specifier/Programmer",
+  "Di Lu",              "Tester" 
 ) %>% 
   signature_table()
 
@@ -67,9 +67,10 @@ For code review, the tester will review the programmers code directly from the c
 
 The plots targeted for independent double programming include:
 
-  - Plot 1; Plot title
-  - Plot 3; Plot title
-  - Plot 45; Plot title
+  - Plot 1.3; Pair plots of D57 Ab markers: baseline negative vaccine arm (pairs_Day57_Markers_BaselineNeg_vaccine_arm_mock.png)
+  - Plot 1.24; RCDF plots for D57 Ab markers: by baseline status for the vaccine arm (Marker_Rcdf_Day57_trt_vaccine_bstatus_both_mock.png)
+  - Plot 1.32; Boxplots of D57 Ab markers: baseline negative vaccine + placebo arms (boxplots_Day57_x_trt_BaselineNeg_mock.png)
+  - Plot 1.47; Spaghetti plots of Ab markers over time: baseline negative vaccine + placebo arm (Spaghetti_plot_BaselineNeg_mock.png)
 
 Mock data used in the verification can be found in the `COVIDcorr` R package, available at https://github.com/CoVPN/correlates_mockdata. Any use of this code outside of the mock data is not guaranteed and is subject to additional verification.
 

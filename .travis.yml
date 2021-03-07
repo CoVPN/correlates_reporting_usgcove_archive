@@ -53,12 +53,8 @@ before_script:
 # build reports via included Make recipes
 script:
   - make data_processed
-  # - make immuno_report
-  - ls -a cor_threshold/figs/pointwise_CI
-  - ls -a cor_threshold/figs/simultaneous_CI
+  - make immuno_report
   - make cor_report
-  - ls -a cor_threshold/figs/pointwise_CI
-  - ls -a cor_threshold/figs/simultaneous_CI
   # - make cop_report
 
 # push reports to gh-pages branch

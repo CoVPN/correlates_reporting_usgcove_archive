@@ -15,7 +15,7 @@ output:
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.9\textwidth]{`r here::here("cor_threshold", "figs", "pointwise_CI", paste0("pointwise_CI/PLOT_Day", day, key, "_pointwiseCI.pdf"))`}
+\includegraphics[width=0.9\textwidth]{`r here::here("cor_threshold", "figs", "pointwise_CI", paste0("PLOT_Day", day, key, "_pointwiseCI.pdf"))`}
 \caption{Adjusted threshold-response function for a range of thresholds of the
   Day `r day` `r marker` activity levels with point-wise 95\% confidence intervals. The dashed red line marks the threshold after which no more COVID events are observed. }
 \end{figure}

@@ -29,9 +29,9 @@ ls -l
 # stage, commit, push copied files to branch gh-pages
 if [ "${TRAVIS_PULL_REQUEST}" = "false" ]
 then
-  COMMIT_MESSAGE="Update reports: PR #${TRAVIS_PULL_REQUEST} ($TRAVIS_COMMIT)."
+  COMMIT_MESSAGE="Update reports via ${TRAVIS_COMMIT}."
 else
-  COMMIT_MESSAGE="Update reports via commit ${TRAVIS_COMMIT}."
+  COMMIT_MESSAGE="Update reports: PR #${TRAVIS_PULL_REQUEST} ($TRAVIS_COMMIT)."
 fi
 git add --all *
 git commit -m "${COMMIT_MESSAGE}"

@@ -14,7 +14,7 @@ cache:
   directories:
   - "$HOME/.local/share/renv"
   - "$TRAVIS_BUILD_DIR/renv/library"
-  - "$HOM/.TinyTeX/"
+  - "$HOME/.TinyTeX/"
 
 # which versions of R should we build on
 r:

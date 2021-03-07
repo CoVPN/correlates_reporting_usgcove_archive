@@ -10,10 +10,10 @@ source(here::here("..", "..", "..", "_common.R"))
 
 # assume we will read in the iteration from the command line
 args <- commandArgs(trailingOnly = TRUE)
-this_seed <- as.numeric(args[[1]])
+this_seed <- 20210216
 # library can be 'demo' or 'prod'
-this_library <- args[[2]]
-print(paste0("Running super learner for seed ", this_seed.))
+this_library <- args[[1]]
+print(paste0("Running super learner for seed ", this_seed))
 
 library(SuperLearner)
 y <- readRDS(here::here("data_clean", "y.rds"))
@@ -63,7 +63,6 @@ inner_validation_folds <- ifelse(sum(y) <= 30, sum(y) - 1, 5)
 print(paste0("Super learner built using ", inner_validation_folds," folds of CV."))
 
 # NEED TO UPDATE BASED ON BHAVESH'S ADVICE
-this_seed <- 1234
 set.seed(this_seed)
 sl_fit <- SuperLearner(
   Y = y,

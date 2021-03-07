@@ -20,7 +20,7 @@ cvsl_out_slurm_prod: code/fit_cv_superlearner.R seeds clean_data
 
 ## sl_out_local_demo : run jobs locally to fit cv super learner with demo library
 sl_out_local_demo: code/fit_superlearner.R seeds clean_data code/submit_jobs_local.sh
-	Rscript code/fit_superlearner.R 1234 demo
+	Rscript code/fit_superlearner.R demo
 
 ## sl_out_slurm_prod : submit jobs to cluster to run cv super learner with production library
 sl_out_slurm_prod: code/fit_superlearner.R seeds clean_data
@@ -31,8 +31,12 @@ cvauc_table: code/get_cvauc.R
 	@echo "~~~~~~~~~~\nMake sure you've saved cvSuperLearner results\n~~~~~~~~~~\n" 
 	Rscript code/get_cvauc.R
 
+## risk_scores         : risk scores on the logit scale from superlearner fit
+risk_scores: code/get_risk_scores.R
+	Rscript code/get_risk_scores.R
+	
 ## report              : report results
-report: report.Rmd
+report: report.Rmd cvauc_table
 	Rscript -e "rmarkdown::render('report.Rmd')"
 
 ## clean               : remove contents of output and data_clean

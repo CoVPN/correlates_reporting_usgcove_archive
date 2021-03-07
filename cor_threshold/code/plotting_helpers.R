@@ -94,6 +94,8 @@ generate_tables <- function(marker, num_show = 10) {
   index_to_show <- unique(round(seq.int(1, nrow(esttmle_table), length.out = num_show)))
   print(esttmle_table)
   print(paste0("I'm in the function running tables for ", marker ))
+  print(paste0("here's where here thinks we are: ", here::here(
+      "figs", "pointwise_CI")))
   rownames(esttmle_table) <- NULL
   kable(esttmle_table[index_to_show, c(1, 2, 3, 4, 5)], format = "latex", row.names = F, booktabs = TRUE) %>%
     kable_styling(latex_options = c("scaled_down", "striped"), ) %>%
@@ -101,6 +103,10 @@ generate_tables <- function(marker, num_show = 10) {
       "figs", "pointwise_CI",
       paste0("TABLE_", marker, "_pointwiseCI.pdf")
     ))
+  print(paste0("I saved this file: ", here::here(
+      "figs", "pointwise_CI",
+      paste0("TABLE_", marker, "_pointwiseCI.pdf")
+    )))
   kable(esttmle_table[index_to_show, c(1, 2, 3, 6, 7)], format = "latex", row.names = F, booktabs = TRUE) %>%
     kable_styling(latex_options = c("scaled_down", "striped"), ) %>%
     save_kable(file = here::here(

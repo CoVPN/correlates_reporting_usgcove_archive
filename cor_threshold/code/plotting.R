@@ -26,8 +26,7 @@ for (marker in markers) {
   get_plot(marker, simultaneous_CI = T, monotone = F)
   get_plot(marker, simultaneous_CI = F, monotone = T)
   get_plot(marker, simultaneous_CI = T, monotone = T)
-  tmp <- generate_tables(marker, num_show = 10)
+  generate_tables(marker, num_show = 10)
   #get_inverse_plot(marker, F)
   #get_inverse_plot(marker, T)
 }
-tmp

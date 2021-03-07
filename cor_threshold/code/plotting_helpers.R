@@ -86,32 +86,23 @@ generate_tables <- function(marker, num_show = 10) {
   esttmle_table[, 5] <- round(esttmle_table[, 5], 5)
   esttmle_table[, 6] <- round(esttmle_table[, 6], 5)
   esttmle_table[, 7] <- round(esttmle_table[, 7], 5)
-  esttmle_table <- data.frame(esttmle_table, gsub("e\\+0", "*10^", format(10^esttmle_table[, 1], scientific = T, digits = 3)))
+  esttmle_table <- data.frame(esttmle_table, paste0(gsub("e\\+0", " * 10$^", format(10^esttmle_table[, 1], scientific = T, digits = 3)), "$"))
   esttmle_table <- esttmle_table[, c(1, 8, 2, 4, 5, 6, 7)]
   esttmle_table[esttmle_table[, 3] < 0, 3] <- 0
-  colnames(esttmle_table) <- c("log10-Threshold", "Threshold", "Risk estimate", "CI left", "CI right", "CI left", "CI right")
+  colnames(esttmle_table) <- c("log$_{10}$-Threshold", "Threshold", "Risk estimate", "CI left", "CI right", "CI left", "CI right")
   # Save nice latex table
   index_to_show <- unique(round(seq.int(1, nrow(esttmle_table), length.out = num_show)))
-  print(esttmle_table)
-  print(paste0("I'm in the function running tables for ", marker ))
-  print(paste0("here's where here thinks we are: ", here::here(
-      "figs", "pointwise_CI")))
-  rownames(esttmle_table) <- NULL
-  kable(esttmle_table[index_to_show, c(1, 2, 3, 4, 5)], format = "latex", row.names = F, booktabs = TRUE) %>%
-    kable_styling(latex_options = c("scaled_down", "striped"), ) %>%
-    save_kable(file = here::here(
+  ptwise_tab_guts <- esttmle_table[index_to_show, c(1, 2, 3, 4, 5)]
+
+  saveRDS(ptwise_tab_guts, file = here::here(
       "figs", "pointwise_CI",
-      paste0("TABLE_", marker, "_pointwiseCI.pdf")
+      paste0("TABLE_", marker, "_pointwiseCI.rds")
     ))
-  print(paste0("I saved this file: ", here::here(
-      "figs", "pointwise_CI",
-      paste0("TABLE_", marker, "_pointwiseCI.pdf")
-    )))
-  kable(esttmle_table[index_to_show, c(1, 2, 3, 6, 7)], format = "latex", row.names = F, booktabs = TRUE) %>%
-    kable_styling(latex_options = c("scaled_down", "striped"), ) %>%
-    save_kable(file = here::here(
+  simul_tab_guts <- esttmle_table[index_to_show, c(1, 2, 3, 6, 7)]
+
+  saveRDS(simul_tab_guts, file = here::here(
       "figs", "simultaneous_CI",
-      paste0("TABLE_", marker, "_simultCI.pdf")
+      paste0("TABLE_", marker, "_simultCI.rds")
     ))
   return(list(pointwise = esttmle_table[index_to_show, c(1, 2, 3, 4, 5)], simult = esttmle_table[index_to_show, c(1, 2, 3, 6, 7)]))
 }

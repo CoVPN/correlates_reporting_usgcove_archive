@@ -21,11 +21,14 @@ sudo apt-get update
 # will take a couple minutes
 sudo apt-get install -y r-base r-base-dev 
 
-# install pandoc
+# install recent version of pandoc + citeproc
 sudo apt-get install -y pandoc
+sudo apt-get install -y pandoc-citeproc
 
-# install texlive
+# install texlive + extras
 sudo apt-get install -y texlive
+sudo apt-get install -y texlive-latex-extra
+sudo apt-get install -y texlive-fonts-extra 
 ```
 
 ### Setting up GitHub credentials

@@ -1031,13 +1031,6 @@
       "Repository": "CRAN",
       "Hash": "1ebfdc8a3cfe8fe19184f5481972b092"
     },
-    "magick": {
-      "Package": "magick",
-      "Version": "2.6.0",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "ffc87958461a1d2a5ec4b36035b87b94"
-    },
     "magrittr": {
       "Package": "magrittr",
       "Version": "2.0.1",

@@ -8,7 +8,8 @@
 _book
 _bookdown_files
 packages.bib
-
+cor_threshold/figs/simultaneous_CI/*.rds
+cor_threshold/figs/pointwise_CI/*.rds
 # ignore build directories
 _report_immuno/*.pdf
 _report_immuno/*.html
@@ -16,3 +17,4 @@ _report_cor/*.pdf
 _report_cor/*.html
 _report_cop/*.pdf
 _report_cop/*.html
+data_clean/.README.md.swp

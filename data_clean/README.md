@@ -13,7 +13,7 @@ The data sets represent an expected COVID-19 vaccine efficacy
 
 ## Some derived variables include
 
-* `TwophasesampInd`: a derived variable which is defined as `Perprotocol==1 &
+* `TwophasesampInd`: a derived variable which is defined as `Fullvaccine==1 &
   (SubcohortInd==1 | case)` &
   `(has baseline, D29 and D57 spike and RBD binding data)`.
 * `race`: factor variable.
@@ -27,8 +27,9 @@ The data sets represent an expected COVID-19 vaccine efficacy
 * `Wstratum`: Stratum indicator 1-(4k+1). Differs from `tps.stratum` in
   that cases are in a separate stratum 33. Useful for computing sampling
   probabilities.
-* `wt`: Inverse sampling probability weight for the population for the D57 analyses (Perprotocol == 1 & EventTimePrimaryD57>=7). Set to NA for subjects outside that population.
-* `wt.2`: Inverse sampling probability weight for the population for the D29 analyses (EventTimePrimaryD29>=14 & Perprotocol == 1 | EventTimePrimaryD29>=7 & EventTimePrimaryD29<=13 & Fullvaccine==1). Set to NA for subjects outside that population.
+* `wt`: Inverse sampling probability weight for the D57 CoR analyses. Defined on the population (Perprotocol == 1 & EventTimePrimaryD57>=7). Set to NA for subjects outside that population.
+* `wt.2`: Inverse sampling probability weight for the D29 CoR analyses Defined on the population (EventTimePrimaryD29>=14 & Perprotocol == 1 | EventTimePrimaryD29>=7 & EventTimePrimaryD29<=13 & Fullvaccine==1). Set to NA for subjects outside that population.
+* `wt.subcohort`: Inverse sampling probability weight for the immunogenicity analyses, which use samples from the subcohort but not the cases outside the subcohort. Defined on the population (Perprotocol == 1 & EventTimePrimaryD57>=7). Set to NA for subjects outside that population.
 
 ## Derived variables for immunologic markers
 
@@ -95,4 +96,3 @@ The data sets represent an expected COVID-19 vaccine efficacy
    that after the data set is constructed. Thus, `Twophasesampind == 1` means
    that all markers have Day 1, 57 data, and the ppt is included in IPWCC
    analysis.
-

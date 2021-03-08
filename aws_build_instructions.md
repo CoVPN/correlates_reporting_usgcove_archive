@@ -20,6 +20,12 @@ sudo add-apt-repository 'deb https://cloud.r-project.org/bin/linux/ubuntu focal-
 sudo apt-get update 
 # will take a couple minutes
 sudo apt-get install -y r-base r-base-dev 
+
+# install pandoc
+sudo apt-get install -y pandoc
+
+# install texlive
+sudo apt-get install -y texlive
 ```
 
 ### Setting up GitHub credentials

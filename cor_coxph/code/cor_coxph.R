@@ -2,12 +2,13 @@
 # obligatory to append to the top of each script
 renv::activate(project = here::here(".."))
 
-## There is a bug on Windows that prevents renv from working properly. saved.system.libPaths provides a workaround:
-#if (.Platform$OS.type == "windows") saved.system.libPaths=paste0(Sys.getenv ("R_HOME"), "/library")
+# There is a bug on Windows that prevents renv from working properly. The following code provides a workaround:
+if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
+
 #if (.Platform$OS.type == "windows") {
 #    options(renv.config.install.transactional = FALSE)
 #    renv::restore(library=saved.system.libPaths, prompt=FALSE) # for a quick test, add: packages="backports"
-#    .libPaths(c(saved.system.libPaths, .libPaths()))
+#    .libPaths(c(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
 #} else renv::restore(prompt=FALSE)
 
 # after updating a package, run renv::snapshot() to override the global library record with your changes
@@ -65,7 +66,7 @@ if (pop=="57") {
 dat.vacc.pop$yy=dat.vacc.pop[["EventIndPrimaryD"%.%pop]]
 dat.plac.pop$yy=dat.plac.pop[["EventIndPrimaryD"%.%pop]]
 #
-design.vacc.seroneg<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd, data=dat.vacc.pop)
+design.vacc.seroneg<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=if(pop=="57") ~TwophasesampInd else ~TwophasesampInd.2, data=dat.vacc.pop)
 #
 t0=max(dat.vacc.pop[dat.vacc.pop[["EventIndPrimaryD"%.%pop]]==1, "EventTimePrimaryD"%.%pop]); myprint(t0)
 write(t0, file=paste0(save.results.to, "timepoints_cum_risk_"%.%study.name))

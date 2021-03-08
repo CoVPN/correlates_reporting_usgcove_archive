@@ -14,7 +14,12 @@ output:
 linkcolor: blue
 bibliography: ref.bib
 ---
+
+<!-- this file is a copy of report.Rmd with the change that cor_copxh is removed -->
+
+
 \newcommand{\studyname}{mock}
+
 
 \newcommand{\pathCoRoutput}{output/D}
 

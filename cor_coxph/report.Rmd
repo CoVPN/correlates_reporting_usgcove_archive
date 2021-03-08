@@ -1,8 +1,8 @@
 \newcommand{\studyname}{mock}
 
-```{r, echo=FALSE}
-here::i_am("cor_coxph/report.Rmd")
-```
+<!-- ```{r, echo=FALSE} -->
+<!-- here::i_am("cor_coxph/report.Rmd") -->
+<!-- ``` -->
 
 \newcommand{\pathCoRoutput}{cor_coxph/output/D}
 

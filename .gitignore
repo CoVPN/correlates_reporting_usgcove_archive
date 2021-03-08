@@ -23,3 +23,5 @@ cor_coxph/output/D57/.gitkeep
 cor_coxph/output/D29/.gitkeep
 cor_coxph/report - Copy.tex
 cor_coxph/report_sub - Copy.Rmd
+covpn_correlates_cor.Rmd
+covpn_correlates_cor.tex

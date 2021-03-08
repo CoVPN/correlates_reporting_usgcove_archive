@@ -26,7 +26,7 @@ dat$cohort_event <- factor(with(dat,
                                 ifelse(EventIndPrimaryD29==1 & EventIndPrimaryD57==0, "Intercurrent Cases",
                                        ifelse(Perprotocol==1 & EventIndPrimaryD29==1 & EventIndPrimaryD57==1, "PP Cases",
                                               ifelse(Perprotocol==1 & EventIndPrimaryD29==0 & EventIndPrimaryD57==0, "PP Non-cases", NA)))))
-
+dat <- dat[!is.na(dat$cohort_event),]
 
 
 ## arrange the dataset in the long form, expand by assay types

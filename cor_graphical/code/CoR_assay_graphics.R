@@ -14,24 +14,26 @@ library(ggplot2)
 # stratified by treatment group and event status, in baseline negative or positive subjects
 # We made four ggplot objects, each for one assay, and combine them with ggarrange
 #=========================================================================================================================
+wts <- c("wt", "wt.2", "wt", "wt.2", "wt")
 for (bstatus in 1:2) {
-  for (tt in 1:5){
+  for (tt in 2:5){
     subdat <- subset(dat.long.cor.subset, Bserostatus == bstatus.labels[bstatus])
+    subdat$TrtEvent <- paste(as.character(subdat$Trt), as.character(subdat$cohort_event), ", ")
     if (tt %in% c(3, 5)) {  ## day 57 analysis don't include intercurrent cases
       subdat <- subdat %>% filter(cohort_event != "Intercurrent Cases")
     }
     rcdf_list <- vector("list", 4)
     for (aa in 1:4) {
       rcdf_list[[aa]] <- ggplot(subset(subdat, assay == assays[aa]), 
-                                aes_string(x = times[tt], colour = "Trt:cohort_event", 
-                                           linetype = "Trt:cohort_event", weight = "wt")) +
+                                aes_string(x = times[tt], colour = "TrtEvent", 
+                                           linetype = "TrtEvent", weight = wts[tt])) +
         geom_step(aes(y = 1 - ..y..), stat = "ecdf", lwd = 1) +
         theme_pubr(legend = "none") +
         ylab("Reverse ECDF") + xlab(labels.axis[tt, aa]) +
         scale_x_continuous(labels = label_math(10^.x), limits = c(-2, 10), breaks = seq(-2, 10, 2)) +
         scale_color_manual(values = c("#1749FF", "#D92321", "#0AB7C9", "#FF6F1B", "#810094", "#378252", "#FF5EBF", "#3700A5", "#8F8F8F", "#787873")) +
         guides(linetype = "none",
-               color = guide_legend(nrow = 2, byrow = TRUE)) +
+               color = guide_legend(nrow = 3, byrow = TRUE)) +
         ggtitle(labels.title2[tt, aa]) +
         theme(plot.title = element_text(hjust = 0.5, size = 10),
               legend.title = element_blank(),
@@ -177,7 +179,7 @@ for (bstatus in 1:2) {
         geom_jitter(data = filter(subdat_jitter, assay == assays[aa] & Trt == "Vaccine"), mapping = aes(colour = cohort_event), width = 0.1, 
                     size = 1.4, show.legend = FALSE) +
         theme_pubr() + 
-        guides(alpha = "none") +
+        guides(alpha = "none", color = guide_legend(nrow = 2, byrow = TRUE)) +
         facet_wrap(~ demo_lab) +
         ylab(labels.axis[tt, aa]) + xlab("") + ggtitle(labels.title2[tt, aa]) +
         scale_color_manual(values = c("#1749FF", "#D92321", "#0AB7C9", "#FF6F1B", "#810094", "#378252", "#FF5EBF", "#3700A5", "#8F8F8F", "#787873")) +

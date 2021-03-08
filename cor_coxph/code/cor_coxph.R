@@ -20,12 +20,8 @@ dat.mock <- read.csv(here::here("..", "data_clean", data_name))
 dat.mock.vacc.seroneg <- readRDS(here::here("data_clean", "dat.mock.vacc.seroneg.rds"))
 marker.cutpoints <- readRDS(here::here("data_clean", "marker.cutpoints.rds"))
 
-# kyotil mostly contains code for formatting, but may also contain code for some estimation tasks
-library(kyotil)
-#remotes::install_github("youyifong/kyotil")
-# marginalizedRisk contains logic for computing marginalized risk curves
+library(kyotil) # p.adj.perm, getFormattedSummary
 library(marginalizedRisk)
-#remotes::install_github("youyifong/marginalizedRisk")
 library(tools) # toTitleCase
 library(survey)
 library(parallel)

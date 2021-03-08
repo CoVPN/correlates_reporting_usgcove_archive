@@ -94,15 +94,15 @@ dat_proc$URM[is.na(dat_proc$URM)] = 0
 # The code for tps.stratum and Wstratum are not trial specific since they are constructed on top of Bstratum
 ###############################################################################
 
-## Bstratum
-## Moderna: 1 ~ 3, defines the 3 baseline strata within trt/serostatus
-#dat_proc <- dat_proc %>%
-#  mutate(
-#    Bstratum = ifelse (URM==1, ifelse(Age >= 65, 1, ifelse(HighRiskInd == 1, 2, 3)), 3+ifelse(Age >= 65, 1, ifelse(HighRiskInd == 1, 2, 3)))
-#  )
-#names(Bstratum.labels) <- Bstratum.labels
+# Bstratum: randomization strata
+# Moderna: 1 ~ 3, defines the 3 baseline strata within trt/serostatus
+dat_proc <- dat_proc %>%
+  mutate(
+    Bstratum = ifelse (URM==1, ifelse(Age >= 65, 1, ifelse(HighRiskInd == 1, 2, 3)), 3+ifelse(Age >= 65, 1, ifelse(HighRiskInd == 1, 2, 3)))
+  )
+names(Bstratum.labels) <- Bstratum.labels
 
-# demo.stratum
+# demo.stratum: correlates sampling strata
 # Moderna: 1 ~ 6 defines the 6 baseline strata within trt/serostatus
 dat_proc <- dat_proc %>%
   mutate(

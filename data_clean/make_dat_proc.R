@@ -122,11 +122,10 @@ dat_proc$wt <- wts_norm[dat_proc$Wstratum]
 dat_proc$wt[!with(dat_proc, Perprotocol == 1 & EventTimePrimaryD57>=7)] <- NA
 
 
-# wt.2, for D28 correlates analyses
+# wt.2, for D29 correlates analyses
 wts_table2 <- dat_proc %>%
   dplyr::filter(EventTimePrimaryD29 >= 14 & Perprotocol == 1 |
-                EventTimePrimaryD29 >= 7 & EventTimePrimaryD29 <= 13 &
-                Fullvaccine == 1) %>%
+                EventTimePrimaryD29 >= 7 & EventTimePrimaryD29 <= 13 & Fullvaccine == 1) %>%
   with(table(Wstratum, TwophasesampInd))
 wts_norm2 <- rowSums(wts_table2) / wts_table2[, 2]
 dat_proc$wt.2 <- wts_norm2[dat_proc$Wstratum]

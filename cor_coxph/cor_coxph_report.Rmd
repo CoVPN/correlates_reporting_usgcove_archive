@@ -16,7 +16,7 @@ bibliography: ref.bib
 ---
 \newcommand{\studyname}{mock}
 
-\newcommand{\pathCoRoutput}{output/D57}
+\newcommand{\pathCoRoutput}{output/D}
 
 ```{r, echo=FALSE}
 Day <- 57
@@ -27,7 +27,6 @@ Day <- 57
 
 \clearpage
 
-\renewcommand{\pathCoRoutput}{output/D29}
 
 ```{r, echo=FALSE}
 Day <- 29

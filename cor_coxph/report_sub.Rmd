@@ -14,7 +14,7 @@ The main regression model is the Cox proportional hazards model. All plots are m
 . Average follow-up time \input{\pathCoRoutput`r Day`/CoR_mean_followup_time_vacc_\studyname} days, maximum follow-up time \input{\pathCoRoutput`r Day`/CoR_max_followup_time_vacc_\studyname} days.\\
 **No. at-risk = number of per-protocol baseline negative vaccine recipients at-risk for COVID at 7 days post Day `r Day` visit; no. cases = number of this cohort with an observed COVID endpoints.
 
-    \label{tab:CoR_univariable_svycoxph_pretty_\studyname}
+    %\label{tab:CoR_univariable_svycoxph_pretty_\studyname}
 \end{table}
 
 
@@ -41,7 +41,7 @@ Cutpoints:
 \\
 **No. at-risk = number of per-protocol baseline negative vaccine recipients at-risk for COVID at 7 days post Day `r Day` visit; no. cases = number of this cohort with an observed COVID endpoints.\\
 ***Generalized Wald-test p-value of the null hypothesis that the hazard rate is constant across the Lower, Middle, and Upper tertile groups.
-    \label{tab:CoR_univariable_svycoxph_cat_pretty_\studyname}
+    %\label{tab:CoR_univariable_svycoxph_cat_pretty_\studyname}
 \end{table}
 \begin{figure}[H]
     \includegraphics[width=1\textwidth]{\pathCoRoutput`r Day`/hr_forest_bindSpike_\studyname}

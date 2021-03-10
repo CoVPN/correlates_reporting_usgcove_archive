@@ -35,7 +35,7 @@ library(SuperLearner)
 y <- readRDS(here::here("data_clean", "y.rds"))
 x <- readRDS(here::here("data_clean", "x.rds"))
 
-inner_validation_folds <- ifelse(sum(y) <= 30, sum(y) - 1, 5)
+inner_validation_folds <- ifelse(sum(y) <= 30, sum(y), 5)
 print(paste0("Super learners built using ", inner_validation_folds," folds of CV."))
 
 # super learner library

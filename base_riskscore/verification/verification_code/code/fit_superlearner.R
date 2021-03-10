@@ -59,7 +59,7 @@ if(this_library == "demo"){
   )
 }
 
-inner_validation_folds <- ifelse(sum(y) <= 30, sum(y) - 1, 5)
+inner_validation_folds <- ifelse(sum(y) <= 30, sum(y), 5)
 print(paste0("Super learner built using ", inner_validation_folds," folds of CV."))
 
 # NEED TO UPDATE BASED ON BHAVESH'S ADVICE
@@ -69,9 +69,9 @@ sl_fit <- SuperLearner(
   X = data.frame(x),
   SL.library = sl_library,
   family = binomial(),
-  obsWeights = rep(1, length(y)), 
   method = "method.CC_nloglik",
-  cvControl = list(V = inner_validation_folds)
+  cvControl = list(V = inner_validation_folds,
+                   stratifyCV = TRUE)
 )
 
 saveRDS(sl_fit, file = here::here("output", "sl_fit.rds"))

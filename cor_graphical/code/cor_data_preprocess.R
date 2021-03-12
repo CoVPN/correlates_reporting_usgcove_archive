@@ -26,7 +26,7 @@ dat$cohort_event <- factor(with(dat,
                                 ifelse(EventIndPrimaryD29==1 & EventIndPrimaryD57==0, "Intercurrent Cases",
                                        ifelse(Perprotocol==1 & EventIndPrimaryD29==1 & EventIndPrimaryD57==1, "PP Cases",
                                               ifelse(Perprotocol==1 & EventIndPrimaryD29==0 & EventIndPrimaryD57==0, "PP Non-cases", NA)))))
-
+dat <- dat[!is.na(dat$cohort_event),]
 
 
 ## arrange the dataset in the long form, expand by assay types
@@ -237,12 +237,9 @@ dat.longer.cor.subset <- dat.long.cor.subset %>% select(Ptid, Trt, Bserostatus, 
                                                         EventIndPrimaryD57, Perprotocol, cohort_event,
                                                         Age, age_geq_65_label, highrisk_label, age_risk_label,
                                                         sex_label, minority_label, Dich_RaceEthnic,
-                                                        assay, LLoD,
+                                                        assay, LLoD, wt, wt.2,
                                                         B, Day29, Day57, Delta29overB, Delta57overB) %>%
-  pivot_longer(!Ptid:LLoD, names_to = "time", values_to = "value")
-
-# only keep cases and non-cases
-dat.longer.cor.subset <- dat.longer.cor.subset %>% filter(!is.na(cohort_event))
+  pivot_longer(!Ptid:wt.2, names_to = "time", values_to = "value")
 
 # define response rates
 # for binding antibody, positive responses are defined as participants who had baseline concentration values below the LLOQ with detectable concentration above the assay LLOQ (34 IU/ml), or as participants with baseline values above the LLOQ with a 4-fold increase in concentration.

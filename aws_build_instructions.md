@@ -20,6 +20,15 @@ sudo add-apt-repository 'deb https://cloud.r-project.org/bin/linux/ubuntu focal-
 sudo apt-get update 
 # will take a couple minutes
 sudo apt-get install -y r-base r-base-dev 
+
+# install recent version of pandoc + citeproc
+sudo apt-get install -y pandoc
+sudo apt-get install -y pandoc-citeproc
+
+# install texlive + extras
+sudo apt-get install -y texlive
+sudo apt-get install -y texlive-latex-extra
+sudo apt-get install -y texlive-fonts-extra libfontconfig1-dev
 ```
 
 ### Setting up GitHub credentials
@@ -97,6 +106,14 @@ The pipeline expects data to be formatted according to documentation [...](https
 
 ### Workflow for building reports
 
+#### Updating `renv`
+
+Once an image has been built that includes the GitHub repository, the general work flow will be to
+- `git pull` the updated `correlates_reporting` repository;
+- open `R` in the `correlates_reporting` directory;
+- run `renv::restore()` to update `R` package list;
+- exit `R` and proceed to report building below.
+
 #### Immunogenecity report
 
 The general workflow that we have developed relies on the following steps:
@@ -107,17 +124,10 @@ The general workflow that we have developed relies on the following steps:
 There are `make` commands for each of these three steps.
 
 ```bash
-make data_processed
-# takes ~10 minutes
-make immuno_analysis
 make immuno_report
 ```
 
-The compiled `pdf` report will appear in `correlates_reporting/_book/covpn_correlates_immuno.pdf`. From the command line, make a copy of this report to the main directory.
-
-```bash
-cp _book/covpn_correlates_immuno.pdf covpn_correlates_immuno.pdf
-```
+The compiled `pdf` report will appear in `_report_immuno/covpn_correlates_immuno.pdf`.
 
 The immunogenecity report is outcome blinded and may be used both to validate the veracity of the assay data and to inform other aspects of the correlates analysis. 
 
@@ -126,9 +136,23 @@ The immunogenecity report is outcome blinded and may be used both to validate th
 After the immunogenecity report has been satisfactorily examined, a correlates report can be generated using `make` commands as follows.
 
 ```bash
-# takes ... minutes
-make cor_analysis
 make cor_report
 ```
 
-The compiled `pdf` report will appear in `correlates_reporting/_book/covpn_correlates_cor.pdf`.
+The compiled `pdf` report will appear in `_report_cor/covpn_correlates_cor.pdf`.
+
+For test builds, we recommend turning town the number of bootstrap and permutation resamples as follows.
+
+```bash
+# from the correlates_reporting directory
+sed -i '/B=/c\B=20' cor_coxph/code/params.R
+sed -i '/numPerm=/c\numPerm=20' cor_coxph/code/params.R
+```
+
+These options can be reset to their original values as follows.
+
+```bash
+# from the correlates_reporting directory
+sed -i '/B=/c\B=1e3' cor_coxph/code/params.R
+sed -i '/numPerm=/c\numPerm=1e4' cor_coxph/code/params.R
+```

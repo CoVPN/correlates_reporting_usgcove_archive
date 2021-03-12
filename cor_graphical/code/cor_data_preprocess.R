@@ -15,19 +15,18 @@ dat.mock$wt.2[is.na(dat.mock$wt.2)] <- 0
 # load parameters
 source(here("code", "params.R"))
 
-## setting the floor values
 
 ################################################ follow the email, change numbers and change ULOQ
 ################################################
 dat <- as.data.frame(dat.mock)
 
 ## label the subjects according to their case-control status
-# add case vs non-case indicators
+## add case vs non-case indicators (NA?)
 dat$cohort_event <- factor(with(dat,
                                 ifelse(EventIndPrimaryD29==1 & EventIndPrimaryD57==0, "Intercurrent Cases",
-                                       ifelse(Perprotocol==1 & EventIndPrimaryD29==1 & EventIndPrimaryD57==1, "PP Cases", 
+                                       ifelse(Perprotocol==1 & EventIndPrimaryD29==1 & EventIndPrimaryD57==1, "PP Cases",
                                               ifelse(Perprotocol==1 & EventIndPrimaryD29==0 & EventIndPrimaryD57==0, "PP Non-cases", NA)))))
-
+dat <- dat[!is.na(dat$cohort_event),]
 
 
 ## arrange the dataset in the long form, expand by assay types
@@ -38,7 +37,7 @@ dat.long.subject_level <- dat[, c(
   "EthnicityUnknown", "HighRiskInd", "Age", "BMI", "Sex",
   "Bserostatus", "Fullvaccine", "Perprotocol", "EventIndPrimaryD29",
   "EventIndPrimaryD57", "SubcohortInd", "age.geq.65", "TwophasesampInd",
-  "Bstratum", "wt", "race",
+  "Bstratum", "wt", "wt.2", "race",
   "WhiteNonHispanic", "cohort_event"
 )] %>%
   replicate(length(assays),., simplify = FALSE) %>%
@@ -97,14 +96,12 @@ cor.subset.id <- dat.cor.subset$Ptid
 
 dat.long.cor.subset <- dat.long[dat.long$Ptid %in% cor.subset.id, ]
 # add Hispanic or Latino vs. Not Hispanic or Latino variable
-dat.long.cor.subset$Dich_RaceEthnic = with(dat.long.cor.subset, 
-                                           ifelse(EthnicityHispanic==1, "Hispanic or Latino", 
+dat.long.cor.subset$Dich_RaceEthnic = with(dat.long.cor.subset,
+                                           ifelse(EthnicityHispanic==1, "Hispanic or Latino",
                                                   ifelse(EthnicityHispanic==0 & EthnicityNotreported==0 & EthnicityUnknown==0, "Not Hispanic or Latino", NA)))
 
 # add LLoD value to show in the plot
-dat.long.cor.subset$LLoD = with(dat.long.cor.subset, 
-                                ifelse(assay %in% c("bindSpike","bindRBD"), log10(20),
-                                       ifelse(assay %in% c("pseudoneutid50","pseudoneutid80"), log10(10), NA)))
+dat.long.cor.subset$LLoD = log10(llods[dat.long.cor.subset$assay])
 
 
 # reset Delta29overB & Delta57overB for response call later using LLoD & ULoQ truncated data at Day 1, Day 29, Day 57
@@ -236,16 +233,13 @@ dat.long.cor.subset$age_minority_label <-
 
 
 # long to longer format by time
-dat.longer.cor.subset <- dat.long.cor.subset %>% select(Ptid, Trt, Bserostatus, EventIndPrimaryD29, 
+dat.longer.cor.subset <- dat.long.cor.subset %>% select(Ptid, Trt, Bserostatus, EventIndPrimaryD29,
                                                         EventIndPrimaryD57, Perprotocol, cohort_event,
-                                                        Age, age_geq_65_label, highrisk_label, age_risk_label, 
-                                                        sex_label, minority_label, Dich_RaceEthnic, 
-                                                        assay, LLoD,
+                                                        Age, age_geq_65_label, highrisk_label, age_risk_label,
+                                                        sex_label, minority_label, Dich_RaceEthnic,
+                                                        assay, LLoD, wt, wt.2,
                                                         B, Day29, Day57, Delta29overB, Delta57overB) %>%
-  pivot_longer(!Ptid:LLoD, names_to = "time", values_to = "value") 
-
-# only keep cases and non-cases
-dat.longer.cor.subset <- dat.longer.cor.subset %>% filter(!is.na(cohort_event))
+  pivot_longer(!Ptid:wt.2, names_to = "time", values_to = "value")
 
 # define response rates
 # for binding antibody, positive responses are defined as participants who had baseline concentration values below the LLOQ with detectable concentration above the assay LLOQ (34 IU/ml), or as participants with baseline values above the LLOQ with a 4-fold increase in concentration.
@@ -253,12 +247,12 @@ dat.longer.cor.subset <- dat.longer.cor.subset %>% filter(!is.na(cohort_event))
 dat.longer.cor.subset <- dat.longer.cor.subset %>%
   mutate(
     time = ifelse(time=="B","Day 1", ifelse(time=="Day29","Day 29", ifelse(time=="Day57","Day 57", time))),
-    
+
     pos_threshold = ifelse(assay %in% c("bindSpike","bindRBD"), log10(34),
                            ifelse(assay %in% c("pseudoneutid50","pseudoneutid80"), log10(10), NA)),
-    
+
     baseline_lt_thres = ifelse(time=="Day 1" & value >= pos_threshold, 1, 0),
-    increase_4F_D29 = ifelse(time=="Delta29overB" & value>log10(4), 1, 0), 
+    increase_4F_D29 = ifelse(time=="Delta29overB" & value>log10(4), 1, 0),
     increase_4F_D57 = ifelse(time=="Delta57overB" & value>log10(4), 1, 0)) %>%
   group_by(Ptid, assay) %>%
   mutate(baseline_lt_thres_ptid=max(baseline_lt_thres),
@@ -267,8 +261,8 @@ dat.longer.cor.subset <- dat.longer.cor.subset %>%
   ungroup() %>%
   filter(time %in% c("Day 1","Day 29","Day 57")) %>%
   mutate(response = ifelse(baseline_lt_thres_ptid == 0 & value >= pos_threshold, 1,
-                           ifelse(baseline_lt_thres_ptid == 1 & time == "Day 1", 1, 
-                                  ifelse(baseline_lt_thres_ptid == 1 & time == "Day 29" & increase_4F_D29_ptid==1, 1, 
+                           ifelse(baseline_lt_thres_ptid == 1 & time == "Day 1", 1,
+                                  ifelse(baseline_lt_thres_ptid == 1 & time == "Day 29" & increase_4F_D29_ptid==1, 1,
                                          ifelse(baseline_lt_thres_ptid == 1 & time == "Day 57" & increase_4F_D57_ptid==1, 1,0)))))
 # subsets for violin/line plots
 #### figure specific data prep
@@ -278,35 +272,35 @@ dat.longer.cor.subset <- dat.longer.cor.subset %>%
 #### for Figure 1. intercurrent vs pp, case vs non-case, (Day 1), Day 29 Day 57
 groupby_vars1=c("Trt", "Bserostatus", "cohort_event", "time", "assay")
 
-dat.longer.cor.subset.plot1 <- 
+dat.longer.cor.subset.plot1 <-
   dat.longer.cor.subset %>% group_by_at(groupby_vars1) %>%
-  mutate(num = sum(response), 
-         denom=n(), 
+  mutate(num = sum(response),
+         denom=n(),
          RespRate = paste0(num,"/",denom,"=\n",round(num/denom*100, 1),"%"))
-saveRDS(dat.longer.cor.subset.plot1, file = here("data_clean", "longer_cor_data_plot1.rds"))  
+saveRDS(dat.longer.cor.subset.plot1, file = here("data_clean", "longer_cor_data_plot1.rds"))
 
 
-plot.25sample1 <- dat.longer.cor.subset.plot1 %>% 
+plot.25sample1 <- dat.longer.cor.subset.plot1 %>%
   group_by_at(groupby_vars1) %>%
-  sample_n((ifelse(n()>=25, 25, n())), replace=F) %>% filter(time=="Day 57") %>% 
+  sample_n((ifelse(n()>=25, 25, n())), replace=F) %>% filter(time=="Day 57") %>%
   ungroup() %>%
   select(c("Ptid", groupby_vars1[!groupby_vars1 %in% "time"])) %>%
   inner_join(dat.longer.cor.subset.plot1, by=c("Ptid", groupby_vars1[!groupby_vars1 %in% "time"]))
-saveRDS(plot.25sample1, file = here("data_clean", "plot.25sample1.rds"))  
+saveRDS(plot.25sample1, file = here("data_clean", "plot.25sample1.rds"))
 
 #### for Figure 3. intercurrent vs pp, case vs non-case, (Day 1) Day 29 Day 57, by if Age >=65 and if at risk
 groupby_vars3 <- c("Trt", "Bserostatus", "cohort_event", "time", "assay", "age_geq_65_label", "highrisk_label")
 
-dat.longer.cor.subset.plot3 <- 
+dat.longer.cor.subset.plot3 <-
   dat.longer.cor.subset %>% group_by_at(groupby_vars3) %>%
-  mutate(num = sum(response), 
-         denom=n(), 
+  mutate(num = sum(response),
+         denom=n(),
          RespRate = paste0(num,"/",denom,"=\n",round(num/denom*100, 1),"%"))
-saveRDS(dat.longer.cor.subset.plot3, file = here("data_clean", "longer_cor_data_plot3.rds"))  
+saveRDS(dat.longer.cor.subset.plot3, file = here("data_clean", "longer_cor_data_plot3.rds"))
 
-plot.25sample3 <-  dat.longer.cor.subset.plot3 %>% 
+plot.25sample3 <-  dat.longer.cor.subset.plot3 %>%
   group_by_at(groupby_vars3) %>%
-  sample_n((ifelse(n()>=25, 25, n())), replace=F) %>% filter(time=="Day 57") %>% 
+  sample_n((ifelse(n()>=25, 25, n())), replace=F) %>% filter(time=="Day 57") %>%
   ungroup() %>%
   select(c("Ptid", groupby_vars3[!groupby_vars3 %in% "time"])) %>%
   inner_join(dat.longer.cor.subset.plot3, by=c("Ptid", groupby_vars3[!groupby_vars3 %in% "time"]))

@@ -174,7 +174,7 @@ covid_corr_pairplots_by_time <- function(plot_dat, ## data for plotting
   }
   
   if (rr[2] - rr[1] < 2) {
-    rr <- floor(rr[1]):ceiling(rr[2])
+    rr <- c(floor(rr[1]), ceiling(rr[2]))
   }
   
   breaks <- floor(rr[1]):ceiling(rr[2])
@@ -826,6 +826,7 @@ covid_corr_spaghetti_facets <- function(plot_dat,
                                         y,
                                         id,
                                         color,
+                                        alpha = 0.6,
                                         facet_by,
                                         xlab = "Time",
                                         ylab = "Antibody marker value",
@@ -867,7 +868,7 @@ covid_corr_spaghetti_facets <- function(plot_dat,
     plot_dat, aes_string(x = x, y = y, group = id, color = color, shape = color)
   ) +
     geom_point(size = point_size) +
-    geom_line(lwd = lwd) +
+    geom_line(lwd = lwd, alpha = alpha) +
     guides(
       color = guide_legend(nrow = legend_nrow, byrow = TRUE)
     ) +

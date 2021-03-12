@@ -694,8 +694,16 @@ for (ii in 1:2) {  # 1 conditional on s,   2 is conditional on S>=s
 for (idx in 1:2) { # 1 with placebo lines, 2 without placebo lines. Implementation-wise, only difference is in ylim
 # ii=2; idx=2; a=assays[3]
     risks.all=get("risks.all."%.%ii)
-    ylim=range(sapply(risks.all, function(x) x$prob[1]), if(idx==1) prev.plac, prev.vacc, 0)
-    ylim[2]=ylim[2]*1.1; myprint(ylim)
+    
+    if (ii==2 & idx==2) {
+        # later values in prob may be wildly large due to lack of samples
+        ylim=range(sapply(risks.all, function(x) x$prob[1]), if(idx==1) prev.plac, prev.vacc, 0)
+        # add some white space at the top to write placebo overall risk
+        ylim[2]=ylim[2]*1.1
+    } else {
+        ylim=range(sapply(risks.all, function(x) x$prob), if(idx==1) prev.plac, prev.vacc, 0)
+    }
+    myprint(ylim)
     lwd=2
     
     mypdf(oma=c(0,0,0,0), onefile=F, file=paste0(save.results.to, "marginalized_risks", ii, ifelse(idx==1,"","_woplacebo"), "_"%.%study.name), mfrow=.mfrow)

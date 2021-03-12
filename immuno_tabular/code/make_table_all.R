@@ -96,6 +96,7 @@ names(tab_dm)<- c("subgroup", "Characteristics",
                   sprintf("Vaccine\n(N = %s)", sum(ds_s$Trt==1)),
                   sprintf("Total\n(N = %s)", nrow(ds_s)))
 
+print("Done with table 1") 
 ### Table 2. Responder Rates & Proportions of Magnitudes >= 2FR, 4FR
 # For each binding antibody marker, the estimated percentage of participants
 # defined as responders, and with concentrations >= 2x LLOD or >=
@@ -146,11 +147,14 @@ tab_rr <- inner_join(
     names_from = Ind, values_from = rslt) %>% 
   arrange(subgroup, Group, Visit, Arm, Baseline, Marker)
 
+
 tab_bind <- tab_rr %>% 
   dplyr::filter(Marker %in% c("Anti N IgG (IU/ml)", "Anti RBD IgG (IU/ml)", 
                               "Anti Spike IgG (IU/ml)")) %>% 
   select(subgroup, Group, Visit, Arm, Baseline, Marker, N, Responder, 
          `% Greater than 2xLLOD`,`% Greater than 4xLLOD`)
+
+print("Done with table2") 
 
 # Table 3 & 4. For the ID50 pseudo-virus & MN50 WT live virus neutralization 
 # antibody marker, the estimated percentage of participants defined as 
@@ -166,7 +170,7 @@ tab_wt <- tab_rr %>% dplyr::filter(Marker == "Live virus-nAb MN50") %>%
   select(subgroup, Group, Visit, Arm, Baseline, Marker, N, Responder,
          `% 2-Fold Rise`, `% 4-Fold Rise`)
 
-
+print("Done with table3 & 4") 
 # Table 5. Geometric mean titers (GMTs) and geometric mean concentrations (GMCs)
 # will be summarized along with their 95% CIs using the t-distribution
 # approximation of log-transformed concentrations/titers (for each of the 5
@@ -203,6 +207,7 @@ tab_gmt <- tab_gm %>%
   arrange(subgroup, Group, Visit, Arm, Baseline, Marker) %>% 
   select(subgroup, Group, Visit, Arm, Baseline, Marker, N, `GMT/GMC`) 
 
+print("Done with table5") 
 ### Table 6. GMTRs/GMCRs will be summarized with 95% CI (t-distribution 
 # approximation) for any post-baseline values compared to baseline, and
 # post-Day 57 values compared to Day 57
@@ -232,6 +237,7 @@ tab_gmr <- tab_gm %>%
   select(subgroup, Group, Visit, Arm, Baseline, Marker, N,  
          `Baseline GMT/GMC`, `Post Baseline GMT/GMC`, `GMTR/GMCR`)
 
+print("Done with table6") 
 ### Table 7. The ratios of GMTs/GMCs will be estimated between groups with the
 # two-sided 95% CIs calculated using t-distribution approximation of 
 # log-transformed titers/concentrations
@@ -263,7 +269,6 @@ gmtr <- ds_mag_l_gmtr %>%
   map_dfr(get_gmtr, comp_v=comp_v, f_v = f_v, sub_grp_col = sub_grp_col, 
           weights = "wt.subcohort") 
 
-
 tab_gmt_gmtr <- inner_join(
   tab_gmt, 
   tab_gmt %>% 
@@ -292,6 +297,7 @@ tab_gmtr <- gmtr %>%
   select(subgroup, Visit, Arm, Baseline, Marker, Comparison, `Group 1 GMT/GMC`,
          `Group 2 GMT/GMC`, `Ratios of GMT/GMC`)  
 
+print("Done with table7") 
 ### Table 8. The differences in the responder rates, 2FRs, 4FRs between groups 
 # will be computed along with the two-sided 95% CIs by the Wilson-Score
 # method without continuity correction (Newcombe, 1998).
@@ -323,6 +329,7 @@ tab_rrdiff <- rrdiff %>%
   select(subgroup, Group, Visit, Baseline, Marker, Comparison, Responder,
          `% 2-Fold Rise`, `% 4-Fold Rise`)
 
+print("Done with table8") 
 # 8b Responder rate differences between cases vs non-cases & 95% CI of 
 # Titers or Concentrations
 comp_v <- "Group"
@@ -351,6 +358,7 @@ tab_rrdiff_case <- rrdiff_case %>%
               names_from = Ind,
               values_from = rslt) 
 
+print("Done with table9") 
 # Generate a full table with all the estimates: response rates, GMT, GMTR, etc.
 # (Per Peter's email Feb 5, 2021)
 # Cases vs Non-cases
@@ -466,7 +474,7 @@ case_vacc_pos <- filter(tab_key_case, Arm == "Vaccine", Baseline == "Positive") 
 case_plcb_pos <- filter(tab_key_case, Arm == "Placebo", Baseline == "Positive") %>% 
   select(-c(Arm, Baseline))
 
-
+print("Done with table10-12") 
 # Generate a full table with all the estimates: response rates, GMT, GMTR, etc.
 # (Per Peter's email Feb 5, 2021) 
 # Vaccine vs Placebo within Baseline status
@@ -518,6 +526,7 @@ tab_neg <- filter(tab_key_Rx, Baseline == "Negative") %>%
 tab_pos <- filter(tab_key_Rx, Baseline == "Positive") %>% 
   select(-c(Baseline))
 
+print("Done with table13-14") 
 ###################################################
 
 comp_v <- "Baseline"
@@ -593,3 +602,4 @@ save(tlf, tab_dm, tab_bind, tab_pseudo, tab_wt, tab_gmt,
      tab_neg, tab_pos, tab_vacc, tab_plcb,
      file = here::here("output", "Tables.Rdata"))
 
+print("Done with table15") 

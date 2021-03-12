@@ -515,6 +515,7 @@ tab_neg <- filter(tab_key_Rx, Baseline == "Negative") %>%
   select(-c(Baseline))
 tab_pos <- filter(tab_key_Rx, Baseline == "Positive") %>% 
   select(-c(Baseline))
+
 ###################################################
 
 comp_v <- "Baseline"
@@ -522,8 +523,7 @@ f_v <- as.formula(sprintf("response ~ %s", comp_v))
 sub_grp_col_bl <- c("Rx", "subgroup", "Marker", "Visit", "resp_cat")
 
 ds_resp_l_bl <- ds_resp_l %>% 
-  dplyr::filter(subgroup == "All participants" & Ind == "Responder" 
-                & Rx == "Vaccine")
+  dplyr::filter(subgroup == "All participants" & Ind == "Responder")
 
 rrdiff_bl <- ds_resp_l_bl %>%
   group_split(across(all_of(sub_grp_col_bl))) %>%
@@ -563,30 +563,35 @@ tab_gmtr_bl <- gmtr_bl %>%
   select(Rx, Marker, Visit, subgroup, comp, `Ratios of GMT/GMC`) %>% 
   arrange(subgroup, Rx, Visit, Marker)
 
-tab_vacc <- full_join(tab_rr, 
-                      tab_gmt, 
-                      by = c("Rx", "subgroup", "Group",
+ tab_bl <- full_join(tab_rr, 
+                     tab_gmt, 
+                     by = c("Rx", "subgroup", "Group",
                              "Baseline", "Visit", "Marker", "N")) %>%
-  dplyr::filter(as.character(subgroup) == "All participants" & Rx == "Vaccine") %>%
-  pivot_wider(id_cols = c(subgroup, Group, Baseline, Marker, Visit),
+  dplyr::filter(as.character(subgroup) == "All participants") %>%
+  pivot_wider(id_cols = c(Rx, subgroup, Group, Baseline, Marker, Visit),
               names_from=Baseline, 
               values_from=c(N, Responder, `GMT/GMC`)
   ) %>% 
   # Join with RR difference (tab_rr)
   inner_join(tab_rrdiff_bl, 
-             by = c("subgroup", "Visit", "Marker")
+             by = c("subgroup", "Rx","Visit", "Marker")
   ) %>% 
   # Join with GMT/GMC Ratios (tab_gmtrC) 
   inner_join(tab_gmtr_bl, 
-             by = c("Visit", "Marker", "subgroup")
+             by = c("Visit", "Rx","Marker", "subgroup")
   ) %>% 
-  select(Visit, Marker, `N_Negative`, `Responder_Negative`, 
+  select(Rx, Visit, Marker, `N_Negative`, `Responder_Negative`, 
          `GMT/GMC_Negative`, `N_Positive`, `Responder_Positive`, 
          `GMT/GMC_Positive`, rslt, `Ratios of GMT/GMC`) %>% 
   arrange(Visit, Marker)
 
+tab_vacc <- tab_bl %>% dplyr::filter(Rx == "Vaccine")
+tab_plcb <- tab_bl %>% dplyr::filter(Rx == "Placebo")
+
+
+
 save(tlf, tab_dm, tab_bind, tab_pseudo, tab_wt, tab_gmt,
      tab_gmr, tab_gmtr, tab_rrdiff, case_vacc_neg, case_vacc_pos, case_plcb_pos, 
-     tab_neg, tab_pos, tab_vacc,
+     tab_neg, tab_pos, tab_vacc, tab_plcb,
      file = here::here("output", "Tables.Rdata"))
 

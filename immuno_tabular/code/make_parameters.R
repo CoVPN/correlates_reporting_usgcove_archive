@@ -141,8 +141,21 @@ tlf <-
       table_footer = "",
       col_name = c("Visit", "Marker", "N", "Resp rate", "GMT/GMC", "N",
                    "Resp rate", "GMT/GMC", "Resp Rate Difference", "GMTR/GMCR"),
-      header_above1 = c("", "", "Vaccine" = 3, "Placebo" = 3, "Comparison" = 2),
+      header_above1 = c("", "", "Baseline SARS-CoV-2 Negative" = 3, 
+                        "Baseline SARS-CoV-2 Positive" = 3, "Comparison" = 2),
       header_above2 = c("", "", "Vaccine Recipients" = 8)
+    ),
+    
+    tab_plcb = list(
+      table_name = "placebo recipients",
+      table_header = "Antibody levels in the per-protocol cohort
+      (placebo recipients)",
+      table_footer = "",
+      col_name = c("Visit", "Marker", "N", "Resp rate", "GMT/GMC", "N",
+                   "Resp rate", "GMT/GMC", "Resp Rate Difference", "GMTR/GMCR"),
+      header_above1 = c("", "", "Baseline SARS-CoV-2 Negative" = 3, 
+                        "Baseline SARS-CoV-2 Positive" = 3, "Comparison" = 2),
+      header_above2 = c("", "", "Placebo Recipients" = 8)
     ),
     
     case_vacc_neg = list(

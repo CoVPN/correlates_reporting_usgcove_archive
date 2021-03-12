@@ -843,7 +843,7 @@ for (a in assays) {
     # cutpoints
     q.a=marker.cutpoints[[a]][["D"%.%pop]]
     
-    mymatplot(out$time, out$risk, lty=1:3, col=c("green3","green","darkgreen"), type="l", lwd=lwd, make.legend=F, ylab="Probability* of COVID by Day t", ylim=ylim, xlab="", las=1, xlim=c(0,t0), at=x.time, xaxt="n")
+    mymatplot(out$time, out$risk, lty=1:3, col=c("green3","green","darkgreen"), type="l", lwd=lwd, make.legend=F, ylab="Probability* of COVID by Day "%.%t0, ylim=ylim, xlab="", las=1, xlim=c(0,t0), at=x.time, xaxt="n")
     title(xlab="Days Since Day "%.%pop%.%" Visit", line=2)
     title(main=labels.title["Day"%.%pop,a], cex.main=.9, line=2)
     mtext(bquote(cutpoints: list(.(formatDouble(10^q.a[1]/10^floor(q.a[1]),1)) %*% 10^ .(floor(q.a[1])), .(formatDouble(10^q.a[2]/10^floor(q.a[2]),1)) %*% 10^ .(floor(q.a[2])))), line= .25, cex=.8)   

@@ -144,12 +144,13 @@ tab_rr <- inner_join(
   pivot_wider(
     id_cols = c(subgroup, Group, Rx, Baseline, Marker, Visit, N),
     names_from = Ind, values_from = rslt) %>% 
-  arrange(subgroup, Group, Visit, Rx, Baseline, Marker)
+  arrange(subgroup, Group, Visit, Rx, Baseline, Marker) %>% 
+  rename(Arm = Rx)
 
 tab_bind <- tab_rr %>% 
   dplyr::filter(Marker %in% c("Anti N IgG (IU/ml)", "Anti RBD IgG (IU/ml)", 
                               "Anti Spike IgG (IU/ml)")) %>% 
-  select(subgroup, Group, Visit, Rx, Baseline, Marker, N, Responder, 
+  select(subgroup, Group, Visit, Arm, Baseline, Marker, N, Responder, 
          `% Greater than 2xLLOD`,`% Greater than 4xLLOD`)
 
 # Table 3 & 4. For the ID50 pseudo-virus & MN50 WT live virus neutralization 
@@ -160,10 +161,10 @@ tab_bind <- tab_rr %>%
 # Output: tab_pseudo & tab_wt
 
 tab_pseudo <- tab_rr %>% dplyr::filter(Marker == "Pseudovirus-nAb ID50") %>% 
-  select(subgroup, Group, Visit, Rx, Baseline, Marker, N, Responder,
+  select(subgroup, Group, Visit, Arm, Baseline, Marker, N, Responder,
          `% 2-Fold Rise`, `% 4-Fold Rise`)
 tab_wt <- tab_rr %>% dplyr::filter(Marker == "Live virus-nAb MN50") %>% 
-  select(subgroup, Group, Visit, Rx, Baseline, Marker, N, Responder,
+  select(subgroup, Group, Visit, Arm, Baseline, Marker, N, Responder,
          `% 2-Fold Rise`, `% 4-Fold Rise`)
 
 
@@ -195,13 +196,13 @@ tab_gm <- inner_join(
     group_by(subgroup, mag_cat, Group, Visit, Marker, Rx, Baseline) %>%
     summarise(N = n(), .groups = 'drop'),
   by = sub_grp_col
-) 
+) %>%   rename(Arm = Rx)
 
 tab_gmt <- tab_gm %>% 
   dplyr::filter(!grepl("Delta", mag_cat)) %>% 
   mutate(`GMT/GMC`= sprintf("%.0f\n(%.0f, %.0f)", 10^mag, 10^ci_l, 10^ci_u)) %>% 
-  arrange(subgroup, Group, Visit, Rx, Baseline, Marker) %>% 
-  select(subgroup, Group, Visit, Rx, Baseline, Marker, N, `GMT/GMC`) 
+  arrange(subgroup, Group, Visit, Arm, Baseline, Marker) %>% 
+  select(subgroup, Group, Visit, Arm, Baseline, Marker, N, `GMT/GMC`) 
 
 ### Table 6. GMTRs/GMCRs will be summarized with 95% CI (t-distribution 
 # approximation) for any post-baseline values compared to baseline, and
@@ -217,19 +218,19 @@ tab_gmt_gmr <- inner_join(
   tab_gmt %>% 
     filter(Visit != "Day 1") %>% 
     rename(`Post Baseline GMT/GMC` = `GMT/GMC`),
-  by = c("subgroup", "Rx", "Group", "Baseline", "N", "Marker")
+  by = c("subgroup", "Arm", "Group", "Baseline", "N", "Marker")
 ) %>% 
   mutate(Visit = paste0(gsub("ay ", "", Visit), " fold-rise over D1"))
 
 tab_gmr <- tab_gm %>% 
   dplyr::filter(grepl("Delta", mag_cat)) %>%
   mutate(`GMTR/GMCR`=sprintf("%.2f\n(%.2f, %.2f)", 10^mag, 10^ci_l, 10^ci_u)) %>% 
-  select(subgroup, Group, Rx, Baseline, Visit, N, Marker, `GMTR/GMCR`) %>% 
+  select(subgroup, Group, Arm, Baseline, Visit, N, Marker, `GMTR/GMCR`) %>% 
   inner_join(tab_gmt_gmr,
-             by = c("subgroup", "Group", "Rx", "Baseline", "Visit", "N", "Marker")
+             by = c("subgroup", "Group", "Arm", "Baseline", "Visit", "N", "Marker")
   ) %>% 
-  arrange(subgroup, Group, Visit, Rx, Baseline, Marker) %>% 
-  select(subgroup, Group, Visit, Rx, Baseline, Marker, N,  
+  arrange(subgroup, Group, Visit, Arm, Baseline, Marker) %>% 
+  select(subgroup, Group, Visit, Arm, Baseline, Marker, N,  
          `Baseline GMT/GMC`, `Post Baseline GMT/GMC`, `GMTR/GMCR`)
 
 ### Table 7. The ratios of GMTs/GMCs will be estimated between groups with the
@@ -287,10 +288,11 @@ tab_gmtr <- gmtr %>%
              by = c("Baseline", "Rx", "subgroup", "Marker", "Visit")) %>% 
   rename(Comparison = comp, 
          `Group 1 GMT/GMC` = `Group1`, 
-         `Group 2 GMT/GMC` = `Group2`) %>% 
-  arrange(subgroup, Visit, Rx, Baseline, Marker) %>% 
-  select(subgroup, Visit, Rx, Baseline, Marker, Comparison, `Group 1 GMT/GMC`,
-         `Group 2 GMT/GMC`, `Ratios of GMT/GMC`) %>% 
+         `Group 2 GMT/GMC` = `Group2`,
+         Arm = Rx) %>% 
+  arrange(subgroup, Visit, Arm, Baseline, Marker) %>% 
+  select(subgroup, Visit, Arm, Baseline, Marker, Comparison, `Group 1 GMT/GMC`,
+         `Group 2 GMT/GMC`, `Ratios of GMT/GMC`)  
 
 ### Table 8. The differences in the responder rates, 2FRs, 4FRs between groups 
 # will be computed along with the two-sided 95% CIs by the Wilson-Score

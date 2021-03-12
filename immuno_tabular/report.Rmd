@@ -56,10 +56,10 @@ for (i in 1:length(tlf)){
       subnum <- subnum + 1
       tab.j <- dplyr::filter(tab, !!as.name(loop) == j) 
       
-      if (!is.na(group_table_col)) {
-        tab.j <- mutate_at(tab.j, group_table_col, as.character)
-        tab.j <- group_table(data.frame(tab.j), group_table_col)
-        }
+      # if (!is.na(group_table_col)) {
+      #   tab.j <- mutate_at(tab.j, group_table_col, as.character)
+      #   tab.j <- group_table(data.frame(tab.j), group_table_col)
+      #   }
         
       tabjk <- kable(tab.j %>% select(-!!deselect),
                      format = "html",
@@ -74,19 +74,14 @@ for (i in 1:length(tlf)){
                  escape = FALSE)
       
       if (!is.na(pack_row)) {
-        tabjk <- pack_rows(tabjk, index = table(tab.j[pack_row]))
+        tabjk <- pack_rows(tabjk, index = table(droplevels(tab.j[pack_row])))
         }
     print(tabjk)
     cat("\n\n\\pagebreak\n")
     }
     
     } else {
-      
-      if (!is.na(group_table_col)){
-        tab <- mutate_at(tab, group_table_col, as.character)
-        tab <- group_table(tab, group_table_col)
-      }
-      
+
       tabk <- kable(
         if (is.na(deselect)) {tab} else {tab %>% select(-!!deselect)},
         format = "html", booktabs = TRUE, longtable = TRUE, escape = FALSE,
@@ -95,10 +90,11 @@ for (i in 1:length(tlf)){
         kable_styling(latex_options = "repeat_header") %>% 
         add_header_above(header_above1) %>%
         add_header_above(header_above2) %>%
-        footnote(general_title = "", general = footer_i, threeparttable = TRUE, escape = FALSE)
+        footnote(general_title = "", general = footer_i, 
+                 threeparttable = TRUE, escape = FALSE)
       
       if (!is.na(pack_row)) {
-        tabk <- pack_rows(tabk, index = table(tab[pack_row]))
+        tabk <- pack_rows(tabk, index = table(droplevels(tab[pack_row])))
         }
       print(tabk)
       cat("\n\n\\pagebreak\n")

@@ -11,7 +11,6 @@ base::load(here::here("data_clean", "params.Rdata"))
 
 library(survey)
 library(tidyverse)
-library(COVIDcorr)
 library(dplyr, warn.conflicts = FALSE)
 # Suppress summarise info
 options(dplyr.summarise.inform = FALSE)
@@ -92,7 +91,7 @@ ds_long <- ds_s %>%
   pivot_longer(
     cols = c(
       Age65C, HighRiskC, AgeRiskC, SexC, AgeSexC, ethnicityC, RaceEthC,
-      MinorityC, AgeMinorC, Case),
+      MinorityC, AgeMinorC),
     names_to = "subgroup", values_to = "subgroup_cat") %>%
   mutate(subgroup = factor(subgrp[subgroup], levels = subgrp)) %>%
   dplyr::filter(!subgroup_cat %in% c("", "Age < 65 ", "Age >= 65 ")) %>%
@@ -103,7 +102,7 @@ ds_all <- bind_rows(
   ds_long,
   ds_s %>% mutate(
     subgroup = factor("All participants", levels = subgrp),
-    subgroup_cat = "All participants"
+    subgroup_cat = ""
   )
 )
 
@@ -168,19 +167,16 @@ ds_resp_l <- pivot_longer(ds,
                           cols = all_of(resp_v), 
                           names_to = "resp_cat",
                           values_to = "response") %>%
-  inner_join(labels_all, by = "resp_cat") %>% 
-  mutate(weight = case_when(time == "Day57" ~ wt,
-                            time == "Day29" ~ wt.2))
+  inner_join(labels_all, by = "resp_cat")
+
 mag_v <- c(bAb_v, pnAb_v, lnAb_v, grep("DeltaDay", names(ds), value = T))
 ds_mag_l <- pivot_longer(ds,
                          cols = all_of(mag_v),
                          names_to = "mag_cat", values_to = "mag") %>%
   inner_join(labels_all %>% 
                distinct(mag_cat, time, marker, Visit, Marker, label.short), 
-             by = "mag_cat") %>% 
-  mutate(weight = case_when(time == "Day57" ~ wt,
-                            time == "Day29" ~ wt.2))
+             by = "mag_cat")
 
-save(ds, ds_s, ds_long, ds_resp_l, ds_mag_l, labels_all,
+save(ds_s, ds_long, ds_resp_l, ds_mag_l, labels_all,
      file = here::here("data_clean", "ds_all.Rdata")
 )

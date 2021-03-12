@@ -295,6 +295,7 @@ tlf <-
       table_name = "Ratios of GMTs/GMCs",
       table_header = "The ratios of GMTs/GMCs between groups",
       table_footer = " ",
+      deselect = "subgroup",
       group_table_col = c("subgroup","Rx", "Baseline", "Visit")
     ),
     

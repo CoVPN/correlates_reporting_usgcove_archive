@@ -31,7 +31,7 @@ library(xtable) # this is a dependency of kyotil
 
 # population is either 57 or 29
 Args <- commandArgs(trailingOnly=TRUE) 
-if (length(Args)==0) Args=c(pop="29") 
+if (length(Args)==0) Args=c(pop="57") 
 pop=Args[1]; print(pop)
 #
 save.results.to = paste0(here::here("output"), "/D", pop,"/");
@@ -83,6 +83,8 @@ wts=if(pop=="57") dat.vacc.pop$wt else dat.vacc.pop$wt.2
 time.start=Sys.time()
 
 rv=list() # results for verification
+    
+    
     
 ####################################################################################################
 # Main regression results tables
@@ -690,12 +692,14 @@ myprint(prev.vacc)
 
 for (ii in 1:2) {  # 1 conditional on s,   2 is conditional on S>=s
 for (idx in 1:2) { # 1 with placebo lines, 2 without placebo lines. Implementation-wise, only difference is in ylim
-# ii=2; idx=1; a=assays[3]
+# ii=2; idx=2; a=assays[3]
     risks.all=get("risks.all."%.%ii)
-    ylim=range(sapply(risks.all, function(x) x$prob), if(idx==1) prev.plac, prev.vacc, 0)
+    ylim=range(sapply(risks.all, function(x) x$prob[1]), if(idx==1) prev.plac, prev.vacc, 0)
+    ylim[2]=ylim[2]*1.1; myprint(ylim)
     lwd=2
     
-    mypdf(oma=c(1,0,0,0), onefile=F, file=paste0(save.results.to, "marginalized_risks", ii, ifelse(idx==1,"","_woplacebo"), "_"%.%study.name), mfrow=.mfrow)
+    mypdf(oma=c(0,0,0,0), onefile=F, file=paste0(save.results.to, "marginalized_risks", ii, ifelse(idx==1,"","_woplacebo"), "_"%.%study.name), mfrow=.mfrow)
+    par(las=1, cex.axis=0.9, cex.lab=1)# axis label orientation
     for (a in assays) {        
         risks=risks.all[[a]]
         xlim=quantile(dat.vacc.pop[["Day"%.%pop%.%a]],if(ii==1) c(.025,.975) else c(0,.95), na.rm=T) 
@@ -741,7 +745,7 @@ for (idx in 1:2) { # 1 with placebo lines, 2 without placebo lines. Implementati
         #mtext("Density", side=4, las=0, line=2, cex=1, at=.3)  
         #mylegend(x=6, fill=col, border=col, legend="Vaccine Group", bty="n", cex=0.7)      
     }
-    mtext(toTitleCase(study.name), side = 1, line = 0, outer = T, at = NA, adj = NA, padj = NA, cex = NA, col = NA, font = NA)
+    #mtext(toTitleCase(study.name), side = 1, line = 0, outer = T, at = NA, adj = NA, padj = NA, cex = NA, col = NA, font = NA)
     dev.off()    
 }
 }

@@ -31,21 +31,21 @@ num_v2 <- c("BMI") # Summaries - Mean & St.d
 cat_v <- c("Age", "Risk for Severe Covid-19", "Sex", "Race", 
            "Hispanic or Latino ethnicity", "Risk for Severe Covid-19")
 
-# Stack a Rx = "Total" to the original data
+# Stack a Arm = "Total" to the original data
 ds_long_ttl <- bind_rows(
-  ds_long %>% mutate(Rx = "Total"),
+  ds_long %>% mutate(Arm = "Total"),
   ds_long
 )
 
 # Calculate % for categorical covariates
 dm_cat <- inner_join(
   ds_long_ttl %>%
-    group_by(Rx, subgroup, subgroup_cat) %>%
+    group_by(Arm, subgroup, subgroup_cat) %>%
     summarise(n = n(), .groups = 'drop'),
   ds_long_ttl %>%
-    group_by(Rx, subgroup) %>%
+    group_by(Arm, subgroup) %>%
     summarise(N = n(), .groups = 'drop'),
-  by = c("Rx", "subgroup")
+  by = c("Arm", "subgroup")
 ) %>%
   mutate(pct = n / N,
          rslt1 = sprintf("%s (%.1f%%)", n, n / N * 100), 
@@ -54,11 +54,11 @@ dm_cat <- inner_join(
 
 # Calculate mean and range for numeric covariates
 dm_num <- ds_long_ttl %>%
-  distinct_at(all_of(c("Rx", "Ptid", num_v1, num_v2))) %>%
+  distinct_at(all_of(c("Arm", "Ptid", num_v1, num_v2))) %>%
   pivot_longer(cols = all_of(c(num_v1, num_v2)), 
                names_to = "subgroup", 
                values_to = "subgroup_cat") %>%
-  group_by(Rx, subgroup) %>%
+  group_by(Arm, subgroup) %>%
   summarise(
     min = min(subgroup_cat, na.rm = T), 
     max = max(subgroup_cat, na.rm = T),
@@ -75,7 +75,7 @@ dm_num <- ds_long_ttl %>%
 tab_dm <- full_join(
   dm_cat, 
   dm_num,
-  by = c("Rx", "subgroup", "subgroup_cat","N", "rslt1", "rslt2")
+  by = c("Arm", "subgroup", "subgroup_cat","N", "rslt1", "rslt2")
 ) %>%
   mutate(rslt = case_when(subgroup %in% cat_v ~ rslt1,
                           subgroup %in% num_v1 ~ rslt1,
@@ -84,9 +84,9 @@ tab_dm <- full_join(
                            levels = c("Age", "BMI", "Sex", "Race", 
                                       "Hispanic or Latino ethnicity", 
                                       "Risk for Severe Covid-19")),
-         Rx = factor(Rx, levels = c("Placebo", "Vaccine", "Total"))) %>% 
-  pivot_wider(c(Rx, subgroup, subgroup_cat, rslt),
-              names_from = Rx, 
+         Arm = factor(Arm, levels = c("Placebo", "Vaccine", "Total"))) %>% 
+  pivot_wider(c(Arm, subgroup, subgroup_cat, rslt),
+              names_from = Arm, 
               names_sort = T,
               values_from = rslt) %>%
   arrange(subgroup, subgroup_cat)
@@ -106,10 +106,10 @@ names(tab_dm)<- c("subgroup", "Characteristics",
 
 # Variables used for stratification in the tables
 # subgroup: SAP Table 6: Baseline Subgroups
-# Rx and Baseline: Assigned treatment Arms * Baseline COVID-19 Status
+# Arm and Baseline: Assigned treatment Arms * Baseline COVID-19 Status
 # Group: Category in each subgroup
 
-sub_grp_col <- c("subgroup", "Rx", "Baseline", "Group", "resp_cat")
+sub_grp_col <- c("subgroup", "Arm", "Baseline", "Group", "resp_cat")
 sub_grp <- as.formula(paste0("~", paste(sub_grp_col, collapse = "+")))
 
 resp_v <- c(grep("Resp|2llod|4llod", unique(ds_resp_l$resp_cat), value = T) %>% 
@@ -130,7 +130,7 @@ tab_rr <- inner_join(
   rpcnt,
   ds_resp_l %>%
     mutate(rspndr = response*wt.subcohort) %>% 
-    group_by(Rx, Baseline, Marker, resp_cat, subgroup, Group, Visit, Ind) %>%
+    group_by(Arm, Baseline, Marker, resp_cat, subgroup, Group, Visit, Ind) %>%
     summarise(N = n(), Nw = sum(wt.subcohort), rspndr = sum(rspndr),
               .groups = 'drop'),
   by = sub_grp_col) %>%
@@ -142,10 +142,9 @@ tab_rr <- inner_join(
               round(rspndr, 1), round(Nw, 1), response*100, ci_l*100, ci_u*100))
   ) %>%
   pivot_wider(
-    id_cols = c(subgroup, Group, Rx, Baseline, Marker, Visit, N),
+    id_cols = c(subgroup, Group, Arm, Baseline, Marker, Visit, N),
     names_from = Ind, values_from = rslt) %>% 
-  arrange(subgroup, Group, Visit, Rx, Baseline, Marker) %>% 
-  rename(Arm = Rx)
+  arrange(subgroup, Group, Visit, Arm, Baseline, Marker)
 
 tab_bind <- tab_rr %>% 
   dplyr::filter(Marker %in% c("Anti N IgG (IU/ml)", "Anti RBD IgG (IU/ml)", 
@@ -179,7 +178,7 @@ gm_v <- c(bAb_v, pnAb_v, lnAb_v,
           gmr_v <- grep("DeltaDay", unique(ds_mag_l$mag_cat), value = T) %>% 
             grep("overB", ., value = T))
 
-sub_grp_col <- c("subgroup", "Rx", "Baseline", "Group", "mag_cat")
+sub_grp_col <- c("subgroup", "Arm", "Baseline", "Group", "mag_cat")
 sub_grp <- as.formula(paste0("~", paste(sub_grp_col, collapse = "+")))
 
 dssvy <- svydesign(ids = ~ Ptid, 
@@ -193,10 +192,10 @@ rgm <- svyby(~ mag, sub_grp, dssvy, svymean, vartype = "ci")
 tab_gm <- inner_join(
   rgm,
   ds_mag_l %>%
-    group_by(subgroup, mag_cat, Group, Visit, Marker, Rx, Baseline) %>%
+    group_by(subgroup, mag_cat, Group, Visit, Marker, Arm, Baseline) %>%
     summarise(N = n(), .groups = 'drop'),
   by = sub_grp_col
-) %>%   rename(Arm = Rx)
+) 
 
 tab_gmt <- tab_gm %>% 
   dplyr::filter(!grepl("Delta", mag_cat)) %>% 
@@ -257,7 +256,7 @@ ds_mag_l_gmtr <- ds_mag_l %>%
 
 comp_v <- "Group"
 f_v <- as.formula(sprintf("mag ~ %s", comp_v))
-sub_grp_col <- c("subgroup", "Rx", "Baseline", "Visit", "Marker")
+sub_grp_col <- c("subgroup", "Arm", "Baseline", "Visit", "Marker")
 
 gmtr <- ds_mag_l_gmtr %>%
   group_split(across(all_of(sub_grp_col))) %>%
@@ -275,7 +274,7 @@ tab_gmt_gmtr <- inner_join(
   by = c("subgroup", "Group")
 ) %>%
   dplyr::filter(ngroup == 2) %>% 
-  pivot_wider(id_cols = c(subgroup, Rx, Baseline, Visit, Marker),
+  pivot_wider(id_cols = c(subgroup, Arm, Baseline, Visit, Marker),
               names_from = groupn, values_from = `GMT/GMC`, 
               names_prefix = "Group")
 
@@ -285,11 +284,10 @@ tab_gmtr <- gmtr %>%
          `Ratios of GMT/GMC` = sprintf("%.2f\n(%.2f, %.2f)", 
                                        10^Estimate, ci_l, ci_u)) %>% 
   inner_join(tab_gmt_gmtr, 
-             by = c("Baseline", "Rx", "subgroup", "Marker", "Visit")) %>% 
+             by = c("Baseline", "Arm", "subgroup", "Marker", "Visit")) %>% 
   rename(Comparison = comp, 
          `Group 1 GMT/GMC` = `Group1`, 
-         `Group 2 GMT/GMC` = `Group2`,
-         Arm = Rx) %>% 
+         `Group 2 GMT/GMC` = `Group2`) %>% 
   arrange(subgroup, Visit, Arm, Baseline, Marker) %>% 
   select(subgroup, Visit, Arm, Baseline, Marker, Comparison, `Group 1 GMT/GMC`,
          `Group 2 GMT/GMC`, `Ratios of GMT/GMC`)  
@@ -299,9 +297,9 @@ tab_gmtr <- gmtr %>%
 # method without continuity correction (Newcombe, 1998).
 # Output: tab_rrdiff
 # 
-comp_v <- "Rx"
+comp_v <- "Arm"
 f_v <- as.formula(sprintf("response ~ %s", comp_v))
-contrasts(ds_resp_l$Rx) <- contr.treatment(2, base = 2)
+contrasts(ds_resp_l$Arm) <- contr.treatment(2, base = 2)
 sub_grp_col_diff <- c("Baseline", "subgroup", "Group", "Ind", "Visit", "Marker")
 
 rrdiff <- ds_resp_l %>%
@@ -329,7 +327,7 @@ tab_rrdiff <- rrdiff %>%
 # Titers or Concentrations
 comp_v <- "Group"
 f_v <- as.formula(sprintf("response ~ %s", comp_v))
-sub_grp_col_case <- c("Rx", "Baseline","subgroup", "Ind", "Marker", "Visit")
+sub_grp_col_case <- c("Arm", "Baseline","subgroup", "Ind", "Marker", "Visit")
 
 ds_resp_l_case <- ds_resp_l %>% 
   dplyr::filter(subgroup == "All participants" & Ind == "Responder") %>% 
@@ -368,7 +366,7 @@ dssvy_case <- svydesign(ids = ~ Ptid,
                         data = ds_resp_case,
                         nest = T)
 
-sub_grp_col <- c("subgroup", "Rx", "Baseline", "Case", "resp_cat")
+sub_grp_col <- c("subgroup", "Arm", "Baseline", "Case", "resp_cat")
 sub_grp <- as.formula(paste0("~", paste(sub_grp_col, collapse = "+")))
 
 rpcnt_case <- svyby(~response, by=sub_grp, dssvy_case, svyciprop, vartype = "ci")
@@ -377,10 +375,10 @@ tab_rr_case <- rpcnt_case %>%
   inner_join(
     ds_resp_case %>%
       mutate(rspndr = response*wt.subcohort) %>% 
-      group_by(subgroup, Rx, Baseline, Marker, resp_cat, Case, Visit) %>%
+      group_by(subgroup, Arm, Baseline, Marker, resp_cat, Case, Visit) %>%
       summarise(N = n(), Nw = sum(wt.subcohort), rspndr = sum(rspndr),
                 .groups = 'drop'),
-    by = c("subgroup", "Rx", "Baseline", "Case", "resp_cat")
+    by = c("subgroup", "Arm", "Baseline", "Case", "resp_cat")
   ) %>%
   mutate(Responder = case_when(
     is.na(ci_l)|is.na(ci_u) ~ 
@@ -389,7 +387,7 @@ tab_rr_case <- rpcnt_case %>%
       sprintf("%s/%s = %.1f%%\n(%.1f%%, %.1f%%)", 
               round(rspndr, 1), round(Nw, 1), response*100, ci_l*100, ci_u*100))
   ) %>% 
-  select(subgroup, Rx, Baseline, Case, Visit, N, Marker, Responder)
+  select(subgroup, Arm, Baseline, Case, Visit, N, Marker, Responder)
 
 #########
 
@@ -397,7 +395,7 @@ gm_v <- c(bAb_v, pnAb_v, lnAb_v)
 ds_mag_case <- ds_mag_l %>% 
   dplyr::filter(subgroup == "All participants" & mag_cat %in% gm_v & !is.na(wt))
 
-sub_grp_col <- c("subgroup", "Rx", "Baseline", "Case", "mag_cat")
+sub_grp_col <- c("subgroup", "Arm", "Baseline", "Case", "mag_cat")
 sub_grp <- as.formula(paste0("~", paste(sub_grp_col, collapse = "+")))
 
 dssvy_case <- svydesign(ids = ~ Ptid, 
@@ -411,13 +409,13 @@ rgm_case <- svyby(~ mag, sub_grp, dssvy_case, svymean, vartype = "ci")
 
 tab_gm_case <- rgm_case %>%
   inner_join(ds_mag_case %>%
-               group_by(subgroup, mag_cat, Case, Visit, Marker, Rx, Baseline) %>%
+               group_by(subgroup, mag_cat, Case, Visit, Marker, Arm, Baseline) %>%
                summarise(N = n(), .groups = 'drop'),
-             by = c("subgroup", "Case", "Rx", "Baseline", "mag_cat")
+             by = c("subgroup", "Case", "Arm", "Baseline", "mag_cat")
   ) %>%
   mutate(`GMT/GMC` = sprintf("%.0f\n(%.0f, %.0f)", 10^mag, 10^ci_l, 10^ci_u)
   ) %>% 
-  select(subgroup, Rx, Baseline, Case, Visit, N, Marker, `GMT/GMC`)
+  select(subgroup, Arm, Baseline, Case, Visit, N, Marker, `GMT/GMC`)
 
 ###
 ds_mag_l_gmtr_case <- ds_mag_l %>%
@@ -426,7 +424,7 @@ ds_mag_l_gmtr_case <- ds_mag_l %>%
 
 comp_v <- "Case"
 f_v <- as.formula(sprintf("mag ~ %s", comp_v))
-sub_grp_col <- c("subgroup", "Rx", "Baseline", "Visit", "Marker")
+sub_grp_col <- c("subgroup", "Arm", "Baseline", "Visit", "Marker")
 
 gmtr_case <- ds_mag_l_gmtr_case %>%
   group_split(across(all_of(sub_grp_col))) %>%
@@ -438,35 +436,35 @@ tab_gmtr_case <- gmtr_case %>%
          ci_l = 10^(Estimate-1.96*`Std. Error`),
          `Ratios of GMT/GMC` = sprintf("%.2f\n(%.2f, %.2f)", 
                                        10^Estimate, ci_l, ci_u)) %>% 
-  select(Rx, Baseline, Marker, Visit, subgroup, comp, `Ratios of GMT/GMC`) %>% 
-  arrange(subgroup, Rx, Baseline, Visit, Marker)
+  select(Arm, Baseline, Marker, Visit, subgroup, comp, `Ratios of GMT/GMC`) %>% 
+  arrange(subgroup, Arm, Baseline, Visit, Marker)
 
 tab_key_case <- full_join(tab_rr_case, 
                           tab_gm_case,
-                          by = c("subgroup", "Rx", "Baseline", 
+                          by = c("subgroup", "Arm", "Baseline", 
                                  "Case", "N", "Marker", "Visit")) %>%
   pivot_wider(names_from = Case, 
               values_from = c(N, Responder, `GMT/GMC`)) %>% 
   # Join with RR difference (tab_rr)
   full_join(tab_rrdiff_case, 
-            by = c("Rx", "subgroup", "Baseline", "Visit", "Marker")
+            by = c("Arm", "subgroup", "Baseline", "Visit", "Marker")
   ) %>% 
   # Join with GMT/GMC Ratios (tab_gmtr) 
   full_join(tab_gmtr_case, 
-            by = c("Rx", "Baseline", "Visit", "Marker", "subgroup")
+            by = c("Arm", "Baseline", "Visit", "Marker", "subgroup")
   ) %>% 
-  select(Rx, Baseline, Visit, Marker, `N_Non-Cases`, `Responder_Non-Cases`, 
+  select(Arm, Baseline, Visit, Marker, `N_Non-Cases`, `Responder_Non-Cases`, 
          `GMT/GMC_Non-Cases`, `N_Cases`, `Responder_Cases`, `GMT/GMC_Cases`, 
          Responder, `Ratios of GMT/GMC`) %>% 
   dplyr::filter(Visit != "Day 1") %>% 
-  arrange(Rx, Baseline) 
+  arrange(Arm, Baseline) 
 
-case_vacc_neg <- filter(tab_key_case, Rx == "Vaccine", Baseline == "Negative") %>% 
-  select(-c(Rx, Baseline))
-case_vacc_pos <- filter(tab_key_case, Rx == "Vaccine", Baseline == "Positive") %>% 
-  select(-c(Rx, Baseline))
-case_plcb_pos <- filter(tab_key_case, Rx == "Placebo", Baseline == "Positive") %>% 
-  select(-c(Rx, Baseline))
+case_vacc_neg <- filter(tab_key_case, Arm == "Vaccine", Baseline == "Negative") %>% 
+  select(-c(Arm, Baseline))
+case_vacc_pos <- filter(tab_key_case, Arm == "Vaccine", Baseline == "Positive") %>% 
+  select(-c(Arm, Baseline))
+case_plcb_pos <- filter(tab_key_case, Arm == "Placebo", Baseline == "Positive") %>% 
+  select(-c(Arm, Baseline))
 
 
 # Generate a full table with all the estimates: response rates, GMT, GMTR, etc.
@@ -475,8 +473,8 @@ case_plcb_pos <- filter(tab_key_case, Rx == "Placebo", Baseline == "Positive") %
 ds_mag_l_Rx <- ds_mag_l %>%
   dplyr::filter(subgroup == "All participants" & !grepl("Delta", mag_cat))
 
-comp_v <- "Rx"
-contrasts(ds_mag_l_Rx$Rx) <- contr.treatment(2, base = 2)
+comp_v <- "Arm"
+contrasts(ds_mag_l_Rx$Arm) <- contr.treatment(2, base = 2)
 f_v <- as.formula(sprintf("mag ~ %s", comp_v))
 sub_grp_col_Rx <- c("subgroup", "Group", "Baseline", "mag_cat", "Marker", "Visit")
 
@@ -495,11 +493,11 @@ tab_gmtr_Rx <- gmtr_Rx %>%
 
 tab_key_Rx <- full_join(tab_rr, 
                         tab_gmt,
-                        by = c("subgroup", "Rx", "Baseline", 
+                        by = c("subgroup", "Arm", "Baseline", 
                                "Group", "Visit", "N", "Marker")) %>%
   dplyr::filter(as.character(subgroup) == "All participants") %>%
   pivot_wider(id_cols = c(subgroup, Group, Baseline, Marker, Visit),  
-              names_from = Rx, 
+              names_from = Arm, 
               values_from = c(N, Responder, `GMT/GMC`)
   ) %>% 
   # Join with RR difference (tab_rr)
@@ -524,7 +522,7 @@ tab_pos <- filter(tab_key_Rx, Baseline == "Positive") %>%
 
 comp_v <- "Baseline"
 f_v <- as.formula(sprintf("response ~ %s", comp_v))
-sub_grp_col_bl <- c("Rx", "subgroup", "Marker", "Visit", "resp_cat")
+sub_grp_col_bl <- c("Arm", "subgroup", "Marker", "Visit", "resp_cat")
 
 ds_resp_l_bl <- ds_resp_l %>% 
   dplyr::filter(subgroup == "All participants" & Ind == "Responder")
@@ -549,7 +547,7 @@ ds_mag_l_bl <- ds_mag_l %>%
 
 contrasts(ds_mag_l_bl$Baseline) <- contr.treatment(2, base = 2)
 f_v <- as.formula(sprintf("mag ~ %s", comp_v))
-sub_grp_col_bl <- c("subgroup", "Rx", "Visit", "Marker", "mag_cat")
+sub_grp_col_bl <- c("subgroup", "Arm", "Visit", "Marker", "mag_cat")
 
 
 gmtr_bl <- ds_mag_l_bl %>%
@@ -562,33 +560,33 @@ tab_gmtr_bl <- gmtr_bl %>%
           ci_l = 10^(Estimate-1.96*`Std. Error`),
           `Ratios of GMT/GMC` = sprintf("%.2f\n(%.2f, %.2f)", 
                                         10^Estimate, ci_l, ci_u)) %>% 
-  select(Rx, Marker, Visit, subgroup, comp, `Ratios of GMT/GMC`) %>% 
-  arrange(subgroup, Rx, Visit, Marker)
+  select(Arm, Marker, Visit, subgroup, comp, `Ratios of GMT/GMC`) %>% 
+  arrange(subgroup, Arm, Visit, Marker)
 
  tab_bl <- full_join(tab_rr, 
                      tab_gmt, 
-                     by = c("Rx", "subgroup", "Group",
+                     by = c("Arm", "subgroup", "Group",
                              "Baseline", "Visit", "Marker", "N")) %>%
   dplyr::filter(as.character(subgroup) == "All participants") %>%
-  pivot_wider(id_cols = c(Rx, subgroup, Group, Baseline, Marker, Visit),
+  pivot_wider(id_cols = c(Arm, subgroup, Group, Baseline, Marker, Visit),
               names_from=Baseline, 
               values_from=c(N, Responder, `GMT/GMC`)
   ) %>% 
   # Join with RR difference (tab_rr)
   inner_join(tab_rrdiff_bl, 
-             by = c("subgroup", "Rx","Visit", "Marker")
+             by = c("subgroup", "Arm","Visit", "Marker")
   ) %>% 
   # Join with GMT/GMC Ratios (tab_gmtrC) 
   inner_join(tab_gmtr_bl, 
-             by = c("Visit", "Rx","Marker", "subgroup")
+             by = c("Visit", "Arm", "Marker", "subgroup")
   ) %>% 
-  select(Rx, Visit, Marker, `N_Negative`, `Responder_Negative`, 
+  select(Arm, Visit, Marker, `N_Negative`, `Responder_Negative`, 
          `GMT/GMC_Negative`, `N_Positive`, `Responder_Positive`, 
          `GMT/GMC_Positive`, rslt, `Ratios of GMT/GMC`) %>% 
   arrange(Visit, Marker)
 
-tab_vacc <- tab_bl %>% dplyr::filter(Rx == "Vaccine") %>% select(-Rx)
-tab_plcb <- tab_bl %>% dplyr::filter(Rx == "Placebo") %>% select(-Rx)
+tab_vacc <- tab_bl %>% dplyr::filter(Arm == "Vaccine") %>% select(-Arm)
+tab_plcb <- tab_bl %>% dplyr::filter(Arm == "Placebo") %>% select(-Arm)
 
 save(tlf, tab_dm, tab_bind, tab_pseudo, tab_wt, tab_gmt,
      tab_gmr, tab_gmtr, tab_rrdiff, case_vacc_neg, case_vacc_pos, case_plcb_pos, 

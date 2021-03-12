@@ -50,11 +50,9 @@ ds_s <- dat.mock %>%
     Baseline = factor(ifelse(Bserostatus == 1, "Positive", "Negative"),
                       levels = c("Negative", "Positive")
     ),
-    Rx = factor(ifelse(Trt == 1, "Vaccine", "Placebo"), 
+    Arm = factor(ifelse(Trt == 1, "Vaccine", "Placebo"), 
                 levels = c("Vaccine", "Placebo")),
-    RxB = factor(paste(Rx, Baseline), 
-                 levels=c("Vaccine Negative", "Placebo Negative",
-                          "Vaccine Positive", "Placebo Positive")),
+
     Case = case_when(Perprotocol == 1 & EventIndPrimaryD29 == 1 & 
                        EventIndPrimaryD57 == 1 ~ "Cases",
                      TRUE ~ "Non-Cases"),

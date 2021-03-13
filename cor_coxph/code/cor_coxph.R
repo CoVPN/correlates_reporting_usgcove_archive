@@ -724,13 +724,14 @@ for (idx in 1:2) { # 1 with placebo lines, 2 without placebo lines. Implementati
         
         # prevelance lines
         abline(h=prev.plac, col="gray", lty=c(1,3,3), lwd=lwd)
-        abline(h=prev.vacc, col="gray", lty=c(1,3,3), lwd=lwd)
         #
         if (ii==1) {
+            abline(h=prev.vacc, col="gray", lty=c(1,3,3), lwd=lwd)
             lines(risks$marker, risks$prob, lwd=lwd)
             lines(risks$marker, risks$lb,   lwd=lwd, lty=3)
             lines(risks$marker, risks$ub,   lwd=lwd, lty=3)    
         } else {
+            abline(h=prev.vacc[1], col="gray", lty=c(1), lwd=lwd)
             lines(risks$marker[ncases>=5], risks$prob[ncases>=5], lwd=lwd)
             lines(risks$marker[ncases>=5], risks$lb[ncases>=5],   lwd=lwd, lty=3)
             lines(risks$marker[ncases>=5], risks$ub[ncases>=5],   lwd=lwd, lty=3)    

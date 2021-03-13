@@ -5,6 +5,17 @@
 #' @param monotone True if monotone correction should be done on estimates. Otherwise no monotone correction. This should be done if one expects monotonicity.
 #' Assume monotone nonincreasing
 get_plot <- function(marker, simultaneous_CI = F, monotone = F) {
+  dat.mock <- read.csv(here::here("..", "data_clean", data_name))
+  #dat.mock <- read.csv(here::here( "data_clean", data_name))
+  tmp <- dat.mock[dat.mock$Perprotocol==1 & dat.mock$Bserostatus == 0,]
+  time <- "Day57"
+   tmp$time <-  tmp[[Event_Time_variable[[time]]]] 
+  tmp$Delta <-  tmp[[Event_Ind_variable[[time]]]]  
+  fit <- summary(survival::survfit(survival::Surv(time, Delta) ~ 1, data = tmp[tmp$Trt==1,]), times = tf[[time]] )
+  risk_vac <- round(mean(1-fit$surv),4)
+  fit <- summary(survival::survfit(survival::Surv(time, Delta) ~ 1, data = tmp[tmp$Trt==0,]), times = tf[[time]] )
+  risk_plac <-  round(mean(1-fit$surv),3)
+  
   if(monotone) {
     load(file = here::here("output", paste0("tmleThresh_monotone_", marker, ".RData")))
   } else {
@@ -68,7 +79,11 @@ get_plot <- function(marker, simultaneous_CI = F, monotone = F) {
       name = laby,
       sec.axis = sec_axis(~ . / scale_coef, name = "Reverse CDF"), n.breaks = 10
     ) + geom_vline(xintercept = max_thresh, colour = "red", linetype = "longdash") +
-    theme(plot.title = element_text(size = 25), axis.text.x = element_text(angle = 0, hjust = 1, size = 18), axis.text.y = element_text(angle = 0, hjust = 1, size = 18)) #+  geom_text(aes(x=max_thresh *(1.01), label="No observed events", y=0.002), colour="black", angle=90, text=element_text(size=11))
+    theme(plot.title = element_text(size = 25), axis.text.x = element_text(angle = 0, hjust = 1, size = 18), axis.text.y = element_text(angle = 0, hjust = 1, size = 18)) +
+    geom_hline(aes(yintercept=risk_vac), alpha = 0.4) + geom_text(alpha = 0.75,aes(median(v$data$cutoffs),risk_vac,label = "vaccine overall risk"), vjust = -0.5, size = 5) +
+ geom_text(alpha = 0.75, aes(quantile(v$data$cutoffs, 0.1),max(v$data$upper),label = paste0("placebo overall risk: ", risk_plac)), vjust = 0, size = 5)
+  plot
+    #+  geom_text(aes(x=max_thresh *(1.01), label="No observed events", y=0.002), colour="black", angle=90, text=element_text(size=11))
   append_end <- ""
   append_start <- "PLOT"
   folder <- ""

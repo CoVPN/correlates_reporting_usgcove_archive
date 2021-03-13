@@ -101,6 +101,7 @@ thresholdTMLE <- function(data_full, node_list, thresholds = NULL, biased_sampli
     upper_list$IC <- IC
     upper_list$IC_IPCW <- IC_IPCW
     # Simultaneous bands
+
     if (ncol(IC_IPCW) > 1) {
       var_D <- cov(IC_IPCW)
       var_D[is.na(var_D)] <- 0
@@ -109,17 +110,26 @@ thresholdTMLE <- function(data_full, node_list, thresholds = NULL, biased_sampli
       se <- sqrt(diag(var_D) / n)
       level <- 0.95
       rho_D <- as.matrix(var_D / sqrt(tcrossprod(diag(var_D))))
-
+      psi_mono <- isoreg(thresholds, -psi)
+      psi_mono <- -psi_mono$yf
       q <- mvtnorm::qmvnorm(level, tail = "both", corr = rho_D)$quantile
       ci <- as.matrix(wald_ci(psi, se, q = q))
+      ci_mono <- as.matrix(wald_ci(psi_mono, se, q = q))
+      se_sim <- se*q
       ####
       se <- apply(IC_IPCW, 2, sd) / sqrt(nrow(data_full))
       estimates_upper <- cbind(thresholds, psi, se, psi - 1.96 * se, psi + 1.96 * se, ci)
       colnames(estimates_upper) <- c("thresholds", "EWE[Y|>=v,W]", "se", "CI_left", "CI_right", "CI_left_simultaneous", "CI_right_simultaneous")
+    
+      estimates_upper_monotone <- cbind(thresholds, psi_mono, se, psi_mono - 1.96 * se, psi_mono + 1.96 * se, ci_mono)
+      colnames(estimates_upper) <- c("thresholds", "EWE[Y|>=v,W]", "se", "CI_left", "CI_right", "CI_left_simultaneous", "CI_right_simultaneous")
+      
+      #attr(estimates_upper, "se_sim") <-  se_sim
     } else {
       se <- apply(IC_IPCW, 2, sd) / sqrt(nrow(data_full))
       estimates_upper <- cbind(thresholds, psi, se, psi - 1.96 * se, psi + 1.96 * se, psi - 1.96 * se, psi + 1.96 * se)
       colnames(estimates_upper) <- c("thresholds", "EWE[Y|>=v,W]", "se", "CI_left", "CI_right", "CI_left_simultaneous", "CI_right_simultaneous")
+      estimates_upper_monotone <- NULL
     }
     Y <- data[[node_list$Y]]
     A <- data[[node_list$A]]
@@ -135,6 +145,25 @@ thresholdTMLE <- function(data_full, node_list, thresholds = NULL, biased_sampli
       estimates_upper[no_event, intersect(1:ncol(estimates_upper), c(7))] <- NA
     }
     setattr(estimates_upper, "IC", IC_IPCW)
+    
+    ##############
+    
+    Y <- data[[node_list$Y]]
+    A <- data[[node_list$A]]
+    no_event <- sapply(thresholds, function(v) {
+      all(Y[A >= v] == 0)
+    })
+    no_event <- as.vector(no_event)
+    attr(estimates_upper_monotone, "no_event") <- as.vector(no_event)
+    estimates_upper_monotone[no_event, intersect(1:ncol(estimates_upper_monotone), c(3))] <- NA
+    estimates_upper_monotone[, intersect(1:ncol(estimates_upper_monotone), c(4, 6))] <- pmax(0, estimates_upper_monotone[, intersect(1:ncol(estimates_upper_monotone), c(4, 6))])
+    estimates_upper_monotone[no_event, intersect(1:ncol(estimates_upper_monotone), c(5))] <- NA
+    if (ncol(estimates_upper_monotone) == 7) {
+      estimates_upper_monotone[no_event, intersect(1:ncol(estimates_upper_monotone), c(7))] <- NA
+    }
+    setattr(estimates_upper_monotone, "IC", IC_IPCW)
+    
+    ###########3
     # min(estimates_upper[!no_event, intersect(1:ncol(estimates_upper), c(7))])}
 
     # estimates_upper[, intersect(1:ncol(estimates_upper), c(5,7))] <- data.table::nafill(estimates_upper[, intersect(1:ncol(estimates_upper), c(5,7))], type = "locf")
@@ -145,76 +174,8 @@ thresholdTMLE <- function(data_full, node_list, thresholds = NULL, biased_sampli
   } else {
     estimates_upper <- NULL
   }
-  #
-  #   ##### A <= v
-  #   for(i in seq_along(thresholds_below)) {
-  #     print(paste0("Running analysis for threshold: ", round(thresholds_below[i],3)))
-  #
-  #     task_list <- get_task_list_TSM(data, node_list, NULL, thresholds_below[i])
-  #     preds <- get_preds_TSM(task_list, lrnr_A, lrnr_Y, lrnr_Delta)
-  #
-  #     ests <- do_update_TSM(preds, task_list, node_list)
-  #     IC <- ests$IC
-  #     ests$IC_IPCW <- IC
-  #     if(biased_sampling) {
-  #       IC_full <- matrix(0, nrow = nrow(data_full), ncol = ncol(IC))
-  #       IC_full[data_full[[biased_sampling_indicator]] == 1,] <- IC * ests$weights
-  #       proj_dat <- data.table(grp = data[[biased_sampling_strata]], IC = IC)
-  #       IC_names <- setdiff(colnames(proj_dat), "grp")
-  #       proj_dat <- proj_dat[, lapply(.SD, mean), by = "grp"]
-  #       data_proj <- merge(data_full, proj_dat, by = "grp")
-  #       data_proj <- data_proj[order(data_proj$id)]
-  #       IC_proj <-  data_proj[,IC_names, with = F] * ( as.numeric(data_full[[biased_sampling_indicator]] == 1) * data_full[[node_list$weights]] - 1)
-  #       ests$IC_IPCW <- as.matrix(IC_full)
-  #       IC_full <- IC_full - IC_proj
-  #       ests$IC <- as.matrix(IC_full)
-  #     }
-  #     ests$preds <- preds
-  #     lower_list[[as.character(thresholds_below[i])]] <- ests
-  #   }
-  #   if(length(lower_list)>0) {
-  #     psi <- unlist(lapply(lower_list, `[[`, "psi"), use.names = F)
-  #     IC <- do.call(cbind, lapply(lower_list, `[[`, "IC"))
-  #     IC_IPCW <- do.call(cbind, lapply(lower_list, `[[`, "IC_IPCW"))
-  #     thresholds <- thresholds_below
-  #     lower_list <- list()
-  #     lower_list$thresholds <- thresholds
-  #     lower_list$psi <- psi
-  #     lower_list$IC <- IC
-  #     lower_list$IC_IPCW <- IC_IPCW
-  #     # Simultaneous bands
-  #     if(ncol(IC_IPCW)>1){
-  #       var_D <- cov(IC_IPCW)
-  #       n <- nrow(IC_IPCW)
-  #       se <- sqrt(diag(var_D) / n)
-  #       level <- 0.95
-  #       rho_D <- var_D / sqrt(tcrossprod(diag(var_D)))
-  #
-  #
-  #       q <- mvtnorm::qmvnorm(level, tail = "both", corr = rho_D)$quantile
-  #       ci <- as.matrix(wald_ci(psi, se, q = q))
-  #       ####
-  #       se <- apply(IC_IPCW,2,sd)/sqrt(nrow(data_full))
-  #
-  #       estimates_lower <- cbind(thresholds, psi, se, psi - 1.96*se, psi + 1.96*se, ci)
-  #       colnames(estimates_lower) <- c("thresholds", "EWE[Y|<v,W]", "se", "CI_left", "CI_right", "CI_left_simultaneous",  "CI_right_simultaneous")
-  #     } else {
-  #       se <- apply(IC_IPCW,2,sd)/sqrt(nrow(data_full))
-  #       estimates_lower <- cbind(thresholds, psi, se, psi - 1.96*se, psi + 1.96*se)
-  #       colnames(estimates_lower) <- c("thresholds", "EWE[Y|<v,W]", "se", "CI_left", "CI_right")
-  #     }
-  #   } else {
-  #     estimates_lower <- NULL
-  #   }
-  output <- list()
-  # if(is.null(estimates_lower)) {
-  #   return(list(estimates = estimates_upper, upper_info = upper_list))
-  # }
-  # if(is.null(estimates_upper)) {
-  #   return(list(estimates = estimates_lower, lower_info = lower_list))
-  #
-  # }
-  return(estimates_upper)
+ 
+  return(list(output = estimates_upper, output_monotone = estimates_upper_monotone))
 }
 
 

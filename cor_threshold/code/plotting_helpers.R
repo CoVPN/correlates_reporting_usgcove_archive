@@ -5,14 +5,19 @@
 #' @param monotone True if monotone correction should be done on estimates. Otherwise no monotone correction. This should be done if one expects monotonicity.
 #' Assume monotone nonincreasing
 get_plot <- function(marker, simultaneous_CI = F, monotone = F) {
-  load(file = here::here("output", paste0("tmleThresh_", marker, ".RData")))
+  if(monotone) {
+    load(file = here::here("output", paste0("tmleThresh_monotone_", marker, ".RData")))
+  } else {
+    load(file = here::here("output", paste0("tmleThresh_", marker, ".RData")))
+  }
+  time <- marker_to_time[[marker]]
   day <- ""
-  laby <- "Marginalized Probability of COVID"
+  laby <- paste0("Probability of COVID by Day ",tf[time])
   labx <- plotting_assay_label_generator(marker)
   # subtitle_main <- "Nonparametric estimate of Threshold-response function"
-  time <- marker_to_time[[marker]]
   data <- read.csv(here::here("data_clean", paste0("data_secondstage_", time, ".csv")))
-  main <- paste0("Cumulative Risk of COVID by Day ", tf[time])
+  main <- plotting_assay_title_generator(marker)
+    #paste0("Cumulative Risk of COVID by Day ", tf[time]) 
 
   ident <- function(x) x
   col <- c(col2rgb("olivedrab3")) # orange, darkgoldenrod2
@@ -31,20 +36,39 @@ get_plot <- function(marker, simultaneous_CI = F, monotone = F) {
   }
   RCDF <- Vectorize(RCDF)
   if (!simultaneous_CI) {
-    main <- paste0(main, " with point-wise confidence intervals")
+    #main <- paste0(main, " with point-wise confidence intervals")
   } else {
-    main <- paste0(main, " with simultaneous confidence bands")
+    #main <- paste0(main, " with simultaneous confidence bands")
   }
+  a <- marker_to_assay[[marker]]
+  xx=seq(floor(min(esttmle[, 1])), ceiling(max(esttmle[, 1])))
+  xx <- as.numeric(sort(union(xx, log10(llods[a]))))
+  labels <- sapply(xx, function(x) {
+    if (log10(llods[a])==x) {
+      labels <- "lod"
+      } 
+    else if (x>=3) {
+        labels <- (bquote(10^.(x)))
+      }
+    else {
+      labels <- as.character(10^x )
+    }
+    return(labels)
+  })
+  labels <- unlist(labels, use.names = F, recursive = F)
+  
+
   plot <- v + scale_x_continuous(
-   breaks = union(floor(esttmle[, 1]), ceiling(esttmle[, 1])),
-    labels = trans_format("ident", math_format(10^.x)), limits = c(min(esttmle[, 1]) - 0.1, max(esttmle[, 1]) + 0.1)
+   breaks = xx,#union(floor(esttmle[, 1]), ceiling(esttmle[, 1])),
+    labels = do.call(expression,labels) #trans_format("ident", math_format(10^.x)), 
+   #limits = c(min(esttmle[, 1]) - 0.1, max(esttmle[, 1]) + 0.1)
   ) + xlab(paste0(marker, " threshold")) + ylab(laby)  + xlab(labx) + ggtitle(main) +
     stat_function(fun = RCDF, color = col, geom = "area", fill = col, alpha = 0.2) +
     scale_y_continuous(
       name = laby,
       sec.axis = sec_axis(~ . / scale_coef, name = "Reverse CDF"), n.breaks = 10
     ) + geom_vline(xintercept = max_thresh, colour = "red", linetype = "longdash") +
-    theme(plot.title = element_text(size = 15), axis.text.x = element_text(angle = 0, hjust = 1, size = 18), axis.text.y = element_text(angle = 0, hjust = 1, size = 18)) #+  geom_text(aes(x=max_thresh *(1.01), label="No observed events", y=0.002), colour="black", angle=90, text=element_text(size=11))
+    theme(plot.title = element_text(size = 25), axis.text.x = element_text(angle = 0, hjust = 1, size = 18), axis.text.y = element_text(angle = 0, hjust = 1, size = 18)) #+  geom_text(aes(x=max_thresh *(1.01), label="No observed events", y=0.002), colour="black", angle=90, text=element_text(size=11))
   append_end <- ""
   append_start <- "PLOT"
   folder <- ""
@@ -76,8 +100,12 @@ get_plot <- function(marker, simultaneous_CI = F, monotone = F) {
 # Generates tables (both pointwise CI and simultaneous CI) for Threshold-response function estimates
 #' @param marker The marker variable to generate plots for.
 #' @param num_show The number of thresholds to include in table.
-generate_tables <- function(marker, num_show = 10) {
-  load(file = here::here("output", paste0("tmleThresh_", marker, ".RData")))
+generate_tables <- function(marker, num_show = 10, monotone = F) {
+  if(monotone) {
+    load(file = here::here("output", paste0("tmleThresh_monotone_", marker, ".RData")))
+  } else {
+    load(file = here::here("output", paste0("tmleThresh_", marker, ".RData")))
+  }
   esttmle_table <- esttmle
   esttmle_table[, 1] <- round(esttmle_table[, 1], 3)
   esttmle_table[, 2] <- round(esttmle_table[, 2], 5)
@@ -86,6 +114,7 @@ generate_tables <- function(marker, num_show = 10) {
   esttmle_table[, 5] <- round(esttmle_table[, 5], 5)
   esttmle_table[, 6] <- round(esttmle_table[, 6], 5)
   esttmle_table[, 7] <- round(esttmle_table[, 7], 5)
+  esttmle_table <- esttmle_table[,c(1:7)]
   esttmle_table <- data.frame(esttmle_table, paste0(gsub("e\\+0", " * 10$^", format(10^esttmle_table[, 1], scientific = T, digits = 3)), "$"))
   esttmle_table <- esttmle_table[, c(1, 8, 2, 4, 5, 6, 7)]
   esttmle_table[esttmle_table[, 3] < 0, 3] <- 0
@@ -93,16 +122,20 @@ generate_tables <- function(marker, num_show = 10) {
   # Save nice latex table
   index_to_show <- unique(round(seq.int(1, nrow(esttmle_table), length.out = num_show)))
   ptwise_tab_guts <- esttmle_table[index_to_show, c(1, 2, 3, 4, 5)]
-
+  if(monotone) {
+    key <- "monotone_"
+  } else {
+    key <- ""
+  }
   saveRDS(ptwise_tab_guts, file = here::here(
       "figs", "pointwise_CI",
-      paste0("TABLE_", marker, "_pointwiseCI.rds")
+      paste0("TABLE_",key, marker, "_pointwiseCI.rds")
     ))
   simul_tab_guts <- esttmle_table[index_to_show, c(1, 2, 3, 6, 7)]
 
   saveRDS(simul_tab_guts, file = here::here(
       "figs", "simultaneous_CI",
-      paste0("TABLE_", marker, "_simultCI.rds")
+      paste0("TABLE_", key, marker, "_simultCI.rds")
     ))
   return(list(pointwise = esttmle_table[index_to_show, c(1, 2, 3, 4, 5)], simult = esttmle_table[index_to_show, c(1, 2, 3, 6, 7)]))
 }
@@ -117,7 +150,7 @@ get_inverse_plot <- function(marker, simultaneous_CI = F) {
   } else {
     folder <- "pointwise_CI"
   }
-  load(file = here::here("output", paste0("tmleThresh_", marker, ".RData")))
+  load(file = here::here("output", paste0("tmleThresh_monotone_", marker, ".RData")))
   main <- paste0("Cumulative Risk of COVID by Day ", tf[marker_to_time[[marker]]])
   risks <- risks_to_estimate_thresh_of_protection
   if (is.null(risks)) {

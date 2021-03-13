@@ -58,7 +58,7 @@ monotone <- F
 
 ```
 
-```{r, child=here::here('cor_threshold','sub_report_test.Rmd')}
+```{r, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -72,7 +72,7 @@ ci <- "pointwise"
 monotone <- F
 ```
 
-```{r, child=here::here('cor_threshold','sub_report_test.Rmd')}
+```{r, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -86,7 +86,7 @@ ci <- "pointwise"
 monotone <- F
 ```
 
-```{r, child=here::here('cor_threshold','sub_report_test.Rmd')}
+```{r, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -100,7 +100,7 @@ ci <- "pointwise"
 monotone <- F
 ```
 
-```{r, child=here::here('cor_threshold','sub_report_test.Rmd')}
+```{r, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -118,7 +118,7 @@ ci <- "pointwise"
 monotone <- F
 ```
 
-```{r, child=here::here('cor_threshold','sub_report_test.Rmd')}
+```{r, child=here::here('cor_threshold','sub_report.Rmd')}
 
 
 ```
@@ -134,7 +134,7 @@ ci <- "pointwise"
 monotone <- F
 ```
 
-```{r, child=here::here('cor_threshold','sub_report_test.Rmd')}
+```{r, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -148,7 +148,7 @@ ci <- "pointwise"
 monotone <- F
 ```
 
-```{r, child=here::here('cor_threshold','sub_report_test.Rmd')}
+```{r, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -162,7 +162,7 @@ ci <- "pointwise"
 monotone <- F
 ```
 
-```{r, child=here::here('cor_threshold','sub_report_test.Rmd')}
+```{r, child=here::here('cor_threshold','sub_report.Rmd')}
 
 
 ```
@@ -183,7 +183,7 @@ monotone <- T
 
 ```
 
-```{r, child=here::here('cor_threshold','sub_report_test.Rmd')}
+```{r, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -197,7 +197,7 @@ ci <- "pointwise"
 monotone <- T
 ```
 
-```{r, child=here::here('cor_threshold','sub_report_test.Rmd')}
+```{r, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -211,7 +211,7 @@ ci <- "pointwise"
 monotone <- T
 ```
 
-```{r, child=here::here('cor_threshold','sub_report_test.Rmd')}
+```{r, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -225,7 +225,7 @@ ci <- "pointwise"
 monotone <- T
 ```
 
-```{r, child=here::here('cor_threshold','sub_report_test.Rmd')}
+```{r, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -243,7 +243,7 @@ ci <- "pointwise"
 monotone <- T
 ```
 
-```{r, child=here::here('cor_threshold','sub_report_test.Rmd')}
+```{r, child=here::here('cor_threshold','sub_report.Rmd')}
 
 
 ```
@@ -259,7 +259,7 @@ ci <- "pointwise"
 monotone <- T
 ```
 
-```{r, child=here::here('cor_threshold','sub_report_test.Rmd')}
+```{r, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -273,7 +273,7 @@ ci <- "pointwise"
 monotone <- T
 ```
 
-```{r, child=here::here('cor_threshold','sub_report_test.Rmd')}
+```{r, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -287,7 +287,7 @@ ci <- "pointwise"
 monotone <- T
 ```
 
-```{r, child=here::here('cor_threshold','sub_report_test.Rmd')}
+```{r, child=here::here('cor_threshold','sub_report.Rmd')}
 
 
 ```
@@ -307,7 +307,7 @@ monotone <- F
 
 ```
 
-```{r, child=here::here('cor_threshold','sub_report_test.Rmd')}
+```{r, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -321,7 +321,7 @@ ci <- "simultaneous"
 monotone <- F
 ```
 
-```{r, child=here::here('cor_threshold','sub_report_test.Rmd')}
+```{r, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -335,7 +335,7 @@ ci <- "simultaneous"
 monotone <- F
 ```
 
-```{r, child=here::here('cor_threshold','sub_report_test.Rmd')}
+```{r, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -349,7 +349,7 @@ ci <- "simultaneous"
 monotone <- F
 ```
 
-```{r, child=here::here('cor_threshold','sub_report_test.Rmd')}
+```{r, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -367,7 +367,7 @@ ci <- "simultaneous"
 monotone <- F
 ```
 
-```{r, child=here::here('cor_threshold','sub_report_test.Rmd')}
+```{r, child=here::here('cor_threshold','sub_report.Rmd')}
 
 
 ```
@@ -383,7 +383,7 @@ ci <- "simultaneous"
 monotone <- F
 ```
 
-```{r, child=here::here('cor_threshold','sub_report_test.Rmd')}
+```{r, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -397,7 +397,7 @@ ci <- "simultaneous"
 monotone <- F
 ```
 
-```{r, child=here::here('cor_threshold','sub_report_test.Rmd')}
+```{r, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -411,7 +411,7 @@ ci <- "simultaneous"
 monotone <- F
 ```
 
-```{r, child=here::here('cor_threshold','sub_report_test.Rmd')}
+```{r, child=here::here('cor_threshold','sub_report.Rmd')}
 
 
 ```
@@ -432,7 +432,7 @@ monotone <- T
 
 ```
 
-```{r, child=here::here('cor_threshold','sub_report_test.Rmd')}
+```{r, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -446,7 +446,7 @@ ci <- "simultaneous"
 monotone <- T
 ```
 
-```{r, child=here::here('cor_threshold','sub_report_test.Rmd')}
+```{r, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -460,7 +460,7 @@ ci <- "simultaneous"
 monotone <- T
 ```
 
-```{r, child=here::here('cor_threshold','sub_report_test.Rmd')}
+```{r, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -474,7 +474,7 @@ ci <- "simultaneous"
 monotone <- T
 ```
 
-```{r, child=here::here('cor_threshold','sub_report_test.Rmd')}
+```{r, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -492,7 +492,7 @@ ci <- "simultaneous"
 monotone <- T
 ```
 
-```{r, child=here::here('cor_threshold','sub_report_test.Rmd')}
+```{r, child=here::here('cor_threshold','sub_report.Rmd')}
 
 
 ```
@@ -508,7 +508,7 @@ ci <- "simultaneous"
 monotone <- T
 ```
 
-```{r, child=here::here('cor_threshold','sub_report_test.Rmd')}
+```{r, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -522,7 +522,7 @@ ci <- "simultaneous"
 monotone <- T
 ```
 
-```{r, child=here::here('cor_threshold','sub_report_test.Rmd')}
+```{r, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -536,7 +536,7 @@ ci <- "simultaneous"
 monotone <- T
 ```
 
-```{r, child=here::here('cor_threshold','sub_report_test.Rmd')}
+```{r, child=here::here('cor_threshold','sub_report.Rmd')}
 
 
 ```

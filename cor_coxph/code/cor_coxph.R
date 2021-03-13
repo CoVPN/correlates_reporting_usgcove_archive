@@ -699,7 +699,8 @@ for (idx in 1:2) { # 1 with placebo lines, 2 without placebo lines. Implementati
         # later values in prob may be wildly large due to lack of samples
         ylim=range(sapply(risks.all, function(x) x$prob[1]), if(idx==1) prev.plac, prev.vacc, 0)
         # add some white space at the top to write placebo overall risk
-        ylim[2]=ylim[2]*1.1
+        ylim[2]=ylim[2]
+#        ylim=c(0, 0.007)
     } else {
         ylim=range(sapply(risks.all, function(x) x$prob), if(idx==1) prev.plac, prev.vacc, 0)
     }

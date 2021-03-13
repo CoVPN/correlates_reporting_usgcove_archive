@@ -34,7 +34,7 @@ ci_label <- paste0(ci, " ")
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.7\textwidth]{`r here::here("cor_threshold", "figs", paste0(ci,"_CI"), paste0("PLOT_",key0, "Day", day, key, "_", ci_key, "CI.pdf"))`}
+\includegraphics[width=0.8\textwidth]{`r here::here("cor_threshold", "figs", paste0(ci,"_CI"), paste0("PLOT_",key0, "Day", day, key, "_", ci_key, "CI.pdf"))`}
 \caption{Adjusted threshold-response function for a range of thresholds of the
   Day `r day` `r marker` levels with `r ci` 95\% confidence intervals. The dashed red line marks the threshold after which no more COVID events are observed. `r add_line`}
 \end{figure}
@@ -68,14 +68,14 @@ knitr::kable(ptwise_tab_guts, format = "latex", row.names = F, booktabs = TRUE, 
 <!-- \begin{figure}[H] -->
 
 <!-- \centering -->
-<!-- \includegraphics[width=0.7\textwidth]{`r here::here("cor_threshold", "figs", "pointwise_CI", paste0("PLOT_monotone_Day", day, key, "_pointwiseCI.pdf"))`} -->
+<!-- \includegraphics[width=0.8\textwidth]{`r here::here("cor_threshold", "figs", "pointwise_CI", paste0("PLOT_monotone_Day", day, key, "_pointwiseCI.pdf"))`} -->
 <!--   \caption{Assuming nonincreasing monotonicity of the true function, the plot shows the estimated (monotone) adjusted threshold-response function for a range of thresholds of the Day `r day` `r marker` activity levels with point-wise 95\% confidence intervals. The dashed red line marks the threshold after which no more COVID events are observed. } -->
 <!-- \end{figure} -->
 
 <!-- \begin{figure}[H] -->
 
 <!-- \centering -->
-<!-- \includegraphics[width=0.7\textwidth]{`r here::here("cor_threshold", "figs", "simultaneous_CI", paste0("PLOT_monotone_Day", day, key, "_simultCI.pdf"))`} -->
+<!-- \includegraphics[width=0.8\textwidth]{`r here::here("cor_threshold", "figs", "simultaneous_CI", paste0("PLOT_monotone_Day", day, key, "_simultCI.pdf"))`} -->
 <!--   \caption{Assuming nonincreasing monotonicity of the true function, the plot shows the estimated (monotone) adjusted threshold-response function for a range of thresholds of the Day `r day` `r marker` activity levels with simultaneous 95\% confidence intervals. The dashed red line marks the threshold after which no more COVID events are observed.} -->
 <!-- \end{figure} -->
 

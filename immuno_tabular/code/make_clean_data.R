@@ -21,7 +21,7 @@ dat.mock <- read.csv(here::here("../data_clean", data_name))
 # The stratified random cohort for immunogenicity
 ds_s <- dat.mock %>%
   dplyr::filter(SubcohortInd == 1 & TwophasesampInd == 1 & Perprotocol == 1) %>%
-  dplyr::filter(!is.na(wt)) %>%
+  dplyr::filter(!is.na(wt.subcohort)) %>%
   # The subgroup variables need to be character not factors
   mutate(raceC = as.character(race)) %>%
   mutate(

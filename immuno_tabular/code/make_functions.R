@@ -89,12 +89,12 @@ setDelta <- function(data, marker, timepoints, time.ref = NA) {
 
 #' Wrapper function to generate ration of magnitude based on svyglm()
 
-get_gmtr <- function(comp_v, f_v, sub_grp_col, weights, x, desc = T) {
+get_gmtr <- function(comp_v, f_v, sub_grp_col, stratum, weights, x, desc = T) {
   svy <- svydesign(ids = ~ Ptid, 
-                   # strata = ~ Wstratum,
+                   strata = as.formula(paste0("~", stratum)),
                    weights = as.formula(paste0("~", weights)),
                    data = x,
-                   nest = T)
+                   nest = F)
   rslt <-summary(svyglm(f_v, design = svy))$coefficients[2,]
   
   if (desc) {
@@ -120,14 +120,14 @@ get_gmtr <- function(comp_v, f_v, sub_grp_col, weights, x, desc = T) {
 
 #' Wrapper function to generate responder rate difference based on svyglm()
 
-get_rrdiff <- function(comp_v, f_v, sub_grp_col, weights, x, desc = F) {
+get_rrdiff <- function(comp_v, f_v, sub_grp_col, stratum, weights, x, desc = F){
   if (any(table(x[,comp_v])<=1)) {
     ret <- NULL
   }else{
     rslt <-summary(svyglm(f_v, 
                           design = svydesign(
                             ids = ~ Ptid, 
-                            # strata = ~ Wstratum,
+                            strata = as.formula(paste0("~", stratum)),
                             weights = as.formula(paste0("~", weights)),
                             data = x,
                             nest = T)))$coefficients[2,]

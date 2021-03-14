@@ -14,6 +14,8 @@ library(tidyverse)
 library(dplyr, warn.conflicts = FALSE)
 # Suppress summarise info
 options(dplyr.summarise.inform = FALSE)
+# For stratum with 1 ppt
+options(survey.lonely.psu="adjust")
 
 ###################################################
 #             Generating the Tables               #
@@ -119,11 +121,11 @@ resp_v <- c(grep("Resp|2llod|4llod", unique(ds_resp_l$resp_cat), value = T) %>%
               grep("neut", ., value = T))
 
 dssvy <- svydesign(ids = ~ Ptid, 
-                   # strata = ~ Wstratum, 
+                   strata = ~ tps.stratum,
                    weights = ~ wt.subcohort,
                    data = ds_resp_l %>% filter(resp_cat %in% resp_v &
                                                  Visit != "Day 1"),
-                   nest = T)
+                   nest = F)
 
 rpcnt <- svyby(~ response, by=sub_grp, dssvy, svyciprop, vartype = "ci")
 
@@ -186,10 +188,10 @@ sub_grp_col <- c("subgroup", "Arm", "Baseline", "Group", "mag_cat")
 sub_grp <- as.formula(paste0("~", paste(sub_grp_col, collapse = "+")))
 
 dssvy <- svydesign(ids = ~ Ptid, 
-                   # strata = ~ Wstratum, 
+                   strata = ~ tps.stratum,
                    weights = ~ wt.subcohort,
                    data = ds_mag_l %>% filter(mag_cat %in% gm_v),
-                   nest = T)
+                   nest = F)
 
 rgm <- svyby(~ mag, sub_grp, dssvy, svymean, vartype = "ci")
 
@@ -267,7 +269,7 @@ sub_grp_col <- c("subgroup", "Arm", "Baseline", "Visit", "Marker")
 gmtr <- ds_mag_l_gmtr %>%
   group_split(across(all_of(sub_grp_col))) %>%
   map_dfr(get_gmtr, comp_v=comp_v, f_v = f_v, sub_grp_col = sub_grp_col, 
-          weights = "wt.subcohort") 
+          stratum = "tps.stratum", weights = "wt.subcohort") 
 
 tab_gmt_gmtr <- inner_join(
   tab_gmt, 
@@ -312,7 +314,7 @@ rrdiff <- ds_resp_l %>%
   dplyr::filter(Visit != "Day 1") %>% 
   group_split(across(all_of(sub_grp_col_diff))) %>%
   map_dfr(get_rrdiff, comp_v = comp_v, f_v = f_v, weights = "wt.subcohort", 
-          sub_grp_col = sub_grp_col_diff)
+          stratum = "tps.stratum", sub_grp_col = sub_grp_col_diff)
 
 tab_rrdiff <- rrdiff %>% 
   mutate(
@@ -345,7 +347,7 @@ contrasts(ds_resp_l_case$Group) <- contr.treatment(2, base = 2)
 rrdiff_case <- ds_resp_l_case %>%
   group_split(across(all_of(sub_grp_col_case))) %>%
   map_dfr(get_rrdiff, comp_v = comp_v, f_v = f_v, weights = "wt", 
-          sub_grp_col = sub_grp_col_case)
+          stratum = "Wstratum", sub_grp_col = sub_grp_col_case)
 
 tab_rrdiff_case <- rrdiff_case %>% 
   mutate(
@@ -366,13 +368,14 @@ print("Done with table9")
 ds_resp_case <- ds_resp_l %>% 
   dplyr::filter(subgroup == "All participants" & grepl("Resp", resp_cat))
 
+
 resp_v <- unique(ds_resp_case$resp_cat)
 
 dssvy_case <- svydesign(ids = ~ Ptid, 
-                        # strata = ~ Wstratum, 
+                        strata = ~ Wstratum,
                         weights = ~ wt,
                         data = ds_resp_case,
-                        nest = T)
+                        nest = F)
 
 sub_grp_col <- c("subgroup", "Arm", "Baseline", "Case", "resp_cat")
 sub_grp <- as.formula(paste0("~", paste(sub_grp_col, collapse = "+")))
@@ -407,10 +410,10 @@ sub_grp_col <- c("subgroup", "Arm", "Baseline", "Case", "mag_cat")
 sub_grp <- as.formula(paste0("~", paste(sub_grp_col, collapse = "+")))
 
 dssvy_case <- svydesign(ids = ~ Ptid, 
-                        # strata = ~ Wstratum, 
+                        strata = ~ Wstratum,
                         weights = ~ wt,
                         data = ds_mag_case,
-                        nest = T)
+                        nest = F)
 
 gm_f <- paste0("~", paste(gm_v, collapse = " + "))
 rgm_case <- svyby(~ mag, sub_grp, dssvy_case, svymean, vartype = "ci")
@@ -437,7 +440,7 @@ sub_grp_col <- c("subgroup", "Arm", "Baseline", "Visit", "Marker")
 gmtr_case <- ds_mag_l_gmtr_case %>%
   group_split(across(all_of(sub_grp_col))) %>%
   map_dfr(get_gmtr, comp_v=comp_v, f_v = f_v, sub_grp_col = sub_grp_col, 
-          weights = "wt") 
+          stratum = "Wstratum", weights = "wt") 
 
 tab_gmtr_case <- gmtr_case %>%
   mutate(ci_u = 10^(Estimate+1.96*`Std. Error`), 
@@ -489,7 +492,7 @@ sub_grp_col_Rx <- c("subgroup", "Group", "Baseline", "mag_cat", "Marker", "Visit
 gmtr_Rx <- ds_mag_l_Rx %>%
   group_split(across(all_of(sub_grp_col_Rx))) %>%
   map_dfr(get_gmtr, comp_v=comp_v, f_v = f_v, sub_grp_col = sub_grp_col_Rx, 
-          weights = "wt.subcohort", desc = F) 
+          stratum = "tps.stratum", weights = "wt.subcohort", desc = F) 
 
 tab_gmtr_Rx <- gmtr_Rx %>%
   mutate(ci_u = 10^(Estimate+1.96*`Std. Error`), 
@@ -539,7 +542,7 @@ ds_resp_l_bl <- ds_resp_l %>%
 rrdiff_bl <- ds_resp_l_bl %>%
   group_split(across(all_of(sub_grp_col_bl))) %>%
   map_dfr(get_rrdiff, comp_v = comp_v, f_v = f_v, weights = "wt.subcohort", 
-          sub_grp_col = sub_grp_col_bl) 
+          stratum = "tps.stratum", sub_grp_col = sub_grp_col_bl) 
 
 tab_rrdiff_bl <- rrdiff_bl %>% 
   mutate(
@@ -562,7 +565,7 @@ sub_grp_col_bl <- c("subgroup", "Arm", "Visit", "Marker", "mag_cat")
 gmtr_bl <- ds_mag_l_bl %>%
   group_split(across(all_of(sub_grp_col_bl))) %>%
   map_dfr(get_gmtr, comp_v=comp_v, f_v = f_v, sub_grp_col = sub_grp_col_bl, 
-          weights = "wt.subcohort", desc = F) 
+          stratum = "tps.stratum", weights = "wt.subcohort", desc = F) 
 
 tab_gmtr_bl <- gmtr_bl %>%
   mutate( ci_u = 10^(Estimate+1.96*`Std. Error`), 

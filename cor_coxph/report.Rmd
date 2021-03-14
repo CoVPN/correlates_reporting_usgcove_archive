@@ -1,7 +1,13 @@
-```{r, include=FALSE}
+\newcommand{\studyname}{mock}
+
+<!-- ```{r, echo=FALSE} -->
+<!-- here::i_am("cor_coxph/report.Rmd") -->
+<!-- ``` -->
+
+\newcommand{\pathCoRoutput}{cor_coxph/output/D}
+
+```{r, echo=FALSE}
 Day <- 57
-here::i_am("cor_coxph/report.Rmd")
-source(here::here("_common.R"))
 ```
 
 ```{r, child=c(here::here('cor_coxph', 'report_sub.Rmd'))}
@@ -9,7 +15,8 @@ source(here::here("_common.R"))
 
 \clearpage
 
-```{r, include=FALSE}
+
+```{r, echo=FALSE}
 Day <- 29
 ```
 

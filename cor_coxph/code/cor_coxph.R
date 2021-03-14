@@ -2,12 +2,13 @@
 # obligatory to append to the top of each script
 renv::activate(project = here::here(".."))
 
-## There is a bug on Windows that prevents renv from working properly. saved.system.libPaths provides a workaround:
-#if (.Platform$OS.type == "windows") saved.system.libPaths=paste0(Sys.getenv ("R_HOME"), "/library")
+# There is a bug on Windows that prevents renv from working properly. The following code provides a workaround:
+if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
+
 #if (.Platform$OS.type == "windows") {
 #    options(renv.config.install.transactional = FALSE)
 #    renv::restore(library=saved.system.libPaths, prompt=FALSE) # for a quick test, add: packages="backports"
-#    .libPaths(c(saved.system.libPaths, .libPaths()))
+#    .libPaths(c(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
 #} else renv::restore(prompt=FALSE)
 
 # after updating a package, run renv::snapshot() to override the global library record with your changes
@@ -19,12 +20,8 @@ dat.mock <- read.csv(here::here("..", "data_clean", data_name))
 dat.mock.vacc.seroneg <- readRDS(here::here("data_clean", "dat.mock.vacc.seroneg.rds"))
 marker.cutpoints <- readRDS(here::here("data_clean", "marker.cutpoints.rds"))
 
-# kyotil mostly contains code for formatting, but may also contain code for some estimation tasks
-library(kyotil)
-#remotes::install_github("youyifong/kyotil")
-# marginalizedRisk contains logic for computing marginalized risk curves
+library(kyotil) # p.adj.perm, getFormattedSummary
 library(marginalizedRisk)
-#remotes::install_github("youyifong/marginalizedRisk")
 library(tools) # toTitleCase
 library(survey)
 library(parallel)
@@ -34,7 +31,7 @@ library(xtable) # this is a dependency of kyotil
 
 # population is either 57 or 29
 Args <- commandArgs(trailingOnly=TRUE) 
-if (length(Args)==0) Args=c(pop="29") 
+if (length(Args)==0) Args=c(pop="57") 
 pop=Args[1]; print(pop)
 #
 save.results.to = paste0(here::here("output"), "/D", pop,"/");
@@ -65,7 +62,7 @@ if (pop=="57") {
 dat.vacc.pop$yy=dat.vacc.pop[["EventIndPrimaryD"%.%pop]]
 dat.plac.pop$yy=dat.plac.pop[["EventIndPrimaryD"%.%pop]]
 #
-design.vacc.seroneg<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd, data=dat.vacc.pop)
+design.vacc.seroneg<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=if(pop=="57") ~TwophasesampInd else ~TwophasesampInd.2, data=dat.vacc.pop)
 #
 t0=max(dat.vacc.pop[dat.vacc.pop[["EventIndPrimaryD"%.%pop]]==1, "EventTimePrimaryD"%.%pop]); myprint(t0)
 write(t0, file=paste0(save.results.to, "timepoints_cum_risk_"%.%study.name))
@@ -86,6 +83,8 @@ wts=if(pop=="57") dat.vacc.pop$wt else dat.vacc.pop$wt.2
 time.start=Sys.time()
 
 rv=list() # results for verification
+    
+    
     
 ####################################################################################################
 # Main regression results tables
@@ -693,12 +692,23 @@ myprint(prev.vacc)
 
 for (ii in 1:2) {  # 1 conditional on s,   2 is conditional on S>=s
 for (idx in 1:2) { # 1 with placebo lines, 2 without placebo lines. Implementation-wise, only difference is in ylim
-# ii=2; idx=1; a=assays[3]
+# ii=2; idx=2; a=assays[3]
     risks.all=get("risks.all."%.%ii)
-    ylim=range(sapply(risks.all, function(x) x$prob), if(idx==1) prev.plac, prev.vacc, 0)
+    
+    if (ii==2 & idx==2) {
+        # later values in prob may be wildly large due to lack of samples
+        ylim=range(sapply(risks.all, function(x) x$prob[1]), if(idx==1) prev.plac, prev.vacc, 0)
+        # add some white space at the top to write placebo overall risk
+        ylim[2]=ylim[2]
+#        ylim=c(0, 0.007)
+    } else {
+        ylim=range(sapply(risks.all, function(x) x$prob), if(idx==1) prev.plac, prev.vacc, 0)
+    }
+    myprint(ylim)
     lwd=2
     
-    mypdf(oma=c(1,0,0,0), onefile=F, file=paste0(save.results.to, "marginalized_risks", ii, ifelse(idx==1,"","_woplacebo"), "_"%.%study.name), mfrow=.mfrow)
+    mypdf(oma=c(0,0,0,0), onefile=F, file=paste0(save.results.to, "marginalized_risks", ii, ifelse(idx==1,"","_woplacebo"), "_"%.%study.name), mfrow=.mfrow)
+    par(las=1, cex.axis=0.9, cex.lab=1)# axis label orientation
     for (a in assays) {        
         risks=risks.all[[a]]
         xlim=quantile(dat.vacc.pop[["Day"%.%pop%.%a]],if(ii==1) c(.025,.975) else c(0,.95), na.rm=T) 
@@ -715,13 +725,14 @@ for (idx in 1:2) { # 1 with placebo lines, 2 without placebo lines. Implementati
         
         # prevelance lines
         abline(h=prev.plac, col="gray", lty=c(1,3,3), lwd=lwd)
-        abline(h=prev.vacc, col="gray", lty=c(1,3,3), lwd=lwd)
         #
         if (ii==1) {
+            abline(h=prev.vacc, col="gray", lty=c(1,3,3), lwd=lwd)
             lines(risks$marker, risks$prob, lwd=lwd)
             lines(risks$marker, risks$lb,   lwd=lwd, lty=3)
             lines(risks$marker, risks$ub,   lwd=lwd, lty=3)    
         } else {
+            abline(h=prev.vacc[1], col="gray", lty=c(1), lwd=lwd)
             lines(risks$marker[ncases>=5], risks$prob[ncases>=5], lwd=lwd)
             lines(risks$marker[ncases>=5], risks$lb[ncases>=5],   lwd=lwd, lty=3)
             lines(risks$marker[ncases>=5], risks$ub[ncases>=5],   lwd=lwd, lty=3)    
@@ -744,7 +755,7 @@ for (idx in 1:2) { # 1 with placebo lines, 2 without placebo lines. Implementati
         #mtext("Density", side=4, las=0, line=2, cex=1, at=.3)  
         #mylegend(x=6, fill=col, border=col, legend="Vaccine Group", bty="n", cex=0.7)      
     }
-    mtext(toTitleCase(study.name), side = 1, line = 0, outer = T, at = NA, adj = NA, padj = NA, cex = NA, col = NA, font = NA)
+    #mtext(toTitleCase(study.name), side = 1, line = 0, outer = T, at = NA, adj = NA, padj = NA, cex = NA, col = NA, font = NA)
     dev.off()    
 }
 }
@@ -842,7 +853,7 @@ for (a in assays) {
     # cutpoints
     q.a=marker.cutpoints[[a]][["D"%.%pop]]
     
-    mymatplot(out$time, out$risk, lty=1:3, col=c("green3","green","darkgreen"), type="l", lwd=lwd, make.legend=F, ylab="Probability* of COVID by Day t", ylim=ylim, xlab="", las=1, xlim=c(0,t0), at=x.time, xaxt="n")
+    mymatplot(out$time, out$risk, lty=1:3, col=c("green3","green","darkgreen"), type="l", lwd=lwd, make.legend=F, ylab="Probability* of COVID by Day "%.%t0, ylim=ylim, xlab="", las=1, xlim=c(0,t0), at=x.time, xaxt="n")
     title(xlab="Days Since Day "%.%pop%.%" Visit", line=2)
     title(main=labels.title["Day"%.%pop,a], cex.main=.9, line=2)
     mtext(bquote(cutpoints: list(.(formatDouble(10^q.a[1]/10^floor(q.a[1]),1)) %*% 10^ .(floor(q.a[1])), .(formatDouble(10^q.a[2]/10^floor(q.a[2]),1)) %*% 10^ .(floor(q.a[2])))), line= .25, cex=.8)   

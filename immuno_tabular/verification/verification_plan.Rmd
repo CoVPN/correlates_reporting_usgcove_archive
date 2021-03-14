@@ -46,9 +46,10 @@ signature_table <- function(people){
 
 tibble::tribble(
   ~ name,                ~ role,
-  "Dr. Peter Gilbert",  "Specifier/Manager",
+  "Dr. Peter Gilbert",  "Manager",
   "Dr. David Benkeser", "Programmer",
   "Nima Hejazi",        "Programmer",
+  "Chenchen Yu",        "Specifier/Programmer",
   "Kendric Li",         "Programmer",
   "Yiwen Lu",         "Tester" 
 ) %>% 

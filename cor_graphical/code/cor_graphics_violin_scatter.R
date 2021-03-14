@@ -114,12 +114,12 @@ for (typ in c("line","violin")) {
                       facetby=vars(cohort_event),
                       ylim=c(0.5, 7.71),
                       ybreaks=seq(1, 7),
-                      inpanel.cex=6.5,
+                      inpanel.cex=5.4,
                       rate.y.pos=7.7
                       
           )
           file_name <- paste0(typ, "box_", gsub("bind","",gsub("pseudoneut","pnAb_",plots[i])), "_", trt[k], "_", gsub(" ","",bstatus[j]), "_",length(unlist(times[t])),"tp","_", study.name, ".pdf")
-          ggsave2(plot = p, filename = here("figs", file_name), width = 11.5, height = 11)
+          ggsave2(plot = p, filename = here("figs", file_name), width = 16, height = 11)
         }
       }
     }
@@ -141,9 +141,9 @@ for (typ in c("line","violin")) {
             
             longer_cor_data_plot2 <- 
               longer_cor_data %>% group_by_at(groupby_vars2) %>%
-              mutate(num = sum(response), 
-                     denom=n(), 
-                     RespRate = paste0(num,"/",denom,"=\n",round(num/denom*100, 1),"%"))
+              mutate(num = round(sum(response*wt.2), 1), 
+                     denom = round(sum(wt.2), 1), 
+                     RespRate = paste0(num,"/",denom,"\n",round(num/denom*100, 1),"%"))
             
             # make subset for strata RaceEthnic and Dich_RaceEthnic, only present non-NA categories
             if (s=="minority_label") {
@@ -170,12 +170,12 @@ for (typ in c("line","violin")) {
                         facetby=as.formula(paste("~",s,"+cohort_event")),
                         ylim=c(0.5, 8.2),
                         ybreaks=seq(1, 7),
-                        inpanel.cex=5.5,
+                        inpanel.cex=5,
                         rate.y.pos=7.9)
             
             s1 <- ifelse(s=="age_geq_65_label", "Age", ifelse(s=="highrisk_label", "Risk", ifelse(s=="sex_label","Sex", ifelse(s=="minority_label","RaceEthnic", ifelse(s=="Dich_RaceEthnic","Dich_RaceEthnic",NA)))))
             file_name <- paste0(typ, "box_", gsub("bind","",gsub("pseudoneut","pnAb_",plots[i])), "_", trt[k], "_", gsub(" ","",bstatus[j]), "_", s1, "_",length(unlist(times[t])),"tp","_", study.name, ".pdf")
-            ggsave2(plot = p, filename = here("figs", file_name), width = 11.5, height = 11)
+            ggsave2(plot = p, filename = here("figs", file_name), width = 16, height = 11)
             
           }
         }
@@ -200,11 +200,11 @@ for (typ in c("line","violin")) {
                       ylim=c(0.5, 9.2),
                       ybreaks=seq(1, 8, 2),
                       facetopt = "grid",
-                      inpanel.cex=5,
+                      inpanel.cex=5.3,
                       rate.y.pos=8.5
           )
           file_name <- paste0(typ, "box_", gsub("bind","",gsub("pseudoneut","pnAb_",plots[i])), "_", trt[k], "_", gsub(" ","",bstatus[j]), "_Age_Risk_", length(unlist(times[t])),"tp","_", study.name, ".pdf")
-          ggsave2(plot = p, filename = here("figs", file_name), width = 11.5, height = 13.5)
+          ggsave2(plot = p, filename = here("figs", file_name), width = 16, height = 13.5)
         }
       }
     }
@@ -245,7 +245,7 @@ for (i in 1:length(plots)) {
               axis.text.x = element_text(size=ifelse(c=="Vaccine_BaselineNeg", 27, 19)))
       
       file_name <- paste0("scatter_",gsub("bind","",gsub("pseudoneut","pnAb_",plots[i])),"_",c,"_",gsub(" ","",times[[2]][d]),"_", study.name, ".pdf")
-      ggsave2(plot = p, filename = here("figs", file_name), width = 11.5, height = 11)
+      ggsave2(plot = p, filename = here("figs", file_name), width = 12.5, height = 11)
       
     }
   }

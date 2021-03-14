@@ -85,6 +85,6 @@ readin_SLobjects_fromFolder <- function(data_file, trt) {
 
 
 # Read CV.SL object and save AUCs
-data_file <- here("results", "cvsl_riskscore_cvaucs.rds")
+data_file <- here("output", "cvsl_riskscore_cvaucs.rds")
 risk_placebo_cvaucs <- readin_SLobjects_fromFolder(data_file, trt = "placebo")
-save(risk_placebo_cvaucs, file = here("results", "cvsl_risk_placebo_cvaucs.rda"))
+save(risk_placebo_cvaucs, file = here("output", "cvsl_risk_placebo_cvaucs.rda"))

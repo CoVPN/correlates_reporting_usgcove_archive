@@ -10,7 +10,7 @@ library(conflicted)
 conflict_prefer("filter", "dplyr")
 
 # Get Superlearner weights
-load(file = here("results", "sl_riskscore_slfits.rda"))
+load(file = here("output", "sl_riskscore_slfits.rda"))
 sl_weights <- sl_riskscore_slfits$coef %>%
   as.data.frame() %>%
   tibble::rownames_to_column(var = "Learner") %>%

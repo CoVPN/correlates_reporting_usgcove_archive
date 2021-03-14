@@ -26,8 +26,8 @@ num_cores <- parallel::detectCores()
 if (num_cores < 10) stop("Number of cores on this computing environment are less than 10! Superlearner code needs atleast 11 cores to run smoothly.")
 
 # Define code version to run
-run_demo <- TRUE # the demo version is simpler and runs faster!
-run_prod <- FALSE # the prod version runs SL with the complete set of diverse learners and takes more time (around 5-7 hrs on a cluster machine!)
+run_demo <- FALSE # the demo version is simpler and runs faster!
+run_prod <- TRUE # the prod version runs SL with the complete set of diverse learners and takes more time (around 5-7 hrs on a cluster machine!)
 
 source(here("code", "sl_screens.R")) # set up the screen/algorithm combinations
 source(here("code", "utils.R")) # get CV-AUC for all algs
@@ -136,7 +136,7 @@ for (i in 1:length(seeds)) {
   cvfits[[i]] <- fits[[i]]$cvfits
 }
 
-saveRDS(cvaucs, here("results", "cvsl_riskscore_cvaucs.rds"))
-save(cvfits, file = here("results", "cvsl_riskscore_cvfits.rda"))
-save(risk_placebo_ptids, file = here("results", "risk_placebo_ptids.rda"))
-save(run_demo, run_prod, Y, X_riskVars, weights, inputFile, risk_vars, endpoint, maxVar, V_outer, file = here("results", "objects_for_running_SL.rda"))
+saveRDS(cvaucs, here("output", "cvsl_riskscore_cvaucs.rds"))
+save(cvfits, file = here("output", "cvsl_riskscore_cvfits.rda"))
+save(risk_placebo_ptids, file = here("output", "risk_placebo_ptids.rda"))
+save(run_demo, run_prod, Y, X_riskVars, weights, inputFile, risk_vars, endpoint, maxVar, V_outer, file = here("output", "objects_for_running_SL.rda"))

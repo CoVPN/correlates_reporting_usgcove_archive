@@ -1,6 +1,0 @@
-"","Learner","SL Weights","Predictors","Coefficient","Odds Ratio"
-"1","screen_univariate_logistic_pval_SL.glm","0.816","(Intercept)","-3.636","0.026"
-"2","screen_univariate_logistic_pval_SL.glm","0.816","Black","-0.089","0.914"
-"3","screen_univariate_logistic_pval_SL.glm","0.816","Unknown"," 0.054","1.055"
-"4","screen_univariate_logistic_pval_SL.glm","0.816","HighRiskInd"," 0.847","2.332"
-"5","screen_univariate_logistic_pval_SL.glm","0.816","Age"," 0.738","2.093"

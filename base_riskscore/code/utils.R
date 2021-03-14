@@ -10,6 +10,7 @@ source(here::here("..", "_common.R"))
 # get the CV-AUC for a single learner's predicted values
 # @param preds the fitted values
 # @param Y the outcome
+# @param full_y the observed outcome (from the entire dataset, for cross-fitted estimates)
 # @param scale what scale should the IPCW correction be applied on?
 #              Can help with numbers outside of (0, 1)
 #             ("identity" denotes the identity scale;
@@ -65,7 +66,7 @@ cv_auc <- function(preds, Y, folds, scale = "identity",
       replace = TRUE
     ))
   }
-  ests_eifs <- lapply(as.list(1:V), function(v) {
+  ests_eifs <- lapply(as.list(seq_len(V)), function(v) {
     one_auc(
       preds = preds[folds_numeric == v], Y[folds_numeric == v],
       full_y = Y, scale = scale,
@@ -199,7 +200,6 @@ get_all_aucs <- function(sl_fit, scale = "identity",
 # @param family the family, for super learner (e.g., "binomial")
 # @param obsWeights the inverse probability of censoring weights
 #                   (for super learner)
-# @param all_weights the IPC weights for variable importance (full data)
 # @param sl_lib the super learner library (e.g., "SL.ranger")
 # @param method the method for determining the optimal combination
 #               of base learners
@@ -207,6 +207,12 @@ get_all_aucs <- function(sl_fit, scale = "identity",
 #                  outer super learner
 # @param innerCvControl a list of control parameters to pass to the
 #                       inner super learners
+# @param all_weights the IPC weights for variable importance (full data)
+# @param Z the entire (phase 1) dataset (required only if analysis 
+#                  involves data from phase 2)
+# @param C the outcome from the entire (phase 1) dataset
+# @param z_lib the learner/s to be used for weighted auc calculations
+# @param scale the scale that the IPC correction should be computed on
 # @param vimp determines whether or not we save the entire SL fit object
 #        (for variable importance, we don't need it so can save some memory
 #         by excluding large objects)

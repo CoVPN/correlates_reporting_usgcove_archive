@@ -19,8 +19,11 @@ library(RhpcBLASctl)
 library(aucm)
 library(mice)
 library(conflicted)
+library(gam)
+library(xgboost)
 conflict_prefer("filter", "dplyr")
-load(here("results", "objects_for_running_SL.rda"))
+conflict_prefer("select", "dplyr")
+load(here("output", "objects_for_running_SL.rda"))
 source(here("code", "sl_screens.R")) # set up the screen/algorithm combinations
 source(here("code", "utils.R")) # get CV-AUC for all algs
 
@@ -33,13 +36,13 @@ stopifnot(blas_get_num_procs() == 1)
 
 ## construct superlearner on placebo arm-----------------------
 set.seed(20210216)
-sl_riskscore_slfits <- SuperLearner::SuperLearner(
+sl_riskscore_slfits <- SuperLearner(
   Y = Y, X = X_riskVars, family = "binomial",
   SL.library = SL_library, method = "method.CC_nloglik",
   cvControl = list(V = V_outer, stratifyCV = TRUE)
 )
 
-save(sl_riskscore_slfits, file = here("results", "sl_riskscore_slfits.rda"))
+save(sl_riskscore_slfits, file = here("output", "sl_riskscore_slfits.rda"))
 
 # Predict on vaccine arm
 dat.ph1.vacc <- inputFile %>%

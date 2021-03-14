@@ -46,7 +46,7 @@ screen_all_plus_exposure <- function(Y, X, family, obsWeights, id, nVar = maxVar
 
 ## screen based on lasso
 screen_glmnet_plus_exposure <- function(Y, X, family, obsWeights, id, alpha = 1, minscreen = 2, nfolds = 10, nlambda = 100, nVar = maxVar, ...) {
-  # set.seed(123)
+  set.seed(123)
   vars <- screen.glmnet(Y, X, family, obsWeights, id, alpha = 1, minscreen = 2, nfolds = 10, nlambda = 100, ...)
   # keep only a max of nVar immune markers; rank by univariate p-value
   X_initial_screen <- X %>%
@@ -231,31 +231,6 @@ SL.stumpboost <- function(Y, X, newX, family, obsWeights, ...) {
   return(fit)
 }
 
-
-# Gam with df = 2
-SL.gam.2 <- function(Y, X, newX, family, obsWeights, ...) {
-  fit <- SL.gam(
-    Y = Y, X = X, newX = newX, family = family, obsWeights = obsWeights,
-    deg.gam = 2, cts.num = 8, ...
-  )
-  return(fit)
-}
-
-SL.gam.3 <- function(Y, X, newX, family, obsWeights, ...) {
-  fit <- SL.gam(
-    Y = Y, X = X, newX = newX, family = family, obsWeights = obsWeights,
-    deg.gam = 3, cts.num = 8, ...
-  )
-  return(fit)
-}
-
-SL.gam.4 <- function(Y, X, newX, family, obsWeights, ...) {
-  fit <- SL.gam(
-    Y = Y, X = X, newX = newX, family = family, obsWeights = obsWeights,
-    deg.gam = 4, cts.num = 8, ...
-  )
-  return(fit)
-}
 
 # naive bayes wrapper
 SL.naivebayes <- function(Y, X, newX, family, obsWeights, laplace = 0, ...) {

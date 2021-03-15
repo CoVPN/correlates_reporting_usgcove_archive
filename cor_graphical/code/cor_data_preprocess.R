@@ -104,12 +104,11 @@ dat.long.cor.subset$Dich_RaceEthnic = with(dat.long.cor.subset,
 dat.long.cor.subset$LLoD = log10(llods[dat.long.cor.subset$assay])
 
 # add ULoQ value
-dat.long.cor.subset$ULoQ = with(dat.long.cor.subset, ifelse(assay %in% c("bindSpike","bindRBD"), log10(19136250),
-                                                            ifelse(assay == "livevirusneutmn50", log10(18,976.19), NA)))
+dat.long.cor.subset$ULoQ = with(dat.long.cor.subset, ifelse(assay %in% c("bindSpike","bindRBD"), log10(19136250), Inf))
 
 # reset Delta29overB & Delta57overB for response call later using LLoD & ULoQ truncated data at Day 1, Day 29, Day 57
-dat.long.cor.subset$Delta29overB = min(dat.long.cor.subset$Day29, dat.long.cor.subset$ULoQ) - dat.long.cor.subset$B
-dat.long.cor.subset$Delta57overB = min(dat.long.cor.subset$Day57, dat.long.cor.subset$ULoQ) - dat.long.cor.subset$B
+dat.long.cor.subset$Delta29overB = apply(dat.long.cor.subset[,c("Day29","ULoQ")], 1, FUN=min) - dat.long.cor.subset$B
+dat.long.cor.subset$Delta57overB = apply(dat.long.cor.subset[,c("Day57","ULoQ")], 1, FUN=min) - dat.long.cor.subset$B
 
 # # matrix to decide the sampling strata
 dat.long.cor.subset$demo_lab <-

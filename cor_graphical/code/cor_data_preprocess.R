@@ -103,10 +103,13 @@ dat.long.cor.subset$Dich_RaceEthnic = with(dat.long.cor.subset,
 # add LLoD value to show in the plot
 dat.long.cor.subset$LLoD = log10(llods[dat.long.cor.subset$assay])
 
+# add ULoQ value
+dat.long.cor.subset$ULoQ = with(dat.long.cor.subset, ifelse(assay %in% c("bindSpike","bindRBD"), log10(19136250),
+                                                            ifelse(assay == "livevirusneutmn50", log10(18,976.19), NA)))
 
 # reset Delta29overB & Delta57overB for response call later using LLoD & ULoQ truncated data at Day 1, Day 29, Day 57
-dat.long.cor.subset$Delta29overB = dat.long.cor.subset$Day29 - dat.long.cor.subset$B
-dat.long.cor.subset$Delta57overB = dat.long.cor.subset$Day57 - dat.long.cor.subset$B
+dat.long.cor.subset$Delta29overB = min(dat.long.cor.subset$Day29, dat.long.cor.subset$ULoQ) - dat.long.cor.subset$B
+dat.long.cor.subset$Delta57overB = min(dat.long.cor.subset$Day57, dat.long.cor.subset$ULoQ) - dat.long.cor.subset$B
 
 # # matrix to decide the sampling strata
 dat.long.cor.subset$demo_lab <-
@@ -248,10 +251,7 @@ dat.longer.cor.subset <- dat.longer.cor.subset %>%
   mutate(
     time = ifelse(time=="B","Day 1", ifelse(time=="Day29","Day 29", ifelse(time=="Day57","Day 57", time))),
 
-    pos_threshold = ifelse(assay %in% c("bindSpike","bindRBD"), log10(34),
-                           ifelse(assay %in% c("pseudoneutid50","pseudoneutid80"), log10(10), NA)),
-
-    baseline_lt_thres = ifelse(time=="Day 1" & value >= pos_threshold, 1, 0),
+    baseline_lt_thres = ifelse(time=="Day 1" & value >= LLoD, 1, 0),
     increase_4F_D29 = ifelse(time=="Delta29overB" & value>log10(4), 1, 0),
     increase_4F_D57 = ifelse(time=="Delta57overB" & value>log10(4), 1, 0)) %>%
   group_by(Ptid, assay) %>%
@@ -260,7 +260,7 @@ dat.longer.cor.subset <- dat.longer.cor.subset %>%
          increase_4F_D57_ptid=max(increase_4F_D57)) %>%
   ungroup() %>%
   filter(time %in% c("Day 1","Day 29","Day 57")) %>%
-  mutate(response = ifelse(baseline_lt_thres_ptid == 0 & value >= pos_threshold, 1,
+  mutate(response = ifelse(baseline_lt_thres_ptid == 0 & value >= LLoD, 1,
                            ifelse(baseline_lt_thres_ptid == 1 & time == "Day 1", 1,
                                   ifelse(baseline_lt_thres_ptid == 1 & time == "Day 29" & increase_4F_D29_ptid==1, 1,
                                          ifelse(baseline_lt_thres_ptid == 1 & time == "Day 57" & increase_4F_D57_ptid==1, 1,0)))))

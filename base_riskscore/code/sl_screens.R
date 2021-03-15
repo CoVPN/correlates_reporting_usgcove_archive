@@ -443,14 +443,24 @@ if (run_demo) {
 
 if (run_prod) {
   # learners in the method1 are also combined with no screen
-  methods1 <- c("SL.mean", "SL.glm", "SL.bayesglm", "SL.glm.interaction")
+  methods1 <- c("SL.mean", "SL.glm", "SL.glmnet", "SL.xgboost", "SL.ranger")
 
   # learners in the method2 are learners that can have screens
   methods2 <- c(
-    "SL.glm", "SL.bayesglm", "SL.glm.interaction", "SL.glmnet", "SL.gam", # "SL.gam.2", "SL.gam.3", "SL.gam.4", "SL.nnet", "SL.ksvm", "SL.polymars",
-    "SL.xgboost", "SL.cforest"
+    "SL.glm", "SL.glm.interaction", "SL.gam"
   )
 }
+
+# if (run_prod) {
+#   # learners in the method1 are also combined with no screen
+#   methods1 <- c("SL.mean", "SL.glm", "SL.bayesglm", "SL.glm.interaction")
+#   
+#   # learners in the method2 are learners that can have screens
+#   methods2 <- c(
+#     "SL.glm", "SL.bayesglm", "SL.glm.interaction", "SL.glmnet", "SL.gam", 
+#     "SL.xgboost", "SL.cforest"
+#   )
+# }
 
 screens1 <- "screen_all_plus_exposure"
 screens2 <- c(
@@ -472,3 +482,6 @@ apply(screen_method_frame2, 1, function(x) {
 SL_library1 <- c(apply(screen_method_frame1, 1, paste0, collapse = "_"))
 SL_library2 <- c(apply(screen_method_frame2, 1, paste0, collapse = "_"))
 SL_library <- c(SL_library1, SL_library2)
+
+
+

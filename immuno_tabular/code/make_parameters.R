@@ -186,7 +186,7 @@ tlf <-
       pack_row = "subgroup"
     ),
     
-    tab_gmtr = list(
+    tab_rgmt = list(
       table_name = "Ratios of GMTs/GMCs",
       table_header = "The ratios of GMTs/GMCs between groups",
       table_footer = " ",

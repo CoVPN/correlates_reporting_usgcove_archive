@@ -32,14 +32,12 @@ ds_s <- dat.mock %>%
                              EthnicityUnknown==1 ~ "Not reported and unknown"),
     RaceEthC = case_when(
       WhiteNonHispanic == 1 ~ "White Non-Hispanic",
-      # raceC == "White" & ethnicityC == "Hispanic or Latino" ~ "Other",
+      # raceC == "White" & WhiteNonHispanic == 0 ~ NA,
       TRUE ~ raceC
     ),
     MinorityC = case_when(
-      MinorityInd == 1 ~ "Communities of Color",
-      MinorityInd == 0 & raceC == "White" &
-        ethnicityC == "Not Hispanic or Latino" ~ "White Non-Hispanic",
-      TRUE ~ ""
+      WhiteNonHispanic == 0 ~ "Communities of Color",
+      WhiteNonHispanic == 1 ~ "White Non-Hispanic"
     ),
     HighRiskC = ifelse(HighRiskInd == 1, "At-risk", "Not at-risk"),
     Age65C = ifelse(age.geq.65 == 1, "Age >= 65", "Age < 65"),
@@ -47,7 +45,7 @@ ds_s <- dat.mock %>%
     AgeRiskC = paste(Age65C, HighRiskC),
     AgeSexC = paste(Age65C, SexC),
     AgeMinorC = paste(Age65C, MinorityC),
-    Baseline = factor(ifelse(Bserostatus == 1, "Positive", "Negative"),
+    `Baseline COVID` = factor(ifelse(Bserostatus == 1, "Positive", "Negative"),
                       levels = c("Negative", "Positive")
     ),
     Arm = factor(ifelse(Trt == 1, "Vaccine", "Placebo"), 
@@ -91,10 +89,7 @@ ds_long <- ds_s %>%
       Age65C, HighRiskC, AgeRiskC, SexC, AgeSexC, ethnicityC, RaceEthC,
       MinorityC, AgeMinorC),
     names_to = "subgroup", values_to = "subgroup_cat") %>%
-  mutate(subgroup = factor(subgrp[subgroup], levels = subgrp)) %>%
-  dplyr::filter(!subgroup_cat %in% c("", "Age < 65 ", "Age >= 65 ")) %>%
-  dplyr::filter(!(subgroup == "ethnicityC" &
-                    subgroup_cat == "Not reported and unknown"))
+  mutate(subgroup = factor(subgrp[subgroup], levels = subgrp))
 
 ds_all <- bind_rows(
   ds_long,

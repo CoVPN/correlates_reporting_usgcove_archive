@@ -3,276 +3,112 @@
 ```{r knitr, echo=FALSE, message=FALSE, warning=FALSE}
 library(knitr)
 library(kableExtra)
-library(tidyverse)
+library(dplyr)
 here::i_am("immuno_tabular/report.Rmd")
-base::load(here::here("immuno_tabular", "data_clean", "params.Rdata"))
-base::load(here::here("immuno_tabular", "output", "Tables.Rdata"))
-
+base::load(here::here( "immuno_tabular", "output", "Tables.Rdata"))
+source(here::here("immuno_tabular", "code", "make_functions.R"))
 # Determine output document type.
-doctype <- opts_knit$get("rmarkdown.pandoc.to")
+doctype <- "html"
 ```
 
-`r if ("demo" %in% names(tlf)) {sprintf("### Table %s. Demographic", tbl_num)}`
-```{r demo, results="asis", eval="demo" %in% names(tlf) & doctype != "docx"}
-chunk_name <- opts_current$get("label")
-tlf_labels <- tlf[[chunk_name]]
+```{r tabs, results="asis", echo=FALSE, message=FALSE, warning=FALSE}
+opts <- options(knitr.kable.NA = "")
+for (i in 1:length(tlf)){
+  subnum <- 0
+  tlf_labels <- tlf[[i]]
 
-title_i <- tlf_labels[["table_header"]]
-footer_i <- tlf_labels[["table_footer"]]
-
-tab_footer <- c(footer_i, "", trt_footer)
-
-kable(
-  tab_dm %>% select(-subgroup),
-  col.names = c("Characteristics",
-                sprintf("Placebo\n(N = %s)", sum(ds_s$Trt==0)),
-                sprintf("Vaccine\n(N = %s)",sum(ds_s$Trt==1)),
-                sprintf("Total\n(N = %s)", nrow(ds_s))),
-  format = doctype, booktabs = TRUE, longtable = TRUE,
-  caption = sprintf("Table %s. %s", tbl_num, title_i)
-) %>%
-pack_rows(index = table(tab_dm$subgroup)) %>%
-kable_styling(latex_options = "repeat_header") %>%
-footnote(general = tab_footer, general_title = " ",
-         threeparttable = TRUE, escape = TRUE)
-
-tbl_num <- tbl_num + 1
-```
-
-`r if ("demo" %in% names(tlf)) {sprintf("### Table %s. Responder rates", tbl_num)}`
-```{r respprop, results="asis", echo=FALSE, eval="respprop" %in% names(tlf) & doctype != "docx"}
-chunk_name <- opts_current$get("label")
-tlf_labels <- tlf[[chunk_name]]
-
-title_i <- tlf_labels[["table_header"]]
-footer_i <- tlf_labels[["table_footer"]]
-
-tab_footer <- c(footer_i, "", add2footer, "", trt_footer)
-
-tab1 <- tab_rr %>%
-  select(subgroup, Group, Baseline, Visit,  N, Endpoint,Responder,
-         `2-Fold Rise`, `4-Fold Rise`) %>%
-  mutate(N = as.character(N))
-
-subnum <- 0
-for (i in unique(tab_rr$subgroup)){
-  subnum <- subnum + 1
-  tab.i <- dplyr::filter(tab1, subgroup==i) %>%
-    arrange(subgroup, Group, Baseline, Visit, Endpoint) %>%
-    group_table(., c("Group", "Baseline", "Visit", "N", "Endpoint"))
-
-  print(kable(tab.i %>% select(-subgroup),
-              format = doctype, booktabs = TRUE, longtable = TRUE,
-              caption = sprintf("Table %s%s. %s by %s", tbl_num,
-                                letters[subnum], title_i, i)) %>%
-          pack_rows(index=table(tab.i$subgroup)) %>%
-          column_spec(1, width = "5cm") %>%
-          kable_styling(latex_options = "repeat_header") %>%
-          footnote(general = tab_footer, general_title = " ",
-                   threeparttable = TRUE, escape = TRUE)
-  )
-  cat("\n\n\\pagebreak\n")
-}
-
-tbl_num <- tbl_num + 1
-```
-
-`r if ("demo" %in% names(tlf)) {sprintf("### Table %s. Geometric mean titers (GMTs) or geometric mean value of concentrations (GMCs)", tbl_num)}`
-```{r gmt, results="asis", echo=FALSE, eval="gmt" %in% names(tlf) & doctype != "docx"}
-chunk_name <- opts_current$get("label")
-tlf_labels <- tlf[[chunk_name]]
-
-title_i <- tlf_labels[["table_header"]]
-footer_i <- tlf_labels[["table_footer"]]
-
-tab_footer <- c(footer_i, "", add2footer, "", trt_footer)
-
-tab2 <- tab_gm %>% 
-  select(subgroup, Group, Baseline, Visit, N, Endpoint, `GMT/GMC`,
-         `95% CI`) %>%
-  mutate(N = as.character(N))
-
-subnum <- 0
-for (i in unique(tab2$subgroup)){
-  subnum <- subnum + 1
-  tab.i <- dplyr::filter(tab2, subgroup==i) %>%
-  arrange(Group, Baseline, Visit, N, Endpoint) %>%
-  group_table(., c("Group", "Baseline", "Visit", "N", "Endpoint"))
-
-print(
-  kable(tab.i %>% select(-subgroup),
-        format = doctype, booktabs = TRUE, longtable = TRUE, 
-        caption = sprintf("Table %s%s. %s by %s", tbl_num, letters[subnum],
-                          title_i, i)) %>%
-  pack_rows(index = table(tab.i$subgroup)) %>%
-     column_spec(1, width = "5cm") %>% 
-  kable_styling(latex_options = "repeat_header") %>%
-  footnote(general =  tab_footer, general_title = " ", threeparttable = TRUE,
-           escape = TRUE)
-)
-  cat("\n\n\\pagebreak\n")
-}
-
-tbl_num <- tbl_num + 1
-```
-
-`r if ("demo" %in% names(tlf)) {sprintf("### Table %s. GMTRs or GMCRs between post-vaccinations vs. pre-vaccination", tbl_num)}`
-```{r gmtr, results = "asis", echo = FALSE, eval = "gmtr" %in% names(tlf) & doctype != "docx"}
-chunk_name <- opts_current$get("label")
-tlf_labels <- tlf[[chunk_name]]
-
-title_i <- tlf_labels[["table_header"]]
-footer_i <- tlf_labels[["table_footer"]]
-
-tab_footer <- c(footer_i, "", add2footer, "", trt_footer)
-
-tab3 <- tab_gmr %>%
-  select(subgroup, Group, Baseline, Visit, N, Endpoint, `GMTR/GMCR`,
-         `95% CI`) %>%
-  mutate(N = as.character(N))
-
-subnum <- 0
-for (i in unique(tab3$subgroup)) {
-  subnum <- subnum + 1
-  tab.i <- dplyr::filter(tab3, subgroup == i) %>%
-  arrange(Group, Baseline, Visit, N, Endpoint) %>%
-  group_table(., c("Group", "Baseline", "Visit", "N", "Endpoint"))
+  title_i <- tlf_labels[["table_header"]]
+  footer_i <- tlf_labels[["table_footer"]]
+  tlf_args <- names(tlf_labels)
   
-  print(
-    kable(tab.i %>% select(-subgroup),
-      format = doctype, booktabs = TRUE, longtable = TRUE,
-      caption = sprintf("Table %s%s. %s by %s", tbl_num, letters[subnum],
-                        title_i, i)) %>%
-  kable_styling(latex_options = "repeat_header") %>%
-  pack_rows(index=table(tab.i$subgroup)) %>%
-  column_spec(1, width = "5cm") %>%
-  footnote(general = tab_footer, general_title = " ", threeparttable = TRUE,
-           escape = TRUE)
-  )
-  cat("\n\n\\pagebreak\n")
+  tab <- get(names(tlf)[i])
+  
+  deselect <- if ("deselect" %in% tlf_args) tlf_labels[["deselect"]] else NA
+  loop <- if ("loop" %in% tlf_args) tlf_labels[["loop"]] else NA
+  group_table_col <- if ("group_table_col" %in% tlf_args) {
+    tlf_labels[["group_table_col"]] 
+    } else NA 
+  
+  if ("pack_row" %in% tlf_args) {
+    pack_row <- tlf_labels[["pack_row"]]
+    if (!is.na(loop)) { 
+      pack_row_ind <- by(tab, 
+                         tab[, loop], 
+                         function(x)table(droplevels(x[, pack_row])))
+      } else {
+      pack_row_ind <- table(droplevels(tab[, pack_row]))  
+      }
+    } else NA
+  
+  col_name <- if ("col_name" %in% tlf_args) { 
+    tlf_labels[["col_name"]] 
+  } else setdiff(names(tab), deselect) 
+  
+  header_above1 <- if ("header_above1" %in% tlf_args) {
+    tlf_labels[["header_above1"]] 
+    } else {
+    rep("", ncol(tab)-!is.na(deselect))
+    }
+  
+  header_above2 <- if ("header_above2" %in% tlf_args) {
+    tlf_labels[["header_above2"]] 
+    } else {
+    rep("", ncol(tab)-!is.na(deselect))
+    }
+  
+  tab<- data.frame(sapply(tab, gsub, pattern="\n", replacement="<br>", fixed=T))
+  
+  if (!is.na(loop)) {
+    
+    jloop <- pull(tab, !!as.name(loop)) %>% unique()
+    
+    for (j in jloop) {
+      subnum <- subnum + 1
+      tab.j <- dplyr::filter(tab, !!as.name(loop) == j) 
+      # if (!is.na(group_table_col)) {
+      #   tab.j <- mutate_at(tab.j, group_table_col, as.character)
+      #   tab.j <- group_table(data.frame(tab.j), group_table_col)
+      #   }
+        
+      tabjk <- kable(tab.j %>% select(-!!deselect),
+                     format = "html",
+                     booktabs = TRUE, longtable = TRUE, escape = FALSE,
+                     col.names = col_name, 
+                     caption = sprintf("Table %s%s. %s by %s", i,
+                                       letters[subnum], title_i, j)) %>%
+        add_header_above(header_above1) %>%
+        add_header_above(header_above2) %>%
+        kable_styling(latex_options = "repeat_header") %>%
+        footnote(general_title = "", general = footer_i, threeparttable = TRUE, 
+                 escape = FALSE)
+      
+      if ("pack_row" %in% tlf_args) {
+        tabjk <- pack_rows(tabjk, index = pack_row_ind[j])
+        }
+    print(tabjk)
+    cat("\n\n\\pagebreak\n")
+    }
+    
+    } else {
+
+      tabk <- kable(
+        if (is.na(deselect)) {tab} else {tab %>% select(-!!deselect)},
+        format = "html", booktabs = TRUE, longtable = TRUE, escape = FALSE,
+        col.names = col_name, 
+        caption = sprintf("Table %s. %s", i, title_i)) %>%
+        kable_styling(latex_options = "repeat_header") %>% 
+        add_header_above(header_above1) %>%
+        add_header_above(header_above2) %>%
+        footnote(general_title = "", general = footer_i, 
+                 threeparttable = TRUE, escape = FALSE)
+      
+      if ("pack_row" %in% tlf_args) {
+        tabk <- pack_rows(tabk, index = pack_row_ind)
+        }
+      print(tabk)
+      cat("\n\n\\pagebreak\n")
 }
-tbl_num <- tbl_num + 1
-```
 
-`r if ("demo" %in% names(tlf)) {sprintf("### Table %s. Ratios of GMTs/GMCs between the vaccine arm vs. placebo arm, by baseline status", tbl_num)}`
-```{r RofGMTa, results = "asis", echo = FALSE, eval = "RofGMTa" %in% names(tlf) & doctype != "docx"}
-chunk_name <- opts_current$get("label")
-tlf_labels <- tlf[[chunk_name]]
-
-title_i <- tlf_labels[["table_header"]]
-footer_i <- tlf_labels[["table_footer"]]
-
-tab_footer <- c(footer_i, "", add2footer, "", trt_footer)
-
-tab4 <- tab_gmtrA %>%
-  select(subgroup, Baseline, Visit, N, Endpoint, `Ratios of GMT/GMC`,
-         `95% CI`) %>%
-  mutate(N=as.character(N)) %>%
-  arrange(subgroup, Baseline, Visit, N, Endpoint) %>%
-  group_table(., c("Baseline", "Visit", "N", "Endpoint")) %>%
-  ungroup()
-
-  kable(tab4 %>% select(-subgroup),
-          format = doctype, booktabs = TRUE, longtable = TRUE,
-          caption = sprintf("Table %s. %s", tbl_num, title_i)) %>%
-  kable_styling(latex_options = "repeat_header") %>%
-  pack_rows(index = table(tab4$subgroup)) %>%
-  footnote(general = tab_footer, general_title = " ", threeparttable = TRUE,
-           escape = TRUE)
-tbl_num <- tbl_num + 1
-```
-
-`r if ("demo" %in% names(tlf)) {sprintf("### Table %s. Ratios of GMTs/GMCs between baseline positive participants vs. negative participants, among the vaccinees", tbl_num)}`
-```{r RofGMTb, results = "asis", echo = FALSE, eval = "RofGMTb" %in% names(tlf) & doctype != "docx"}
-chunk_name <- opts_current$get("label")
-tlf_labels <- tlf[[chunk_name]]
-
-title_i <- tlf_labels[["table_header"]]
-footer_i <- tlf_labels[["table_footer"]]
-
-tab_footer <- c(footer_i, "", add2footer, "", trt_footer)
-
-tab5 <- tab_gmtrB %>% 
-  select(subgroup, Visit, N, Endpoint, `Ratios of GMT/GMC`, `95% CI`) %>% 
-  mutate(N=as.character(N)) %>% 
-  arrange(Visit, N, Endpoint) %>% 
-  group_table(., c("Visit", "N", "Endpoint")) %>% 
-  ungroup()
-
-kable(tab5 %>% select(-subgroup), 
-      format = doctype, booktabs = TRUE, longtable = TRUE, #linesep=lineseps, 
-      caption=sprintf("Table %s. %s", tbl_num, title_i)) %>%
-  kable_styling(latex_options = "repeat_header") %>%
-  pack_rows(index=table(tab5$subgroup)) %>%
-  footnote(general = tab_footer, general_title = " ", threeparttable = TRUE,
-           escape = TRUE)
-  tbl_num <- tbl_num + 1
-```
-
-`r if ("demo" %in% names(tlf)) {sprintf("### Table %s. Ratios of GMTs/GMCs between demographic subgroups among the vaccine recipients", tbl_num)}`
-```{r RofGMTc, results = "asis", echo = FALSE, eval = "RofGMTc" %in% names(tlf) & doctype != "docx"}
-chunk_name <- opts_current$get("label")
-tlf_labels <- tlf[[chunk_name]]
-
-title_i <- tlf_labels[["table_header"]]
-footer_i <- tlf_labels[["table_footer"]]
-tab_footer <- c(footer_i, "", add2footer, "", trt_footer)
-
-tab6 <- tab_gmtrC %>%
-  ungroup() %>%
-  mutate(N = as.character(N),
-         subgroup = factor(comp_i, levels = c("Age", "Sex", "High Risk",
-                                              "Ethnicity", "Minority"))) %>%
-  select(subgroup, Baseline, Visit, Endpoint, N, `Ratios of GMT/GMC`,
-         `95% CI`) %>%
-  arrange(subgroup, Baseline, Visit, N, Endpoint) %>%
-  group_table(., c("Baseline", "Visit", "N", "Endpoint"))
-
-  kable(tab6 %>% select(-subgroup),
-        format = doctype, booktabs = TRUE, longtable = TRUE,
-        caption = sprintf("Table %s. %s", tbl_num, title_i)) %>%
-    kable_styling(latex_options = "repeat_header") %>%
-    pack_rows(index = table(tab6$subgroup)) %>%
-    footnote(general = tab_footer, general_title = " ", threeparttable = TRUE,
-             escape = TRUE)
-tbl_num <- tbl_num + 1
-```
-
-`r if ("demo" %in% names(tlf)) {sprintf("### Table %s. Differences of responder rates between the vaccine arm and the placebo arm", tbl_num)}`
-```{r respdiff, results = "asis", echo = FALSE, eval = "respdiff" %in% names(tlf) & doctype != "docx"}
-chunk_name <- opts_current$get("label")
-tlf_labels <- tlf[[chunk_name]]
-
-title_i <- tlf_labels[["table_header"]]
-footer_i <- tlf_labels[["table_footer"]]
-
-tab_footer <- c(footer_i, "", add2footer, "", trt_footer)
-
-tab7 <- tab_rrdiff %>%
-  select(subgroup, Group, Baseline, Visit, N, Endpoint, `2-Fold Rise`,
-         `4-Fold Rise`, Responder) %>%
-  mutate(N = as.character(N)) %>%
-  ungroup()
-
-subnum <- 0
-for (i in unique(tab7$subgroup)){
-  subnum <- subnum + 1
-
-  tab.i <- dplyr::filter(tab7, subgroup==i) %>%
-    arrange(subgroup, Group, Baseline, Visit, N, Endpoint) %>%
-    group_table(., c( "Group", "Baseline","Visit", "N", "Endpoint"))
-
-  print(
-    kable(tab.i %>% select(-subgroup),
-          format = doctype, booktabs = TRUE, longtable = TRUE,
-          caption = sprintf("Table %s%s. %s by %s", tbl_num, letters[subnum],
-                            title_i, i)) %>%
-      kable_styling(latex_options = "repeat_header") %>%
-      column_spec(1, width = "5cm") %>%
-      footnote(general = tab_footer, general_title = " ",
-               threeparttable = TRUE, escape = TRUE)
-  )
-  cat("\n\n\\pagebreak\n")
 }
-tbl_num <- tbl_num + 1
+
 ```

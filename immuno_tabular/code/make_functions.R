@@ -1,21 +1,3 @@
-#' Find the LLOQ value for an endpoint, used for \code{getLLOQ()}
-#'
-#' @param x An endpoint name.
-#'
-#' @return The LLOQ value of endpoint \code{x}.
-#'
-#' @examples
-#' getLLOQ("bindSpike")
-.getLLOQ <- function(x) {
-  if (grepl("bind", x, fixed = TRUE)) {
-    bAb_lloq
-  } else if (grepl("50", x, fixed = TRUE)) {
-    nAb50_lloq
-  } else if (grepl("80", x, fixed = TRUE)) {
-    nAb80_lloq
-  }
-}
-
 #' Truncate the endpoint at LLOQ
 #'
 #' @param x An endpoint vector.
@@ -23,14 +5,30 @@
 #' @param uloq The ULOQ for endpoint \code{x}.
 #'
 #' @return The endpoint vector after truncation.
-setLOQ <- function(x,
-                   lloq = -Inf,
-                   uloq = Inf) {
-  lloq <- ifelse(is.infinite(lloq), lloq, log10(lloq))
+setLOD <- function(x,
+                   uloq = Inf,
+                   llod = -Inf) {
+  llod <- ifelse(is.infinite(llod), llod, log10(llod))
   uloq <- log10(uloq)
-  x <- ifelse(x < lloq, lloq - log10(2), x)
+  x <- ifelse(x < llod, llod - log10(2), x)
   x <- ifelse(x > uloq, uloq, x)
 }
+
+
+#' Derive indicators of magnitudes greater than 2xLLOD and 4xLLOD
+#'
+#' @param x An endpoint vector.
+#' @param lloq The LLOQ for endpoint \code{x}.
+#'
+#' @return Two indicator variables \emph{x}_2llod and \emph{x}_4llod .
+grtLLOD <- function(data,
+                    x, 
+                    llod = -Inf) {
+  data[, paste0(x, "2llod")] <- ifelse(10^data[,x] >= llod*2, 1, 0)
+  data[, paste0(x, "4llod")] <- ifelse(10^data[,x] >= llod*4, 1, 0)
+  return(select_at(data, paste0(x, c(2, 4),"llod")))
+}
+
 
 #' Generate response calls and fold-rise indicator for endpoints:
 #' Responders at each pre-defined timepoint are defined as participants who
@@ -58,9 +56,9 @@ setResponder <- function(data, bl, post, folds = c(2, 4), lloq,
   data <- cbind(data, foldsInd)
   data[, paste0(post, "Resp")] <-
     ifelse((data[, bl] < log10(lloq) & data[, post] > log10(lloq)) |
-      (data[, bl] >= log10(lloq) & data[, paste0(post, "FR", responderFR)] == 1),
-    1,
-    0
+             (data[, bl] >= log10(lloq) & data[, paste0(post, "FR", responderFR)] == 1),
+           1,
+           0
     )
   return(select_at(data, c(paste0(post, "Resp"), paste0(post, "FR", folds))))
 }
@@ -69,15 +67,111 @@ setResponder <- function(data, bl, post, folds = c(2, 4), lloq,
 #'
 #' @param data The dataframe with the endpoint of interest at \code{t1} and
 #'  \code{t2}.
-#' @param endpoint The endpoint (as in the column name).
-#' @param t1 Timepoint 1.
-#' @param t2 Timepoint 2.
+#' @param marker The marker (as in the column name).
+#' @param timepoints Timepoints for comparisons.
+#' @param time.ref The reference timepoint to compare with all other timepoints. Pairwise comparisons between all timepoints if not specified.
 #'
 #' @return A vector of delta: Delta\emph{t2}over\emph{t1Endpoint}.
-setDelta <- function(data, endpoint, t1, t2) {
-  data[, paste0("Delta", t2, "over", t1, endpoint)] <-
-    data[paste0(t2, endpoint)] - data[paste0(t1, endpoint)]
-  return(select_at(data, paste0("Delta", t2, "over", t1, endpoint)))
+setDelta <- function(data, marker, timepoints, time.ref = NA) {
+  ret <- data.frame(matrix(ncol = 0, nrow = nrow(data)))
+  if (is.na(time.ref)) {
+    timepairs <- gtools::combinations(n = length(timepoints), r = 2, v = timepoints)
+  } else {
+    timepairs <- matrix(c(setdiff(timepoints, time.ref), rep(time.ref, length(timepoints)-1)), ncol = 2)
+  }
+  for (i in 1:nrow(timepairs)){
+    t1 <- timepairs[i, 1]
+    t2 <- timepairs[i, 2]
+    ret[, paste0("Delta", t2, "over", t1, marker)] <- data[paste0(t2, marker)] - data[paste0(t1, marker)]
+  }
+  return(ret)
+}
+
+#' Wrapper function to generate ratio of geometric magnitude based on svyglm()
+#'
+#' @param x The dataframe used for the svydesign() data argument
+#' @param comp_v The covariate for comparison
+#' @param f_v The model formula used for svyglm()
+#' @param sug_grp_col A formula specifying factors that define subsets to run the model, used for svyby() by argument
+#' @param stratum The stratum used for svydesign()
+#' @param weights The weights used for svydesign()
+get_rgmt <- function(comp_v, f_v, sub_grp_col, stratum, weights, x, desc = T) {
+  
+  cat("Table of ", paste(mutate_at(x, sub_grp_col, as.character) %>% 
+                           distinct_at(sub_grp_col) , collapse = ", "),
+      "\n")
+    svy <- svydesign(ids = ~ Ptid, 
+                   strata = as.formula(paste0("~", stratum)),
+                   weights = as.formula(paste0("~", weights)),
+                   data = x)
+    rslt <- svyglm(f_v, design = svy)
+    
+  
+  if (desc) {
+    comp_i <- arrange_at(x, desc(comp_v))
+  } else {
+    comp_i <- arrange_at(x, comp_v)
+  }
+  
+  comp_i <- comp_i %>% 
+    distinct_at(comp_v) %>% 
+    pull(!!as.name(comp_v))
+  
+  comp <- paste(comp_i, collapse = " vs ")
+  
+  ret <- x %>% 
+    mutate(comp = !!comp) %>% 
+    distinct_at(c("comp", sub_grp_col)) %>% 
+    mutate(Estimate = rslt$coefficients[2], 
+           ci_l = confint(rslt)[2, "2.5 %"],
+           ci_u = confint(rslt)[2, "97.5 %"])
+  
+  return(ret)
+}
+
+
+#' Wrapper function to generate responder rate difference based on svyglm()
+#'
+#' @param x The dataframe used for the svydesign() data argument
+#' @param comp_v The covariate for comparison
+#' @param f_v The model formula used for svyglm()
+#' @param sug_grp_col A formula specifying factors that define subsets to run the model, used for svyby() by argument
+#' @param stratum The stratum used for svydesign()
+#' @param weights The weights used for svydesign()
+
+get_rrdiff <- function(comp_v, f_v, sub_grp_col, stratum, weights, x, desc = F){
+
+  cat("Table of ", paste(mutate_at(x, sub_grp_col, as.character) %>% 
+                           distinct_at(sub_grp_col) , collapse = ", "),
+      "\n")
+  
+    svy <- svydesign(ids = ~ Ptid, 
+                   strata = as.formula(paste0("~", stratum)),
+                   weights = as.formula(paste0("~", weights)),
+                   data = x)
+  
+    rslt <-svyglm(f_v, design = svy)
+    
+    if (desc) {
+      comp_i <- arrange_at(x, desc(comp_v))
+    } else {
+      comp_i <- arrange_at(x, comp_v)
+    }
+    
+    comp_i <- comp_i %>% 
+      distinct_at(comp_v) %>% 
+      pull(!!as.name(comp_v))
+    
+    comp <- paste(comp_i, collapse = " vs ")
+    
+    ret <- x %>% 
+      mutate(comp = !!comp) %>% 
+      distinct_at(c("comp", sub_grp_col)) %>%
+      mutate(Estimate = rslt$coefficients[2], 
+             ci_l = confint(rslt)[2, "2.5 %"],
+             ci_u = confint(rslt)[2, "97.5 %"])
+  
+  return(ret)
 }
 
 #' Function to remove duplicate key rows from table outputs.
@@ -90,15 +184,15 @@ group_table <- function(data, keys) {
   # Sort data by keys
   data <- data[do.call(order, data[, keys, drop = FALSE]), ]
   isfactor <- sapply(data, is.factor)
-  message(sprintf(
-    "Converting factors to character: %s",
-    paste(names(isfactor)[isfactor], collapse = ", ")
-  ))
+  # message(sprintf(
+  #   "Converting factors to character: %s",
+  #   paste(names(isfactor)[isfactor], collapse = ", ")
+  # ))
   data[, isfactor] <- data.frame(lapply(
     data[, isfactor, drop = FALSE],
     as.character
   ), stringsAsFactors = FALSE)
-
+  
   # Now find duplicates and replace with ""
   groups <- Reduce(c, keys, accumulate = TRUE)
   groups_dup <- lapply(groups, function(x) duplicated(data[, x]))
@@ -109,3 +203,4 @@ group_table <- function(data, keys) {
   rownames(data) <- NULL
   data
 }
+

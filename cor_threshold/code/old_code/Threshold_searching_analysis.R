@@ -1,4 +1,3 @@
-
 #### NOTE:
 # For questions and issues:
 # Contact: Lars van der Laan
@@ -6,7 +5,6 @@
 # Phone: 1-925-257-3339
 
 #### Working directory should be /correlates_report
-setwd("~/CovidCorrSAP/correlates_report")
 #### This should take about 10-20 minutes to run. It can be made much faster by  using a single machine learning algorithm as opposed to SuperLearner
 #### Options:
 tf <- 172 # Reference time to perform analysis. Y = 1(T <= tf) where T is event time of Covid.
@@ -22,9 +20,6 @@ risks_to_estimate_thresh_of_protection <- NULL ### Risk values at which to estim
 # At least 15 thresholds
 threshold_grid_size <- max(threshold_grid_size, 15)
 ###### Running threshold analysis
-######
-
-
 
 library(SuperLearner)
 # devtools::install_github("tlverse/sl3")
@@ -33,17 +28,9 @@ library(here)
 library(data.table)
 library(future)
 library(kableExtra)
-plan(multiprocess, workers = 4)
-
-
+plan(multiprocess, workers = 4L)
 source(file.path("tmleThresh.R"))
 
-
-
-
-remotes::install_local(file.path("..", "R_packages", "COVIDcorr"), force = TRUE)
-library(COVIDcorr)
-stopifnot(packageVersion("COVIDcorr") >= "2020.10.14")
 ####################################################
 #### Data set up
 ####################################################

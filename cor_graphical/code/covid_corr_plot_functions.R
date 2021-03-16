@@ -821,6 +821,7 @@ covid_corr_spaghetti_facets <- function(plot_dat,
                                           "#FF5EBF", "#3700A5",
                                           "#8F8F8F", "#787873"
                                         ),
+                                        alpha = 0.6,
                                         lwd = 0.4,
                                         point_size = 1.4,
                                         plot_title,
@@ -851,7 +852,7 @@ covid_corr_spaghetti_facets <- function(plot_dat,
     plot_dat, aes_string(x = x, y = y, group = id, color = color, shape = color)
   ) +
     geom_point(size = point_size) +
-    geom_line(lwd = lwd) +
+    geom_line(lwd = lwd, alpha = alpha) +
     guides(
       color = guide_legend(nrow = legend_nrow, byrow = TRUE),
       shape = "none"

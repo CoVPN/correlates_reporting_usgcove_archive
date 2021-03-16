@@ -26,7 +26,7 @@ dat$cohort_event <- factor(with(dat,
                                 ifelse(EventIndPrimaryD29==1 & EventIndPrimaryD57==0, "Intercurrent Cases",
                                        ifelse(Perprotocol==1 & EventIndPrimaryD29==1 & EventIndPrimaryD57==1, "PP Cases",
                                               ifelse(Perprotocol==1 & EventIndPrimaryD29==0 & EventIndPrimaryD57==0, "PP Non-cases", NA)))))
-
+dat <- dat[!is.na(dat$cohort_event),]
 
 
 ## arrange the dataset in the long form, expand by assay types
@@ -103,10 +103,12 @@ dat.long.cor.subset$Dich_RaceEthnic = with(dat.long.cor.subset,
 # add LLoD value to show in the plot
 dat.long.cor.subset$LLoD = log10(llods[dat.long.cor.subset$assay])
 
+# add ULoQ value
+dat.long.cor.subset$ULoQ = with(dat.long.cor.subset, ifelse(assay %in% c("bindSpike","bindRBD"), log10(19136250), Inf))
 
 # reset Delta29overB & Delta57overB for response call later using LLoD & ULoQ truncated data at Day 1, Day 29, Day 57
-dat.long.cor.subset$Delta29overB = dat.long.cor.subset$Day29 - dat.long.cor.subset$B
-dat.long.cor.subset$Delta57overB = dat.long.cor.subset$Day57 - dat.long.cor.subset$B
+dat.long.cor.subset$Delta29overB = apply(dat.long.cor.subset[,c("Day29","ULoQ")], 1, FUN=min) - dat.long.cor.subset$B
+dat.long.cor.subset$Delta57overB = apply(dat.long.cor.subset[,c("Day57","ULoQ")], 1, FUN=min) - dat.long.cor.subset$B
 
 # # matrix to decide the sampling strata
 dat.long.cor.subset$demo_lab <-
@@ -237,12 +239,9 @@ dat.longer.cor.subset <- dat.long.cor.subset %>% select(Ptid, Trt, Bserostatus, 
                                                         EventIndPrimaryD57, Perprotocol, cohort_event,
                                                         Age, age_geq_65_label, highrisk_label, age_risk_label,
                                                         sex_label, minority_label, Dich_RaceEthnic,
-                                                        assay, LLoD,
+                                                        assay, LLoD, wt, wt.2,
                                                         B, Day29, Day57, Delta29overB, Delta57overB) %>%
-  pivot_longer(!Ptid:LLoD, names_to = "time", values_to = "value")
-
-# only keep cases and non-cases
-dat.longer.cor.subset <- dat.longer.cor.subset %>% filter(!is.na(cohort_event))
+  pivot_longer(!Ptid:wt.2, names_to = "time", values_to = "value")
 
 # define response rates
 # for binding antibody, positive responses are defined as participants who had baseline concentration values below the LLOQ with detectable concentration above the assay LLOQ (34 IU/ml), or as participants with baseline values above the LLOQ with a 4-fold increase in concentration.
@@ -251,10 +250,7 @@ dat.longer.cor.subset <- dat.longer.cor.subset %>%
   mutate(
     time = ifelse(time=="B","Day 1", ifelse(time=="Day29","Day 29", ifelse(time=="Day57","Day 57", time))),
 
-    pos_threshold = ifelse(assay %in% c("bindSpike","bindRBD"), log10(34),
-                           ifelse(assay %in% c("pseudoneutid50","pseudoneutid80"), log10(10), NA)),
-
-    baseline_lt_thres = ifelse(time=="Day 1" & value >= pos_threshold, 1, 0),
+    baseline_lt_thres = ifelse(time=="Day 1" & value >= LLoD, 1, 0),
     increase_4F_D29 = ifelse(time=="Delta29overB" & value>log10(4), 1, 0),
     increase_4F_D57 = ifelse(time=="Delta57overB" & value>log10(4), 1, 0)) %>%
   group_by(Ptid, assay) %>%
@@ -263,7 +259,7 @@ dat.longer.cor.subset <- dat.longer.cor.subset %>%
          increase_4F_D57_ptid=max(increase_4F_D57)) %>%
   ungroup() %>%
   filter(time %in% c("Day 1","Day 29","Day 57")) %>%
-  mutate(response = ifelse(baseline_lt_thres_ptid == 0 & value >= pos_threshold, 1,
+  mutate(response = ifelse(baseline_lt_thres_ptid == 0 & value >= LLoD, 1,
                            ifelse(baseline_lt_thres_ptid == 1 & time == "Day 1", 1,
                                   ifelse(baseline_lt_thres_ptid == 1 & time == "Day 29" & increase_4F_D29_ptid==1, 1,
                                          ifelse(baseline_lt_thres_ptid == 1 & time == "Day 57" & increase_4F_D57_ptid==1, 1,0)))))

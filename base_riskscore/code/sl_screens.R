@@ -252,187 +252,9 @@ predict.SL.naivebayes <- function(object, newdata, ...) {
   return(pred)
 }
 
-
 ## -------------------------------------------------------------------------------------
-## Add all alg/screen combinations to global environment, create SL library
+## Create SL Library
 ## -------------------------------------------------------------------------------------
-
-#' This function takes a super learner method wrapper and a super learner
-#' screen wrapper and combines them into a single wrapper and makes that
-#' wrapper available in the specified environment. It also makes a predict
-#' method available in the specified environment.
-#' @param method A super learner method wrapper. See ?SuperLearner::listWrappers(what = "method").
-#' @param screen A super learner method wrapper. See ?SuperLearner::listWrappers(what = "screen").
-#' @param envir The environment to assign the functions to (default is global environment)
-#' @param verbose Print a message with the function names confirming their assignment?
-assign_combined_function <- function(method, screen, envir = .GlobalEnv,
-                                     verbose = TRUE) {
-  fn <- eval(parse(
-    text =
-      paste0(
-        "function(Y, X, newX, obsWeights, family, ...){ \n",
-        "screen_call <- ", screen, "(Y = Y, X = X, newX = newX, obsWeights = obsWeights, family = family, ...) \n",
-        "method_call <- ", method, "(Y = Y, X = X[,screen_call,drop=FALSE], newX = newX[,screen_call,drop = FALSE], obsWeights = obsWeights, family = family, ...) \n",
-        "pred <- method_call$pred \n",
-        "fit <- list(object = method_call$fit$object, which_vars = screen_call) \n",
-        "class(fit) <- paste0('", screen, "', '_', '", method, "') \n",
-        "out <- list(fit = fit, pred = pred) \n",
-        "return(out) \n",
-        "}"
-      )
-  ))
-  fn_name <- paste0(screen, "_", method)
-  assign(x = fn_name, value = fn, envir = envir)
-  if (verbose) {
-    message(paste0("Function ", fn_name, " now available in requested environment."))
-  }
-  if (method == "SL.glmnet") {
-    pred_fn <- eval(parse(
-      text =
-        paste0(
-          "function(object, newdata, ...){ \n",
-          "screen_newdata <- newdata[,object$which_vars,drop = FALSE] \n",
-          "pred <- predict(object$object, type = 'response', newx = as.matrix(screen_newdata), s = 'lambda.min', ...) \n",
-          "return(pred) \n",
-          "}"
-        )
-    ))
-  } else if (method == "SL.stumpboost") {
-    pred_fn <- eval(parse(
-      text =
-        paste0(
-          "function(object, newdata, ...){ \n",
-          "screen_newdata <- newdata[,object$which_vars,drop = FALSE] \n",
-          "screen_newdata_2 <- matrix(unlist(lapply(screen_newdata, as.numeric)), nrow=nrow(screen_newdata), ncol=ncol(screen_newdata)) \n",
-          "pred <- predict(object$object, newdata = screen_newdata_2, ...) \n",
-          "return(pred) \n",
-          "}"
-        )
-    ))
-  } else if (method == "SL.naivebayes") {
-    pred_fn <- eval(parse(
-      text =
-        paste0(
-          "function(object, newdata, ...){ \n",
-          "screen_newdata <- newdata[,object$which_vars,drop = FALSE] \n",
-          'pred <- predict(object$object, newdata = screen_newdata, type = "raw", ...)[,2] \n',
-          "return(pred) \n",
-          "}"
-        )
-    ))
-  } else if (method == "SL.randomForest") {
-    pred_fn <- eval(parse(
-      text =
-        paste0(
-          "function(object, newdata, ...){ \n",
-          "screen_newdata <- newdata[,object$which_vars,drop = FALSE] \n",
-          "if (object$object$type != 'classification') {
-                                    pred <- predict(object$object, newdata = screen_newdata, type = 'response')
-                                }else {
-                                    pred <- predict(object$object, newdata = screen_newdata, type = 'vote')[,
-                                        2]
-                                }
-                                pred",
-          "}"
-        )
-    ))
-  }
-  else if (method == "SL.mean") {
-    pred_fn <- eval(parse(
-      text =
-        paste0(
-          "function(object, newdata, ...){ \n",
-          "pred <- rep.int(object$object, times = nrow(newdata)) \n",
-          "pred}"
-        )
-    ))
-  }
-  else if (method == "SL.cforest") {
-    pred_fn <- eval(parse(
-      text =
-        paste0(
-          "function(object, newdata, ...){ \n",
-          "pred <- predict(object=object$object, newdata=newdata[,object$which_vars,drop = FALSE]) \n",
-          "pred}"
-        )
-    ))
-  }
-  else if (method == "SL.xgboost") {
-    pred_fn <- eval(parse(
-      text =
-        paste0(
-          "function(object, newdata, ...){ \n",
-          "if (!is.matrix(newdata)) { \n",
-          "newdata = model.matrix(~. - 1, newdata)}\n",
-          "pred <- predict(object=object$object, newdata=newdata[,object$which_vars,drop = FALSE]) \n",
-          "pred}"
-        )
-    ))
-  }
-  else if (method == "SL.nnet") {
-    pred_fn <- eval(parse(
-      text =
-        paste0(
-          "function(object, newdata, ...){ \n",
-          "pred <- predict(object=object$object, newdata=newdata[,object$which_vars,drop = FALSE]) \n",
-          "pred}"
-        )
-    ))
-  }
-  else if (method == "SL.ksvm") {
-    pred_fn <- eval(parse(
-      text =
-        paste0(
-          "function(object, newdata, ...){ \n",
-          "if (!is.matrix(newdata)) { \n",
-          "newdata = model.matrix(~ ., data = newdata) \n",
-          "newdata = newdata[, -1, drop = FALSE] }\n",
-
-          "if (family$family == 'binomial') { \n",
-          "predict_type = 'probabilities' } \n",
-
-          "pred = kernlab::predict(object$object, newdata=newdata[,object$which_vars,drop = FALSE], predict_type, coupler = coupler) \n",
-          "pred = pred[, 2] \n",
-          "pred}"
-        )
-    ))
-  }
-  else if (method == "SL.polymars") {
-    pred_fn <- eval(parse(
-      text =
-        paste0(
-          "function(object, newdata, ...){ \n",
-          "pred <- polspline::ppolyclass(object=object$object, cov=newdata[,object$which_vars,drop = FALSE])[, 2] \n",
-          "pred}"
-        )
-    ))
-  }
-
-  else {
-    pred_fn <- eval(parse(
-      text =
-        paste0(
-          "function(object, newdata, ...){ \n",
-          "screen_newdata <- newdata[,object$which_vars,drop = FALSE] \n",
-          "pred <- predict(object$object, type = 'response', newdata = screen_newdata, ...) \n",
-          "return(pred) \n",
-          "}"
-        )
-    ))
-  }
-
-  pred_fn_name <- paste0("predict.", screen, "_", method)
-  assign(x = pred_fn_name, value = pred_fn, envir = envir)
-  if (verbose) {
-    message(paste0("Function ", pred_fn_name, " now available in requested environment."))
-  }
-}
-
-
-## -------------------------------------------------------------------------------------
-## Create SL Library; Add all alg/screen combinations to global environment
-## -------------------------------------------------------------------------------------
-
 if (run_demo) {
   # learners in the method1 are also combined with no screen
   methods1 <- c("SL.mean", "SL.glm")
@@ -451,17 +273,6 @@ if (run_prod) {
   )
 }
 
-# if (run_prod) {
-#   # learners in the method1 are also combined with no screen
-#   methods1 <- c("SL.mean", "SL.glm", "SL.bayesglm", "SL.glm.interaction")
-#   
-#   # learners in the method2 are learners that can have screens
-#   methods2 <- c(
-#     "SL.glm", "SL.bayesglm", "SL.glm.interaction", "SL.glmnet", "SL.gam", 
-#     "SL.xgboost", "SL.cforest"
-#   )
-# }
-
 screens1 <- "screen_all_plus_exposure"
 screens2 <- c(
   "screen_glmnet_plus_exposure",
@@ -469,19 +280,14 @@ screens2 <- c(
   "screen_highcor_random_plus_exposure"
 )
 
-screen_method_frame1 <- expand.grid(screen = screens1, method = methods1)
-screen_method_frame2 <- expand.grid(screen = screens2, method = methods2)
-
-apply(screen_method_frame1, 1, function(x) {
-  assign_combined_function(screen = x[1], method = x[2], verbose = FALSE)
-})
-apply(screen_method_frame2, 1, function(x) {
-  assign_combined_function(screen = x[1], method = x[2], verbose = FALSE)
-})
-
-SL_library1 <- c(apply(screen_method_frame1, 1, paste0, collapse = "_"))
-SL_library2 <- c(apply(screen_method_frame2, 1, paste0, collapse = "_"))
+SL_library1 <- sapply(
+  1:length(methods1),
+  function(i) c(methods1[i], screens1),
+  simplify = FALSE
+)
+SL_library2 <- sapply(
+  1:length(methods2),
+  function(i) c(methods2[i], screens2),
+  simplify = FALSE
+)
 SL_library <- c(SL_library1, SL_library2)
-
-
-

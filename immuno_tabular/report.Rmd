@@ -28,7 +28,17 @@ for (i in 1:length(tlf)){
   group_table_col <- if ("group_table_col" %in% tlf_args) {
     tlf_labels[["group_table_col"]] 
     } else NA 
-  pack_row <- if ("pack_row" %in% tlf_args) tlf_labels[["pack_row"]] else NA 
+  
+  if ("pack_row" %in% tlf_args) {
+    pack_row <- tlf_labels[["pack_row"]]
+    if (!is.na(loop)) { 
+      pack_row_ind <- by(tab, 
+                         tab[, loop], 
+                         function(x)table(droplevels(x[, pack_row])))
+      } else {
+      pack_row_ind <- table(droplevels(tab[, pack_row]))  
+      }
+    } else NA
   
   col_name <- if ("col_name" %in% tlf_args) { 
     tlf_labels[["col_name"]] 
@@ -55,7 +65,6 @@ for (i in 1:length(tlf)){
     for (j in jloop) {
       subnum <- subnum + 1
       tab.j <- dplyr::filter(tab, !!as.name(loop) == j) 
-      
       # if (!is.na(group_table_col)) {
       #   tab.j <- mutate_at(tab.j, group_table_col, as.character)
       #   tab.j <- group_table(data.frame(tab.j), group_table_col)
@@ -73,8 +82,8 @@ for (i in 1:length(tlf)){
         footnote(general_title = "", general = footer_i, threeparttable = TRUE, 
                  escape = FALSE)
       
-      if (!is.na(pack_row)) {
-        tabjk <- pack_rows(tabjk, index = table(droplevels(tab.j[pack_row])))
+      if ("pack_row" %in% tlf_args) {
+        tabjk <- pack_rows(tabjk, index = pack_row_ind[j])
         }
     print(tabjk)
     cat("\n\n\\pagebreak\n")
@@ -93,8 +102,8 @@ for (i in 1:length(tlf)){
         footnote(general_title = "", general = footer_i, 
                  threeparttable = TRUE, escape = FALSE)
       
-      if (!is.na(pack_row)) {
-        tabk <- pack_rows(tabk, index = table(droplevels(tab[pack_row])))
+      if ("pack_row" %in% tlf_args) {
+        tabk <- pack_rows(tabk, index = pack_row_ind)
         }
       print(tabk)
       cat("\n\n\\pagebreak\n")

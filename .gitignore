@@ -19,3 +19,5 @@ _report_cor/*.html
 _report_cop/*.pdf
 _report_cop/*.html
 data_clean/.README.md.swp
+data_clean/*.csv
+data_clean/*.Rprofile

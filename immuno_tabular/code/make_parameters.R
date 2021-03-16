@@ -112,6 +112,99 @@ tlf <-
       pack_row = "subgroup"
     ),
     
+    tab_bind = list(
+      table_name = "Binding antibody marker",
+      table_header = "Percentage of responders, and participants
+      with concentrations >= 2 x LLOD or >= 4 x LLOD for binding antibody
+      markers",
+      table_footer = c(
+        "Binding Antibody Responders are defined as participants who had
+        baseline values below the LLOD with detectable antibody concentration
+        above the assay LLOD, or as participants with baseline values above
+        the LLOD with a 4-fold increase in antibody concentration."),
+      loop = "subgroup",
+      group_table_col = c("Rx", "Group", "Baseline", "Visit", "N", "Marker"),
+      deselect = "subgroup",
+      pack_row = "subgroup"
+    ),
+    
+    tab_pseudo = list(
+      table_name = "ID50 pseudo-virus neutralization antibody marker",
+      table_header = "Percentage of responders, and participants
+      participants with 2-fold rise, and participants with 4-fold rise for 
+      ID50 pseudo-virus neutralization antibody markers",
+      table_footer = c(
+        "Neutralization Responders are defined as participants who had baseline
+        values below the lower limit of detection (LLOD) with detectable
+        ID50 neutralization titer above the assay LLOD, or as participants with
+        baseline values above the LLOD with a 4-fold increase in ID50."
+      ),
+      loop = "subgroup",
+      group_table_col = c("Rx", "Group", "Baseline", "Visit", "N", "Marker"),
+      deselect = "subgroup",
+      pack_row = "subgroup"
+    ),
+    
+    tab_wt = list(
+      table_name = "MN50 WT live virus neutralization antibody marker",
+      table_header = "Percentage of responders, and participants
+      participants with 2-fold rise, and participants with 4-fold rise 
+      for MN50 WT live virus neutralization antibody markers",
+      table_footer = c(
+        "Neutralization Responders are defined as participants who had baseline
+        values below the lower limit of detection (LLOD) with detectable
+        ID50 neutralization titer above the assay LLOD, or as participants with
+        baseline values above the LLOD with a 4-fold increase in ID50."
+      ),
+      loop = "subgroup",
+      group_table_col = c("Rx", "Group", "Baseline", "Visit", "N", "Marker"),
+      deselect = "subgroup",
+      pack_row = "subgroup"
+    ),
+    
+    tab_gmt = list(
+      table_name = "Geometric mean titers (GMTs) and geometric mean
+      concentrations (GMCs)",
+      table_header = "Geometric mean titers (GMTs) and geometric mean
+      concentrations (GMCs)",
+      table_footer = "",
+      loop = "subgroup",
+      group_table_col = c("Rx", "Group", "Baseline", "Visit", "N", "Marker"),
+      deselect = "subgroup",
+      pack_row = "subgroup"
+    ),
+    
+    tab_gmr = list(
+      table_name = "Geometric mean titer ratios (GMTRs) or geometric mean
+      concentration ratios (GMCRs)",
+      table_header = "Geometric mean titer ratios (GMTRs) or geometric mean
+      concentration ratios (GMCRs) between post-vaccinations/pre-vaccination",
+      table_footer = " ",
+      loop = "subgroup",
+      group_table_col = c("Rx", "Group", "Baseline", "Visit", "N", "Marker"),
+      deselect = "subgroup",
+      pack_row = "subgroup"
+    ),
+    
+    tab_gmtr = list(
+      table_name = "Ratios of GMTs/GMCs",
+      table_header = "The ratios of GMTs/GMCs between groups",
+      table_footer = " ",
+      deselect = "subgroup",
+      group_table_col = c("subgroup","Rx", "Baseline", "Visit")
+    ),
+    
+    tab_rrdiff = list(
+      table_name = "Responder Rate differences",
+      table_header = "Differences in the responder rates, 2FRs, 4FRs between 
+      the vaccine arm and the placebo arm",
+      table_footer = " ",
+      loop = "subgroup",
+      group_table_col = c( "Group", "Baseline","Visit", "Marker"),
+      deselect = "subgroup"
+    ),
+    
+    
     tab_neg = list(
       table_name = "baseline SARS-CoV-2 negative",
       table_header = "Antibody levels in the baseline SARS-CoV-2
@@ -215,98 +308,6 @@ tlf <-
                         "Comparison" = 2),
       header_above2 = c("", "",
                         "Baseline SARS-CoV-2 Positive Placebo Recipients" = 8)
-    ),
-    
-    tab_bind = list(
-      table_name = "Binding antibody marker",
-      table_header = "Percentage of responders, and participants
-      with concentrations >= 2 x LLOD or >= 4 x LLOD for binding antibody
-      markers",
-      table_footer = c(
-        "Binding Antibody Responders are defined as participants who had
-        baseline values below the LLOQ with detectable antibody concentration
-        above the assay LLOQ, or as participants with baseline values above
-        the LLOQ with a 4-fold increase in antibody concentration."),
-      loop = "subgroup",
-      group_table_col = c("Rx", "Group", "Baseline", "Visit", "N", "Marker"),
-      deselect = "subgroup",
-      pack_row = "subgroup"
-    ),
-    
-    tab_pseudo = list(
-      table_name = "ID50 pseudo-virus neutralization antibody marker",
-      table_header = "Percentage of responders, and participants
-      participants with 2-fold rise (2FR), and participants with 4-fold rise
-      (4FR) for ID50 pseudo-virus neutralization antibody markers",
-      table_footer = c(
-        "Neutralization Responders are defined as participants who had baseline
-        values below the lower limit of detection (LLOD) with detectable
-        ID50 neutralization titer above the assay LLOD, or as participants with
-        baseline values above the LLOD with a 4-fold increase in ID50."
-      ),
-      loop = "subgroup",
-      group_table_col = c("Rx", "Group", "Baseline", "Visit", "N", "Marker"),
-      deselect = "subgroup",
-      pack_row = "subgroup"
-    ),
-    
-    tab_wt = list(
-      table_name = "MN50 WT live virus neutralization antibody marker",
-      table_header = "Percentage of responders, and participants
-      participants with 2-fold rise (2FR), and participants with 4-fold rise
-      (4FR) for MN50 WT live virus neutralization antibody markers",
-      table_footer = c(
-        "Neutralization Responders are defined as participants who had baseline
-        values below the lower limit of detection (LLOD) with detectable
-        ID50 neutralization titer above the assay LLOD, or as participants with
-        baseline values above the LLOD with a 4-fold increase in ID50."
-      ),
-      loop = "subgroup",
-      group_table_col = c("Rx", "Group", "Baseline", "Visit", "N", "Marker"),
-      deselect = "subgroup",
-      pack_row = "subgroup"
-    ),
-    
-    tab_gmt = list(
-      table_name = "Geometric mean titers (GMTs) and geometric mean
-      concentrations (GMCs)",
-      table_header = "Geometric mean titers (GMTs) and geometric mean
-      concentrations (GMCs)",
-      table_footer = "",
-      loop = "subgroup",
-      group_table_col = c("Rx", "Group", "Baseline", "Visit", "N", "Marker"),
-      deselect = "subgroup",
-      pack_row = "subgroup"
-    ),
-    
-    tab_gmr = list(
-      table_name = "Geometric mean titer ratios (GMTRs) or geometric mean
-      concentration ratios (GMCRs)",
-      table_header = "Geometric mean titer ratios (GMTRs) or geometric mean
-      concentration ratios (GMCRs) between post-vaccinations/pre-vaccination",
-      table_footer = " ",
-      loop = "subgroup",
-      group_table_col = c("Rx", "Group", "Baseline", "Visit", "N", "Marker"),
-      deselect = "subgroup",
-      pack_row = "subgroup"
-    ),
-    
-    tab_gmtr = list(
-      table_name = "Ratios of GMTs/GMCs",
-      table_header = "The ratios of GMTs/GMCs between groups",
-      table_footer = " ",
-      deselect = "subgroup",
-      group_table_col = c("subgroup","Rx", "Baseline", "Visit")
-    ),
-    
-    tab_rrdiff = list(
-      table_name = "Responder Rate differences",
-      table_header = "Differences in the responder rates, 2FRs, 4FRs between 
-      between the vaccine arm and the placebo arm",
-      table_footer = " ",
-      loop = "subgroup",
-      group_table_col = c( "Group", "Baseline","Visit", "Marker"),
-      deselect = "subgroup"
     )
   )
 save.image(file = here::here("data_clean", "params.Rdata"))

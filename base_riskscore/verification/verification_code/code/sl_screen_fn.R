@@ -9,30 +9,26 @@ max_var <- readRDS(here::here("output", "max_var.rds"))
 
 # screen_all No screen. This screen is run only with non-data-adaptive learners, namely, SL.mean, SL.glm, SL.bayesglm, SL.glm.interaction
 screen_all <- eval(parse(text = paste0(
-  "function(..., X, id, family = binomial(), max_var = ", max_var, "){\n",
+  "function(..., Y, X, id, family = binomial(), max_var = ", max_var, "){\n",
     "out <- SuperLearner:::All(X = X, ...)\n",
-    "if(sum(out) > max_var){\n",
-      "pvals <- univariate_logistic_pval(X = X, family = family, ...)\n",
-      "ii <- order(pvals, decreasing=FALSE)[1:min(max_var,length(pvals))]\n",
-      "idx <- ii[!is.na(pvals[ii])]\n",
-      "out <- rep(FALSE, ncol(X))\n",
-      "out[idx] <- TRUE\n",
-    "}\n",
+    "pvals <- univariate_logistic_pval(Y = Y, X = X[,out,drop=FALSE], family = family)\n",
+      "ii <- rank(pvals)\n",
+      "if(sum(out) > max_var){\n",
+      "  out[ii > max_var] <- FALSE\n",
+      "}\n",
     "return(out)\n",
   "}"
 )))
 
 # screen_glmnet alpha = 1, minscreen = 2, nfolds = 10, nlambda = 100
 screen_glmnet <- eval(parse(text = paste0(
-  "function(..., X, id, family = binomial(), max_var = ", max_var, "){\n",
-    "out <- SuperLearner::screen.glmnet(X = X, family = family, ...)\n",
-    "if(sum(out) > max_var){\n",
-      "pvals <- univariate_logistic_pval(X = X, family = family, ...)\n",
-      "ii <- order(pvals, decreasing=FALSE)[1:min(max_var,length(pvals))]\n",
-      "idx <- ii[!is.na(pvals[ii])]\n",
-      "out <- rep(FALSE, ncol(X))\n",
-      "out[idx] <- TRUE\n",
-    "}\n",
+  "function(Y, X, id, family = binomial(), max_var = ", max_var, ", ...){\n",
+    "out <- SuperLearner::screen.glmnet(Y = Y, X = X, family = family, ...)\n",
+      "pvals <- univariate_logistic_pval(Y = Y, X = X[,out,drop=FALSE], family = family)\n",
+      "ii <- rank(pvals)\n",
+      "if(sum(out) > max_var){\n",
+      "  out[ii > max_var] <- FALSE\n",
+      "}\n",
     "return(out)\n",
   "}"
 )))
@@ -50,7 +46,7 @@ univariate_logistic_pval <- function(Y, X, family = binomial(), obsWeights = rep
 }
 
 screen_univariate_logistic_pval_tmp <- function(Y, X,  family = binomial(), obsWeights = rep(1, length(Y)), id, minPvalue = 0.1, minscreen = 2,...){
-	listp <- univariate_logistic_pval(Y = Y, X = X, family = family, obsWeights = obsWeights,...)
+	listp <- univariate_logistic_pval(Y = Y, X = X, family = family, obsWeights = obsWeights)
 	whichVariable <- (listp <= minPvalue)
     if (sum(whichVariable) < minscreen) {
         warning("number of variables with p value less than minPvalue is less than minscreen")
@@ -62,13 +58,11 @@ screen_univariate_logistic_pval_tmp <- function(Y, X,  family = binomial(), obsW
 screen_univariate_logistic_pval <- eval(parse(text = paste0(
   "function(Y, X, family = binomial(), max_var = ", max_var, ", ...){\n",
     "out <- screen_univariate_logistic_pval_tmp(X = X, Y = Y, family = binomial(), ...)\n",
-    "if(sum(out) > max_var){\n",
-      "pvals <- univariate_logistic_pval(Y = Y, X = X, family = binomial(), ...)\n",
-      "ii <- order(pvals, decreasing=FALSE)[1:min(max_var,length(pvals))]\n",
-      "idx <- ii[!is.na(pvals[ii])]\n",
-      "out <- rep(FALSE, ncol(X))\n",
-      "out[idx] <- TRUE\n",
-    "}\n",
+    "pvals <- univariate_logistic_pval(Y = Y, X = X[,out,drop=FALSE], family = family)\n",
+      "ii <- rank(pvals)\n",
+      "if(sum(out) > max_var){\n",
+      "  out[ii > max_var] <- FALSE\n",
+      "}\n",
     "return(out)\n",
   "}"
 )))
@@ -97,15 +91,13 @@ screen_highcor_random_tmp <- function(Y, X, family, obsWeights, cor_thresh = 0.9
 }
 
 screen_highcor_random <- eval(parse(text = paste0(
-  "function(..., X, id, family, max_var = ", max_var, "){\n",
-    "out <- screen_highcor_random_tmp(X = X, ...)\n",
-    "if(sum(out) > max_var){\n",
-      "pvals <- univariate_logistic_pval(X = X, family = family, ...)\n",
-      "ii <- order(pvals, decreasing=FALSE)[1:min(max_var,length(pvals))]\n",
-      "idx <- ii[!is.na(pvals[ii])]\n",
-      "out <- rep(FALSE, ncol(X))\n",
-      "out[idx] <- TRUE\n",
-    "}\n",
+  "function(Y, X, id, family, max_var = ", max_var, ", ...){\n",
+    "out <- screen_highcor_random_tmp(Y = Y, X = X, ...)\n",
+    "pvals <- univariate_logistic_pval(Y = Y, X = X[,out,drop=FALSE], family = family)\n",
+      "ii <- rank(pvals)\n",
+      "if(sum(out) > max_var){\n",
+      "  out[ii > max_var] <- FALSE\n",
+      "}\n",
     "return(out)\n",
   "}"
 )))

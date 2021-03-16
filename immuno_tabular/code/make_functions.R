@@ -87,15 +87,25 @@ setDelta <- function(data, marker, timepoints, time.ref = NA) {
   return(ret)
 }
 
-#' Wrapper function to generate ration of magnitude based on svyglm()
-
-get_gmtr <- function(comp_v, f_v, sub_grp_col, stratum, weights, x, desc = T) {
-  svy <- svydesign(ids = ~ Ptid, 
+#' Wrapper function to generate ratio of geometric magnitude based on svyglm()
+#'
+#' @param x The dataframe used for the svydesign() data argument
+#' @param comp_v The covariate for comparison
+#' @param f_v The model formula used for svyglm()
+#' @param sug_grp_col A formula specifying factors that define subsets to run the model, used for svyby() by argument
+#' @param stratum The stratum used for svydesign()
+#' @param weights The weights used for svydesign()
+get_rgmt <- function(comp_v, f_v, sub_grp_col, stratum, weights, x, desc = T) {
+  
+  cat("Table of ", paste(mutate_at(x, sub_grp_col, as.character) %>% 
+                           distinct_at(sub_grp_col) , collapse = ", "),
+      "\n")
+    svy <- svydesign(ids = ~ Ptid, 
                    strata = as.formula(paste0("~", stratum)),
                    weights = as.formula(paste0("~", weights)),
-                   data = x,
-                   nest = F)
-  rslt <-summary(svyglm(f_v, design = svy))$coefficients[2,]
+                   data = x)
+    rslt <- svyglm(f_v, design = svy)
+    
   
   if (desc) {
     comp_i <- arrange_at(x, desc(comp_v))
@@ -112,25 +122,35 @@ get_gmtr <- function(comp_v, f_v, sub_grp_col, stratum, weights, x, desc = T) {
   ret <- x %>% 
     mutate(comp = !!comp) %>% 
     distinct_at(c("comp", sub_grp_col)) %>% 
-    data.frame(., t(rslt[c("Estimate", "Std. Error")]), check.names = F)
+    mutate(Estimate = rslt$coefficients[2], 
+           ci_l = confint(rslt)[2, "2.5 %"],
+           ci_u = confint(rslt)[2, "97.5 %"])
   
   return(ret)
 }
 
 
 #' Wrapper function to generate responder rate difference based on svyglm()
+#'
+#' @param x The dataframe used for the svydesign() data argument
+#' @param comp_v The covariate for comparison
+#' @param f_v The model formula used for svyglm()
+#' @param sug_grp_col A formula specifying factors that define subsets to run the model, used for svyby() by argument
+#' @param stratum The stratum used for svydesign()
+#' @param weights The weights used for svydesign()
 
 get_rrdiff <- function(comp_v, f_v, sub_grp_col, stratum, weights, x, desc = F){
-  if (any(table(x[,comp_v])<=1)) {
-    ret <- NULL
-  }else{
-    rslt <-summary(svyglm(f_v, 
-                          design = svydesign(
-                            ids = ~ Ptid, 
-                            strata = as.formula(paste0("~", stratum)),
-                            weights = as.formula(paste0("~", weights)),
-                            data = x,
-                            nest = T)))$coefficients[2,]
+
+  cat("Table of ", paste(mutate_at(x, sub_grp_col, as.character) %>% 
+                           distinct_at(sub_grp_col) , collapse = ", "),
+      "\n")
+  
+    svy <- svydesign(ids = ~ Ptid, 
+                   strata = as.formula(paste0("~", stratum)),
+                   weights = as.formula(paste0("~", weights)),
+                   data = x)
+  
+    rslt <-svyglm(f_v, design = svy)
     
     if (desc) {
       comp_i <- arrange_at(x, desc(comp_v))
@@ -146,9 +166,10 @@ get_rrdiff <- function(comp_v, f_v, sub_grp_col, stratum, weights, x, desc = F){
     
     ret <- x %>% 
       mutate(comp = !!comp) %>% 
-      distinct_at(c("comp", sub_grp_col)) %>% 
-      data.frame(., t(rslt[c("Estimate", "Std. Error")]), check.names = F)
-  }
+      distinct_at(c("comp", sub_grp_col)) %>%
+      mutate(Estimate = rslt$coefficients[2], 
+             ci_l = confint(rslt)[2, "2.5 %"],
+             ci_u = confint(rslt)[2, "97.5 %"])
   
   return(ret)
 }

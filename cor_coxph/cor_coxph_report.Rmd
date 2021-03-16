@@ -14,9 +14,14 @@ output:
 linkcolor: blue
 bibliography: ref.bib
 ---
+
+<!-- this file is a copy of report.Rmd with the change that cor_copxh is removed -->
+
+
 \newcommand{\studyname}{mock}
 
-\newcommand{\pathCoRoutput}{output/D57}
+
+\newcommand{\pathCoRoutput}{output/D}
 
 ```{r, echo=FALSE}
 Day <- 57
@@ -27,7 +32,6 @@ Day <- 57
 
 \clearpage
 
-\renewcommand{\pathCoRoutput}{output/D29}
 
 ```{r, echo=FALSE}
 Day <- 29

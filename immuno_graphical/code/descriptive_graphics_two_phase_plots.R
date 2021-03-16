@@ -31,7 +31,7 @@ dat.long.twophase.sample <- readRDS(here(
 ))
 dat.twophase.sample <- readRDS(here("data_clean", "twophase_data.rds"))
 
-wts <- c("wt", "wt.2", "wt", "wt.2", "wt")
+
 #-----------------------------------------------
 # PAIR PLOTS
 #-----------------------------------------------
@@ -55,7 +55,7 @@ for (tt in 1:4) {
         time = times[tt + 1],
         assays = assays,
         strata = "Bstratum",
-        weight = wts[tt + 1],
+        weight = "wt.subcohort",
         plot_title = paste0(
           c(
             "D29", "D57", "D29 Fold-rise over D1",
@@ -95,7 +95,7 @@ for (bserostatus in 0:1) {
       time = "B",
       assays = assays,
       strata = "Bstratum",
-      weight = "wt",
+      weight = "wt.subcohort",
       plot_title = paste0(
         "D1 Ab markers: baseline ",
         ifelse(bserostatus, "positive", "negative"), ", ",
@@ -127,7 +127,7 @@ for (bserostatus in 0:1) {
         times = c("B", "Day29", "Day57"),
         assay = aa,
         strata = "Bstratum",
-        weight = "wt",
+        weight = "wt.subcohort",
         plot_title = paste0(
           labels.assays[aa], ": baseline ",
           ifelse(bserostatus, "positive ", "negative "),
@@ -159,7 +159,7 @@ for (tt in seq_along(times)) {
     x = times[tt],
     facet_by = "assay",
     color = "trt_bstatus_label",
-    weight = wts[tt],
+    weight = "wt.subcohort",
     panel_titles = labels.title2[tt, ] %>% unlist(),
     axis_titles = labels.axis[tt, ] %>% unlist(),
     filename = paste0(
@@ -203,7 +203,7 @@ for (day in c("29", "57")) {
     x = paste0("Delta", day, "overB"),
     color = "assay",
     lty = "Bserostatus",
-    weight = ifelse(day == "29", "wt.2", "wt"),
+    weight = "wt.subcohort",
     xlab = paste0("D", day, " Fold-rise over D1 Binding Ab (IU/ml) / Pseudovirus nAb ID50 or ID80"),
     filename = paste0(
       save.results.to, "/Marker_Rcdf_Delta", day,
@@ -224,7 +224,7 @@ for (day in c("29", "57")) {
     x = paste0("Day", day),
     color = "assay",
     lty = NULL,
-    weight = ifelse(day == "29", "wt.2", "wt"),
+    weight = "wt.subcohort",
     xlab = paste0(
       "D", day,
       " Binding Ab (IU/ml) / Pseudovirus nAb ID50 or ID80"
@@ -242,7 +242,7 @@ for (day in c("29", "57")) {
     x = paste0("Delta", day, "overB"),
     color = "assay",
     lty = NULL,
-    weight = ifelse(day == "29", "wt.2", "wt"),
+    weight = "wt.subcohort",
     xlab = paste0(
       "D", day,
       " Fold-rise over D1 Binding Ab (IU/ml) / Pseudovirus nAb ID50 or ID80"

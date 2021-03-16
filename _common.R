@@ -92,6 +92,16 @@ Bstratum.labels <- c(
   "Age < 65, Not at risk"
 )
 
+# baseline stratum labeling
+demo.stratum.labels <- c(
+  "Age >= 65, URM",
+  "Age < 65, At risk, URM",
+  "Age < 65, Not at risk, URM",
+  "Age >= 65, White non-Hisp",
+  "Age < 65, At risk, White non-Hisp",
+  "Age < 65, Not at risk, White non-Hisp"
+)
+
 llods <- c(
   bindSpike = 20,
   bindRBD = 20,
@@ -190,4 +200,3 @@ ggsave_custom <- function(filename = default_name(plot),
                           height= 15, width = 21, ...) {
   ggsave(filename = filename, height = height, width = width, ...)
 }
-

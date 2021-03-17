@@ -102,17 +102,6 @@ dat.long <- dat.long %>%
     )
   )
 
-# # matrix to decide the sampling strata
-dat.long$demo_lab <-
-  with(dat.long, factor(paste0(age.geq.65, HighRiskInd),
-    levels = c("00", "01", "10", "11"),
-    labels = c(
-      "Age < 65 not at risk",
-      "Age < 65 at risk",
-      "Age >= 65 not at risk",
-      "Age >= 65 at risk"
-    )
-  ))
 
 # labels of the demographic strata for the subgroup plotting
 dat.long.twophase.sample$trt_bstatus_label <-

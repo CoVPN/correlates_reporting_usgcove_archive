@@ -349,11 +349,11 @@ tab_rgmt <- rgmt %>%
                                        10^Estimate, 10^ci_l, 10^ci_u)) %>% 
   inner_join(tab_gmt_rgmt, 
              by = c("Baseline COVID", "Arm", "subgroup", "Marker", "Visit")) %>% 
-  rename(Comparison = comp, 
+  rename(`Group 1 vs 2` = comp, 
          `Group 1 GMT/GMC` = `Group2`, 
          `Group 2 GMT/GMC` = `Group1`) %>% 
   arrange(subgroup, Visit, Arm, `Baseline COVID`, Marker) %>% 
-  select(Comparison, subgroup, Visit, Arm, `Baseline COVID`, Marker, `Group 1 GMT/GMC`,
+  select(`Group 1 vs 2`, subgroup, Visit, Arm, `Baseline COVID`, Marker, `Group 1 GMT/GMC`,
          `Group 2 GMT/GMC`, `Ratios of GMT/GMC`)  
 
 print("Done with table7") 

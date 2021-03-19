@@ -50,11 +50,11 @@ Set the random seed to be `12345`.
 
 ### Box Plots
 1.  For baseline negative subjects, make box plots that consists of four panels of baseline assay readouts, each panel for one type of assay. Each panel contains two bars, representing "vaccine group" and "placebo group". Each box plot is overlaid with 30 randomly chosen sample points. Use dashline to indicate LLOQ. Make the same plots for Day 29 assay readouts, Day 57 assay readouts, Day 29 fold-rise over baseline and Day 57 fold-rise over baseline. There is no LLOQ line in the plots of Day 29 fold-rise over baseline and Day 57 fold-rise over baseline. 
-bAb LLOQ = log10(34); nAb ID50 LLOQ = log10(49); nAb ID80 LLOQ = log10(43).
+bAb LLOD = log10(20); nAb ID50 LLOD = log10(10); nAb ID80 LLOD = log10(10).
 
 2. Repeat 1 for baseline positive subjects.
 
-3. For vaccine group subjects, make box plots that consists of four panels of baseline assay readouts, each panel for one type of assay. Each panel contains two bars, representing "baseline negative" and "baseline positive". Each box plot is overlaid with 30 randomly chosen sample points. Use dashline to indicate LLOQ. The weights are given by the `wt` field. Make the same plots for Day 29 assay readouts, Day 57 assay readouts, Day 29 fold-rise over baseline and Day 57 fold-rise over baseline. There is no LLOQ line in the plots of Day 29 fold-rise over baseline and Day 57 fold-rise over baseline.
+3. For vaccine group subjects, make box plots that consists of four panels of baseline assay readouts, each panel for one type of assay. Each panel contains two bars, representing "baseline negative" and "baseline positive". Each box plot is overlaid with 30 randomly chosen sample points. Use dashline to indicate LLOD. The weights are given by the `wt` field. Make the same plots for Day 29 assay readouts, Day 57 assay readouts, Day 29 fold-rise over baseline and Day 57 fold-rise over baseline. There is no LLOD line in the plots of Day 29 fold-rise over baseline and Day 57 fold-rise over baseline.
 
 4. Repeat 1 for placebo group subjects.
 
@@ -89,8 +89,8 @@ Set the random seed to be `12345`.
 9. Repeat 1 and 2, except the lines in each panel represents subjects with different values of the `age_minority_label` field.
 
 ### Box plots
-1.  For baseline negative vaccine group subjects, make box plots that consists of four panels of baseline assay readouts, each panel for one type of assay. Each panel contains bars representing subjects with different values of the `age_geq_65_label` field. Each box plot is overlaid with 30 randomly chosen sample points. Use dashline to indicate LLOQ. Make the same plots for Day 29 assay readouts, Day 57 assay readouts, Day 29 fold-rise over baseline and Day 57 fold-rise over baseline. There is no LLOQ line in the plots of Day 29 fold-rise over baseline and Day 57 fold-rise over baseline. 
-bAb LLOQ = log10(34); nAb ID50 LLOQ = log10(49); nAb ID80 LLOQ = log10(43).
+1.  For baseline negative vaccine group subjects, make box plots that consists of four panels of baseline assay readouts, each panel for one type of assay. Each panel contains bars representing subjects with different values of the `age_geq_65_label` field. Each box plot is overlaid with 30 randomly chosen sample points. Use dashline to indicate LLOD. Make the same plots for Day 29 assay readouts, Day 57 assay readouts, Day 29 fold-rise over baseline and Day 57 fold-rise over baseline. There is no LLOD line in the plots of Day 29 fold-rise over baseline and Day 57 fold-rise over baseline. 
+bAb LLOD = log10(20); nAb ID50 LLOD = log10(10); nAb ID80 LLOD = log10(10).
 
 
 2. Repeat 1 for baseline positive vaccine group subjects.

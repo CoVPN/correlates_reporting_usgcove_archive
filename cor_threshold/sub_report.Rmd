@@ -29,12 +29,14 @@ if(ci == "simultaneous") {
 ci_label <- paste0(ci, " ")
 
 ```
+
 \newpage
+
 ### Day `r day` `r marker`
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.8\textwidth]{`r here::here("cor_threshold", "figs", paste0(ci,"_CI"), paste0("PLOT_",key0, "Day", day, key, "_", ci_key, "CI.pdf"))`}
+\includegraphics[width=0.75\textwidth]{`r here::here("cor_threshold", "figs", paste0(ci,"_CI"), paste0("PLOT_",key0, "Day", day, key, "_", ci_key, "CI.pdf"))`}
 \caption{Adjusted threshold-response function for a range of thresholds of the
   Day `r day` `r marker` levels with `r ci` 95\% confidence intervals. The dashed red line marks the threshold after which no more COVID events are observed. `r add_line`}
 \end{figure}

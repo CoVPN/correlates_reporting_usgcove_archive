@@ -20,14 +20,11 @@ assays <- c(
   # NOTE: the live neutralization marker will eventually be available
   #"liveneutmn50"
 )
-times <- c("B", "Day29", "Day57")
-markers <- c(outer(times, assays, "%.%"))
 
-# re-define times variable here as needed here
-times <- c(
-  "B", "Day29", "Day57", "Delta29overB", "Delta57overB",
-  "Delta57over29"
-)
+times <- c("B", "Day29", "Day57", "Delta29overB", "Delta57overB", "Delta57over29")
+
+markers <- c(outer(times[1:3], assays, "%.%"))
+
 
 # race labeling
 labels.race <- c(

@@ -20,17 +20,17 @@ library(dplyr)
 
 An extension of the unadjusted nonparametric threshold-searching approach
 developed in @Donovan, the covariate-adjusted TMLE-based approach developed by
-van der Laan, Zhang, Gilbert (in progress) is used to estimate the so-called
+van der Laan, Zhang, Gilbert (submitted) is used to estimate the so-called
 threshold-response function $E_X[ E[Y|S \geq s, X, A = 1]|A=1]$ for a range of
-thresholds $s$. Here, $X$ is a set of baseline characteristics, $A=1$ represents
+thresholds $s$.Here, $X$ is a set of baseline characteristics, $A=1$ represents
 the vaccine group, $S$ is the biomarker/immune-response/correlate of interest,
 and $Y$ is the indicator of COVID disease before some time point $t_f$. This
-parameter can be viewed as a causal version of the parameter $P(Y=1|S \geq s,
+parameter can be viewed as a causal/covariate-adjusted version of the parameter $P(Y=1|S \geq s,
 A=1)$ Intuitively, the threshold-response at a given threshold is the expected
 probability of obtaining COVID disease if one experiences a
 marker/immune-response value above that threshold. The threshold-response
-function is estimated for each of the Day 29 and Day 57 antibody markers, in each case
-adjusting for the baseline covariates: age, baseline risk score, high risk
+function is estimated for each of the four Day 57 antibody markers, in each case
+adjusting for the baseline covariates: baseline risk score, high risk
 indicator, and underrepresented minority status.A parametric learner, selected
 via cross-validation, is used for the covariate adjustment. A number of plots
 and tables are reported:
@@ -38,9 +38,9 @@ and tables are reported:
    for the threshold-response at a grid of thresholds.
 2. A plot and table with risk estimates and simultaneous 95% confidence bands
    for the threshold-response at a grid of thresholds.
-3. Versions of items 1. and 2. with a monotonicity adjustment.
+3. Monotone-corrected versions of 1 and 2.
 
-A histogram of the marker values is superimposed on the threshold-response plots
+A reverse cumulative distribution function curve estimated by the IPW NPMLE of the marker values is superimposed on the threshold-response plots
 and a dashed red line is added to mark the threshold value after which no more
 events are observed.
 
@@ -107,6 +107,7 @@ monotone <- F
 \newpage
 
 ##  Plots and Tables with estimates and pointwise confidence intervals for Day 29
+
 \newpage
 
 ```{r, include = FALSE}
@@ -171,6 +172,7 @@ monotone <- F
 
 
 \newpage
+
 ## Plots and Tables with estimates and pointwise confidence interval for Day 57 (monotone-corrected)
 
 \newpage

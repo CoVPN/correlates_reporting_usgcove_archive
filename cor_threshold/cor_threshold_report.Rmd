@@ -13,23 +13,24 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(here)
+library(dplyr)
 ```
 
 # Univariate CoR: Nonparametric Threshold Modeling {#cor-threshold}
 
 An extension of the unadjusted nonparametric threshold-searching approach
 developed in @Donovan, the covariate-adjusted TMLE-based approach developed by
-van der Laan, Zhang, Gilbert (in progress) is used to estimate the so-called
+van der Laan, Zhang, Gilbert (submitted) is used to estimate the so-called
 threshold-response function $E_X[ E[Y|S \geq s, X, A = 1]|A=1]$ for a range of
 thresholds $s$.Here, $X$ is a set of baseline characteristics, $A=1$ represents
 the vaccine group, $S$ is the biomarker/immune-response/correlate of interest,
 and $Y$ is the indicator of COVID disease before some time point $t_f$. This
-parameter can be viewed as a causal version of the parameter $P(Y=1|S \geq s,
+parameter can be viewed as a causal/covariate-adjusted version of the parameter $P(Y=1|S \geq s,
 A=1)$ Intuitively, the threshold-response at a given threshold is the expected
 probability of obtaining COVID disease if one experiences a
 marker/immune-response value above that threshold. The threshold-response
 function is estimated for each of the four Day 57 antibody markers, in each case
-adjusting for the baseline covariates: age, baseline risk score, high risk
+adjusting for the baseline covariates: baseline risk score, high risk
 indicator, and underrepresented minority status.A parametric learner, selected
 via cross-validation, is used for the covariate adjustment. A number of plots
 and tables are reported:
@@ -37,20 +38,27 @@ and tables are reported:
    for the threshold-response at a grid of thresholds.
 2. A plot and table with risk estimates and simultaneous 95% confidence bands
    for the threshold-response at a grid of thresholds.
+3. Monotone-corrected versions of 1 and 2.
 
-A histogram of the marker values is superimposed on the threshold-response plots
+A reverse cumulative distribution function curve estimated by the IPW NPMLE of the marker values is superimposed on the threshold-response plots
 and a dashed red line is added to mark the threshold value after which no more
 events are observed.
 
 \newpage
+## Plots and Tables with estimates and pointwise confidence interval for Day 57
+
+\newpage
 
 ```{r, include = FALSE}
-marker <- "Spike protein antibody"
+marker <- "Spike protein binding antibody"
 key <- "bindSpike"
 day <- 57
+ci <- "pointwise"
+monotone <- F
+
 ```
 
-```{r, child=here::here('cor_threshold', 'sub_report.Rmd')}
+```{r, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -60,9 +68,11 @@ day <- 57
 marker <- "RBD binding antibody"
 key <- "bindRBD"
 day <- 57
+ci <- "pointwise"
+monotone <- F
 ```
 
-```{r, child=here::here('cor_threshold', 'sub_report.Rmd')}
+```{r, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -72,9 +82,11 @@ day <- 57
 marker <- "Pseudo virus-neutralizing antibody (50\\% titer)"
 key <- "pseudoneutid50"
 day <- 57
+ci <- "pointwise"
+monotone <- F
 ```
 
-```{r, child=here::here('cor_threshold', 'sub_report.Rmd')}
+```{r, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -84,11 +96,17 @@ day <- 57
 marker <- "Pseudo virus-neutralizing antibody (80\\% titer)"
 key <- "pseudoneutid80"
 day <- 57
+ci <- "pointwise"
+monotone <- F
 ```
 
-```{r, child=here::here('cor_threshold', 'sub_report.Rmd')}
+```{r, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
+
+\newpage
+
+##  Plots and Tables with estimates and pointwise confidence intervals for Day 29
 
 \newpage
 
@@ -97,9 +115,11 @@ day <- 57
 marker <- "Spike protein antibody"
 key <- "bindSpike"
 day <- 29
+ci <- "pointwise"
+monotone <- F
 ```
 
-```{r, child=here::here('cor_threshold', 'sub_report.Rmd')}
+```{r, child=here::here('cor_threshold','sub_report.Rmd')}
 
 
 ```
@@ -111,9 +131,11 @@ day <- 29
 marker <- "RBD binding antibody"
 key <- "bindRBD"
 day <- 29
+ci <- "pointwise"
+monotone <- F
 ```
 
-```{r, child=here::here('cor_threshold', 'sub_report.Rmd')}
+```{r, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -123,9 +145,11 @@ day <- 29
 marker <- "Pseudo virus-neutralizing antibody (50\\% titer)"
 key <- "pseudoneutid50"
 day <- 29
+ci <- "pointwise"
+monotone <- F
 ```
 
-```{r, child=here::here('cor_threshold', 'sub_report.Rmd')}
+```{r, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -135,9 +159,386 @@ day <- 29
 marker <- "Pseudo virus-neutralizing antibody (80\\% titer)"
 key <- "pseudoneutid80"
 day <- 29
+ci <- "pointwise"
+monotone <- F
 ```
 
-```{r, child=here::here('cor_threshold', 'sub_report.Rmd')}
+```{r, child=here::here('cor_threshold','sub_report.Rmd')}
+
+
+```
+
+
+
+
+\newpage
+
+## Plots and Tables with estimates and pointwise confidence interval for Day 57 (monotone-corrected)
+
+\newpage
+```{r, include = FALSE}
+marker <- "Spike protein binding antibody"
+key <- "bindSpike"
+day <- 57
+ci <- "pointwise"
+monotone <- T
+
+```
+
+```{r, child=here::here('cor_threshold','sub_report.Rmd')}
+
+```
+
+\newpage 
+
+```{r, include = FALSE}
+marker <- "RBD binding antibody"
+key <- "bindRBD"
+day <- 57
+ci <- "pointwise"
+monotone <- T
+```
+
+```{r, child=here::here('cor_threshold','sub_report.Rmd')}
+
+```
+
+\newpage
+
+```{r, include=FALSE}
+marker <- "Pseudo virus-neutralizing antibody (50\\% titer)"
+key <- "pseudoneutid50"
+day <- 57
+ci <- "pointwise"
+monotone <- T
+```
+
+```{r, child=here::here('cor_threshold','sub_report.Rmd')}
+
+```
+
+\newpage
+
+```{r, include=FALSE}
+marker <- "Pseudo virus-neutralizing antibody (80\\% titer)"
+key <- "pseudoneutid80"
+day <- 57
+ci <- "pointwise"
+monotone <- T
+```
+
+```{r, child=here::here('cor_threshold','sub_report.Rmd')}
+
+```
+
+\newpage
+
+##  Plots and Tables with estimates and pointwise confidence intervals for Day 29 (monotone-corrected)
+
+\newpage
+```{r, include = FALSE}
+# DAY 29
+marker <- "Spike protein antibody"
+key <- "bindSpike"
+day <- 29
+ci <- "pointwise"
+monotone <- T
+```
+
+```{r, child=here::here('cor_threshold','sub_report.Rmd')}
+
+
+```
+
+\newpage 
+
+```{r, include = FALSE}
+
+marker <- "RBD binding antibody"
+key <- "bindRBD"
+day <- 29
+ci <- "pointwise"
+monotone <- T
+```
+
+```{r, child=here::here('cor_threshold','sub_report.Rmd')}
+
+```
+
+\newpage
+
+```{r, include = FALSE}
+marker <- "Pseudo virus-neutralizing antibody (50\\% titer)"
+key <- "pseudoneutid50"
+day <- 29
+ci <- "pointwise"
+monotone <- T
+```
+
+```{r, child=here::here('cor_threshold','sub_report.Rmd')}
+
+```
+
+\newpage
+
+```{r, include = FALSE}
+marker <- "Pseudo virus-neutralizing antibody (80\\% titer)"
+key <- "pseudoneutid80"
+day <- 29
+ci <- "pointwise"
+monotone <- T
+```
+
+```{r, child=here::here('cor_threshold','sub_report.Rmd')}
+
+
+```
+
+
+
+\newpage
+## Plots and Tables with estimates and simultaneous confidence bands for Day 57
+\newpage 
+
+```{r, include = FALSE}
+marker <- "Spike protein binding antibody"
+key <- "bindSpike"
+day <- 57
+ci <- "simultaneous"
+monotone <- F
+
+```
+
+```{r, child=here::here('cor_threshold','sub_report.Rmd')}
+
+```
+
+\newpage 
+
+```{r, include = FALSE}
+marker <- "RBD binding antibody"
+key <- "bindRBD"
+day <- 57
+ci <- "simultaneous"
+monotone <- F
+```
+
+```{r, child=here::here('cor_threshold','sub_report.Rmd')}
+
+```
+
+\newpage
+
+```{r, include=FALSE}
+marker <- "Pseudo virus-neutralizing antibody (50\\% titer)"
+key <- "pseudoneutid50"
+day <- 57
+ci <- "simultaneous"
+monotone <- F
+```
+
+```{r, child=here::here('cor_threshold','sub_report.Rmd')}
+
+```
+
+\newpage
+
+```{r, include=FALSE}
+marker <- "Pseudo virus-neutralizing antibody (80\\% titer)"
+key <- "pseudoneutid80"
+day <- 57
+ci <- "simultaneous"
+monotone <- F
+```
+
+```{r, child=here::here('cor_threshold','sub_report.Rmd')}
+
+```
+
+\newpage
+
+##  Plots and Tables with estimates and simultaneous confidence bands for Day 29
+
+\newpage
+```{r, include = FALSE}
+# DAY 29
+marker <- "Spike protein antibody"
+key <- "bindSpike"
+day <- 29
+ci <- "simultaneous"
+monotone <- F
+```
+
+```{r, child=here::here('cor_threshold','sub_report.Rmd')}
+
+
+```
+
+\newpage 
+
+```{r, include = FALSE}
+
+marker <- "RBD binding antibody"
+key <- "bindRBD"
+day <- 29
+ci <- "simultaneous"
+monotone <- F
+```
+
+```{r, child=here::here('cor_threshold','sub_report.Rmd')}
+
+```
+
+\newpage
+
+```{r, include = FALSE}
+marker <- "Pseudo virus-neutralizing antibody (50\\% titer)"
+key <- "pseudoneutid50"
+day <- 29
+ci <- "simultaneous"
+monotone <- F
+```
+
+```{r, child=here::here('cor_threshold','sub_report.Rmd')}
+
+```
+
+\newpage
+
+```{r, include = FALSE}
+marker <- "Pseudo virus-neutralizing antibody (80\\% titer)"
+key <- "pseudoneutid80"
+day <- 29
+ci <- "simultaneous"
+monotone <- F
+```
+
+```{r, child=here::here('cor_threshold','sub_report.Rmd')}
+
+
+```
+
+
+
+
+\newpage
+## Plots and Tables with estimates and pointwise confidence interval for Day 57 (monotone-corrected)
+
+\newpage
+```{r, include = FALSE}
+marker <- "Spike protein binding antibody"
+key <- "bindSpike"
+day <- 57
+ci <- "simultaneous"
+monotone <- T
+
+```
+
+```{r, child=here::here('cor_threshold','sub_report.Rmd')}
+
+```
+
+\newpage 
+
+```{r, include = FALSE}
+marker <- "RBD binding antibody"
+key <- "bindRBD"
+day <- 57
+ci <- "simultaneous"
+monotone <- T
+```
+
+```{r, child=here::here('cor_threshold','sub_report.Rmd')}
+
+```
+
+\newpage
+
+```{r, include=FALSE}
+marker <- "Pseudo virus-neutralizing antibody (50\\% titer)"
+key <- "pseudoneutid50"
+day <- 57
+ci <- "simultaneous"
+monotone <- T
+```
+
+```{r, child=here::here('cor_threshold','sub_report.Rmd')}
+
+```
+
+\newpage
+
+```{r, include=FALSE}
+marker <- "Pseudo virus-neutralizing antibody (80\\% titer)"
+key <- "pseudoneutid80"
+day <- 57
+ci <- "simultaneous"
+monotone <- T
+```
+
+```{r, child=here::here('cor_threshold','sub_report.Rmd')}
+
+```
+
+\newpage
+
+##  Plots and Tables with estimates and pointwise confidence intervals for Day 29 (monotone-corrected) 
+\newpage
+
+```{r, include = FALSE}
+# DAY 29
+marker <- "Spike protein antibody"
+key <- "bindSpike"
+day <- 29
+ci <- "simultaneous"
+monotone <- T
+```
+
+```{r, child=here::here('cor_threshold','sub_report.Rmd')}
+
+
+```
+
+\newpage 
+
+```{r, include = FALSE}
+
+marker <- "RBD binding antibody"
+key <- "bindRBD"
+day <- 29
+ci <- "simultaneous"
+monotone <- T
+```
+
+```{r, child=here::here('cor_threshold','sub_report.Rmd')}
+
+```
+
+\newpage
+
+```{r, include = FALSE}
+marker <- "Pseudo virus-neutralizing antibody (50\\% titer)"
+key <- "pseudoneutid50"
+day <- 29
+ci <- "simultaneous"
+monotone <- T
+```
+
+```{r, child=here::here('cor_threshold','sub_report.Rmd')}
+
+```
+
+\newpage
+
+```{r, include = FALSE}
+marker <- "Pseudo virus-neutralizing antibody (80\\% titer)"
+key <- "pseudoneutid80"
+day <- 29
+ci <- "simultaneous"
+monotone <- T
+```
+
+```{r, child=here::here('cor_threshold','sub_report.Rmd')}
 
 
 ```

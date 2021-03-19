@@ -48,6 +48,8 @@ knitr::kable(ptwise_tab_guts, format = "latex", row.names = F, booktabs = TRUE, 
     kableExtra::kable_styling(latex_options = c("scaled_down", "striped","hold_position") )
 ```
 
+\newpage
+
 <!-- \newpage -->
 <!-- \begin{figure}[H] -->
 

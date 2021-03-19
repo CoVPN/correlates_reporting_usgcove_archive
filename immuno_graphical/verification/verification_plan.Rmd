@@ -78,4 +78,3 @@ Mock data used in the verification can be found in the `COVIDcorr` R package, av
 
 The verification results will be contained in `verification_results.pdf`, where the results of the independent verification will be reported. It will contain a table that lists the Plot, the original source code filename, the verification code filename, the results of the visual comparison, and the date the testing is completed.
 
-

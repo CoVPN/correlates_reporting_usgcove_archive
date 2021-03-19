@@ -106,10 +106,16 @@ tlf <-
     tab_dm = list(
       table_name = "Demographic",
       table_header = "Demographic",
-      table_footer = "This table summarises the case-cohort,
-      which measures antibody markers at (Day 1, Day 29, and Day 57).",
+      table_footer = "This table summarises the random subcohort, which
+      was randomly sampled from the per-protocol individuals without a COVID failure
+      event < 7 days post Day 57. The sampling was stratified by the key baseline 
+      covariates: assigned treatment arm, baseline SARS-CoV-2 status 
+      (defined by serostatus and possibly also NAAT and/or RNA PCR testing), 
+      any additional important demographic factors such as the randomization strata 
+      (e.g., defined by age and/or co-morbidities).",
       deselect = "subgroup",
-      pack_row = "subgroup"
+      pack_row = "subgroup",
+      col1="7cm"
     ),
     
     tab_bind = list(
@@ -148,7 +154,7 @@ tlf <-
     tab_wt = list(
       table_name = "MN50 WT live virus neutralization antibody marker",
       table_header = "Percentage of responders, and participants
-      participants with 2-fold rise, and participants with 4-fold rise 
+      participants with 2-fold rise, and participants with 4-fold rise
       for MN50 WT live virus neutralization antibody markers",
       table_footer = c(
         "Neutralization Responders are defined as participants who had baseline
@@ -171,7 +177,8 @@ tlf <-
       loop = "subgroup",
       group_table_col = c("Rx", "Group", "Baseline", "Visit", "N", "Marker"),
       deselect = "subgroup",
-      pack_row = "subgroup"
+      pack_row = "subgroup",
+      col1="7cm"
     ),
     
     tab_gmr = list(
@@ -211,9 +218,10 @@ tlf <-
       negative per-protocol cohort (vaccine vs. placebo)",
       table_footer = "",
       col_name = c("Visit", "Marker", "N", "Resp rate", "GMT/GMC", "N",
-                   "Resp rate", "GMT/GMC", "Resp Rate Difference", "GMTR/GMCR"),
-      header_above1 = c("", "", "Vaccine" = 3, "Placebo" = 3, "Comparison" = 2),
-      header_above2 = c("", "", "Baseline SARS-CoV-2 Negative" = 8)
+                   "Resp rate", "GMT/GMC", "Resp Rate\nDifference", "GMTR/\nGMCR"),
+      header_above1 = c(" "=2, "Vaccine" = 3, "Placebo" = 3, "Comparison" = 2),
+      header_above2 = c(" "=2, "Baseline SARS-CoV-2 Negative" = 8),
+      col1="1cm"
     ),
     
     tab_pos = list(
@@ -222,9 +230,10 @@ tlf <-
       positive per-protocol cohort (vaccine vs. placebo)",
       table_footer = "",
       col_name = c("Visit", "Marker", "N", "Resp rate", "GMT/GMC", "N",
-                   "Resp rate", "GMT/GMC", "Resp Rate Difference", "GMTR/GMCR"),
-      header_above1 = c("", "", "Vaccine" = 3, "Placebo" = 3, "Comparison" = 2),
-      header_above2 = c("", "", "Baseline SARS-CoV-2 Positive" = 8)
+                   "Resp rate", "GMT/GMC", "Resp Rate\nDifference", "GMTR/\nGMCR"),
+      header_above1 = c(" "=2, "Vaccine" = 3, "Placebo" = 3, "Comparison" = 2),
+      header_above2 = c(" "=2, "Baseline SARS-CoV-2 Positive" = 8),
+      col1="1cm"
     ),
     
     tab_vacc = list(
@@ -233,10 +242,11 @@ tlf <-
       (vaccine recipients)",
       table_footer = "",
       col_name = c("Visit", "Marker", "N", "Resp rate", "GMT/GMC", "N",
-                   "Resp rate", "GMT/GMC", "Resp Rate Difference", "GMTR/GMCR"),
-      header_above1 = c("", "", "Baseline SARS-CoV-2 Negative" = 3, 
+                   "Resp rate", "GMT/GMC", "Resp Rate\nDifference", "GMTR/\nGMCR"),
+      header_above1 = c(" "=2, "Baseline SARS-CoV-2 Negative" = 3, 
                         "Baseline SARS-CoV-2 Positive" = 3, "Comparison" = 2),
-      header_above2 = c("", "", "Vaccine Recipients" = 8)
+      header_above2 = c(" "=2, "Vaccine Recipients" = 8),
+      col1="1cm"
     ),
     
     tab_plcb = list(
@@ -245,10 +255,11 @@ tlf <-
       (placebo recipients)",
       table_footer = "",
       col_name = c("Visit", "Marker", "N", "Resp rate", "GMT/GMC", "N",
-                   "Resp rate", "GMT/GMC", "Resp Rate Difference", "GMTR/GMCR"),
-      header_above1 = c("", "", "Baseline SARS-CoV-2 Negative" = 3, 
+                   "Resp rate", "GMT/GMC", "Resp Rate\nDifference", "GMTR/GMCR"),
+      header_above1 = c(" "=2, "Baseline SARS-CoV-2 Negative" = 3, 
                         "Baseline SARS-CoV-2 Positive" = 3, "Comparison" = 2),
-      header_above2 = c("", "", "Placebo Recipients" = 8)
+      header_above2 = c(" "=2, "Placebo Recipients" = 8),
+      col1="1cm"
     ),
     
     case_vacc_neg = list(
@@ -263,11 +274,12 @@ tlf <-
         per-protocol vaccine recipients sampled into the random subcohort with
         no evidence of SARS-CoV-2 infection up to the time of data cut.",
       col_name = c("Visit", "Marker", "N", "Resp rate", "GMT/GMC", "N",
-                   "Resp rate", "GMT/GMC", "Resp Rate Difference", "GMTR/GMCR"),
-      header_above1 = c("", "", "Non-Cases/Control" = 3, "Cases*" = 3,
+                   "Resp rate", "GMT/GMC", "Resp Rate\nDifference", "GMTR/GMCR"),
+      header_above1 = c(" "=2, "Non-Cases/Control" = 3, "Cases*" = 3,
                         "Comparison" = 2),
-      header_above2 = c("", "",
-                        "Baseline SARS-CoV-2 Negative Vaccine Recipients" = 8)
+      header_above2 = c(" "=2,
+                        "Baseline SARS-CoV-2 Negative Vaccine Recipients" = 8),
+      col1="1cm"
     ),
     
     case_vacc_pos = list(
@@ -283,11 +295,12 @@ tlf <-
         subcohort with no evidence of SARS-CoV-2 infection up to the time
         of data cut."),
       col_name = c("Visit", "Marker", "N", "Resp rate", "GMT/GMC", "N",
-                   "Resp rate", "GMT/GMC", "Resp Rate Difference", "GMTR/GMCR"),
-      header_above1 = c("", "", "Non-Cases/Control" = 3, "Cases*" = 3,
+                   "Resp rate", "GMT/GMC", "Resp Rate\nDifference", "GMTR/GMCR"),
+      header_above1 = c(" "=2, "Cases*" = 3, "Non-Cases/Control" = 3, 
                         "Comparison" = 2),
-      header_above2 = c("", "",
-                        "Baseline SARS-CoV-2 Positive Vaccine Recipients" = 8)
+      header_above2 = c(" "=2,
+                        "Baseline SARS-CoV-2 Positive Vaccine Recipients" = 8),
+      col1="1cm"
     ),
     
     case_plcb_pos = list(
@@ -303,11 +316,12 @@ tlf <-
         subcohort with no evidence of SARS-CoV-2 infection up to the time of
         data cut."),
       col_name = c("Visit", "Marker", "N", "Resp rate", "GMT/GMC", "N",
-                   "Resp rate", "GMT/GMC", "Resp Rate Difference", "GMTR/GMCR"),
-      header_above1 = c("", "", "Non-Cases/Control" = 3, "Cases*" = 3,
+                   "Resp rate", "GMT/GMC", "Resp Rate\nDifference", "GMTR/GMCR"),
+      header_above1 = c(" "=2, "Non-Cases/Control" = 3, "Cases*" = 3,
                         "Comparison" = 2),
-      header_above2 = c("", "",
-                        "Baseline SARS-CoV-2 Positive Placebo Recipients" = 8)
+      header_above2 = c(" "=2,
+                        "Baseline SARS-CoV-2 Positive Placebo Recipients" = 8),
+      col1="1cm"
     )
   )
 save.image(file = here::here("data_clean", "params.Rdata"))

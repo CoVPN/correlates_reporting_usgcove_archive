@@ -32,6 +32,7 @@ covid_corr_pairplots <- function(plot_dat, ## data for plotting
                                  weight,
                                  plot_title,
                                  column_labels,
+                                 seed = 12345,
                                  height = 5.1,
                                  width = 5.05,
                                  units = "in",
@@ -73,6 +74,7 @@ covid_corr_pairplots <- function(plot_dat, ## data for plotting
         wrap(ggally_cor_resample,
           stars = FALSE,
           size = corr_size,
+          seed = seed,
           strata = subdat[, strata],
           weight = subdat[, weight]
         )

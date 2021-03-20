@@ -53,7 +53,7 @@
   
   \item Define Delta57overBxxx, Delta29overBxxx, and Delta57over29xxx for each xxx in the variable assays. They are the log10 fold rise markers.
   
-  \item Censor each of the markers in all markers measured by baseline, Day29 and Day57. Censoring means setting values < lower limits of detection (llods) to half of the llods. Note that llods are on the antilog scale and need to be transformed.
+  \item Censor each of the markers in all markers measured by baseline, Day29 and Day57. Censoring means setting values < lower limits of detection (llods, defined in _common.R) to half of the llods. Note that llods are on the antilog scale and need to be transformed.
   
 \end{itemize}
 

@@ -41,7 +41,7 @@
   
   \item Define tps.stratum, an integer variable to index correlates sampling strata. For Moderna, there are 24 strata: [placebo/baseline negative, placebo/baseline positive, vaccine/baseline negative, vaccine/baseline positive] x demo.stratum
 
-  \item Define Wstratum, an integer variable to index strata for computing weights. For Moderna, there are 28 strata: if not case (EventIndPrimaryD29==1): demo.stratum, else: [25 - placebo/baseline negative, 26 - placebo/baseline positive, 27 - vaccine/baseline negative, 28 - vaccine/baseline positive] 
+  \item Define Wstratum, an integer variable to index strata for computing weights. For Moderna, there are 28 strata: if not case (EventIndPrimaryD29==1): tps.stratum, else: [25 - placebo/baseline negative, 26 - placebo/baseline positive, 27 - vaccine/baseline negative, 28 - vaccine/baseline positive] 
   
   \item Define wt, a double variable for D57 correlates analyses. The weights equal the sampling probabilities of TwophasesampInd==1 within each Wstratum. This variable is only defined for subjects satisfying Perprotocol == 1 and EventTimePrimaryD57>=7 and set to NA otherwise
   

@@ -208,7 +208,7 @@ dat_proc["Delta57over29" %.% assays] <-
 ###############################################################################
 
 for (a in assays) {
-  for (t in times) {
+  for (t in times[1:3]) {
     dat_proc[[t %.% a]] <- ifelse(dat_proc[[t %.% a]] < log10(llods[a]),
                                   log10(llods[a] / 2), dat_proc[[t %.% a]])
   }

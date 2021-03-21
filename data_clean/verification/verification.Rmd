@@ -71,8 +71,8 @@ The scripts used to verify the outputs of the original outputs. These live withi
 
 ----
 
--Verification Script:
-
--Verification Author:
-
--Verification Date:
+- Verification Script: `verification_code/process_data_raw.R`
+- Verification Author: Ellis Hughes
+- Last Edit Date: March 19, 2021
+- Verification Date:
+- Description: Produces a csv that is to be compared against the output of `make_data_proc.R` in the validation report. 

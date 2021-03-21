@@ -95,7 +95,7 @@ dat_proc$URM[is.na(dat_proc$URM)] = 0
 # Moderna: 1 ~ 3, defines the 3 baseline strata within trt/serostatus
 dat_proc <- dat_proc %>%
   mutate(
-    Bstratum = ifelse (URM==1, ifelse(Age >= 65, 1, ifelse(HighRiskInd == 1, 2, 3)), 3+ifelse(Age >= 65, 1, ifelse(HighRiskInd == 1, 2, 3)))
+    Bstratum = ifelse(Age >= 65, 1, ifelse(HighRiskInd == 1, 2, 3))
   )
 names(Bstratum.labels) <- Bstratum.labels
 

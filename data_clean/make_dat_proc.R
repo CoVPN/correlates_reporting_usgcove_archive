@@ -42,11 +42,8 @@ dat_proc <- dat_proc %>%
   )
 
 # ethnicity labeling
-dat_proc$ethnicity <- ifelse(dat_proc$EthnicityHispanic == 1,
-  labels.ethnicity[1], labels.ethnicity[2]
-)
-dat_proc$ethnicity[dat_proc$EthnicityNotreported == 1 |
-  dat_proc$EthnicityUnknown == 1] <- labels.ethnicity[3]
+dat_proc$ethnicity <- ifelse(dat_proc$EthnicityHispanic == 1, labels.ethnicity[1], labels.ethnicity[2])
+dat_proc$ethnicity[dat_proc$EthnicityNotreported == 1 | dat_proc$EthnicityUnknown == 1] <- labels.ethnicity[3]
 dat_proc$ethnicity <- factor(dat_proc$ethnicity, levels = labels.ethnicity)
 
 # race labeling
@@ -153,10 +150,10 @@ dat_proc$wt.2[!with(dat_proc, EventTimePrimaryD29 >= 14 & Perprotocol == 1 |
                     Fullvaccine == 1)] <- NA
 
 
-# wt.subcohort, for immunogenicity analyses that are use subcohort only and are not enriched by cases outside subcohort
+# wt.subcohort, for immunogenicity analyses that use subcohort only and are not enriched by cases outside subcohort
 wts_table <- dat_proc %>%
   dplyr::filter(Perprotocol == 1 & EventTimePrimaryD57 >= 7) %>%
-  with(table(tps.stratum, TwophasesampInd))
+  with(table(tps.stratum, TwophasesampInd & SubcohortInd))
 wts_norm <- rowSums(wts_table) / wts_table[, 2]
 dat_proc$wt.subcohort <- wts_norm[dat_proc$tps.stratum]
 dat_proc$wt.subcohort[!with(dat_proc, Perprotocol == 1 & EventTimePrimaryD57>=7)] <- NA
@@ -171,7 +168,7 @@ dat_proc$wt.subcohort[!with(dat_proc, Perprotocol == 1 & EventTimePrimaryD57>=7)
 #     use baseline and D57, but not Delta
 ###############################################################################
 
-n.imp <- 10
+n.imp <- 1
 dat.tmp.impute <- subset(dat_proc, TwophasesampInd == 1)
 
 for (trt in unique(dat_proc$Trt)) {
@@ -179,7 +176,7 @@ for (trt in unique(dat_proc$Trt)) {
     dplyr::filter(Trt == trt) %>%
     select(all_of(markers)) %>%
     mice(m = n.imp, printFlag = FALSE)
-
+    
   dat.tmp.impute[dat.tmp.impute$Trt == trt, markers] <-
     mice::complete(imp, action = 1)
 }

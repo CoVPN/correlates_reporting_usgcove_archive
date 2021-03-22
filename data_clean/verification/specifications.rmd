@@ -24,12 +24,12 @@
     \item no missing values in baseline or Day 29 binding to Spike or RBD
   \end{itemize}  
   
-  \item Define ethnicity, a factor variable that has three levels:   "Hispanic or Latino", "Not Hispanic or Latino", "Not reported or reported as unknown"
+  \item Define ethnicity, a factor variable that has three levels:   "Hispanic or Latino", "Not Hispanic or Latino", "Not reported and unknown"
 
   \item Define race, a factor variable that has the following levels:   "White", "Black or African American",
   "Asian", "American Indian or Alaska Native",
   "Native Hawaiian or Other Pacific Islander", "Multiracial",
-  "Other", "Not reported or reported as unknown"
+  "Other", "Not reported and unknown"
 
   \item Define WhiteNonHispanic, a binary variable that takes value 1 if race is White and ethnicity is not Hispanic, 0 if race is not "white or unknown" OR ethnicity is Hispanic, and NA otherwise
   
@@ -45,7 +45,7 @@
   
   \item Define wt, a double variable for D57 correlates analyses. The weights equal the sampling probabilities of TwophasesampInd==1 within each Wstratum. This variable is only defined for subjects satisfying Perprotocol == 1 and EventTimePrimaryD57>=7 and set to NA otherwise
   
-  \item Define wt.2, a double variable for D29 correlates analyses. The weights equal the sampling probabilities of TwophasesampInd.2==1 within each Wstratum. This variable is only defined for subjects satisfying Perprotocol == 1 and EventTimePrimaryD57>=7 | EventTimePrimaryD29 >= 7 and EventTimePrimaryD29 <= 13 and Fullvaccine == 1 and set to NA otherwise
+  \item Define wt.2, a double variable for D29 correlates analyses. The weights equal the sampling probabilities of TwophasesampInd.2==1 within each Wstratum. This variable is only defined for subjects satisfying EventTimePrimaryD29 >= 14 & Perprotocol == 1 | EventTimePrimaryD29 >= 7 & EventTimePrimaryD29 <= 13 & Fullvaccine == 1 and set to NA otherwise
   
   \item Define wt.subcohort, a double variable for immunogenicity analyses that use subcohort only and are not enriched by cases outside subcohort. The weights equal the sampling probabilities of TwophasesampInd==1 and SubcohortInd==1 within each tps.stratum. This variable is only defined for subjects satisfying Perprotocol == 1 and EventTimePrimaryD57>=7 and set to NA otherwise
   

@@ -16,7 +16,7 @@ library(mice)
 library(dplyr)
 
 # load data and rename first column (ID)
-dat_proc <- read_csv(here(
+dat_proc <- read.csv(here(
   "data_raw", data_in_file
 ))
 colnames(dat_proc)[1] <- "Ptid"
@@ -146,8 +146,7 @@ wts_table2 <- dat_proc %>%
 wts_norm2 <- rowSums(wts_table2) / wts_table2[, 2]
 dat_proc$wt.2 <- wts_norm2[dat_proc$Wstratum]
 dat_proc$wt.2[!with(dat_proc, EventTimePrimaryD29 >= 14 & Perprotocol == 1 |
-                    EventTimePrimaryD29 >= 7 & EventTimePrimaryD29 <= 13 &
-                    Fullvaccine == 1)] <- NA
+                    EventTimePrimaryD29 >= 7 & EventTimePrimaryD29 <= 13 & Fullvaccine == 1)] <- NA
 
 
 # wt.subcohort, for immunogenicity analyses that use subcohort only and are not enriched by cases outside subcohort

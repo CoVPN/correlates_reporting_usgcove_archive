@@ -24,12 +24,12 @@
     \item no missing values in baseline or Day 29 binding to Spike or RBD
   \end{itemize}  
   
-  \item Define ethnicity, a factor variable that has three levels:   "Hispanic or Latino", "Not Hispanic or Latino", "Not reported and unknown"
+  \item Define ethnicity, a factor variable that has three levels:   "Hispanic or Latino", "Not Hispanic or Latino", "Not reported or reported as unknown"
 
   \item Define race, a factor variable that has the following levels:   "White", "Black or African American",
   "Asian", "American Indian or Alaska Native",
   "Native Hawaiian or Other Pacific Islander", "Multiracial",
-  "Other", "Not reported and unknown"
+  "Other", "Not reported or reported as unknown"
 
   \item Define WhiteNonHispanic, a binary variable that takes value 1 if race is White and ethnicity is not Hispanic, 0 if race is not "white or unknown" OR ethnicity is Hispanic, and NA otherwise
   

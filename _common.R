@@ -118,6 +118,7 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   #cache = TRUE,
   out.width = "80%",
+  out.extra = "",
   fig.align = "center",
   fig.width = 6,
   fig.asp = 0.618,
@@ -127,8 +128,7 @@ knitr::opts_chunk$set(
   echo = FALSE,
   message = FALSE,
   warning = FALSE,
-  fig.pos = "ht",
-  out.extra = ""
+  fig.pos = "H"
 )
 
 # global options

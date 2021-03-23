@@ -249,7 +249,7 @@ ggally_cor_resample <- function(
                                 seed = 12345,
                                 ...,
                                 stars = TRUE,
-                                method = "pearson",
+                                method = "spearman",
                                 use = "complete.obs",
                                 display_grid = FALSE,
                                 digits = 3,

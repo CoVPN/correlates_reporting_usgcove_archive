@@ -41,19 +41,19 @@
   
   \item Define tps.stratum, an integer variable to index correlates sampling strata. For Moderna, there are 24 strata: [placebo/baseline negative, placebo/baseline positive, vaccine/baseline negative, vaccine/baseline positive] x demo.stratum
 
-  \item Define Wstratum, an integer variable to index strata for computing weights. For Moderna, there are 28 strata: if not case (EventIndPrimaryD29==1): demo.stratum, else: [25 - placebo/baseline negative, 26 - placebo/baseline positive, 27 - vaccine/baseline negative, 28 - vaccine/baseline positive] 
+  \item Define Wstratum, an integer variable to index strata for computing weights. For Moderna, there are 28 strata: if not case (EventIndPrimaryD29==1): tps.stratum, else: [25 - placebo/baseline negative, 26 - placebo/baseline positive, 27 - vaccine/baseline negative, 28 - vaccine/baseline positive] 
   
   \item Define wt, a double variable for D57 correlates analyses. The weights equal the sampling probabilities of TwophasesampInd==1 within each Wstratum. This variable is only defined for subjects satisfying Perprotocol == 1 and EventTimePrimaryD57>=7 and set to NA otherwise
   
-  \item Define wt.2, a double variable for D29 correlates analyses. The weights equal the sampling probabilities of TwophasesampInd.2==1 within each Wstratum. This variable is only defined for subjects satisfying Perprotocol == 1 and EventTimePrimaryD57>=7 | EventTimePrimaryD29 >= 7 and EventTimePrimaryD29 <= 13 and Fullvaccine == 1 and set to NA otherwise
+  \item Define wt.2, a double variable for D29 correlates analyses. The weights equal the sampling probabilities of TwophasesampInd.2==1 within each Wstratum. This variable is only defined for subjects satisfying EventTimePrimaryD29 >= 14 & Perprotocol == 1 | EventTimePrimaryD29 >= 7 & EventTimePrimaryD29 <= 13 & Fullvaccine == 1 and set to NA otherwise
   
   \item Define wt.subcohort, a double variable for immunogenicity analyses that use subcohort only and are not enriched by cases outside subcohort. The weights equal the sampling probabilities of TwophasesampInd==1 and SubcohortInd==1 within each tps.stratum. This variable is only defined for subjects satisfying Perprotocol == 1 and EventTimePrimaryD57>=7 and set to NA otherwise
   
-  \item Carry out single imputation using the R package mice for the subjects satisfying TwophasesampInd==1. Since baseline, D29 and D57 binding to Spike and RBD are required in this subset of people, the imputation is intended to fill in missing marker values for neutralization assays at these three time points. (\_common.R defines a vector variable, markers, for this purpose.) 
+  \item Carry out single imputation using the R package mice for the subjects satisfying TwophasesampInd==1. Imputation is done separately for vaccine arm baseline seronegative, vaccine arm baseline seropositive, placebo arm baseline seronegative, and placebo arm baseline seropositive. Since baseline, D29 and D57 binding to Spike and RBD are required in this subset of people, the imputation is intended to fill in missing marker values for neutralization assays at these three time points. The imputation is done with the package mice with default parameters and seed 1. Notes: 1. The order of variables may cause numerical differences. If it does, use this order: c(outer(c("B", "Day29", "Day57"), assays, "%.%")). 2. If there is no missing data in the dataset, this piece cannot be verified.
   
-  \item Define Delta57overBxxx, Delta29overBxxx, and Delta57over29xxx for each xxx in the variable assays. They are the log10 fold rise markers.
+  \item Define Delta57overBxxx, Delta29overBxxx, and Delta57over29xxx for each xxx in the variable assays. This step needs to happen before censoring. Deltas are computed by taking the difference between two markers. Since the markers are on the log scale, the deltas represent the log10 fold rise. No transformation is needed. Negative values are left as they are.
   
-  \item Censor each of the markers in all combinations of assays and markers. Censoring means setting values < lower limits of detection (llods) to half of the llods. Note that llods are on the antilog scale and need to be transformed.
+  \item Censor each of the markers in all markers measured by baseline, Day29 and Day57. Censoring means setting values < lower limits of detection (llods, defined in _common.R) to half of the llods. Note that llods are on the antilog scale and need to be transformed.
   
 \end{itemize}
 

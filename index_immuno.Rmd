@@ -1,7 +1,7 @@
 ---
 knit: "bookdown::render_book"
 title: "COVID-19 Correlates Immunogenicity Analysis Report"
-author: "COVID-19 Prevention Network (CoVPN) Biostatistics Team"
+author: "USG COVID-19 Response Biostatistics Team"
 date: "`r format(Sys.time(), '%B %d, %Y')`"
 documentclass: book
 output:

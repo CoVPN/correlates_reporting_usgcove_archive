@@ -246,9 +246,10 @@ ggally_cor_resample <- function(
                                 strata,
                                 weight,
                                 B = 200,
+                                seed = 12345,
                                 ...,
                                 stars = TRUE,
-                                method = "pearson",
+                                method = "spearman",
                                 use = "complete.obs",
                                 display_grid = FALSE,
                                 digits = 3,
@@ -259,6 +260,7 @@ ggally_cor_resample <- function(
                                 title = "Corr",
                                 alignPercent = warning("deprecated. Use `align_percent`"),
                                 displayGrid = warning("deprecated. Use `display_grid`")) {
+  set.seed(seed)
   if (!missing(alignPercent)) {
     warning("`alignPercent` is deprecated. Please use `align_percent` if alignment still needs to be adjusted")
     align_percent <- alignPercent

@@ -26,7 +26,7 @@ source(here::here("..", "_common.R"))
 
 
 
-tf <- list("Day57" = 183, "Day29" = 211) # Reference time to perform analysis. Y = 1(T <= tf) where T is event time of Covid.
+tf <- list("Day57" = 172, "Day29" = 200) # Reference time to perform analysis. Y = 1(T <= tf) where T is event time of Covid.
 # tf should be large enough that most events are observed but small enough so that not many people are right censored. For the practice dataset, tf = 170 works.
 # Right-censoring is taken into account for  this analysis.
 covariate_adjusted <- TRUE #### Estimate threshold-response function with covariate adjustment

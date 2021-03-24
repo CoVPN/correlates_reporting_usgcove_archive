@@ -262,62 +262,6 @@ tlf <-
                         "Baseline SARS-CoV-2 Negative" = 3, "Comparison" = 2),
       header_above2 = c(" "=2, "Placebo Recipients" = 8),
       col1="1cm"
-    ),
-    
-    case_vacc_neg = list(
-      table_header = "Antibody levels in the baseline SARS-CoV-2 negative
-      per-protocol cohort (vaccine recipients)",
-      table_footer =
-        "*Cases are baseline negative per-protocol vaccine recipients with the
-        symptomatic infection COVID-19 primary endpoint diagnosed starting 7 days
-        after the Day 57 study visit.  Non-cases/Controls are baseline negative
-        per-protocol vaccine recipients sampled into the random subcohort with
-        no evidence of SARS-CoV-2 infection up to the time of data cut.",
-      col_name = c("Visit", "Marker", "N", "Resp rate", "GMT/GMC", "N",
-                   "Resp rate", "GMT/GMC", "Resp Rate\nDifference", "GMTR/GMCR"),
-      header_above1 = c(" "=2, "Cases*" = 3, "Non-Cases/Control" = 3,
-                        "Comparison" = 2),
-      header_above2 = c(" "=2,
-                        "Baseline SARS-CoV-2 Negative Vaccine Recipients" = 8),
-      col1="1cm"
-    ),
-    
-    case_vacc_pos = list(
-      table_header = "Antibody levels in the baseline SARS-CoV-2 positive
-      per-protocol cohort (vaccine recipients)",
-      table_footer = c(
-        "*Cases are baseline positive per-protocol vaccine recipients with the
-        symptomatic infection COVID-19 primary endpoint diagnosed starting 7
-        days after the Day 57 study visit.  Non-cases/Controls are baseline
-        negative per-protocol vaccine recipients sampled into the random
-        subcohort with no evidence of SARS-CoV-2 infection up to the time
-        of data cut."),
-      col_name = c("Visit", "Marker", "N", "Resp rate", "GMT/GMC", "N",
-                   "Resp rate", "GMT/GMC", "Resp Rate\nDifference", "GMTR/GMCR"),
-      header_above1 = c(" "=2, "Cases*" = 3, "Non-Cases/Control" = 3, 
-                        "Comparison" = 2),
-      header_above2 = c(" "=2,
-                        "Baseline SARS-CoV-2 Positive Vaccine Recipients" = 8),
-      col1="1cm"
-    ),
-    
-    case_plcb_pos = list(
-      table_header = "Antibody levels in the baseline SARS-CoV-2 positive
-      per-protocol cohort (placebo recipients)",
-      table_footer = c(
-        "*Cases are baseline negative per-protocol vaccine recipients with the
-        symptomatic infection COVID-19 primary endpoint diagnosed starting 7
-        days after the Day 57 study visit.  Non-cases/Controls are baseline
-        negative per-protocol vaccine recipients sampled into the random
-        subcohort with no evidence of SARS-CoV-2 infection up to the time of
-        data cut."),
-      col_name = c("Visit", "Marker", "N", "Resp rate", "GMT/GMC", "N",
-                   "Resp rate", "GMT/GMC", "Resp Rate\nDifference", "GMTR/GMCR"),
-      header_above1 = c(" "=2,  "Cases*" = 3, "Non-Cases/Control" = 3,
-                        "Comparison" = 2),
-      header_above2 = c(" "=2,
-                        "Baseline SARS-CoV-2 Positive Placebo Recipients" = 8),
-      col1="1cm"
     )
   )
 save.image(file = here::here("data_clean", "params.Rdata"))

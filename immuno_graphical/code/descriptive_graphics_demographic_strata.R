@@ -26,7 +26,7 @@ dat.long.twophase.sample <- readRDS(here(
 ))
 dat.twophase.sample <- readRDS(here("data_clean", "twophase_data.rds"))
 
-wts <- c("wt", "wt.2", "wt", "wt.2", "wt")
+
 
 ## ============================================================================
 ## boxplots and weighted rcdf plots of assay readouts at time points versus
@@ -77,7 +77,7 @@ for (tt in 2:5) {
         x = times[tt],
         facet_by = "assay",
         color = "age_geq_65_label",
-        weight = wts[tt],
+        weight = "wt.subcohort",
         panel_titles = labels.title2[tt, ] %>% unlist(),
         axis_titles = labels.axis[tt, ] %>% unlist(),
         filename = paste0(
@@ -117,7 +117,7 @@ for (tt in 2:5) {
         x = times[tt],
         facet_by = "assay",
         color = "highrisk_label",
-        weight = wts[tt],
+        weight = "wt.subcohort",
         panel_titles = labels.title2[tt, ] %>% unlist(),
         axis_titles = labels.axis[tt, ] %>% unlist(),
         filename = paste0(
@@ -158,7 +158,7 @@ for (tt in 2:5) {
         x = times[tt],
         facet_by = "assay",
         color = "age_risk_label",
-        weight = wts[tt],
+        weight = "wt.subcohort",
         panel_titles = labels.title2[tt, ] %>% unlist(),
         axis_titles = labels.axis[tt, ] %>% unlist(),
         height = 7,
@@ -199,7 +199,7 @@ for (tt in 2:5) {
         x = times[tt],
         facet_by = "assay",
         color = "sex_label",
-        weight = wts[tt],
+        weight = "wt.subcohort",
         panel_titles = labels.title2[tt, ] %>% unlist(),
         axis_titles = labels.axis[tt, ] %>% unlist(),
         filename = paste0(
@@ -240,7 +240,7 @@ for (tt in 2:5) {
         x = times[tt],
         facet_by = "assay",
         color = "age_sex_label",
-        weight = wts[tt],
+        weight = "wt.subcohort",
         panel_titles = labels.title2[tt, ] %>% unlist(),
         axis_titles = labels.axis[tt, ] %>% unlist(),
         height = 7,
@@ -282,7 +282,7 @@ for (tt in 2:5) {
         x = times[tt],
         facet_by = "assay",
         color = "ethnicity_label",
-        weight = wts[tt],
+        weight = "wt.subcohort",
         panel_titles = labels.title2[tt, ] %>% unlist(),
         axis_titles = labels.axis[tt, ] %>% unlist(),
         height = 7,
@@ -328,7 +328,7 @@ for (tt in 2:5) {
         x = times[tt],
         facet_by = "assay",
         color = "race",
-        weight = wts[tt],
+        weight = "wt.subcohort",
         panel_titles = labels.title2[tt, ] %>% unlist(),
         axis_titles = labels.axis[tt, ] %>% unlist(),
         height = 7.5,
@@ -369,7 +369,7 @@ for (tt in 2:5) {
         x = times[tt],
         facet_by = "assay",
         color = "minority_label",
-        weight = wts[tt],
+        weight = "wt.subcohort",
         panel_titles = labels.title2[tt, ] %>% unlist(),
         axis_titles = labels.axis[tt, ] %>% unlist(),
         filename = paste0(
@@ -410,7 +410,7 @@ for (tt in 2:5) {
         x = times[tt],
         facet_by = "assay",
         color = "age_minority_label",
-        weight = wts[tt],
+        weight = "wt.subcohort",
         panel_titles = labels.title2[tt, ] %>% unlist(),
         axis_titles = labels.axis[tt, ] %>% unlist(),
         height = 7,

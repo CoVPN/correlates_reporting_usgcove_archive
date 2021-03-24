@@ -14,7 +14,15 @@ here::i_am("immuno_graphical/report.Rmd")
 study_name <- "mock"
 ```
 
-
+```{r, fig.cap = "(Mock data) Pair plots of D29 Ab markers: baseline negative vaccine arm"}
+include_graphics(here(
+  "immuno_graphical", "figs",
+  paste0(
+    "pairs_Day29_Markers_BaselineNeg_vaccine_arm_",
+    study_name, ".png"
+  )
+))
+```
 
 ```{r, fig.cap = "(Mock data) Pair plots of D57 Ab markers: baseline negative vaccine arm"}
 include_graphics(here(

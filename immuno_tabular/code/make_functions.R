@@ -1,7 +1,7 @@
-#' Truncate the endpoint at LLOQ
+#' Truncate the endpoint at LLOD and ULOQ
 #'
 #' @param x An endpoint vector.
-#' @param lloq The LLOQ for endpoint \code{x}.
+#' @param llod The LLOD for endpoint \code{x}.
 #' @param uloq The ULOQ for endpoint \code{x}.
 #'
 #' @return The endpoint vector after truncation.
@@ -18,7 +18,7 @@ setLOD <- function(x,
 #' Derive indicators of magnitudes greater than 2xLLOD and 4xLLOD
 #'
 #' @param x An endpoint vector.
-#' @param lloq The LLOQ for endpoint \code{x}.
+#' @param llod The LLOD for endpoint \code{x}.
 #'
 #' @return Two indicator variables \emph{x}_2llod and \emph{x}_4llod .
 grtLLOD <- function(data,
@@ -32,21 +32,21 @@ grtLLOD <- function(data,
 
 #' Generate response calls and fold-rise indicator for endpoints:
 #' Responders at each pre-defined timepoint are defined as participants who
-#' had baseline values below the LLOQ with detectable ID80 neutralization titer
-#' above the assay LLOQ, or as participants with baseline values above
-#' the LLOQ with a 4-fold increase in neutralizing antibody titer.
+#' had baseline values below the LLOD with detectable ID80 neutralization titer
+#' above the assay LLOD, or as participants with baseline values above
+#' the LLOD with a 4-fold increase in neutralizing antibody titer.
 #'
 #' @param data The dataframe with the endpoint of interest at baseline and
 #'  post-baseline.
 #' @param bl The variable of endpoint value at baseline
 #' @param post The variable of endpoint value at post-baseline
 #' @param folds Folds to generate fold-rise indicator
-#' @param lloq LLOQ
+#' @param llod LLOD
 #' @param respoderFR Fold-rise used for response call positivity criteria
 #'
 #' @return Response calls and fold-rise indicator for \code{bl}: \emph{bl}Resp,
 #'  \emph{bl}FR\emph{folds}
-setResponder <- function(data, bl, post, folds = c(2, 4), lloq,
+setResponder <- function(data, bl, post, folds = c(2, 4), llod,
                          responderFR = 4) {
   data[, paste0(post, "FR")] <- 10^(data[, post] - data[, bl])
   foldsInd <- sapply(folds, function(x) {
@@ -55,8 +55,8 @@ setResponder <- function(data, bl, post, folds = c(2, 4), lloq,
   names(foldsInd) <- paste0(post, "FR", folds)
   data <- cbind(data, foldsInd)
   data[, paste0(post, "Resp")] <-
-    ifelse((data[, bl] < log10(lloq) & data[, post] > log10(lloq)) |
-             (data[, bl] >= log10(lloq) & data[, paste0(post, "FR", responderFR)] == 1),
+    ifelse((data[, bl] < log10(llod) & data[, post] > log10(llod)) |
+             (data[, bl] >= log10(llod) & data[, paste0(post, "FR", responderFR)] == 1),
            1,
            0
     )
@@ -95,30 +95,24 @@ setDelta <- function(data, marker, timepoints, time.ref = NA) {
 #' @param sug_grp_col A formula specifying factors that define subsets to run the model, used for svyby() by argument
 #' @param stratum The stratum used for svydesign()
 #' @param weights The weights used for svydesign()
-get_rgmt <- function(comp_v, f_v, sub_grp_col, stratum, weights, x, desc = T) {
-  
+get_rgmt <- function(comp_v, comp_lev=NULL, f_v, sub_grp_col, stratum, weights, x) {
   cat("Table of ", paste(mutate_at(x, sub_grp_col, as.character) %>% 
                            distinct_at(sub_grp_col) , collapse = ", "),
       "\n")
-    svy <- svydesign(ids = ~ Ptid, 
+
+  x <- data.frame(x, check.names = F)
+  comp_i <- unique(sort(x[, comp_v]))
+  if(is.null(comp_lev)) comp_lev <- comp_i
+  x[, comp_v] <- factor(x[, comp_v], levels = comp_lev)
+  comp <- paste(comp_lev, collapse = " vs ")
+  contrasts(x[, comp_v]) <- contr.treatment(2, base = 2)
+    
+  svy <- svydesign(ids = ~ Ptid, 
                    strata = as.formula(paste0("~", stratum)),
                    weights = as.formula(paste0("~", weights)),
                    data = x)
-    rslt <- svyglm(f_v, design = svy)
     
-  
-  if (desc) {
-    comp_i <- arrange_at(x, desc(comp_v))
-  } else {
-    comp_i <- arrange_at(x, comp_v)
-  }
-  
-  comp_i <- comp_i %>% 
-    distinct_at(comp_v) %>% 
-    pull(!!as.name(comp_v))
-  
-  comp <- paste(comp_i, collapse = " vs ")
-  
+  rslt <- svyglm(f_v, design = svy)
   ret <- x %>% 
     mutate(comp = !!comp) %>% 
     distinct_at(c("comp", sub_grp_col)) %>% 
@@ -129,50 +123,6 @@ get_rgmt <- function(comp_v, f_v, sub_grp_col, stratum, weights, x, desc = T) {
   return(ret)
 }
 
-
-#' Wrapper function to generate responder rate difference based on svyglm()
-#'
-#' @param x The dataframe used for the svydesign() data argument
-#' @param comp_v The covariate for comparison
-#' @param f_v The model formula used for svyglm()
-#' @param sug_grp_col A formula specifying factors that define subsets to run the model, used for svyby() by argument
-#' @param stratum The stratum used for svydesign()
-#' @param weights The weights used for svydesign()
-
-get_rrdiff <- function(comp_v, f_v, sub_grp_col, stratum, weights, x, desc = F){
-
-  cat("Table of ", paste(mutate_at(x, sub_grp_col, as.character) %>% 
-                           distinct_at(sub_grp_col) , collapse = ", "),
-      "\n")
-  
-    svy <- svydesign(ids = ~ Ptid, 
-                   strata = as.formula(paste0("~", stratum)),
-                   weights = as.formula(paste0("~", weights)),
-                   data = x)
-  
-    rslt <-svyglm(f_v, design = svy)
-    
-    if (desc) {
-      comp_i <- arrange_at(x, desc(comp_v))
-    } else {
-      comp_i <- arrange_at(x, comp_v)
-    }
-    
-    comp_i <- comp_i %>% 
-      distinct_at(comp_v) %>% 
-      pull(!!as.name(comp_v))
-    
-    comp <- paste(comp_i, collapse = " vs ")
-    
-    ret <- x %>% 
-      mutate(comp = !!comp) %>% 
-      distinct_at(c("comp", sub_grp_col)) %>%
-      mutate(Estimate = rslt$coefficients[2], 
-             ci_l = confint(rslt)[2, "2.5 %"],
-             ci_u = confint(rslt)[2, "97.5 %"])
-  
-  return(ret)
-}
 
 #' Function to remove duplicate key rows from table outputs.
 #'

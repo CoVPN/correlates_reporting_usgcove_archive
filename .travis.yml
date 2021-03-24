@@ -49,10 +49,10 @@ before_script:
 
 # build reports via included Make recipes
 script:
-  - travis_wait 80 make data_processed
-  - travis_wait 80 make immuno_report
-  - travis_wait 80 make cor_report
-  # - travis_wait 80 make cop_report
+  - make data_processed
+  - make immuno_report
+  - travis_wait 60 make cor_report
+  # - travis_wait 60 make cop_report
 
 # push reports to gh-pages branch
 after_script:

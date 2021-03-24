@@ -155,7 +155,7 @@ In this document, the output of `make_data_proc.R` is compared against the outpu
 
 suppressMessages({
 original_data <- read_csv(
-  here("data_clean/verification/verification_input/practice_data.csv"),
+  here("data_clean","practice_data.csv"),
   guess_max = 30000
   )
 

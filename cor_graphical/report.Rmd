@@ -1,4 +1,4 @@
-#  Graphical Description of Antibody Markers {#ab-grapical}
+#  Graphical Descriptions of Antibody Marker Data {#ab-grapical}
 
 ```{r cor-graphical-setup, echo = FALSE, message = FALSE}
 library(here)
@@ -15,21 +15,17 @@ here::i_am("cor_graphical/report.Rmd")
 include_graphics(here("cor_graphical", "figs", paste0("boxplots_Day57_trt_vaccine_x_cc_BaselineNeg_", study_name, ".png")))
 ```
 
-
 ```{r, fig.cap = "Boxplots of D57 fold-rise over D1 Ab markers: baseline negative vaccine arm."}
 include_graphics(here("cor_graphical", "figs", paste0("boxplots_Delta57overB_trt_vaccine_x_cc_BaselineNeg_", study_name, ".png")))
 ```
-
 
 ```{r, fig.cap = "Boxplots of D29 Ab markers: baseline negative vaccine arm."}
 include_graphics(here("cor_graphical", "figs", paste0("boxplots_Day29_trt_vaccine_x_cc_BaselineNeg_", study_name, ".png")))
 ```
 
-
 ```{r, fig.cap = "Boxplots of D29 fold-rise over D1 Ab markers: baseline negative vaccine arm."}
 include_graphics(here("cor_graphical", "figs", paste0("boxplots_Delta29overB_trt_vaccine_x_cc_BaselineNeg_", study_name, ".png")))
 ```
-
 
 ### Baseline seropositive
 
@@ -74,13 +70,11 @@ include_graphics(here("cor_graphical", "figs", paste0("Marker_RCDF_Day29_trt_by_
 include_graphics(here("cor_graphical", "figs", paste0("Marker_RCDF_Delta29overB_trt_by_event_status_bstatus_BaselineNeg_", study_name, ".png")))
 ```
 
-
 ### Baseline seropositive
 
 ```{r, fig.cap = "RCDF plots for D57 Ab markers: baseline positive by treatment arm."}
 include_graphics(here("cor_graphical", "figs", paste0("Marker_RCDF_Day57_trt_by_event_status_bstatus_BaselinePos_", study_name, ".png")))
 ```
-
 
 ```{r, fig.cap = "RCDF plots for D57 fold-rise over D1 Ab markers: baseline positive by treatment arm."}
 include_graphics(here("cor_graphical", "figs", paste0("Marker_RCDF_Delta57overB_trt_by_event_status_bstatus_BaselinePos_", study_name, ".png")))
@@ -94,7 +88,6 @@ include_graphics(here("cor_graphical", "figs", paste0("Marker_RCDF_Day29_trt_by_
 ```{r, fig.cap = "RCDF plots for D29 fold-rise over D1 Ab markers: baseline positive by treatment arm."}
 include_graphics(here("cor_graphical", "figs", paste0("Marker_RCDF_Delta29overB_trt_by_event_status_bstatus_BaselinePos_", study_name, ".png")))
 ```
-
 
 ## Weighted RCDF plots of threshold correlate concentration for overall vaccine efficacy
 

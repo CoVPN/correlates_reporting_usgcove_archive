@@ -172,32 +172,11 @@ verification_data <- read_csv(
 ```{r comparison}
 
 data_clean_comparison <- compare_datasets(
- colnames(original_data),
+  colnames(original_data),
   original_data,
   verification_data,
-  index = "Ptid",
-  round_digits = list(
-    .default = NA,
-    wt = 5,
-    
-    # Values reported at 4 decimals
-    Delta57overBbindSpike = 4,
-    Delta57overBbindRBD = 4,
-    Delta57overBpseudoneutid50 = 4,
-    Delta57overBpseudoneutid80 = 4,
-    Delta29overBbindSpike = 4,
-    Delta29overBbindRBD = 4,
-    Delta29overBpseudoneutid50 = 4,
-    Delta29overBpseudoneutid80 = 4,
-    Delta57over29bindSpike = 4,
-    Delta57over29bindRBD = 4,
-    Delta57over29pseudoneutid50 = 4,
-    Delta57over29pseudoneutid80 = 4
-  )
+  index = "Ptid"
 )
-
-data_clean_comparison$Delta57overBbindSpike$diffs %>% head
-
 
 ```
 

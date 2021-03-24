@@ -20,6 +20,7 @@ library(tidyr)
 library(dplyr)
 library(readr)
 library(mice)
+library(purrr)
 
 # Helper functions 
 any_missing <- function(...){
@@ -43,22 +44,17 @@ sampling_p <- function(strata, cohort, where){
   u_strata <- unique(strata)
 
   #population (s)
-  N <- sum(where)
   Nh <- table(factor(strata[where], levels = u_strata))
-  
   
   # sample
   nh <- table(factor(strata[where & cohort], levels = u_strata))
-  n <- sum(where & cohort)
-  
+
   weights <- setNames(rep(0,length = length(u_strata)), u_strata)
   
   for(s in u_strata){
-    weights[[s]] <- (Nh[[s]]/N) / (nh[[s]]/n)
+    weights[[s]] <- Nh[[s]]/ nh[[s]]
   }
   
-  weights <- weights / min(weights)
-
   samp_prob[where] <- weights[strata[where]]
   
   samp_prob
@@ -66,13 +62,14 @@ sampling_p <- function(strata, cohort, where){
 }
 
 log10_fold <- function(x, y){
-  x <- 10^x
-  y <- 10^y
-  fold = (x - y) / y
-  sign(fold) * log10(abs(fold))
+  # x <- 10^x
+  # y <- 10^y
+  # fold = (x - y) / y
+  # sign(fold) * log10(abs(fold))
+  x - y
 }
 
-# load Raw data
+## load Raw data ----
 covid_raw <- read_csv(
   here("data_raw/COVID_VEtrial_practicedata_primarystage1.csv"),
   guess_max = 30000,
@@ -80,7 +77,7 @@ covid_raw <- read_csv(
 
 
 ## Processing ----
-
+### variable derivation ----
 covid_processed <- covid_raw %>% 
   rename(
     Ptid = X1
@@ -162,8 +159,12 @@ covid_processed <- covid_raw %>%
       Trt == 0 & Bserostatus == 1 ~ 26,
       Trt == 1 & Bserostatus == 0 ~ 27,
       Trt == 1 & Bserostatus == 1 ~ 28
-    ),
-    
+    ))
+
+### weight derivation ----
+
+covid_processed_wt <- covid_processed %>% 
+  mutate(
     wt =  sampling_p(
       Wstratum,
       TwophasesampInd==1,
@@ -173,32 +174,54 @@ covid_processed <- covid_raw %>%
     wt.2 = sampling_p(
       Wstratum, 
       TwophasesampInd.2==1,
-      (Perprotocol == 1 & EventTimePrimaryD57 >=7) | 
-        (EventTimePrimaryD29 >= 7 & EventTimePrimaryD29 <= 13 & Fullvaccine == 1)
+      EventTimePrimaryD29 >= 14 & Perprotocol == 1 | 
+        EventTimePrimaryD29 >= 7 & EventTimePrimaryD29 <= 13 & Fullvaccine == 1
       ),
     
     wt.subcohort = sampling_p(
       tps.stratum,
       TwophasesampInd==1 & SubcohortInd==1,
-      Perprotocol == 1 & EventTimePrimaryD57>=7
-    ) 
+      Perprotocol == 1 & EventTimePrimaryD57 >=7
+    )
   )
 
 ## Imputation ----
 
-covid_processed_imputed_assay <- covid_processed %>% 
+covid_processed_imputed_assay <- covid_processed_wt %>% 
   filter(TwophasesampInd == 1) %>% 
   select(
     Ptid,
+    Trt, 
+    Bserostatus,
     ends_with("bindSpike"),
     ends_with("bindRBD"),
     ends_with("pseudoneutid50"),
     ends_with("pseudoneutid80")
   ) %>% 
-  mice() %>% 
-  complete()
+  group_split(
+    Trt, Bserostatus
+  ) %>% 
+  map_dfr( function(x){
+    
+    suppressWarnings({
+      x %>%
+      select(
+          all_of(c(outer(
+            c("B", "Day29", "Day57"),
+            c("bindSpike","bindRBD","pseudoneutid50","pseudoneutid80"),
+            paste0)))
+      ) %>% 
+      mice(seed = 1, m = 1,  printFlag = FALSE) %>%
+      complete() %>% 
+      mutate(
+          Ptid = x$Ptid
+        )
+    })
+  })
+  
+  
 
-covid_processed_imputed <- covid_processed %>% 
+covid_processed_imputed <- covid_processed_wt %>% 
   select(-ends_with("bindSpike"),
          -ends_with("bindRBD"),
          -ends_with("pseudoneutid50"),
@@ -207,7 +230,7 @@ covid_processed_imputed <- covid_processed %>%
     covid_processed_imputed_assay
   ) %>% 
   select(
-    colnames(covid_processed)
+    colnames(covid_processed_wt)
   )
 
 ## Delta over baseline ----
@@ -274,7 +297,8 @@ covid_processed_censored <- covid_processed_delta
 for(assay_typ in names(LLOD)){
   covid_processed_censored <- covid_processed_censored %>% 
     mutate(
-      across(ends_with(assay_typ), function(x){
+      ## only run this for non-delta fields
+      across(matches(paste0("(^(B|Day29|Day57))",assay_typ,"$")), function(x){
         # cases where x < log10(LLOD) replace with log10(LLOD/2)
         x[x < log10(LLOD[[assay_typ]])] <- log10(LLOD[[assay_typ]]/2)
         x
@@ -288,3 +312,4 @@ write_csv(
   covid_processed_censored,
   file = here("data_clean/verification/verification_output/data_clean_verification_output.csv")
 )
+

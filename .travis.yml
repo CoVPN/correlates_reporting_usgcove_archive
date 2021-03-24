@@ -45,14 +45,14 @@ install:
 # turn down number of bootstraps and permutations in CoR for faster builds
 before_script:
   - sed -i '/B=/c\B=10' $TRAVIS_BUILD_DIR/cor_coxph/code/params.R
-  - sed -i '/numPerm=/c\numPerm=20' $TRAVIS_BUILD_DIR/cor_coxph/code/params.R
+  - sed -i '/numPerm=/c\numPerm=10' $TRAVIS_BUILD_DIR/cor_coxph/code/params.R
 
 # build reports via included Make recipes
 script:
   - make data_processed
-    # - make immuno_report
-  - travis_wait 120 make cor_report
-  # - travis_wait 120 make cop_report
+  - make immuno_report
+  - make cor_report
+  # - make cop_report
 
 # push reports to gh-pages branch
 after_script:

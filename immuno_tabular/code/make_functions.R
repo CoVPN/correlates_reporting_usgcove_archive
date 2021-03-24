@@ -8,9 +8,11 @@
 setLOD <- function(x,
                    uloq = Inf,
                    llod = -Inf) {
+  
+  llod.half <- ifelse(is.infinite(llod), llod, log10(round(llod, 0)/2))
   llod <- ifelse(is.infinite(llod), llod, log10(llod))
   uloq <- log10(uloq)
-  x <- ifelse(x < llod, llod - log10(2), x)
+  x <- ifelse(x < llod, llod.half, x)
   x <- ifelse(x > uloq, uloq, x)
 }
 

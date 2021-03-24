@@ -31,7 +31,7 @@ ds_s <- dat.mock %>%
                            EthnicityNotreported==1 | 
                              EthnicityUnknown==1 ~ "Not reported and unknown "),
     RaceEthC = case_when(
-      WhiteNonHispanic==1 ~ "White Non-Hispanic",
+      WhiteNonHispanic==1 ~ "White Non-Hispanic ",
       TRUE ~ raceC
     ),
     MinorityC = case_when(
@@ -39,12 +39,12 @@ ds_s <- dat.mock %>%
       WhiteNonHispanic == 1 ~ "White Non-Hispanic"
     ),
     HighRiskC = ifelse(HighRiskInd == 1, "At-risk", "Not at-risk"),
-    Age65C = ifelse(age.geq.65 == 1, "Age >= 65", "Age < 65"),
+    Age65C = ifelse(age.geq.65 == 1, "Age $\\geq$ 65", "Age $<$ 65"),
     SexC = ifelse(Sex == 1, "Female", "Male"),
     AgeRiskC = paste(Age65C, HighRiskC),
     AgeSexC = paste(Age65C, SexC),
     AgeMinorC = ifelse(is.na(MinorityC), NA, paste(Age65C, MinorityC)),
-    `Baseline COVID` = factor(ifelse(Bserostatus == 1, "Positive", "Negative"),
+    `Baseline SARS-CoV-2` = factor(ifelse(Bserostatus == 1, "Positive", "Negative"),
                       levels = c("Negative", "Positive")
     ),
     Arm = factor(ifelse(Trt == 1, "Vaccine", "Placebo"), 
@@ -72,8 +72,8 @@ subgrp <- c(
   "AgeSexC" = "Age, sex",
   "ethnicityC" = "Hispanic or Latino ethnicity", 
   "RaceEthC" = "Race",
-  "MinorityC" = "Race and ethnic group",
-  "AgeMinorC" = "Age, Race and ethnic group"
+  "MinorityC" = "Underrepresented minority status",
+  "AgeMinorC" = "Age, Underrepresented minority status"
 )
 
 ds_long <- ds_s %>%
@@ -141,23 +141,25 @@ ds3 <- bind_cols(
     do.call(cbind, .)
 )
 
-grp_lev <- c("", "Age < 65",  "Age >= 65", "At-risk", "Not at-risk", 
-             "Age < 65 At-risk", "Age < 65 Not at-risk",
-             "Age >= 65 At-risk", "Age >= 65 Not at-risk", "Female", "Male", 
-             "Age < 65 Female", "Age < 65 Male", 
-             "Age >= 65 Female", "Age >= 65 Male", 
+grp_lev <- c("", "Age $<$ 65",  "Age $\\geq$ 65", "At-risk", "Not at-risk", 
+             "Age $<$ 65 At-risk", "Age $<$ 65 Not at-risk",
+             "Age $\\geq$ 65 At-risk", "Age $\\geq$ 65 Not at-risk", "Male", "Female", 
+             "Age $<$ 65 Female", "Age $<$ 65 Male", 
+             "Age $\\geq$ 65 Male", "Age $\\geq$ 65 Female", 
              "Hispanic or Latino", "Not Hispanic or Latino", "Not reported and unknown ", 
-             "White Non-Hispanic", "Black or African American", "Asian", 
+             "White Non-Hispanic ", "Black or African American", "Asian", 
              "American Indian or Alaska Native", 
              "Native Hawaiian or Other Pacific Islander", 
              "Multiracial", "Other", "Not reported and unknown",  
-             "Communities of Color", 
-             "Age < 65 White Non-Hispanic", "Age < 65 Communities of Color", 
-             "Age >= 65 Communities of Color", "Age >= 65 White Non-Hispanic")
+             "Communities of Color", "White Non-Hispanic",
+             "Age $<$ 65 Communities of Color", "Age $<$ 65 White Non-Hispanic",  
+             "Age $\\geq$ 65 Communities of Color", "Age $\\geq$ 65 White Non-Hispanic")
 
 ds <- mutate(ds3, Group = factor(subgroup_cat, levels = grp_lev))
 
-resp_v <- grep("Resp|FR2|FR4|2llod|4llod", names(ds), value = T)
+resp_v <- setdiff(grep("Resp|FR2|FR4|2llod|4llod", names(ds), value = T),
+                  grep("liveneut", names(ds), value = T)
+                  )
 
 ds_resp_l <- pivot_longer(ds,
                           cols = all_of(resp_v), 
@@ -165,7 +167,11 @@ ds_resp_l <- pivot_longer(ds,
                           values_to = "response") %>%
   inner_join(labels_all, by = "resp_cat")
 
-mag_v <- c(bAb_v, pnAb_v, lnAb_v, grep("DeltaDay", names(ds), value = T))
+mag_v <- setdiff(
+  c(bAb_v, pnAb_v, lnAb_v, grep("DeltaDay", names(ds), value = T)), 
+  grep("liveneut", names(ds), value = T)
+  )
+
 ds_mag_l <- pivot_longer(ds,
                          cols = all_of(mag_v),
                          names_to = "mag_cat", values_to = "mag") %>%

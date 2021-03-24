@@ -41,43 +41,46 @@ ds_long_ttl <- bind_rows(
 # Calculate % for categorical covariates
 dm_cat <- inner_join(
   ds_long_ttl %>%
-    group_by(Arm, subgroup, subgroup_cat) %>%
+    group_by(`Baseline SARS-CoV-2`, Arm, subgroup, subgroup_cat) %>%
     summarise(n = n(), .groups = 'drop'),
   ds_long_ttl %>%
-    group_by(Arm, subgroup) %>%
+    group_by(`Baseline SARS-CoV-2`, Arm, subgroup) %>%
     summarise(N = n(), .groups = 'drop'),
-  by = c("Arm", "subgroup")
+  by = c("Baseline SARS-CoV-2", "Arm", "subgroup")
 ) %>%
   mutate(pct = n / N,
          rslt1 = sprintf("%s (%.1f%%)", n, n / N * 100), 
-         rslt2 = sprintf("%s/%s = %.1f%%", n, N, n / N * 100)) %>% 
+         rslt2 = sprintf("%s/%s = %.1f%%", n, N, n / N * 100),
+         subgroup = ifelse(subgroup_cat == "Communities of Color", 
+                           "Race", as.character(subgroup))) %>% 
   dplyr::filter(subgroup %in% cat_v) %>% 
-  arrange(Arm, subgroup, desc(pct))
+  arrange(`Baseline SARS-CoV-2`, Arm, subgroup)
 
 # Calculate mean and range for numeric covariates
 dm_num <- ds_long_ttl %>%
-  distinct_at(all_of(c("Arm", "Ptid", num_v1, num_v2))) %>%
+  distinct_at(all_of(c("Baseline SARS-CoV-2","Arm","Ptid",num_v1,num_v2))) %>%
   pivot_longer(cols = all_of(c(num_v1, num_v2)), 
                names_to = "subgroup", 
                values_to = "subgroup_cat") %>%
-  group_by(Arm, subgroup) %>%
+  group_by(`Baseline SARS-CoV-2`, Arm, subgroup) %>%
   summarise(
     min = min(subgroup_cat, na.rm = T), 
     max = max(subgroup_cat, na.rm = T),
     mean = mean(subgroup_cat, na.rm = T),
     sd = sd(subgroup_cat, na.rm = T), 
     rslt1 = sprintf("%.1f (%.1f, %.1f)", mean, min, max),
-    rslt2 = sprintf("%.1f +/- %.1f", mean, sd),
+    rslt2 = sprintf("%.1f $\\pm$ %.1f", mean, sd),
     N = n(),
     .groups = 'drop'
   ) %>% 
   mutate(subgroup_cat = case_when(subgroup %in% num_v1 ~ "Mean (Range)",
-                                  subgroup %in% num_v2 ~ "Mean +/- SD"))
+                                  subgroup %in% num_v2 ~ "Mean $\\pm$ SD"))
 
 tab_dm <- full_join(
   dm_cat, 
   dm_num,
-  by = c("Arm", "subgroup", "subgroup_cat","N", "rslt1", "rslt2")
+  by = c("Baseline SARS-CoV-2", "Arm", "subgroup", 
+         "subgroup_cat", "N", "rslt1", "rslt2")
 ) %>%
   mutate(rslt = case_when(subgroup %in% cat_v ~ rslt1,
                           subgroup %in% num_v1 ~ rslt1,
@@ -85,20 +88,51 @@ tab_dm <- full_join(
          subgroup = factor(subgroup, 
                            levels = c("Age", "BMI", "Sex", "Race", 
                                       "Hispanic or Latino ethnicity", 
-                                      "Risk for Severe Covid-19")),
-         Arm = factor(Arm, levels = c("Placebo", "Vaccine", "Total"))) %>% 
-  pivot_wider(c(Arm, subgroup, subgroup_cat, rslt),
-              names_from = Arm, 
+                                      "Risk for Severe Covid-19"))) %>%
+  inner_join(ds_long_ttl %>% 
+               distinct(`Baseline SARS-CoV-2`, Arm, Ptid) %>% 
+               group_by(`Baseline SARS-CoV-2`, Arm) %>%
+               summarise(tot = n()),
+             by = c("Baseline SARS-CoV-2", "Arm")) %>% 
+  mutate(Arm = paste0(Arm, "\n(N = ", tot, ")")) %>%
+  pivot_wider(c(`Baseline SARS-CoV-2`, Arm, subgroup, subgroup_cat, rslt),
+              names_from = Arm,
               names_sort = T,
               values_from = c(rslt)) %>%
-  arrange(subgroup)
+  mutate(Characteristics = factor(subgroup_cat,
+                                  levels=c("Age $\\geq$ 65","Age $<$ 65",
+                                           "Mean (Range)","Mean $\\pm$ SD",
+                                           "Female","Male",
+                                           "White Non-Hispanic ",
+                                           "Black or African American",
+                                           "Asian",
+                                           "American Indian or Alaska Native",
+                                           "Native Hawaiian or Other Pacific Islander",
+                                           "Multiracial",
+                                           "Other",
+                                           "Not reported and unknown",
+                                           "Communities of Color",
+                                           "Hispanic or Latino","Not Hispanic or Latino",
+                                           "Not reported and unknown ",
+                                           "At-risk","Not at-risk"))) %>% 
+  arrange(`Baseline SARS-CoV-2`, subgroup, Characteristics)
 
-arm_n <- ds_long %>% distinct(Ptid, Arm)
+tab_dm_pos <- tab_dm %>% 
+  dplyr::filter(`Baseline SARS-CoV-2` == "Positive") %>% 
+  select_if(~ !all(is.na(.))) %>% 
+  select_at(c("subgroup", "Characteristics", 
+                         grep("Vaccine" ,names(.), value = T),
+                         grep("Placebo" ,names(.), value = T),
+                         grep("Total" ,names(.), value = T)))
 
-names(tab_dm)<- c("subgroup", "Characteristics",
-                  sprintf("Placebo\n(N = %s)", sum(arm_n$Arm=="Placebo")),
-                  sprintf("Vaccine\n(N = %s)", sum(arm_n$Arm=="Vaccine")),
-                  sprintf("Total\n(N = %s)", nrow(arm_n)))
+tab_dm_neg <- tab_dm %>% 
+  dplyr::filter(`Baseline SARS-CoV-2` == "Negative") %>% 
+  select_if(~ !all(is.na(.))) %>% 
+  select_at(c("subgroup", "Characteristics", 
+              grep("Vaccine" ,names(.), value = T),
+              grep("Placebo" ,names(.), value = T),
+              grep("Total" ,names(.), value = T)))
+
 
 print("Done with table 1") 
 
@@ -112,10 +146,10 @@ print("Done with table 1")
 
 # Variables used for stratification in the tables
 # subgroup: SAP Table 6: Baseline Subgroups
-# Arm and Baseline: Assigned treatment Arms * Baseline COVID-19 Status
+# Arm and Baseline: Assigned treatment Arms * Baseline SARS-CoV-2-19 Status
 # Group: Category in each subgroup
 
-sub_grp_col <- c("subgroup", "Arm", "Baseline COVID", "Group", 
+sub_grp_col <- c("subgroup", "Arm", "Baseline SARS-CoV-2", "Group", 
                  "Ind", "Marker", "Visit")
 
 resp_v <- c(grep("Resp|2llod|4llod", unique(ds_resp_l$resp_cat), value = T) %>%
@@ -158,15 +192,15 @@ tab_rr <- inner_join(
               round(rspndr, 1), round(Nw, 1), response*100, ci_l*100, ci_u*100))
   ) %>%
   pivot_wider(
-    id_cols = c(subgroup, Group, Arm, `Baseline COVID`, Marker, Visit, N),
+    id_cols = c(subgroup, Group, Arm, `Baseline SARS-CoV-2`, Marker, Visit, N),
     names_from = Ind, values_from = rslt) %>% 
-  arrange(subgroup, Group, Visit, Arm, `Baseline COVID`, Marker)
+  arrange(subgroup, Group, Visit, Arm, `Baseline SARS-CoV-2`, Marker)
 
 
 tab_bind <- tab_rr %>% 
   dplyr::filter(Marker %in% c("Anti N IgG (IU/ml)", "Anti RBD IgG (IU/ml)", 
                               "Anti Spike IgG (IU/ml)")) %>% 
-  select(subgroup, Group, Visit, Arm, `Baseline COVID`, Marker, N, Responder, 
+  select(subgroup, Group, Visit, Arm, `Baseline SARS-CoV-2`, Marker, N, Responder, 
          `% Greater than 2xLLOD`,`% Greater than 4xLLOD`)
 
 print("Done with table2") 
@@ -179,12 +213,12 @@ print("Done with table2")
 # Output: tab_pseudo & tab_wt
 
 tab_pseudo <- tab_rr %>% dplyr::filter(Marker == "Pseudovirus-nAb ID50") %>% 
-  select(subgroup, Group, Visit, Arm, `Baseline COVID`, Marker, N, Responder,
+  select(subgroup, Group, Visit, Arm, `Baseline SARS-CoV-2`, Marker, N, Responder,
          `% 2-Fold Rise`, `% 4-Fold Rise`)
-tab_wt <- #NULL 
-  tab_rr %>% dplyr::filter(Marker == "Live virus-nAb MN50") %>%
-  select(subgroup, Group, Visit, Arm, `Baseline COVID`, Marker, N, Responder,
-         `% 2-Fold Rise`, `% 4-Fold Rise`)
+tab_wt <- NULL 
+  # tab_rr %>% dplyr::filter(Marker == "Live virus-nAb MN50") %>%
+  # select(subgroup, Group, Visit, Arm, `Baseline SARS-CoV-2`, Marker, N, Responder,
+  #        `% 2-Fold Rise`, `% 4-Fold Rise`)
 
 print("Done with table3 & 4") 
 
@@ -199,7 +233,7 @@ gm_v <- c(bAb_v, pnAb_v, lnAb_v,
           gmr_v <- grep("DeltaDay", unique(ds_mag_l$mag_cat), value = T) %>% 
             grep("overB", ., value = T))
 
-sub_grp_col <- c("subgroup", "Arm", "Baseline COVID", "Group", "mag_cat")
+sub_grp_col <- c("subgroup", "Arm", "Baseline SARS-CoV-2", "Group", "mag_cat")
 
 rgm <- ds_mag_l %>% 
   dplyr::filter(mag_cat %in% gm_v) %>% 
@@ -224,7 +258,7 @@ rgm <- ds_mag_l %>%
 tab_gm <- inner_join(
   rgm,
   ds_mag_l %>%
-    group_by(subgroup, mag_cat, Group, Visit, Marker, Arm, `Baseline COVID`) %>%
+    group_by(subgroup, mag_cat, Group, Visit, Marker, Arm, `Baseline SARS-CoV-2`) %>%
     summarise(N = n(), .groups = 'drop'),
   by = sub_grp_col
 ) 
@@ -232,8 +266,8 @@ tab_gm <- inner_join(
 tab_gmt <- tab_gm %>% 
   dplyr::filter(!grepl("Delta", mag_cat)) %>% 
   mutate(`GMT/GMC`= sprintf("%.0f\n(%.0f, %.0f)", 10^mag, 10^ci_l, 10^ci_u)) %>% 
-  arrange(subgroup, Group, Visit, Arm, `Baseline COVID`, Marker) %>% 
-  select(subgroup, Group, Visit, Arm, `Baseline COVID`, Marker, N, `GMT/GMC`) 
+  arrange(subgroup, Group, Visit, Arm, `Baseline SARS-CoV-2`, Marker) %>% 
+  select(subgroup, Group, Visit, Arm, `Baseline SARS-CoV-2`, Marker, N, `GMT/GMC`) 
 
 print("Done with table5") 
 
@@ -251,22 +285,21 @@ tab_gmt_gmr <- inner_join(
   tab_gmt %>% 
     filter(Visit != "Day 1") %>% 
     rename(`Post Baseline GMT/GMC` = `GMT/GMC`),
-  by = c("subgroup", "Arm", "Group", "Baseline COVID", "N", "Marker")
+  by = c("subgroup", "Arm", "Group", "Baseline SARS-CoV-2", "N", "Marker")
 ) %>% 
   mutate(Visit = paste0(gsub("ay ", "", Visit), " fold-rise over D1"))
 
 tab_gmr <- tab_gm %>% 
   dplyr::filter(grepl("Delta", mag_cat)) %>%
   mutate(`GMTR/GMCR`=sprintf("%.2f\n(%.2f, %.2f)", 10^mag, 10^ci_l, 10^ci_u)) %>% 
-  select(subgroup, Group, Arm, `Baseline COVID`, Visit, N, Marker, `GMTR/GMCR`) %>% 
+  select(subgroup, Group, Arm, `Baseline SARS-CoV-2`, Visit, N, Marker, `GMTR/GMCR`) %>% 
   inner_join(tab_gmt_gmr,
-             by = c("subgroup", "Group", "Arm", "Baseline COVID", "Visit", "N", "Marker")
+             by = c("subgroup", "Group", "Arm", "Baseline SARS-CoV-2", "Visit", "N", "Marker")
   ) %>% 
-  arrange(subgroup, Group, Visit, Arm, `Baseline COVID`, Marker) %>% 
-  select(subgroup, Group, Visit, Arm, `Baseline COVID`, Marker, N,  
+  arrange(subgroup, Group, Visit, Arm, `Baseline SARS-CoV-2`, Marker) %>% 
+  select(subgroup, Group, Visit, Arm, `Baseline SARS-CoV-2`, Marker, N,  
          `Baseline GMT/GMC`, `Post Baseline GMT/GMC`, `GMTR/GMCR`) %>% 
-  rename(`Baseline\nCOVID`=`Baseline COVID`, 
-         `Baseline\nGMT/GMC`=`Baseline GMT/GMC`, 
+  rename(`Baseline\nGMT/GMC`=`Baseline GMT/GMC`, 
          `Post Baseline\nGMT/GMC`=`Post Baseline GMT/GMC`,)
 
 print("Done with table6") 
@@ -277,84 +310,85 @@ print("Done with table6")
 # Output: tab_rgmt
 # 
 # Ratios of GMT/GMC between subgroups among vacinees
+
 ds_mag_l_rgmt <- ds_mag_l %>%
   dplyr::filter(subgroup %in% c("Age", "Risk for Severe Covid-19", 
                                 "Age, Risk for Severe Covid-19",  
                                 "Sex", 
                                 "Hispanic or Latino ethnicity",
-                                "Race and ethnic group") & 
+                                "Underrepresented minority status") & 
                 !grepl("Delta", mag_cat) &
-                Group != "Not reported and unknown") %>%
+                Group != "Not reported and unknown ") %>%
   mutate(
     subgroup = case_when(
-      Group %in% c("Age < 65 At-risk", "Age < 65 Not at-risk") ~ "Age, Risk 1",
-      Group %in% c("Age >= 65 At-risk", "Age >= 65 Not at-risk") ~ "Age, Risk 2",
+      Group %in% c("Age $<$ 65 At-risk", "Age $<$ 65 Not at-risk") ~ "Age, Risk 1",
+      Group %in% c("Age $\\geq$ 65 At-risk", "Age $\\geq$ 65 Not at-risk") ~ "Age, Risk 2",
       TRUE ~ as.character(subgroup)),
     comp_i = as.character(subgroup), 
-    subgroup = factor(comp_i, levels = c("Age",  
-                                         "Risk for Severe Covid-19",
-                                         "Age, Risk 1", "Age, Risk 2",
-                                         "Sex",
-                                         "Hispanic or Latino ethnicity",
-                                         "Race and ethnic group")),
-         Group = factor(Group, 
-                        levels = c("Age >= 65", "Age < 65", 
-                                   "Not at-risk", "At-risk",   
-                                   "Age < 65 Not at-risk", "Age < 65 At-risk",
-                                   "Age >= 65 Not at-risk", "Age >= 65 At-risk", 
-                                   "Male", "Female", 
-                                   "Not Hispanic or Latino", "Hispanic or Latino", 
-                                   "Communities of Color", "White Non-Hispanic")))
+    Group = factor(Group, 
+                   levels = c("Age $\\geq$ 65", "Age $<$ 65", 
+                              "At-risk", "Not at-risk",    
+                              "Age $<$ 65 At-risk", "Age $<$ 65 Not at-risk", 
+                              "Age $\\geq$ 65 At-risk", "Age $\\geq$ 65 Not at-risk", 
+                              "Male", "Female", 
+                              "Hispanic or Latino", "Not Hispanic or Latino",  
+                              "Communities of Color", "White Non-Hispanic")))
 
 comp_v <- "Group"
 f_v <- as.formula(sprintf("mag ~ %s", comp_v))
-sub_grp_col <- c("subgroup", "Arm", "Baseline COVID", "Visit", "Marker")
+sub_grp_col <- c("subgroup", "Arm", "Baseline SARS-CoV-2", "Visit", "Marker")
 
 rgmt <- ds_mag_l_rgmt %>%
   group_split(across(all_of(sub_grp_col))) %>%
   map_dfr(get_rgmt, comp_v=comp_v, f_v = f_v, sub_grp_col = sub_grp_col, 
           comp_lev=NULL, stratum = "tps.stratum", weights = "wt.subcohort") 
 
-tab_gmt_rgmt <- inner_join(
-  tab_gmt, 
-  tab_gmt %>% 
-    dplyr::filter(subgroup %in% c("Age", "Risk for Severe Covid-19", 
-                                  "Age, Risk for Severe Covid-19",  
-                                  "Sex", 
-                                  "Hispanic or Latino ethnicity",
-                                  "Race and ethnic group") &
-                  Group != "Not reported and unknown ") %>%  
-    mutate(
-      subgroup = case_when(
-        Group %in% c("Age < 65 At-risk", "Age < 65 Not at-risk") ~ "Age, Risk 1",
-        Group %in% c("Age >= 65 At-risk", "Age >= 65 Not at-risk") ~ "Age, Risk 2",
-        TRUE ~ as.character(subgroup))
-      ) %>% 
-    group_by(subgroup) %>% 
-    summarise(Group = as.character(unique(Group)),
-              groupn = match(Group, unique(sort(Group)))),
-  by = c("subgroup", "Group")
-) %>%
+tab_gmtx <- tab_gmt %>% 
+  dplyr::filter(subgroup %in% c("Age", 
+                                "Risk for Severe Covid-19", 
+                                "Age, Risk for Severe Covid-19",  
+                                "Sex", 
+                                "Hispanic or Latino ethnicity",
+                                "Underrepresented minority status") &
+                  Group != "Not reported and unknown ") %>%
   mutate(subgroup = case_when(
-    Group %in% c("Age < 65 At-risk", "Age < 65 Not at-risk") ~ "Age, Risk 1",
-    Group %in% c("Age >= 65 At-risk", "Age >= 65 Not at-risk") ~ "Age, Risk 2",
-    TRUE ~ as.character(subgroup))) %>% 
-  dplyr::filter(Group != "Not reported and unknown ") %>%
-  pivot_wider(id_cols = c(subgroup, Arm, `Baseline COVID`, Visit, Marker),
+    Group %in% c("Age $<$ 65 At-risk", "Age $<$ 65 Not at-risk") ~ 
+      "Age, Risk 1",
+    Group %in% c("Age $\\geq$ 65 At-risk", "Age $\\geq$ 65 Not at-risk") ~ 
+      "Age, Risk 2",
+    TRUE ~ as.character(subgroup)),
+    Group = factor(Group, 
+                   levels = c("Age $\\geq$ 65", "Age $<$ 65", 
+                              "At-risk", "Not at-risk",    
+                              "Age $<$ 65 At-risk", "Age $<$ 65 Not at-risk", 
+                              "Age $\\geq$ 65 At-risk", "Age $\\geq$ 65 Not at-risk", 
+                              "Male", "Female", 
+                              "Hispanic or Latino", "Not Hispanic or Latino",  
+                              "Communities of Color", "White Non-Hispanic")))
+  
+tab_gmt_rgmt <- tab_gmtx %>% 
+  mutate(groupn = 2-match(Group, unique(sort(Group)))%%2) %>% 
+  pivot_wider(id_cols = c(subgroup, Arm, `Baseline SARS-CoV-2`, Visit, Marker),
               names_from = groupn, values_from = `GMT/GMC`, 
               names_prefix = "Group")
 
-tab_rgmt <- rgmt %>%
-  mutate(`Ratios of GMT/GMC` = sprintf("%.2f\n(%.2f, %.2f)", 
-                                       10^Estimate, 10^ci_l, 10^ci_u)) %>% 
-  inner_join(tab_gmt_rgmt, 
-             by = c("Baseline COVID", "Arm", "subgroup", "Marker", "Visit")) %>% 
+tab_rgmt <- inner_join(rgmt, 
+             tab_gmt_rgmt, 
+             by = c("Baseline SARS-CoV-2", "Arm", "subgroup", "Marker", "Visit")) %>% 
   rename(`Group 1 vs 2` = comp, 
-         `Group 1 GMT/GMC` = `Group2`, 
-         `Group 2 GMT/GMC` = `Group1`) %>% 
-  arrange(subgroup, Visit, Arm, `Baseline COVID`, Marker) %>% 
-  select(`Group 1 vs 2`, subgroup, Visit, Arm, `Baseline COVID`, Marker, `Group 1 GMT/GMC`,
-         `Group 2 GMT/GMC`, `Ratios of GMT/GMC`)  
+         `Group 1 GMT/GMC` = `Group1`, 
+         `Group 2 GMT/GMC` = `Group2`) %>% 
+  mutate(`Ratios of GMT/GMC` = sprintf("%.2f\n(%.2f, %.2f)", 
+                                       10^Estimate, 10^ci_l, 10^ci_u),
+         subgroup = factor(subgroup, levels = c("Age",  
+                                                "Risk for Severe Covid-19",
+                                                "Age, Risk 1", "Age, Risk 2",
+                                                "Sex",
+                                                "Hispanic or Latino ethnicity",
+                                                "Underrepresented minority status"))) %>% 
+  select(`Group 1 vs 2`, subgroup, Visit, Arm, `Baseline SARS-CoV-2`, Marker, 
+         `Group 1 GMT/GMC`, `Group 2 GMT/GMC`, `Ratios of GMT/GMC`) %>% 
+  arrange(subgroup, Visit, Arm, `Baseline SARS-CoV-2`, Marker)
 
 print("Done with table7") 
 
@@ -364,7 +398,7 @@ print("Done with table7")
 # Output: tab_rrdiff
 
 comp_v <- c("Vaccine", "Placebo")
-sub_grp_col <- c("subgroup", "Arm", "Baseline COVID", "Group", 
+sub_grp_col <- c("subgroup", "Arm", "Baseline SARS-CoV-2", "Group", 
                   "Ind", "Marker", "Visit")
 rpcnt_diff <- ds_resp_l %>% 
   dplyr::filter(Visit != "Day 1" & Ind %in% c("Responder", "% 2-Fold Rise", "% 4-Fold Rise") &
@@ -403,8 +437,8 @@ tab_rrdiff <- rrdiff %>%
   pivot_wider(-c(Estimate, ci_u, ci_l),
               names_from = Ind,
               values_from = rslt) %>%
-  arrange(subgroup, Group, Visit, `Baseline COVID`, Marker, Comparison) %>% 
-  select(subgroup, Group, Visit, `Baseline COVID`, Marker, Comparison, Responder,
+  arrange(subgroup, Group, Visit, `Baseline SARS-CoV-2`, Marker, Comparison) %>% 
+  select(subgroup, Group, Visit, `Baseline SARS-CoV-2`, Marker, Comparison, Responder,
          `% 2-Fold Rise`, `% 4-Fold Rise`)
 
 print("Done with table8") 
@@ -424,7 +458,7 @@ dssvy_case <- svydesign(ids = ~ Ptid,
                         data = ds_resp_case,
                         nest = F)
 
-sub_grp_col <- c("subgroup", "Arm", "`Baseline COVID`", 
+sub_grp_col <- c("subgroup", "Arm", "`Baseline SARS-CoV-2`", 
                  "Case", "resp_cat", "Visit", "Marker", "Ind")
 sub_grp <- as.formula(paste0("~", paste(sub_grp_col, collapse = "+")))
 
@@ -446,7 +480,7 @@ tab_rr_case <- rpcnt_case %>%
       sprintf("%s/%s = %.1f%%\n(%.1f%%, %.1f%%)", 
               round(rspndr, 1), round(Nw, 1), response*100, ci_l*100, ci_u*100))
   ) %>% 
-  select(subgroup, Arm, `Baseline COVID`, Case, Visit, N, Marker, Responder)
+  select(subgroup, Arm, `Baseline SARS-CoV-2`, Case, Visit, N, Marker, Responder)
 
 #########
 
@@ -480,7 +514,7 @@ gm_v <- c(bAb_v, pnAb_v, lnAb_v)
 ds_mag_case <- ds_mag_l %>% 
   dplyr::filter(subgroup == "All participants" & mag_cat %in% gm_v & !is.na(wt))
 
-sub_grp_col <- c("subgroup", "Arm", "`Baseline COVID`", "Case", "mag_cat")
+sub_grp_col <- c("subgroup", "Arm", "`Baseline SARS-CoV-2`", "Case", "mag_cat")
 sub_grp <- as.formula(paste0("~", paste(sub_grp_col, collapse = "+")))
 
 dssvy_case <- svydesign(ids = ~ Ptid, 
@@ -494,13 +528,13 @@ rgm_case <- svyby(~ mag, sub_grp, dssvy_case, svymean, vartype = "ci")
 
 tab_gm_case <- rgm_case %>%
   inner_join(ds_mag_case %>%
-               group_by(subgroup, mag_cat, Case, Visit, Marker, Arm, `Baseline COVID`) %>%
+               group_by(subgroup, mag_cat, Case, Visit, Marker, Arm, `Baseline SARS-CoV-2`) %>%
                summarise(N = n(), .groups = 'drop'),
-             by = c("subgroup", "Case", "Arm", "Baseline COVID", "mag_cat")
+             by = c("subgroup", "Case", "Arm", "Baseline SARS-CoV-2", "mag_cat")
   ) %>%
   mutate(`GMT/GMC` = sprintf("%.0f\n(%.0f, %.0f)", 10^mag, 10^ci_l, 10^ci_u)
   ) %>% 
-  select(subgroup, Arm, `Baseline COVID`, Case, Visit, N, Marker, `GMT/GMC`)
+  select(subgroup, Arm, `Baseline SARS-CoV-2`, Case, Visit, N, Marker, `GMT/GMC`)
 
 ###
 ds_mag_l_rgmt_case <- ds_mag_l %>%
@@ -510,7 +544,7 @@ ds_mag_l_rgmt_case <- ds_mag_l %>%
 comp_v <- "Case"
 comp_lev <- c("Cases", "Non-Cases")
 f_v <- as.formula(sprintf("mag ~ %s", comp_v))
-sub_grp_col <- c("subgroup", "Arm", "Baseline COVID", "Visit", "Marker")
+sub_grp_col <- c("subgroup", "Arm", "Baseline SARS-CoV-2", "Visit", "Marker")
 
 rgmt_case <- ds_mag_l_rgmt_case %>%
   group_split(across(all_of(sub_grp_col))) %>%
@@ -520,35 +554,35 @@ rgmt_case <- ds_mag_l_rgmt_case %>%
 tab_rgmt_case <- rgmt_case %>%
   mutate(`Ratios of GMT/GMC` = sprintf("%.2f\n(%.2f, %.2f)", 
                                        10^Estimate, 10^ci_l, 10^ci_u)) %>% 
-  select(Arm, `Baseline COVID`, Marker, Visit, subgroup, comp, `Ratios of GMT/GMC`) %>% 
-  arrange(subgroup, Arm, `Baseline COVID`, Visit, Marker)
+  select(Arm, `Baseline SARS-CoV-2`, Marker, Visit, subgroup, comp, `Ratios of GMT/GMC`) %>% 
+  arrange(subgroup, Arm, `Baseline SARS-CoV-2`, Visit, Marker)
 
 tab_key_case <- full_join(tab_rr_case, 
                           tab_gm_case,
-                          by = c("subgroup", "Arm", "Baseline COVID", 
+                          by = c("subgroup", "Arm", "Baseline SARS-CoV-2", 
                                  "Case", "N", "Marker", "Visit")) %>%
   pivot_wider(names_from = Case, 
               values_from = c(N, Responder, `GMT/GMC`)) %>% 
   # Join with RR difference (tab_rr)
   full_join(tab_rrdiff_case, 
-            by = c("Arm", "subgroup", "Baseline COVID", "Visit", "Marker")
+            by = c("Arm", "subgroup", "Baseline SARS-CoV-2", "Visit", "Marker")
   ) %>% 
   # Join with GMT/GMC Ratios (tab_rgmt) 
   full_join(tab_rgmt_case, 
-            by = c("Arm", "Baseline COVID", "Visit", "Marker", "subgroup")
+            by = c("Arm", "Baseline SARS-CoV-2", "Visit", "Marker", "subgroup")
   ) %>% 
-  select(Arm, `Baseline COVID`, Visit, Marker, `N_Cases`, `Responder_Cases`, 
+  select(Arm, `Baseline SARS-CoV-2`, Visit, Marker, `N_Cases`, `Responder_Cases`, 
          `GMT/GMC_Cases`, `N_Non-Cases`, `Responder_Non-Cases`, `GMT/GMC_Non-Cases`,  
          Responder, `Ratios of GMT/GMC`) %>% 
   dplyr::filter(Visit != "Day 1") %>% 
-  arrange(Arm, `Baseline COVID`) 
+  arrange(Arm, `Baseline SARS-CoV-2`) 
 
-case_vacc_neg <- filter(tab_key_case, Arm == "Vaccine", `Baseline COVID` == "Negative") %>% 
-  select(-c(Arm, `Baseline COVID`))
-case_vacc_pos <- filter(tab_key_case, Arm == "Vaccine", `Baseline COVID` == "Positive") %>% 
-  select(-c(Arm, `Baseline COVID`))
-case_plcb_pos <- filter(tab_key_case, Arm == "Placebo", `Baseline COVID` == "Positive") %>% 
-  select(-c(Arm, `Baseline COVID`))
+case_vacc_neg <- filter(tab_key_case, Arm == "Vaccine", `Baseline SARS-CoV-2` == "Negative") %>% 
+  select(-c(Arm, `Baseline SARS-CoV-2`))
+case_vacc_pos <- filter(tab_key_case, Arm == "Vaccine", `Baseline SARS-CoV-2` == "Positive") %>% 
+  select(-c(Arm, `Baseline SARS-CoV-2`))
+case_plcb_pos <- filter(tab_key_case, Arm == "Placebo", `Baseline SARS-CoV-2` == "Positive") %>% 
+  select(-c(Arm, `Baseline SARS-CoV-2`))
 
 print("Done with table10-12") 
 
@@ -561,7 +595,7 @@ ds_mag_l_Rx <- ds_mag_l %>%
 comp_v <- "Arm"
 # contrasts(ds_mag_l_Rx$Arm) <- contr.treatment(2, base = 2)
 f_v <- as.formula(sprintf("mag ~ %s", comp_v))
-sub_grp_col_Rx <- c("subgroup", "Group", "Baseline COVID", "mag_cat", "Marker", "Visit")
+sub_grp_col_Rx <- c("subgroup", "Group", "Baseline SARS-CoV-2", "mag_cat", "Marker", "Visit")
 
 rgmt_Rx <- ds_mag_l_Rx %>%
   group_split(across(all_of(sub_grp_col_Rx))) %>%
@@ -572,35 +606,35 @@ rgmt_Rx <- ds_mag_l_Rx %>%
 tab_rgmt_Rx <- rgmt_Rx %>%
   mutate(`Ratios of GMT/GMC` = sprintf("%.2f\n(%.2f, %.2f)", 
                                        10^Estimate, 10^ci_l, 10^ci_u)) %>% 
-  select(`Baseline COVID`, Marker, Visit, subgroup, Group, comp, `Ratios of GMT/GMC`) %>% 
-  arrange(subgroup, `Baseline COVID`, Visit, Marker)
+  select(`Baseline SARS-CoV-2`, Marker, Visit, subgroup, Group, comp, `Ratios of GMT/GMC`) %>% 
+  arrange(subgroup, `Baseline SARS-CoV-2`, Visit, Marker)
 
 tab_key_Rx <- full_join(tab_rr, 
                         tab_gmt,
-                        by = c("subgroup", "Arm", "Baseline COVID", 
+                        by = c("subgroup", "Arm", "Baseline SARS-CoV-2", 
                                "Group", "Visit", "N", "Marker")) %>%
   dplyr::filter(as.character(subgroup) == "All participants") %>%
-  pivot_wider(id_cols = c(subgroup, Group, `Baseline COVID`, Marker, Visit),  
+  pivot_wider(id_cols = c(subgroup, Group, `Baseline SARS-CoV-2`, Marker, Visit),  
               names_from = Arm, 
               values_from = c(N, Responder, `GMT/GMC`)
   ) %>% 
   # Join with RR difference (tab_rr)
   inner_join(tab_rrdiff, 
-             by = c("subgroup", "Group", "Baseline COVID", "Visit", "Marker")
+             by = c("subgroup", "Group", "Baseline SARS-CoV-2", "Visit", "Marker")
   ) %>% 
   # Join with GMT/GMC Ratios (tab_rgmt) 
   inner_join(tab_rgmt_Rx, 
-             by = c("subgroup", "Group", "Baseline COVID", "Visit", "Marker")
+             by = c("subgroup", "Group", "Baseline SARS-CoV-2", "Visit", "Marker")
   ) %>% 
-  select(`Baseline COVID`, Visit, Marker, `N_Vaccine`, `Responder_Vaccine`, 
+  select(`Baseline SARS-CoV-2`, Visit, Marker, `N_Vaccine`, `Responder_Vaccine`, 
          `GMT/GMC_Vaccine`, `N_Placebo`, `Responder_Placebo`, `GMT/GMC_Placebo`, 
          Responder, `Ratios of GMT/GMC`) %>% 
-  arrange(`Baseline COVID`, Visit, Marker)
+  arrange(`Baseline SARS-CoV-2`, Visit, Marker)
 
-tab_neg <- filter(tab_key_Rx, `Baseline COVID` == "Negative") %>% 
-  select(-c(`Baseline COVID`))
-tab_pos <- filter(tab_key_Rx, `Baseline COVID` == "Positive") %>% 
-  select(-c(`Baseline COVID`))
+tab_neg <- filter(tab_key_Rx, `Baseline SARS-CoV-2` == "Negative") %>% 
+  select(-c(`Baseline SARS-CoV-2`))
+tab_pos <- filter(tab_key_Rx, `Baseline SARS-CoV-2` == "Positive") %>% 
+  select(-c(`Baseline SARS-CoV-2`))
 
 print("Done with table13-14") 
 
@@ -610,9 +644,9 @@ comp_v <- c("Positive", "Negative")
 
 rrdiff_bl <- rpcnt_diff %>% 
   dplyr::filter(subgroup == "All participants" & Ind == "Responder") %>% 
-  mutate(`Baseline COVID` = match(as.character(`Baseline COVID`), comp_v), 
+  mutate(`Baseline SARS-CoV-2` = match(as.character(`Baseline SARS-CoV-2`), comp_v), 
          comp = paste(comp_v, collapse = " vs ")) %>% 
-  pivot_wider(names_from = `Baseline COVID`, 
+  pivot_wider(names_from = `Baseline SARS-CoV-2`, 
               values_from = c(response, ci_l, ci_u), names_sep = "") %>% 
   mutate(Estimate = response1-response2,
          ci_l = Estimate-sqrt((response1-ci_l1)^2+(response2-ci_u2)^2),
@@ -631,15 +665,15 @@ tab_rrdiff_bl <- rrdiff_bl %>%
 ds_mag_l_bl <- ds_mag_l %>%
   dplyr::filter(subgroup == "All participants" & !grepl("Delta", mag_cat))
 
-contrasts(ds_mag_l_bl$`Baseline COVID`) <- contr.treatment(2, base = 2)
-# f_v <- as.formula("mag ~ `Baseline COVID`")
+contrasts(ds_mag_l_bl$`Baseline SARS-CoV-2`) <- contr.treatment(2, base = 2)
+# f_v <- as.formula("mag ~ `Baseline SARS-CoV-2`")
 sub_grp_col_bl <- c("subgroup", "Arm", "Visit", "Marker", "mag_cat")
 
 rgmt_bl <- ds_mag_l_bl %>%
   group_split(across(all_of(sub_grp_col_bl))) %>%
   map_dfr(get_rgmt, 
-          comp_v = "Baseline COVID", comp_lev = c("Positive", "Negative"),
-          f_v = "mag ~ `Baseline COVID`", sub_grp_col = sub_grp_col_bl, 
+          comp_v = "Baseline SARS-CoV-2", comp_lev = c("Positive", "Negative"),
+          f_v = "mag ~ `Baseline SARS-CoV-2`", sub_grp_col = sub_grp_col_bl, 
           stratum = "tps.stratum", weights = "wt.subcohort") 
 
 tab_rgmt_bl <- rgmt_bl %>%
@@ -651,10 +685,10 @@ tab_rgmt_bl <- rgmt_bl %>%
  tab_bl <- full_join(tab_rr, 
                      tab_gmt, 
                      by = c("Arm", "subgroup", "Group",
-                             "Baseline COVID", "Visit", "Marker", "N")) %>%
+                             "Baseline SARS-CoV-2", "Visit", "Marker", "N")) %>%
   dplyr::filter(as.character(subgroup) == "All participants") %>%
-  pivot_wider(id_cols = c(Arm, subgroup, Group, `Baseline COVID`, Marker, Visit),
-              names_from=`Baseline COVID`, 
+  pivot_wider(id_cols = c(Arm, subgroup, Group, `Baseline SARS-CoV-2`, Marker, Visit),
+              names_from=`Baseline SARS-CoV-2`, 
               values_from=c(N, Responder, `GMT/GMC`)
   ) %>% 
   # Join with RR difference (tab_rr)
@@ -665,15 +699,15 @@ tab_rgmt_bl <- rgmt_bl %>%
   inner_join(tab_rgmt_bl, 
              by = c("Arm", "subgroup", "Marker", "Visit", "comp")
   ) %>% 
-  select(Arm, Visit, Marker, `N_Negative`, `Responder_Negative`, 
-         `GMT/GMC_Negative`, `N_Positive`, `Responder_Positive`, 
-         `GMT/GMC_Positive`, rslt, `Ratios of GMT/GMC`) %>% 
+  select(Arm, Visit, Marker, `N_Positive`, `Responder_Positive`, 
+         `GMT/GMC_Positive`, `N_Negative`, `Responder_Negative`, 
+         `GMT/GMC_Negative`, rslt, `Ratios of GMT/GMC`) %>% 
   arrange(Arm, Visit, Marker)
 
 tab_vacc <- tab_bl %>% dplyr::filter(Arm == "Vaccine") %>% select(-Arm)
 tab_plcb <- tab_bl %>% dplyr::filter(Arm == "Placebo") %>% select(-Arm)
 
-save(tlf, tab_dm, tab_bind, tab_pseudo, tab_wt, tab_gmt,
+save(tlf, tab_dm_pos, tab_dm_neg, tab_bind, tab_pseudo, tab_wt, tab_gmt,
      tab_gmr, tab_rgmt, tab_rrdiff, case_vacc_neg, case_vacc_pos, case_plcb_pos, 
      tab_neg, tab_pos, tab_vacc, tab_plcb,
      file = here::here("output", "Tables.Rdata"))

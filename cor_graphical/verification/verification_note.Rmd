@@ -1,0 +1,18 @@
+---
+title: " Correlates of risk figures verification note"
+date: March 24, 2021
+output:
+  html_document: default
+  pdf_document: default
+---
+
+<br>
+
+####Fig 1.14; lineplots of Binding Antibody to Spike: baseline negative vaccine arm (2 timepoints)
+Violin plots, box plots and line plots 
+
+####Fig 1.18; lineplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm (2 timepoints)
+Violin plots, box plots and line plots 
+
+####Fig 1.30; lineplots of Binding Antibody to Spike: baseline negative vaccine arm (3 timepoints)
+Violin plots, box plots and line plots 

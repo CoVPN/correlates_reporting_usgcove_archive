@@ -1,7 +1,9 @@
 ---
-title: Verification Plan for Immunogenicity Plots
-date: "`r format(Sys.time(), '%B %d, %Y')`"
-output: pdf_document
+title: "Verification Plan for Immunogenicity Plots"
+output:
+  html_document: default
+  pdf_document: default
+date: '`r format(Sys.time(), ''%B %d, %Y'')`'
 ---
 
 Project directory: `correlates_reporting/immuno_graphical`

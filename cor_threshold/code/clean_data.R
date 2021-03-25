@@ -30,7 +30,7 @@ for (time in times) {
   Delta <- as.numeric(Delta)
   data$outcome <- outcome
   data$Delta <- Delta
-  print(colnames(data))
+
   
   data$TwophasesampInd <- as.numeric(data[[twophaseind_variable[[time]]]])
   data$wt <- data[[weight_variable[[time]]]]

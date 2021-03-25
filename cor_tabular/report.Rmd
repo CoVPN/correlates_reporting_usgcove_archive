@@ -1,0 +1,112 @@
+---
+output: pdf_document
+header-includes:
+    - \usepackage{caption}
+    - \usepackage{pdflscape}
+---
+
+#  Summary Tables{#cor-tabular}
+\captionsetup{justification=raggedright,singlelinecheck=false}
+```{r knitr, echo=FALSE, message=FALSE, warning=FALSE}
+library(knitr)
+library(kableExtra)
+library(dplyr)
+here::i_am("immuno_tabular/report.Rmd")
+base::load(here::here( "immuno_tabular", "output", "Tables.Rdata"))
+
+```
+\captionsetup[table]{labelformat=empty}
+```{r tabs, results="asis", echo=FALSE, message=FALSE, warning=FALSE}
+opts <- options(knitr.kable.NA = "")
+numi <- 1
+for (i in 1:length(tlf)){
+  if(i==3){
+    cat("\n\n\\newgeometry{top=0.1in, bottom=0.1in}")
+    cat("\n\n\\begin{landscape}\n")
+  }
+  subnum <- 0
+  tlf_labels <- tlf[[i]]
+
+  title_i <- tlf_labels[["table_header"]]
+  footer_i <- tlf_labels[["table_footer"]]
+  tlf_args <- names(tlf_labels)
+  deselect <- if ("deselect" %in% tlf_args) tlf_labels[["deselect"]] else NA
+  loop <- if ("loop" %in% tlf_args) tlf_labels[["loop"]] else NA
+  
+  tab <- get(names(tlf)[i]) 
+   if (nrow(tab) == 0) next
+  
+  group_table_col <- if ("group_table_col" %in% tlf_args) {
+    tlf_labels[["group_table_col"]] 
+    } else NA 
+  
+  
+  if ("pack_row" %in% tlf_args) {
+    pack_row <- tlf_labels[["pack_row"]]
+    if (!is.na(loop)) { 
+      pack_row_ind <- by(tab, 
+                         tab[, loop], 
+                         function(x)table(droplevels(x[, pack_row])))
+      } else {
+      pack_row_ind <- table(droplevels(tab[, pack_row]))  
+      }
+    } else NA
+  
+  tab <- data.frame(sapply(tab,function(x)gsub("%", "\\\\%", x)), check.names = F)
+  colnames(tab) <- gsub("%", "\\\\%", colnames(tab))
+  colnames(tab) <- gsub("Baseline SARS-CoV-2", "Baseline\nSARS\\-CoV\\-2", colnames(tab))
+  
+  col_name <- if ("col_name" %in% tlf_args) { 
+    tlf_labels[["col_name"]] 
+  } else setdiff(names(tab), deselect) 
+  
+  jloop <- if (!is.na(loop)) pull(tab, !!as.name(loop)) %>% unique() else 1
+    
+  for (j in jloop) {
+      subnum <- subnum + 1
+      
+      tab.j <- if (is.na(loop)) {
+        tab 
+      } else {
+        dplyr::filter(tab, !!as.name(loop) == j)
+      }
+      
+      tab.j <- mutate_all(tab.j, linebreak, align = "l")
+      
+      caption.i <- ifelse(is.na(loop),
+        sprintf("Table %s. %s", numi, title_i),                  
+        sprintf("Table %s%s. %s by %s", numi, letters[subnum], title_i, j))
+      
+      tabjk <- kable(if (is.na(deselect)) {tab.j} else {tab.j %>% select(-!!deselect)},
+                     align = "l",
+                     format = "latex",
+                     booktabs = TRUE,
+                     longtable = TRUE,
+                     escape = FALSE,
+                     col.names = linebreak(col_name, align="l"),
+                     caption = caption.i) %>%
+        column_spec(1, width = ifelse("col1"%in%tlf_args, tlf_labels[["col1"]],"2.7cm")) %>% 
+        kable_styling(latex_options = "repeat_header", 
+                      repeat_header_method = "replace") %>%
+        footnote(general_title = "", general = footer_i, threeparttable = TRUE,
+        escape = FALSE)
+
+        if ("header_above1" %in% tlf_args) {
+          tabjk <-add_header_above(tabjk, tlf_labels[["header_above1"]])
+          }
+        
+        if ("header_above2" %in% tlf_args) {
+          tabjk <-add_header_above(tabjk, tlf_labels[["header_above2"]])
+          }
+      
+        if ("pack_row" %in% tlf_args) {
+          tabjk <- pack_rows(tabjk, index = if(is.na(loop))pack_row_ind else pack_row_ind[j])
+         }
+    print(tabjk)
+    cat("\n\n\\clearpage\n")
+    }
+  numi <- numi + 1
+  }
+
+```
+\end{landscape}

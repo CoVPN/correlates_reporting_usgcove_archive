@@ -180,7 +180,7 @@ for (day in c("29", "57")) {
     x = paste0("Day", day),
     color = "assay",
     lty = "Bserostatus",
-    weight = ifelse(day == "29", "wt.2", "wt"),
+    weight = "wt.subcohort",
     xlab = paste0(
       "D", day,
       " Binding Ab (IU/ml) / Pseudovirus nAb ID50 or ID80"

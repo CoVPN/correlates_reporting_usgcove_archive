@@ -29,15 +29,15 @@ The main regression model is the Cox proportional hazards model. All plots are m
 . Average follow-up time \input{\pathCoRoutput`r Day`/CoR_mean_followup_time_vacc_\studyname} days, maximum follow-up time \input{\pathCoRoutput`r Day`/CoR_max_followup_time_vacc_\studyname} days.
 Cutpoints:
 %Day `r Day` cutpoints:
-\input{\pathCoRoutput`r Day`/cutpoints_D`r Day`bindSpike_\studyname},  
-\input{\pathCoRoutput`r Day`/cutpoints_D`r Day`bindRBD_\studyname},  
-\input{\pathCoRoutput`r Day`/cutpoints_D`r Day`pseudoneutid50_\studyname},  
-\input{\pathCoRoutput`r Day`/cutpoints_D`r Day`pseudoneutid80_\studyname}.
+\input{\pathCoRoutput`r Day`/cutpoints_Day`r Day`bindSpike_\studyname},  
+\input{\pathCoRoutput`r Day`/cutpoints_Day`r Day`bindRBD_\studyname},  
+\input{\pathCoRoutput`r Day`/cutpoints_Day`r Day`pseudoneutid50_\studyname},  
+\input{\pathCoRoutput`r Day`/cutpoints_Day`r Day`pseudoneutid80_\studyname}.
 %fold-rise cutpoints:
-%\input{\pathCoRoutput`r Day`/cutpoints_D`r Day`overBbindSpike_\studyname},  
-%\input{\pathCoRoutput`r Day`/cutpoints_D`r Day`overBbindRBD_\studyname},  
-%\input{\pathCoRoutput`r Day`/cutpoints_D`r Day`overBpseudoneutid50_\studyname},  
-%\input{\pathCoRoutput`r Day`/cutpoints_D`r Day`overBpseudoneutid80_\studyname}.  
+%\input{\pathCoRoutput`r Day`/cutpoints_Delta`r Day`overBbindSpike_\studyname},  
+%\input{\pathCoRoutput`r Day`/cutpoints_Delta`r Day`overBbindRBD_\studyname},  
+%\input{\pathCoRoutput`r Day`/cutpoints_Delta`r Day`overBpseudoneutid50_\studyname},  
+%\input{\pathCoRoutput`r Day`/cutpoints_Delta`r Day`overBpseudoneutid80_\studyname}.  
 \\
 **No. at-risk = number of per-protocol baseline negative vaccine recipients at-risk for COVID at 7 days post Day `r Day` visit; no. cases = number of this cohort with an observed COVID endpoints.\\
 ***Generalized Wald-test p-value of the null hypothesis that the hazard rate is constant across the Lower, Middle, and Upper tertile groups.

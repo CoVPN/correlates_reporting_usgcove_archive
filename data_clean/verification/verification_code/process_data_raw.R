@@ -62,10 +62,6 @@ sampling_p <- function(strata, cohort, where){
 }
 
 log10_fold <- function(x, y){
-  # x <- 10^x
-  # y <- 10^y
-  # fold = (x - y) / y
-  # sign(fold) * log10(abs(fold))
   x - y
 }
 
@@ -89,13 +85,13 @@ covid_processed <- covid_raw %>%
       TRUE ~ 0),
     
     TwophasesampInd = case_when(
-      Fullvaccine == 1 & 
+      Perprotocol == 1 & EventTimePrimaryD57>=7 & 
         (SubcohortInd == 1 | EventIndPrimaryD29 == 1 ) & 
         !any_missing(BbindSpike, BbindRBD, Day29bindSpike, Day29bindRBD, Day57bindSpike, Day57bindRBD) ~ 1,
       TRUE ~ 0),
     
     TwophasesampInd.2 = case_when(
-      Fullvaccine == 1 & 
+      (EventTimePrimaryD29 >= 14 & Perprotocol == 1 | EventTimePrimaryD29 >= 7 & EventTimePrimaryD29 <= 13 & Fullvaccine == 1) & 
         (SubcohortInd == 1 | EventIndPrimaryD29 == 1 ) & 
         !any_missing(BbindSpike, BbindRBD, Day29bindSpike, Day29bindRBD) ~ 1,
       TRUE ~ 0),    
@@ -222,6 +218,7 @@ covid_processed_imputed_assay <- covid_processed_wt %>%
   
 
 covid_processed_imputed <- covid_processed_wt %>% 
+  filter(TwophasesampInd == 1) %>% 
   select(-ends_with("bindSpike"),
          -ends_with("bindRBD"),
          -ends_with("pseudoneutid50"),
@@ -231,6 +228,10 @@ covid_processed_imputed <- covid_processed_wt %>%
   ) %>% 
   select(
     colnames(covid_processed_wt)
+  ) %>% 
+  bind_rows(
+    covid_processed_wt %>% 
+      filter(TwophasesampInd != 1)
   )
 
 ## Delta over baseline ----

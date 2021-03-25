@@ -7,18 +7,14 @@
   \item Define age.geq.65, a binary variable indicating Age >= 65
 
   \item Define TwophasesampInd, a binary two-phase sampling indicator for D57 analyses as the intersection of
-  
   \begin{itemize}
-  
     \item getting two vaccine shots
     \item either in the subchort or be a case (EventIndPrimaryD29 == 1)
     \item no missing values in baseline, Day 29, or Day 57 binding to Spike or RBD
   \end{itemize}  
 
   \item Define TwophasesampInd.2, a binary two-phase sampling indicator for D29 analyses as the intersection of
-  
   \begin{itemize}
-  
     \item getting two vaccine shots
     \item either in the subchort or be a case (EventIndPrimaryD29 == 1)
     \item no missing values in baseline or Day 29 binding to Spike or RBD

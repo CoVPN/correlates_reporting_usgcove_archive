@@ -47,8 +47,7 @@ for (time in times) {
       "outcome",
       "Delta"
     )
-  keep <- data$Trt == 1 & data$Bserostatus == 0 &
-    data$Perprotocol == 1 & !is.na(data$wt)
+  keep <- data$Trt == 1 & data$Bserostatus == 0 & !is.na(data$wt)
   
   data_firststage <- data[keep, variables_to_keep]
   #data_firststage <- na.omit(data_firststage)

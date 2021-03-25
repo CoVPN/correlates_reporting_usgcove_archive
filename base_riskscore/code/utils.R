@@ -318,10 +318,6 @@ impute_missing_values <- function(X, riskVars) {
     invisible(capture.output(imp = mice(X, m = n.imp)))
     # use the first imputation by default
     X <- mice::complete(imp, action = 1)
-    # # Add imputed variables to X to make checks (if required)
-    # for (i in 1:n.imp) {
-    #   X[, covars%.%".imp"%.%i]=mice::complete(imp, action=i)
-    # }
   }
   return(X)
 }
@@ -352,10 +348,10 @@ get_cv_predictions <- function(cv_fit, cvaucDAT) {
     bind_cols(cv_fit[["SL.predict"]] %>% as.data.frame() %>% `colnames<-`(c("Super Learner"))) %>%
     bind_cols(cv_fit[["Y"]] %>% as.data.frame() %>% `colnames<-`(c("Y"))) %>%
     gather("algo", "pred", -Y) %>%
-    filter(algo %in% c(top3$Screen_fromRun)) # , "Super Learner", "Discrete SL"))
+    filter(algo %in% c(top3$LearnerScreen)) 
 
   predict %>%
-    left_join(top3 %>% select(Screen_fromRun, Learner, Screen, AUC), by = c("algo" = "Screen_fromRun")) %>%
+    left_join(top3 %>% select(Screen_fromRun, Learner, Screen, AUC, LearnerScreen), by = c("algo" = "LearnerScreen")) %>%
     mutate(
       learnerScreen = paste0(Learner, "_", Screen),
       learnerScreen = ifelse(Learner %in% c("SL", "Discrete SL"), algo, learnerScreen),
@@ -390,7 +386,7 @@ plot_roc_curves <- function(predict, cvaucDAT) {
     unnest(roc.dat) %>%
     select(algo, xval, yval) %>%
     ungroup() %>%
-    left_join(top3 %>% select(Screen_fromRun, Learner, Screen, AUC), by = c("algo" = "Screen_fromRun")) %>%
+    left_join(top3 %>% select(Screen_fromRun, Learner, Screen, AUC, LearnerScreen), by = c("algo" = "LearnerScreen")) %>%
     mutate(
       learnerScreen = paste0(Learner, "_", Screen),
       learnerScreen = ifelse(Learner %in% c("SL", "Discrete SL"), algo, learnerScreen),
@@ -422,9 +418,7 @@ plot_predicted_probabilities <- function(pred) {
     geom_boxplot(alpha = 0.2, width = 0.025, color = "black", outlier.size = NA, outlier.shape = NA) +
     theme_bw() +
     scale_color_manual(values = c("#56B4E9", "#E69F00")) +
-    # colorblindr::scale_color_OkabeIto(order = c(5, 1)) +
     facet_wrap(vars(learnerScreen), ncol = 1) +
-    # facet_grid(cols = vars(learnerScreen)) +
     labs(y = "CV estimated probability of COVID disease", x = "") +
     theme(
       legend.position = "none",
@@ -531,7 +525,7 @@ make_forest_plot_prod <- function(avgs) {
     geom_text(hjust = 1, vjust = 0, size = 5) +
     xlim(0.7, 2) +
     theme(
-      plot.margin = unit(c(0.2, -0.15, 0.7, -0.15), "cm"),
+      plot.margin = unit(c(1.0, -0.15, 1.4, -0.15), "cm"),
       axis.line = element_blank(),
       axis.text.y = element_blank(),
       axis.text.x = element_text(size = 2, color = "white"),

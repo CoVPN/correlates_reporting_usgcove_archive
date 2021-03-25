@@ -10,7 +10,7 @@ source(here::here("..", "_common.R"))
 ## SL screens; all models adjust for baseline maternal enrollment variables
 ## -------------------------------------------------------------------------------------
 ## screen based on logistic regression univariate p-value < level
-rank_univariate_logistic_pval_plus_exposure <- function(Y, X, family, obsWeights, id, ...) {
+rank_univariate_logistic_pval <- function(Y, X, family, obsWeights, id, ...) {
   ## logistic regression of outcome on each variable
   listp <- apply(X, 2, function(x, Y, family) {
     summ <- coef(summary(glm(Y ~ x,
@@ -24,7 +24,7 @@ rank_univariate_logistic_pval_plus_exposure <- function(Y, X, family, obsWeights
 }
 
 # no screen (only the top 6 covariates with lowest univariate logistic pvalue)
-screen_all_plus_exposure <- function(Y, X, family, obsWeights, id, nVar = maxVar, ...) {
+screen_all <- function(Y, X, family, obsWeights, id, nVar = maxVar, ...) {
   # X contain baseline variables
   ## logistic regression of outcome on each variable
   vars <- rep(TRUE, ncol(X))
@@ -45,20 +45,20 @@ screen_all_plus_exposure <- function(Y, X, family, obsWeights, id, nVar = maxVar
 }
 
 ## screen based on lasso
-screen_glmnet_plus_exposure <- function(Y, X, family, obsWeights, id, alpha = 1, minscreen = 2, nfolds = 10, nlambda = 100, nVar = maxVar, ...) {
+screen_glmnet <- function(Y, X, family, obsWeights, id, alpha = 1, minscreen = 2, nfolds = 10, nlambda = 100, nVar = maxVar, ...) {
   set.seed(123)
   vars <- screen.glmnet(Y, X, family, obsWeights, id, alpha = 1, minscreen = 2, nfolds = 10, nlambda = 100, ...)
   # keep only a max of nVar immune markers; rank by univariate p-value
   X_initial_screen <- X %>%
     select(names(X)[vars])
-  ranked_vars <- rank_univariate_logistic_pval_plus_exposure(Y, X_initial_screen, family, obsWeights, id)
+  ranked_vars <- rank_univariate_logistic_pval(Y, X_initial_screen, family, obsWeights, id)
   vars[vars][ranked_vars > nVar] <- FALSE
   names(vars) <- names(X)
   return(vars)
 }
 
 ## screen based on logistic regression univariate p-value < level
-screen_univariate_logistic_pval_plus_exposure <- function(Y, X, family, obsWeights, id, minPvalue = 0.1, minscreen = 2, nVar = maxVar, ...) {
+screen_univariate_logistic_pval <- function(Y, X, family, obsWeights, id, minPvalue = 0.1, minscreen = 2, nVar = maxVar, ...) {
   ## logistic regression of outcome on each variable
   listp <- apply(X, 2, function(x, Y, family) {
     summ <- coef(summary(glm(Y ~ x,
@@ -74,14 +74,14 @@ screen_univariate_logistic_pval_plus_exposure <- function(Y, X, family, obsWeigh
   # keep only a max of nVar immune markers; rank by univariate p-value
   X_initial_screen <- X %>%
     select(names(X)[vars])
-  ranked_vars <- rank_univariate_logistic_pval_plus_exposure(Y, X_initial_screen, family, obsWeights, id)
+  ranked_vars <- rank_univariate_logistic_pval(Y, X_initial_screen, family, obsWeights, id)
 
   vars[vars][ranked_vars > nVar] <- FALSE
   return(vars)
 }
 
 ## screen to avoid high-correlation amongst risk variables
-screen_highcor_random_plus_exposure <- function(Y, X, family, obsWeights, id, nVar = maxVar, ...) {
+screen_highcor_random <- function(Y, X, family, obsWeights, id, nVar = maxVar, ...) {
 
   # set all vars to FALSE
   vars <- rep(FALSE, ncol(X))
@@ -111,7 +111,7 @@ screen_highcor_random_plus_exposure <- function(Y, X, family, obsWeights, id, nV
   # keep only a max of nVar immune markers; rank by univariate p-value
   X_initial_screen <- X %>%
     select(names(X)[vars])
-  ranked_vars <- rank_univariate_logistic_pval_plus_exposure(Y, X_initial_screen, family, obsWeights, id)
+  ranked_vars <- rank_univariate_logistic_pval(Y, X_initial_screen, family, obsWeights, id)
 
   vars[vars][ranked_vars > nVar] <- FALSE
   return(vars)
@@ -231,6 +231,35 @@ SL.stumpboost <- function(Y, X, newX, family, obsWeights, ...) {
   return(fit)
 }
 
+# random forests
+SL.ranger.imp <- function (Y, X, newX, family, obsWeights = rep(1, length(Y)), num.trees = 500, mtry = floor(sqrt(ncol(X))),
+                           write.forest = TRUE, probability = family$family == "binomial",
+                           min.node.size = ifelse(family$family == "gaussian", 5, 1),
+                           replace = TRUE, sample.fraction = ifelse(replace, 1, 0.632),
+                           num.threads = 1, verbose = TRUE, ...) {
+  SuperLearner:::.SL.require("ranger")
+  if (family$family == "binomial") {
+    Y = as.factor(Y)
+  }
+  if (is.matrix(X)) {
+    X = data.frame(X)
+  }
+  fit <- ranger::ranger(`_Y` ~ ., data = cbind(`_Y` = Y, X),
+                        num.trees = num.trees, mtry = mtry, min.node.size = min.node.size,
+                        replace = replace, sample.fraction = sample.fraction,
+                        case.weights = obsWeights, write.forest = write.forest,
+                        probability = probability, num.threads = num.threads,
+                        verbose = verbose, importance = "impurity")
+  pred <- predict(fit, data = newX)$predictions
+  if (family$family == "binomial") {
+    pred = pred[, "1"]
+  }
+  fit <- list(object = fit, verbose = verbose)
+  class(fit) <- c("SL.ranger")
+  out <- list(pred = pred, fit = fit)
+  return(out)
+}
+
 
 # naive bayes wrapper
 SL.naivebayes <- function(Y, X, newX, family, obsWeights, laplace = 0, ...) {
@@ -265,19 +294,18 @@ if (run_demo) {
 
 if (run_prod) {
   # learners in the method1 are also combined with no screen
-  methods1 <- c("SL.mean", "SL.glm", "SL.glmnet", "SL.xgboost", "SL.ranger")
+  methods1 <- c("SL.mean", "SL.glm", "SL.glmnet", "SL.xgboost", "SL.ranger.imp")
 
   # learners in the method2 are learners that can have screens
   methods2 <- c(
-    "SL.glm", "SL.glm.interaction", "SL.gam"
-  )
+    "SL.glm", "SL.glm.interaction", "SL.gam")
 }
 
-screens1 <- "screen_all_plus_exposure"
+screens1 <- "screen_all"
 screens2 <- c(
-  "screen_glmnet_plus_exposure",
-  "screen_univariate_logistic_pval_plus_exposure",
-  "screen_highcor_random_plus_exposure"
+  "screen_glmnet",
+  "screen_univariate_logistic_pval",
+  "screen_highcor_random"
 )
 
 SL_library1 <- sapply(
@@ -285,9 +313,11 @@ SL_library1 <- sapply(
   function(i) c(methods1[i], screens1),
   simplify = FALSE
 )
+
 SL_library2 <- sapply(
   1:length(methods2),
   function(i) c(methods2[i], screens2),
   simplify = FALSE
 )
+
 SL_library <- c(SL_library1, SL_library2)

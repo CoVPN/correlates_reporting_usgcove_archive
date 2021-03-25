@@ -14,10 +14,11 @@ library(here)
 get_fancy_screen_names <- function(avgs) {
   return(avgs %>%
     mutate(fancyScreen = case_when(
-      Screen == "screen_highcor_random_plus_exposure_All" ~ "highcor_random",
-      Screen == "screen_glmnet_plus_exposure_All" ~ "glmnet",
-      Screen == "screen_univariate_logistic_pval_plus_exposure_All" ~ "univar_logistic_pval",
-      Screen == "screen_all_plus_exposure_All" ~ "all",
+      Screen == "screen_highcor_random" ~ "highcor_random",
+      Screen == "screen_glmnet" ~ "glmnet",
+      Screen == "screen_univariate_logistic_pval" ~ "univar_logistic_pval",
+      Screen == "screen_all" ~ "all",
+      Screen == "All" ~ "-",
       TRUE ~ as.character(Screen)
     )))
 }
@@ -43,17 +44,10 @@ drop_seeds_with_error <- function(dat) {
 # @param dat object containing all 10 fits (as lists) from the CV.Superlearner with folds and auc information
 # @return dataframe containing CV-AUCs
 convert_SLobject_to_Slresult_dataframe <- function(dat) {
-
-  # Remove any iteration seeds that returned an error!
-  newdat <- drop_seeds_with_error(dat)
-
-  # if (is.null(newdat[[1]])) {
-  #   return( read.csv("empty_df.csv", stringsAsFactors = FALSE) %>% select(-X) %>% as_tibble() )
-  # }
-
+  
+  newdat <- drop_seeds_with_error(dat) # Remove any iteration seeds that returned an error (if any)!
   if (!is.null(newdat[[1]])) {
     as_tibble(do.call(rbind.data.frame, lapply(newdat, function(x) x$aucs))) %>%
-      # filter(!is.na(ci_ll) | !is.na(ci_ul)) %>%    # drop learners that have NA for ci_ul or ci_ll for certain seeds!
       group_by(Learner, Screen) %>%
       summarise(AUC = mean(AUC), ci_ll = mean(ci_ll), ci_ul = mean(ci_ul), .groups = "drop") %>%
       arrange(-AUC) %>%

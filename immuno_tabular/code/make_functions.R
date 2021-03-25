@@ -8,9 +8,11 @@
 setLOD <- function(x,
                    uloq = Inf,
                    llod = -Inf) {
+  
+  llod.half <- ifelse(is.infinite(llod), llod, log10(round(llod, 0)/2))
   llod <- ifelse(is.infinite(llod), llod, log10(llod))
   uloq <- log10(uloq)
-  x <- ifelse(x < llod, llod - log10(2), x)
+  x <- ifelse(x < llod, llod.half, x)
   x <- ifelse(x > uloq, uloq, x)
 }
 
@@ -82,7 +84,7 @@ setDelta <- function(data, marker, timepoints, time.ref = NA) {
   for (i in 1:nrow(timepairs)){
     t1 <- timepairs[i, 1]
     t2 <- timepairs[i, 2]
-    ret[, paste0("Delta", t2, "over", t1, marker)] <- data[paste0(t2, marker)] - data[paste0(t1, marker)]
+    ret[, gsub("Day", "", paste0("Delta", t2, "over", t1, marker))] <- data[paste0(t2, marker)] - data[paste0(t1, marker)]
   }
   return(ret)
 }

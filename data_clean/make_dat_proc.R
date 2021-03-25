@@ -165,7 +165,7 @@ dat_proc$TwophasesampInd.2[!with(dat_proc, EventTimePrimaryD29 >= 14 & Perprotoc
 # impute missing neut biomarkers in ph2
 #     impute vaccine and placebo, baseline pos and neg, separately
 #     use all assays
-#     use baseline and D57, but not Delta
+#     use baseline, D29 and D57, but not Delta
 ###############################################################################
 
 n.imp <- 1
@@ -196,6 +196,43 @@ stopifnot(
 # populate dat_proc imp.markers with the imputed values
 dat_proc[dat_proc$TwophasesampInd==1, imp.markers] <-
   dat.tmp.impute[imp.markers][match(dat_proc[dat_proc$TwophasesampInd==1, "Ptid"], dat.tmp.impute$Ptid), ]
+
+
+
+###############################################################################
+# impute again for TwophasesampInd.2
+#     use baseline and D29
+
+n.imp <- 1
+dat.tmp.impute <- subset(dat_proc, TwophasesampInd.2 == 1)
+
+imp.markers=c(outer(c("B", "Day29"), assays, "%.%"))
+
+for (trt in unique(dat_proc$Trt)) {
+for (sero in unique(dat_proc$Bserostatus)) {
+
+  #summary(subset(dat.tmp.impute, Trt == 1 & Bserostatus==0)[imp.markers])
+    
+  imp <- dat.tmp.impute %>%
+    dplyr::filter(Trt == trt & Bserostatus==sero) %>%
+    select(all_of(imp.markers)) %>%
+    mice(m = n.imp, printFlag = FALSE, seed=1)
+    
+  dat.tmp.impute[dat.tmp.impute$Trt == trt & dat.tmp.impute$Bserostatus == sero , imp.markers] <-
+    mice::complete(imp, action = 1)
+    
+}
+}
+
+stopifnot(
+  all(table(dat.tmp.impute$Wstratum, complete.cases(dat.tmp.impute[imp.markers])))
+)
+
+# populate dat_proc imp.markers with the imputed values
+dat_proc[dat_proc$TwophasesampInd.2==1, imp.markers] <-
+  dat.tmp.impute[imp.markers][match(dat_proc[dat_proc$TwophasesampInd.2==1, "Ptid"], dat.tmp.impute$Ptid), ]
+
+
 
 
 ###############################################################################

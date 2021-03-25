@@ -166,7 +166,7 @@ ds_resp_l <- pivot_longer(ds,
                           values_to = "response") %>%
   inner_join(labels_all, by = "resp_cat")
 
-mag_v <- c(assays_col, grep("DeltaDay", names(ds), value = T))
+mag_v <- c(assays_col, grep("Delta", names(ds), value = T))
 
 ds_mag_l <- pivot_longer(ds,
                          cols = all_of(mag_v),

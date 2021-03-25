@@ -230,7 +230,7 @@ print("Done with table3 & 4")
 # 
 # Output: tab_gm
 gm_v <- c(assays_col, 
-          gmr_v <- grep("DeltaDay", unique(ds_mag_l$mag_cat), value = T) %>% 
+          gmr_v <- grep("Delta", unique(ds_mag_l$mag_cat), value = T) %>% 
             grep("overB", ., value = T))
 
 sub_grp_col <- c("subgroup", "Arm", "Baseline SARS-CoV-2", "Group", "mag_cat")

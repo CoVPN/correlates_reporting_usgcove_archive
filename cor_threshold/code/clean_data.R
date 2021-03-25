@@ -47,9 +47,9 @@ for (time in times) {
       "outcome",
       "Delta"
     )
-  print(setdiff(variables_to_keep, colnames(data)))
   keep <- data$Trt == 1 & data$Bserostatus == 0 &
-    data$Perprotocol == 1
+    data$Perprotocol == 1 & !is.na(data$wt)
+  
   data_firststage <- data[keep, variables_to_keep]
   #data_firststage <- na.omit(data_firststage)
   data_secondstage <- na.omit(data_firststage[data_firststage$TwophasesampInd == 1, ])

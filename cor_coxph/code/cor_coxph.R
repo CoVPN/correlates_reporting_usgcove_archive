@@ -42,9 +42,11 @@ print(paste0("save.results.to equals ", save.results.to))
 if (pop=="57") {
     dat.vacc.pop=dat.mock.vacc.seroneg[dat.mock.vacc.seroneg[["EventTimePrimaryD"%.%pop]]>=7, ] #dat.mock.vacc.seroneg has trichotomized variables defined
     dat.plac.pop=subset(dat.mock, Trt==0 & Bserostatus==0 & Perprotocol & EventTimePrimaryD57>=7)
+    dat.vacc.pop$TwophasesampInd.0 = dat.vacc.pop$TwophasesampInd
 } else if (pop=="29") {
     dat.vacc.pop=subset(dat.mock, Trt==1 & Bserostatus == 0 & (EventTimePrimaryD29>=14 & Perprotocol == 1 | EventTimePrimaryD29>=7 & EventTimePrimaryD29<=13 & Fullvaccine==1))
     dat.plac.pop=subset(dat.mock, Trt==0 & Bserostatus == 0 & (EventTimePrimaryD29>=14 & Perprotocol == 1 | EventTimePrimaryD29>=7 & EventTimePrimaryD29<=13 & Fullvaccine==1))    
+    dat.vacc.pop$TwophasesampInd.0 = dat.vacc.pop$TwophasesampInd.2
     # define trichotomized markers
     for (a in assays) {    
       q.a <- wtd.quantile(dat.vacc.pop[["Day29" %.% a]], weights = dat.vacc.pop$wt.2, probs = c(1 / 3, 2 / 3))
@@ -62,7 +64,7 @@ if (pop=="57") {
 dat.vacc.pop$yy=dat.vacc.pop[["EventIndPrimaryD"%.%pop]]
 dat.plac.pop$yy=dat.plac.pop[["EventIndPrimaryD"%.%pop]]
 #
-design.vacc.seroneg<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=if(pop=="57") ~TwophasesampInd else ~TwophasesampInd.2, data=dat.vacc.pop)
+design.vacc.seroneg<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=dat.vacc.pop)
 #
 t0=max(dat.vacc.pop[dat.vacc.pop[["EventIndPrimaryD"%.%pop]]==1, "EventTimePrimaryD"%.%pop]); myprint(t0)
 write(t0, file=paste0(save.results.to, "timepoints_cum_risk_"%.%study.name))
@@ -378,7 +380,7 @@ for (a in assays) {
             # 0-2 cases
             fits[[k+1]]=NA
         } else {
-            design<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=if(pop=="57") ~TwophasesampInd else ~TwophasesampInd.2, data=subset(dat.vacc.pop, Bstratum==k))            
+            design<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=subset(dat.vacc.pop, Bstratum==k))            
             if (k==1) {
                 f = update(form.0, as.formula(paste0("~.+Day",pop, a)))
             } else {
@@ -423,17 +425,17 @@ designs=list()
 for (i in 1:4) {    
     designs[[i]]=list()
     if(i==1) {
-        designs[[i]][[1]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=if(pop=="57") ~TwophasesampInd else ~TwophasesampInd.2, data=subset(dat.vacc.pop, age.geq.65==1))
-        designs[[i]][[2]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=if(pop=="57") ~TwophasesampInd else ~TwophasesampInd.2, data=subset(dat.vacc.pop, age.geq.65==0))        
+        designs[[i]][[1]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=subset(dat.vacc.pop, age.geq.65==1))
+        designs[[i]][[2]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=subset(dat.vacc.pop, age.geq.65==0))        
     } else if(i==2) {
-        designs[[i]][[1]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=if(pop=="57") ~TwophasesampInd else ~TwophasesampInd.2, data=subset(dat.vacc.pop, HighRiskInd==1))
-        designs[[i]][[2]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=if(pop=="57") ~TwophasesampInd else ~TwophasesampInd.2, data=subset(dat.vacc.pop, HighRiskInd==0))
+        designs[[i]][[1]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=subset(dat.vacc.pop, HighRiskInd==1))
+        designs[[i]][[2]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=subset(dat.vacc.pop, HighRiskInd==0))
     } else if(i==3) {
-        designs[[i]][[1]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=if(pop=="57") ~TwophasesampInd else ~TwophasesampInd.2, data=subset(dat.vacc.pop, MinorityInd==1))
-        designs[[i]][[2]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=if(pop=="57") ~TwophasesampInd else ~TwophasesampInd.2, data=subset(dat.vacc.pop, MinorityInd==0))
+        designs[[i]][[1]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=subset(dat.vacc.pop, MinorityInd==1))
+        designs[[i]][[2]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=subset(dat.vacc.pop, MinorityInd==0))
     } else if(i==4) {
-        designs[[i]][[1]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=if(pop=="57") ~TwophasesampInd else ~TwophasesampInd.2, data=subset(dat.vacc.pop, Sex==1))
-        designs[[i]][[2]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=if(pop=="57") ~TwophasesampInd else ~TwophasesampInd.2, data=subset(dat.vacc.pop, Sex==0))
+        designs[[i]][[1]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=subset(dat.vacc.pop, Sex==1))
+        designs[[i]][[2]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=subset(dat.vacc.pop, Sex==0))
     }
 }
 
@@ -516,14 +518,14 @@ marginalized.risk.svycoxph.boot=function(formula, marker.name, type, data, t, we
     # conditional on s    
         ss=quantile(data[[marker.name]], seq(.05,.95,by=0.01), na.rm=TRUE) # this is a fine grid because we may need to read points off the curve    
         f1=update(formula, as.formula(paste0("~.+",marker.name)))        
-        tmp.design=twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=if(pop=="57") ~TwophasesampInd else ~TwophasesampInd.2, data=data)
+        tmp.design=twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=data)
         fit.risk=svycoxph(f1, design=tmp.design) # since we don't need se, we could use coxph, but the weights computed by svycoxph are a little different from the coxph due to fpc
-        prob=marginalized.risk(fit.risk, marker.name, data=subset(data, TwophasesampInd==1), ss=ss, weights=weights[data$TwophasesampInd==1], t=t, categorical.s=F)        
+        prob=marginalized.risk(fit.risk, marker.name, data=subset(data, TwophasesampInd.0==1), ss=ss, weights=weights[data$TwophasesampInd.0==1], t=t, categorical.s=F)        
     
     } else if (type==2) {
     # conditional on S>=s
         ss=quantile(data[[marker.name]], seq(0,.9,by=0.05), na.rm=TRUE)
-        prob=marginalized.risk.threshold (formula, marker.name, data=subset(data, TwophasesampInd==1), weights=weights[data$TwophasesampInd==1], t=t, ss=ss)
+        prob=marginalized.risk.threshold (formula, marker.name, data=subset(data, TwophasesampInd.0==1), weights=weights[data$TwophasesampInd.0==1], t=t, ss=ss)
        
     } else stop("wrong type")
     
@@ -541,20 +543,20 @@ marginalized.risk.svycoxph.boot=function(formula, marker.name, type, data, t, we
         dat.b=data[match(unlist(tmp), data$Ptid),]
     
         # compute weights
-        tmp=with(dat.b, table(Wstratum, TwophasesampInd))
+        tmp=with(dat.b, table(Wstratum, TwophasesampInd.0))
         weights=rowSums(tmp)/tmp[,2]
         dat.b$wt=weights[""%.%dat.b$Wstratum]
         
         if(type==1) {
         # conditional on s
-            tmp.design=twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=if(pop=="57") ~TwophasesampInd else ~TwophasesampInd.2, data=dat.b)
+            tmp.design=twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=dat.b)
             fit.risk=svycoxph(f1, design=tmp.design)
             #fit.s=svyglm(f2, tmp.design)      
-            marginalized.risk(fit.risk, marker.name, subset(dat.b,TwophasesampInd==1), t=t, ss=ss, weights=dat.b$wt[dat.b$TwophasesampInd==1], categorical.s=F)
+            marginalized.risk(fit.risk, marker.name, subset(dat.b,TwophasesampInd.0==1), t=t, ss=ss, weights=dat.b$wt[dat.b$TwophasesampInd.0==1], categorical.s=F)
             
         } else if (type==2) {
         # conditional on S>=s
-            tmp=try(marginalized.risk.threshold (formula, marker.name, data=subset(dat.b, TwophasesampInd==1), weights=dat.b$wt[dat.b$TwophasesampInd==1], t=t, ss=ss))
+            tmp=try(marginalized.risk.threshold (formula, marker.name, data=subset(dat.b, TwophasesampInd.0==1), weights=dat.b$wt[dat.b$TwophasesampInd.0==1], t=t, ss=ss))
             if (class(tmp) != "try-error" ) tmp else rep(NA,length(ss))
             
         } else stop("wrong type")
@@ -824,12 +826,12 @@ risks.all.ter=list()
 for (a in assays) {        
     marker.name="Day"%.%pop%.%a%.%"cat"    
     f1=update(form.0, as.formula(paste0("~.+",marker.name)))        
-    fit.risk=svycoxph(f1, design=twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=if(pop=="57") ~TwophasesampInd else ~TwophasesampInd.2, data=dat.vacc.pop))
+    fit.risk=svycoxph(f1, design=twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=dat.vacc.pop))
 
 #    f2=update(form.0, as.formula(paste0(marker.name,"~.")))
 #    fit.s=nnet::multinom(f2, dat.vacc.pop, weights=dat.vacc.pop$wt) 
     
-    risks.all.ter[[a]]=marginalized.risk(fit.risk, marker.name, subset(dat.vacc.pop,TwophasesampInd==1), weights=wts[dat.vacc.pop$TwophasesampInd==1], categorical.s=T)
+    risks.all.ter[[a]]=marginalized.risk(fit.risk, marker.name, subset(dat.vacc.pop,TwophasesampInd.0==1), weights=wts[dat.vacc.pop$TwophasesampInd.0==1], categorical.s=T)
 }
 
 #rv$marginalized.risk.over.time=list()
@@ -863,7 +865,7 @@ for (a in assays) {
     
     # add data ribbon    
     f1=update(form.s, as.formula(paste0("~.+",marker.name)))
-    km <- survfit(f1, subset(dat.vacc.pop, TwophasesampInd==1), weights=if(pop=="57") wt else wt.2)
+    km <- survfit(f1, subset(dat.vacc.pop, TwophasesampInd.0==1), weights=if(pop=="57") wt else wt.2)
     tmp=summary(km, times=x.time)            
     
     n.risk.L <- round(tmp$n.risk[1:length(x.time)])
@@ -897,7 +899,7 @@ for (a in assays) {
 mtext(toTitleCase(study.name), side = 1, line = 2, outer = T, at = NA, adj = NA, padj = NA, cex = .8, col = NA, font = NA)
 dev.off()    
 #
-cumsum(summary(survfit(form.s, subset(dat.vacc.pop, TwophasesampInd==1)), times=x.time)$n.event)
+cumsum(summary(survfit(form.s, subset(dat.vacc.pop, TwophasesampInd.0==1)), times=x.time)$n.event)
 table(subset(dat.vacc.pop, yy==1)[["Day"%.%pop%.%"pseudoneutid80cat"]])
 
 

@@ -20,7 +20,7 @@ for (time in times) {
   outcome <- as.numeric(outcome)
   # TO CHANGE
   
-  if(adjust_for_censoring) {
+  if(F & adjust_for_censoring) {
   Delta <-
     1 - (data[[Event_Ind_variable[[time]]]] == 0 &
       data[[Event_Time_variable[[time]]]] < tf[[time]])
@@ -30,9 +30,11 @@ for (time in times) {
   Delta <- as.numeric(Delta)
   data$outcome <- outcome
   data$Delta <- Delta
-  data$TwophasesampInd <- as.numeric(data[[twophaseind_variable]])
-  data$wt <- data[[weight_variable]]
-  data$grp <- data[[twophasegroup_variable]]
+  print(colnames(data))
+  
+  data$TwophasesampInd <- as.numeric(data[[twophaseind_variable[[time]]]])
+  data$wt <- data[[weight_variable[[time]]]]
+  #data$grp <- data[[twophasegroup_variable[[time]]]]
   
   # Subset data
   variables_to_keep <-
@@ -40,7 +42,7 @@ for (time in times) {
       covariates,
       markers[marker_to_time[markers] == time],
       "TwophasesampInd",
-      "grp",
+      #"grp",
       "wt",
       "outcome",
       "Delta"

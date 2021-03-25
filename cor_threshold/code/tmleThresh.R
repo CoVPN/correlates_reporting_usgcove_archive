@@ -42,7 +42,7 @@ thresholdTMLE <- function(data_full, node_list, thresholds = NULL, biased_sampli
   data_full$id <- seq_len(nrow(data_full))
   if (!is.null(biased_sampling_indicator)) {
     data <- data_full[data_full[[biased_sampling_indicator]] == 1]
-    data_full$grp <- data_full[[biased_sampling_strata]]
+    #data_full$grp <- data_full[[biased_sampling_strata]]
     biased_sampling <- TRUE
   } else {
     biased_sampling <- FALSE

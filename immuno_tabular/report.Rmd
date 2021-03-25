@@ -34,7 +34,7 @@ for (i in 1:length(tlf)){
   loop <- if ("loop" %in% tlf_args) tlf_labels[["loop"]] else NA
   
   tab <- get(names(tlf)[i]) 
-  if (is.null(tab)) next
+  if (nrow(tab) == 0) next
   
   group_table_col <- if ("group_table_col" %in% tlf_args) {
     tlf_labels[["group_table_col"]] 

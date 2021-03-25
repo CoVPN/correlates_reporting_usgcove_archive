@@ -7,100 +7,8 @@ source(here::here("..", "_common.R")) #
 library(tidyverse)
 source(here::here("code", "make_functions.R"))
 
-# Depends on the Incoming data
-dataDate <- format(lubridate::mdy("01/12/2021"), "%B %d, %Y")
-
-llods <-c(bindN = 20, bindSpike = 20, bindRBD = 20, pseudoneutid50 = 10, 
-          pseudoneutid80 = 10, liveneutmn50 = 62.16) 
-lloqs <-c(bindN = 34, bindSpike = 34, bindRBD = 34, pseudoneutid50 = 49, 
-          pseudoneutid80 = 43, liveneutmn50 = 117.35) 
-uloqs <-c(bindN = 19136250, bindSpike = 19136250, bindRBD = 19136250, 
-          pseudoneutid50 = Inf, pseudoneutid80 = Inf, liveneutmn50 = 18976.19) 
-
-# Updates on assay variables and labels
-labels.assays.short <- c(bindN = "Anti N IgG (IU/ml)", 
-                         bindSpike = "Anti Spike IgG (IU/ml)", 
-                         bindRBD = "Anti RBD IgG (IU/ml)", 
-                         pseudoneutid50 = "Pseudovirus-nAb ID50", 
-                         pseudoneutid80 = "Pseudovirus-nAb ID80", 
-                         liveneutmn50 = "Live virus-nAb MN50")
-
-labels.time <- c(B = "Day 1", Day29 = "Day 29", Day57 = "Day 57", 
-                 DeltaDay29overB = "D29 fold-rise over D1", 
-                 DeltaDay57overB = "D57 fold-rise over D1", 
-                 DeltaDay57overDay29 = "D57 fold-rise over D29")
-
-labels.assays.long <- data.frame(
-  matrix(nrow = length(labels.time), 
-         ncol = length(labels.assays.short), 
-         dimnames = list(names(labels.time), names(labels.assays.short)))
-)
-
-invisible(
-  sapply(names(labels.assays.short), function(x){
-    labels.assays.long[,x] <<- paste0(labels.assays.short[x], ": ", labels.time)
-  })
-)
-
-# c("bindSpike", "bindRBD")
-bAb <- grep("bind", names(labels.assays.short), value = TRUE)
-# c("pseudoneutid50", "pseudoneutid80")
-pnAb <- grep("pseudo", names(labels.assays.short), value = TRUE)
-# c("liveneutmn50")
-lnAb <- grep("liveneut", names(labels.assays.short), value = TRUE)
-
-visits <- rownames(labels.assays.long)[!grepl(
-  "Delta",
-  rownames(labels.assays.long)
-)]
-bAb_v <- levels(interaction(visits, bAb, sep = ""))
-pnAb_v <- levels(interaction(visits, pnAb, sep = ""))
-lnAb_v <- levels(interaction(visits, lnAb, sep = ""))
-
-labels.assays <- expand.grid(
-  time = rownames(labels.assays.long),
-  marker = colnames(labels.assays.long),
-  stringsAsFactors = FALSE
-) %>%
-  rowwise() %>%
-  mutate(
-    label.long = labels.assays.long[time, marker],
-    label.short = sapply(labels.assays.short, as.character)[marker],
-    Marker = strsplit(as.character(label.long), ": ", fixed = TRUE)[[1]][1],
-    Visit = strsplit(as.character(label.long), ": ", fixed = T)[[1]][2],
-    colname = paste0(time, marker)
-  )
-
-resp.lb <- expand.grid(
-  time = visits, marker = c(bAb, pnAb, lnAb),
-  ind = c("Resp", "FR2", "FR4", "2llod", "4llod"), stringsAsFactors = F
-) %>%
-  mutate(Ind = case_when(
-    ind == "FR2" ~ "% 2-Fold Rise",
-    ind == "FR4" ~ "% 4-Fold Rise",
-    ind == "Resp" ~ "Responder",
-    ind == "2llod" ~ "% Greater than 2xLLOD",
-    ind == "4llod" ~ "% Greater than 4xLLOD"
-  )) 
-
-labels_all <- full_join(labels.assays, resp.lb, by = c("time", "marker")) %>% 
-  mutate(mag_cat = colname, resp_cat = paste0(colname, ind))
-
-
-# Page header and footer for the tables
-header <- c(
-  "CoVPN COVID-19 Vaccine Efficacy Trial Immunogenicity",
-  "Mock Report",
-  paste("Data as of", format(Sys.Date(), "%B %d, %Y"))
-)
-header <- paste(header, collapse = "\\\\")
-
-add2footer <- "All calculations were weighted by the inverse probability 
-sampling (IPS), defined based on the subcohort sampling strata."
-
-
 # To select which tables are included in the report.
-# Also to modify the headers and footers for each table.
+# Also to modify the headers, footers, etc. for each table.
 tlf <-
   list(
     tab_dm_neg = list(
@@ -264,5 +172,71 @@ tlf <-
       col1="1cm"
     )
   )
+
+
+
+# Depends on the Incoming data
+
+llods <-c(bindN = 20, bindSpike = 20, bindRBD = 20, pseudoneutid50 = 10, 
+          pseudoneutid80 = 10, liveneutmn50 = 62.16) 
+lloqs <-c(bindN = 34, bindSpike = 34, bindRBD = 34, pseudoneutid50 = 49, 
+          pseudoneutid80 = 43, liveneutmn50 = 117.35) 
+uloqs <-c(bindN = 19136250, bindSpike = 19136250, bindRBD = 19136250, 
+          pseudoneutid50 = Inf, pseudoneutid80 = Inf, liveneutmn50 = 18976.19) 
+
+labels.assays.short <- c(bindN = "Anti N IgG (IU/ml)", 
+                         bindSpike = "Anti Spike IgG (IU/ml)", 
+                         bindRBD = "Anti RBD IgG (IU/ml)", 
+                         pseudoneutid50 = "Pseudovirus-nAb ID50", 
+                         pseudoneutid80 = "Pseudovirus-nAb ID80", 
+                         liveneutmn50 = "Live virus-nAb MN50")
+
+labels.time <- c(B = "Day 1", Day29 = "Day 29", Day57 = "Day 57", 
+                 Delta29overB = "D29 fold-rise over D1", 
+                 Delta57overB = "D57 fold-rise over D1", 
+                 Delta57over29 = "D57 fold-rise over D29")
+
+assays <- unique(c("bindN"[include_bindN], assays))
+labels.assays.short <- labels.assays.short[assays]
+labels.time <- labels.time[times]
+
+# 
+
+labels.assays.long <- data.frame (purrr::imap_dfc(labels.assays.short, ~ paste0(labels.assays.short[.y], ": ", labels.time)))
+rownames(labels.assays.long) <- names(labels.time)
+
+
+visits <- names(labels.time)[!grepl("Delta", names(labels.time))]
+assays_col <- levels(interaction(visits, assays, sep=""))
+
+labels.assays <- expand.grid(
+  time = rownames(labels.assays.long),
+  marker = colnames(labels.assays.long),
+  stringsAsFactors = FALSE
+) %>%
+  rowwise() %>%
+  mutate(
+    label.long = labels.assays.long[time, marker],
+    label.short = sapply(labels.assays.short, as.character)[marker],
+    Marker = strsplit(as.character(label.long), ": ", fixed = T)[[1]][1],
+    Visit = strsplit(as.character(label.long), ": ", fixed = T)[[1]][2],
+    colname = paste0(time, marker)
+  )
+
+resp.lb <- expand.grid(
+  time = visits, marker = assays,
+  ind = c("Resp", "FR2", "FR4", "2llod", "4llod"), stringsAsFactors = F
+) %>%
+  mutate(Ind = case_when(
+    ind == "FR2" ~ "% 2-Fold Rise",
+    ind == "FR4" ~ "% 4-Fold Rise",
+    ind == "Resp" ~ "Responder",
+    ind == "2llod" ~ "% Greater than 2xLLOD",
+    ind == "4llod" ~ "% Greater than 4xLLOD"
+  )) 
+
+labels_all <- full_join(labels.assays, resp.lb, by = c("time", "marker")) %>% 
+  mutate(mag_cat = colname, resp_cat = paste0(colname, ind))
+
 save.image(file = here::here("data_clean", "params.Rdata"))
 

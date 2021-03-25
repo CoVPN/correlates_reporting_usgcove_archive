@@ -198,8 +198,7 @@ tab_rr <- inner_join(
 
 
 tab_bind <- tab_rr %>% 
-  dplyr::filter(Marker %in% c("Anti N IgG (IU/ml)", "Anti RBD IgG (IU/ml)", 
-                              "Anti Spike IgG (IU/ml)")) %>% 
+  dplyr::filter(Marker %in% labels_all$Marker[grep("bind", labels_all$marker)]) %>% 
   select(subgroup, Group, Visit, Arm, `Baseline SARS-CoV-2`, Marker, N, Responder, 
          `% Greater than 2xLLOD`,`% Greater than 4xLLOD`)
 
@@ -212,13 +211,14 @@ print("Done with table2")
 # 
 # Output: tab_pseudo & tab_wt
 
-tab_pseudo <- tab_rr %>% dplyr::filter(Marker == "Pseudovirus-nAb ID50") %>% 
+tab_pseudo <- tab_rr %>% 
+  dplyr::filter(Marker  %in% labels_all$Marker[grep("pseudoneutid50", labels_all$marker)]) %>% 
   select(subgroup, Group, Visit, Arm, `Baseline SARS-CoV-2`, Marker, N, Responder,
          `% 2-Fold Rise`, `% 4-Fold Rise`)
-tab_wt <- NULL 
-  # tab_rr %>% dplyr::filter(Marker == "Live virus-nAb MN50") %>%
-  # select(subgroup, Group, Visit, Arm, `Baseline SARS-CoV-2`, Marker, N, Responder,
-  #        `% 2-Fold Rise`, `% 4-Fold Rise`)
+tab_wt <- tab_rr %>% 
+  dplyr::filter(Marker  %in% labels_all$Marker[grep("liveneutmn50", labels_all$marker)]) %>% 
+  select(subgroup, Group, Visit, Arm, `Baseline SARS-CoV-2`, Marker, N, Responder,
+         `% 2-Fold Rise`, `% 4-Fold Rise`)
 
 print("Done with table3 & 4") 
 
@@ -229,7 +229,7 @@ print("Done with table3 & 4")
 # and WT live virus-nAb MN50, as well as for binding Ab to N).
 # 
 # Output: tab_gm
-gm_v <- c(bAb_v, pnAb_v, lnAb_v, 
+gm_v <- c(assays_col, 
           gmr_v <- grep("DeltaDay", unique(ds_mag_l$mag_cat), value = T) %>% 
             grep("overB", ., value = T))
 
@@ -445,146 +445,6 @@ print("Done with table8")
 
 # Generate a full table with all the estimates: response rates, GMT, GMTR, etc.
 # (Per Peter's email Feb 5, 2021)
-# Cases vs Non-cases
-
-ds_resp_case <- ds_resp_l %>% 
-  dplyr::filter(subgroup == "All participants" & grepl("Resp", resp_cat))
-
-resp_v <- unique(ds_resp_case$resp_cat)
-
-dssvy_case <- svydesign(ids = ~ Ptid, 
-                        strata = ~ Wstratum,
-                        weights = ~ wt,
-                        data = ds_resp_case,
-                        nest = F)
-
-sub_grp_col <- c("subgroup", "Arm", "`Baseline SARS-CoV-2`", 
-                 "Case", "resp_cat", "Visit", "Marker", "Ind")
-sub_grp <- as.formula(paste0("~", paste(sub_grp_col, collapse = "+")))
-
-rpcnt_case <- svyby(~response, by=sub_grp, dssvy_case, svyciprop, vartype = "ci")
-
-tab_rr_case <- rpcnt_case %>%
-  inner_join(
-    ds_resp_case %>%
-      mutate(rspndr = response*wt.subcohort) %>% 
-      group_by(across(all_of(gsub("`","",sub_grp_col)))) %>%
-      summarise(N = n(), Nw = sum(wt.subcohort), rspndr = sum(rspndr),
-                .groups = 'drop'),
-    by = gsub("`","",sub_grp_col)
-  ) %>%
-  mutate(Responder = case_when(
-    is.na(ci_l)|is.na(ci_u) ~ 
-      sprintf("%s/%s = %.1f%%", round(rspndr,1), round(Nw,1), response*100),
-    TRUE ~ 
-      sprintf("%s/%s = %.1f%%\n(%.1f%%, %.1f%%)", 
-              round(rspndr, 1), round(Nw, 1), response*100, ci_l*100, ci_u*100))
-  ) %>% 
-  select(subgroup, Arm, `Baseline SARS-CoV-2`, Case, Visit, N, Marker, Responder)
-
-#########
-
-# 8b Responder rate differences between cases vs non-cases & 95% CI of 
-# Titers or Concentrations
-comp_v <- c("Cases", "Non-Cases")
-
-rrdiff_case <- rpcnt_case %>% 
-  mutate(Case = match(as.character(Case), comp_v), comp = paste(comp_v, collapse = " vs ")) %>% 
-  pivot_wider(names_from = Case, values_from = c(response, ci_l, ci_u), names_sep = "") %>% 
-  mutate(Estimate = response1-response2,
-         ci_l = Estimate-sqrt((response1-ci_l1)^2+(response2-ci_u2)^2),
-         ci_u = Estimate+sqrt((response1-ci_u1)^2+(response2-ci_l2)^2)) %>% 
-  select(-c(response1, response2, ci_l1, ci_l2, ci_u1, ci_u2))
-  
-
-tab_rrdiff_case <- rrdiff_case %>% 
-  mutate(rslt = case_when(
-    !complete.cases(ci_l, ci_u) ~ sprintf("%s%%", round(Estimate * 100, 1)),
-    complete.cases(ci_l, ci_u) ~ sprintf("%s%%\n(%s%%, %s%%)", round(Estimate * 100, 1), 
-                                         round(ci_l*100, 1), round(ci_u*100, 1)))
-  ) %>% 
-  pivot_wider(-c(Estimate, ci_u, ci_l),
-              names_from = Ind,
-              values_from = rslt) 
-
-print("Done with table9") 
-
-#########
-gm_v <- c(bAb_v, pnAb_v, lnAb_v)
-ds_mag_case <- ds_mag_l %>% 
-  dplyr::filter(subgroup == "All participants" & mag_cat %in% gm_v & !is.na(wt))
-
-sub_grp_col <- c("subgroup", "Arm", "`Baseline SARS-CoV-2`", "Case", "mag_cat")
-sub_grp <- as.formula(paste0("~", paste(sub_grp_col, collapse = "+")))
-
-dssvy_case <- svydesign(ids = ~ Ptid, 
-                        strata = ~ Wstratum,
-                        weights = ~ wt,
-                        data = ds_mag_case,
-                        nest = F)
-
-gm_f <- paste0("~", paste(gm_v, collapse = " + "))
-rgm_case <- svyby(~ mag, sub_grp, dssvy_case, svymean, vartype = "ci")
-
-tab_gm_case <- rgm_case %>%
-  inner_join(ds_mag_case %>%
-               group_by(subgroup, mag_cat, Case, Visit, Marker, Arm, `Baseline SARS-CoV-2`) %>%
-               summarise(N = n(), .groups = 'drop'),
-             by = c("subgroup", "Case", "Arm", "Baseline SARS-CoV-2", "mag_cat")
-  ) %>%
-  mutate(`GMT/GMC` = sprintf("%.0f\n(%.0f, %.0f)", 10^mag, 10^ci_l, 10^ci_u)
-  ) %>% 
-  select(subgroup, Arm, `Baseline SARS-CoV-2`, Case, Visit, N, Marker, `GMT/GMC`)
-
-###
-ds_mag_l_rgmt_case <- ds_mag_l %>%
-  dplyr::filter(subgroup == "All participants" & !is.na(wt) & 
-                  !grepl("Delta", mag_cat))
-
-comp_v <- "Case"
-comp_lev <- c("Cases", "Non-Cases")
-f_v <- as.formula(sprintf("mag ~ %s", comp_v))
-sub_grp_col <- c("subgroup", "Arm", "Baseline SARS-CoV-2", "Visit", "Marker")
-
-rgmt_case <- ds_mag_l_rgmt_case %>%
-  group_split(across(all_of(sub_grp_col))) %>%
-  map_dfr(get_rgmt, comp_v=comp_v, comp_lev=comp_lev, f_v = f_v, 
-          sub_grp_col = sub_grp_col, stratum = "Wstratum", weights = "wt") 
-
-tab_rgmt_case <- rgmt_case %>%
-  mutate(`Ratios of GMT/GMC` = sprintf("%.2f\n(%.2f, %.2f)", 
-                                       10^Estimate, 10^ci_l, 10^ci_u)) %>% 
-  select(Arm, `Baseline SARS-CoV-2`, Marker, Visit, subgroup, comp, `Ratios of GMT/GMC`) %>% 
-  arrange(subgroup, Arm, `Baseline SARS-CoV-2`, Visit, Marker)
-
-tab_key_case <- full_join(tab_rr_case, 
-                          tab_gm_case,
-                          by = c("subgroup", "Arm", "Baseline SARS-CoV-2", 
-                                 "Case", "N", "Marker", "Visit")) %>%
-  pivot_wider(names_from = Case, 
-              values_from = c(N, Responder, `GMT/GMC`)) %>% 
-  # Join with RR difference (tab_rr)
-  full_join(tab_rrdiff_case, 
-            by = c("Arm", "subgroup", "Baseline SARS-CoV-2", "Visit", "Marker")
-  ) %>% 
-  # Join with GMT/GMC Ratios (tab_rgmt) 
-  full_join(tab_rgmt_case, 
-            by = c("Arm", "Baseline SARS-CoV-2", "Visit", "Marker", "subgroup")
-  ) %>% 
-  select(Arm, `Baseline SARS-CoV-2`, Visit, Marker, `N_Cases`, `Responder_Cases`, 
-         `GMT/GMC_Cases`, `N_Non-Cases`, `Responder_Non-Cases`, `GMT/GMC_Non-Cases`,  
-         Responder, `Ratios of GMT/GMC`) %>% 
-  dplyr::filter(Visit != "Day 1") %>% 
-  arrange(Arm, `Baseline SARS-CoV-2`) 
-
-case_vacc_neg <- filter(tab_key_case, Arm == "Vaccine", `Baseline SARS-CoV-2` == "Negative") %>% 
-  select(-c(Arm, `Baseline SARS-CoV-2`))
-case_vacc_pos <- filter(tab_key_case, Arm == "Vaccine", `Baseline SARS-CoV-2` == "Positive") %>% 
-  select(-c(Arm, `Baseline SARS-CoV-2`))
-case_plcb_pos <- filter(tab_key_case, Arm == "Placebo", `Baseline SARS-CoV-2` == "Positive") %>% 
-  select(-c(Arm, `Baseline SARS-CoV-2`))
-
-print("Done with table10-12") 
 
 # Generate a full table with all the estimates: response rates, GMT, GMTR, etc.
 # (Per Peter's email Feb 5, 2021) 
@@ -707,10 +567,10 @@ tab_rgmt_bl <- rgmt_bl %>%
 tab_vacc <- tab_bl %>% dplyr::filter(Arm == "Vaccine") %>% select(-Arm)
 tab_plcb <- tab_bl %>% dplyr::filter(Arm == "Placebo") %>% select(-Arm)
 
+print("Done with table15") 
+
 save(tlf, tab_dm_pos, tab_dm_neg, tab_bind, tab_pseudo, tab_wt, tab_gmt,
-     tab_gmr, tab_rgmt, tab_rrdiff, case_vacc_neg, case_vacc_pos, case_plcb_pos, 
-     tab_neg, tab_pos, tab_vacc, tab_plcb,
+     tab_gmr, tab_rgmt, tab_rrdiff, tab_neg, tab_pos, tab_vacc, tab_plcb,
      file = here::here("output", "Tables.Rdata"))
 
-print("Done with table15") 
 

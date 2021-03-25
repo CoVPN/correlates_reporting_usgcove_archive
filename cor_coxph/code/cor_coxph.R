@@ -31,7 +31,7 @@ library(xtable) # this is a dependency of kyotil
 
 # population is either 57 or 29
 Args <- commandArgs(trailingOnly=TRUE) 
-if (length(Args)==0) Args=c(pop="57") 
+if (length(Args)==0) Args=c(pop="29") 
 pop=Args[1]; print(pop)
 #
 save.results.to = paste0(here::here("output"), "/D", pop,"/");
@@ -43,10 +43,12 @@ if (pop=="57") {
     dat.vacc.pop=dat.mock.vacc.seroneg[dat.mock.vacc.seroneg[["EventTimePrimaryD"%.%pop]]>=7, ] #dat.mock.vacc.seroneg has trichotomized variables defined
     dat.plac.pop=subset(dat.mock, Trt==0 & Bserostatus==0 & Perprotocol & EventTimePrimaryD57>=7)
     dat.vacc.pop$TwophasesampInd.0 = dat.vacc.pop$TwophasesampInd
+    dat.plac.pop$TwophasesampInd.0 = dat.plac.pop$TwophasesampInd
 } else if (pop=="29") {
     dat.vacc.pop=subset(dat.mock, Trt==1 & Bserostatus == 0 & (EventTimePrimaryD29>=14 & Perprotocol == 1 | EventTimePrimaryD29>=7 & EventTimePrimaryD29<=13 & Fullvaccine==1))
     dat.plac.pop=subset(dat.mock, Trt==0 & Bserostatus == 0 & (EventTimePrimaryD29>=14 & Perprotocol == 1 | EventTimePrimaryD29>=7 & EventTimePrimaryD29<=13 & Fullvaccine==1))    
     dat.vacc.pop$TwophasesampInd.0 = dat.vacc.pop$TwophasesampInd.2
+    dat.plac.pop$TwophasesampInd.0 = dat.plac.pop$TwophasesampInd.2
     # define trichotomized markers
     for (a in assays) {    
       q.a <- wtd.quantile(dat.vacc.pop[["Day29" %.% a]], weights = dat.vacc.pop$wt.2, probs = c(1 / 3, 2 / 3))

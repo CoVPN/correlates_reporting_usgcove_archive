@@ -78,30 +78,6 @@ dat.long$assay <- factor(dat.long$assay, levels = assays, labels = assays)
 dat.long.twophase.sample <- dat.long[dat.long$Ptid %in% twophase_sample_id, ]
 dat.twophase.sample <- subset(dat, Ptid %in% twophase_sample_id)
 
-## label the subjects according to their case-control status
-dat.long.twophase.sample <- dat.long.twophase.sample %>%
-  mutate(
-    EventD29 = factor(EventIndPrimaryD29,
-      levels = c(0, 1),
-      labels = c("Non-Case", "Case")
-    ),
-    EventD57 = factor(EventIndPrimaryD57,
-      levels = c(0, 1),
-      labels = c("Non-Case", "Case")
-    )
-  )
-dat.long <- dat.long %>%
-  mutate(
-    EventD29 = factor(EventIndPrimaryD29,
-      levels = c(0, 1),
-      labels = c("Non-Case", "Case")
-    ),
-    EventD57 = factor(EventIndPrimaryD57,
-      levels = c(0, 1),
-      labels = c("Non-Case", "Case")
-    )
-  )
-
 
 # labels of the demographic strata for the subgroup plotting
 dat.long.twophase.sample$trt_bstatus_label <-

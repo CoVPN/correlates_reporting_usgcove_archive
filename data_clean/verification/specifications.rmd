@@ -47,6 +47,8 @@
   
   \item Carry out single imputation using the R package mice for the subjects satisfying TwophasesampInd==1. Imputation is done separately for vaccine arm baseline seronegative, vaccine arm baseline seropositive, placebo arm baseline seronegative, and placebo arm baseline seropositive. Since baseline, D29 and D57 binding to Spike and RBD are required in this subset of people, the imputation is intended to fill in missing marker values for neutralization assays at these three time points. The imputation is done with the package mice with default parameters and seed 1. Notes: 1. The order of variables matters in imputation: c(outer(c("B", "Day29", "Day57"), c("bindSpike", "bindRBD", "pseudoneutid50", "pseudoneutid80"), "%.%")). 2. If there is no missing data in the dataset, this piece cannot be verified. 3. Be careful not to change subjects outside TwophasesampInd==1
   
+  \item Repeat single imputation for the subjects satisfying TwophasesampInd.2==1 and only impute these variables: c(outer(c("B", "Day29"), c("bindSpike", "bindRBD", "pseudoneutid50", "pseudoneutid80"), "%.%")).  
+
   \item Define Delta57overBxxx, Delta29overBxxx, and Delta57over29xxx for each xxx in the variable assays. This step needs to happen before censoring. Deltas are computed by taking the difference between two markers. Since the markers are on the log scale, the deltas represent the log10 fold rise. No transformation is needed. Negative values are left as they are.
   
   \item Censor each of the markers in all markers measured by baseline, Day29 and Day57. Censoring means setting values < lower limits of detection (llods, defined in _common.R) to half of the llods. Note that llods are on the antilog scale and need to be transformed.

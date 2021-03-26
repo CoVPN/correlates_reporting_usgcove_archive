@@ -37,25 +37,16 @@ if (!dir.exists(save.results.to))  dir.create(save.results.to)
 print(paste0("save.results.to equals ", save.results.to))
 
 
-
-# important subsets of data
 if (pop=="57") {
-    dat.vacc.pop=subset(dat.mock, Trt==1 & Bserostatus==0 & EventTimePrimaryD57>=7 & Perprotocol==1)
-    dat.plac.pop=subset(dat.mock, Trt==0 & Bserostatus==0 & EventTimePrimaryD57>=7 & Perprotocol==1)
-    dat.vacc.pop$TwophasesampInd.0 = dat.vacc.pop$TwophasesampInd
-    dat.plac.pop$TwophasesampInd.0 = dat.plac.pop$TwophasesampInd    
-    dat.vacc.pop$wt.0=dat.vacc.pop$wt
-    dat.plac.pop$wt.0=dat.plac.pop$wt
-    
+    dat.mock$wt.0=dat.mock$wt
+    dat.mock$TwophasesampInd.0 = dat.mock$TwophasesampInd    
 } else if (pop=="29") {
-    dat.vacc.pop=subset(dat.mock, Trt==1 & Bserostatus==0 & (EventTimePrimaryD29>=14 & Perprotocol==1 | EventTimePrimaryD29>=7 & EventTimePrimaryD29<=13 & Fullvaccine==1))
-    dat.plac.pop=subset(dat.mock, Trt==0 & Bserostatus==0 & (EventTimePrimaryD29>=14 & Perprotocol==1 | EventTimePrimaryD29>=7 & EventTimePrimaryD29<=13 & Fullvaccine==1))    
-    dat.vacc.pop$TwophasesampInd.0 = dat.vacc.pop$TwophasesampInd.2
-    dat.plac.pop$TwophasesampInd.0 = dat.plac.pop$TwophasesampInd.2
-    dat.vacc.pop$wt.0=dat.vacc.pop$wt.2
-    dat.plac.pop$wt.0=dat.plac.pop$wt.2
-    
+    dat.mock$wt.0=dat.mock$wt.2
+    dat.mock$TwophasesampInd.0 = dat.mock$TwophasesampInd.2    
 } else stop("wrong pop")
+# the following data frame define the phase 1 ptids
+dat.vacc.pop=subset(dat.mock, Trt==1 & Bserostatus==0 & !is.na(wt.0))
+dat.plac.pop=subset(dat.mock, Trt==0 & Bserostatus==0 & !is.na(wt.0))
 
 
 # define trichotomized markers
@@ -134,8 +125,8 @@ pvals.cont = sapply(fits, function(x) {
 # mean and max followup time in the vaccine arm
 write(round(mean(dat.vacc.pop[["EventTimePrimaryD"%.%pop]])), file=paste0(save.results.to, "CoR_mean_followup_time_vacc_"%.%study.name))
 write(round(max (dat.vacc.pop[["EventTimePrimaryD"%.%pop]])), file=paste0(save.results.to, "CoR_max_followup_time_vacc_"%.% study.name))
-rv$CoR_mean_followup_time_vacc=mean((dat.vacc.pop[["EventTimePrimaryD"%.%pop]]))
-rv$CoR_max_followup_time_vacc= max ((dat.vacc.pop[["EventTimePrimaryD"%.%pop]]))
+#rv$CoR_mean_followup_time_vacc=mean((dat.vacc.pop[["EventTimePrimaryD"%.%pop]]))
+#rv$CoR_max_followup_time_vacc= max ((dat.vacc.pop[["EventTimePrimaryD"%.%pop]]))
 
 
 ######################################
@@ -600,8 +591,8 @@ if(!file.exists(paste0(save.results.to, "marginalized.risk.1.",study.name,".Rdat
     load(paste0(save.results.to, "marginalized.risk.1."%.%study.name%.%".Rdata"))
 }
 
-rv$marginalized.risk.S.eq.s=list()
-for (a in assays) rv$marginalized.risk.S.eq.s[[a]] = risks.all.1[[a]][c("marker","prob")]
+#rv$marginalized.risk.S.eq.s=list()
+#for (a in assays) rv$marginalized.risk.S.eq.s[[a]] = risks.all.1[[a]][c("marker","prob")]
 
 
 # vaccine arm, conditional on S>=s    
@@ -658,8 +649,8 @@ if(!file.exists(paste0(save.results.to, "marginalized.risk.2.",study.name,".Rdat
     load(file=paste0(save.results.to, "marginalized.risk.2."%.%study.name%.%".Rdata"))
 }
 
-rv$marginalized.risk.S.geq.s=list()
-for (a in assays) rv$marginalized.risk.S.geq.s[[a]] = risks.all.2[[a]][c("marker","prob")]
+#rv$marginalized.risk.S.geq.s=list()
+#for (a in assays) rv$marginalized.risk.S.geq.s[[a]] = risks.all.2[[a]][c("marker","prob")]
 
 
 ## these results are close to bootstrap results. they are not used later and only for sanity check

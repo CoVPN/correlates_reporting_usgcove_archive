@@ -3,71 +3,97 @@
 
 # Specifications for CoR_COXPH
 
-The population of interest for the D57 CoR study is defined as baseline negative, per-protocol, at risk at 7 days post the Day 57 visit, vaccine recipients. In the rest of this specification we will refer to this population as baseline negative vaccine recipients for simplicity. For comparison, we are also interested in the baseline negative, per-protocol, at risk at 7 days post the Day 57 visit, placebo recipients.
+General considerations:
+\begin{itemize}
+    \item We will focus on baseline negative vaccine recipients. Baseline negative recipients are also studied as comparison. 
+    
+    \item The results in the section on Cox regression model fits will be independently programmed, the results in the section on marginalized risk curves will be code-reviewed.
+    
+    \item The anlyses are repeated once for Day 57 markers and once for Day 29 markers.
 
-The population of interest for the D29 CoR study is defined similarly, but per-protocol AND at risk at 7 days post the Day 57 visit needs to replaced by (at risk at 14 days post the Day 29 visit AND per-protocol) OR (at risk between 7 and 13 days post the Day 29 visit AND per-protocol AND receiving both vaccine doses).
+\end{itemize}
 
 
-
-There are two main sets of results in the CoR_COXPH section of the report: (i) Cox regression model coefficients, and (ii) marginalized risk functions based on Cox models. 
 
 ## Cox regression model fits
 
-Due to the two-phase sampling design, the survey package svycoxph function (using twophase function to create the design object) will be used for fitting Cox models and getting confidence intervals and P values. 
+### Cox regression model fits for the whole vaccine arm
 
-The following continuous biomarkers will be studied. Their trichotomized version adds cat at the end, e.g. Day57bindSpikecat.
+Due to the two-phase sampling design, the survey package svycoxph function (using twophase function to create the design object) will be used for fitting Cox models and getting confidence intervals and P values. The differences between Day 57 and Day 29 analyses are
 \begin{itemize}
-    \item Day57bindSpike
-    \item Day57bindRBD
-    \item Day57pseudoneutid50
-    \item Day57pseudoneutid80.
+    \item Phase 1 ptids in Day 57 analyses are defined by is.na(wt); in Day 29 analyses they are defined by is.na(wt.2)
+    \item Phase 2 ptids in Day 57 analyses are defined by TwophasesampInd; in Day 29 analyses they are defined by TwophasesampInd.2
 \end{itemize}
 
-We first fit Cox regression models to the baseline negative, vaccinee population (defined in more details above), one for each continuous or trichotomized marker. All models adjust for the following baseline covariates. These results will be double programmed.
+
+Markers to be studied: Day57bindSpike, Day57bindRBD, Day57pseudoneutid50, Day57pseudoneutid8. 
+
+Define the trichotomized versions of these variables as follows:
 \begin{itemize}
-    \item at risk or not
-    \item community of color or not
-    \item age (to be replace by SL risk score)
+    \item Use Hmisc::wtd.quantile to find cut points at 1/3 and 2/3 quantiles
+    \item Add 1e-6 to the first cut point. This helps avoid an error when the first cut point equals the minimum
+    \item Add -Inf and Inf to the beginning and end of the vector of cut points. This helps avoid another error in the next step
+    \item Use Hmisc::cut2 to trichotomize and convert the results into a factor
+    \item Name the variables with a 'cat' at the end, e.g. Day57bindSpikecat
 \end{itemize}
 
-Notes:
+
+Fit syvcoxph models to both the continuous and trichotomized variables, all adjusting for MinorityInd + HighRiskInd + Age (Age may be replaced by SL score later), to make Table 1 for continuous markers and Table 2 for trichotomized markers. Note that multitesting adjustment (q-values and FWER) is done across both continuous and trichotomized markers using kyotil::p.adj.perm, which contains Sue Li's implementation of the Westfall and Young permutation-based multitesting adjustment methods. This can be code-reviewed after the other parts are double-programmed.
+
+
+The Day 57 results for continuous markers are pasted below with notes:
+\begin{center}
+    \input{../output/D57/CoR_univariable_svycoxph_pretty_mock}\\
+\end{center}
 \begin{itemize}
-    \item The No. at-risk in the trichotomized table are weighted estimates based on the phase 2 samples.
-    \item The q-values and FWER are computed using Sue Li's implementation of the Westfall and Young permutation-based method (kyotil::p.adj.perm) for the continuous and trichotomized markers together. We verify Sue's implementation through a Monte Carlo study that is outside of this verification plan.
+    \item No. at-risk = number of phase 1 ptids 
+    \item No. cases   = number of phase 1 ptids with EventIndPrimaryD57==1
 \end{itemize}
-
-<!-- \clearpage -->
-<!-- The following two tables contain results to be verified, one for the continuous markers and the other for the trichotomized markers. -->
-
-<!-- \begin{center} -->
-<!--     \input{../output/CoR_D57_univariable_svycoxph_pretty_\studyname}\\ -->
-<!--     \vspace{10pt} -->
-<!--     \setlength{\tabcolsep}{.5ex} -->
-<!--     \input{../output/CoR_D57_univariable_svycoxph_cat_pretty_\studyname}\\ -->
-<!-- \end{center} -->
 <!-- Average follow-up time \input{../output/CoR_D57_mean_followup_time_vacc_\studyname} days, maximum follow-up time \input{../output/CoR_D57_max_followup_time_vacc_\studyname} days. -->
 
-<!-- $\ast\ast$ No. at-risk = number of per-protocol baseline negative vaccine recipients at-risk for COVID at 7 days post Day 57 visit; no. cases = number of this cohort with an observed COVID endpoints.  -->
 
-<!-- $\ast\ast\ast$ Generalized Wald-test p-value of the null hypothesis that the hazard rate is constant across the Lower, Middle, and Upper tertile groups. -->
+The Day 57 results for trichotomized markers are pasted below with notes:
+\begin{center}
+    \setlength{\tabcolsep}{.5ex}
+    \input{../output/D57/CoR_univariable_svycoxph_cat_pretty_mock}\\
+\end{center}
+\begin{itemize}
+    \item No. at-risk = estimated number of phase 1 ptids in a given category using inverse probability weights 
+    \item No. cases   = estimated number of phase 1 ptids with EventIndPrimaryD57==1 in a given category using inverse probability weights 
+    \item Attach rate = no. cases / no. at-risk
+    \item P values are for comparison with the Lower level; overall P values are generalized Wald-test p-value of the null hypothesis that the hazard rate is constant across the Lower, Middle, and Upper tertile groups. It can be implemented by comparing a chisquared statistic (estimated effects of middle and high groups * inverse(estimated var matrix) * estimated effects of middle and high groups) with a chiquared distribution of 2 degrees of freedom
+\end{itemize}
 
 
-Second, we fit Cox regression models to the following subgroups for continuous markers only. Note that for some analyses we cannot adjust for all baseline demographic variables, e.g. in the second bullet we cannot include the at-risk indicator, HighRiskInd, as a covariate. The clinical covariates to be excluded  These results will be code-reviewed.
+### Cox regression model fits for subpopulations in the vaccine arm
+
+Two-phase Cox regression models are fitted to subgroups in the vaccine arm for the continuous markers. Results are presented as forest plots. Verification includes programmatic comparison of the numbers presented in the forest plots and visual inspection of the plots to see if they match the numbers in the plots.
+
+\begin{center}
+    \includegraphics[width=1\textwidth]{../output/D57/hr_forest_bindSpike_mock}
+\end{center}
+
+
+The subgroups are as follows. For some subgroups we cannot adjust for all baseline demographic variables, e.g. in the at risk subgroup we cannot adjust for HighRiskInd.
+
 \begin{itemize}
     \item age >= 65
-    \item age<65 and at risk (-HighRiskInd)
-    \item age<65 and not at risk (-HighRiskInd)
-    \item at risk (-HighRiskInd)
-    \item Not at risk (-HighRiskInd)
-    \item Comm of color (-MinorityInd)
-    \item White non-Hispanic (-MinorityInd)
-    \item Men
-    \item Women
+    \item age < 65
+    \item at risk (HighRiskInd)
+    \item Not at risk (HighRiskInd)
+    \item Comm of color (MinorityInd)
+    \item White non-Hispanic (MinorityInd)
+    \item Men (Sex)
+    \item Women (Sex)
+    \item age<65 and at risk
+    \item age<65 and not at risk 
 \end{itemize}
 
 
 
 ## Marginalized risk
+
+The results in this section will be code-reviewed. 
 
 The primary implementation of marginalized risk uses functions from the package marginalizedRisk on CRAN. The marginalizedRisk package is written for a more general purpose. The verification will double program the specific algorithm used to compute the marginalized risk in this report. Because of the specialized nature of the R functions required to implement these methods, the tester will first review the primary programmer's code to gain familiarity with the basic functions for working with survival analysis in R, but will write the program independently after that.
 

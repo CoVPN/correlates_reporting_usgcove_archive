@@ -1,7 +1,7 @@
 #-----------------------------------------------
 # obligatory to append to the top of each script
 renv::activate(project = here::here(".."))
-    
+
 # There is a bug on Windows that prevents renv from working properly. The following code provides a workaround:
 if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
     
@@ -10,14 +10,14 @@ if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/
 #    renv::restore(library=saved.system.libPaths, prompt=FALSE) # for a quick test, add: packages="backports"
 #    .libPaths(c(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
 #} else renv::restore(prompt=FALSE)
-    
+
 # after updating a package, run renv::snapshot() to override the global library record with your changes
 source(here::here("..", "_common.R"))
 #-----------------------------------------------
 
 source(here::here("code", "params.R"))
 dat.mock <- read.csv(here::here("..", "data_clean", data_name))
-    
+
 library(kyotil) # p.adj.perm, getFormattedSummary
 library(marginalizedRisk)
 library(tools) # toTitleCase
@@ -26,12 +26,12 @@ library(parallel)
 library(forestplot)
 library(Hmisc) # wtd.quantile, cut2
 library(xtable) # this is a dependency of kyotil
-    
+
 # population is either 57 or 29
-Args <- commandArgs(trailingOnly=TRUE) 
-if (length(Args)==0) Args=c(pop="29") 
+Args <- commandArgs(trailingOnly=TRUE)
+if (length(Args)==0) Args=c(pop="29")
 pop=Args[1]; print(pop)
-#
+
 save.results.to = paste0(here::here("output"), "/D", pop,"/");
 if (!dir.exists(save.results.to))  dir.create(save.results.to)
 print(paste0("save.results.to equals ", save.results.to))
@@ -915,15 +915,15 @@ table(subset(dat.vacc.pop, yy==1)[["Day"%.%pop%.%"pseudoneutid80cat"]])
 
 
 
-###############################################################################
+###################################################################################################
 # misc
 
 # save cutpoints to files
 cutpoints=list()
-for (a in assays) {
-    for (t in c("D"%.%pop, "D"%.%pop%.%"overB")) {
-        q.a=marker.cutpoints[[a]][["D"%.%pop]]
-        write(paste0(labels.axis[1,a], " [", concatList(round(q.a, 2), ", "), ")%"), file=paste0(save.results.to, "cutpoints_",t,a, "_"%.%study_name))
+for (a in assays) {        
+    for (t in c("Day"%.%pop, "Delta"%.%pop%.%"overB")) {
+        q.a=marker.cutpoints[[a]][[t]]
+        write(paste0(labels.axis[1,a], " [", concatList(round(q.a, 2), ", "), ")%"), file=paste0(save.results.to, "cutpoints_", t, a, "_"%.%study_name))
     }
 }
 

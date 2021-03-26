@@ -5,14 +5,14 @@ header-includes:
     - \usepackage{pdflscape}
 ---
 
-#  Tabular Description of Immunogenicity Data {#immuno-tabular}
+#  Summary Tables{#cor-tabular}
 \captionsetup{justification=raggedright,singlelinecheck=false}
 ```{r knitr, echo=FALSE, message=FALSE, warning=FALSE}
 library(knitr)
 library(kableExtra)
 library(dplyr)
-here::i_am("immuno_tabular/report.Rmd")
-base::load(here::here( "immuno_tabular", "output", "Tables.Rdata"))
+here::i_am("cor_tabular/report.Rmd")
+base::load(here::here( "cor_tabular", "output", "Tables.Rdata"))
 
 ```
 \captionsetup[table]{labelformat=empty}
@@ -21,7 +21,7 @@ opts <- options(knitr.kable.NA = "")
 numi <- 1
 for (i in 1:length(tlf)){
   if(i==3){
-    cat("\n\n\\newgeometry{top=0.08in, bottom=0.08in}")
+    cat("\n\n\\newgeometry{top=0.1in, bottom=0.1in}")
     cat("\n\n\\begin{landscape}\n")
   }
   subnum <- 0
@@ -34,7 +34,7 @@ for (i in 1:length(tlf)){
   loop <- if ("loop" %in% tlf_args) tlf_labels[["loop"]] else NA
   
   tab <- get(names(tlf)[i]) 
-  if (nrow(tab) == 0) next
+   if (nrow(tab) == 0) next
   
   group_table_col <- if ("group_table_col" %in% tlf_args) {
     tlf_labels[["group_table_col"]] 

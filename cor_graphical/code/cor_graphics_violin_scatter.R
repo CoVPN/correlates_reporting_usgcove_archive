@@ -63,9 +63,9 @@ myplot <- function(dat,
                    facetby=vars(cohort_event),
                    facetopt="wrap",
                    col=c("#0AB7C9","#FF6F1B","#810094"),
-                   inpanel.cex=6.5,
+                   inpanel.cex=5.4,
                    rate.y.pos=7.7,
-                   axis.text.cex=19){
+                   axis.text.cex=25){
   
   p <- ggplot(data=dat, aes_string(x=x, y=y, color=colby, shape=shaby))
   
@@ -83,9 +83,9 @@ myplot <- function(dat,
   } else if (facetopt=="grid") {p <- p + facet_grid(facetby, drop=FALSE)}
   
   p <- p + 
-    geom_text(aes(label=RespRate, x=time, y=rate.y.pos), color="black", size=inpanel.cex) +
+    geom_text(aes(label=RespRate, x=time, y=rate.y.pos), color="black", size=inpanel.cex, check_overlap = TRUE) +
     geom_hline(aes(yintercept=LLoD), linetype="dashed", color="gray") +
-    geom_text(aes(label="LLoD", x=0.75, y=LLoD), color="black", size=inpanel.cex) + 
+    geom_text(aes(label="LLoD", x=0.75, y=LLoD), color="black", size=inpanel.cex, check_overlap = TRUE) + 
     scale_y_continuous(limits=ylim, breaks=ybreaks, labels=math_format(10^.x)) +
     labs(x=xtitle, y=ytitle, title=toptitle, color="Category", shape="Category") +
     scale_color_manual(values=col) +
@@ -113,9 +113,7 @@ for (typ in c("line","violin")) {
                       type=typ,
                       facetby=vars(cohort_event),
                       ylim=c(0.5, 7.71),
-                      ybreaks=seq(1, 7),
-                      inpanel.cex=5.4,
-                      rate.y.pos=7.7
+                      ybreaks=seq(1, 7)
                       
           )
           file_name <- paste0(typ, "box_", gsub("bind","",gsub("pseudoneut","pnAb_",plots[i])), "_", trt[k], "_", gsub(" ","",bstatus[j]), "_",length(unlist(times[t])),"tp","_", study.name, ".pdf")

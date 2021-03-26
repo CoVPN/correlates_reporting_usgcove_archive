@@ -90,7 +90,8 @@ The subgroups are as follows. For some subgroups we cannot adjust for all baseli
 \end{itemize}
 
 
-
+\bigskip
+\bigskip
 ## Marginalized risk
 
 The results in this section will be code-reviewed. 

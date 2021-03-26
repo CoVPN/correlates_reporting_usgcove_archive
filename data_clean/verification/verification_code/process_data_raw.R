@@ -183,7 +183,7 @@ covid_processed_wt <- covid_processed %>%
 
 ## Imputation ----
 
-covid_processed_imputed_assay <- covid_processed_wt %>% 
+covid_processed_imputed_assay_TwophasesampInd <- covid_processed_wt %>% 
   filter(TwophasesampInd == 1) %>% 
   select(
     Ptid,
@@ -215,8 +215,6 @@ covid_processed_imputed_assay <- covid_processed_wt %>%
     })
   })
   
-  
-
 covid_processed_imputed <- covid_processed_wt %>% 
   filter(TwophasesampInd == 1) %>% 
   select(-ends_with("bindSpike"),
@@ -224,7 +222,7 @@ covid_processed_imputed <- covid_processed_wt %>%
          -ends_with("pseudoneutid50"),
          -ends_with("pseudoneutid80")) %>% 
   left_join(
-    covid_processed_imputed_assay
+    covid_processed_imputed_assay_TwophasesampInd
   ) %>% 
   select(
     colnames(covid_processed_wt)
@@ -232,6 +230,55 @@ covid_processed_imputed <- covid_processed_wt %>%
   bind_rows(
     covid_processed_wt %>% 
       filter(TwophasesampInd != 1)
+  )
+
+covid_processed_imputed_assay_TwophasesampInd_2 <- covid_processed_imputed %>% 
+  filter(TwophasesampInd.2 == 1) %>% 
+  select(
+    Ptid,
+    Trt, 
+    Bserostatus,
+    ends_with("bindSpike"),
+    ends_with("bindRBD"),
+    ends_with("pseudoneutid50"),
+    ends_with("pseudoneutid80")
+  ) %>% 
+  group_split(
+    Trt, Bserostatus
+  ) %>% 
+  map_dfr( function(x){
+    
+    suppressWarnings({
+      x %>%
+        select(
+          all_of(c(outer(
+            c("B", "Day29", "Day57"),
+            c("bindSpike","bindRBD","pseudoneutid50","pseudoneutid80"),
+            paste0)))
+        ) %>% 
+        mice(seed = 1, m = 1,  printFlag = FALSE) %>%
+        complete() %>% 
+        mutate(
+          Ptid = x$Ptid
+        )
+    })
+  })
+
+covid_processed_imputed2 <- covid_processed_imputed %>% 
+  filter(TwophasesampInd.2 == 1) %>% 
+  select(-ends_with("bindSpike"),
+         -ends_with("bindRBD"),
+         -ends_with("pseudoneutid50"),
+         -ends_with("pseudoneutid80")) %>% 
+  left_join(
+    covid_processed_imputed_assay_TwophasesampInd_2
+  ) %>% 
+  select(
+    colnames(covid_processed_imputed)
+  ) %>% 
+  bind_rows(
+    covid_processed_imputed %>% 
+      filter(TwophasesampInd.2 != 1)
   )
 
 ## Delta over baseline ----

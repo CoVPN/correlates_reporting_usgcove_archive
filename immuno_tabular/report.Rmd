@@ -2,10 +2,7 @@
 output: pdf_document
 header-includes:
     - \usepackage{caption}
-    - \usepackage{geometry}
     - \usepackage{pdflscape}
-geometry: "top=0.08in, bottom=0.08in, left=0.5in, right=0.5in"
-
 ---
 
 #  Tabular Description of Immunogenicity Data {#immuno-tabular}
@@ -16,15 +13,17 @@ library(kableExtra)
 library(dplyr)
 here::i_am("immuno_tabular/report.Rmd")
 base::load(here::here( "immuno_tabular", "output", "Tables.Rdata"))
-# source(here::here("immuno_tabular", "code", "make_functions.R"))
 
 ```
 \captionsetup[table]{labelformat=empty}
 ```{r tabs, results="asis", echo=FALSE, message=FALSE, warning=FALSE}
-
 opts <- options(knitr.kable.NA = "")
+numi <- 1
 for (i in 1:length(tlf)){
-  if(i==2)cat("\n\n\\begin{landscape}\n")
+  if(i==3){
+    cat("\n\n\\newgeometry{top=0.08in, bottom=0.08in}")
+    cat("\n\n\\begin{landscape}\n")
+  }
   subnum <- 0
   tlf_labels <- tlf[[i]]
 
@@ -33,7 +32,10 @@ for (i in 1:length(tlf)){
   tlf_args <- names(tlf_labels)
   deselect <- if ("deselect" %in% tlf_args) tlf_labels[["deselect"]] else NA
   loop <- if ("loop" %in% tlf_args) tlf_labels[["loop"]] else NA
+  
   tab <- get(names(tlf)[i]) 
+  if (nrow(tab) == 0) next
+  
   group_table_col <- if ("group_table_col" %in% tlf_args) {
     tlf_labels[["group_table_col"]] 
     } else NA 
@@ -52,6 +54,7 @@ for (i in 1:length(tlf)){
   
   tab <- data.frame(sapply(tab,function(x)gsub("%", "\\\\%", x)), check.names = F)
   colnames(tab) <- gsub("%", "\\\\%", colnames(tab))
+  colnames(tab) <- gsub("Baseline SARS-CoV-2", "Baseline\nSARS\\-CoV\\-2", colnames(tab))
   
   col_name <- if ("col_name" %in% tlf_args) { 
     tlf_labels[["col_name"]] 
@@ -71,8 +74,8 @@ for (i in 1:length(tlf)){
       tab.j <- mutate_all(tab.j, linebreak, align = "l")
       
       caption.i <- ifelse(is.na(loop),
-        sprintf("Table %s. %s", i, title_i),                  
-        sprintf("Table %s%s. %s by %s", i, letters[subnum], title_i, j))
+        sprintf("Table %s. %s", numi, title_i),                  
+        sprintf("Table %s%s. %s by %s", numi, letters[subnum], title_i, j))
       
       tabjk <- kable(if (is.na(deselect)) {tab.j} else {tab.j %>% select(-!!deselect)},
                      align = "l",
@@ -102,6 +105,7 @@ for (i in 1:length(tlf)){
     print(tabjk)
     cat("\n\n\\clearpage\n")
     }
+  numi <- numi + 1
   }
 
 ```

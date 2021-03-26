@@ -21,6 +21,8 @@ assays <- c(
   #"liveneutmn50"
 )
 
+include_bindN <- TRUE
+
 times <- c("B", "Day29", "Day57", "Delta29overB", "Delta57overB", "Delta57over29")
 
 markers <- c(outer(times[1:3], assays, "%.%"))

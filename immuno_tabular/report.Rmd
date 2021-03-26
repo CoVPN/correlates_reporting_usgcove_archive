@@ -2,10 +2,7 @@
 output: pdf_document
 header-includes:
     - \usepackage{caption}
-    - \usepackage{geometry}
     - \usepackage{pdflscape}
-geometry: "top=0.08in, bottom=0.08in, left=0.5in, right=0.5in"
-
 ---
 
 #  Tabular Description of Immunogenicity Data {#immuno-tabular}
@@ -23,7 +20,10 @@ base::load(here::here( "immuno_tabular", "output", "Tables.Rdata"))
 opts <- options(knitr.kable.NA = "")
 numi <- 1
 for (i in 1:length(tlf)){
-  if(i==3)cat("\n\n\\begin{landscape}\n")
+  if(i==3){
+    cat("\n\n\\newgeometry{top=0.08in, bottom=0.08in}")
+    cat("\n\n\\begin{landscape}\n")
+  }
   subnum <- 0
   tlf_labels <- tlf[[i]]
 

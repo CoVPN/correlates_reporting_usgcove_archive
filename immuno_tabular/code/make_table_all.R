@@ -160,21 +160,7 @@ resp_v <- c(grep("Resp|2llod|4llod", unique(ds_resp_l$resp_cat), value = T) %>%
 rpcnt <- ds_resp_l %>% 
   dplyr::filter(Visit != "Day 1" & resp_cat %in% resp_v) %>% 
   group_split(across(all_of(sub_grp_col))) %>%
-  map_dfr(function(x){
-    cat("Table2 of ", paste(mutate_at(x, sub_grp_col, as.character) %>% 
-                              distinct_at(sub_grp_col) , collapse = ", "),
-        "\n")
-    ret <- svyciprop(~ response, svydesign(ids = ~ Ptid, 
-                                           strata = ~ tps.stratum,
-                                           weights = ~ wt.subcohort,
-                                           data = x))
-    ret <- x %>% 
-      distinct_at(sub_grp_col) %>% 
-      mutate(response = ret['response'], 
-             ci_l = attributes(ret)$ci['2.5%'], 
-             ci_u = attributes(ret)$ci['97.5%'])
-    ret
-    })
+  map_dfr(get_rr, stratum="tps.stratum", weights="wt.subcohort", sub_grp_col=sub_grp_col)
 
 tab_rr <- inner_join(
   rpcnt,
@@ -238,22 +224,7 @@ sub_grp_col <- c("subgroup", "Arm", "Baseline SARS-CoV-2", "Group", "mag_cat")
 rgm <- ds_mag_l %>% 
   dplyr::filter(mag_cat %in% gm_v) %>% 
   group_split(across(all_of(sub_grp_col))) %>%
-  map_dfr(function(x){
-    cat("Table3 of ", paste(mutate_at(x, sub_grp_col, as.character) %>% 
-                              distinct_at(sub_grp_col) , collapse = ", "),
-        "\n")
-    ret <- svymean(~ mag, svydesign(ids = ~ Ptid, 
-                                    strata = ~ tps.stratum,
-                                    weights = ~ wt.subcohort,
-                                    data = x))
-    ret <- x %>% 
-      distinct_at(sub_grp_col) %>% 
-      mutate(mag = ret['mag'], 
-             ci_l = confint(ret)[,'2.5 %'], 
-             ci_u = confint(ret)[,'97.5 %'])
-    ret
-  })
-
+  map_dfr(get_gm,weights="wt.subcohort",stratum="tps.stratum",sub_grp_col=sub_grp_col)
 
 tab_gm <- inner_join(
   rgm,
@@ -404,21 +375,7 @@ rpcnt_diff <- ds_resp_l %>%
   dplyr::filter(Visit != "Day 1" & Ind %in% c("Responder", "% 2-Fold Rise", "% 4-Fold Rise") &
                 subgroup=="All participants") %>% 
   group_split(across(all_of(sub_grp_col))) %>%
-  map_dfr(function(x){
-    cat("Table8 of ", paste(mutate_at(x, sub_grp_col, as.character) %>% 
-                              distinct_at(sub_grp_col) , collapse = ", "),
-        "\n")
-    ret <- svyciprop(~ response, svydesign(ids = ~ Ptid, 
-                                           strata = ~ tps.stratum,
-                                           weights = ~ wt.subcohort,
-                                           data = x))
-    ret <- x %>% 
-      distinct_at(sub_grp_col) %>% 
-      mutate(response = ret['response'], 
-             ci_l = attributes(ret)$ci['2.5%'], 
-             ci_u = attributes(ret)$ci['97.5%'])
-    ret
-  })
+  map_dfr(get_rr, weights="wt.subcohort", stratum="tps.stratum", sub_grp_col=sub_grp_col)
 
 rrdiff <- rpcnt_diff %>% 
   dplyr::filter(subgroup == "All participants") %>% 

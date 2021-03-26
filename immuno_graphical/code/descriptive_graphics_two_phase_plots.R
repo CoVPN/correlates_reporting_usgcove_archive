@@ -176,11 +176,11 @@ for (tt in seq_along(times)) {
 
 for (day in c("29", "57")) {
   covid_corr_rcdf(
-    plot_dat = subset(dat.long.twophase.sample, Trt = "Vaccine"),
+    plot_dat = subset(dat.long.twophase.sample, Trt == "Vaccine"),
     x = paste0("Day", day),
     color = "assay",
     lty = "Bserostatus",
-    weight = ifelse(day == "29", "wt.2", "wt"),
+    weight = "wt.subcohort",
     xlab = paste0(
       "D", day,
       " Binding Ab (IU/ml) / Pseudovirus nAb ID50 or ID80"
@@ -199,7 +199,7 @@ for (day in c("29", "57")) {
 
 for (day in c("29", "57")) {
   covid_corr_rcdf(
-    plot_dat = subset(dat.long.twophase.sample, Trt = "Vaccine"),
+    plot_dat = subset(dat.long.twophase.sample, Trt == "Vaccine"),
     x = paste0("Delta", day, "overB"),
     color = "assay",
     lty = "Bserostatus",
@@ -220,7 +220,7 @@ for (day in c("29", "57")) {
 
 for (day in c("29", "57")) {
   covid_corr_rcdf(
-    plot_dat = subset(dat.long.twophase.sample, Trt = "Vaccine"),
+    plot_dat = filter(dat.long.twophase.sample, Trt == "Vaccine", Bserostatus == "Baseline Neg"),
     x = paste0("Day", day),
     color = "assay",
     lty = NULL,
@@ -238,7 +238,7 @@ for (day in c("29", "57")) {
 
 for (day in c("29", "57")) {
   covid_corr_rcdf(
-    plot_dat = subset(dat.long.twophase.sample, Trt = "Vaccine"),
+    plot_dat = subset(dat.long.twophase.sample, Trt == "Vaccine"),
     x = paste0("Delta", day, "overB"),
     color = "assay",
     lty = NULL,

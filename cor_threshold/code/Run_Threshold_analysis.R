@@ -31,7 +31,7 @@ run_threshold_analysis <- function(marker) {
   ####################################################
   # Run thresholdTMLE
   ####################################################
-  esttmle_full <- suppressWarnings(thresholdTMLE(data_full, node_list, thresholds = thresholds, biased_sampling_strata = "grp", biased_sampling_indicator = "TwophasesampInd", lrnr_A = lrnr, lrnr_Y = lrnr, lrnr_Delta = lrnr_Delta))
+  esttmle_full <- suppressWarnings(thresholdTMLE(data_full, node_list, thresholds = thresholds, biased_sampling_strata = NULL, biased_sampling_indicator = "TwophasesampInd", lrnr_A = lrnr, lrnr_Y = lrnr, lrnr_Delta = lrnr_Delta))
 
   esttmle <- esttmle_full[[1]]
   

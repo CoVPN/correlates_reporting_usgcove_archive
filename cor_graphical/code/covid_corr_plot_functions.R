@@ -44,33 +44,33 @@ covid_corr_pairplots <- function(plot_dat, ## data for plotting
                                  filename) {
   dat.tmp <- plot_dat[, paste0(time, assays)]
   rr <- range(dat.tmp, na.rm = TRUE)
-
+  
   if (rr[2] - rr[1] < 2) {
     rr <- floor(rr[1]):ceiling(rr[2])
   }
-
+  
   breaks <- floor(rr[1]):ceiling(rr[2])
-
+  
   if (rr[2] > ceiling(rr[1])) {
     breaks <- ceiling(rr[1]):floor(rr[2])
   } else {
     breaks <- floor(rr[1]):ceiling(rr[2]) ## breaks on the axis
   }
-
+  
   if (max(breaks) - min(breaks) >= 6) {
     breaks <- breaks[breaks %% 2 == 0]
   }
-
+  
   pairplots <- ggpairs(
     data = dat.tmp, title = plot_title,
     columnLabels = column_labels,
     upper = list(
       continuous =
         wrap(ggally_cor_resample,
-          stars = FALSE,
-          size = corr_size,
-          strata = subdat[, strata],
-          weight = subdat[, weight]
+             stars = FALSE,
+             size = corr_size,
+             strata = subdat[, strata],
+             weight = subdat[, weight]
         )
     ),
     lower = list(
@@ -110,7 +110,7 @@ covid_corr_pairplots <- function(plot_dat, ## data for plotting
         labels = label_math(10^.x)
       ) + ylim(0, 1.2)
   }
-
+  
   ggsave(
     filename = filename, plot = pairplots, width = width, height = height,
     units = units
@@ -304,11 +304,13 @@ covid_corr_rcdf_facets <- function(plot_dat,
                                    width = 6.5,
                                    units = "in",
                                    filename) {
+  
+  plot_dat <- plot_dat[!is.na(plot_dat[, color]), ]
   rcdf_list <- vector("list", nlevels(plot_dat[, facet_by]))
   for (aa in 1:nlevels(plot_dat[, facet_by])) {
     rcdf_list[[aa]] <- ggplot(
       subset(plot_dat, plot_dat[, facet_by] ==
-        levels(plot_dat[, facet_by])[aa]),
+               levels(plot_dat[, facet_by])[aa]),
       aes_string(x = x, color = color, weight = weight)
     ) +
       geom_step(aes(y = 1 - ..y..), stat = "ecdf", lwd = lwd) +
@@ -335,13 +337,13 @@ covid_corr_rcdf_facets <- function(plot_dat,
         axis.text = element_text(size = axis_size)
       )
   }
-
+  
   output_plot <- ggarrange(
     plotlist = rcdf_list, ncol = 2, nrow = 2,
     common.legend = TRUE, legend = "bottom",
     align = "h"
   )
-
+  
   ggsave(
     filename = filename, plot = output_plot, width = width,
     height = height, units = units
@@ -406,6 +408,7 @@ covid_corr_rcdf <- function(plot_dat,
                             width = 8,
                             units = "in",
                             filename) {
+  plot_dat <- plot_dat[!is.na(plot_dat[, color]), ]
   output_plot <- ggplot(
     plot_dat,
     aes_string(
@@ -432,7 +435,7 @@ covid_corr_rcdf <- function(plot_dat,
       axis.title = element_text(size = axis_title_size),
       axis.text = element_text(size = axis_size)
     )
-
+  
   ggsave(
     filename = filename, plot = output_plot, width = width,
     height = height, units = units
@@ -502,7 +505,7 @@ covid_corr_scatter_facets <- function(plot_dat,
                                       units = "in",
                                       filename) {
   scatterplot_list <- vector("list", length(assays))
-
+  
   ## make the plot axis limits adaptive to the data range
   if (is.null(lim) | is.null(breaks)) {
     lim <- range(plot_dat[, c(x, y)], na.rm = TRUE)
@@ -519,23 +522,23 @@ covid_corr_scatter_facets <- function(plot_dat,
       breaks <- breaks[breaks %% 2 == 0]
     }
   }
-
+  
   for (aa in 1:nlevels(plot_dat[, facet_by])) {
     ## correlation
     ss <- plot_dat[plot_dat[, facet_by] ==
-      levels(plot_dat[, facet_by])[aa], ] %>%
+                     levels(plot_dat[, facet_by])[aa], ] %>%
       dplyr::filter(complete.cases(.))
-
+    
     marker_corr <- round(spearman_resample(
       x = ss[, x], y = ss[, y],
       strata = ss[, strata],
       weight = ss[, weight],
       B = nboot
     ), 2)
-
+    
     scatterplot_list[[aa]] <- ggplot(
       data = plot_dat[plot_dat[, facet_by] ==
-        levels(plot_dat[, facet_by])[aa], ],
+                        levels(plot_dat[, facet_by])[aa], ],
       aes_string(x = x, y = y)
     ) +
       geom_point(size = point_size) +
@@ -573,7 +576,7 @@ covid_corr_scatter_facets <- function(plot_dat,
     legend = "none", common.legend = FALSE,
     align = "h"
   )
-
+  
   ggsave(
     filename = filename, plot = output_plot, width = width,
     height = height, units = units
@@ -692,12 +695,12 @@ covid_corr_boxplot_facets <- function(plot_dat,
       }
     }) %>%
     bind_rows()
-
+  
   boxplot_list <- vector("list", nlevels(plot_dat[, facet_by]))
   for (aa in 1:nlevels(plot_dat[, facet_by])) {
     boxplot_list[[aa]] <- ggplot(
       subset(plot_dat, plot_dat[, facet_by] ==
-        levels(plot_dat[, facet_by])[aa]),
+               levels(plot_dat[, facet_by])[aa]),
       aes_string(x = x, y = y, color = color)
     ) +
       geom_boxplot(width = box_width, lwd = lwd) +
@@ -735,7 +738,7 @@ covid_corr_boxplot_facets <- function(plot_dat,
         legend.title = element_blank(),
         legend.text = element_text(size = legend_size, face = "bold")
       )
-
+    
     if (plot_LLOD) {
       boxplot_list[[aa]] <- boxplot_list[[aa]] +
         geom_hline(
@@ -837,7 +840,7 @@ covid_corr_spaghetti_facets <- function(plot_dat,
                                         ybreaks = seq(0, 8, by = 2),
                                         arrange_nrow = ceiling(
                                           length(unique(plot_dat[, facet_by]))/2
-                                          ),
+                                        ),
                                         arrange_ncol = 2,
                                         panel_title_size = 10,
                                         height = 5,

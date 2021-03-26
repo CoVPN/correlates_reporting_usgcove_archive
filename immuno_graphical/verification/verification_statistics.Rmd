@@ -52,7 +52,7 @@ for (bstatus in 1:2) {
     
     subdat <- dat.long.twophase.sample %>%
       filter(assay == assays[aa], Bserostatus == bstatus.labels[bstatus],
-             Trt== "Vaccine") %>%
+             Trt == "Vaccine") %>%
       select(Day57, wt.subcohort) %>%
       filter(complete.cases(.))
     

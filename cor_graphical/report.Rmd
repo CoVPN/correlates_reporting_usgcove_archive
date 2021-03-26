@@ -12,7 +12,7 @@ study_name = "mock"
 
 ### Baseline seronegative
 
-```{r, fig.cap = "(Mock data) Boxplots of D57 Ab markers: baseline negative vaccine arm."}
+```{r, fig.cap = "Boxplots of D57 Ab markers: baseline negative vaccine arm."}
     
 
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("boxplots_Day57_trt_vaccine_x_cc_BaselineNeg_", study_name, ".png")))
@@ -21,7 +21,7 @@ study_name = "mock"
 ```
 
 
-```{r, fig.cap = "(Mock data) Boxplots of D57 fold-rise over D1 Ab markers: baseline negative vaccine arm."}
+```{r, fig.cap = "Boxplots of D57 fold-rise over D1 Ab markers: baseline negative vaccine arm."}
     
 
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("boxplots_Delta57overB_trt_vaccine_x_cc_BaselineNeg_", study_name, ".png")))
@@ -30,14 +30,14 @@ study_name = "mock"
 ```
 
 
-```{r, fig.cap = "(Mock data) Boxplots of D29 Ab markers: baseline negative vaccine arm."}
+```{r, fig.cap = "Boxplots of D29 Ab markers: baseline negative vaccine arm."}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("boxplots_Day29_trt_vaccine_x_cc_BaselineNeg_", study_name, ".png")))
     
 ```
 
 
-```{r, fig.cap = "(Mock data) Boxplots of D29 fold-rise over D1 Ab markers: baseline negative vaccine arm."}
+```{r, fig.cap = "Boxplots of D29 fold-rise over D1 Ab markers: baseline negative vaccine arm."}
 
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("boxplots_Delta29overB_trt_vaccine_x_cc_BaselineNeg_", study_name, ".png")))
 
@@ -46,14 +46,14 @@ study_name = "mock"
 
 ### Baseline seropositive
 
-```{r, fig.cap = "(Mock data) Boxplots of D57 Ab markers: baseline positive vaccine arm."}
+```{r, fig.cap = "Boxplots of D57 Ab markers: baseline positive vaccine arm."}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("boxplots_Day57_trt_vaccine_x_cc_BaselinePos_", study_name, ".png")))
     
 ```
 
 
-```{r, fig.cap = "(Mock data) Boxplots of D57 fold-rise over D1 Ab markers: baseline positive vaccine arm."}
+```{r, fig.cap = "Boxplots of D57 fold-rise over D1 Ab markers: baseline positive vaccine arm."}
     
 
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("boxplots_Delta57overB_trt_vaccine_x_cc_BaselinePos_", study_name, ".png")))
@@ -61,7 +61,7 @@ study_name = "mock"
     
 ```
 
-```{r, fig.cap = "(Mock data) Boxplots of D29 Ab markers: baseline positive vaccine arm."}
+```{r, fig.cap = "Boxplots of D29 Ab markers: baseline positive vaccine arm."}
 
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("boxplots_Day29_trt_vaccine_x_cc_BaselinePos_", study_name, ".png")))
 
@@ -69,7 +69,7 @@ study_name = "mock"
 ```
 
 
-```{r, fig.cap = "(Mock data) Boxplots of D29 fold-rise over D1 Ab markers: baseline positive vaccine arm."}
+```{r, fig.cap = "Boxplots of D29 fold-rise over D1 Ab markers: baseline positive vaccine arm."}
     
 
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("boxplots_Delta29overB_trt_vaccine_x_cc_BaselinePos_", study_name, ".png")))
@@ -82,21 +82,21 @@ study_name = "mock"
 
 ### Baseline seronegative
 
-```{r, fig.cap = "(Mock data) RCDF plots for D57 Ab markers: baseline negative by treatment arm."}
+```{r, fig.cap = "RCDF plots for D57 Ab markers: baseline negative by treatment arm."}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("Marker_RCDF_Day57_trt_by_event_status_bstatus_BaselineNeg_", study_name, ".png")))
     
 ```
 
 
-```{r, fig.cap = "(Mock data) RCDF plots for D57 fold-rise over D1 Ab markers: baseline negative by treatment arm."}
+```{r, fig.cap = "RCDF plots for D57 fold-rise over D1 Ab markers: baseline negative by treatment arm."}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("Marker_RCDF_Delta57overB_trt_by_event_status_bstatus_BaselineNeg_", study_name, ".png")))
     
 ```
 
 
-```{r, fig.cap = "(Mock data) RCDF plots for D29 Ab markers: baseline negative by treatment arm."}
+```{r, fig.cap = "RCDF plots for D29 Ab markers: baseline negative by treatment arm."}
     
 
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("Marker_RCDF_Day29_trt_by_event_status_bstatus_BaselineNeg_", study_name, ".png")))
@@ -104,7 +104,7 @@ study_name = "mock"
     
 ```
 
-```{r, fig.cap = "(Mock data) RCDF plots for D29 fold-rise over D1 Ab markers: baseline negative by treatment arm."}
+```{r, fig.cap = "RCDF plots for D29 fold-rise over D1 Ab markers: baseline negative by treatment arm."}
     
 
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("Marker_RCDF_Delta29overB_trt_by_event_status_bstatus_BaselineNeg_", study_name, ".png")))
@@ -116,7 +116,7 @@ study_name = "mock"
 ### Baseline seropositive
 
 
-```{r, fig.cap = "(Mock data) RCDF plots for D57 Ab markers: baseline positive by treatment arm."}
+```{r, fig.cap = "RCDF plots for D57 Ab markers: baseline positive by treatment arm."}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("Marker_RCDF_Day57_trt_by_event_status_bstatus_BaselinePos_", study_name, ".png")))
     
@@ -124,20 +124,20 @@ study_name = "mock"
 
 
 
-```{r, fig.cap = "(Mock data) RCDF plots for D57 fold-rise over D1 Ab markers: baseline positive by treatment arm."}
+```{r, fig.cap = "RCDF plots for D57 fold-rise over D1 Ab markers: baseline positive by treatment arm."}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("Marker_RCDF_Delta57overB_trt_by_event_status_bstatus_BaselinePos_", study_name, ".png")))
     
 ```
 
 
-```{r, fig.cap = "(Mock data) RCDF plots for D29 Ab markers: baseline positive by treatment arm."}
+```{r, fig.cap = "RCDF plots for D29 Ab markers: baseline positive by treatment arm."}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("Marker_RCDF_Day29_trt_by_event_status_bstatus_BaselinePos_", study_name, ".png")))
     
 ```
 
-```{r, fig.cap = "(Mock data) RCDF plots for D29 fold-rise over D1 Ab markers: baseline positive by treatment arm."}
+```{r, fig.cap = "RCDF plots for D29 fold-rise over D1 Ab markers: baseline positive by treatment arm."}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("Marker_RCDF_Delta29overB_trt_by_event_status_bstatus_BaselinePos_", study_name, ".png")))
     
@@ -147,14 +147,14 @@ study_name = "mock"
 ## Weighted RCDF plots showing threshold correlate concentration for overall vaccine efficacy
 
 ### Baseline seronegative
-```{r, fig.cap = "(Mock data) Marker RCDF of D57 anti-Spike binding Ab: baseline negative vaccine arm"}
+```{r, fig.cap = "Marker RCDF of D57 anti-Spike binding Ab: baseline negative vaccine arm"}
     
 
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("RCDF_VE_Day57_trt_Vaccine_BaselineNeg_bindSpike_", study_name, ".png")))
 
 ```
 
-```{r, fig.cap = "(Mock data) Marker RCDF of D57 anti-RBD binding Ab: baseline negative vaccine arm"}
+```{r, fig.cap = "Marker RCDF of D57 anti-RBD binding Ab: baseline negative vaccine arm"}
     
 
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("RCDF_VE_Day57_trt_Vaccine_BaselineNeg_bindRBD_", study_name, ".png")))
@@ -162,7 +162,7 @@ study_name = "mock"
 
 ```
 
-```{r, fig.cap = "(Mock data) Marker RCDF of D57 PsV-nAb ID50: baseline negative vaccine arm"}
+```{r, fig.cap = "Marker RCDF of D57 PsV-nAb ID50: baseline negative vaccine arm"}
     
 
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("RCDF_VE_Day57_trt_Vaccine_BaselineNeg_pseudoneutid50_", study_name, ".png")))
@@ -170,7 +170,7 @@ study_name = "mock"
 
 ```
 
-```{r, fig.cap = "(Mock data) Marker RCDF of D57 PsV-nAb ID80: baseline negative vaccine arm"}
+```{r, fig.cap = "Marker RCDF of D57 PsV-nAb ID80: baseline negative vaccine arm"}
 
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("RCDF_VE_Day57_trt_Vaccine_BaselineNeg_pseudoneutid80_", study_name, ".png")))
 
@@ -179,13 +179,13 @@ study_name = "mock"
 
 ## Spaghetti plots
 
-```{r, fig.cap = "(Mock data) Spaghetti Plots of Marker Trajectory: baseline negative vaccine arm"}
+```{r, fig.cap = "Spaghetti Plots of Marker Trajectory: baseline negative vaccine arm"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("spaghetti_plot_trt_BaselineNeg_", study_name, ".png")))
 
 ```
 
-```{r, fig.cap = "(Mock data) Spaghetti Plots of Marker Trajectory: baseline positive vaccine arm"}
+```{r, fig.cap = "Spaghetti Plots of Marker Trajectory: baseline positive vaccine arm"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("spaghetti_plot_trt_BaselinePos_", study_name, ".png")))
 
@@ -195,581 +195,581 @@ study_name = "mock"
 ## Violin and line plots
 
 
-```{r, fig.cap = "(Mock data) lineplots of Binding Antibody to Spike: baseline negative placebo arm (2 timepoints)"}
+```{r, fig.cap = "Lineplots of Binding Antibody to Spike: baseline negative placebo arm (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_Spike_Placebo_BaselineNeg_2tp_", study_name, ".pdf")))
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Binding Antibody to Spike: baseline negative vaccine arm (2 timepoints)"}
+```{r, fig.cap = "Lineplots of Binding Antibody to Spike: baseline negative vaccine arm (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_Spike_Vaccine_BaselineNeg_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Binding Antibody to RBD: baseline negative placebo arm (2 timepoints)"}
+```{r, fig.cap = "Lineplots of Binding Antibody to RBD: baseline negative placebo arm (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_RBD_Placebo_BaselineNeg_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Binding Antibody to RBD: baseline negative vaccine arm (2 timepoints)"}
+```{r, fig.cap = "Lineplots of Binding Antibody to RBD: baseline negative vaccine arm (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_RBD_Vaccine_BaselineNeg_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Pseudovirus Neutralization ID50: baseline negative placebo arm (2 timepoints)"}
+```{r, fig.cap = "Lineplots of Pseudovirus Neutralization ID50: baseline negative placebo arm (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_pnAb_id50_Placebo_BaselineNeg_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm (2 timepoints)"}
+```{r, fig.cap = "Lineplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_pnAb_id50_Vaccine_BaselineNeg_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Pseudovirus Neutralization ID80: baseline negative placebo arm (2 timepoints)"}
+```{r, fig.cap = "Lineplots of Pseudovirus Neutralization ID80: baseline negative placebo arm (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_pnAb_id80_Placebo_BaselineNeg_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm (2 timepoints)"}
+```{r, fig.cap = "Lineplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_pnAb_id80_Vaccine_BaselineNeg_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Binding Antibody to Spike: baseline negative placebo arm (2 timepoints)"}
+```{r, fig.cap = "Violinplots of Binding Antibody to Spike: baseline negative placebo arm (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_Spike_Placebo_BaselineNeg_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Binding Antibody to Spike: baseline negative vaccine arm (2 timepoints)"}
+```{r, fig.cap = "Violinplots of Binding Antibody to Spike: baseline negative vaccine arm (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_Spike_Vaccine_BaselineNeg_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Binding Antibody to RBD: baseline negative placebo arm (2 timepoints)"}
+```{r, fig.cap = "Violinplots of Binding Antibody to RBD: baseline negative placebo arm (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_RBD_Placebo_BaselineNeg_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Binding Antibody to RBD: baseline negative vaccine arm (2 timepoints)"}
+```{r, fig.cap = "Violinplots of Binding Antibody to RBD: baseline negative vaccine arm (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_RBD_Vaccine_BaselineNeg_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Pseudovirus Neutralization ID50: baseline negative placebo arm (2 timepoints)"}
+```{r, fig.cap = "Violinplots of Pseudovirus Neutralization ID50: baseline negative placebo arm (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_pnAb_id50_Placebo_BaselineNeg_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm (2 timepoints)"}
+```{r, fig.cap = "Violinplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_pnAb_id50_Vaccine_BaselineNeg_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Pseudovirus Neutralization ID80: baseline negative placebo arm (2 timepoints)"}
+```{r, fig.cap = "Violinplots of Pseudovirus Neutralization ID80: baseline negative placebo arm (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_pnAb_id80_Placebo_BaselineNeg_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm (2 timepoints)"}
+```{r, fig.cap = "Violinplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_pnAb_id80_Vaccine_BaselineNeg_2tp_", study_name, ".pdf")))
 
 ```
 
 
-```{r, fig.cap = "(Mock data) lineplots of Binding Antibody to Spike: baseline negative placebo arm (3 timepoints)"}
+```{r, fig.cap = "Lineplots of Binding Antibody to Spike: baseline negative placebo arm (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_Spike_Placebo_BaselineNeg_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Binding Antibody to Spike: baseline negative vaccine arm (3 timepoints)"}
+```{r, fig.cap = "Lineplots of Binding Antibody to Spike: baseline negative vaccine arm (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_Spike_Vaccine_BaselineNeg_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Binding Antibody to RBD: baseline negative placebo arm (3 timepoints)"}
+```{r, fig.cap = "Lineplots of Binding Antibody to RBD: baseline negative placebo arm (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_RBD_Placebo_BaselineNeg_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Binding Antibody to RBD: baseline negative vaccine arm (3 timepoints)"}
+```{r, fig.cap = "Lineplots of Binding Antibody to RBD: baseline negative vaccine arm (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_RBD_Vaccine_BaselineNeg_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Pseudovirus Neutralization ID50: baseline negative placebo arm (3 timepoints)"}
+```{r, fig.cap = "Lineplots of Pseudovirus Neutralization ID50: baseline negative placebo arm (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_pnAb_id50_Placebo_BaselineNeg_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm (3 timepoints)"}
+```{r, fig.cap = "Lineplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_pnAb_id50_Vaccine_BaselineNeg_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Pseudovirus Neutralization ID80: baseline negative placebo arm (3 timepoints)"}
+```{r, fig.cap = "Lineplots of Pseudovirus Neutralization ID80: baseline negative placebo arm (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_pnAb_id80_Placebo_BaselineNeg_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm (3 timepoints)"}
+```{r, fig.cap = "Lineplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_pnAb_id80_Vaccine_BaselineNeg_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Binding Antibody to Spike: baseline negative placebo arm (3 timepoints)"}
+```{r, fig.cap = "Violinplots of Binding Antibody to Spike: baseline negative placebo arm (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_Spike_Placebo_BaselineNeg_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Binding Antibody to Spike: baseline negative vaccine arm (3 timepoints)"}
+```{r, fig.cap = "Violinplots of Binding Antibody to Spike: baseline negative vaccine arm (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_Spike_Vaccine_BaselineNeg_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Binding Antibody to RBD: baseline negative placebo arm (3 timepoints)"}
+```{r, fig.cap = "Violinplots of Binding Antibody to RBD: baseline negative placebo arm (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_RBD_Placebo_BaselineNeg_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Binding Antibody to RBD: baseline negative vaccine arm (3 timepoints)"}
+```{r, fig.cap = "Violinplots of Binding Antibody to RBD: baseline negative vaccine arm (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_RBD_Vaccine_BaselineNeg_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Pseudovirus Neutralization ID50: baseline negative placebo arm (3 timepoints)"}
+```{r, fig.cap = "Violinplots of Pseudovirus Neutralization ID50: baseline negative placebo arm (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_pnAb_id50_Placebo_BaselineNeg_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm (3 timepoints)"}
+```{r, fig.cap = "Violinplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_pnAb_id50_Vaccine_BaselineNeg_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Pseudovirus Neutralization ID80: baseline negative placebo arm (3 timepoints)"}
+```{r, fig.cap = "Violinplots of Pseudovirus Neutralization ID80: baseline negative placebo arm (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_pnAb_id80_Placebo_BaselineNeg_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm (3 timepoints)"}
+```{r, fig.cap = "Violinplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_pnAb_id80_Vaccine_BaselineNeg_3tp_", study_name, ".pdf")))
 
 ```
 
 
-```{r, fig.cap = "(Mock data) lineplots of Binding Antibody to Spike: baseline negative placebo arm by age (2 timepoints)"}
+```{r, fig.cap = "Lineplots of Binding Antibody to Spike: baseline negative placebo arm by age (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_Spike_Placebo_BaselineNeg_Age_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Binding Antibody to Spike: baseline negative vaccine arm by age (2 timepoints)"}
+```{r, fig.cap = "Lineplots of Binding Antibody to Spike: baseline negative vaccine arm by age (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_Spike_Vaccine_BaselineNeg_Age_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Binding Antibody to RBD: baseline negative placebo arm by age (2 timepoints)"}
+```{r, fig.cap = "Lineplots of Binding Antibody to RBD: baseline negative placebo arm by age (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_RBD_Placebo_BaselineNeg_Age_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Binding Antibody to RBD: baseline negative vaccine arm by age (2 timepoints)"}
+```{r, fig.cap = "Lineplots of Binding Antibody to RBD: baseline negative vaccine arm by age (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_RBD_Vaccine_BaselineNeg_Age_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by age (2 timepoints)"}
+```{r, fig.cap = "Lineplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by age (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_pnAb_id50_Placebo_BaselineNeg_Age_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by age (2 timepoints)"}
+```{r, fig.cap = "Lineplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by age (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_pnAb_id50_Vaccine_BaselineNeg_Age_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by age (2 timepoints)"}
+```{r, fig.cap = "Lineplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by age (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_pnAb_id80_Placebo_BaselineNeg_Age_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by age (2 timepoints)"}
+```{r, fig.cap = "Lineplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by age (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_pnAb_id80_Vaccine_BaselineNeg_Age_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Binding Antibody to Spike: baseline negative placebo arm by age (2 timepoints)"}
+```{r, fig.cap = "Violinplots of Binding Antibody to Spike: baseline negative placebo arm by age (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_Spike_Placebo_BaselineNeg_Age_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Binding Antibody to Spike: baseline negative vaccine arm by age (2 timepoints)"}
+```{r, fig.cap = "Violinplots of Binding Antibody to Spike: baseline negative vaccine arm by age (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_Spike_Vaccine_BaselineNeg_Age_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Binding Antibody to RBD: baseline negative placebo arm by age (2 timepoints)"}
+```{r, fig.cap = "Violinplots of Binding Antibody to RBD: baseline negative placebo arm by age (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_RBD_Placebo_BaselineNeg_Age_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Binding Antibody to RBD: baseline negative vaccine arm by age (2 timepoints)"}
+```{r, fig.cap = "Violinplots of Binding Antibody to RBD: baseline negative vaccine arm by age (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_RBD_Vaccine_BaselineNeg_Age_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by age (2 timepoints)"}
+```{r, fig.cap = "Violinplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by age (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_pnAb_id50_Placebo_BaselineNeg_Age_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by age (2 timepoints)"}
+```{r, fig.cap = "Violinplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by age (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_pnAb_id50_Vaccine_BaselineNeg_Age_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by age (2 timepoints)"}
+```{r, fig.cap = "Violinplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by age (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_pnAb_id80_Placebo_BaselineNeg_Age_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by age (2 timepoints)"}
+```{r, fig.cap = "Violinplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by age (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_pnAb_id80_Vaccine_BaselineNeg_Age_2tp_", study_name, ".pdf")))
 
 ```
 
 
-```{r, fig.cap = "(Mock data) lineplots of Binding Antibody to Spike: baseline negative placebo arm by age (3 timepoints)"}
+```{r, fig.cap = "Lineplots of Binding Antibody to Spike: baseline negative placebo arm by age (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_Spike_Placebo_BaselineNeg_Age_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Binding Antibody to Spike: baseline negative vaccine arm by age (3 timepoints)"}
+```{r, fig.cap = "Lineplots of Binding Antibody to Spike: baseline negative vaccine arm by age (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_Spike_Vaccine_BaselineNeg_Age_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Binding Antibody to RBD: baseline negative placebo arm by age (3 timepoints)"}
+```{r, fig.cap = "Lineplots of Binding Antibody to RBD: baseline negative placebo arm by age (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_RBD_Placebo_BaselineNeg_Age_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Binding Antibody to RBD: baseline negative vaccine arm by age (3 timepoints)"}
+```{r, fig.cap = "Lineplots of Binding Antibody to RBD: baseline negative vaccine arm by age (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_RBD_Vaccine_BaselineNeg_Age_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by age (3 timepoints)"}
+```{r, fig.cap = "Lineplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by age (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_pnAb_id50_Placebo_BaselineNeg_Age_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by age (3 timepoints)"}
+```{r, fig.cap = "Lineplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by age (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_pnAb_id50_Vaccine_BaselineNeg_Age_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by age (3 timepoints)"}
+```{r, fig.cap = "Lineplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by age (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_pnAb_id80_Placebo_BaselineNeg_Age_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by age (3 timepoints)"}
+```{r, fig.cap = "Lineplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by age (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_pnAb_id80_Vaccine_BaselineNeg_Age_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Binding Antibody to Spike: baseline negative placebo arm by age (3 timepoints)"}
+```{r, fig.cap = "Violinplots of Binding Antibody to Spike: baseline negative placebo arm by age (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_Spike_Placebo_BaselineNeg_Age_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Binding Antibody to Spike: baseline negative vaccine arm by age (3 timepoints)"}
+```{r, fig.cap = "Violinplots of Binding Antibody to Spike: baseline negative vaccine arm by age (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_Spike_Vaccine_BaselineNeg_Age_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Binding Antibody to RBD: baseline negative placebo arm by age (3 timepoints)"}
+```{r, fig.cap = "Violinplots of Binding Antibody to RBD: baseline negative placebo arm by age (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_RBD_Placebo_BaselineNeg_Age_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Binding Antibody to RBD: baseline negative vaccine arm by age (3 timepoints)"}
+```{r, fig.cap = "Violinplots of Binding Antibody to RBD: baseline negative vaccine arm by age (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_RBD_Vaccine_BaselineNeg_Age_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by age (3 timepoints)"}
+```{r, fig.cap = "Violinplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by age (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_pnAb_id50_Placebo_BaselineNeg_Age_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by age (3 timepoints)"}
+```{r, fig.cap = "Violinplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by age (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_pnAb_id50_Vaccine_BaselineNeg_Age_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by age (3 timepoints)"}
+```{r, fig.cap = "Violinplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by age (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_pnAb_id80_Placebo_BaselineNeg_Age_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by age (3 timepoints)"}
+```{r, fig.cap = "Violinplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by age (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_pnAb_id80_Vaccine_BaselineNeg_Age_3tp_", study_name, ".pdf")))
 
 ```
 
 
-```{r, fig.cap = "(Mock data) lineplots of Binding Antibody to Spike: baseline negative placebo arm by risk condition (2 timepoints)"}
+```{r, fig.cap = "Lineplots of Binding Antibody to Spike: baseline negative placebo arm by risk condition (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_Spike_Placebo_BaselineNeg_Risk_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Binding Antibody to Spike: baseline negative vaccine arm by risk condition (2 timepoints)"}
+```{r, fig.cap = "Lineplots of Binding Antibody to Spike: baseline negative vaccine arm by risk condition (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_Spike_Vaccine_BaselineNeg_Risk_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Binding Antibody to RBD: baseline negative placebo arm by risk condition (2 timepoints)"}
+```{r, fig.cap = "Lineplots of Binding Antibody to RBD: baseline negative placebo arm by risk condition (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_RBD_Placebo_BaselineNeg_Risk_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Binding Antibody to RBD: baseline negative vaccine arm by risk condition (2 timepoints)"}
+```{r, fig.cap = "Lineplots of Binding Antibody to RBD: baseline negative vaccine arm by risk condition (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_RBD_Vaccine_BaselineNeg_Risk_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by risk condition (2 timepoints)"}
+```{r, fig.cap = "Lineplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by risk condition (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_pnAb_id50_Placebo_BaselineNeg_Risk_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by risk condition (2 timepoints)"}
+```{r, fig.cap = "Lineplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by risk condition (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_pnAb_id50_Vaccine_BaselineNeg_Risk_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by risk condition (2 timepoints)"}
+```{r, fig.cap = "Lineplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by risk condition (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_pnAb_id80_Placebo_BaselineNeg_Risk_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by risk condition (2 timepoints)"}
+```{r, fig.cap = "Lineplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by risk condition (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_pnAb_id80_Vaccine_BaselineNeg_Risk_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Binding Antibody to Spike: baseline negative placebo arm by risk condition (2 timepoints)"}
+```{r, fig.cap = "Violinplots of Binding Antibody to Spike: baseline negative placebo arm by risk condition (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_Spike_Placebo_BaselineNeg_Risk_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Binding Antibody to Spike: baseline negative vaccine arm by risk condition (2 timepoints)"}
+```{r, fig.cap = "Violinplots of Binding Antibody to Spike: baseline negative vaccine arm by risk condition (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_Spike_Vaccine_BaselineNeg_Risk_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Binding Antibody to RBD: baseline negative placebo arm by risk condition (2 timepoints)"}
+```{r, fig.cap = "Violinplots of Binding Antibody to RBD: baseline negative placebo arm by risk condition (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_RBD_Placebo_BaselineNeg_Risk_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Binding Antibody to RBD: baseline negative vaccine arm by risk condition (2 timepoints)"}
+```{r, fig.cap = "Violinplots of Binding Antibody to RBD: baseline negative vaccine arm by risk condition (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_RBD_Vaccine_BaselineNeg_Risk_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by risk condition (2 timepoints)"}
+```{r, fig.cap = "Violinplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by risk condition (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_pnAb_id50_Placebo_BaselineNeg_Risk_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by risk condition (2 timepoints)"}
+```{r, fig.cap = "Violinplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by risk condition (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_pnAb_id50_Vaccine_BaselineNeg_Risk_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by risk condition (2 timepoints)"}
+```{r, fig.cap = "Violinplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by risk condition (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_pnAb_id80_Placebo_BaselineNeg_Risk_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by risk condition (2 timepoints)"}
+```{r, fig.cap = "Violinplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by risk condition (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_pnAb_id80_Vaccine_BaselineNeg_Risk_2tp_", study_name, ".pdf")))
 
 ```
 
 
-```{r, fig.cap = "(Mock data) lineplots of Binding Antibody to Spike: baseline negative placebo arm by risk condition (3 timepoints)"}
+```{r, fig.cap = "Lineplots of Binding Antibody to Spike: baseline negative placebo arm by risk condition (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_Spike_Placebo_BaselineNeg_Risk_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Binding Antibody to Spike: baseline negative vaccine arm by risk condition (3 timepoints)"}
+```{r, fig.cap = "Lineplots of Binding Antibody to Spike: baseline negative vaccine arm by risk condition (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_Spike_Vaccine_BaselineNeg_Risk_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Binding Antibody to RBD: baseline negative placebo arm by risk condition (3 timepoints)"}
+```{r, fig.cap = "Lineplots of Binding Antibody to RBD: baseline negative placebo arm by risk condition (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_RBD_Placebo_BaselineNeg_Risk_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Binding Antibody to RBD: baseline negative vaccine arm by risk condition (3 timepoints)"}
+```{r, fig.cap = "Lineplots of Binding Antibody to RBD: baseline negative vaccine arm by risk condition (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_RBD_Vaccine_BaselineNeg_Risk_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by risk condition (3 timepoints)"}
+```{r, fig.cap = "Lineplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by risk condition (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_pnAb_id50_Placebo_BaselineNeg_Risk_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by risk condition (3 timepoints)"}
+```{r, fig.cap = "Lineplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by risk condition (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_pnAb_id50_Vaccine_BaselineNeg_Risk_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by risk condition (3 timepoints)"}
+```{r, fig.cap = "Lineplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by risk condition (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_pnAb_id80_Placebo_BaselineNeg_Risk_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by risk condition (3 timepoints)"}
+```{r, fig.cap = "Lineplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by risk condition (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_pnAb_id80_Vaccine_BaselineNeg_Risk_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Binding Antibody to Spike: baseline negative placebo arm by risk condition (3 timepoints)"}
+```{r, fig.cap = "Violinplots of Binding Antibody to Spike: baseline negative placebo arm by risk condition (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_Spike_Placebo_BaselineNeg_Risk_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Binding Antibody to Spike: baseline negative vaccine arm by risk condition (3 timepoints)"}
+```{r, fig.cap = "Violinplots of Binding Antibody to Spike: baseline negative vaccine arm by risk condition (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_Spike_Vaccine_BaselineNeg_Risk_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Binding Antibody to RBD: baseline negative placebo arm by risk condition (3 timepoints)"}
+```{r, fig.cap = "Violinplots of Binding Antibody to RBD: baseline negative placebo arm by risk condition (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_RBD_Placebo_BaselineNeg_Risk_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Binding Antibody to RBD: baseline negative vaccine arm by risk condition (3 timepoints)"}
+```{r, fig.cap = "Violinplots of Binding Antibody to RBD: baseline negative vaccine arm by risk condition (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_RBD_Vaccine_BaselineNeg_Risk_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by risk condition (3 timepoints)"}
+```{r, fig.cap = "Violinplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by risk condition (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_pnAb_id50_Placebo_BaselineNeg_Risk_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by risk condition (3 timepoints)"}
+```{r, fig.cap = "Violinplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by risk condition (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_pnAb_id50_Vaccine_BaselineNeg_Risk_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by risk condition (3 timepoints)"}
+```{r, fig.cap = "Violinplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by risk condition (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_pnAb_id80_Placebo_BaselineNeg_Risk_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by risk condition (3 timepoints)"}
+```{r, fig.cap = "Violinplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by risk condition (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_pnAb_id80_Vaccine_BaselineNeg_Risk_3tp_", study_name, ".pdf")))
 
@@ -777,194 +777,194 @@ study_name = "mock"
 
 
 
-```{r, fig.cap = "(Mock data) lineplots of Binding Antibody to Spike: baseline negative placebo arm by age and risk condition (2 timepoints)"}
+```{r, fig.cap = "Lineplots of Binding Antibody to Spike: baseline negative placebo arm by age and risk condition (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_Spike_Placebo_BaselineNeg_Age_Risk_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Binding Antibody to Spike: baseline negative vaccine arm by age and risk condition (2 timepoints)"}
+```{r, fig.cap = "Lineplots of Binding Antibody to Spike: baseline negative vaccine arm by age and risk condition (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_Spike_Vaccine_BaselineNeg_Age_Risk_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Binding Antibody to RBD: baseline negative placebo arm by age and risk condition (2 timepoints)"}
+```{r, fig.cap = "Lineplots of Binding Antibody to RBD: baseline negative placebo arm by age and risk condition (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_RBD_Placebo_BaselineNeg_Age_Risk_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Binding Antibody to RBD: baseline negative vaccine arm by age and risk condition (2 timepoints)"}
+```{r, fig.cap = "Lineplots of Binding Antibody to RBD: baseline negative vaccine arm by age and risk condition (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_RBD_Vaccine_BaselineNeg_Age_Risk_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by age and risk condition (2 timepoints)"}
+```{r, fig.cap = "Lineplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by age and risk condition (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_pnAb_id50_Placebo_BaselineNeg_Age_Risk_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by age and risk condition (2 timepoints)"}
+```{r, fig.cap = "Lineplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by age and risk condition (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_pnAb_id50_Vaccine_BaselineNeg_Age_Risk_2tp_", study_name, ".pdf")))
  
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by age and risk condition (2 timepoints)"}
+```{r, fig.cap = "Lineplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by age and risk condition (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_pnAb_id80_Placebo_BaselineNeg_Age_Risk_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by age and risk condition (2 timepoints)"}
+```{r, fig.cap = "Lineplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by age and risk condition (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_pnAb_id80_Vaccine_BaselineNeg_Age_Risk_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Binding Antibody to Spike: baseline negative placebo arm by age and risk condition (2 timepoints)"}
+```{r, fig.cap = "Violinplots of Binding Antibody to Spike: baseline negative placebo arm by age and risk condition (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_Spike_Placebo_BaselineNeg_Age_Risk_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Binding Antibody to Spike: baseline negative vaccine arm by age and risk condition (2 timepoints)"}
+```{r, fig.cap = "Violinplots of Binding Antibody to Spike: baseline negative vaccine arm by age and risk condition (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_Spike_Vaccine_BaselineNeg_Age_Risk_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Binding Antibody to RBD: baseline negative placebo arm by age and risk condition (2 timepoints)"}
+```{r, fig.cap = "Violinplots of Binding Antibody to RBD: baseline negative placebo arm by age and risk condition (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_RBD_Placebo_BaselineNeg_Age_Risk_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Binding Antibody to RBD: baseline negative vaccine arm by age and risk condition (2 timepoints)"}
+```{r, fig.cap = "Violinplots of Binding Antibody to RBD: baseline negative vaccine arm by age and risk condition (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_RBD_Vaccine_BaselineNeg_Age_Risk_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by age and risk condition (2 timepoints)"}
+```{r, fig.cap = "Violinplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by age and risk condition (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_pnAb_id50_Placebo_BaselineNeg_Age_Risk_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by age and risk condition (2 timepoints)"}
+```{r, fig.cap = "Violinplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by age and risk condition (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_pnAb_id50_Vaccine_BaselineNeg_Age_Risk_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by age and risk condition (2 timepoints)"}
+```{r, fig.cap = "Violinplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by age and risk condition (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_pnAb_id80_Placebo_BaselineNeg_Age_Risk_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by age and risk condition (2 timepoints)"}
+```{r, fig.cap = "Violinplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by age and risk condition (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_pnAb_id80_Vaccine_BaselineNeg_Age_Risk_2tp_", study_name, ".pdf")))
 
 ```
 
 
-```{r, fig.cap = "(Mock data) lineplots of Binding Antibody to Spike: baseline negative placebo arm by age and risk condition (3 timepoints)"}
+```{r, fig.cap = "Lineplots of Binding Antibody to Spike: baseline negative placebo arm by age and risk condition (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_Spike_Placebo_BaselineNeg_Age_Risk_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Binding Antibody to Spike: baseline negative vaccine arm by age and risk condition (3 timepoints)"}
+```{r, fig.cap = "Lineplots of Binding Antibody to Spike: baseline negative vaccine arm by age and risk condition (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_Spike_Vaccine_BaselineNeg_Age_Risk_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Binding Antibody to RBD: baseline negative placebo arm by age and risk condition (3 timepoints)"}
+```{r, fig.cap = "Lineplots of Binding Antibody to RBD: baseline negative placebo arm by age and risk condition (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_RBD_Placebo_BaselineNeg_Age_Risk_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Binding Antibody to RBD: baseline negative vaccine arm by age and risk condition (3 timepoints)"}
+```{r, fig.cap = "Lineplots of Binding Antibody to RBD: baseline negative vaccine arm by age and risk condition (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_RBD_Vaccine_BaselineNeg_Age_Risk_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by age and risk condition (3 timepoints)"}
+```{r, fig.cap = "Lineplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by age and risk condition (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_pnAb_id50_Placebo_BaselineNeg_Age_Risk_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by age and risk condition (3 timepoints)"}
+```{r, fig.cap = "Lineplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by age and risk condition (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_pnAb_id50_Vaccine_BaselineNeg_Age_Risk_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by age and risk condition (3 timepoints)"}
+```{r, fig.cap = "Lineplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by age and risk condition (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_pnAb_id80_Placebo_BaselineNeg_Age_Risk_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by age and risk condition (3 timepoints)"}
+```{r, fig.cap = "Lineplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by age and risk condition (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_pnAb_id80_Vaccine_BaselineNeg_Age_Risk_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Binding Antibody to Spike: baseline negative placebo arm by age and risk condition (3 timepoints)"}
+```{r, fig.cap = "Violinplots of Binding Antibody to Spike: baseline negative placebo arm by age and risk condition (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_Spike_Placebo_BaselineNeg_Age_Risk_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Binding Antibody to Spike: baseline negative vaccine arm by age and risk condition (3 timepoints)"}
+```{r, fig.cap = "Violinplots of Binding Antibody to Spike: baseline negative vaccine arm by age and risk condition (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_Spike_Vaccine_BaselineNeg_Age_Risk_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Binding Antibody to RBD: baseline negative placebo arm by age and risk condition (3 timepoints)"}
+```{r, fig.cap = "Violinplots of Binding Antibody to RBD: baseline negative placebo arm by age and risk condition (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_RBD_Placebo_BaselineNeg_Age_Risk_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Binding Antibody to RBD: baseline negative vaccine arm by age and risk condition (3 timepoints)"}
+```{r, fig.cap = "Violinplots of Binding Antibody to RBD: baseline negative vaccine arm by age and risk condition (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_RBD_Vaccine_BaselineNeg_Age_Risk_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by age and risk condition (3 timepoints)"}
+```{r, fig.cap = "Violinplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by age and risk condition (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_pnAb_id50_Placebo_BaselineNeg_Age_Risk_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by age and risk condition (3 timepoints)"}
+```{r, fig.cap = "Violinplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by age and risk condition (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_pnAb_id50_Vaccine_BaselineNeg_Age_Risk_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by age and risk condition (3 timepoints)"}
+```{r, fig.cap = "Violinplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by age and risk condition (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_pnAb_id80_Placebo_BaselineNeg_Age_Risk_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by age and risk condition (3 timepoints)"}
+```{r, fig.cap = "Violinplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by age and risk condition (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_pnAb_id80_Vaccine_BaselineNeg_Age_Risk_3tp_", study_name, ".pdf")))
 
@@ -972,194 +972,194 @@ study_name = "mock"
 
 
 
-```{r, fig.cap = "(Mock data) lineplots of Binding Antibody to Spike: baseline negative placebo arm by sex assigned at birth (2 timepoints)"}
+```{r, fig.cap = "Lineplots of Binding Antibody to Spike: baseline negative placebo arm by sex assigned at birth (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_Spike_Placebo_BaselineNeg_Sex_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Binding Antibody to Spike: baseline negative vaccine arm by sex assigned at birth (2 timepoints)"}
+```{r, fig.cap = "Lineplots of Binding Antibody to Spike: baseline negative vaccine arm by sex assigned at birth (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_Spike_Vaccine_BaselineNeg_Sex_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Binding Antibody to RBD: baseline negative placebo arm by sex assigned at birth (2 timepoints)"}
+```{r, fig.cap = "Lineplots of Binding Antibody to RBD: baseline negative placebo arm by sex assigned at birth (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_RBD_Placebo_BaselineNeg_Sex_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Binding Antibody to RBD: baseline negative vaccine arm by sex assigned at birth (2 timepoints)"}
+```{r, fig.cap = "Lineplots of Binding Antibody to RBD: baseline negative vaccine arm by sex assigned at birth (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_RBD_Vaccine_BaselineNeg_Sex_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by sex assigned at birth (2 timepoints)"}
+```{r, fig.cap = "Lineplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by sex assigned at birth (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_pnAb_id50_Placebo_BaselineNeg_Sex_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by sex assigned at birth (2 timepoints)"}
+```{r, fig.cap = "Lineplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by sex assigned at birth (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_pnAb_id50_Vaccine_BaselineNeg_Sex_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by sex assigned at birth (2 timepoints)"}
+```{r, fig.cap = "Lineplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by sex assigned at birth (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_pnAb_id80_Placebo_BaselineNeg_Sex_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by sex assigned at birth (2 timepoints)"}
+```{r, fig.cap = "Lineplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by sex assigned at birth (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_pnAb_id80_Vaccine_BaselineNeg_Sex_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Binding Antibody to Spike: baseline negative placebo arm by sex assigned at birth (2 timepoints)"}
+```{r, fig.cap = "Violinplots of Binding Antibody to Spike: baseline negative placebo arm by sex assigned at birth (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_Spike_Placebo_BaselineNeg_Sex_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Binding Antibody to Spike: baseline negative vaccine arm by sex assigned at birth (2 timepoints)"}
+```{r, fig.cap = "Violinplots of Binding Antibody to Spike: baseline negative vaccine arm by sex assigned at birth (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_Spike_Vaccine_BaselineNeg_Sex_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Binding Antibody to RBD: baseline negative placebo arm by sex assigned at birth (2 timepoints)"}
+```{r, fig.cap = "Violinplots of Binding Antibody to RBD: baseline negative placebo arm by sex assigned at birth (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_RBD_Placebo_BaselineNeg_Sex_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Binding Antibody to RBD: baseline negative vaccine arm by sex assigned at birth (2 timepoints)"}
+```{r, fig.cap = "Violinplots of Binding Antibody to RBD: baseline negative vaccine arm by sex assigned at birth (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_RBD_Vaccine_BaselineNeg_Sex_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by sex assigned at birth (2 timepoints)"}
+```{r, fig.cap = "Violinplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by sex assigned at birth (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_pnAb_id50_Placebo_BaselineNeg_Sex_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by sex assigned at birth (2 timepoints)"}
+```{r, fig.cap = "Violinplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by sex assigned at birth (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_pnAb_id50_Vaccine_BaselineNeg_Sex_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by sex assigned at birth (2 timepoints)"}
+```{r, fig.cap = "Violinplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by sex assigned at birth (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_pnAb_id80_Placebo_BaselineNeg_Sex_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by sex assigned at birth (2 timepoints)"}
+```{r, fig.cap = "Violinplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by sex assigned at birth (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_pnAb_id80_Vaccine_BaselineNeg_Sex_2tp_", study_name, ".pdf")))
 
 ```
 
 
-```{r, fig.cap = "(Mock data) lineplots of Binding Antibody to Spike: baseline negative placebo arm by sex assigned at birth (3 timepoints)"}
+```{r, fig.cap = "Lineplots of Binding Antibody to Spike: baseline negative placebo arm by sex assigned at birth (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_Spike_Placebo_BaselineNeg_Sex_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Binding Antibody to Spike: baseline negative vaccine arm by sex assigned at birth (3 timepoints)"}
+```{r, fig.cap = "Lineplots of Binding Antibody to Spike: baseline negative vaccine arm by sex assigned at birth (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_Spike_Vaccine_BaselineNeg_Sex_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Binding Antibody to RBD: baseline negative placebo arm by sex assigned at birth (3 timepoints)"}
+```{r, fig.cap = "Lineplots of Binding Antibody to RBD: baseline negative placebo arm by sex assigned at birth (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_RBD_Placebo_BaselineNeg_Sex_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Binding Antibody to RBD: baseline negative vaccine arm by sex assigned at birth (3 timepoints)"}
+```{r, fig.cap = "Lineplots of Binding Antibody to RBD: baseline negative vaccine arm by sex assigned at birth (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_RBD_Vaccine_BaselineNeg_Sex_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by sex assigned at birth (3 timepoints)"}
+```{r, fig.cap = "Lineplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by sex assigned at birth (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_pnAb_id50_Placebo_BaselineNeg_Sex_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by sex assigned at birth (3 timepoints)"}
+```{r, fig.cap = "Lineplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by sex assigned at birth (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_pnAb_id50_Vaccine_BaselineNeg_Sex_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by sex assigned at birth (3 timepoints)"}
+```{r, fig.cap = "Lineplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by sex assigned at birth (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_pnAb_id80_Placebo_BaselineNeg_Sex_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by sex assigned at birth (3 timepoints)"}
+```{r, fig.cap = "Lineplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by sex assigned at birth (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_pnAb_id80_Vaccine_BaselineNeg_Sex_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Binding Antibody to Spike: baseline negative placebo arm by sex assigned at birth (3 timepoints)"}
+```{r, fig.cap = "Violinplots of Binding Antibody to Spike: baseline negative placebo arm by sex assigned at birth (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_Spike_Placebo_BaselineNeg_Sex_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Binding Antibody to Spike: baseline negative vaccine arm by sex assigned at birth (3 timepoints)"}
+```{r, fig.cap = "Violinplots of Binding Antibody to Spike: baseline negative vaccine arm by sex assigned at birth (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_Spike_Vaccine_BaselineNeg_Sex_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Binding Antibody to RBD: baseline negative placebo arm by sex assigned at birth (3 timepoints)"}
+```{r, fig.cap = "Violinplots of Binding Antibody to RBD: baseline negative placebo arm by sex assigned at birth (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_RBD_Placebo_BaselineNeg_Sex_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Binding Antibody to RBD: baseline negative vaccine arm by sex assigned at birth (3 timepoints)"}
+```{r, fig.cap = "Violinplots of Binding Antibody to RBD: baseline negative vaccine arm by sex assigned at birth (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_RBD_Vaccine_BaselineNeg_Sex_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by sex assigned at birth (3 timepoints)"}
+```{r, fig.cap = "Violinplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by sex assigned at birth (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_pnAb_id50_Placebo_BaselineNeg_Sex_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by sex assigned at birth (3 timepoints)"}
+```{r, fig.cap = "Violinplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by sex assigned at birth (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_pnAb_id50_Vaccine_BaselineNeg_Sex_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by sex assigned at birth (3 timepoints)"}
+```{r, fig.cap = "Violinplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by sex assigned at birth (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_pnAb_id80_Placebo_BaselineNeg_Sex_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by sex assigned at birth (3 timepoints)"}
+```{r, fig.cap = "Violinplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by sex assigned at birth (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_pnAb_id80_Vaccine_BaselineNeg_Sex_3tp_", study_name, ".pdf")))
 
@@ -1167,459 +1167,459 @@ study_name = "mock"
 
 
 
-```{r, fig.cap = "(Mock data) lineplots of Binding Antibody to Spike: baseline negative placebo arm by race and ethnic group (2 timepoints)"}
+```{r, fig.cap = "Lineplots of Binding Antibody to Spike: baseline negative placebo arm by race and ethnic group (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_Spike_Placebo_BaselineNeg_RaceEthnic_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Binding Antibody to Spike: baseline negative vaccine arm by race and ethnic group (2 timepoints)"}
+```{r, fig.cap = "Lineplots of Binding Antibody to Spike: baseline negative vaccine arm by race and ethnic group (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_Spike_Vaccine_BaselineNeg_RaceEthnic_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Binding Antibody to RBD: baseline negative placebo arm by race and ethnic group (2 timepoints)"}
+```{r, fig.cap = "Lineplots of Binding Antibody to RBD: baseline negative placebo arm by race and ethnic group (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_RBD_Placebo_BaselineNeg_RaceEthnic_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Binding Antibody to RBD: baseline negative vaccine arm by race and ethnic group (2 timepoints)"}
+```{r, fig.cap = "Lineplots of Binding Antibody to RBD: baseline negative vaccine arm by race and ethnic group (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_RBD_Vaccine_BaselineNeg_RaceEthnic_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by race and ethnic group (2 timepoints)"}
+```{r, fig.cap = "Lineplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by race and ethnic group (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_pnAb_id50_Placebo_BaselineNeg_RaceEthnic_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by race and ethnic group (2 timepoints)"}
+```{r, fig.cap = "Lineplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by race and ethnic group (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_pnAb_id50_Vaccine_BaselineNeg_RaceEthnic_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by race and ethnic group (2 timepoints)"}
+```{r, fig.cap = "Lineplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by race and ethnic group (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_pnAb_id80_Placebo_BaselineNeg_RaceEthnic_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by race and ethnic group (2 timepoints)"}
+```{r, fig.cap = "Lineplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by race and ethnic group (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_pnAb_id80_Vaccine_BaselineNeg_RaceEthnic_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Binding Antibody to Spike: baseline negative placebo arm by race and ethnic group (2 timepoints)"}
+```{r, fig.cap = "Violinplots of Binding Antibody to Spike: baseline negative placebo arm by race and ethnic group (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_Spike_Placebo_BaselineNeg_RaceEthnic_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Binding Antibody to Spike: baseline negative vaccine arm by race and ethnic group (2 timepoints)"}
+```{r, fig.cap = "Violinplots of Binding Antibody to Spike: baseline negative vaccine arm by race and ethnic group (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_Spike_Vaccine_BaselineNeg_RaceEthnic_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Binding Antibody to RBD: baseline negative placebo arm by race and ethnic group (2 timepoints)"}
+```{r, fig.cap = "Violinplots of Binding Antibody to RBD: baseline negative placebo arm by race and ethnic group (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_RBD_Placebo_BaselineNeg_RaceEthnic_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Binding Antibody to RBD: baseline negative vaccine arm by race and ethnic group (2 timepoints)"}
+```{r, fig.cap = "Violinplots of Binding Antibody to RBD: baseline negative vaccine arm by race and ethnic group (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_RBD_Vaccine_BaselineNeg_RaceEthnic_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by race and ethnic group (2 timepoints)"}
+```{r, fig.cap = "Violinplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by race and ethnic group (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_pnAb_id50_Placebo_BaselineNeg_RaceEthnic_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by race and ethnic group (2 timepoints)"}
+```{r, fig.cap = "Violinplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by race and ethnic group (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_pnAb_id50_Vaccine_BaselineNeg_RaceEthnic_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by race and ethnic group (2 timepoints)"}
+```{r, fig.cap = "Violinplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by race and ethnic group (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_pnAb_id80_Placebo_BaselineNeg_RaceEthnic_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by race and ethnic group (2 timepoints)"}
+```{r, fig.cap = "Violinplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by race and ethnic group (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_pnAb_id80_Vaccine_BaselineNeg_RaceEthnic_2tp_", study_name, ".pdf")))
 
 ```
 
 
-```{r, fig.cap = "(Mock data) lineplots of Binding Antibody to Spike: baseline negative placebo arm by race and ethnic group (3 timepoints)"}
+```{r, fig.cap = "Lineplots of Binding Antibody to Spike: baseline negative placebo arm by race and ethnic group (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_Spike_Placebo_BaselineNeg_RaceEthnic_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Binding Antibody to Spike: baseline negative vaccine arm by race and ethnic group (3 timepoints)"}
+```{r, fig.cap = "Lineplots of Binding Antibody to Spike: baseline negative vaccine arm by race and ethnic group (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_Spike_Vaccine_BaselineNeg_RaceEthnic_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Binding Antibody to RBD: baseline negative placebo arm by race and ethnic group (3 timepoints)"}
+```{r, fig.cap = "Lineplots of Binding Antibody to RBD: baseline negative placebo arm by race and ethnic group (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_RBD_Placebo_BaselineNeg_RaceEthnic_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Binding Antibody to RBD: baseline negative vaccine arm by race and ethnic group (3 timepoints)"}
+```{r, fig.cap = "Lineplots of Binding Antibody to RBD: baseline negative vaccine arm by race and ethnic group (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_RBD_Vaccine_BaselineNeg_RaceEthnic_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by race and ethnic group (3 timepoints)"}
+```{r, fig.cap = "Lineplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by race and ethnic group (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_pnAb_id50_Placebo_BaselineNeg_RaceEthnic_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by race and ethnic group (3 timepoints)"}
+```{r, fig.cap = "Lineplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by race and ethnic group (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_pnAb_id50_Vaccine_BaselineNeg_RaceEthnic_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by race and ethnic group (3 timepoints)"}
+```{r, fig.cap = "Lineplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by race and ethnic group (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_pnAb_id80_Placebo_BaselineNeg_RaceEthnic_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by race and ethnic group (3 timepoints)"}
+```{r, fig.cap = "Lineplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by race and ethnic group (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_pnAb_id80_Vaccine_BaselineNeg_RaceEthnic_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Binding Antibody to Spike: baseline negative placebo arm by race and ethnic group (3 timepoints)"}
+```{r, fig.cap = "Violinplots of Binding Antibody to Spike: baseline negative placebo arm by race and ethnic group (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_Spike_Placebo_BaselineNeg_RaceEthnic_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Binding Antibody to Spike: baseline negative vaccine arm by race and ethnic group (3 timepoints)"}
+```{r, fig.cap = "Violinplots of Binding Antibody to Spike: baseline negative vaccine arm by race and ethnic group (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_Spike_Vaccine_BaselineNeg_RaceEthnic_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Binding Antibody to RBD: baseline negative placebo arm by race and ethnic group (3 timepoints)"}
+```{r, fig.cap = "Violinplots of Binding Antibody to RBD: baseline negative placebo arm by race and ethnic group (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_RBD_Placebo_BaselineNeg_RaceEthnic_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Binding Antibody to RBD: baseline negative vaccine arm by race and ethnic group (3 timepoints)"}
+```{r, fig.cap = "Violinplots of Binding Antibody to RBD: baseline negative vaccine arm by race and ethnic group (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_RBD_Vaccine_BaselineNeg_RaceEthnic_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by race and ethnic group (3 timepoints)"}
+```{r, fig.cap = "Violinplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by race and ethnic group (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_pnAb_id50_Placebo_BaselineNeg_RaceEthnic_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by race and ethnic group (3 timepoints)"}
+```{r, fig.cap = "Violinplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by race and ethnic group (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_pnAb_id50_Vaccine_BaselineNeg_RaceEthnic_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by race and ethnic group (3 timepoints)"}
+```{r, fig.cap = "Violinplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by race and ethnic group (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_pnAb_id80_Placebo_BaselineNeg_RaceEthnic_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by race and ethnic group (3 timepoints)"}
+```{r, fig.cap = "Violinplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by race and ethnic group (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_pnAb_id80_Vaccine_BaselineNeg_RaceEthnic_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Binding Antibody to Spike: baseline negative placebo arm by dichotomous classification of race and ethnic group (2 timepoints)"}
+```{r, fig.cap = "Lineplots of Binding Antibody to Spike: baseline negative placebo arm by dichotomous classification of race and ethnic group (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_Spike_Placebo_BaselineNeg_Dich_RaceEthnic_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Binding Antibody to Spike: baseline negative vaccine arm by dichotomous classification of race and ethnic group (2 timepoints)"}
+```{r, fig.cap = "Lineplots of Binding Antibody to Spike: baseline negative vaccine arm by dichotomous classification of race and ethnic group (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_Spike_Vaccine_BaselineNeg_Dich_RaceEthnic_2tp_", study_name, ".pdf")))
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Binding Antibody to RBD: baseline negative placebo arm by dichotomous classification of race and ethnic group (2 timepoints)"}
+```{r, fig.cap = "Lineplots of Binding Antibody to RBD: baseline negative placebo arm by dichotomous classification of race and ethnic group (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_RBD_Placebo_BaselineNeg_Dich_RaceEthnic_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Binding Antibody to RBD: baseline negative vaccine arm by dichotomous classification of race and ethnic group (2 timepoints)"}
+```{r, fig.cap = "Lineplots of Binding Antibody to RBD: baseline negative vaccine arm by dichotomous classification of race and ethnic group (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_RBD_Vaccine_BaselineNeg_Dich_RaceEthnic_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by dichotomous classification of race and ethnic group (2 timepoints)"}
+```{r, fig.cap = "Lineplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by dichotomous classification of race and ethnic group (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_pnAb_id50_Placebo_BaselineNeg_Dich_RaceEthnic_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by dichotomous classification of race and ethnic group (2 timepoints)"}
+```{r, fig.cap = "Lineplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by dichotomous classification of race and ethnic group (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_pnAb_id50_Vaccine_BaselineNeg_Dich_RaceEthnic_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by dichotomous classification of race and ethnic group (2 timepoints)"}
+```{r, fig.cap = "Lineplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by dichotomous classification of race and ethnic group (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_pnAb_id80_Placebo_BaselineNeg_Dich_RaceEthnic_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by dichotomous classification of race and ethnic group (2 timepoints)"}
+```{r, fig.cap = "Lineplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by dichotomous classification of race and ethnic group (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_pnAb_id80_Vaccine_BaselineNeg_Dich_RaceEthnic_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Binding Antibody to Spike: baseline negative placebo arm by dichotomous classification of race and ethnic group (2 timepoints)"}
+```{r, fig.cap = "Violinplots of Binding Antibody to Spike: baseline negative placebo arm by dichotomous classification of race and ethnic group (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_Spike_Placebo_BaselineNeg_Dich_RaceEthnic_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Binding Antibody to Spike: baseline negative vaccine arm by dichotomous classification of race and ethnic group (2 timepoints)"}
+```{r, fig.cap = "Violinplots of Binding Antibody to Spike: baseline negative vaccine arm by dichotomous classification of race and ethnic group (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_Spike_Vaccine_BaselineNeg_Dich_RaceEthnic_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Binding Antibody to RBD: baseline negative placebo arm by dichotomous classification of race and ethnic group (2 timepoints)"}
+```{r, fig.cap = "Violinplots of Binding Antibody to RBD: baseline negative placebo arm by dichotomous classification of race and ethnic group (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_RBD_Placebo_BaselineNeg_Dich_RaceEthnic_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Binding Antibody to RBD: baseline negative vaccine arm by dichotomous classification of race and ethnic group (2 timepoints)"}
+```{r, fig.cap = "Violinplots of Binding Antibody to RBD: baseline negative vaccine arm by dichotomous classification of race and ethnic group (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_RBD_Vaccine_BaselineNeg_Dich_RaceEthnic_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by dichotomous classification of race and ethnic group (2 timepoints)"}
+```{r, fig.cap = "Violinplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by dichotomous classification of race and ethnic group (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_pnAb_id50_Placebo_BaselineNeg_Dich_RaceEthnic_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by dichotomous classification of race and ethnic group (2 timepoints)"}
+```{r, fig.cap = "Violinplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by dichotomous classification of race and ethnic group (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_pnAb_id50_Vaccine_BaselineNeg_Dich_RaceEthnic_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by dichotomous classification of race and ethnic group (2 timepoints)"}
+```{r, fig.cap = "Violinplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by dichotomous classification of race and ethnic group (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_pnAb_id80_Placebo_BaselineNeg_Dich_RaceEthnic_2tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by dichotomous classification of race and ethnic group (2 timepoints)"}
+```{r, fig.cap = "Violinplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by dichotomous classification of race and ethnic group (2 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_pnAb_id80_Vaccine_BaselineNeg_Dich_RaceEthnic_2tp_", study_name, ".pdf")))
 
 ```
 
 
-```{r, fig.cap = "(Mock data) lineplots of Binding Antibody to Spike: baseline negative placebo arm by dichotomous classification of race and ethnic group (3 timepoints)"}
+```{r, fig.cap = "Lineplots of Binding Antibody to Spike: baseline negative placebo arm by dichotomous classification of race and ethnic group (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_Spike_Placebo_BaselineNeg_Dich_RaceEthnic_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Binding Antibody to Spike: baseline negative vaccine arm by dichotomous classification of race and ethnic group (3 timepoints)"}
+```{r, fig.cap = "Lineplots of Binding Antibody to Spike: baseline negative vaccine arm by dichotomous classification of race and ethnic group (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_Spike_Vaccine_BaselineNeg_Dich_RaceEthnic_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Binding Antibody to RBD: baseline negative placebo arm by dichotomous classification of race and ethnic group (3 timepoints)"}
+```{r, fig.cap = "Lineplots of Binding Antibody to RBD: baseline negative placebo arm by dichotomous classification of race and ethnic group (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_RBD_Placebo_BaselineNeg_Dich_RaceEthnic_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Binding Antibody to RBD: baseline negative vaccine arm by dichotomous classification of race and ethnic group (3 timepoints)"}
+```{r, fig.cap = "Lineplots of Binding Antibody to RBD: baseline negative vaccine arm by dichotomous classification of race and ethnic group (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_RBD_Vaccine_BaselineNeg_Dich_RaceEthnic_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by dichotomous classification of race and ethnic group (3 timepoints)"}
+```{r, fig.cap = "Lineplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by dichotomous classification of race and ethnic group (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_pnAb_id50_Placebo_BaselineNeg_Dich_RaceEthnic_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by dichotomous classification of race and ethnic group (3 timepoints)"}
+```{r, fig.cap = "Lineplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by dichotomous classification of race and ethnic group (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_pnAb_id50_Vaccine_BaselineNeg_Dich_RaceEthnic_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by dichotomous classification of race and ethnic group (3 timepoints)"}
+```{r, fig.cap = "Lineplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by dichotomous classification of race and ethnic group (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_pnAb_id80_Placebo_BaselineNeg_Dich_RaceEthnic_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) lineplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by dichotomous classification of race and ethnic group (3 timepoints)"}
+```{r, fig.cap = "Lineplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by dichotomous classification of race and ethnic group (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("linebox_pnAb_id80_Vaccine_BaselineNeg_Dich_RaceEthnic_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Binding Antibody to Spike: baseline negative placebo arm by dichotomous classification of race and ethnic group (3 timepoints)"}
+```{r, fig.cap = "Violinplots of Binding Antibody to Spike: baseline negative placebo arm by dichotomous classification of race and ethnic group (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_Spike_Placebo_BaselineNeg_Dich_RaceEthnic_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Binding Antibody to Spike: baseline negative vaccine arm by dichotomous classification of race and ethnic group (3 timepoints)"}
+```{r, fig.cap = "Violinplots of Binding Antibody to Spike: baseline negative vaccine arm by dichotomous classification of race and ethnic group (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_Spike_Vaccine_BaselineNeg_Dich_RaceEthnic_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Binding Antibody to RBD: baseline negative placebo arm by dichotomous classification of race and ethnic group (3 timepoints)"}
+```{r, fig.cap = "Violinplots of Binding Antibody to RBD: baseline negative placebo arm by dichotomous classification of race and ethnic group (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_RBD_Placebo_BaselineNeg_Dich_RaceEthnic_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Binding Antibody to RBD: baseline negative vaccine arm by dichotomous classification of race and ethnic group (3 timepoints)"}
+```{r, fig.cap = "Violinplots of Binding Antibody to RBD: baseline negative vaccine arm by dichotomous classification of race and ethnic group (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_RBD_Vaccine_BaselineNeg_Dich_RaceEthnic_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by dichotomous classification of race and ethnic group (3 timepoints)"}
+```{r, fig.cap = "Violinplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by dichotomous classification of race and ethnic group (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_pnAb_id50_Placebo_BaselineNeg_Dich_RaceEthnic_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by dichotomous classification of race and ethnic group (3 timepoints)"}
+```{r, fig.cap = "Violinplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by dichotomous classification of race and ethnic group (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_pnAb_id50_Vaccine_BaselineNeg_Dich_RaceEthnic_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by dichotomous classification of race and ethnic group (3 timepoints)"}
+```{r, fig.cap = "Violinplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by dichotomous classification of race and ethnic group (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_pnAb_id80_Placebo_BaselineNeg_Dich_RaceEthnic_3tp_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) violinplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by dichotomous classification of race and ethnic group (3 timepoints)"}
+```{r, fig.cap = "Violinplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by dichotomous classification of race and ethnic group (3 timepoints)"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("violinbox_pnAb_id80_Vaccine_BaselineNeg_Dich_RaceEthnic_3tp_", study_name, ".pdf")))
 
 ```
 
 
-```{r, fig.cap = "(Mock data) scatterplots of Binding Antibody to Spike: baseline negative vaccine arm at day 1"}
+```{r, fig.cap = "Scatterplots of Binding Antibody to Spike: baseline negative vaccine arm at day 1"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("scatter_Spike_Vaccine_BaselineNeg_Day1_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) scatterplots of Binding Antibody to Spike: baseline negative vaccine arm at day 29"}
+```{r, fig.cap = "Scatterplots of Binding Antibody to Spike: baseline negative vaccine arm at day 29"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("scatter_Spike_Vaccine_BaselineNeg_Day29_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) scatterplots of Binding Antibody to Spike: baseline negative vaccine arm at day 57"}
+```{r, fig.cap = "Scatterplots of Binding Antibody to Spike: baseline negative vaccine arm at day 57"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("scatter_Spike_Vaccine_BaselineNeg_Day57_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) scatterplots of Binding Antibody to RBD: baseline negative vaccine arm at day 1"}
+```{r, fig.cap = "Scatterplots of Binding Antibody to RBD: baseline negative vaccine arm at day 1"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("scatter_RBD_Vaccine_BaselineNeg_Day1_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) scatterplots of Binding Antibody to RBD: baseline negative vaccine arm at day 29"}
+```{r, fig.cap = "Scatterplots of Binding Antibody to RBD: baseline negative vaccine arm at day 29"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("scatter_RBD_Vaccine_BaselineNeg_Day29_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) scatterplots of Binding Antibody to RBD: baseline negative vaccine arm at day 57"}
+```{r, fig.cap = "Scatterplots of Binding Antibody to RBD: baseline negative vaccine arm at day 57"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("scatter_RBD_Vaccine_BaselineNeg_Day57_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) scatterplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm at day 1"}
+```{r, fig.cap = "Scatterplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm at day 1"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("scatter_pnAb_id50_Vaccine_BaselineNeg_Day1_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) scatterplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm at day 29"}
+```{r, fig.cap = "Scatterplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm at day 29"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("scatter_pnAb_id50_Vaccine_BaselineNeg_Day29_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) scatterplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm at day 57"}
+```{r, fig.cap = "Scatterplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm at day 57"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("scatter_pnAb_id50_Vaccine_BaselineNeg_Day57_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) scatterplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm at day 1"}
+```{r, fig.cap = "Scatterplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm at day 1"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("scatter_pnAb_id80_Vaccine_BaselineNeg_Day1_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) scatterplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm at day 29"}
+```{r, fig.cap = "Scatterplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm at day 29"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("scatter_pnAb_id80_Vaccine_BaselineNeg_Day29_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) scatterplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm at day 57"}
+```{r, fig.cap = "Scatterplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm at day 57"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("scatter_pnAb_id80_Vaccine_BaselineNeg_Day57_", study_name, ".pdf")))
 
@@ -1627,73 +1627,73 @@ study_name = "mock"
 
 
 
-```{r, fig.cap = "(Mock data) scatterplots of Binding Antibody to Spike: by arm at day 1"}
+```{r, fig.cap = "Scatterplots of Binding Antibody to Spike: by arm at day 1"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("scatter_Spike_all_Day1_", study_name, ".pdf"))
 )
 ```
 
-```{r, fig.cap = "(Mock data) scatterplots of Binding Antibody to Spike: by arm at day 29"}
+```{r, fig.cap = "Scatterplots of Binding Antibody to Spike: by arm at day 29"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("scatter_Spike_all_Day29_", study_name, ".pdf"))
 )
 ```
 
-```{r, fig.cap = "(Mock data) scatterplots of Binding Antibody to Spike: by arm at day 57"}
+```{r, fig.cap = "Scatterplots of Binding Antibody to Spike: by arm at day 57"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("scatter_Spike_all_Day57_", study_name, ".pdf"))
 )
 ```
 
-```{r, fig.cap = "(Mock data) scatterplots of Binding Antibody to RBD: by arm at day 1"}
+```{r, fig.cap = "Scatterplots of Binding Antibody to RBD: by arm at day 1"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("scatter_RBD_all_Day1_", study_name, ".pdf"))
 )
 ```
 
-```{r, fig.cap = "(Mock data) scatterplots of Binding Antibody to RBD: by arm at day 29"}
+```{r, fig.cap = "Scatterplots of Binding Antibody to RBD: by arm at day 29"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("scatter_RBD_all_Day29_", study_name, ".pdf"))
 )
 ```
 
-```{r, fig.cap = "(Mock data) scatterplots of Binding Antibody to RBD: by arm at day 57"}
+```{r, fig.cap = "Scatterplots of Binding Antibody to RBD: by arm at day 57"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("scatter_RBD_all_Day57_", study_name, ".pdf"))
 )
 ```
 
-```{r, fig.cap = "(Mock data) scatterplots of Pseudovirus Neutralization ID50: by arm at day 1"}
+```{r, fig.cap = "Scatterplots of Pseudovirus Neutralization ID50: by arm at day 1"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("scatter_pnAb_id50_all_Day1_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) scatterplots of Pseudovirus Neutralization ID50: by arm at day 29"}
+```{r, fig.cap = "Scatterplots of Pseudovirus Neutralization ID50: by arm at day 29"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("scatter_pnAb_id50_all_Day29_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) scatterplots of Pseudovirus Neutralization ID50: by arm at day 57"}
+```{r, fig.cap = "Scatterplots of Pseudovirus Neutralization ID50: by arm at day 57"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("scatter_pnAb_id50_all_Day57_", study_name, ".pdf")))
  
 ```
 
-```{r, fig.cap = "(Mock data) scatterplots of Pseudovirus Neutralization ID80: by arm at day 1"}
+```{r, fig.cap = "Scatterplots of Pseudovirus Neutralization ID80: by arm at day 1"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("scatter_pnAb_id80_all_Day1_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) scatterplots of Pseudovirus Neutralization ID80: by arm at day 29"}
+```{r, fig.cap = "Scatterplots of Pseudovirus Neutralization ID80: by arm at day 29"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("scatter_pnAb_id80_all_Day29_", study_name, ".pdf")))
 
 ```
 
-```{r, fig.cap = "(Mock data) scatterplots of Pseudovirus Neutralization ID80: by arm at day 57"}
+```{r, fig.cap = "Scatterplots of Pseudovirus Neutralization ID80: by arm at day 57"}
     
     knitr::include_graphics(here::here("cor_graphical", "figs", paste0("scatter_pnAb_id80_all_Day57_", study_name, ".pdf")))
 ```

@@ -298,11 +298,14 @@ ggally_cor_resample <- function(
       corvec <- rep(NA, B)
       set.seed(seed)
       resamp_mat <- sapply(1:B, function(ii) sample.int(n = nn, replace = TRUE, prob = wt))
-      ## write.csv(resamp_mat, "output_row_number.csv", row.names = FALSE)
+      # write.csv(data.frame(x = x, y = y), "input_columns.csv", row.names = FALSE)
+      
+      # write.csv(resamp_mat, "output_row_number.csv", row.names = FALSE)
       for (bb in seq_len(B)) {
         resamp_vec <- resamp_mat[, bb]
         x_resamp <- x[resamp_vec]
         y_resamp <- y[resamp_vec]
+        # write.csv(data.frame(x = x_resamp, y = y_resamp), "input_columns_last_resamp.csv", row.names = FALSE)
         st_resamp <- strata[resamp_vec]
 
         suppressWarnings(st_resamp_dummy <-
@@ -330,12 +333,11 @@ ggally_cor_resample <- function(
 
         # make sure all values have X-many decimal places
         corvec[bb] <- ifelse(class(corObj) == "try-error",
-          cor(resamp_data$x, resamp_data$y,
-            method = method
-          ),
+          NA,
           corObj
         )
       }
+      # saveRDS(corvec, file = "corvec.RDS")
       cor_est <- mean(corvec, na.rm = TRUE)
       cor_txt <- formatC(cor_est, digits = digits, format = "f")
       cor_txt

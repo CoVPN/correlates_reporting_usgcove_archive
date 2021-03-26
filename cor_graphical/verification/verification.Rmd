@@ -1,0 +1,96 @@
+---
+title: Correlates of Risk Plots Verification Documentation
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output: pdf_document
+---
+
+# Overview
+
+This document indicates the script, author, verification script, and verification author of the files contained within the parent folder. To verify the images generated, the two scripts use the same base mock data. Then the input data used to generate the plots was recreated, and compared to ensure they are the same. Any statistics shown in the final plots were recreated manually and verified.
+
+## Signatures
+
+```{r signatures}
+library(knitr)
+library(tibble)
+
+signature_table <- function(people){
+  # check that the tables have correct variables
+  if (!all(c("role", "name", "title") %in% tolower(names(people)))) {
+    stop(paste0("people table must have variables: role, name, and title. ",
+                "Contains: ", paste0(tolower(names(people)), collapse = ", ")))
+  }
+  
+  people$signature <- NA
+  people$date <- NA
+  names(people) <- tolower(names(people))
+  people[, c("role", "name", "signature", "date")] %>% 
+    # mutate_all(linebreak) %>% 
+  kable(col.names = c("Role", "Name", "Signature", "Date"),
+        escape = FALSE, booktabs = FALSE) %>% 
+    kable_styling(full_width = FALSE, position = "left") %>% 
+    row_spec(0, background = rgb(184, 204, 228, maxColorValue = 255)) %>% 
+    column_spec(1, width = "9em", border_left = TRUE) %>% 
+    column_spec(2, width = "11em") %>% 
+    column_spec(3, width = "15em") %>% 
+    column_spec(4, width = "8em", border_right = TRUE)
+}
+
+tibble::tribble(
+  ~ name,                ~ role,
+  "Dr. Peter Gilbert",  "Specifier/Manager",
+  "Dr. David Benkeser", "Programmer",
+  "Nima Hejazi",        "Programmer",
+  "Kendric Li",         "Programmer",
+  "Yiwen Lu",           "Programmer",
+  "Di Lu",              "Tester" 
+) %>% 
+  signature_table()
+
+```
+
+##
+
+## Original Scripts
+
+The scripts used to generate the original outputs. These live within the `immuno_graphical/code` folder.
+
+----
+- Script: params.R
+- Author(s): Kendric Li, Nima Hejazi, David Benkeser
+- Last Edit Date: January 21, 2021
+- Description: 
+
+----
+- Script: cor_data_preprocess.R
+- Author(s): Kendric Li, Yiwen Lu, Nima Hejazi, David Benkeser
+- Last Edit Date: February 25, 2021
+- Description: 
+
+----
+- Script: cor_wrcdf_plot_function.R
+- Author(s): Kendric Li, Nima Hejazi, David Benkeser
+- Last Edit Date: January 21, 2021
+- Description: 
+
+----
+- Script: CoR_wrcdf_with_VE_lines.R
+- Author(s): Kendric Li, Nima Hejazi, David Benkeser
+- Last Edit Date: January 21, 2021
+- Description: 
+
+----
+- Script: cor_graphics_violin_scatter.R
+- Author(s): Yiwen Lu, Nima Hejazi, David Benkeser
+- Last Edit Date: February 25, 2021
+- Description: 
+
+
+## Verification Scripts
+
+The scripts used to verify the outputs of the original outputs. These live within the `cor_graphical/verification` folder.
+
+----
+Verification Script:
+Verification Author:
+Verification Date:

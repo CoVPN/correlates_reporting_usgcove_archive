@@ -1,0 +1,4 @@
+data_clean/*.Rdata
+figs/*.png
+figs/*.pdf
+output/*.Rdata

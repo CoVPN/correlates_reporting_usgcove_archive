@@ -273,8 +273,8 @@ groupby_vars1=c("Trt", "Bserostatus", "cohort_event", "time", "assay")
 
 dat.longer.cor.subset.plot1 <-
   dat.longer.cor.subset %>% group_by_at(groupby_vars1) %>%
-  mutate(num = sum(response),
-         denom=n(),
+  mutate(num = round(sum(response*wt.2), 1),
+         denom = round(sum(wt.2), 1),
          RespRate = paste0(num,"/",denom,"=\n",round(num/denom*100, 1),"%"))
 saveRDS(dat.longer.cor.subset.plot1, file = here("data_clean", "longer_cor_data_plot1.rds"))
 
@@ -292,8 +292,8 @@ groupby_vars3 <- c("Trt", "Bserostatus", "cohort_event", "time", "assay", "age_g
 
 dat.longer.cor.subset.plot3 <-
   dat.longer.cor.subset %>% group_by_at(groupby_vars3) %>%
-  mutate(num = sum(response),
-         denom=n(),
+  mutate(num = round(sum(response*wt.2), 1),
+         denom = round(sum(wt.2) ,1),
          RespRate = paste0(num,"/",denom,"=\n",round(num/denom*100, 1),"%"))
 saveRDS(dat.longer.cor.subset.plot3, file = here("data_clean", "longer_cor_data_plot3.rds"))
 

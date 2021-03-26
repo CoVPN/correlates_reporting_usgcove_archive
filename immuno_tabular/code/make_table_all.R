@@ -30,13 +30,19 @@ options(survey.lonely.psu="adjust")
 num_v1 <- c("Age") # Summaries - Mean & Range
 num_v2 <- c("BMI") # Summaries - Mean & St.d
 cat_v <- c("Age", "Risk for Severe Covid-19", "Sex", "Race", 
-           "Hispanic or Latino ethnicity", "Risk for Severe Covid-19")
+           "Hispanic or Latino ethnicity", "Risk for Severe Covid-19", 
+           "Age, Risk for Severe Covid-19")
 
 # Stack a Arm = "Total" to the original data
 ds_long_ttl <- bind_rows(
   ds_long %>% mutate(Arm = "Total"),
   ds_long
-)
+) %>% 
+  mutate(subgroup_cat = case_when(
+    subgroup=="Age, Risk for Severe Covid-19" & 
+      grepl("$\\geq$", subgroup_cat, fixed=T)~"Age $\\geq$ 65",
+    is.na(subgroup_cat) ~ "Missing data",
+    TRUE ~ subgroup_cat))
 
 # Calculate % for categorical covariates
 dm_cat <- inner_join(
@@ -88,7 +94,8 @@ tab_dm <- full_join(
          subgroup = factor(subgroup, 
                            levels = c("Age", "BMI", "Sex", "Race", 
                                       "Hispanic or Latino ethnicity", 
-                                      "Risk for Severe Covid-19"))) %>%
+                                      "Risk for Severe Covid-19", 
+                                      "Age, Risk for Severe Covid-19"))) %>%
   inner_join(ds_long_ttl %>% 
                distinct(`Baseline SARS-CoV-2`, Arm, Ptid) %>% 
                group_by(`Baseline SARS-CoV-2`, Arm) %>%
@@ -100,7 +107,7 @@ tab_dm <- full_join(
               names_sort = T,
               values_from = c(rslt)) %>%
   mutate(Characteristics = factor(subgroup_cat,
-                                  levels=c("Age $\\geq$ 65","Age $<$ 65",
+                                  levels=c("Age $<$ 65", "Age $\\geq$ 65",
                                            "Mean (Range)","Mean $\\pm$ SD",
                                            "Female","Male",
                                            "White Non-Hispanic ",
@@ -114,7 +121,8 @@ tab_dm <- full_join(
                                            "Communities of Color",
                                            "Hispanic or Latino","Not Hispanic or Latino",
                                            "Not reported and unknown ",
-                                           "At-risk","Not at-risk"))) %>% 
+                                           "At-risk","Not at-risk",
+                                           "Age $<$ 65 At-risk","Age $<$ 65 Not at-risk"))) %>% 
   arrange(`Baseline SARS-CoV-2`, subgroup, Characteristics)
 
 tab_dm_pos <- tab_dm %>% 

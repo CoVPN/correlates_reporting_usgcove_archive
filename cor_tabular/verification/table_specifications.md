@@ -20,7 +20,7 @@ Non-cases/Controls are defined as per-protocol participants sampled into the ran
 Title: Demographic
 Column names: Characteristics, Placebo (N = ),	Vaccine (N = ),	Total (N = )
 
-1. List the categories, frequencies (n), and proportions (%) by baseline COVID status and assigned arms for: Age (<65, >=65), Sex (Female, Male), Hispanic or Latino ethnicity (Hispanic or Latino, Not Hispanic or Latino, Not reported and unknown), Race (Asian, Black or African American, Multiracial, Native Hawaiian or Other Pacific Islander, White, White Non-Hispanic, Other, Not reported and unknown), Risk for Severe Covid-19 (At-risk, Not at-risk). Within each covariate, the categories are listed by descending frequency.
+1. List the categories, frequencies (n), and proportions (%) by baseline COVID status and assigned arms for: Age (<65, >=65), Sex (Female, Male), Hispanic or Latino ethnicity (Hispanic or Latino, Not Hispanic or Latino, Not reported and unknown), Race (Asian, Black or African American, Multiracial, Native Hawaiian or Other Pacific Islander, White, White Non-Hispanic, Other, Not reported and unknown), Risk for Severe Covid-19 (At-risk, Not at-risk), Age x Risk for Severe Covid-19 (<65 At risk, <65 Not at risk, >=65). Within each covariate, the categories are listed by descending frequency.
 2. List the mean and range for: Age
 3. List the mean and sd for: BMI
 4. The results are separate into two tables by baseline COVID status and displayed in a wide format by arms: Placebo, Vaccine, Total (placebo and vaccine). The total count of each arm should be displayed in the column.

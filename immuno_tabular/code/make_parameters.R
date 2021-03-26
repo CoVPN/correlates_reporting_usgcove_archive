@@ -16,7 +16,7 @@ tlf <-
       the baseline SARS-CoV-2 negative per-protocol cohort",
       table_footer = "This table summarises the random subcohort, which
       was randomly sampled from the per-protocol individuals without a COVID failure
-      event < 7 days post Day 57. The sampling was stratified by the key baseline 
+      event $<$ 7 days post Day 57. The sampling was stratified by the key baseline 
       covariates: assigned treatment arm, baseline SARS-CoV-2 status 
       (defined by serostatus and possibly also NAAT and/or RNA PCR testing), 
       any additional important demographic factors such as the randomization strata 
@@ -31,7 +31,7 @@ tlf <-
       the baseline SARS-CoV-2 positive per-protocol cohort",
       table_footer = "This table summarises the random subcohort, which
       was randomly sampled from the per-protocol individuals without a COVID failure
-      event < 7 days post Day 57. The sampling was stratified by the key baseline 
+      event $<$ 7 days post Day 57. The sampling was stratified by the key baseline 
       covariates: assigned treatment arm, baseline SARS-CoV-2 status 
       (defined by serostatus and possibly also NAAT and/or RNA PCR testing), 
       any additional important demographic factors such as the randomization strata 

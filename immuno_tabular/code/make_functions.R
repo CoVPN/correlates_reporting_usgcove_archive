@@ -8,9 +8,11 @@
 setLOD <- function(x,
                    uloq = Inf,
                    llod = -Inf) {
+  
+  llod.half <- ifelse(is.infinite(llod), llod, log10(round(llod, 0)/2))
   llod <- ifelse(is.infinite(llod), llod, log10(llod))
   uloq <- log10(uloq)
-  x <- ifelse(x < llod, llod - log10(2), x)
+  x <- ifelse(x < llod, llod.half, x)
   x <- ifelse(x > uloq, uloq, x)
 }
 
@@ -82,9 +84,71 @@ setDelta <- function(data, marker, timepoints, time.ref = NA) {
   for (i in 1:nrow(timepairs)){
     t1 <- timepairs[i, 1]
     t2 <- timepairs[i, 2]
-    ret[, paste0("Delta", t2, "over", t1, marker)] <- data[paste0(t2, marker)] - data[paste0(t1, marker)]
+    ret[, gsub("Day", "", paste0("Delta", t2, "over", t1, marker))] <- data[paste0(t2, marker)] - data[paste0(t1, marker)]
   }
   return(ret)
+}
+
+
+#' Wrapper function to generate response rates based on svyciprop()
+#'
+#' @param x The dataframe used for the svydesign() data argument
+#' @param sug_grp_col A formula specifying factors that define subsets to run the model, used for svyby() by argument
+#' @param stratum The stratum used for svydesign()
+#' @param weights The weights used for svydesign()
+get_rr <- function(x, weights, stratum, sub_grp_col){
+  cat("TableRR of ", paste(mutate_at(x, sub_grp_col, as.character) %>% 
+                            distinct_at(sub_grp_col) , collapse = ", "),
+      "\n")
+  if (nrow(x)>1) {
+    ret <- svyciprop(~ response, svydesign(ids = ~ Ptid, 
+                                           strata = as.formula(sprintf("~%s", stratum)),
+                                           weights = as.formula(sprintf("~%s", weights)),
+                                           data = x))
+    ret <- x %>% 
+      distinct_at(sub_grp_col) %>% 
+      mutate(response = ret['response'], 
+             ci_l = attributes(ret)$ci['2.5%'], 
+             ci_u = attributes(ret)$ci['97.5%'])
+  } else{
+    ret <- x %>% 
+      mutate(ci_l = NaN, 
+             ci_u = NaN) %>% 
+      distinct_at(c(sub_grp_col, "response", "ci_l", "ci_u"))
+  }
+  ret
+}
+
+
+
+#' Wrapper function to generate ratio of geometric mean based on svymean()
+#'
+#' @param x The dataframe used for the svydesign() data argument
+#' @param sug_grp_col A formula specifying factors that define subsets to run the model, used for svyby() by argument
+#' @param stratum The stratum used for svydesign()
+#' @param weights The weights used for svydesign()
+get_gm <- function(x, weights, stratum, sub_grp_col){
+  cat("TableGM of ", paste(mutate_at(x, sub_grp_col, as.character) %>% 
+                             distinct_at(sub_grp_col) , collapse = ", "),
+      "\n")
+  if (nrow(x)>1) {
+    ret <- svymean(~ mag, svydesign(ids = ~ Ptid, 
+                                           strata = as.formula(sprintf("~%s", stratum)),
+                                           weights = as.formula(sprintf("~%s", weights)),
+                                           data = x))
+    ret <- x %>% 
+      distinct_at(sub_grp_col) %>% 
+      mutate(mag = ret['mag'], 
+             ci_l = confint(ret)[,'2.5 %'], 
+             ci_u = confint(ret)[,'97.5 %'])
+  } else{
+    ret <- x %>% 
+      mutate(mag = mag, 
+             ci_l = mag, 
+             ci_u = mag) %>% 
+      distinct_at(c(sub_grp_col, "mag", "ci_l", "ci_u"))
+  }
+  ret
 }
 
 #' Wrapper function to generate ratio of geometric magnitude based on svyglm()

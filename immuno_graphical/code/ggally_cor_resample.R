@@ -298,15 +298,17 @@ ggally_cor_resample <- function(
       corvec <- rep(NA, B)
       set.seed(seed)
       resamp_mat <- sapply(1:B, function(ii) sample.int(n = nn, replace = TRUE, prob = wt))
-      # write.csv(data.frame(x = x, y = y), "input_columns.csv", row.names = FALSE)
+      # write.csv(data.frame(x = x, y = y, strata = st), "input_columns.csv", row.names = FALSE)
       
       # write.csv(resamp_mat, "output_row_number.csv", row.names = FALSE)
       for (bb in seq_len(B)) {
         resamp_vec <- resamp_mat[, bb]
         x_resamp <- x[resamp_vec]
         y_resamp <- y[resamp_vec]
-        # write.csv(data.frame(x = x_resamp, y = y_resamp), "input_columns_last_resamp.csv", row.names = FALSE)
-        st_resamp <- strata[resamp_vec]
+        st_resamp <- st[resamp_vec]
+        
+        # write.csv(data.frame(x = x_resamp, y = y_resamp, strata = st_resamp), "input_columns_last_resamp.csv", row.names = FALSE)
+
 
         suppressWarnings(st_resamp_dummy <-
           dummies::dummy(st_resamp, sep = "_"))

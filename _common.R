@@ -21,6 +21,8 @@ assays <- c(
   #"liveneutmn50"
 )
 
+include_bindN <- TRUE
+
 times <- c("B", "Day29", "Day57", "Delta29overB", "Delta57overB", "Delta57over29")
 
 markers <- c(outer(times[1:3], assays, "%.%"))
@@ -118,6 +120,7 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   #cache = TRUE,
   out.width = "80%",
+  out.extra = "",
   fig.align = "center",
   fig.width = 6,
   fig.asp = 0.618,
@@ -127,8 +130,7 @@ knitr::opts_chunk$set(
   echo = FALSE,
   message = FALSE,
   warning = FALSE,
-  fig.pos = "ht",
-  out.extra = ""
+  fig.pos = "H"
 )
 
 # global options

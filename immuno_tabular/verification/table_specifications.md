@@ -13,16 +13,17 @@ Non-cases/Controls are defined as per-protocol participants sampled into the ran
 9. Define the covariate "Hispanic or Latino Ethnicity" as: Hispanic or Latino(`EthnicityHispanic==1`); Not Hispanic or Latino(`EthnicityHispanic==0 & EthnicityNotreported==0 & EthnicityUnknown==0`); Not reported and unknown (`(EthnicityNotreported==1 | EthnicityUnknown==1)`)
 10. Define the covariate "Underrepresented Minority Status in the U.S." as White Non-Hispanic(`WhiteNonHispanic==1`); Communities of Color(`WhiteNonHispanic==0`)
 11. The race subgroup "White" is define as `WhiteNonHispanic==1`
+12. Set `options(survey.lonely.psu="adjust")` to avoid error message for stratums that contain only one participant.
 
 
 ## Table 1. Demographics 
 Title: Demographic
 Column names: Characteristics, Placebo (N = ),	Vaccine (N = ),	Total (N = )
 
-1. List the categories, frequencies (n), and proportions (%) for: Age (<65, >=65), Sex (Female, Male), Hispanic or Latino ethnicity (Hispanic or Latino, Not Hispanic or Latino, Not reported and unknown), Race (Asian, Black or African American, Multiracial, Native Hawaiian or Other Pacific Islander, White, White Non-Hispanic, Other, Not reported and unknown), Risk for Severe Covid-19 (At-risk, Not at-risk). Within each covariate, the categories are listed by descending frequency.
+1. List the categories, frequencies (n), and proportions (%) by baseline COVID status and assigned arms for: Age (<65, >=65), Sex (Female, Male), Hispanic or Latino ethnicity (Hispanic or Latino, Not Hispanic or Latino, Not reported and unknown), Race (Asian, Black or African American, Multiracial, Native Hawaiian or Other Pacific Islander, White, White Non-Hispanic, Other, Not reported and unknown), Risk for Severe Covid-19 (At-risk, Not at-risk), Age x Risk for Severe Covid-19 (<65 At risk, <65 Not at risk, >=65). Within each covariate, the categories are listed by descending frequency.
 2. List the mean and range for: Age
 3. List the mean and sd for: BMI
-4. The table is displayed in a wide format by arms: Placebo, Vaccine, Total (placebo and vaccine). The total count of each arm should be displayed in the column.
+4. The results are separate into two tables by baseline COVID status and displayed in a wide format by arms: Placebo, Vaccine, Total (placebo and vaccine). The total count of each arm should be displayed in the column.
 
 
 ## Table 2-4. Responder Proportion Table
@@ -34,9 +35,10 @@ Footers:
 
 Tables 2-4 include post-enrollment visits only as pre-enrollment visits don't have responders by the definition of responders.
 
-1. Table 2a: Calculate the weighted (`wt.subcohort`) proportion and 95% CI of responders, participants with concentrations >= 2 x LLOD or >= 4 x LLOD for binding antibody markers (Anti N IgG (IU/ml), Anti Spike IgG (IU/ml), Anti RBD IgG (IU/ml)) by visit, arm, baseline COVID status and marker. The estimation used `survey::svyciprop(~ response, design = svydesign(ids = ~ Ptid, strata = ~ tps.stratum, weights = ~ wt.subcohort, data = data))`, where `response` represents the binary endpoints (responder, 2llod, 4llod), and `data` contains the subcohort participants only.
-2. For each binary endpoint (responder, 2llod, 4llod), show the counts of participants with indicator = 1 (n) and the counts of the subgroup (N, each subgroup is a combination of visit, arm, baseline COVID status and marker) in the format of "n/N=pct%". Here n & N are weighted: n=sum(response * `wt.subcohort`); N=sum(`wt.subcohort`).
-3. Repeat Step 1 & 2 by subgroups for Table 2b-2j: 
+1. Table 2a: Calculate the weighted (`wt.subcohort`) proportion and 95% CI of responders, participants with concentrations >= 2 x LLOD or >= 4 x LLOD for binding antibody markers (Anti N IgG (IU/ml), Anti Spike IgG (IU/ml), Anti RBD IgG (IU/ml)) by visit, arm, baseline COVID status and marker. The estimation used `prop.est <- survey::svyciprop(~ response, design = svydesign(ids = ~ Ptid, strata = ~ tps.stratum, weights = ~ wt.subcohort, data = data))`, where `response` represents the binary endpoints (responder, 2llod, 4llod), and `data` contains the subcohort participants only. 
+2. The 95% CI could be extracted from the attributes of the result from last step `attributes(prop.est)$ci`.
+3. For each binary endpoint (responder, 2llod, 4llod), show the counts of participants with indicator = 1 (n) and the counts of the subgroup (N, each subgroup is a combination of visit, arm, baseline COVID status and marker) in the format of "n/N=pct%". Here n & N are weighted: n=sum(response * `wt.subcohort`); N=sum(`wt.subcohort`).
+4. Repeat Step 1 - 3 by subgroups for Table 2b-2j: 
   b. Age (<65, >=65)
   c. Risk for Severe COVID (At risk, Not at risk)
   d. Age x Risk for Severe COVID (< 65 At risk, < 65 Not at risk, >= 65 At risk, >= 65 Not at risk)
@@ -53,9 +55,10 @@ Column names: Group, Visit, Arm, Baseline, Marker, N, Responder, % 2-Fold Rise, 
 Footers:
 - Neutralization Responders are defined as participants who had baseline values below the lower limit of detection (LLOD) with detectable ID50 neutralization titer above the assay LLOD, or as participants with baseline values above the LLOD with a 4-fold increase in ID50.
 
-1. Table 3a: Calculate the weighted (`wt.subcohort`) proportion and 95% CI of responders, participants with ID50 >= 2 Fold-rise or >= 4 Fold-rise for ID50 pseudo-virus neutralization antibody markers (Pseudovirus-nAb ID50) by visit, arm, baseline COVID status and marker. The estimation used `survey::svyciprop(~ response, svydesign(ids = ~ Ptid, strata = ~ tps.stratum, weights = ~ wt.subcohort, data = data))`, where `response` represents the binary endpoints (responder, FR2, FR4),and `data` contains the subcohort participants only.
-2. For each binary endpoint (responder, FR2, FR4), show the counts of participants with indicator = 1 (n) and the counts of the subgroup (N, each subgroup is a combination of visit, arm, baseline COVID status and marker) in the format of "n/N=pct%". Here n & N are weighted: n=sum(response * `wt.subcohort`); N=sum(`wt.subcohort`).
-3. Repeat Step 1 & 2 by subgroups listed in Table 2 Step 3 for Table 3b-3j. 
+1. Table 3a: Calculate the weighted (`wt.subcohort`) proportion and 95% CI of responders, participants with ID50 >= 2 Fold-rise or >= 4 Fold-rise for ID50 pseudo-virus neutralization antibody markers (Pseudovirus-nAb ID50) by visit, arm, baseline COVID status and marker. The estimation used `prop.est <- survey::svyciprop(~ response, svydesign(ids = ~ Ptid, strata = ~ tps.stratum, weights = ~ wt.subcohort, data = data))`, where `response` represents the binary endpoints (responder, FR2, FR4),and `data` contains the subcohort participants only.
+2. The 95% CI could be extracted from the attributes of the result from last step `attributes(prop.est)$ci`.
+3. For each binary endpoint (responder, FR2, FR4), show the counts of participants with indicator = 1 (n) and the counts of the subgroup (N, each subgroup is a combination of visit, arm, baseline COVID status and marker) in the format of "n/N=pct%". Here n & N are weighted: n=sum(response * `wt.subcohort`); N=sum(`wt.subcohort`).
+4. Repeat Step 1 - 3 by subgroups listed in Table 2 Step 3 for Table 3b-3j. 
 
 Table 4.
 Title: Percentage of responders, and participants participants with 2-fold rise, and participants with 4-fold rise for MN50 WT live virus neutralization antibody markers
@@ -63,9 +66,10 @@ Column names: Group, Visit, Arm, Baseline, Marker, N, Responder, % 2-Fold Rise, 
 Footers:
 - Neutralization Responders are defined as participants who had baseline values below the lower limit of detection (LLOD) with detectable ID50 neutralization titer above the assay LLOD, or as participants with baseline values above the LLOD with a 4-fold increase in ID50.
 
-1. Table 4a: Calculate the weighted (`wt.subcohort`) proportion and 95% CI of responders, participants with ID50 >= 2 Fold-rise or >= 4 Fold-rise for MN50 WT live virus neutralization antibody markers (Live virus-nAb MN50) by visit, arm, baseline COVID status and marker. The calculation used `survey::svyciprop(~ response, svydesign(ids = ~ Ptid, strata = ~ tps.stratum, weights = ~ wt.subcohort, data = data))`, where `response` represents the binary C(responder, FR2, FR4), and `data` contains the subcohort participants only.
-2. For each binary endpoint (responder, FR2, FR4), show the counts of participants with indicator = 1 (n) and the counts of the subgroup (N, each subgroup is a combination of visit, arm, baseline COVID status and marker) in the format of "n/N=pct%". Here n & N are weighted: n=sum(response * `wt.subcohort`); N=sum(`wt.subcohort`).
-3.  Repeat Step 1 & 2 by subgroups listed in Table 2 Step 3 for Table 4b-4j
+1. Table 4a: Calculate the weighted (`wt.subcohort`) proportion and 95% CI of responders, participants with ID50 >= 2 Fold-rise or >= 4 Fold-rise for MN50 WT live virus neutralization antibody markers (Live virus-nAb MN50) by visit, arm, baseline COVID status and marker. The calculation used `prop.est <- survey::svyciprop(~ response, svydesign(ids = ~ Ptid, strata = ~ tps.stratum, weights = ~ wt.subcohort, data = data))`, where `response` represents the binary endpoints (responder, FR2, FR4), and `data` contains the subcohort participants only.
+2. The 95% CI could be extracted from the attributes of the result from last step `attributes(prop.est)$ci`.
+3. For each binary endpoint (responder, FR2, FR4), show the counts of participants with indicator = 1 (n) and the counts of the subgroup (N, each subgroup is a combination of visit, arm, baseline COVID status and marker) in the format of "n/N=pct%". Here n & N are weighted: n=sum(response * `wt.subcohort`); N=sum(`wt.subcohort`).
+4.  Repeat Step 1 - 3 by subgroups listed in Table 2 Step 3 for Table 4b-4j
 
 ## Table 5. Geometric mean titers (GMTs) and geometric mean concentrations (GMCs)
 Title: Geometric mean titers (GMTs) and geometric mean concentrations (GMCs)
@@ -143,8 +147,8 @@ Title: Antibody level comparison of Cases vs Non-Cases by baseline COVID status 
 Column names: Visit,	Marker,	Cases(N,	Resp rate,	GMT/GMC),	Non-cases(N, Resp rate,	GMT/GMC),	Comparison(Resp Rate Difference,	GMTR/GMCR)
 
 1. The indicator of Cases and Non-cases is defined in Initial data processing Step 8.
-2. Similar to Table 2a, calculate the weighted (`wt`) proportion and 95% CI of responder, for all markers by visit, case/non-case status, arm, baseline COVID status and marker. The estimation used `survey::svyciprop(~ response, svydesign(ids = ~ Ptid, strata = ~ Wstratum, weights = ~ wt, data = data))`, where `data` contains the subcohort participants only. The responder rates are shown with the counts of responders (n) and the counts of the subgroup (N, each subgroup is a combination of visit, case/non-case status, arm, baseline COVID status, and marker) in the format of "n/N=pct%". Here n & N are weighted: n=sum(response * `wt`); N=sum(`wt`).
-3. Similar to Table 5a, calculate the weighted (`wt`) GMTs/GMCs and 95% CI for all markers by visit, case/non-case status, arm, baseline COVID status and marker: calculate the mean and 95% CI of the log10-magnitudes of the markers, then 10 power the resultsto the linear scale. The estimation of the mean of the log10-magnitudes used `survey::svymean(~ magnitude, svydesign(ids = ~ Ptid, strata = ~ Wstratum, weights = ~ wt, data = data))`, where `data` contains the subcohort participants only. The 95% log10-scaled CI used `base::confint()`.
+2. Similar to Table 2a, calculate the weighted (`wt`) proportion and 95% CI of responder, for all markers by visit, case/non-case status, arm, baseline COVID status and marker. The estimation used `prop.est <- survey::svyciprop(~ response, svydesign(ids = ~ Ptid, strata = ~ Wstratum, weights = ~ wt, data = data))`, where `data` contains the subcohort participants only. The 95% CI is extracted from the attributes `attributes(prop.est)$ci`. The responder rates are shown with the counts of responders (n) and the counts of the subgroup (N, each subgroup is a combination of visit, case/non-case status, arm, baseline COVID status, and marker) in the format of "n/N=pct%". Here n & N are weighted: n=sum(response * `wt`); N=sum(`wt`).
+3. Similar to Table 5a, calculate the weighted (`wt`) GMTs/GMCs and 95% CI for all markers by visit, case/non-case status, arm, baseline COVID status and marker: calculate the mean and 95% CI of the log10-magnitudes of the markers, then 10 power the results to the linear scale. The estimation of the mean of the log10-magnitudes used `survey::svymean(~ magnitude, svydesign(ids = ~ Ptid, strata = ~ Wstratum, weights = ~ wt, data = data))`, where `data` contains the subcohort participants only. The 95% log10-scaled CI used `base::confint()`.
 4. Similar to Table 8, calculate the differences and 95% CI of response rates between Cases vs Non-cases participants, for all markers by visit, case/non-case status, arm, baseline COVID status, and marker: Format the table from step 2 into wide format by case/non-case status, calculate the response rate difference and 95% CI limits using the equation in Table 8 step 1, where $p_{1}$ is the weighted reponse rate of Case participants, $p_{2}$ is the weighted response rate of baseline COVID Non-Cases participants, $L_{1}, U_{1}$ are the 95% CI limits $p_{1}$, and $L_{2}, U_{2}$ are the 95% CI limits of $p_{2}$.
 5. Similar to Table 7, calculate the weighted (`wt`) ratios of GMTs/GMCs and 95% CI between Cases vs Non-cases participants, for all markers by visit, case/non-case status, arm, baseline COVID status, and marker: run the model `survey::svyglm(magnitude ~ case, svydesign(ids = ~ Ptid, strata = ~ Wstratum, weights = ~ wt, data = data))`, where `magnitude` represents the log10-magnitude endpoints, `case` is the indicator defined in step 1, and `data` contains the subcohort participants only. Pull the estimate and 95% CI of the coefficient of `case`, then 10 power the results to the linear scale. The 95% CI used `base::confint()`.
 6. Merge the tables from step 2 & 3 by visit, case/non-case status, arm, baseline COVID status, and marker. Format the columns N, Response rate, GMT/GMC into wide format by case/non-case status. 

@@ -6,7 +6,7 @@ output: pdf_document
 
 Project directory: `correlates_reporting/data_clean`
 
-Specifications: `TBD`
+Specifications: `correlates_reporting/data_clean/verification/dat_clean_specifications.pdf`
 
 Other Background Information: N/A 
 

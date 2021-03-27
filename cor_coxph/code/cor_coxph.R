@@ -1,7 +1,7 @@
 #-----------------------------------------------
 # obligatory to append to the top of each script
 renv::activate(project = here::here(".."))
-    
+
 # There is a bug on Windows that prevents renv from working properly. The following code provides a workaround:
 if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
     
@@ -10,14 +10,14 @@ if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/
 #    renv::restore(library=saved.system.libPaths, prompt=FALSE) # for a quick test, add: packages="backports"
 #    .libPaths(c(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
 #} else renv::restore(prompt=FALSE)
-    
+
 # after updating a package, run renv::snapshot() to override the global library record with your changes
 source(here::here("..", "_common.R"))
 #-----------------------------------------------
 
 source(here::here("code", "params.R"))
 dat.mock <- read.csv(here::here("..", "data_clean", data_name))
-    
+
 library(kyotil) # p.adj.perm, getFormattedSummary
 library(marginalizedRisk)
 library(tools) # toTitleCase
@@ -26,12 +26,12 @@ library(parallel)
 library(forestplot)
 library(Hmisc) # wtd.quantile, cut2
 library(xtable) # this is a dependency of kyotil
-    
+
 # population is either 57 or 29
-Args <- commandArgs(trailingOnly=TRUE) 
-if (length(Args)==0) Args=c(pop="29") 
+Args <- commandArgs(trailingOnly=TRUE)
+if (length(Args)==0) Args=c(pop="29")
 pop=Args[1]; print(pop)
-#
+
 save.results.to = paste0(here::here("output"), "/D", pop,"/");
 if (!dir.exists(save.results.to))  dir.create(save.results.to)
 print(paste0("save.results.to equals ", save.results.to))
@@ -71,13 +71,13 @@ dat.plac.pop$yy=dat.plac.pop[["EventIndPrimaryD"%.%pop]]
 design.vacc.seroneg<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=dat.vacc.pop)
 #
 t0=max(dat.vacc.pop[dat.vacc.pop[["EventIndPrimaryD"%.%pop]]==1, "EventTimePrimaryD"%.%pop]); myprint(t0)
-write(t0, file=paste0(save.results.to, "timepoints_cum_risk_"%.%study.name))
+write(t0, file=paste0(save.results.to, "timepoints_cum_risk_"%.%study_name))
 # trial-specific formula
 form.s = as.formula(paste0("Surv(EventTimePrimaryD",pop,", EventIndPrimaryD",pop,") ~ 1"))
-if (study.name == "mock") {
+if (study_name == "mock") {
     form.0 =            update (form.s, ~.+ MinorityInd + HighRiskInd + Age) #  Age is to be replaced by BRiskScore
     form.0.logistic = as.formula(paste0("EventIndPrimaryD",pop,"  ~ MinorityInd + HighRiskInd + Age"))  #  Age is to be replaced by BRiskScore
-} else if (study.name == "moderna") {
+} else if (study_name == "moderna") {
     form.0 =            update (form.s, ~.+ MinorityInd + HighRiskInd + BRiskScore)
     form.0.logistic = as.formula(paste0("EventIndPrimaryD",pop,"  ~ MinorityInd + HighRiskInd + BRiskScore"))
 } else stop("")
@@ -123,8 +123,8 @@ pvals.cont = sapply(fits, function(x) {
 })
 
 # mean and max followup time in the vaccine arm
-write(round(mean(dat.vacc.pop[["EventTimePrimaryD"%.%pop]])), file=paste0(save.results.to, "CoR_mean_followup_time_vacc_"%.%study.name))
-write(round(max (dat.vacc.pop[["EventTimePrimaryD"%.%pop]])), file=paste0(save.results.to, "CoR_max_followup_time_vacc_"%.% study.name))
+write(round(mean(dat.vacc.pop[["EventTimePrimaryD"%.%pop]])), file=paste0(save.results.to, "CoR_mean_followup_time_vacc_"%.%study_name))
+write(round(max (dat.vacc.pop[["EventTimePrimaryD"%.%pop]])), file=paste0(save.results.to, "CoR_max_followup_time_vacc_"%.% study_name))
 #rv$CoR_mean_followup_time_vacc=mean((dat.vacc.pop[["EventTimePrimaryD"%.%pop]]))
 #rv$CoR_max_followup_time_vacc= max ((dat.vacc.pop[["EventTimePrimaryD"%.%pop]]))
 
@@ -161,7 +161,7 @@ pvals.adj.hol=p.adjust(c(pvals.cont, overall.p.tri), method="holm")
 
 
 #### Westfall and Young permutation-based adjustment
-if(!file.exists(paste0(save.results.to, "pvals.perm.",study.name,".Rdata"))) {
+if(!file.exists(paste0(save.results.to, "pvals.perm.",study_name,".Rdata"))) {
     
     dat.ph2 = design.vacc.seroneg$phase1$sample$variables
     design.vacc.seroneg.perm=design.vacc.seroneg
@@ -201,10 +201,10 @@ if(!file.exists(paste0(save.results.to, "pvals.perm.",study.name,".Rdata"))) {
         out
     })
     pvals.perm=do.call(rbind, out)
-    save(pvals.perm, file=paste0(save.results.to, "pvals.perm."%.%study.name%.%".Rdata"))
+    save(pvals.perm, file=paste0(save.results.to, "pvals.perm."%.%study_name%.%".Rdata"))
     
 } else {
-    load(file=paste0(save.results.to, "pvals.perm."%.%study.name%.%".Rdata"))
+    load(file=paste0(save.results.to, "pvals.perm."%.%study_name%.%".Rdata"))
 }
 
 pvals.adj.perm = p.adj.perm (c(pvals.cont, overall.p.tri), pvals.perm)
@@ -224,9 +224,9 @@ tab.1=cbind(paste0(nevents, "/", format(natrisk, big.mark=",")), t(est), t(ci), 
 rownames(tab.1)=c(labels.axis["Day"%.%pop, assays])
 tab.1
 
-mytex(tab.1, file.name="CoR_univariable_svycoxph_pretty_"%.%study.name, align="c", include.colnames = F, save2input.only=T, input.foldername=save.results.to,
+mytex(tab.1, file.name="CoR_univariable_svycoxph_pretty_"%.%study_name, align="c", include.colnames = F, save2input.only=T, input.foldername=save.results.to,
     col.headers=paste0("\\hline\n 
-         \\multicolumn{1}{l}{", toTitleCase(study.name), "} & \\multicolumn{1}{c}{No. cases /}   & \\multicolumn{2}{c}{HR per 10-fold incr.}                     & \\multicolumn{1}{c}{P-value}   & \\multicolumn{1}{c}{q-value}   & \\multicolumn{1}{c}{FWER} \\\\ 
+         \\multicolumn{1}{l}{", toTitleCase(study_name), "} & \\multicolumn{1}{c}{No. cases /}   & \\multicolumn{2}{c}{HR per 10-fold incr.}                     & \\multicolumn{1}{c}{P-value}   & \\multicolumn{1}{c}{q-value}   & \\multicolumn{1}{c}{FWER} \\\\ 
          \\multicolumn{1}{l}{Immunologic Marker}            & \\multicolumn{1}{c}{No. at-risk**} & \\multicolumn{1}{c}{Pt. Est.} & \\multicolumn{1}{c}{95\\% CI} & \\multicolumn{1}{c}{(2-sided)} & \\multicolumn{1}{c}{} & \\multicolumn{1}{c}{} \\\\ 
          \\hline\n 
     ")
@@ -276,9 +276,9 @@ tmp=rbind(c(labels.axis["Day"%.%pop, assays], labels.axis["Delta"%.%pop%.%"overB
 rownames(tab)=c(tmp)
 tab
 
-mytex(tab[1:(nrow(tab)/2),], file.name="CoR_univariable_svycoxph_cat_pretty_"%.%study.name, align="c", include.colnames = F, save2input.only=T, input.foldername=save.results.to,
+mytex(tab[1:(nrow(tab)/2),], file.name="CoR_univariable_svycoxph_cat_pretty_"%.%study_name, align="c", include.colnames = F, save2input.only=T, input.foldername=save.results.to,
     col.headers=paste0("\\hline\n 
-         \\multicolumn{1}{l}{", toTitleCase(study.name), "} & \\multicolumn{1}{c}{Tertile}   & \\multicolumn{1}{c}{No. cases /}   & \\multicolumn{1}{c}{Attack}   & \\multicolumn{2}{c}{Haz. Ratio}                     & \\multicolumn{1}{c}{P-value}   & \\multicolumn{1}{c}{Overall P-}      & \\multicolumn{1}{c}{Overall q-}   & \\multicolumn{1}{c}{Overall} \\\\ 
+         \\multicolumn{1}{l}{", toTitleCase(study_name), "} & \\multicolumn{1}{c}{Tertile}   & \\multicolumn{1}{c}{No. cases /}   & \\multicolumn{1}{c}{Attack}   & \\multicolumn{2}{c}{Haz. Ratio}                     & \\multicolumn{1}{c}{P-value}   & \\multicolumn{1}{c}{Overall P-}      & \\multicolumn{1}{c}{Overall q-}   & \\multicolumn{1}{c}{Overall} \\\\ 
          \\multicolumn{1}{l}{Immunologic Marker}            & \\multicolumn{1}{c}{}          & \\multicolumn{1}{c}{No. at-risk**} & \\multicolumn{1}{c}{rate}   & \\multicolumn{1}{c}{Pt. Est.} & \\multicolumn{1}{c}{95\\% CI} & \\multicolumn{1}{c}{(2-sided)} & \\multicolumn{1}{c}{value***} & \\multicolumn{1}{c}{value} & \\multicolumn{1}{c}{FWER} \\\\ 
          \\hline\n 
     "),        
@@ -403,7 +403,7 @@ rv$fr.1=list(nevents=nevents)
 for (a in assays) {
     #width and height decide margin
     # to make CI wider, make width bigger and graphwidth larger # onefile has to be F otherwise there will be an empty page inserted
-    mypdf(onefile=F, width=10,height=3, file=paste0(save.results.to, "hr_forest_", a, "_", study.name)) 
+    mypdf(onefile=F, width=10,height=3, file=paste0(save.results.to, "hr_forest_", a, "_", study_name)) 
         fits = fits.all[[a]]
         names(fits)=c("All baseline negative, vaccine", "      "%.%Bstratum.labels)
         est.ci = sapply(fits, function (fit) {
@@ -484,7 +484,7 @@ for (a in assays) {
         tmp=getFixedEf(fit, exp=T, robust=T)
         tmp[nrow(tmp),c("HR", "(lower", "upper)", "p.value")]
     })
-    mypdf(onefile=F, file=paste0(save.results.to, "hr_forest_marginal_", a, "_", study.name), width=10,height=4) #width and height decide margin
+    mypdf(onefile=F, file=paste0(save.results.to, "hr_forest_marginal_", a, "_", study_name), width=10,height=4) #width and height decide margin
         theforestplot (lineheight=unit(.75,"cm"), point.estimates=est.ci[1,], lower.bounds=est.ci[2,], upper.bounds=est.ci[3,], p.values=NA, graphwidth=unit(120, "mm"), fontsize=1.2,
             table.labels = c("Group (Baseline Negative)", "HR (95% CI)","No. Events"), group=colnames(est.ci), decimal.places=2, nEvents=nevents, title=paste0(labels.assays.long["Day"%.%pop,a]))
     dev.off()    
@@ -580,15 +580,15 @@ marginalized.risk.svycoxph.boot=function(formula, marker.name, type, data, t, we
 
 
 # vaccine arm, conditional on S=s
-if(!file.exists(paste0(save.results.to, "marginalized.risk.1.",study.name,".Rdata"))) {    
+if(!file.exists(paste0(save.results.to, "marginalized.risk.1.",study_name,".Rdata"))) {    
     print("make marginalized.risk.1")
     risks.all.1=list()
     for (a in assays) {
         risks.all.1[[a]]=marginalized.risk.svycoxph.boot(formula=form.0, marker.name="Day"%.%pop%.%a, type=1, data=dat.vacc.pop, t0, weights=dat.vacc.pop$wt.0, B=B, ci.type="quantile", numCores=numCores)                
     }
-    save(risks.all.1, file=paste0(save.results.to, "marginalized.risk.1."%.%study.name%.%".Rdata"))    
+    save(risks.all.1, file=paste0(save.results.to, "marginalized.risk.1."%.%study_name%.%".Rdata"))    
 } else {
-    load(paste0(save.results.to, "marginalized.risk.1."%.%study.name%.%".Rdata"))
+    load(paste0(save.results.to, "marginalized.risk.1."%.%study_name%.%".Rdata"))
 }
 
 #rv$marginalized.risk.S.eq.s=list()
@@ -597,7 +597,7 @@ if(!file.exists(paste0(save.results.to, "marginalized.risk.1.",study.name,".Rdat
 
 # vaccine arm, conditional on S>=s    
 # vaccine and placebo arm, no markers
-if(!file.exists(paste0(save.results.to, "marginalized.risk.2.",study.name,".Rdata"))) {    
+if(!file.exists(paste0(save.results.to, "marginalized.risk.2.",study_name,".Rdata"))) {    
     
     print("make marginalized.risk.2")
     
@@ -643,10 +643,10 @@ if(!file.exists(paste0(save.results.to, "marginalized.risk.2.",study.name,".Rdat
         }
     }    
     
-    save(risks.all.2, res.plac.cont, res.vacc.cont, file=paste0(save.results.to, "marginalized.risk.2."%.%study.name%.%".Rdata"))
+    save(risks.all.2, res.plac.cont, res.vacc.cont, file=paste0(save.results.to, "marginalized.risk.2."%.%study_name%.%".Rdata"))
     
 } else {
-    load(file=paste0(save.results.to, "marginalized.risk.2."%.%study.name%.%".Rdata"))
+    load(file=paste0(save.results.to, "marginalized.risk.2."%.%study_name%.%".Rdata"))
 }
 
 #rv$marginalized.risk.S.geq.s=list()
@@ -710,7 +710,7 @@ for (idx in 1:2) { # 1 with placebo lines, 2 without placebo lines. Implementati
     myprint(ylim)
     lwd=2
     
-    mypdf(oma=c(0,0,0,0), onefile=F, file=paste0(save.results.to, "marginalized_risks", ii, ifelse(idx==1,"","_woplacebo"), "_"%.%study.name), mfrow=.mfrow)
+    mypdf(oma=c(0,0,0,0), onefile=F, file=paste0(save.results.to, "marginalized_risks", ii, ifelse(idx==1,"","_woplacebo"), "_"%.%study_name), mfrow=.mfrow)
     par(las=1, cex.axis=0.9, cex.lab=1)# axis label orientation
     for (a in assays) {        
         risks=risks.all[[a]]
@@ -758,7 +758,7 @@ for (idx in 1:2) { # 1 with placebo lines, 2 without placebo lines. Implementati
         #mtext("Density", side=4, las=0, line=2, cex=1, at=.3)  
         #mylegend(x=6, fill=col, border=col, legend="Vaccine Group", bty="n", cex=0.7)      
     }
-    #mtext(toTitleCase(study.name), side = 1, line = 0, outer = T, at = NA, adj = NA, padj = NA, cex = NA, col = NA, font = NA)
+    #mtext(toTitleCase(study_name), side = 1, line = 0, outer = T, at = NA, adj = NA, padj = NA, cex = NA, col = NA, font = NA)
     dev.off()    
 }
 }
@@ -768,7 +768,7 @@ for (idx in 1:2) { # 1 with placebo lines, 2 without placebo lines. Implementati
 # controlled VE curves
 s2="85%"; s1="15%" # these two reference quantiles are used in the next two blocks of code
 RRud=RReu=4
-mypdf(onefile=F, file=paste0(save.results.to, "controlled_ve_curves_"%.%study.name), mfrow=.mfrow, oma=c(1,0,0,0))
+mypdf(onefile=F, file=paste0(save.results.to, "controlled_ve_curves_"%.%study_name), mfrow=.mfrow, oma=c(1,0,0,0))
     lwd=2.5
     par(las=1, cex.axis=0.9, cex.lab=1)# axis label orientation
     for (a in assays) {        
@@ -847,7 +847,7 @@ lwd=2
 ylim=c(0,max(risk.0))
 x.time<-seq(0,t0,by=30); if(t0-last(x.time)>15) x.time=c(x.time, t0) else x.time[length(x.time)]=t0
 #
-mypdf(oma=c(1,0,0,0), onefile=F, file=paste0(save.results.to, "marginalized_risks_cat_", study.name), mfrow=.mfrow, width=7*1.3, height = 7.5/2*.mfrow[1]*1.3, mar=c(11,4,4,2))
+mypdf(oma=c(1,0,0,0), onefile=F, file=paste0(save.results.to, "marginalized_risks_cat_", study_name), mfrow=.mfrow, width=7*1.3, height = 7.5/2*.mfrow[1]*1.3, mar=c(11,4,4,2))
 for (a in assays) {        
     par(las=1, cex.axis=0.9, cex.lab=1)# axis label 
     marker.name="Day"%.%pop%.%a%.%"cat"    
@@ -897,7 +897,7 @@ for (a in assays) {
     mtext(cum.H,side=1,outer=FALSE,line=9.1,at=x.time,cex=cex.text)
     
 }
-mtext(toTitleCase(study.name), side = 1, line = 2, outer = T, at = NA, adj = NA, padj = NA, cex = .8, col = NA, font = NA)
+mtext(toTitleCase(study_name), side = 1, line = 2, outer = T, at = NA, adj = NA, padj = NA, cex = .8, col = NA, font = NA)
 dev.off()    
 #
 cumsum(summary(survfit(form.s, subset(dat.vacc.pop, TwophasesampInd.0==1)), times=x.time)$n.event)
@@ -914,9 +914,9 @@ cutpoints=list()
 for (a in assays) {        
     for (t in c("Day"%.%pop, "Delta"%.%pop%.%"overB")) {
         q.a=marker.cutpoints[[a]][[t]]
-        write(paste0(labels.axis[1,a], " [", concatList(round(q.a, 2), ", "), ")%"), file=paste0(save.results.to, "cutpoints_", t, a, "_"%.%study.name))
+        write(paste0(labels.axis[1,a], " [", concatList(round(q.a, 2), ", "), ")%"), file=paste0(save.results.to, "cutpoints_", t, a, "_"%.%study_name))
     }
 }
 
-save(rv, file=paste0(here::here("verification"), "/D", pop, ".rv."%.%study.name%.%".Rdata"))
+save(rv, file=paste0(here::here("verification"), "/D", pop, ".rv."%.%study_name%.%".Rdata"))
 print(Sys.time()-time.start)

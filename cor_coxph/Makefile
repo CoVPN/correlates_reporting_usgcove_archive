@@ -7,7 +7,7 @@ clean:
 	rm -f output/D57/*
 
 ## cor_coxph     : create tables and figures
-cor_coxph: 
+cor_coxph:
 	Rscript code/cor_coxph.R 57 && Rscript code/cor_coxph.R 29
 
 ## report        : create a standalone report

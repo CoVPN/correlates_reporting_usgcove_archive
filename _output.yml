@@ -4,7 +4,7 @@ bookdown::bs4_book:
   repo: https://github.com/CoVPN/correlates_reporting
 
 bookdown::gitbook:
-  css: [style.css, toc.css, center.css]
+  css: [css/style.css, css/toc.css, css/center.css]
   dev: svg
   config:
     toc:
@@ -14,9 +14,18 @@ bookdown::gitbook:
     sharing: no
 
 bookdown::pdf_book:
-  latex_engine: "xelatex"
+  latex_engine: "pdflatex"
   citation_package: "natbib"
   includes:
-    in_header: preamble.tex
-  keep_tex: yes
+    in_header: latex/preamble.tex
   highlight: tango
+  toc_unnumbered: false
+  toc_appendix: true
+  extra_dependencies: ["float"]
+
+bookdown::pdf_document2:
+  latex_engine: "pdflatex"
+  citation_package: "natbib"
+  includes:
+    in_header: latex/preamble.tex
+  extra_dependencies: ["float"]

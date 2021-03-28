@@ -1,6 +1,7 @@
 ---
 knit: "bookdown::render_book"
 title: "COVID-19 Immunogenicity Analysis Report"
+subtitle: '`r source(here::here("_common.R")); paste(study_name, "Study")`'
 author: "USG COVID-19 Response Biostatistics Team"
 date: "`r format(Sys.time(), '%B %d, %Y')`"
 documentclass: book

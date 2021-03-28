@@ -10,23 +10,41 @@ set.seed(98109)
 data_in_file <- "COVID_VEtrial_practicedata_primarystage1.csv"
 data_name <- "practice_data.csv"
 study_name <- "mock"
+
 ###############################################################################
-# figure labels and titles for markers
+# define immune markers to be included in the analysis
 ###############################################################################
 
-# define useful constants
 assays <- c(
   "bindSpike", "bindRBD", "pseudoneutid50", "pseudoneutid80"
   # NOTE: the live neutralization marker will eventually be available
   #"liveneutmn50"
 )
 
+# if this flag is true, then the N IgG binding antibody is reported 
+# in the immuno report (but is not analyzed in the cor or cop reports).
 include_bindN <- TRUE
 
+# times of measurements of the markers
+# B, Day29, Day57 are quantitative levels of markers measured at different times
+# DeltaXoverY is fold change in marker from time X to time Y
 times <- c("B", "Day29", "Day57", "Delta29overB", "Delta57overB", "Delta57over29")
 
-markers <- c(outer(times[1:3], assays, "%.%"))
+# LLODs for each assay
+llods <- c(
+  bindSpike = 20,
+  bindRBD = 20,
+  pseudoneutid50 = 10,
+  pseudoneutid80 = 10
+)
+# live neut to be added
+#, liveneutmn50=62)
 
+###############################################################################
+# figure labels and titles for markers
+###############################################################################
+
+markers <- c(outer(times[1:3], assays, "%.%"))
 
 # race labeling
 labels.race <- c(
@@ -100,15 +118,6 @@ demo.stratum.labels <- c(
   "Age < 65, At risk, White non-Hisp",
   "Age < 65, Not at risk, White non-Hisp"
 )
-
-llods <- c(
-  bindSpike = 20,
-  bindRBD = 20,
-  pseudoneutid50 = 10,
-  pseudoneutid80 = 10
-)
-# live neut to be added
-#, liveneutmn50=62)
 
 ###############################################################################
 # theme options

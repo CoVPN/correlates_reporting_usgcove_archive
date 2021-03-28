@@ -16,9 +16,6 @@ lof: yes
 always_allow_html: yes
 ---
 
-```{r, source-common, include = FALSE}
-here::here("_common.R")
-```
 
 ```{r, include = knitr::is_latex_output() & study_name == "mock"}
 knitr::asis_output("\\AddToShipoutPictureFG{

@@ -68,7 +68,7 @@ for (tt in 2:5) {
           bstatus.labels.2[bstatus],
           "_trt_", trt.labels[trt],
           "_by_age_group_",
-          study.name, ".png"
+          study_name, ".png"
         )
       )
 
@@ -86,7 +86,7 @@ for (tt in 2:5) {
           times[tt], "_trt_",
           c("placebo_", "vaccine_")[trt],
           bstatus.labels.2[bstatus],
-          "_by_age_group_", study.name,
+          "_by_age_group_", study_name,
           ".png"
         )
       )
@@ -108,7 +108,7 @@ for (tt in 2:5) {
           bstatus.labels.2[bstatus],
           "_trt_", trt.labels[trt],
           "_by_risk_group_",
-          study.name, ".png"
+          study_name, ".png"
         )
       )
 
@@ -126,7 +126,7 @@ for (tt in 2:5) {
           times[tt], "_trt_",
           c("placebo_", "vaccine_")[trt],
           bstatus.labels.2[bstatus],
-          "_by_risk_group_", study.name,
+          "_by_risk_group_", study_name,
           ".png"
         )
       )
@@ -149,7 +149,7 @@ for (tt in 2:5) {
           bstatus.labels.2[bstatus],
           "_trt_", trt.labels[trt],
           "_by_age_x_risk_group_",
-          study.name, ".png"
+          study_name, ".png"
         )
       )
 
@@ -169,7 +169,7 @@ for (tt in 2:5) {
           c("placebo_", "vaccine_")[trt],
           bstatus.labels.2[bstatus],
           "_by_age_risk_group_",
-          study.name, ".png"
+          study_name, ".png"
         )
       )
 
@@ -189,7 +189,7 @@ for (tt in 2:5) {
           times[tt], "_",
           bstatus.labels.2[bstatus],
           "_trt_", trt.labels[trt],
-          "_by_sex_", study.name,
+          "_by_sex_", study_name,
           ".png"
         )
       )
@@ -208,7 +208,7 @@ for (tt in 2:5) {
           times[tt], "_trt_",
           c("placebo_", "vaccine_")[trt],
           bstatus.labels.2[bstatus],
-          "_by_sex_group_", study.name,
+          "_by_sex_group_", study_name,
           ".png"
         )
       )
@@ -231,7 +231,7 @@ for (tt in 2:5) {
           bstatus.labels.2[bstatus],
           "_trt_", trt.labels[trt],
           "_by_age_x_sex_group_",
-          study.name, ".png"
+          study_name, ".png"
         )
       )
 
@@ -251,7 +251,7 @@ for (tt in 2:5) {
           c("placebo_", "vaccine_")[trt],
           bstatus.labels.2[bstatus],
           "_by_age_sex_group_",
-          study.name, ".png"
+          study_name, ".png"
         )
       )
 
@@ -272,7 +272,7 @@ for (tt in 2:5) {
           times[tt], "_",
           bstatus.labels.2[bstatus],
           "_trt_", trt.labels[trt],
-          "_by_ethnicity_", study.name,
+          "_by_ethnicity_", study_name,
           ".png"
         )
       )
@@ -292,7 +292,7 @@ for (tt in 2:5) {
           times[tt], "_trt_",
           c("placebo_", "vaccine_")[trt],
           bstatus.labels.2[bstatus],
-          "_by_ethnicity_", study.name,
+          "_by_ethnicity_", study_name,
           ".png"
         )
       )
@@ -316,7 +316,7 @@ for (tt in 2:5) {
           times[tt], "_",
           bstatus.labels.2[bstatus],
           "_trt_", trt.labels[trt],
-          "_by_race_", study.name,
+          "_by_race_", study_name,
           ".png"
         )
       )
@@ -338,7 +338,7 @@ for (tt in 2:5) {
           times[tt], "_trt_",
           c("placebo_", "vaccine_")[trt],
           bstatus.labels.2[bstatus],
-          "_by_race_", study.name,
+          "_by_race_", study_name,
           ".png"
         )
       )
@@ -360,7 +360,7 @@ for (tt in 2:5) {
           bstatus.labels.2[bstatus],
           "_trt_", trt.labels[trt],
           "_by_minority_group_",
-          study.name, ".png"
+          study_name, ".png"
         )
       )
 
@@ -379,7 +379,7 @@ for (tt in 2:5) {
           c("placebo_", "vaccine_")[trt],
           bstatus.labels.2[bstatus],
           "_by_minority_group_",
-          study.name, ".png"
+          study_name, ".png"
         )
       )
 
@@ -401,7 +401,7 @@ for (tt in 2:5) {
           bstatus.labels.2[bstatus],
           "_trt_", trt.labels[trt],
           "_by_age_x_minority_",
-          study.name, ".png"
+          study_name, ".png"
         )
       )
 
@@ -421,7 +421,7 @@ for (tt in 2:5) {
           c("placebo_", "vaccine_")[trt],
           bstatus.labels.2[bstatus],
           "_by_age_minority_group_",
-          study.name, ".png"
+          study_name, ".png"
         )
       )
       print(paste0("Done with loop of tt=", tt, ", trt=",

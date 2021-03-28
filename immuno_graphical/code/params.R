@@ -9,15 +9,6 @@ labels.assays <- c("Binding Antibody to Spike", "Binding Antibody to RBD",
 names(labels.assays) <- c("bindSpike", "bindRBD", "pseudoneutid50",
                           #"liveneutmn50",
                           "pseudoneutid80")
-# color palatte throughout the report
-study.name <- "mock"
-
-
-
-# defining labels of the subgroups
-times <- c("B", "Day29", "Day57", "Delta29overB", "Delta57overB")
-assays <- c("bindSpike", "bindRBD", "pseudoneutid50", "pseudoneutid80")
-
 
 
 # for now exclude the liveneut results

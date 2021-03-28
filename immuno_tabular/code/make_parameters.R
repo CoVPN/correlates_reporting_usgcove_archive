@@ -187,7 +187,9 @@ labels.time <- c(B = "Day 1", Day29 = "Day 29", Day57 = "Day 57",
                  Delta57overB = "D57 fold-rise over D1", 
                  Delta57over29 = "D57 fold-rise over D29")
 
-assays <- unique(c("bindN"[include_bindN], assays))
+if(include_bindN){
+  assays <- c("bindN", assays)
+}
 labels.assays.short <- labels.assays.short[assays]
 labels.time <- labels.time[times]
 

@@ -57,7 +57,7 @@ uloqs <-c(bindN = 19136250,
 # figure labels and titles for markers
 ###############################################################################
 
-markers <- c(outer(times[which(times %in% c("B", "Day29", "Day 57"))], 
+markers <- c(outer(times[which(times %in% c("B", "Day29", "Day57"))], 
                    assays, "%.%"))
 
 # race labeling

@@ -329,20 +329,34 @@ theforestplot <- function(cohort=NA,group,nEvents=NA,totFU=NA,rate=NA,point.esti
   # remove.redundancy <- function(x){ifelse(!is.na(dplyr::lag(x)) & x==dplyr::lag(x), NA, x)}
   show.decimals <- function(x){format(round(x, decimal.places), nsmall=decimal.places)}
   
+  group_edit <- sapply(group, function(x){
+    if(grepl(">=", x)){
+      ssplit <- strsplit(x, split = ">=")[[1]]
+      eval(parse(text = paste0('expression("', ssplit[1], '" >= "', ssplit[2], '")')))
+    }else if(grepl("<", x)){
+      ssplit <- strsplit(x, split = "<")[[1]]
+      eval(parse(text = paste0('expression("', ssplit[1], '" < "', ssplit[2], '")')))
+    }else{
+      x
+    }
+  }, simplify = FALSE)
+  group <- group_edit
+
   if(all(is.na(p.values))){
-    tabletext <- cbind(
+    tabletext <- list(
       # c(table.labels[1], remove.redundancy(as.character(cohort))),
-      c(table.labels[1], as.character(group)),
+      c(table.labels[1], group),
       c(table.labels[3], nEvents),
       # c(table.labels[4], totFU),
       # c(table.labels[5], rate),
       c(paste0(table.labels[2]), 
         paste0(sapply(point.estimates, show.decimals), " (", sapply(lower.bounds, show.decimals), ", ", sapply(upper.bounds, show.decimals), ")")),
       c(" ", rep(NA, length(point.estimates)))
-    )} else{
-      tabletext <- cbind(
+    )
+  } else{
+      tabletext <- list(
         # c(table.labels[1], remove.redundancy(as.character(cohort))),
-        c(table.labels[1], as.character(group)),
+        c(table.labels[1], group),
         c(table.labels[3], nEvents),
         # c(table.labels[4], totFU),
         # c(table.labels[5], rate),
@@ -352,10 +366,10 @@ theforestplot <- function(cohort=NA,group,nEvents=NA,totFU=NA,rate=NA,point.esti
       )}    
     
   replaceNA <- function(x){ifelse(grepl("NA", x), NA, x)}
-  tabletext[,3] <- sapply(tabletext[,3], replaceNA)
+  tabletext[[3]] <- sapply(tabletext[[3]], replaceNA)
   
   replaceDash <- function(x){gsub("-", "\u2013", x)}
-  tabletext[,3] <- sapply(tabletext[,3], replaceDash)
+  tabletext[[3]] <- sapply(tabletext[[3]], replaceDash)
   
   if(!is.na(dashed.line)){grid.line <- structure(dashed.line, gp = gpar(lty = 2, col = "red", lwd=0.5))} else{grid.line <- FALSE}
   
@@ -420,7 +434,7 @@ for (a in assays) {
             tmp=getFixedEf(fit, exp=T, robust=T)
             tmp[nrow(tmp),c("HR", "(lower", "upper)", "p.value")]
         })
-        theforestplot (point.estimates=est.ci[1,], lower.bounds=est.ci[2,], upper.bounds=est.ci[3,], p.values=NA, graphwidth=unit(120, "mm"), fontsize=1.2,
+        theforestplot(point.estimates=est.ci[1,], lower.bounds=est.ci[2,], upper.bounds=est.ci[3,], p.values=NA, graphwidth=unit(120, "mm"), fontsize=1.2,
             table.labels = c("Group", "HR (95% CI)","No. Events"), group=colnames(est.ci), decimal.places=2, nEvents=nevents, title=paste0(labels.assays.long["Day"%.%pop,a]))
     dev.off()
     

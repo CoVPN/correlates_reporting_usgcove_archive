@@ -175,29 +175,14 @@ tlf <-
 
 
 # Depends on the Incoming data
-labels.assays.short <- c(bindN = "Anti N IgG (IU/ml)", 
-                         bindSpike = "Anti Spike IgG (IU/ml)", 
-                         bindRBD = "Anti RBD IgG (IU/ml)", 
-                         pseudoneutid50 = "Pseudovirus-nAb ID50", 
-                         pseudoneutid80 = "Pseudovirus-nAb ID80", 
-                         liveneutmn50 = "Live virus-nAb MN50")
-
-labels.time <- c(B = "Day 1", Day29 = "Day 29", Day57 = "Day 57", 
-                 Delta29overB = "D29 fold-rise over D1", 
-                 Delta57overB = "D57 fold-rise over D1", 
-                 Delta57over29 = "D57 fold-rise over D29")
-
 if(include_bindN){
   assays <- c("bindN", assays)
 }
-labels.assays.short <- labels.assays.short[assays]
 labels.time <- labels.time[times]
 
-# 
-
+# redefines what is in _common.R to use shorter names
 labels.assays.long <- data.frame (purrr::imap_dfc(labels.assays.short, ~ paste0(labels.assays.short[.y], ": ", labels.time)))
 rownames(labels.assays.long) <- names(labels.time)
-
 
 visits <- names(labels.time)[!grepl("Delta", names(labels.time))]
 assays_col <- levels(interaction(visits, assays, sep=""))

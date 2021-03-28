@@ -28,7 +28,8 @@ include_bindN <- TRUE
 # times of measurements of the markers
 # B, Day29, Day57 are quantitative levels of markers measured at different times
 # DeltaXoverY is fold change in marker from time X to time Y
-times <- c("B", "Day29", "Day57", "Delta29overB", "Delta57overB", "Delta57over29")
+times <- c("B", "Day29", "Day57", 
+           "Delta29overB", "Delta57overB", "Delta57over29")
 
 # limits for each assay
 llods <-c(bindN = 20, 
@@ -56,7 +57,8 @@ uloqs <-c(bindN = 19136250,
 # figure labels and titles for markers
 ###############################################################################
 
-markers <- c(outer(times[1:3], assays, "%.%"))
+markers <- c(outer(times[which(times %in% c("B", "Day29", "Day 57"))], 
+                   assays, "%.%"))
 
 # race labeling
 labels.race <- c(
@@ -72,31 +74,49 @@ labels.ethnicity <- c(
   "Not reported and unknown"
 )
 
+labels.assays.short <- c("Anti N IgG (IU/ml)", 
+                         "Anti Spike IgG (IU/ml)", 
+                         "Anti RBD IgG (IU/ml)", 
+                         "Pseudovirus-nAb ID50", 
+                         "Pseudovirus-nAb ID80", 
+                         "Live virus-nAb MN50")
+names(labels.assays.short) <- c("bindN",
+  "bindSpike",
+  "bindRBD",
+  "pseudoneutid50",
+  "pseudoneutid80",
+  "liveneutmn50")
+
+labels.time <- c("Day 1", "Day 29", "Day 57", 
+                 "D29 fold-rise over D1", 
+                 "D57 fold-rise over D1", 
+                 "D57 fold-rise over D29")
+
+names(labels.time) <- c("B", "Day29", "Day57", "Delta29overB", 
+                        "Delta57overB", "Delta57over29")
+
 # axis labeling
 labels.axis <- outer(
-  c("", "", "", "", "", ""),
-  c(
-    "Spike IgG (IU/ml)", "RBD IgG (IU/ml)", "PsV-nAb ID50",
-    #"WT LV-nAb MN50",
-    "PsV-nAb ID80"#,
-    #"WT LV-nAb MN80"
-  ),
+  rep("", length(times)),
+  labels.assays.short[assays],
   "%.%"
 )
 labels.axis <- as.data.frame(labels.axis)
-rownames(labels.axis) <- times
-# NOTE: hacky solution to deal with changes in the number of markers
-colnames(labels.axis)[seq_along(assays)] <- assays
+  rownames(labels.axis) <- times
+
+labels.assays <- c("Binding Antibody to Spike", 
+                   "Binding Antibody to RBD",
+                   "PsV Neutralization 50% Titer",
+                   "PsV Neutralization 80% Titer",
+                   "WT LV Neutralization 50% Titer")
+
+names(labels.assays) <- c("bindSpike", "bindRBD", "pseudoneutid50",
+                          "pseudoneutid80",
+                          "liveneutmn50")
 
 # title labeling
 labels.title <- outer(
-  c(
-    "Binding Antibody to Spike", "Binding Antibody to RBD",
-    "PsV Neutralization 50% Titer",
-    #"WT LV Neutralization 50% Titer",
-    "PsV Neutralization 80% Titer" #,
-    #"WT LV Neutralization 80% Titer"
-  ),
+  labels.assays[assays],
   ": " %.%
     c(
       "Day 1", "Day 29", "Day 57", "D29 fold-rise over D1",

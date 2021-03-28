@@ -15,7 +15,7 @@ library(dplyr, warn.conflicts = FALSE)
 options(dplyr.summarise.inform = FALSE)
 
 # Read in original data
-dat.mock <- read.csv(here::here("..", data_clean", data_name))
+dat.mock <- read.csv(here::here("..", "data_clean", data_name))
 
 # The stratified random cohort for immunogenicity
 ds_s <- dat.mock %>%

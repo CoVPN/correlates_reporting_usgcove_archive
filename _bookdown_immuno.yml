@@ -13,8 +13,8 @@ language:
 
 rmd_files: [
   "index_immuno.Rmd",
-  "immuno_graphical/report.Rmd",
   "immuno_tabular/report.Rmd",
+  "immuno_graphical/report.Rmd",
   #"immuno_engin/report.Rmd",
   "references.Rmd"
 ]

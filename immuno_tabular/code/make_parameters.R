@@ -174,16 +174,7 @@ tlf <-
   )
 
 
-
 # Depends on the Incoming data
-
-llods <-c(bindN = 20, bindSpike = 20, bindRBD = 20, pseudoneutid50 = 10, 
-          pseudoneutid80 = 10, liveneutmn50 = 62.16) 
-lloqs <-c(bindN = 34, bindSpike = 34, bindRBD = 34, pseudoneutid50 = 49, 
-          pseudoneutid80 = 43, liveneutmn50 = 117.35) 
-uloqs <-c(bindN = 19136250, bindSpike = 19136250, bindRBD = 19136250, 
-          pseudoneutid50 = Inf, pseudoneutid80 = Inf, liveneutmn50 = 18976.19) 
-
 labels.assays.short <- c(bindN = "Anti N IgG (IU/ml)", 
                          bindSpike = "Anti Spike IgG (IU/ml)", 
                          bindRBD = "Anti RBD IgG (IU/ml)", 

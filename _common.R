@@ -30,15 +30,27 @@ include_bindN <- TRUE
 # DeltaXoverY is fold change in marker from time X to time Y
 times <- c("B", "Day29", "Day57", "Delta29overB", "Delta57overB", "Delta57over29")
 
-# LLODs for each assay
-llods <- c(
-  bindSpike = 20,
-  bindRBD = 20,
-  pseudoneutid50 = 10,
-  pseudoneutid80 = 10
-)
-# live neut to be added
-#, liveneutmn50=62)
+# limits for each assay
+llods <-c(bindN = 20, 
+          bindSpike = 20, 
+          bindRBD = 20, 
+          pseudoneutid50 = 10, 
+          pseudoneutid80 = 10, 
+          liveneutmn50 = 62.16)
+
+lloqs <-c(bindN = 34, 
+          bindSpike = 34, 
+          bindRBD = 34, 
+          pseudoneutid50 = 49, 
+          pseudoneutid80 = 43, 
+          liveneutmn50 = 117.35) 
+
+uloqs <-c(bindN = 19136250, 
+          bindSpike = 19136250, 
+          bindRBD = 19136250, 
+          pseudoneutid50 = Inf, 
+          pseudoneutid80 = Inf, 
+          liveneutmn50 = 18976.19) 
 
 ###############################################################################
 # figure labels and titles for markers

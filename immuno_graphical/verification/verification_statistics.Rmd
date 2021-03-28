@@ -29,17 +29,17 @@ dat.twophase.sample <- readRDS(here("data_clean", "twophase_data.rds"))
 *Pairwise resampling-based stratified Spearman correlation*
 (Since the calculation is resampling based, the specific numbers could be different depending on the code and the random seeds).
 
-- RBD IgG vs. Spike IgG: 0.624
+- RBD IgG vs. Spike IgG: 0.567
 
-- PsV-nAb ID50 vs. Spike IgG: 0.534
+- PsV-nAb ID50 vs. Spike IgG: 0.488
 
-- PsV-nAb ID80 vs. Spike IgG: 0.546
+- PsV-nAb ID80 vs. Spike IgG: 0.516
 
-- PsV-nAb ID50 vs. RBD IgG: 0.499
+- PsV-nAb ID50 vs. RBD IgG: 0.463
 
-- PsV-nAb ID80 vs. RBD IgG: 0.532
+- PsV-nAb ID80 vs. RBD IgG: 0.505
 
-- PSV-nAb ID80 vs. PsV-nAb ID50: 0.565
+- PSV-nAb ID80 vs. PsV-nAb ID50: 0.542
 
 ## Plot 1.24; RCDF plots for D57 Ab markers: by baseline status for the vaccine arm
 *Weighted RCDF for four assays, stratified by baseline status, evaluated at 1-10*

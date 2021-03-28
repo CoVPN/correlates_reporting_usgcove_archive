@@ -14,6 +14,8 @@ graphics: yes
 lot: yes
 lof: yes
 always_allow_html: yes
+header-includes:
+   - \usepackage{eso-pic,graphicx,transparent}
 ---
 
 ```{r, include = knitr::is_latex_output() & study_name == "mock"}

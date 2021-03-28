@@ -70,7 +70,7 @@ for (tt in 1:4) {
           save.results.to, "/pairs_", times[tt + 1],
           "_Markers_", bstatus.labels.2[bserostatus + 1],
           c("_placebo_arm", "_vaccine_arm")[trt + 1], "_",
-          study.name, ".png"
+          study_name, ".png"
         )
       )
     }
@@ -105,7 +105,7 @@ for (bserostatus in 0:1) {
       filename = paste0(
         save.results.to, "/pairs_baselineMarkers_",
         bstatus.labels.2[bserostatus + 1], "_",
-        c("placebo", "vaccine")[trt + 1], "_arm_", study.name,
+        c("placebo", "vaccine")[trt + 1], "_arm_", study_name,
         ".png"
       )
     )
@@ -137,7 +137,7 @@ for (bserostatus in 0:1) {
         filename = paste0(
           save.results.to, "/pairs_", aa, "_by_times_",
           bstatus.labels.2[bserostatus + 1], "_", c("placebo_", "vaccine_")[trt + 1],
-          study.name, ".png"
+          study_name, ".png"
         )
       )
     }
@@ -164,7 +164,7 @@ for (tt in seq_along(times)) {
     axis_titles = labels.axis[tt, ] %>% unlist(),
     filename = paste0(
       save.results.to, "/Marker_RCDF_", times[tt],
-      "_trt_both_bstatus_both_", study.name, ".png"
+      "_trt_both_bstatus_both_", study_name, ".png"
     )
   )
 }
@@ -187,7 +187,7 @@ for (day in c("29", "57")) {
     ),
     filename = paste0(
       save.results.to, "/Marker_Rcdf_Day", day,
-      "_trt_vaccine_bstatus_both_", study.name, ".png"
+      "_trt_vaccine_bstatus_both_", study_name, ".png"
     )
   )
 }
@@ -207,7 +207,7 @@ for (day in c("29", "57")) {
     xlab = paste0("D", day, " Fold-rise over D1 Binding Ab (IU/ml) / Pseudovirus nAb ID50 or ID80"),
     filename = paste0(
       save.results.to, "/Marker_Rcdf_Delta", day,
-      "overB_trt_vaccine_bstatus_both_", study.name, ".png"
+      "overB_trt_vaccine_bstatus_both_", study_name, ".png"
     )
   )
 }
@@ -231,7 +231,7 @@ for (day in c("29", "57")) {
     ),
     filename = paste0(
       save.results.to, "/Marker_Rcdf_Day", day,
-      "_trt_vaccine_bstatus_Neg_", study.name, ".png"
+      "_trt_vaccine_bstatus_Neg_", study_name, ".png"
     )
   )
 }
@@ -249,7 +249,7 @@ for (day in c("29", "57")) {
     ),
     filename = paste0(
       save.results.to, "/Marker_Rcdf_Delta", day,
-      "overB_trt_vaccine_bstatus_Neg_", study.name, ".png"
+      "overB_trt_vaccine_bstatus_Neg_", study_name, ".png"
     )
   )
 }
@@ -287,7 +287,7 @@ for (bstatus in 1:2) {
       panel_titles = labels.title2[tt, ] %>% unlist(),
       filename = paste0(
         save.results.to, "/boxplots_", times[tt], "_x_trt_", bstatus.labels.2[bstatus],
-        "_", study.name, ".png"
+        "_", study_name, ".png"
       )
     )
   }
@@ -315,7 +315,7 @@ for (trt in 1:2) {
       filename = paste0(
         save.results.to, "/boxplots_", times[tt],
         "_x_bstatus_", c("placebo_arm_", "vaccine_arm_")[trt],
-        study.name, ".png"
+        study_name, ".png"
       )
     )
   }
@@ -374,7 +374,7 @@ for (bstatus in 1:2) {
                               filename = paste0(
                                 save.results.to, "/spaghetti_plot_",
                                 bstatus.labels.2[bstatus], "_",
-                                study.name, ".png"
+                                study_name, ".png"
                               ))
 }
 
@@ -452,7 +452,7 @@ for (tt in 1:3) {
         filename = paste0(
           save.results.to, "/scatter_", times[tt], "_vs_age_",
           "trt_", trt.labels[trt], "_", bstatus.labels.2[bstatus],
-          "_", study.name, ".png"
+          "_", study_name, ".png"
         ), 
         plot = output_plot, 
         width = 7,

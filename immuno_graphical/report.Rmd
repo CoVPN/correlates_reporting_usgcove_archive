@@ -9,9 +9,6 @@ library(here)
 library(latex2exp)
 library(knitr)
 here::i_am("immuno_graphical/report.Rmd")
-
-## define study name
-study_name <- "mock"
 ```
 
 ```{r, fig.cap = "Pair plots of D29 Ab markers: baseline negative vaccine arm"}

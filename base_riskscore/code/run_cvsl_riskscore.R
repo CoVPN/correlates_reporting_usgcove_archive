@@ -114,7 +114,6 @@ blas_set_num_threads(1)
 print(blas_get_num_procs())
 stopifnot(blas_get_num_procs() == 1)
 
-
 fits <- parallel::mclapply(seeds,
   FUN = run_cv_sl_once,
   Y = Y,
@@ -140,4 +139,6 @@ for (i in 1:length(seeds)) {
 saveRDS(cvaucs, here("output", "cvsl_riskscore_cvaucs.rds"))
 save(cvfits, file = here("output", "cvsl_riskscore_cvfits.rda"))
 save(risk_placebo_ptids, file = here("output", "risk_placebo_ptids.rda"))
-save(run_demo, run_prod, Y, X_riskVars, weights, inputFile, risk_vars, endpoint, maxVar, V_outer, file = here("output", "objects_for_running_SL.rda"))
+save(run_demo, run_prod, Y, X_riskVars, weights, inputFile, risk_vars,
+     endpoint, maxVar, V_outer,
+     file = here("output", "objects_for_running_SL.rda"))

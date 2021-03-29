@@ -1,4 +1,5 @@
 report.pdf
+figs/*.png
 output/*.csv
 output/*.rds
 output/*.rda

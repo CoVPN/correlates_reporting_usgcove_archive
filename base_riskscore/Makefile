@@ -29,7 +29,7 @@ constructSL_predict_on_vaccine:
 	
 ## get_SLweights_Modelpredictors   : get SL weights from models
 get_SLweights_Modelpredictors:
-	Rscript get_SLweights_Modelpredictors.R
+	Rscript code/get_SLweights_Modelpredictors.R
 	#sbatch code/get_SLweights_Modelpredictors.sh
 
 ## report        : create a standalone report

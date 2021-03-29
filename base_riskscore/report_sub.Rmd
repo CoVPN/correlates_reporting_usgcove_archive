@@ -9,12 +9,10 @@ number_sections: true
 extra_dependencies: ["caption", "subcaption", "graphicx"]
 toc: true
 ---
-  
-# Baseline Risk Score (Proxy for SARS-CoV-2 Exposure) {#baseline-riskscore}
-  
-  
-  ```{r riskVarstable, warning=FALSE, echo=FALSE, message=FALSE}
 
+# Baseline Risk Score (Proxy for SARS-CoV-2 Exposure) {#baseline-riskscore}
+
+```{r riskVarstable, warning=FALSE, echo=FALSE, message=FALSE}
 library(tidyverse, quietly = T)
 library(kableExtra, quietly = T)
 library(conflicted, quietly = T)
@@ -23,7 +21,8 @@ conflict_prefer("summarise", "dplyr")
 
 caption <- "Variables considered for risk score analysis."
 
-read.csv(here("base_riskscore", "output", "risk_vars.csv"), row.names = 1, header = TRUE) %>%
+read.csv(here("base_riskscore", "output", "risk_vars.csv"), row.names = 1,
+         header = TRUE) %>%
   kable(
     #format = output_type,
     booktabs = TRUE,
@@ -37,17 +36,15 @@ read.csv(here("base_riskscore", "output", "risk_vars.csv"), row.names = 1, heade
 # %>%
 # footnote(c("Missing values for variables not dropped from analysis were imputed."),
 #          threeparttable = TRUE)
-
 ```
 
-
 \clearpage
-
 
 ```{r learner-screens, warning=FALSE, echo=FALSE}
 caption <- "All learner-screen combinations (28 in total) used as input to the superlearner."
 
-read.csv(here::here("base_riskscore", "output", "learner-screens.csv"), row.names = 1, header = TRUE) %>%
+read.csv(here::here("base_riskscore", "output", "learner-screens.csv"),
+         row.names = 1, header = TRUE) %>%
   rename(`Screen*` = `Screen.`) %>%
   kable(
     booktabs = TRUE,
@@ -77,16 +74,12 @@ read.csv(here::here("base_riskscore", "output", "learner-screens.csv"), row.name
 \label{fig:risk_placebo_cvaucs}
 \end{figure}
 
-
-
-
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.9\textwidth]{`r here::here("base_riskscore", "figs", "predProb_riskscore_plac.png")`}
 \caption{Plots showing CV estimated probabilities of COVID disease split by cases and controls based off EventIndPrimaryD57 for the top 2 learners, SuperLearner and Discrete SL.}
 \label{fig:predProb_riskscore_plac}
 \end{figure}
-
 
 \begin{figure}[H]
 \centering
@@ -95,14 +88,12 @@ read.csv(here::here("base_riskscore", "output", "learner-screens.csv"), row.name
 \label{fig:ROCcurve_riskscore_plac}
 \end{figure}
 
-
 \clearpage
-
 
 ```{r risk-sl-weights, warning=FALSE, echo=FALSE}
 caption <- "Weights assigned by Superlearner (risk score analysis)."
-
-read.csv(here("base_riskscore", "output", "SL_weights.csv"), row.names = 1, header = TRUE) %>%
+read.csv(here("base_riskscore", "output", "SL_weights.csv"), row.names = 1,
+         header = TRUE) %>%
   kable(
     booktabs = TRUE,
     linesep = "",
@@ -111,18 +102,16 @@ read.csv(here("base_riskscore", "output", "SL_weights.csv"), row.names = 1, head
   kable_styling(latex_options = c("hold_position"),
                 font_size = 9) %>%
   row_spec(0,bold=TRUE)
-
 ```
 
-
 \begin{landscape}
-
-\clearpage 
+\clearpage
 
 ```{r SLtopmodels, warning=FALSE, echo=FALSE}
 caption <- "Predictors in learners assigned weight > 0.5 by SuperLearner (risk score analysis)."
 
-read.csv(here("base_riskscore", "output", "SL_all_models_with_predictors.csv"), row.names = 1, header = TRUE) %>%
+read.csv(here("base_riskscore", "output", "SL_all_models_with_predictors.csv"),
+         row.names = 1, header = TRUE) %>%
   filter(SL.Weights > 0.5) %>%
   mutate(across(.cols = everything(), ~gsub(" ", "", ., fixed = TRUE))) %>%
   mutate(across(.cols = everything(), ~na_if(., "NA"))) %>%
@@ -136,8 +125,5 @@ read.csv(here("base_riskscore", "output", "SL_all_models_with_predictors.csv"), 
   kable_styling(latex_options = c("hold_position", "repeat_header"),
                 font_size = 5) %>%
   row_spec(0,bold=TRUE)
-
 ```
-
 \end{landscape}
-

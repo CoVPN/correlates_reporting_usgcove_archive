@@ -14,6 +14,9 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 library(here)
 library(dplyr)
+print(here::here())
+source(here::here( "_common.R"))
+times <- intersect(times, c("Day57", "Day29"))
 ```
 
 # Univariate CoR: Nonparametric Threshold Modeling {#cor-threshold}
@@ -58,7 +61,7 @@ monotone <- F
 
 ```
 
-```{r, child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = "Day57" %in% times, eval = "Day57" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -72,7 +75,7 @@ ci <- "pointwise"
 monotone <- F
 ```
 
-```{r, child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = "Day57" %in% times, eval = "Day57" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -86,7 +89,7 @@ ci <- "pointwise"
 monotone <- F
 ```
 
-```{r, child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = "Day57" %in% times, eval = "Day57" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -100,7 +103,7 @@ ci <- "pointwise"
 monotone <- F
 ```
 
-```{r, child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = "Day57" %in% times, eval = "Day57" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -119,8 +122,7 @@ ci <- "pointwise"
 monotone <- F
 ```
 
-```{r, child=here::here('cor_threshold','sub_report.Rmd')}
-
+```{r, include = "Day29" %in% times, eval = "Day29" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -135,7 +137,7 @@ ci <- "pointwise"
 monotone <- F
 ```
 
-```{r, child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = "Day29" %in% times, eval = "Day29" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -149,7 +151,7 @@ ci <- "pointwise"
 monotone <- F
 ```
 
-```{r, child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = "Day29" %in% times, eval = "Day29" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -163,8 +165,7 @@ ci <- "pointwise"
 monotone <- F
 ```
 
-```{r, child=here::here('cor_threshold','sub_report.Rmd')}
-
+```{r, include = "Day29" %in% times, eval = "Day29" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -185,7 +186,7 @@ monotone <- T
 
 ```
 
-```{r, child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = "Day57" %in% times, eval = "Day57" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -199,7 +200,7 @@ ci <- "pointwise"
 monotone <- T
 ```
 
-```{r, child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = "Day57" %in% times, eval = "Day57" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -213,7 +214,7 @@ ci <- "pointwise"
 monotone <- T
 ```
 
-```{r, child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = "Day57" %in% times, eval = "Day57" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -227,7 +228,7 @@ ci <- "pointwise"
 monotone <- T
 ```
 
-```{r, child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = "Day57" %in% times, eval = "Day57" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -245,8 +246,7 @@ ci <- "pointwise"
 monotone <- T
 ```
 
-```{r, child=here::here('cor_threshold','sub_report.Rmd')}
-
+```{r, include = "Day29" %in% times, eval = "Day29" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -261,7 +261,7 @@ ci <- "pointwise"
 monotone <- T
 ```
 
-```{r, child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = "Day29" %in% times, eval = "Day29" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -275,7 +275,7 @@ ci <- "pointwise"
 monotone <- T
 ```
 
-```{r, child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = "Day29" %in% times, eval = "Day29" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -289,8 +289,7 @@ ci <- "pointwise"
 monotone <- T
 ```
 
-```{r, child=here::here('cor_threshold','sub_report.Rmd')}
-
+```{r, include = "Day29" %in% times, eval = "Day29" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -309,7 +308,7 @@ monotone <- F
 
 ```
 
-```{r, child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = "Day57" %in% times, eval = "Day57" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -323,7 +322,7 @@ ci <- "simultaneous"
 monotone <- F
 ```
 
-```{r, child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = "Day57" %in% times, eval = "Day57" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -337,7 +336,7 @@ ci <- "simultaneous"
 monotone <- F
 ```
 
-```{r, child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = "Day57" %in% times, eval = "Day57" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -351,7 +350,7 @@ ci <- "simultaneous"
 monotone <- F
 ```
 
-```{r, child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = "Day57" %in% times, eval = "Day57" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -369,8 +368,7 @@ ci <- "simultaneous"
 monotone <- F
 ```
 
-```{r, child=here::here('cor_threshold','sub_report.Rmd')}
-
+```{r, include = "Day29" %in% times, eval = "Day29" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -385,7 +383,7 @@ ci <- "simultaneous"
 monotone <- F
 ```
 
-```{r, child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = "Day29" %in% times, eval = "Day29" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -399,7 +397,7 @@ ci <- "simultaneous"
 monotone <- F
 ```
 
-```{r, child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = "Day29" %in% times, eval = "Day29" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -413,8 +411,7 @@ ci <- "simultaneous"
 monotone <- F
 ```
 
-```{r, child=here::here('cor_threshold','sub_report.Rmd')}
-
+```{r, include = "Day29" %in% times, eval = "Day29" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -434,7 +431,7 @@ monotone <- T
 
 ```
 
-```{r, child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = "Day57" %in% times, eval = "Day57" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -448,7 +445,7 @@ ci <- "simultaneous"
 monotone <- T
 ```
 
-```{r, child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = "Day57" %in% times, eval = "Day57" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -462,7 +459,7 @@ ci <- "simultaneous"
 monotone <- T
 ```
 
-```{r, child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = "Day57" %in% times, eval = "Day57" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -476,7 +473,7 @@ ci <- "simultaneous"
 monotone <- T
 ```
 
-```{r, child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = "Day57" %in% times, eval = "Day57" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -494,8 +491,7 @@ ci <- "simultaneous"
 monotone <- T
 ```
 
-```{r, child=here::here('cor_threshold','sub_report.Rmd')}
-
+```{r, include = "Day29" %in% times, eval = "Day29" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -510,7 +506,7 @@ ci <- "simultaneous"
 monotone <- T
 ```
 
-```{r, child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = "Day29" %in% times, eval = "Day29" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -524,7 +520,7 @@ ci <- "simultaneous"
 monotone <- T
 ```
 
-```{r, child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = "Day29" %in% times, eval = "Day29" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -538,7 +534,6 @@ ci <- "simultaneous"
 monotone <- T
 ```
 
-```{r, child=here::here('cor_threshold','sub_report.Rmd')}
-
+```{r, include = "Day29" %in% times, eval = "Day29" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```

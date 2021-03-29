@@ -16,7 +16,7 @@ study_name <- "mock"
 ###############################################################################
 
 assays <- c(
-  "bindSpike" #, "bindRBD" #, "pseudoneutid50", "pseudoneutid80"
+  "bindSpike", "bindRBD" #, "pseudoneutid50", "pseudoneutid80"
   # NOTE: the live neutralization marker will eventually be available
   #"liveneutmn50"
 )

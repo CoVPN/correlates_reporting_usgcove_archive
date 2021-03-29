@@ -14,7 +14,6 @@ library(tidyverse)
 library(Hmisc) # wtd.quantile, cut2
 library(mice)
 library(dplyr)
-has29 = "Day29" %in% times
 
 
 # load data and rename first column (ID)

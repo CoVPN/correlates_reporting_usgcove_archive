@@ -65,7 +65,7 @@ for (tt in 1:4) {
           ifelse(bserostatus, "positive", "negative"), ", ",
           c("placebo", "vaccine")[trt + 1], " arm"
         ),
-        column_labels = labels.axis[tt + 1, 1:4] %>% unlist(),
+        column_labels = labels.axis[tt + 1, seq_along(assays)] %>% unlist(),
         filename = paste0(
           save.results.to, "/pairs_", times[tt + 1],
           "_Markers_", bstatus.labels.2[bserostatus + 1],
@@ -101,7 +101,7 @@ for (bserostatus in 0:1) {
         ifelse(bserostatus, "positive", "negative"), ", ",
         c("placebo", "vaccine")[trt + 1], " arm"
       ),
-      column_labels = labels.axis[tt + 1, 1:4] %>% unlist(),
+      column_labels = labels.axis[tt + 1, seq_along(assays)] %>% unlist(),
       filename = paste0(
         save.results.to, "/pairs_baselineMarkers_",
         bstatus.labels.2[bserostatus + 1], "_",
@@ -113,33 +113,34 @@ for (bserostatus in 0:1) {
 }
 
 
-
-## pairplots of assay readouts for multiple timepoints
-## pairplots by baseline serostatus
-for (bserostatus in 0:1) {
-  for (trt in 0:1) {
-    subdat <- dat.twophase.sample %>%
-      dplyr::filter(Bserostatus == bserostatus & Trt == trt)
-    
-    for (aa in assays) {
-      covid_corr_pairplots_by_time(
-        plot_dat = subdat,
-        times = c("B", "Day29", "Day57"),
-        assay = aa,
-        strata = "Bstratum",
-        weight = "wt.subcohort",
-        plot_title = paste0(
-          labels.assays[aa], ": baseline ",
-          ifelse(bserostatus, "positive ", "negative "),
-          c("placebo", "vaccine")[trt + 1], " arm"
-        ),
-        column_labels = paste(c("D1", "D29", "D57"), labels.axis[, aa][1]),
-        filename = paste0(
-          save.results.to, "/pairs_", aa, "_by_times_",
-          bstatus.labels.2[bserostatus + 1], "_", c("placebo_", "vaccine_")[trt + 1],
-          study_name, ".png"
+if(all(c("B", "Day29", "Day57") %in% times)){
+  ## pairplots of assay readouts for multiple timepoints
+  ## pairplots by baseline serostatus
+  for (bserostatus in 0:1) {
+    for (trt in 0:1) {
+      subdat <- dat.twophase.sample %>%
+        dplyr::filter(Bserostatus == bserostatus & Trt == trt)
+      
+      for (aa in assays) {
+        covid_corr_pairplots_by_time(
+          plot_dat = subdat,
+          times = c("B", "Day29", "Day57"),
+          assay = aa,
+          strata = "Bstratum",
+          weight = "wt.subcohort",
+          plot_title = paste0(
+            labels.assays[aa], ": baseline ",
+            ifelse(bserostatus, "positive ", "negative "),
+            c("placebo", "vaccine")[trt + 1], " arm"
+          ),
+          column_labels = paste(c("D1", "D29", "D57"), labels.axis[, aa][1]),
+          filename = paste0(
+            save.results.to, "/pairs_", aa, "_by_times_",
+            bstatus.labels.2[bserostatus + 1], "_", c("placebo_", "vaccine_")[trt + 1],
+            study_name, ".png"
+          )
         )
-      )
+      }
     }
   }
 }
@@ -174,7 +175,7 @@ for (tt in seq_along(times)) {
 # line-types  distinguishing the baseline serostatus
 #-----------------------------------------------
 
-for (day in c("29", "57")) {
+for (day in c("29", "57")[c("Day29", "Day57") %in% times]) {
   covid_corr_rcdf(
     plot_dat = subset(dat.long.twophase.sample, Trt == "Vaccine"),
     x = paste0("Day", day),
@@ -197,7 +198,7 @@ for (day in c("29", "57")) {
 # one plot, with the line-types distinguishing the baseline serostatus
 #-----------------------------------------------
 
-for (day in c("29", "57")) {
+for (day in c("29", "57")[c("Day29", "Day57") %in% times]) {
   covid_corr_rcdf(
     plot_dat = subset(dat.long.twophase.sample, Trt == "Vaccine"),
     x = paste0("Delta", day, "overB"),
@@ -218,7 +219,7 @@ for (day in c("29", "57")) {
 # recipients with baseline negative sero viral status
 #-----------------------------------------------
 
-for (day in c("29", "57")) {
+for (day in c("29", "57")[c("Day29", "Day57") %in% times]) {
   covid_corr_rcdf(
     plot_dat = filter(dat.long.twophase.sample, Trt == "Vaccine", Bserostatus == "Baseline Neg"),
     x = paste0("Day", day),
@@ -236,7 +237,7 @@ for (day in c("29", "57")) {
   )
 }
 
-for (day in c("29", "57")) {
+for (day in c("29", "57")[c("Day29", "Day57") %in% times]) {
   covid_corr_rcdf(
     plot_dat = subset(dat.long.twophase.sample, Trt == "Vaccine"),
     x = paste0("Delta", day, "overB"),
@@ -253,6 +254,7 @@ for (day in c("29", "57")) {
     )
   )
 }
+
 
 
 
@@ -328,66 +330,72 @@ for (trt in 1:2) {
 # - Spaghetti plots of antibody marker change over time
 #-----------------------------------------------
 
-## in each baseline serostatus group, randomly select 10 placebo recipients and 20 vaccine recipients
-set.seed(12345)
-var_names <- expand.grid(times = c("B", "Day29", "Day57"),
-                          assays = assays) %>%
-  mutate(var_names = paste0(times, assays)) %>%
-  .[, "var_names"]
+if(all(c("B", "Day29", "Day57") %in% times)){
+  ## in each baseline serostatus group, randomly select 10 placebo recipients and 20 vaccine recipients
+  set.seed(12345)
+  var_names <- expand.grid(times = c("B", "Day29", "Day57"),
+                            assays = assays) %>%
+    mutate(var_names = paste0(times, assays)) %>%
+    .[, "var_names"]
 
-spaghetti_ptid <- dat.twophase.sample[, c("Ptid", "Bserostatus", "Trt", var_names)] %>%
-  filter(., complete.cases(.)) %>%
-  transmute(BT = paste0(Bserostatus, Trt),
-            Ptid = Ptid) %>%
-  split(., .$BT) %>%
-  lapply(function(xx) {
-    if (xx$BT[1] %in% c("10", "00")) {
-      sample(xx$Ptid, 10)  ## sample 10 placebo recipients
-    } else {
-      sample(xx$Ptid, 20)  ## sample 20 vaccine recipients
-    }
-  }) %>% unlist %>% as.numeric
+  spaghetti_ptid <- dat.twophase.sample[, c("Ptid", "Bserostatus", "Trt", var_names)] %>%
+    filter(., complete.cases(.)) %>%
+    transmute(BT = paste0(Bserostatus, Trt),
+              Ptid = Ptid) %>%
+    split(., .$BT) %>%
+    lapply(function(xx) {
+      if (xx$BT[1] %in% c("10", "00")) {
+        sample(xx$Ptid, 10)  ## sample 10 placebo recipients
+      } else {
+        sample(xx$Ptid, 20)  ## sample 20 vaccine recipients
+      }
+    }) %>% unlist %>% as.numeric
 
-spaghetti_dat <- dat.long.twophase.sample[, c("Ptid", "Bserostatus", "Trt", 
-                                              "B", "Day29", "Day57", "assay")] %>%
-  filter(Ptid %in% spaghetti_ptid) %>%
-  pivot_longer(cols = c("B", "Day29", "Day57"),
-               names_to = "time") %>%
-  mutate(assay_label = factor(assay, levels = assays, labels = labels.assays.short),
-         time_label = factor(time, levels = c("B", "Day29", "Day57"),
-                             labels = c("D1", "D29", "D57"))) %>%
-  as.data.frame
+  spaghetti_dat <- dat.long.twophase.sample[, c("Ptid", "Bserostatus", "Trt", 
+                                                "B", "Day29", "Day57", "assay")] %>%
+    filter(Ptid %in% spaghetti_ptid) %>%
+    pivot_longer(cols = c("B", "Day29", "Day57"),
+                 names_to = "time") %>%
+    mutate(assay_label = factor(assay, levels = assays, labels = labels.assays.short),
+           time_label = factor(time, levels = c("B", "Day29", "Day57"),
+                               labels = c("D1", "D29", "D57"))) %>%
+    as.data.frame
 
-for (bstatus in 1:2) {
-  subdat <- subset(spaghetti_dat, Bserostatus == bstatus.labels[bstatus])
-  covid_corr_spaghetti_facets(plot_dat = subdat,
-                              x = "time_label",
-                              y = "value",
-                              id = "Ptid",
-                              color = "Trt",
-                              facet_by = "assay_label",
-                              plot_title = paste0(
-                                "Baseline ",
-                                c("Negative", "Positive")[bstatus],
-                                " PP Placebo + Vaccine group"
-                              ),
-                              filename = paste0(
-                                save.results.to, "/spaghetti_plot_",
-                                bstatus.labels.2[bstatus], "_",
-                                study_name, ".png"
-                              ))
+  for (bstatus in 1:2) {
+    subdat <- subset(spaghetti_dat, Bserostatus == bstatus.labels[bstatus])
+    covid_corr_spaghetti_facets(plot_dat = subdat,
+                                x = "time_label",
+                                y = "value",
+                                id = "Ptid",
+                                color = "Trt",
+                                facet_by = "assay_label",
+                                plot_title = paste0(
+                                  "Baseline ",
+                                  c("Negative", "Positive")[bstatus],
+                                  " PP Placebo + Vaccine group"
+                                ),
+                                filename = paste0(
+                                  save.results.to, "/spaghetti_plot_",
+                                  bstatus.labels.2[bstatus], "_",
+                                  study_name, ".png"
+                                ))
+  }
 }
-
-
-
 
 
 #### Scatter plot, assay vs. age in years, (Day 1) Day 29 Day 57
 
-
-for (tt in 1:3) {
+tps <- c("B", "Day29", "Day57")
+for (tp in tps[tps %in% times]) {
   for (bstatus in 1:2) {
     for (trt in 1:2) {
+      if(tp == "B"){
+        tt <- 1
+      }else if(tp == "Day29"){
+        tt <- 2
+      }else if(tp == "Day57"){
+        tt <- 3
+      }
       subdat <- dat.long.twophase.sample %>%
         filter(Bserostatus == bstatus.labels[bstatus], Trt == trt.labels[trt])
       

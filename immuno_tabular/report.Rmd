@@ -1,10 +1,3 @@
----
-output: pdf_document
-header-includes:
-    - \usepackage{caption}
-    - \usepackage{pdflscape}
----
-
 #  Tabular Description of Immunogenicity Data {#immuno-tabular}
 \captionsetup{justification=raggedright,singlelinecheck=false}
 ```{r knitr, echo=FALSE, message=FALSE, warning=FALSE}
@@ -20,7 +13,7 @@ base::load(here::here( "immuno_tabular", "output", "Tables.Rdata"))
 opts <- options(knitr.kable.NA = "")
 numi <- 1
 for (i in 1:length(tlf)){
-  if(i==3){
+  if (i == 3) {
     cat("\n\n\\newgeometry{top=0.08in, bottom=0.08in}")
     cat("\n\n\\begin{landscape}\n")
   }
@@ -34,6 +27,7 @@ for (i in 1:length(tlf)){
   loop <- if ("loop" %in% tlf_args) tlf_labels[["loop"]] else NA
   
   tab <- get(names(tlf)[i]) 
+  if (is.null(tab)) next
   if (nrow(tab) == 0) next
   
   group_table_col <- if ("group_table_col" %in% tlf_args) {
@@ -52,14 +46,16 @@ for (i in 1:length(tlf)){
       }
     } else NA
   
-  tab <- data.frame(sapply(tab,function(x)gsub("%", "\\\\%", x)), check.names = F)
+  tab <- data.frame(sapply(tab,function(x)gsub("%", "\\\\%", x)),
+                    check.names = FALSE)
   colnames(tab) <- gsub("%", "\\\\%", colnames(tab))
-  colnames(tab) <- gsub("Baseline SARS-CoV-2", "Baseline\nSARS\\-CoV\\-2", colnames(tab))
-  
-  col_name <- if ("col_name" %in% tlf_args) { 
+  colnames(tab) <- gsub("Baseline SARS-CoV-2", "Baseline\nSARS\\-CoV\\-2",
+                        colnames(tab))
+
+  col_name <- if ("col_name" %in% tlf_args) {
     tlf_labels[["col_name"]] 
   } else setdiff(names(tab), deselect) 
-  
+
   jloop <- if (!is.na(loop)) pull(tab, !!as.name(loop)) %>% unique() else 1
     
   for (j in jloop) {
@@ -110,3 +106,5 @@ for (i in 1:length(tlf)){
 
 ```
 \end{landscape}
+
+\newgeometry{margin=1in}

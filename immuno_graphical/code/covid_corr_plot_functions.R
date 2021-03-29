@@ -121,7 +121,6 @@ covid_corr_pairplots <- function(plot_dat, ## data for plotting
     filename = filename, plot = pairplots, width = width, height = height,
     units = units
   )
-  return(pairplots)
 }
 
 
@@ -245,7 +244,6 @@ covid_corr_pairplots_by_time <- function(plot_dat, ## data for plotting
     filename = filename, plot = pairplots, width = width, height = height,
     units = units
   )
-  return(pairplots)
 }
 
 
@@ -375,7 +373,6 @@ covid_corr_rcdf_facets <- function(plot_dat,
     filename = filename, plot = output_plot, width = width,
     height = height, units = units
   )
-  return(output_plot)
 }
 
 ###############################################################################
@@ -499,7 +496,6 @@ covid_corr_rcdf <- function(plot_dat,
     filename = filename, plot = output_plot, width = width,
     height = height, units = units
   )
-  return(output_plot)
 }
 
 ###############################################################################
@@ -642,7 +638,6 @@ covid_corr_scatter_facets <- function(plot_dat,
     filename = filename, plot = output_plot, width = width,
     height = height, units = units
   )
-  return(output_plot)
 }
 
 ###############################################################################

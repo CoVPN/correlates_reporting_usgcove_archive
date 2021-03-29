@@ -21,11 +21,11 @@ bookdown::pdf_book:
   highlight: tango
   toc_unnumbered: false
   toc_appendix: true
-  extra_dependencies: ["float"]
+  extra_dependencies: ["float", "flafter"]
 
 bookdown::pdf_document2:
   latex_engine: "pdflatex"
   citation_package: "natbib"
   includes:
     in_header: latex/preamble.tex
-  extra_dependencies: ["float"]
+  extra_dependencies: ["float", "flafter"]

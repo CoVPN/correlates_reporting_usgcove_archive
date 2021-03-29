@@ -161,7 +161,7 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   out.width = "80%",
   out.extra = "",
-  fig.pos = "!h",
+  fig.pos = "ht",
   fig.show = "hold",
   fig.align = "center",
   fig.width = 6,

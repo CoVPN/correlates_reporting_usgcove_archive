@@ -43,6 +43,7 @@ dat %>%
       `Variable Name` == "BMI" ~ "BMI at enrollment (kg/m^2)",
       `Variable Name` == "MinorityInd" ~ "Baseline covariate underrepresented minority status (1=minority, 0=non-minority)",
       `Variable Name` == "EthnicityHispanic" ~ "Indicator ethnicity = Hispanic (0 = Non-Hispanic)",
+      `Variable Name` == "EthnicityNotreported" ~ "Indicator ethnicity = Not reported (0 = Non-Hispanic)",
       `Variable Name` == "EthnicityUnknown" ~ "Indicator ethnicity = Unknown (0 = Non-Hispanic)",
       `Variable Name` == "Black" ~ "Indicator race = Black (0 = White)",
       `Variable Name` == "Asian" ~ "Indicator race = Asian (0 = White)",
@@ -50,8 +51,8 @@ dat %>%
       `Variable Name` == "PacIsl" ~ "Indicator race = Native Hawaiian or Other Pacific Islander (0 = White)",
       `Variable Name` == "WhiteNonHispanic" ~ "Indicator race = White or Caucasian (1 = White)",
       `Variable Name` == "Multiracial" ~ "Indicator race = Multiracial (0 = White)",
-      # `Variable Name` == "Notreported" ~ "Indicator Not reported (0 = White)",
       `Variable Name` == "Other" ~ "Indicator race = Other (0 = White)",
+      `Variable Name` == "Notreported" ~ "Indicator race = Not reported (0 = White)",
       `Variable Name` == "Unknown" ~ "Indicator race = unknown (0 = White)",
       `Variable Name` == "HighRiskInd" ~ "Baseline covariate high risk pre-existing condition (1=yes, 0=no)"
     ),
@@ -90,9 +91,9 @@ if (run_demo) {
       )),
       Learner = as.factor(Learner),
       Learner = fct_relevel(Learner, c(
-        "SL.mean", "SL.glm", "SL.bayesglm", "SL.glm.interaction",
-        "SL.glmnet", "SL.gam", # "SL.gam.2", "SL.gam.3", "SL.gam.4", "SL.nnet", "SL.ksvm", "SL.polymars",
-        "SL.xgboost", "SL.cforest"
+        "SL.mean", "SL.glm", "SL.glm.interaction",
+        "SL.glmnet", "SL.gam", 
+        "SL.xgboost", "SL.ranger"#, "SL.cforest", "SL.bayesglm"
       ))
     ) %>%
     arrange(Learner, Screen) %>%
@@ -126,28 +127,22 @@ dev.off()
 
 ################################################################################
 # plot ROC curve and pred.Prob with SL, Discrete SL and top 2 best-performing individual Learners
-risk_cvaucs <- risk_placebo_cvaucs %>%
-  mutate(
-    Screen_fromRun = sapply(strsplit(Screen_fromRun, "_All"), `[`, 1),
-    Screen_fromRun = paste0(Screen_fromRun, "_", Learner, "_All"),
-    Screen_fromRun = ifelse(Learner == "SL", "Super Learner",
-      ifelse(Learner == "Discrete SL", "Discrete SL", Screen_fromRun)
-    )
-  )
-
 top2_plac <- bind_rows(
-  risk_cvaucs %>% arrange(-AUC) %>% 
+  risk_placebo_cvaucs %>% arrange(-AUC) %>% 
     filter(!Learner %in% c("SL", "Discrete SL")) %>% 
-    slice(1:2),
-  risk_cvaucs %>% 
+    dplyr::slice(1:2),
+  risk_placebo_cvaucs %>% 
     filter(Learner == "SL"),
-  risk_cvaucs %>% 
+  risk_placebo_cvaucs %>% 
     filter(Learner == "Discrete SL")
-)
+) %>%
+  mutate(LearnerScreen = ifelse(Learner == "SL", "Super Learner",
+                                ifelse(Learner == "Discrete SL", Learner, 
+                                       paste0(Learner, "_", Screen_fromRun))))
 
 # Get cvsl fit and extract cv predictions
 load(file = here("output", "cvsl_riskscore_cvfits.rda"))
-pred <- get_cv_predictions(cvfits[[1]], cvaucDAT = top2_plac)
+pred <- get_cv_predictions(cv_fit = cvfits[[1]], cvaucDAT = top2_plac)
 
 # plot ROC curve
 options(bitmapType = "cairo")

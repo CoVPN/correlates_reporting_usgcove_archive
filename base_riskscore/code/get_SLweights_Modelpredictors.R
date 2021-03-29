@@ -7,6 +7,9 @@ source(here::here("..", "_common.R"))
 library(tidyverse)
 library(here)
 library(conflicted)
+library(glmnet)
+library(xgboost)
+library(ranger)
 conflict_prefer("filter", "dplyr")
 
 # Get Superlearner weights
@@ -18,30 +21,62 @@ sl_weights <- sl_riskscore_slfits$coef %>%
   arrange(-Weights)
 
 sl_weights %>%
-  mutate(Weights = format(round(Weights, 3), nsmall = 3)) %>%
+  mutate(SL.Weights = format(round(Weights, 3), nsmall = 3)) %>%
   mutate(
-    Learner = str_remove(Learner, "_plus_exposure"),
-    Learner = str_remove(Learner, "_All")
+    Screen = paste0("screen_", sapply(strsplit(Learner, "_screen_"), `[`, 2)),
+    Learner = sapply(strsplit(Learner, "_screen"), `[`, 1)
   ) %>%
+  select(Learner, Screen, SL.Weights) %>%
   write.csv(here("output", "SL_weights.csv"))
 
 top_models <- sl_weights %>%
-  filter(Weights > 0.5) %>%
   .$Learner
 
 # Get predictors selected in the models with highest weights
-library(glmnet)
-
 for (i in 1:length(top_models)) {
-  model <- sl_riskscore_slfits[["fitLibrary"]][[top_models[i]]]$object$coefficients %>%
-    as.data.frame() %>%
-    tibble::rownames_to_column(var = "Predictors") %>%
-    rename(`Coefficient` = ".") %>%
-    mutate(
-      `Odds Ratio` = exp(`Coefficient`),
-      Learner = top_models[i]
-    )
-
+  if(top_models[i] %in% c("SL.glm_screen_univariate_logistic_pval", 
+                          "SL.glm.interaction_screen_highcor_random",
+                          "SL.glm_screen_all",
+                          "SL.glm_screen_glmnet",
+                          "SL.glm_screen_highcor_random",
+                          "SL.glm.interaction_screen_glmnet",
+                          "SL.glm.interaction_screen_univariate_logistic_pval",
+                          "SL.gam_screen_glmnet",
+                          "SL.gam_screen_univariate_logistic_pval",
+                          "SL.gam_screen_highcor_random")) {
+    model <- sl_riskscore_slfits[["fitLibrary"]][[top_models[i]]]$object$coefficients %>%
+      as.data.frame() %>%
+      tibble::rownames_to_column(var = "Predictors") %>%
+      rename(`Coefficient` = ".") %>%
+      mutate(
+        `Odds Ratio` = exp(`Coefficient`),
+        Learner = top_models[i])
+  }
+  
+  if(top_models[i] %in% c("SL.glmnet_screen_all")) {
+    model <- coef(sl_riskscore_slfits[["fitLibrary"]][[top_models[i]]]$object) %>%
+      as.matrix() %>%
+      as.data.frame() %>%
+      tibble::rownames_to_column(var = "Predictors") %>%
+      rename(`Coefficient` = "1") %>%
+      mutate(`Odds Ratio` = exp(`Coefficient`),
+             Learner = top_models[i])
+  }
+  
+  if(top_models[i] %in% c("SL.xgboost_screen_all")) {
+    model <- xgboost::xgb.importance(model = sl_riskscore_slfits[["fitLibrary"]][[top_models[i]]]$object) %>% 
+      as.data.frame() %>%
+      mutate(Learner = top_models[i])
+  }
+  
+  if(top_models[i] %in% c("SL.ranger.imp_screen_all")) {
+    model <- sl_riskscore_slfits[["fitLibrary"]][[top_models[i]]]$object$variable.importance %>%
+      as.data.frame() %>%
+      rename(Importance = ".") %>%
+      tibble::rownames_to_column(var = "Predictors") %>%
+      mutate(Learner = top_models[i])
+  }
+  
   if (i == 1) {
     all_models <- model
   } else {
@@ -51,18 +86,20 @@ for (i in 1:length(top_models)) {
 
 all_models %>%
   left_join(sl_weights, by = "Learner") %>%
-  select(Learner, Weights, Predictors, Coefficient, `Odds Ratio`) %>%
   mutate(
     `SL Weights` = format(round(Weights, 3), nsmall = 3),
     Coefficient = format(round(Coefficient, 3), nsmall = 3),
-    `Odds Ratio` = format(round(`Odds Ratio`, 3), nsmall = 3)
+    `Odds Ratio` = format(round(`Odds Ratio`, 3), nsmall = 3),
+    Importance = format(round(Importance, 3), nsmall = 3),
+    Gain = format(round(Gain, 3), nsmall = 3),
+    Cover = format(round(Cover, 3), nsmall = 3),
+    Frequency = format(round(Frequency, 3), nsmall = 3),
   ) %>%
   mutate(
-    Learner = str_remove(Learner, "_plus_exposure"),
-    Learner = str_remove(Learner, "_All")
+    Screen = paste0("screen_", sapply(strsplit(Learner, "_screen_"), `[`, 2)),
+    Learner = sapply(strsplit(Learner, "_screen"), `[`, 1)
   ) %>%
-  select(-Weights) %>%
-  select(Learner, `SL Weights`, everything()) %>%
-  write.csv(here("output", "SL_top_models_with_predictors.csv"))
+  select(Learner, Screen, `SL Weights`, Predictors, Coefficient, `Odds Ratio`, Importance, Feature, Gain, Cover, Frequency) %>%
+  write.csv(here("output", "SL_all_models_with_predictors.csv"))
 
 rm(sl_riskscore_slfits)

@@ -16,7 +16,7 @@ study_name <- "mock"
 ###############################################################################
 
 assays <- c(
-  "bindSpike", "bindRBD", "pseudoneutid50", "pseudoneutid80"
+  "bindSpike", "bindRBD" #, "pseudoneutid50", "pseudoneutid80"
   # NOTE: the live neutralization marker will eventually be available
   #"liveneutmn50"
 )
@@ -86,6 +86,10 @@ names(labels.assays.short) <- c("bindN",
   "pseudoneutid50",
   "pseudoneutid80",
   "liveneutmn50")
+
+# hacky fix for tabular, since unclear who else is using
+# the truncated labels.assays.short later
+labels.assays.short.tabular <- labels.assays.short
 
 labels.time <- c("Day 1", "Day 29", "Day 57", 
                  "D29 fold-rise over D1", 

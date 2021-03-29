@@ -21,6 +21,8 @@ include_graphics(here(
 ))
 ```
 
+
+\clearpage
 ```{r, fig.cap = "Pair plots of D57 Ab markers: baseline negative vaccine arm", eval = ('Day57' %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs",
@@ -31,6 +33,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Pair plots of D29 fold-rise over D1 Ab markers: baseline negative vaccine arm", eval = ('Delta29overB' %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs",
@@ -41,6 +44,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Pair plots of D57 fold-rise over D1 Ab markers: baseline negative vaccine arm", eval = ('Delta57overB' %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs",
@@ -51,6 +55,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Pair plots of D1, D29 and D57 Binding Antibody to Spike: baseline negative vaccine arm", eval = (all(c('B', 'Day29', 'Day57') %in% times) & 'bindSpike' %in% assays)}
 include_graphics(here(
   "immuno_graphical", "figs",
@@ -61,6 +66,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Pair plots of D1, D29 and D57 Binding Antibody to RBD: baseline negative vaccine arm", eval = (all(c('B', 'Day29', 'Day57') %in% times) & 'bindRBD' %in% assays)}
 include_graphics(here(
   "immuno_graphical", "figs",
@@ -71,6 +77,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Pair plots of D1, D29 and D57 PsV Neutralization 50\\% Titer: baseline negative vaccine arm", eval = (all(c('B', 'Day29', 'Day57') %in% times) & 'pseudoneutid50' %in% assays)}
 include_graphics(here(
   "immuno_graphical", "figs",
@@ -82,6 +89,7 @@ include_graphics(here(
 ```
 
 
+\clearpage
 ```{r, fig.cap = "Pair plots of D1, D29 and D57 PsV Neutralization 80\\% Titer: Baseline negative vaccine arm", eval = (all(c('B', 'Day29', 'Day57') %in% times) & 'pseudoneutid80' %in% assays)}
 include_graphics(here(
   "immuno_graphical", "figs",
@@ -92,8 +100,7 @@ include_graphics(here(
 ))
 ```
 
-
-
+\clearpage
 ### Baseline SARS-CoV-2 Positive
 
 ```{r, fig.cap = "Pair plots of D29 Ab markers: baseline negative vaccine arm", eval = ('Day29' %in% times)}
@@ -106,6 +113,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Pair plots of D57 Ab markers: baseline negative vaccine arm", eval = ('Day57' %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs",
@@ -116,6 +124,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Pair plots of D29 fold-rise over D1 Ab markers: baseline negative vaccine arm", eval = ('Delta29overB' %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs",
@@ -126,6 +135,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Pair plots of D57 fold-rise over D1 Ab markers: baseline negative vaccine arm", eval = ('Delta57overB' %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs",
@@ -146,6 +156,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Pair plots of D1, D29 and D57 Binding Antibody to RBD: baseline negative vaccine arm", eval = (all(c('B', 'Day29', 'Day57') %in% times) & 'bindRBD' %in% assays)}
 include_graphics(here(
   "immuno_graphical", "figs",
@@ -156,6 +167,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Pair plots of D1, D29 and D57 PsV Neutralization 50\\% Titer: baseline negative vaccine arm", eval = (all(c('B', 'Day29', 'Day57') %in% times) & 'pseudoneutid50' %in% assays)}
 include_graphics(here(
   "immuno_graphical", "figs",
@@ -166,7 +178,7 @@ include_graphics(here(
 ))
 ```
 
-
+\clearpage
 ```{r, fig.cap = "Pair plots of D1, D29 and D57 PsV Neutralization 80\\% Titer: Baseline negative vaccine arm", eval = (all(c('B', 'Day29', 'Day57') %in% times) & 'pseudoneutid80' %in% assays)}
 include_graphics(here(
   "immuno_graphical", "figs",
@@ -177,6 +189,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ## RCDF plots of antibody markers for overall per-protocol cohort
 
 ```{r, fig.cap = "RCDF plots for D29 Ab markers: by baseline status x randomization arm", eval = ("Day29" %in% times)}
@@ -189,6 +202,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D57 Ab markers: by baseline status x randomization arm", eval = ("Day57" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs",
@@ -199,6 +213,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D29 fold-rise over D1 Ab markers: by baseline status x randomization arm", eval = ("Delta29overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs",
@@ -209,6 +224,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D57 fold-rise over D1 Ab markers: by baseline status x randomization arm", eval = ("Delta57overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs",
@@ -219,6 +235,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D29 Ab markers: by baseline status for the vaccine arm", eval = ("Day29" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs",
@@ -229,6 +246,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D57 Ab markers: by baseline status for the vaccine arm", eval = ("Day57" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs",
@@ -239,6 +257,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D29 over D1 fold-rise Ab markers: by baseline status for the vaccine arm", eval = ("Delta29overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs",
@@ -249,6 +268,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D57 fold-rise over D1 Ab markers: by baseline status for the vaccine arm", eval = ("Delta57overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs",
@@ -259,6 +279,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D29 Ab markers: baseline negative vaccine arm", eval = ("Day29" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs",
@@ -269,6 +290,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D57 Ab markers: baseline negative vaccine arm", eval = ("Day57" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs",
@@ -279,6 +301,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D29 fold-rise over D1 Ab markers: baseline negative vaccine arm", eval = ("Delta29overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs",
@@ -289,6 +312,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D57 fold-rise over D1 Ab markers: baseline negative vaccine arm", eval = ("Delta57overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs",
@@ -299,6 +323,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ## Scatter plots of antibody markers versus age for overall per-protocol cohort
 
 ### Baseline SARS-CoV-2 negative
@@ -313,6 +338,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Scatter plots for D57 Ab markers vs. age: baseline negative vaccine arm", eval = ("Day57" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs",
@@ -323,6 +349,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ### Baseline SARS-CoV-2 positive
 
 ```{r, fig.cap = "Scatter plots for D29 Ab markers vs. age: baseline positive vaccine arm", eval = ("Day29" %in% times)}
@@ -335,6 +362,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Scatter plots for D57 Ab markers vs. age: baseline positive vaccine arm", eval = ("Day57" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs",
@@ -345,8 +373,7 @@ include_graphics(here(
 ))
 ```
 
-
-
+\clearpage
 ## Box plots of antibody markers for overall per-protocol cohort
 
 ### Baseline SARS-CoV-2 negative
@@ -358,6 +385,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D57 Ab markers: baseline negative vaccine + placebo arms", eval = ("Day57" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs",
@@ -365,6 +393,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D29 fold-rise over D1 Ab markers: baseline negative vaccine + placebo arms", eval = ("Delta29overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs",
@@ -372,6 +401,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D57 fold-rise over D1 Ab markers: baseline negative vaccine + placebo arms", eval = ("Delta57overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs",
@@ -379,6 +409,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ### Baseline SARS-CoV-2 positive
 
 ```{r, fig.cap = "Boxplots of D29 Ab markers: baseline positive vaccine + placebo arms", eval = ("Day29" %in% times)}
@@ -388,6 +419,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D57 Ab markers: baseline positive vaccine + placebo arms", eval = ("Day57" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs",
@@ -395,6 +427,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D29 fold-rise over D1 Ab markers: baseline positive vaccine + placebo arms", eval = ("Delta29overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs",
@@ -402,6 +435,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D57 fold-rise over D1 Ab markers: baseline positive vaccine + placebo arms", eval = ("Delta57overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs",
@@ -409,6 +443,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ### Baseline negative vs. positive vaccine recipients
 
 ```{r, fig.cap = "Boxplots of D29 Ab markers: baseline positive + negative vaccine arm", eval = ("Day29" %in% times)}
@@ -418,6 +453,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D57 Ab markers: baseline positive + negative vaccine arm", eval = ("Day57" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs",
@@ -425,6 +461,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D29 fold-rise over D1 Ab markers: baseline positive + negative vaccine arm", eval = ("Delta29overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs",
@@ -432,6 +469,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D57 fold-rise over D1 Ab markers: baseline positive + negative vaccine arm", eval = ("Delta57overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs",
@@ -439,6 +477,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ### Baseline negative vs. positive placebo recipients
 
 ```{r, fig.cap = "Boxplots of D29 Ab markers: baseline positive + negative placebo arm", eval = ("Day29" %in% times)}
@@ -448,6 +487,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D57 Ab markers: baseline positive + negative placebo arm", eval = ("Day57" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs",
@@ -455,6 +495,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D29 fold-rise over D1 Ab markers: baseline positive + negative placebo arm", eval = ("Delta29overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs",
@@ -462,6 +503,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D57 fold-rise over D1 Ab markers: baseline positive + negative placebo arm", eval = ("Delta57overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs",
@@ -469,6 +511,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ## Spaghetti plots of antibody markers over time for the overall per-protocol cohort
 
 ### Baseline SARS-CoV-2 negative
@@ -480,6 +523,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ### Baseline SARS-CoV-2 positive
 ```{r, fig.cap = "Spaghetti plots of Ab markers over time: baseline positive vaccine + placebo arm", eval = all(c("B", "Day29", "Day57") %in% times)}
 include_graphics(here(
@@ -488,6 +532,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ## RCDF plots of antibody markers by demographics for per-protocol cohort
 
 ### Baseline SARS-CoV-2 negative
@@ -502,6 +547,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D57 Ab markers: baseline negative vaccine arm by age groups.", eval = ("Day57" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -512,6 +558,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D29 fold-rise over D1 Ab markers: baseline negative vaccine arm by age groups.", eval = ("Delta29overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -522,6 +569,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D57 fold-rise over D1 Ab markers: baseline negative vaccine arm by age groups.", eval = ("Delta57overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -532,6 +580,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D29 Ab markers: baseline negative vaccine arm by high-risk condition.",eval = ("Day29" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -542,6 +591,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D57 Ab markers: baseline negative vaccine arm by high-risk condition.", eval = ("Day57" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -552,6 +602,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D29 fold-rise over D1 Ab markers: baseline negative vaccine arm by high-risk condition.", eval = ("Delta29overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -562,6 +613,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D57 fold-rise over D1 Ab markers: baseline negative vaccine arm by high-risk condition.", eval = ("Delta57overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -572,6 +624,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D29 Ab markers: baseline negative vaccine arm by age and high-risk condition.", eval = ("Day29" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -582,6 +635,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D57 Ab markers: baseline negative vaccine arm by age and high-risk condition.", eval = ("Day57" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -592,6 +646,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D29 fold-rise over D1 Ab markers: baseline negative vaccine arm by age and high-risk condition.", eval = ("Delta29overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -602,6 +657,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D57 fold-rise over D1 Ab markers: baseline negative vaccine arm by age and high-risk condition.", eval = ("Delta57overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -612,6 +668,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D29 Ab markers: baseline negative vaccine arm by sex assigned at birth.", eval = ("Day29" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -622,6 +679,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D57 Ab markers: baseline negative vaccine arm by sex assigned at birth.", eval = ("Day57" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -632,6 +690,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D29 fold-rise over D1 Ab markers: baseline negative vaccine arm by sex assigned at birth.", eval = ("Delta29overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -642,6 +701,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D57 fold-rise over D1 Ab markers: baseline negative vaccine arm by sex assigned at birth.", eval = ("Delta57overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -652,6 +712,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D29 Ab markers: baseline negative vaccine arm by age and sex assigned at birth.", eval = ("Day29" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -662,6 +723,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D57 Ab markers: baseline negative vaccine arm by age and sex assigned at birth.", eval = ("Day57" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -672,6 +734,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D29 fold-rise over D1 Ab markers: baseline negative vaccine arm by age and sex assigned at birth.", eval = ("Delta29overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -682,6 +745,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D57 fold-rise over D1 Ab markers: baseline negative vaccine arm by age and sex at birth.", eval = ("Delta57overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -692,6 +756,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D29 Ab markers: baseline negative vaccine arm by ethnicity.", eval = ("Day29" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -702,6 +767,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D57 Ab markers: baseline negative vaccine arm by ethnicity.", eval = ("Day57" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -712,6 +778,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D29 fold-rise over D1 Ab markers: baseline negative vaccine arm by ethnicity.", eval = ("Delta29overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -722,6 +789,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D57 fold-rise over D1 Ab markers: baseline negative vaccine arm by ethnicity.", eval = ("Delta57overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -732,6 +800,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D29 Ab markers: baseline negative vaccine arm by race.", eval = ("Day29" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -742,6 +811,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D57 Ab markers: baseline negative vaccine arm by race.", eval = ("Day57" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -752,6 +822,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D29 fold-rise over D1 Ab markers: baseline negative vaccine arm by race.", eval = ("Delta29overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -762,6 +833,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D57 fold-rise over D1 Ab markers: baseline negative vaccine arm by race.", eval = ("Delta57overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -772,6 +844,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D29 Ab markers: baseline negative vaccine arm by dichotomous classification of race and ethnic group.", eval = ("Day29" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -782,6 +855,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D57 Ab markers: baseline negative vaccine arm by dichotomous classification of race and ethnic group.", eval = ("Day57" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -792,6 +866,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D29 fold-rise over D1 Ab markers: baseline negative vaccine arm by dichotomous classification of race and ethnic group.", eval = ("Delta29overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -802,6 +877,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D57 fold-rise over D1 Ab markers: baseline negative vaccine arm by dichotomous classification of race and ethnic group.", eval = ("Delta57overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -812,6 +888,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D29 Ab markers: baseline negative vaccine arm by age and dichotomous classification of race and ethnic group.", eval = ("Day29" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -822,6 +899,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D57 Ab markers: baseline negative vaccine arm by age and dichotomous classification of race and ethnic group.", eval = ("Day57" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -832,6 +910,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D29 fold-rise over D1 Ab markers: baseline negative vaccine arm by age and dichotomous classification of race and ethnic group.", eval = ("Delta29overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -842,6 +921,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D57 fold-rise over D1 Ab markers: baseline negative vaccine arm by age and dichotomous classification of race and ethnic group.", eval = ("Delta57overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -852,6 +932,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ### Baseline SARS-CoV-2 positive
 
 ```{r, fig.cap = "RCDF plots for D29 Ab markers: baseline positive vaccine arm by age groups.", eval = ("Day29" %in% times)}
@@ -864,6 +945,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D57 Ab markers: baseline positive vaccine arm by age groups.", eval = ("Day57" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -874,6 +956,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D29 fold-rise over D1 Ab markers: baseline positive vaccine arm by age groups.", eval = ("Delta29overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -884,6 +967,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D57 fold-rise over D1 Ab markers: baseline positive vaccine arm by age groups.", eval = ("Delta57overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -894,6 +978,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D29 Ab markers: baseline positive vaccine arm by high-risk condition.", eval = ("Day29" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -904,6 +989,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D57 Ab markers: baseline positive vaccine arm by high-risk condition.", eval = ("Day57" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -914,6 +1000,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D29 fold-rise over D1 Ab markers: baseline positive vaccine arm by high-risk condition.", eval = ("Delta29overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -924,6 +1011,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D57 fold-rise over D1 Ab markers: baseline positive vaccine arm by high-risk condition.", eval = ("Delta57overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -934,6 +1022,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D29 Ab markers: baseline positive vaccine arm by age and high-risk condition.", eval = ("Day29" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -944,6 +1033,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D57 Ab markers: baseline positive vaccine arm by age and high-risk condition.", eval = ("Day57" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -954,6 +1044,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D29 fold-rise over D1 Ab markers: baseline positive vaccine arm by age and high-risk condition.", eval = ("Delta29overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -964,6 +1055,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D57 fold-rise over D1 Ab markers: baseline positive vaccine arm by age and high-risk condition.", eval = ("Delta57overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -974,6 +1066,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D29 Ab markers: baseline positive vaccine arm by sex assigned at birth.", eval = ("Day29" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -984,6 +1077,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D57 Ab markers: baseline positive vaccine arm by sex assigned at birth.", eval = ("Day57" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -994,6 +1088,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D29 fold-rise over D1 Ab markers: baseline positive vaccine arm by sex assigned at birth.", eval = ("Delta29overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1004,6 +1099,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D57 fold-rise over D1 Ab markers: baseline positive vaccine arm by sex assigned at birth.", eval = ("Delta57overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1014,6 +1110,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D29 Ab markers: baseline positive vaccine arm by age and sex assigned at birth.", eval = ("Day29" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1024,6 +1121,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D57 Ab markers: baseline positive vaccine arm by age and sex assigned at birth.", eval = ("Day57" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1034,6 +1132,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D29 fold-rise over D1 Ab markers: baseline positive vaccine arm by age and sex assigned at birth.", eval = ("Delta29overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1044,6 +1143,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D57 fold-rise over D1 Ab markers: baseline positive vaccine arm by age and sex assigned at birth.", eval = ("Delta57overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1054,6 +1154,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D29 Ab markers: baseline positive vaccine arm by ethnicity.", eval = ("Day29" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1064,6 +1165,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D57 Ab markers: baseline positive vaccine arm by ethnicity.", eval = ("Day57" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1074,6 +1176,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D29 fold-rise over D1 Ab markers: baseline positive vaccine arm by ethnicity.", eval = ("Delta29overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1084,6 +1187,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D57 fold-rise over D1 Ab markers: baseline positive vaccine arm by ethnicity.", eval = ("Delta57overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1094,6 +1198,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D29 Ab markers: baseline positive vaccine arm by race.", eval = ("Day29" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1104,6 +1209,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D57 Ab markers: baseline positive vaccine arm by race.", eval = ("Day57" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1114,6 +1220,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D29 fold-rise over D1 Ab markers: baseline positive vaccine arm by race.", eval = ("Delta29overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1124,6 +1231,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D57 fold-rise over D1 Ab markers: baseline positive vaccine arm by race.", eval = ("Delta57overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1134,6 +1242,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D29 Ab markers: baseline positive vaccine arm by dichotomous classification of race and ethnic group.", eval = ("Day29" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1144,6 +1253,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D57 Ab markers: baseline positive vaccine arm by dichotomous classification of race and ethnic group.", eval = ("Day57" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1154,6 +1264,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D29 fold-rise over D1 Ab markers: baseline positive vaccine arm by dichotomous classification of race and ethnic group.", eval = ("Delta29overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1164,6 +1275,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D57 fold-rise over D1 Ab markers: baseline positive vaccine arm by dichotomous classification of race and ethnic group.", eval = ("Delta57overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1174,6 +1286,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D29 Ab markers: baseline positive vaccine arm by age and dichotomous classification of race and ethnic group.", eval = ("Day29" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1184,6 +1297,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D57 Ab markers: baseline positive vaccine arm by age and dichotomous classification of race and ethnic group.", eval = ("Day57" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1194,6 +1308,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D29 fold-rise over D1 Ab markers: baseline positive vaccine arm by age and dichotomous classification of race and ethnic group.", eval = ("Delta29overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1204,6 +1319,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "RCDF plots for D57 fold-rise over D1 Ab markers: baseline positive vaccine arm by age and dichotomous classification of race and ethnic group.", eval = ("Delta57overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1214,6 +1330,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ## Boxplots of antibody markers by demographics for per-protocol cohort
 
 ### Baseline SARS-CoV-2 negative
@@ -1228,6 +1345,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D57 Ab markers: Baseline negative vaccine arm by age group.", eval=FALSE, eval = ("Day57" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1238,6 +1356,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D29 fold-rise over D1 Ab markers: Baseline negative vaccine arm by age group.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1248,6 +1367,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D57 fold-rise over D1 Ab markers: Baseline negative vaccine arm by age group.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1258,6 +1378,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D29 Ab markers: Baseline negative vaccine arm by high-risk condition.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1268,6 +1389,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D57 Ab markers: Baseline negative vaccine arm by high-risk condition.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1278,6 +1400,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D29 fold-rise over D1 Ab markers: Baseline negative vaccine arm by high-risk condition.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1288,6 +1411,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D57 fold-rise over D1 Ab markers: Baseline negative vaccine arm by high-risk condition.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1298,6 +1422,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D29 Ab markers: Baseline negative vaccine arm by age and high-risk condition.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1308,6 +1433,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D57 Ab markers: Baseline negative vaccine arm by age and high-risk condition.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1318,6 +1444,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D29 fold-rise over D1 Ab markers: Baseline negative vaccine arm by age and high-risk condition.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1328,6 +1455,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D57 fold-rise over D1 Ab markers: Baseline negative vaccine arm by age and high-risk condition.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1338,6 +1466,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D29 Ab markers: Baseline negative vaccine arm by sex assigned at birth.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1348,6 +1477,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D57 Ab markers: Baseline negative vaccine arm by sex assigned at birth.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1358,6 +1488,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D29 fold-rise over D1 Ab markers: Baseline negative vaccine arm by sex assigned at birth.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1368,6 +1499,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D57 fold-rise over D1 Ab markers: Baseline negative vaccine arm by sex assigned at birth.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1378,6 +1510,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D29 Ab markers: Baseline negative vaccine arm by age and sex assigned at birth.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1388,6 +1521,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D57 Ab markers: Baseline negative vaccine arm by age and sex assigned at birth.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1398,6 +1532,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D29 fold-rise over D1 Ab markers: Baseline negative vaccine arm by age and sex assigned at birth.", eval = ("Delta29overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1408,6 +1543,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D57 fold-rise over D1 Ab markers: Baseline negative vaccine arm by age and sex assigned at birth.", eval = ("Delta57overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1418,6 +1554,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D29 Ab markers: Baseline negative vaccine arm by ethnicity.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1428,6 +1565,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D57 Ab markers: Baseline negative vaccine arm by ethnicity.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1438,6 +1576,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D29 fold-rise over D1 Ab markers: Baseline negative vaccine arm by ethnicity.", eval = ("Delta29overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1448,6 +1587,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D57 fold-rise over D1 Ab markers: Baseline negative vaccine arm by ethnicity.", eval = ("Delta57overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1458,6 +1598,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D29 Ab markers: Baseline negative vaccine arm by race.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1468,6 +1609,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D57 Ab markers: Baseline negative vaccine arm by race.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1478,6 +1620,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D29 fold-rise over D1 Ab markers: Baseline negative vaccine arm by race.", eval = ("Delta29overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1488,6 +1631,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D57 fold-rise over D1 Ab markers: Baseline negative vaccine arm by race.", eval = ("Delta57overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1498,6 +1642,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D29 Ab markers: Baseline negative vaccine arm by dichotomous classification of race and ethnic group.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1508,6 +1653,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D57 Ab markers: Baseline negative vaccine arm by dichotomous classification of race and ethnic group.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1518,6 +1664,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D29 fold-rise over D1 Ab markers: Baseline negative vaccine arm by dichotomous classification of race and ethnic group.", eval = ("Delta29overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1528,6 +1675,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D57 fold-rise over D1 Ab markers: Baseline negative vaccine arm by dichotomous classification of race and ethnic group.", eval = ("Delta57overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1538,6 +1686,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D29 Ab markers: Baseline negative vaccine arm by age and dichotomous classification of race and ethnic group.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1548,6 +1697,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D57 Ab markers: Baseline negative vaccine arm by age and dichotomous classification of race and ethnic group.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1558,6 +1708,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D29 fold-rise over D1 Ab markers: Baseline negative vaccine arm by age and dichotomous classification of race and ethnic group.", eval = ("Delta29overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1568,6 +1719,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D57 fold-rise over D1 Ab markers: Baseline negative vaccine arm by age and dichotomous classification of race and ethnic group.", eval = ("Delta57overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1578,6 +1730,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ### Baseline SARS-CoV-2 positive
 
 ```{r, fig.cap = "Boxplots of D29 Ab markers: baseline positive vaccine arm by age group.", eval=FALSE}
@@ -1590,6 +1743,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D57 Ab markers: baseline positive vaccine arm by age group.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1600,6 +1754,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D29 fold-rise over D1 Ab markers: baseline positive vaccine arm by age group.", eval = ("Delta29overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1610,6 +1765,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D57 fold-rise over D1 Ab markers: baseline positive vaccine arm by age group.", eval = ("Delta57overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1620,6 +1776,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D29 Ab markers: baseline positive vaccine arm by high-risk condition.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1630,6 +1787,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D57 Ab markers: baseline positive vaccine arm by high-risk condition.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1640,6 +1798,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D29 fold-rise over D1 Ab markers: baseline positive vaccine arm by high-risk condition.", eval = ("Delta29overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1650,6 +1809,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D57 fold-rise over D1 Ab markers: baseline positive vaccine arm by high-risk condition.", eval = ("Delta57overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1660,6 +1820,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D29 Ab markers: baseline positive vaccine arm by age and high-risk condition.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1670,6 +1831,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D57 Ab markers: baseline positive vaccine arm by age and high-risk condition.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1680,6 +1842,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D29 fold-rise over D1 Ab markers: baseline positive vaccine arm by age and high-risk condition.", eval = ("Delta29overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1690,6 +1853,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D57 fold-rise over D1 Ab markers: baseline positive vaccine arm by age and high-risk condition.", eval = ("Delta57overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1700,6 +1864,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D29 Ab markers: baseline positive vaccine arm by sex assigned at birth.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1710,6 +1875,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D57 Ab markers: baseline positive vaccine arm by sex assigned at birth.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1720,6 +1886,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D29 fold-rise over D1 Ab markers: baseline positive vaccine arm by sex assigned at birth.", eval = ("Delta29overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1730,6 +1897,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D57 fold-rise over D1 Ab markers: baseline positive vaccine arm by sex assigned at birth.", eval = ("Delta57overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1740,6 +1908,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D29 Ab markers: baseline positive vaccine arm by age and sex assigned at birth.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1750,6 +1919,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D57 Ab markers: baseline positive vaccine arm by age and sex assigned at birth.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1760,6 +1930,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D29 fold-rise over D1 Ab markers: baseline positive vaccine arm by age and sex assigned at birth.", eval = ("Delta29overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1770,6 +1941,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D57 fold-rise over D1 Ab markers: baseline positive vaccine arm by age and sex assigned at birth.", eval = ("Delta57overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1780,6 +1952,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D29 Ab markers: baseline positive vaccine arm by ethnicity.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1790,6 +1963,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D57 Ab markers: baseline positive vaccine arm by ethnicity.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1800,6 +1974,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D29 fold-rise over D1 Ab markers: baseline positive vaccine arm by ethnicity.", eval = ("Delta29overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1810,6 +1985,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D57 fold-rise over D1 Ab markers: baseline positive vaccine arm by ethnicity.", eval = ("Delta57overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1820,6 +1996,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D29 Ab markers: baseline positive vaccine arm by race.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1830,6 +2007,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D57 Ab markers: baseline positive vaccine arm by race.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1840,6 +2018,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D29 fold-rise over D1 Ab markers: baseline positive vaccine arm by race.", eval = ("Delta29overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1850,6 +2029,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D57 fold-rise over D1 Ab markers: baseline positive vaccine arm by race.", eval = ("Delta57overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1860,6 +2040,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D29 Ab markers: baseline positive vaccine arm by dichotomous classification of race and ethnic group.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1870,6 +2051,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D57 Ab markers: baseline positive vaccine arm by dichotomous classification of race and ethnic group.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1880,6 +2062,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D29 fold-rise over D1 Ab markers: baseline positive vaccine arm by dichotomous classification of race and ethnic group.", eval = ("Delta29overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1890,6 +2073,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D57 fold-rise over D1 Ab markers: baseline positive vaccine arm by dichotomous classification of race and ethnic group.", eval = ("Delta57overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1900,6 +2084,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D29 Ab markers: baseline positive vaccine arm by age and dichotomous classification of race and ethnic group.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1910,6 +2095,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D57 Ab markers: baseline positive vaccine arm by age and dichotomous classification of race and ethnic group.", eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1920,6 +2106,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D29 fold-rise over D1 Ab markers: baseline positive vaccine arm by age and dichotomous classification of race and ethnic group.", eval = ("Delta29overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
@@ -1930,6 +2117,7 @@ include_graphics(here(
 ))
 ```
 
+\clearpage
 ```{r, fig.cap = "Boxplots of D57 fold-rise over D1 Ab markers: baseline positive vaccine arm by age and dichotomous classification of race and ethnic group.", eval = ("Delta57overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",

@@ -34,6 +34,7 @@ for (i in 1:length(tlf)){
   loop <- if ("loop" %in% tlf_args) tlf_labels[["loop"]] else NA
   
   tab <- get(names(tlf)[i]) 
+  if (is.null(tab)) next
   if (nrow(tab) == 0) next
   
   group_table_col <- if ("group_table_col" %in% tlf_args) {
@@ -55,6 +56,8 @@ for (i in 1:length(tlf)){
   tab <- data.frame(sapply(tab,function(x)gsub("%", "\\\\%", x)), check.names = F)
   colnames(tab) <- gsub("%", "\\\\%", colnames(tab))
   colnames(tab) <- gsub("Baseline SARS-CoV-2", "Baseline\nSARS\\-CoV\\-2", colnames(tab))
+  colnames(tab) <- gsub("% Greater than 2xLLOD", "% Greater than\n2 $\\\\times$ LLOD", colnames(tab))
+  colnames(tab) <- gsub("% Greater than 4xLLOD", "% Greater than\n4 $\\\\times$ LLOD", colnames(tab))
   
   col_name <- if ("col_name" %in% tlf_args) { 
     tlf_labels[["col_name"]] 

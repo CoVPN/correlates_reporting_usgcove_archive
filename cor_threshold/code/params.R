@@ -54,12 +54,12 @@ plotting_assay_title_generator <- function(marker) {
   
 }
 
-times <- c("Day57", "Day29")
+times <- intersect(c("Day57", "Day29"), times)
 # Marker variables to generate results for
 # assays <- c("bindSpike", "bindRBD", "pseudoneutid80", "liveneutid80", "pseudoneutid80", "liveneutid80", "pseudoneutid50", "liveneutid50")
 # assays <- paste0("Day57", assays) # Quick way to switch between days
 markers <- markers
-markers <- grep("^[^B].*", markers, value = T) # Remove the baseline markers
+markers <- unlist(sapply(times, function(v) grep(v, markers, value = T))) # Remove the baseline markers
 markers
 marker_to_time <- sapply(markers, function(v) {
   times[stringr::str_detect(v, times)]

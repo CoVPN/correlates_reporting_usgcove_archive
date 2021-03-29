@@ -499,7 +499,33 @@ boxplots_data_long %>%
     maxiqr = quantile(Day57, 0.75) + 1.5 * (quantile(Day57, 0.75) - quantile(Day57, 0.25))
   ) 
 
+# baseline Negative placebo arm
+boxplots_data_long1<-boxplots_data_long
+boxplots_data_long1$Bserostatus<-as.factor(boxplots_data_long1$Bserostatus)
+boxplots_data_long1<-boxplots_data_long1 %>% 
+  filter(Bserostatus==0,
+         Trt == 0)
 
+ggplot(boxplots_data_long1, aes(y = Day57)) +
+  stat_boxplot(aes(x=assay),
+               geom = "errorbar", 
+               width = 0.5) +  
+  geom_boxplot(aes(x=assay))  +
+  scale_y_continuous(breaks=c(0,1,2,3,4,5,6,7,8,9,10))
+
+# baseline Negative vaccine arm
+boxplots_data_long1<-boxplots_data_long
+boxplots_data_long1$Bserostatus<-as.factor(boxplots_data_long1$Bserostatus)
+boxplots_data_long1<-boxplots_data_long1 %>% 
+  filter(Bserostatus==0,
+         Trt == 1)
+
+ggplot(boxplots_data_long1, aes(y = Day57)) +
+  stat_boxplot(aes(x=assay),
+               geom = "errorbar", 
+               width = 0.5) +  
+  geom_boxplot(aes(x=assay))  +
+  scale_y_continuous(breaks=c(0,1,2,3,4,5,6,7,8,9,10))
 
 
 

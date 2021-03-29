@@ -317,51 +317,7 @@ dat.longer.cor.subset <- dat.longer.cor.subset %>%
   (baseline_lt_thres_ptid == 1 & time == "Day 57" & increase_4F_D57_ptid == 1), 1, 0))
 
 
-dat.longer.cor.subset.plot1 %>%
-  group_by(assay, time) %>%
-  summarize(
-    min = min(value),
-    q1 = quantile(value, 0.25),
-    median = quantile(value, 0.50),
-    mean = mean(value),
-    q3 = quantile(value, 0.75),
-    max = max(value)
-  )
-dat.longer.cor.subset$assay <- as.factor(dat.longer.cor.subset$assay)
-dat.longer.cor.subset$assay <- relevel(dat.longer.cor.subset$assay, ref = "bindSpike")
 
-a <- dat.longer.cor.subset %>% arrange(Ptid, assay, time)
-b <- dat.longer.cor.subset.plot1 %>% arrange(Ptid, assay, time)
-
-sum((a$Trt==1) == (b$Trt=="Vaccine"))
-sum((a$Bserostatus==0) == (b$Bserostatus=="Baseline Neg"))
-sum((a$assay) == (b$assay))
-sum((a$time) == (b$time))
-sum((a$value) == (b$value))
-sum((a$response) == (b$response))
-sum((a$increase_4F_D57_ptid  ) == (b$increase_4F_D57_ptid  ))
-
-
-c<-a%>%select(Ptid,assay,time,value,baseline_lt_thres,increase_4F_D29,increase_4F_D57,baseline_lt_thres_ptid,increase_4F_D29_ptid,increase_4F_D57_ptid)
-d<-b%>%select(Ptid,assay,time,value,baseline_lt_thres,increase_4F_D29,increase_4F_D57,baseline_lt_thres_ptid,increase_4F_D29_ptid,increase_4F_D57_ptid)
-
-
-t<-dat.longer.cor.subset%>%
-  filter(Trt==1,
-         Bserostatus==0,
-         cohort_event=="Intercurrent Cases",
-         time == "Day 29",
-         assay== "pseudoneutid50")
-  
-sum(t$wt.2*t$response)
-sum(t$wt.2)
-sum(t$wt.2*t$response)/sum(t$wt.2)
-  dat.longer.cor.subset%>%group_by("Trt", "Bserostatus", "cohort_event", "time", "assay")%>%
-  mutate(
-         denom = sum(wt.2))
-                                      
-
-#sum((a$ULoQ) == (b$ULoQ))
 
 #lineplots of Binding Antibody to Spike: baseline negative vaccine arm (2 timepoints)
 
@@ -375,9 +331,13 @@ plot.25sample1 <- readRDS(
 )
 
 
-lineplots_neg_vaccine_bindSpike <- dat.longer.cor.subset.plot1 %>% filter(Trt == "Vaccine", Bserostatus == "Baseline Neg", assay == "bindSpike")
+lineplots_neg_vaccine_bindSpike <- dat.longer.cor.subset.plot1 %>% 
+  filter(Trt == "Vaccine", 
+         Bserostatus == "Baseline Neg", 
+         assay == "bindSpike")
 
-lineplots_neg_vaccine_bindSpike <- lineplots_neg_vaccine_bindSpike %>% filter(time == "Day 29" | time == "Day 57")
+lineplots_neg_vaccine_bindSpike <- lineplots_neg_vaccine_bindSpike %>% 
+  filter(time == "Day 29" | time == "Day 57")
 
 p <- ggplot(lineplots_neg_vaccine_bindSpike, aes(x = time, y = value)) +
   geom_violin() +
@@ -385,12 +345,22 @@ p <- ggplot(lineplots_neg_vaccine_bindSpike, aes(x = time, y = value)) +
   scale_y_continuous(breaks = c(0, 1, 2, 3, 4, 5, 6, 7, 8, 9), limits = c(0, 10)) +
   facet_wrap(~cohort_event)
 #geom_line(aes(x=time, y=value,group=Ptid))
-p
 
+lineplots_neg_vaccine_bindSpike %>% 
+  select(cohort_event,
+         time,
+         RespRate) %>% 
+  distinct()
 
-lineplots_neg_vaccine_pseudoneutid50 <- dat.longer.cor.subset.plot1 %>% filter(Trt == "Vaccine", Bserostatus == "Baseline Neg", assay == "pseudoneutid50")
+#violinplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm (2 timepoints)
 
-lineplots_neg_vaccine_pseudoneutid50 <- lineplots_neg_vaccine_pseudoneutid50 %>% filter(time == "Day 29" | time == "Day 57")
+lineplots_neg_vaccine_pseudoneutid50 <- dat.longer.cor.subset.plot1 %>% 
+  filter(Trt == "Vaccine", 
+         Bserostatus == "Baseline Neg", 
+         assay == "pseudoneutid50")
+
+lineplots_neg_vaccine_pseudoneutid50 <- lineplots_neg_vaccine_pseudoneutid50 %>% 
+  filter(time == "Day 29" | time == "Day 57")
 
 p <- ggplot(lineplots_neg_vaccine_pseudoneutid50, aes(x = time, y = value)) +
   geom_violin() +
@@ -400,8 +370,14 @@ p <- ggplot(lineplots_neg_vaccine_pseudoneutid50, aes(x = time, y = value)) +
 # geom_line(aes(x=time, y=value,group=Ptid))
 p
 
+lineplots_neg_vaccine_pseudoneutid50 %>% 
+  select(cohort_event,
+         time,
+         RespRate) %>% 
+  distinct()
 
 
+#lineplots of Binding Antibody to Spike: baseline negative vaccine arm (3 timepoints)
 lineplots_neg_vaccine_bindSpike <- dat.longer.cor.subset.plot1 %>% filter(Trt == "Vaccine", Bserostatus == "Baseline Neg", assay == "bindSpike")
 
 lineplots_neg_vaccine_bindSpike <- lineplots_neg_vaccine_bindSpike
@@ -414,9 +390,13 @@ p <- ggplot(lineplots_neg_vaccine_bindSpike, aes(x = time, y = value)) +
 # geom_line(aes(x=time, y=value,group=Ptid))
 p
 
+lineplots_neg_vaccine_bindSpike %>% 
+  select(cohort_event,
+         time,
+         RespRate) %>% 
+  distinct()
 
 
 
-lineplots_neg_vaccine_bindSpike <- dat.longer.cor.subset.plot1 %>% filter(Trt == "Vaccine", Bserostatus == "Baseline Neg", assay == "bindSpike")
 
-ttttttt <- lineplots_neg_vaccine_bindSpike %>% filter(time == "Day 57", cohort_event == "PP Non-cases")
+

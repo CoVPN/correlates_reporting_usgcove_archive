@@ -76,6 +76,7 @@ include_graphics(here("cor_graphical", "figs", paste0("Marker_RCDF_Day29_trt_by_
 include_graphics(here("cor_graphical", "figs", paste0("Marker_RCDF_Delta29overB_trt_by_event_status_bstatus_BaselineNeg_", study_name, ".png")))
 ```
 
+\clearpage
 ### Baseline seropositive
 
 ```{r, fig.cap = "RCDF plots for D57 Ab markers: baseline positive by treatment arm."}
@@ -98,7 +99,7 @@ include_graphics(here("cor_graphical", "figs", paste0("Marker_RCDF_Delta29overB_
 ```
 
 \clearpage
-## Weighted RCDF plots of threshold correlate concentration for overall vaccine efficacy
+## Weighted RCDF plots of threshold correlate concentration for vaccine efficacy
 
 ### Baseline seronegative
 

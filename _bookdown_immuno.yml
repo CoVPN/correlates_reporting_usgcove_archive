@@ -3,7 +3,6 @@ book_filename: "covpn_correlates_immuno"
 before_chapter_script: "_common.R"
 output_dir: "_report_immuno"
 clean: packages.bib
-keep_tex: true
 language:
   label:
     fig: "FIGURE "
@@ -15,6 +14,6 @@ rmd_files: [
   "index_immuno.Rmd",
   "immuno_tabular/report.Rmd",
   "immuno_graphical/report.Rmd",
-  #"immuno_engin/report.Rmd",
+  # "immuno_engin/report.Rmd",
   "references.Rmd"
 ]

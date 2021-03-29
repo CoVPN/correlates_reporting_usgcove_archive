@@ -1,13 +1,11 @@
-\newcommand{\studyname}{mock}
-
 <!-- ```{r, echo=FALSE} -->
 <!-- here::i_am("cor_coxph/report.Rmd") -->
 <!-- ``` -->
 
-\newcommand{\pathCoRoutput}{cor_coxph/output/D}
 
 ```{r, echo=FALSE}
 Day <- 57
+pathCoRoutput <- "cor_coxph/output/D57"
 ```
 
 ```{r, child=c(here::here('cor_coxph', 'report_sub.Rmd'))}
@@ -18,6 +16,7 @@ Day <- 57
 
 ```{r, echo=FALSE}
 Day <- 29
+pathCoRoutput <- "cor_coxph/output/D29"
 ```
 
 ```{r, child=c(here::here('cor_coxph', 'report_sub.Rmd'))}

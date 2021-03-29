@@ -10,21 +10,55 @@ set.seed(98109)
 data_in_file <- "COVID_VEtrial_practicedata_primarystage1.csv"
 data_name <- "practice_data.csv"
 study_name <- "mock"
+
 ###############################################################################
-# figure labels and titles for markers
+# define immune markers to be included in the analysis
 ###############################################################################
 
-# define useful constants
 assays <- c(
   "bindSpike", "bindRBD", "pseudoneutid50", "pseudoneutid80"
   # NOTE: the live neutralization marker will eventually be available
   #"liveneutmn50"
 )
 
-times <- c("B", "Day29", "Day57", "Delta29overB", "Delta57overB", "Delta57over29")
+# if this flag is true, then the N IgG binding antibody is reported 
+# in the immuno report (but is not analyzed in the cor or cop reports).
+include_bindN <- TRUE
 
-markers <- c(outer(times[1:3], assays, "%.%"))
+# times of measurements of the markers
+# B, Day29, Day57 are quantitative levels of markers measured at different times
+# DeltaXoverY is fold change in marker from time X to time Y
+times <- c("B", "Day29", "Day57", 
+           "Delta29overB", "Delta57overB", "Delta57over29")
 
+# limits for each assay
+llods <-c(bindN = 20, 
+          bindSpike = 20, 
+          bindRBD = 20, 
+          pseudoneutid50 = 10, 
+          pseudoneutid80 = 10, 
+          liveneutmn50 = 62.16)
+
+lloqs <-c(bindN = 34, 
+          bindSpike = 34, 
+          bindRBD = 34, 
+          pseudoneutid50 = 49, 
+          pseudoneutid80 = 43, 
+          liveneutmn50 = 117.35) 
+
+uloqs <-c(bindN = 19136250, 
+          bindSpike = 19136250, 
+          bindRBD = 19136250, 
+          pseudoneutid50 = Inf, 
+          pseudoneutid80 = Inf, 
+          liveneutmn50 = 18976.19) 
+
+###############################################################################
+# figure labels and titles for markers
+###############################################################################
+
+markers <- c(outer(times[which(times %in% c("B", "Day29", "Day57"))], 
+                   assays, "%.%"))
 
 # race labeling
 labels.race <- c(
@@ -40,31 +74,49 @@ labels.ethnicity <- c(
   "Not reported and unknown"
 )
 
+labels.assays.short <- c("Anti N IgG (IU/ml)", 
+                         "Anti Spike IgG (IU/ml)", 
+                         "Anti RBD IgG (IU/ml)", 
+                         "Pseudovirus-nAb ID50", 
+                         "Pseudovirus-nAb ID80", 
+                         "Live virus-nAb MN50")
+names(labels.assays.short) <- c("bindN",
+  "bindSpike",
+  "bindRBD",
+  "pseudoneutid50",
+  "pseudoneutid80",
+  "liveneutmn50")
+
+labels.time <- c("Day 1", "Day 29", "Day 57", 
+                 "D29 fold-rise over D1", 
+                 "D57 fold-rise over D1", 
+                 "D57 fold-rise over D29")
+
+names(labels.time) <- c("B", "Day29", "Day57", "Delta29overB", 
+                        "Delta57overB", "Delta57over29")
+
 # axis labeling
 labels.axis <- outer(
-  c("", "", "", "", "", ""),
-  c(
-    "Spike IgG (IU/ml)", "RBD IgG (IU/ml)", "PsV-nAb ID50",
-    #"WT LV-nAb MN50",
-    "PsV-nAb ID80"#,
-    #"WT LV-nAb MN80"
-  ),
+  rep("", length(times)),
+  labels.assays.short[assays],
   "%.%"
 )
 labels.axis <- as.data.frame(labels.axis)
-rownames(labels.axis) <- times
-# NOTE: hacky solution to deal with changes in the number of markers
-colnames(labels.axis)[seq_along(assays)] <- assays
+  rownames(labels.axis) <- times
+
+labels.assays <- c("Binding Antibody to Spike", 
+                   "Binding Antibody to RBD",
+                   "PsV Neutralization 50% Titer",
+                   "PsV Neutralization 80% Titer",
+                   "WT LV Neutralization 50% Titer")
+
+names(labels.assays) <- c("bindSpike", "bindRBD", "pseudoneutid50",
+                          "pseudoneutid80",
+                          "liveneutmn50")
 
 # title labeling
 labels.title <- outer(
-  c(
-    "Binding Antibody to Spike", "Binding Antibody to RBD",
-    "PsV Neutralization 50% Titer",
-    #"WT LV Neutralization 50% Titer",
-    "PsV Neutralization 80% Titer" #,
-    #"WT LV Neutralization 80% Titer"
-  ),
+  labels.assays[assays],
   ": " %.%
     c(
       "Day 1", "Day 29", "Day 57", "D29 fold-rise over D1",
@@ -99,15 +151,6 @@ demo.stratum.labels <- c(
   "Age < 65, Not at risk, White non-Hisp"
 )
 
-llods <- c(
-  bindSpike = 20,
-  bindRBD = 20,
-  pseudoneutid50 = 10,
-  pseudoneutid80 = 10
-)
-# live neut to be added
-#, liveneutmn50=62)
-
 ###############################################################################
 # theme options
 ###############################################################################
@@ -118,6 +161,7 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   #cache = TRUE,
   out.width = "80%",
+  out.extra = "",
   fig.align = "center",
   fig.width = 6,
   fig.asp = 0.618,
@@ -127,8 +171,7 @@ knitr::opts_chunk$set(
   echo = FALSE,
   message = FALSE,
   warning = FALSE,
-  fig.pos = "ht",
-  out.extra = ""
+  fig.pos = "H"
 )
 
 # global options

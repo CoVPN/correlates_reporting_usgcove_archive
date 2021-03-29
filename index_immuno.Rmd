@@ -1,13 +1,10 @@
 ---
 knit: "bookdown::render_book"
-title: "COVID-19 Correlates Immunogenicity Analysis Report"
-author: "COVID-19 Prevention Network (CoVPN) Biostatistics Team"
+title: "COVID-19 Immunogenicity Analysis Report"
+subtitle: '`r source(here::here("_common.R")); paste(study_name, "Study")`'
+author: "USG COVID-19 Response Biostatistics Team"
 date: "`r format(Sys.time(), '%B %d, %Y')`"
 documentclass: book
-output:
-  bookdown::pdf_document2:
-    includes:
-      in_header: preamble.tex
 site: bookdown::bookdown_site
 bibliography: [book.bib, packages.bib]
 biblio-style: apalike
@@ -18,7 +15,17 @@ graphics: yes
 lot: yes
 lof: yes
 always_allow_html: yes
+header-includes:
+   - \usepackage{eso-pic,graphicx,transparent}
 ---
+
+
+```{r, include = knitr::is_latex_output() & study_name == "mock"}
+knitr::asis_output("\\AddToShipoutPictureFG{
+  \\AtPageCenter{
+    \\makebox[0pt]{\\rotatebox[origin=c]{45}{
+      \\scalebox{10}{\\texttransparent{0.3}{MOCK}}}}}}")
+```
 
 `r if (knitr::is_latex_output()) '<!--'`
 

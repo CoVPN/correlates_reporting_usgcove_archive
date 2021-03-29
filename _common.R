@@ -16,7 +16,7 @@ study_name <- "mock"
 ###############################################################################
 
 assays <- c(
-  "bindSpike", "bindRBD"#, "pseudoneutid50", "pseudoneutid80"
+  "bindSpike", "bindRBD", "pseudoneutid50", "pseudoneutid80"
   # NOTE: the live neutralization marker will eventually be available
   #"liveneutmn50"
 )
@@ -28,9 +28,8 @@ include_bindN <- TRUE
 # times of measurements of the markers
 # B, Day29, Day57 are quantitative levels of markers measured at different times
 # DeltaXoverY is fold change in marker from time X to time Y
-times <- c("B", "Day57")
-           # "B", "Day29", "Day57", 
-           # "Delta29overB", "Delta57overB", "Delta57over29")
+times <- c("B", "Day29", "Day57", 
+           "Delta29overB", "Delta57overB", "Delta57over29")
 
 # limits for each assay
 llods <-c(bindN = 20, 

@@ -1,10 +1,3 @@
----
-output: pdf_document
-header-includes:
-    - \usepackage{caption}
-    - \usepackage{pdflscape}
----
-
 #  Summary Tables{#cor-tabular}
 \captionsetup{justification=raggedright,singlelinecheck=false}
 ```{r knitr, echo=FALSE, message=FALSE, warning=FALSE}

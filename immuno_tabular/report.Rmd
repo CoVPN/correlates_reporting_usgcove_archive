@@ -1,10 +1,3 @@
----
-output: pdf_document
-header-includes:
-    - \usepackage{caption}
-    - \usepackage{pdflscape}
----
-
 #  Tabular Description of Immunogenicity Data {#immuno-tabular}
 \captionsetup{justification=raggedright,singlelinecheck=false}
 ```{r knitr, echo=FALSE, message=FALSE, warning=FALSE}
@@ -34,6 +27,7 @@ for (i in 1:length(tlf)){
   loop <- if ("loop" %in% tlf_args) tlf_labels[["loop"]] else NA
   
   tab <- get(names(tlf)[i]) 
+  if (is.null(tab)) next
   if (nrow(tab) == 0) next
   
   group_table_col <- if ("group_table_col" %in% tlf_args) {
@@ -112,4 +106,5 @@ for (i in 1:length(tlf)){
 
 ```
 \end{landscape}
+
 \newgeometry{margin=1in}

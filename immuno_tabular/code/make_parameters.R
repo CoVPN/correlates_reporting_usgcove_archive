@@ -13,14 +13,16 @@ tlf <-
   list(
     tab_dm_neg = list(
       table_header = "Demographic and Clinical Characteristics at Baseline in 
-      the baseline SARS-CoV-2 negative per-protocol cohort",
-      table_footer = "This table summarises the random subcohort, which
-      was randomly sampled from the per-protocol individuals without a COVID failure
-      event $<$ 7 days post Day 57. The sampling was stratified by the key baseline 
-      covariates: assigned treatment arm, baseline SARS-CoV-2 status 
-      (defined by serostatus and possibly also NAAT and/or RNA PCR testing), 
-      any additional important demographic factors such as the randomization strata 
-      (e.g., defined by age and/or co-morbidities).",
+      the Baseline SARS-CoV-2 Negative Per-Protocol Cohort",
+      table_footer = "This table summarizes the random subcohort, which was 
+      randomly sampled from the per-protocol cohort, and excludes individuals 
+      with a COVID failure event $<$ 7 days post Day 57. The sampling was 
+      stratified by 24 strata defined by enrollment characteristics: Assigned 
+      treatment arm $\\\\times$ Baseline SARS-CoV-2 naïve vs. non-naïve status 
+      (defined by serostatus and NAAT testing) $\\\\times$ Randomization strata 
+      (Age $<$ 65 and at-risk, Age $<$ 65 and not at-risk, Age $\\\\geq$ 65) $\\\\times$ 
+      Communities of color (Yes/No) defined by White Non-Hispanic vs. all 
+      others (following the primary COVE trial paper).",
       deselect = "subgroup",
       pack_row = "subgroup",
       col1="7cm"
@@ -28,14 +30,16 @@ tlf <-
     
     tab_dm_pos = list(
       table_header = "Demographic and Clinical Characteristics at Baseline in 
-      the baseline SARS-CoV-2 positive per-protocol cohort",
-      table_footer = "This table summarises the random subcohort, which
-      was randomly sampled from the per-protocol individuals without a COVID failure
-      event $<$ 7 days post Day 57. The sampling was stratified by the key baseline 
-      covariates: assigned treatment arm, baseline SARS-CoV-2 status 
-      (defined by serostatus and possibly also NAAT and/or RNA PCR testing), 
-      any additional important demographic factors such as the randomization strata 
-      (e.g., defined by age and/or co-morbidities).",
+      the Baseline SARS-CoV-2 Positive Per-Protocol Cohort",
+      table_footer ="This table summarizes the random subcohort, which was 
+      randomly sampled from the per-protocol cohort, and excludes individuals 
+      with a COVID failure event $<$ 7 days post Day 57. The sampling was 
+      stratified by 24 strata defined by enrollment characteristics: Assigned 
+      treatment arm $\\\\times$ Baseline SARS-CoV-2 naïve vs. non-naïve status 
+      (defined by serostatus and NAAT testing) $\\\\times$ Randomization strata 
+      (Age $<$ 65 and at-risk, Age $<$ 65 and not at-risk, Age $\\\\geq$ 65) $\\\\times$ 
+      Communities of color (Yes/No) defined by White Non-Hispanic vs. all 
+      others (following the primary COVE trial paper).",
       deselect = "subgroup",
       pack_row = "subgroup",
       col1="7cm"
@@ -43,13 +47,15 @@ tlf <-
     
     tab_bind = list(
       table_header = "Percentage of responders, and participants
-      with concentrations $\\geq$ 2 x LLOD or $\\geq$ 4 x LLOD for binding antibody
+      with concentrations $\\geq$ 2 $\\times$ LLOD or $\\geq$ 4 $\\times$ LLOD for binding antibody
       markers",
       table_footer = c(
         "Binding Antibody Responders are defined as participants who had
         baseline values below the LLOD with detectable antibody concentration
         above the assay LLOD, or as participants with baseline values above
-        the LLOD with a 4-fold increase in antibody concentration."),
+        the LLOD with a 4-fold increase in antibody concentration.",
+        "Percentages are calculated for the whole per-protocol group/subgroup, 
+        using inverse probability weighting."),
       loop = "subgroup",
       group_table_col = c("Rx", "Group", "Baseline", "Visit", "N", "Marker"),
       deselect = "subgroup",
@@ -64,7 +70,9 @@ tlf <-
         "Neutralization Responders are defined as participants who had baseline
         values below the lower limit of detection (LLOD) with detectable
         ID50 neutralization titer above the assay LLOD, or as participants with
-        baseline values above the LLOD with a 4-fold increase in ID50."
+        baseline values above the LLOD with a 4-fold increase in ID50.",
+        "Percentages are calculated for the whole per-protocol group/subgroup, 
+        using inverse probability weighting."
       ),
       loop = "subgroup",
       group_table_col = c("Rx", "Group", "Baseline", "Visit", "N", "Marker"),
@@ -80,7 +88,9 @@ tlf <-
         "Neutralization Responders are defined as participants who had baseline
         values below the lower limit of detection (LLOD) with detectable
         ID50 neutralization titer above the assay LLOD, or as participants with
-        baseline values above the LLOD with a 4-fold increase in ID50."
+        baseline values above the LLOD with a 4-fold increase in ID50.",
+        "Percentages are calculated for the whole per-protocol group/subgroup, 
+        using inverse probability weighting."
       ),
       loop = "subgroup",
       group_table_col = c("Rx", "Group", "Baseline", "Visit", "N", "Marker"),
@@ -119,7 +129,8 @@ tlf <-
     tab_rrdiff = list(
       table_header = "Differences in the responder rates, 2FRs, 4FRs between 
       the vaccine arm and the placebo arm",
-      table_footer = " ",
+      table_footer = "Percentages are calculated for the whole per-protocol 
+      group/subgroup, using inverse probability weighting.",
       loop = "subgroup",
       group_table_col = c( "Group", "Baseline","Visit", "Marker"),
       deselect = "subgroup"
@@ -129,7 +140,8 @@ tlf <-
     tab_neg = list(
       table_header = "Antibody levels in the baseline SARS-CoV-2
       negative per-protocol cohort (vaccine vs. placebo)",
-      table_footer = "",
+      table_footer = "Percentages are calculated for the whole 
+      per-protocol group/subgroup, using inverse probability weighting.",
       col_name = c("Visit", "Marker", "N", "Resp rate", "GMT/GMC", "N",
                    "Resp rate", "GMT/GMC", "Resp Rate\nDifference", "GMTR/\nGMCR"),
       header_above1 = c(" "=2, "Vaccine" = 3, "Placebo" = 3, "Comparison" = 2),
@@ -140,7 +152,8 @@ tlf <-
     tab_pos = list(
       table_header = "Antibody levels in the baseline SARS-CoV-2
       positive per-protocol cohort (vaccine vs. placebo)",
-      table_footer = "",
+      table_footer = "Percentages are calculated for the whole 
+      per-protocol group/subgroup, using inverse probability weighting.",
       col_name = c("Visit", "Marker", "N", "Resp rate", "GMT/GMC", "N",
                    "Resp rate", "GMT/GMC", "Resp Rate\nDifference", "GMTR/\nGMCR"),
       header_above1 = c(" "=2, "Vaccine" = 3, "Placebo" = 3, "Comparison" = 2),
@@ -151,7 +164,8 @@ tlf <-
     tab_vacc = list(
       table_header = "Antibody levels in the per-protocol cohort
       (vaccine recipients)",
-      table_footer = "",
+      table_footer = "Percentages are calculated for the whole 
+      per-protocol group/subgroup, using inverse probability weighting.",
       col_name = c("Visit", "Marker", "N", "Resp rate", "GMT/GMC", "N",
                    "Resp rate", "GMT/GMC", "Resp Rate\nDifference", "GMTR/\nGMCR"),
       header_above1 = c(" "=2, "Baseline SARS-CoV-2 Positive" = 3,
@@ -163,7 +177,8 @@ tlf <-
     tab_plcb = list(
       table_header = "Antibody levels in the per-protocol cohort
       (placebo recipients)",
-      table_footer = "",
+      table_footer = "Percentages are calculated for the whole 
+      per-protocol group/subgroup, using inverse probability weighting.",
       col_name = c("Visit", "Marker", "N", "Resp rate", "GMT/GMC", "N",
                    "Resp rate", "GMT/GMC", "Resp Rate\nDifference", "GMTR/GMCR"),
       header_above1 = c(" "=2, "Baseline SARS-CoV-2 Positive" = 3, 

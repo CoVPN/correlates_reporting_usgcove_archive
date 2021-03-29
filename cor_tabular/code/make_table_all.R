@@ -23,14 +23,16 @@ tlf <-
   list(
     tab_dm_neg = list(
       table_header = "Demographic and Clinical Characteristics at Baseline in 
-      the baseline SARS-CoV-2 negative per-protocol cohort",
-      table_footer = "This table summarises the random subcohort, which
-      was randomly sampled from the per-protocol individuals without a COVID failure
-      event $<$ 7 days post Day 57. The sampling was stratified by the key baseline 
-      covariates: assigned treatment arm, baseline SARS-CoV-2 status 
-      (defined by serostatus and possibly also NAAT and/or RNA PCR testing), 
-      any additional important demographic factors such as the randomization strata 
-      (e.g., defined by age and/or co-morbidities).",
+      the Baseline SARS-CoV-2 Negative Per-Protocol Cohort",
+      table_footer = "This table summarizes the random subcohort, which was 
+      randomly sampled from the per-protocol cohort, and excludes individuals 
+      with a COVID failure event $<$ 7 days post Day 57. The sampling was 
+      stratified by 24 strata defined by enrollment characteristics: Assigned 
+      treatment arm $\\\\times$ Baseline SARS-CoV-2 naïve vs. non-naïve status 
+      (defined by serostatus and NAAT testing) $\\\\times$ Randomization strata 
+      (Age $<$ 65 and at-risk, Age $<$ 65 and not at-risk, Age $\\\\geq$ 65) $\\\\times$ 
+      Communities of color (Yes/No) defined by White Non-Hispanic vs. all 
+      others (following the primary COVE trial paper).",
       deselect = "subgroup",
       pack_row = "subgroup",
       col1="7cm"
@@ -38,14 +40,16 @@ tlf <-
     
     tab_dm_pos = list(
       table_header = "Demographic and Clinical Characteristics at Baseline in 
-      the baseline SARS-CoV-2 positive per-protocol cohort",
-      table_footer = "This table summarises the random subcohort, which
-      was randomly sampled from the per-protocol individuals without a COVID failure
-      event $<$ 7 days post Day 57. The sampling was stratified by the key baseline 
-      covariates: assigned treatment arm, baseline SARS-CoV-2 status 
-      (defined by serostatus and possibly also NAAT and/or RNA PCR testing), 
-      any additional important demographic factors such as the randomization strata 
-      (e.g., defined by age and/or co-morbidities).",
+      the Baseline SARS-CoV-2 Positive Per-Protocol Cohort",
+      table_footer ="This table summarizes the random subcohort, which was 
+      randomly sampled from the per-protocol cohort, and excludes individuals 
+      with a COVID failure event $<$ 7 days post Day 57. The sampling was 
+      stratified by 24 strata defined by enrollment characteristics: Assigned 
+      treatment arm $\\\\times$ Baseline SARS-CoV-2 naïve vs. non-naïve status 
+      (defined by serostatus and NAAT testing) $\\\\times$ Randomization strata 
+      (Age $<$ 65 and at-risk, Age $<$ 65 and not at-risk, Age $\\\\geq$ 65) $\\\\times$ 
+      Communities of color (Yes/No) defined by White Non-Hispanic vs. all 
+      others (following the primary COVE trial paper).",
       deselect = "subgroup",
       pack_row = "subgroup",
       col1="7cm"

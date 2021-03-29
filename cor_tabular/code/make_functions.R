@@ -93,7 +93,7 @@ setDelta <- function(data, marker, timepoints, time.ref = NA) {
 #' Wrapper function to generate response rates based on svyciprop()
 #'
 #' @param x The dataframe used for the svydesign() data argument
-#' @param sug_grp_col A formula specifying factors that define subsets to run the model, used for svyby() by argument
+#' @param sug_grp_col A formula specifying factors that define subsets to run the model
 #' @param stratum The stratum used for svydesign()
 #' @param weights The weights used for svydesign()
 get_rr <- function(x, weights, stratum, sub_grp_col){
@@ -124,7 +124,7 @@ get_rr <- function(x, weights, stratum, sub_grp_col){
 #' Wrapper function to generate ratio of geometric mean based on svymean()
 #'
 #' @param x The dataframe used for the svydesign() data argument
-#' @param sug_grp_col A formula specifying factors that define subsets to run the model, used for svyby() by argument
+#' @param sug_grp_col A formula specifying factors that define subsets to run the model
 #' @param stratum The stratum used for svydesign()
 #' @param weights The weights used for svydesign()
 get_gm <- function(x, weights, stratum, sub_grp_col){
@@ -156,7 +156,7 @@ get_gm <- function(x, weights, stratum, sub_grp_col){
 #' @param x The dataframe used for the svydesign() data argument
 #' @param comp_v The covariate for comparison
 #' @param f_v The model formula used for svyglm()
-#' @param sug_grp_col A formula specifying factors that define subsets to run the model, used for svyby() by argument
+#' @param sug_grp_col A formula specifying factors that define subsets to run the model
 #' @param stratum The stratum used for svydesign()
 #' @param weights The weights used for svydesign()
 get_rgmt <- function(comp_v, comp_lev=NULL, f_v, sub_grp_col, stratum, weights, x) {

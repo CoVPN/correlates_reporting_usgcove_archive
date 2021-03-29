@@ -61,7 +61,7 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "Pair plots of D1, D29 and D57 Binding Antibody to RBD: baseline negative vaccine arm", eval = (all(c('B', 'Day29', 'Day57') %in% times) & bindRBD %in% assays)}
+```{r, fig.cap = "Pair plots of D1, D29 and D57 Binding Antibody to RBD: baseline negative vaccine arm", eval = (all(c('B', 'Day29', 'Day57') %in% times) & 'bindRBD' %in% assays)}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0(
@@ -71,7 +71,7 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "Pair plots of D1, D29 and D57 PsV Neutralization 50\\% Titer: baseline negative vaccine arm", eval = (all(c('B', 'Day29', 'Day57') %in% times) & pseudoneutid50 %in% assays)}
+```{r, fig.cap = "Pair plots of D1, D29 and D57 PsV Neutralization 50\\% Titer: baseline negative vaccine arm", eval = (all(c('B', 'Day29', 'Day57') %in% times) & 'pseudoneutid50' %in% assays)}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0(
@@ -82,7 +82,7 @@ include_graphics(here(
 ```
 
 
-```{r, fig.cap = "Pair plots of D1, D29 and D57 PsV Neutralization 80\\% Titer: Baseline negative vaccine arm", eval = (all(c('B', 'Day29', 'Day57') %in% times) & pseudoneutid80 %in% assays)}
+```{r, fig.cap = "Pair plots of D1, D29 and D57 PsV Neutralization 80\\% Titer: Baseline negative vaccine arm", eval = (all(c('B', 'Day29', 'Day57') %in% times) & 'pseudoneutid80' %in% assays)}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0(
@@ -146,7 +146,7 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "Pair plots of D1, D29 and D57 Binding Antibody to RBD: baseline negative vaccine arm", eval = (all(c('B', 'Day29', 'Day57') %in% times) & bindRBD %in% assays)}
+```{r, fig.cap = "Pair plots of D1, D29 and D57 Binding Antibody to RBD: baseline negative vaccine arm", eval = (all(c('B', 'Day29', 'Day57') %in% times) & 'bindRBD' %in% assays)}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0(
@@ -156,7 +156,7 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "Pair plots of D1, D29 and D57 PsV Neutralization 50\\% Titer: baseline negative vaccine arm", eval = (all(c('B', 'Day29', 'Day57') %in% times) & pseudoneutid50 %in% assays)}
+```{r, fig.cap = "Pair plots of D1, D29 and D57 PsV Neutralization 50\\% Titer: baseline negative vaccine arm", eval = (all(c('B', 'Day29', 'Day57') %in% times) & 'pseudoneutid50' %in% assays)}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0(
@@ -167,7 +167,7 @@ include_graphics(here(
 ```
 
 
-```{r, fig.cap = "Pair plots of D1, D29 and D57 PsV Neutralization 80\\% Titer: Baseline negative vaccine arm", eval = (all(c('B', 'Day29', 'Day57') %in% times) & pseudoneutid80 %in% assays)}
+```{r, fig.cap = "Pair plots of D1, D29 and D57 PsV Neutralization 80\\% Titer: Baseline negative vaccine arm", eval = (all(c('B', 'Day29', 'Day57') %in% times) & 'pseudoneutid80' %in% assays)}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0(

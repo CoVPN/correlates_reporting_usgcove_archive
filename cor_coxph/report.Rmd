@@ -19,5 +19,5 @@ Day <- 29
 pathCoRoutput <- "cor_coxph/output/D29"
 ```
 
-```{r, child=c(here::here('cor_coxph', 'report_sub.Rmd'))}
+```{r, child=if (has29) c(here::here('cor_coxph', 'report_sub.Rmd'))}
 ```

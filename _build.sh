@@ -2,4 +2,5 @@
 
 echo "Building bookdown $1 report"
 Rscript -e "bookdown::clean_book(TRUE)"
-Rscript -e "bookdown::render_book(input = 'index_$1.Rmd', config_file = '_bookdown_$1.yml', output_format = 'bookdown::pdf_document2', quiet=TRUE)"
+Rscript -e "bookdown::render_book(input = 'index_$1.Rmd', config_file = '_bookdown_$1.yml', output_format = 'bookdown::pdf_document2', quiet=TRUE)" && \
+  pdflatex _report_$1/covpn_correlates_$1.tex

@@ -111,3 +111,5 @@ for (i in 1:length(tlf)){
 
 ```
 \end{landscape}
+
+\newgeometry{margin=1in}

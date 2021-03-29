@@ -59,11 +59,13 @@ tlf <-
       table_header = "Antibody levels in the baseline SARS-CoV-2 negative
       per-protocol cohort (vaccine recipients)",
       table_footer =
-        "*Cases are baseline negative per-protocol vaccine recipients with the
+        c("*Cases are baseline negative per-protocol vaccine recipients with the
         symptomatic infection COVID-19 primary endpoint diagnosed starting 7 days
         after the Day 57 study visit.  Non-cases/Controls are baseline negative
         per-protocol vaccine recipients sampled into the random subcohort with
         no evidence of SARS-CoV-2 infection up to the time of data cut.",
+        "Percentages are calculated for the whole per-protocol group/subgroup, 
+        using inverse probability weighting."),
       col_name = c("Visit", "Marker", "N", "Resp rate", "GMT/GMC", "N",
                    "Resp rate", "GMT/GMC", "Resp Rate\nDifference", "GMTR/GMCR"),
       header_above1 = c(" "=2, "Cases*" = 3, "Non-Cases/Control" = 3,
@@ -82,7 +84,9 @@ tlf <-
         days after the Day 57 study visit.  Non-cases/Controls are baseline
         negative per-protocol vaccine recipients sampled into the random
         subcohort with no evidence of SARS-CoV-2 infection up to the time
-        of data cut."),
+        of data cut.",
+        "Percentages are calculated for the whole per-protocol group/subgroup, 
+        using inverse probability weighting."),
       col_name = c("Visit", "Marker", "N", "Resp rate", "GMT/GMC", "N",
                    "Resp rate", "GMT/GMC", "Resp Rate\nDifference", "GMTR/GMCR"),
       header_above1 = c(" "=2, "Cases*" = 3, "Non-Cases/Control" = 3, 
@@ -101,7 +105,9 @@ tlf <-
         days after the Day 57 study visit.  Non-cases/Controls are baseline
         negative per-protocol vaccine recipients sampled into the random
         subcohort with no evidence of SARS-CoV-2 infection up to the time of
-        data cut."),
+        data cut.",
+        "Percentages are calculated for the whole per-protocol group/subgroup, 
+        using inverse probability weighting."),
       col_name = c("Visit", "Marker", "N", "Resp rate", "GMT/GMC", "N",
                    "Resp rate", "GMT/GMC", "Resp Rate\nDifference", "GMTR/GMCR"),
       header_above1 = c(" "=2,  "Cases*" = 3, "Non-Cases/Control" = 3,
@@ -464,9 +470,9 @@ rpcnt_case <- ds_resp_case %>%
 tab_rr_case <- rpcnt_case %>%
   inner_join(
     ds_resp_case %>%
-      mutate(rspndr = response*wt.subcohort) %>% 
+      mutate(rspndr = response*wt) %>% 
       group_by(across(all_of(gsub("`","",sub_grp_col)))) %>%
-      summarise(N = n(), Nw = sum(wt.subcohort), rspndr = sum(rspndr),
+      summarise(N = n(), Nw = sum(wt), rspndr = sum(rspndr),
                 .groups = 'drop'),
     by = sub_grp_col) %>%
   mutate(Responder = case_when(

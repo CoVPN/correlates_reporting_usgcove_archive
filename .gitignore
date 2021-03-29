@@ -161,3 +161,4 @@ cor_coxph/cor_coxph_report.out
 cor_coxph/cor_coxph_report.aux
 cor_coxph/cor_coxph_report.utf8.md
 data_clean/.Rprofile
+data_clean/renv/activate.R

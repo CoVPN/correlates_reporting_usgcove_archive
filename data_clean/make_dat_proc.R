@@ -32,16 +32,22 @@ dat_proc <- dat_proc %>%
       complete.cases(cbind(
         BbindSpike, if(has29) Day29bindSpike, Day57bindSpike,
         BbindRBD,   if(has29) Day29bindRBD,   Day57bindRBD
-      )),
+      ))
+  )
+
+
+if(has29) dat_proc <- dat_proc %>%
+  mutate(
     # for D29 analyses
-    if(has29) TwophasesampInd.2 = Fullvaccine == 1 &
+    TwophasesampInd.2 = Fullvaccine == 1 &
       (SubcohortInd | EventIndPrimaryD29 == 1) &
       complete.cases(cbind(
         BbindSpike, Day29bindSpike,
         BbindRBD, Day29bindRBD
       ))
   )
-
+  
+  
 # ethnicity labeling
 dat_proc$ethnicity <- ifelse(dat_proc$EthnicityHispanic == 1, labels.ethnicity[1], labels.ethnicity[2])
 dat_proc$ethnicity[dat_proc$EthnicityNotreported == 1 | dat_proc$EthnicityUnknown == 1] <- labels.ethnicity[3]

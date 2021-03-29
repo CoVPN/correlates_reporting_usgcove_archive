@@ -1,8 +1,7 @@
-output/cvsl_riskscore_cvaucs.rds
-output/cvsl_riskscore_cvfits.rda
-output/risk_placebo_ptids.rda
-output/objects_for_running_SL.rda
 report.pdf
+output/*.csv
+output/*.rds
+output/*.rda
 output/*.png
 output/*.jpg
 data_clean/*.csv

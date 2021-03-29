@@ -21,9 +21,10 @@ conflicted::conflict_prefer("filter", "dplyr")
 conflict_prefer("summarise", "dplyr")
 library(mice)
 
-# Risk score analysis: Superlearner code requires computing environment with more than 10 cores!
+# Risk score analysis: Super Learner code requires computing environment with
+# more than 10 cores!
 num_cores <- parallel::detectCores()
-if (num_cores < 10) stop("Number of cores on this computing environment are less than 10! Superlearner code needs atleast 11 cores to run smoothly.")
+# if (num_cores < 10) stop("Number of cores on this computing environment are less than 10! Superlearner code needs at least 11 cores to run smoothly.")
 
 # Define code version to run
 run_demo <- FALSE # the demo version is simpler and runs faster!

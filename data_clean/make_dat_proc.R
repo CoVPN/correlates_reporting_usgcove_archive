@@ -266,8 +266,8 @@ if(has29) {
 
 for (a in assays) {
   for (t in times[1:ifelse(has29,3,2)]) {
-    dat_proc[[t %.% a]] <- ifelse(dat_proc[[t %.% a]] < log10(llods[a]),
-                                  log10(llods[a] / 2), dat_proc[[t %.% a]])
+    dat_proc[[t %.% a]] <- ifelse(dat_proc[[t %.% a]] < log10(llods[a]), log10(llods[a] / 2), dat_proc[[t %.% a]])
+    dat_proc[[t %.% a]] <- ifelse(dat_proc[[t %.% a]] > log10(uloqs[a]), log10(uloqs[a]    ), dat_proc[[t %.% a]])
   }
 }
 

@@ -31,9 +31,6 @@ include_bindN <- TRUE
 times <- c("B", "Day29", "Day57", 
            "Delta29overB", "Delta57overB", "Delta57over29")
 
-has29 = "Day29" %in% times
-
-
 # limits for each assay
 llods <-c(bindN = 20, 
           bindSpike = 20, 
@@ -59,6 +56,7 @@ uloqs <-c(bindN = 19136250,
 ###############################################################################
 # figure labels and titles for markers
 ###############################################################################
+has29 = "Day29" %in% times
 
 markers <- c(outer(times[which(times %in% c("B", "Day29", "Day57"))], 
                    assays, "%.%"))

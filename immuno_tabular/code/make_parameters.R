@@ -179,6 +179,8 @@ if(include_bindN){
   assays <- c("bindN", assays)
 }
 labels.time <- labels.time[times]
+# hacky fix
+labels.assays.short <- labels.assays.short.tabular[assays]
 
 # redefines what is in _common.R to use shorter names
 labels.assays.long <- data.frame (purrr::imap_dfc(labels.assays.short, ~ paste0(labels.assays.short[.y], ": ", labels.time)))

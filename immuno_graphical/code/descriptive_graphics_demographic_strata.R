@@ -42,9 +42,19 @@ dat.twophase.sample <- readRDS(here("data_clean", "twophase_data.rds"))
 ## plot for each treatment group by baseline status
 ## ============================================================================
 
-for (tt in 2:5) {
+tps <- c("Day29", "Day57", "Delta29overB", "Delta57overB")
+for (tp in tps[tps %in% times]) {
   for (trt in 1:2) {
     for (bstatus in 1:2) {
+      if(tp == "Day29"){
+        tt <- 2
+      }else if(tp == "Day57"){
+        tt <- 3
+      }else if(tp == "Delta29overB"){
+        tt <- 4
+      }else if(tp == "Delta57overB"){
+        tt <- 5
+      }
       subdat <- subset(
         dat.long.twophase.sample,
         Bserostatus == bstatus.labels[bstatus] &

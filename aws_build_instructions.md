@@ -158,18 +158,4 @@ make cor_report
 
 The compiled `pdf` report will appear in `_report_cor/covpn_correlates_cor.pdf`.
 
-For test builds, we recommend turning town the number of bootstrap and permutation resamples as follows.
-
-```bash
-# from the correlates_reporting directory
-sed -i '/B=/c\B=20' cor_coxph/code/params.R
-sed -i '/numPerm=/c\numPerm=20' cor_coxph/code/params.R
-```
-
-These options can be reset to their original values as follows.
-
-```bash
-# from the correlates_reporting directory
-sed -i '/B=/c\B=1e3' cor_coxph/code/params.R
-sed -i '/numPerm=/c\numPerm=1e4' cor_coxph/code/params.R
-```
+For test builds, we recommend turning town the number of bootstrap and permutation resamples in `cor_coxph/code/params.R` by setting the values of the variables [`B`](https://github.com/CoVPN/correlates_reporting/blob/fb1e0c976e6ffb8ed939325dbd20a6c59f44f82b/cor_coxph/code/params.R#L2) and [`numPerm`](https://github.com/CoVPN/correlates_reporting/blob/fb1e0c976e6ffb8ed939325dbd20a6c59f44f82b/cor_coxph/code/params.R#L3) both to `5`.

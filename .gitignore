@@ -1,4 +1,5 @@
 .Rproj.user
+*.Rproj
 .Rhistory
 .RData
 .Ruserdata
@@ -13,6 +14,8 @@ cor_threshold/figs/pointwise_CI/*.rds
 # ignore build directories
 _report_immuno/*.pdf
 _report_immuno/*.html
+_report_riskscore/*.pdf
+_report_riskscore/*.html
 _report_cor/*.pdf
 _report_cor/*.html
 _report_cop/*.pdf

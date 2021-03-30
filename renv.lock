@@ -1,6 +1,6 @@
 {
   "R": {
-    "Version": "4.0.4",
+    "Version": "4.0.3",
     "Repositories": [
       {
         "Name": "CRAN",
@@ -1449,6 +1449,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "6367ba8128568cc5ebf8082e440948e4"
+    },
+    "ranger": {
+      "Package": "ranger",
+      "Version": "0.12.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "561326df07a5bc5266ba17ce3b81cbf1"
     },
     "rappdirs": {
       "Package": "rappdirs",

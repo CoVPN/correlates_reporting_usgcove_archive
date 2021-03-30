@@ -8,7 +8,8 @@ library(tidyverse)
 source(here::here("code", "make_functions.R"))
 
 # To select which tables are included in the report.
-# Also to modify the headers, footers, etc. for each table.tlf <-
+# Also to modify the headers, footers, etc. for each table
+tlf <-
   list(
     tab_dm_neg = list(
       table_header = "Demographic and Clinical Characteristics at Baseline in 

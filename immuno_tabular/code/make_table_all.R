@@ -193,10 +193,14 @@ tab_rr <- inner_join(
   arrange(subgroup, Group, Visit, Arm, `Baseline SARS-CoV-2`, Marker)
 
 
-tab_bind <- tab_rr %>% 
-  dplyr::filter(Marker %in% labels_all$Marker[grep("bind", labels_all$marker)]) %>% 
-  select(subgroup, Group, Visit, Arm, `Baseline SARS-CoV-2`, Marker, N, Responder, 
-         `% Greater than 2xLLOD`,`% Greater than 4xLLOD`)
+if(any(grepl("bind", assays))){
+  tab_bind <- tab_rr %>% 
+    dplyr::filter(Marker %in% labels_all$Marker[grep("bind", labels_all$marker)]) %>% 
+    select(subgroup, Group, Visit, Arm, `Baseline SARS-CoV-2`, Marker, N, Responder, 
+           `% Greater than 2xLLOD`,`% Greater than 4xLLOD`)
+}else{
+  tab_bind <- NULL
+}
 
 print("Done with table2") 
 
@@ -207,15 +211,22 @@ print("Done with table2")
 # 
 # Output: tab_pseudo & tab_wt
 
+if("pseudoneutid50" %in% assays){
 tab_pseudo <- tab_rr %>% 
   dplyr::filter(Marker  %in% labels_all$Marker[grep("pseudoneutid50", labels_all$marker)]) %>% 
   select(subgroup, Group, Visit, Arm, `Baseline SARS-CoV-2`, Marker, N, Responder,
          `% 2-Fold Rise`, `% 4-Fold Rise`)
+}else{
+  tab_pseudo <- NULL
+}
+if("liveneutmn50" %in% assays){
 tab_wt <- tab_rr %>% 
   dplyr::filter(Marker  %in% labels_all$Marker[grep("liveneutmn50", labels_all$marker)]) %>% 
   select(subgroup, Group, Visit, Arm, `Baseline SARS-CoV-2`, Marker, N, Responder,
          `% 2-Fold Rise`, `% 4-Fold Rise`)
-
+}else{
+  tab_wt <- NULL
+}
 print("Done with table3 & 4") 
 
 # Table 5. Geometric mean titers (GMTs) and geometric mean concentrations (GMCs)

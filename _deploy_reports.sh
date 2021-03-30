@@ -18,6 +18,7 @@ ls -l
 
 # replace with reports and note R version
 cp -r $TRAVIS_BUILD_DIR/_report_immuno/* ./
+cp -r $TRAVIS_BUILD_DIR/_report_riskscore/* ./
 cp -r $TRAVIS_BUILD_DIR/_report_cor/* ./
 #cp -r $TRAVIS_BUILD_DIR/_report_cop/* ./
 echo "Reports built with R version $TRAVIS_R_VERSION"

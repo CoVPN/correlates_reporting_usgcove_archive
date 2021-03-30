@@ -1,0 +1,129 @@
+---
+  header-includes:
+  - \usepackage{float}
+output:
+  pdf_document: default
+html_document: default
+citation_package: natbib
+number_sections: true
+extra_dependencies: ["caption", "subcaption", "graphicx"]
+toc: true
+---
+
+# Baseline Risk Score (Proxy for SARS-CoV-2 Exposure) {#baseline-riskscore}
+
+```{r riskVarstable, warning=FALSE, echo=FALSE, message=FALSE}
+library(tidyverse, quietly = T)
+library(kableExtra, quietly = T)
+library(conflicted, quietly = T)
+conflicted::conflict_prefer("filter", "dplyr")
+conflict_prefer("summarise", "dplyr")
+
+caption <- "Variables considered for risk score analysis."
+
+read.csv(here("base_riskscore", "output", "risk_vars.csv"), row.names = 1,
+         header = TRUE) %>%
+  kable(
+    #format = output_type,
+    booktabs = TRUE,
+    linesep = "",
+    caption = caption
+  ) %>%
+  column_spec(2, width = "3cm") %>%
+  column_spec(4, width = "3cm") %>%
+  kable_styling(latex_options = c("hold_position"),
+                font_size = 9)
+# %>%
+# footnote(c("Missing values for variables not dropped from analysis were imputed."),
+#          threeparttable = TRUE)
+```
+
+\clearpage
+
+```{r learner-screens, warning=FALSE, echo=FALSE}
+caption <- "All learner-screen combinations (28 in total) used as input to the superlearner."
+
+read.csv(here::here("base_riskscore", "output", "learner-screens.csv"),
+         row.names = 1, header = TRUE) %>%
+  rename(`Screen*` = `Screen.`) %>%
+  kable(
+    booktabs = TRUE,
+    linesep = "",
+    caption = caption
+  ) %>%
+  kable_styling(latex_options = c("hold_position"),
+                font_size = 9) %>%
+  column_spec(1:2, width = "5cm") %>%
+  row_spec(0,bold=TRUE) %>%
+  collapse_rows(columns = 1, valign = "top", latex_hline = "major") %>%
+  footnote(c("*Screen details:",
+             "all: includes all variables",
+             "glmnet: includes variables with non-zero coefficients in the standard implementation of SL.glmnet that optimizes the lasso tuning parameter via cross-validation",
+             "univar_logistic_pval: Wald test 2-sided p-value in a logistic regression model < 0.10",
+             "highcor_random: if pairs of quantitative variables with Spearman rank correlation > 0.90, select one of the variables at random"),
+           threeparttable = TRUE)
+
+```
+
+\clearpage
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{`r here::here("base_riskscore", "figs", "risk_placebo_cvaucs.png")`}
+\caption{Risk score analysis with EventIndPrimaryD57 as the outcome: Plot shows CV-AUC point estimates and 95\% confidence intervals for the Super Learner and all models trained to classify cases in placebo group defined by EventIndPrimaryD57. Learners are sorted by their CV-AUC point estimates.}
+\label{fig:risk_placebo_cvaucs}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{`r here::here("base_riskscore", "figs", "predProb_riskscore_plac.png")`}
+\caption{Plots showing CV estimated probabilities of COVID disease split by cases and controls based off EventIndPrimaryD57 for the top 2 learners, SuperLearner and Discrete SL.}
+\label{fig:predProb_riskscore_plac}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{`r here::here("base_riskscore", "figs", "ROCcurve_riskscore_plac.png")`}
+\caption{ROC curves for the top 2 learners, SuperLearner and Discrete SL.}
+\label{fig:ROCcurve_riskscore_plac}
+\end{figure}
+
+\clearpage
+
+```{r risk-sl-weights, warning=FALSE, echo=FALSE}
+caption <- "Weights assigned by Superlearner (risk score analysis)."
+read.csv(here("base_riskscore", "output", "SL_weights.csv"), row.names = 1,
+         header = TRUE) %>%
+  kable(
+    booktabs = TRUE,
+    linesep = "",
+    caption = caption
+  ) %>%
+  kable_styling(latex_options = c("hold_position"),
+                font_size = 9) %>%
+  row_spec(0,bold=TRUE)
+```
+
+\begin{landscape}
+\clearpage
+
+```{r SLtopmodels, warning=FALSE, echo=FALSE}
+caption <- "Predictors in learners assigned weight > 0.5 by SuperLearner (risk score analysis)."
+
+read.csv(here("base_riskscore", "output", "SL_all_models_with_predictors.csv"),
+         row.names = 1, header = TRUE) %>%
+  filter(SL.Weights > 0.5) %>%
+  mutate(across(.cols = everything(), ~gsub(" ", "", ., fixed = TRUE))) %>%
+  mutate(across(.cols = everything(), ~na_if(., "NA"))) %>%
+  select_if(~sum(!is.na(.)) > 0) %>%
+  kable(
+    longtable = T,
+    booktabs = TRUE,
+    linesep = "",
+    caption = caption
+  ) %>%
+  kable_styling(latex_options = c("hold_position", "repeat_header"),
+                font_size = 5) %>%
+  row_spec(0,bold=TRUE)
+```
+\end{landscape}

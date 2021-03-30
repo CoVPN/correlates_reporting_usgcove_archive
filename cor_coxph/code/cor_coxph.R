@@ -29,8 +29,13 @@ library(xtable) # this is a dependency of kyotil
 
 # population is either 57 or 29
 Args <- commandArgs(trailingOnly=TRUE)
-if (length(Args)==0) Args=c(pop="29")
+if (length(Args)==0) Args=c(pop="57")
 pop=Args[1]; print(pop)
+
+if(!has29 & pop=="29") {
+    print("Quitting because there are no Day 29 markers")
+    quit()
+}
 
 save.results.to = paste0(here::here("output"), "/D", pop,"/");
 if (!dir.exists(save.results.to))  dir.create(save.results.to)

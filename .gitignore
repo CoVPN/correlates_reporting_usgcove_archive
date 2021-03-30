@@ -27,3 +27,10 @@ covpn_correlates_cor.Rmd
 covpn_correlates_cor.tex
 ._bookdown_cor.yml.swp
 cor_coxph/cor_coxph_report.tex
+immuno_graphical/verification/verification_input/*.PNG
+immuno_graphical/verification/verification_input/*.png
+immuno_graphical/verification/verification_input/*.csv
+cor_graphical/verification/verification_input/*.rds
+cor_graphical/verification/verification_input/*.csv
+cor_graphical/verification/verification_input/*.png
+cor_graphical/verification/verification_input/*.PNG

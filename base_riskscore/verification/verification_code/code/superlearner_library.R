@@ -37,6 +37,9 @@ if(this_library == "demo"){
   sl_library <- list(
     c("SL.mean", "screen_all"),
     c("SL.glm", "screen_all"),
+    c("SL.glmnet", "screen_all"), # no need for screens
+    c("SL.xgboost", "screen_all"), # no need for screens
+    c("SL.ranger.imp", "screen_all"),   # faster than cforest?
     c("SL.glm", "screen_glmnet"),
     c("SL.glm", "screen_univariate_logistic_pval"),
     c("SL.glm", "screen_highcor_random"),
@@ -45,9 +48,6 @@ if(this_library == "demo"){
     c("SL.glm.interaction", "screen_highcor_random"),
     c("SL.gam", "screen_glmnet"),
     c("SL.gam", "screen_univariate_logistic_pval"),
-    c("SL.gam", "screen_highcor_random"),
-    c("SL.glmnet", "screen_all"), # no need for screens
-    c("SL.xgboost", "screen_all"), # no need for screens
-    c("SL.ranger", "screen_all")   # faster than cforest?
+    c("SL.gam", "screen_highcor_random")
   )
 }

@@ -50,6 +50,7 @@ before_script:
 # build reports via included Make recipes
 script:
   - make data_processed
+  - make risk_report
   - make immuno_report
   - make cor_report
   # - make cop_report

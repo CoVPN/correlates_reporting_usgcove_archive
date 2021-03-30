@@ -170,6 +170,13 @@
       "Repository": "CRAN",
       "Hash": "a04afc4865a491a4c89b29a5d74d09e9"
     },
+    "RhpcBLASctl": {
+      "Package": "RhpcBLASctl",
+      "Version": "0.20-137",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "fb135751ed3f00f33890826823ebe332"
+    },
     "Rsolnp": {
       "Package": "Rsolnp",
       "Version": "1.16",
@@ -226,6 +233,13 @@
       "Repository": "CRAN",
       "Hash": "4f57884290cc75ab22f4af9e9d4ca862"
     },
+    "argparse": {
+      "Package": "argparse",
+      "Version": "2.0.3",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "516a3e2104cf2eace9f5d2ad5c7badb3"
+    },
     "arm": {
       "Package": "arm",
       "Version": "1.11-2",
@@ -246,6 +260,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "50c838a310445e954bc13f26f26a6ecf"
+    },
+    "aucm": {
+      "Package": "aucm",
+      "Version": "2019.12-1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "3667e00900e3468006821fa82c408322"
     },
     "backports": {
       "Package": "backports",
@@ -331,10 +352,10 @@
     },
     "caTools": {
       "Package": "caTools",
-      "Version": "1.18.1",
+      "Version": "1.18.2",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "f5b3e8f693522708cd9444c839b432e0"
+      "Hash": "34d90fa5845004236b9eacafc51d07b2"
     },
     "cachem": {
       "Package": "cachem",
@@ -452,6 +473,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "0f22be39ec1d141fd03683c06f3a6e67"
+    },
+    "conflicted": {
+      "Package": "conflicted",
+      "Version": "1.0.4",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "43c5107cc96f47043a56736768ecc59d"
     },
     "conquer": {
       "Package": "conquer",
@@ -598,6 +626,13 @@
       "Repository": "CRAN",
       "Hash": "d0f036a9fcc127e756f5c61eefd76279"
     },
+    "e1071": {
+      "Package": "e1071",
+      "Version": "1.7-6",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "9a374a10e3c0dbf1a0e207af019bfcea"
+    },
     "ellipsis": {
       "Package": "ellipsis",
       "Version": "0.3.1",
@@ -632,6 +667,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "77bd60a6157420d4ffa93b27cf6a58b8"
+    },
+    "findpython": {
+      "Package": "findpython",
+      "Version": "1.0.7",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "73cb09f8220dfed388bd89d180f0b922"
     },
     "forcats": {
       "Package": "forcats",
@@ -681,6 +723,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "7fb0dc1961807da107ab2078366052bd"
+    },
+    "gam": {
+      "Package": "gam",
+      "Version": "1.20",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "b4c87fae29126df75f377518703c5853"
     },
     "generics": {
       "Package": "generics",
@@ -1373,6 +1422,13 @@
       "Repository": "CRAN",
       "Hash": "4ab2c43adb4d4699cf3690acd378d75d"
     },
+    "proxy": {
+      "Package": "proxy",
+      "Version": "0.4-25",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "29a4dd5b440af584aed8c448d8eefb6e"
+    },
     "ps": {
       "Package": "ps",
       "Version": "1.6.0",
@@ -1400,6 +1456,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "6367ba8128568cc5ebf8082e440948e4"
+    },
+    "ranger": {
+      "Package": "ranger",
+      "Version": "0.12.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "561326df07a5bc5266ba17ce3b81cbf1"
     },
     "rappdirs": {
       "Package": "rappdirs",
@@ -1884,6 +1947,18 @@
       "Repository": "CRAN",
       "Hash": "5cf1957f93076c19fdc81d01409d240b"
     },
+    "vimp": {
+      "Package": "vimp",
+      "Version": "2.1.10",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteRepo": "vimp",
+      "RemoteUsername": "bdwilliamson",
+      "RemoteRef": "HEAD",
+      "RemoteSha": "0a0e89fd735edcbf32f12d6fe99190566589f5f0",
+      "Hash": "4a1bb4ee87eca9d9c46e81d3db8b0e9e"
+    },
     "viridis": {
       "Package": "viridis",
       "Version": "0.5.1",
@@ -1939,6 +2014,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "eab2f8ba53809c321813e72ecbbd19ba"
+    },
+    "xgboost": {
+      "Package": "xgboost",
+      "Version": "1.2.0.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "e83e1df3948005afbddd83db86f3a0cb"
     },
     "xml2": {
       "Package": "xml2",

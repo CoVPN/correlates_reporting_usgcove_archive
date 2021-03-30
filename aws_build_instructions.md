@@ -102,7 +102,7 @@ You now have all of the software needed to build the reports.
 
 ### Placing data file
 
-The pipeline expects data to be formatted according to documentation [...](https://github.com/covpn/correlates_reporting/). A data set with this format should be placed in `correlates_reporting/raw_data`.
+The pipeline expects data to be formatted according to documentation [...](https://github.com/covpn/correlates_reporting/). A data set with this format should be placed in `correlates_reporting/data_raw`.
 
 ### Workflow for building reports
 
@@ -113,6 +113,23 @@ Once an image has been built that includes the GitHub repository, the general wo
 - open `R` in the `correlates_reporting` directory;
 - run `renv::restore()` to update `R` package list;
 - exit `R` and proceed to report building below.
+
+
+#### Updating `_common.R`
+
+The script [`correlates_reporting/_common.R`](https://github.com/CoVPN/correlates_reporting/blob/master/_common.R) is where options can be set to control the analysis. There are only a few variables defined in this file that are important. These are:
+
+- `data_in_file` = the file placed in the `data_raw` folder
+- `data_name` = the name of the cleaned data file that will be saved in `data_clean` after the pre-processing script is run
+- `study_name` = the name of the study, which is used in report titling and some figures/captions
+- `assays` = the immune assays used in the analysis; currently supports any combination of `"bindRBD", "pseudoneutid50", "pseudoneutid80", "liveneutmn50"`
+- `include_bindN` = `TRUE`/`FALSE` if the IgG antibodies to N protein should be included in the immunogenicity report
+- `times` = for now, this variable should not be touched; the report requires simultaneous analysis of Day 29 and Day 57 markers
+- `llods` = named LLOD for each assay
+- `lloqs` = named LLOQs for each assay
+- `uloqs` = named ULOQs for each assay
+
+All variables defined below this are unlikely to need modification.
 
 #### Immunogenecity report
 
@@ -141,18 +158,4 @@ make cor_report
 
 The compiled `pdf` report will appear in `_report_cor/covpn_correlates_cor.pdf`.
 
-For test builds, we recommend turning town the number of bootstrap and permutation resamples as follows.
-
-```bash
-# from the correlates_reporting directory
-sed -i '/B=/c\B=20' cor_coxph/code/params.R
-sed -i '/numPerm=/c\numPerm=20' cor_coxph/code/params.R
-```
-
-These options can be reset to their original values as follows.
-
-```bash
-# from the correlates_reporting directory
-sed -i '/B=/c\B=1e3' cor_coxph/code/params.R
-sed -i '/numPerm=/c\numPerm=1e4' cor_coxph/code/params.R
-```
+For test builds, we recommend turning town the number of bootstrap and permutation resamples in `cor_coxph/code/params.R` by setting the values of the variables [`B`](https://github.com/CoVPN/correlates_reporting/blob/fb1e0c976e6ffb8ed939325dbd20a6c59f44f82b/cor_coxph/code/params.R#L2) and [`numPerm`](https://github.com/CoVPN/correlates_reporting/blob/fb1e0c976e6ffb8ed939325dbd20a6c59f44f82b/cor_coxph/code/params.R#L3) both to `5`.

@@ -1,9 +1,10 @@
 delete_merged_file: true
-book_filename: "covpn_correlates_immuno"
+book_filename: "covpn_correlates_riskscore"
 before_chapter_script: "_common.R"
-output_dir: "_report_immuno"
+output_dir: "_report_riskscore"
 clean: packages.bib
 keep_tex: true
+
 language:
   label:
     fig: "FIGURE "
@@ -12,9 +13,7 @@ language:
     chapter_name: "Section "
 
 rmd_files: [
-  "index_immuno.Rmd",
-  "immuno_tabular/report.Rmd",
-  "immuno_graphical/report.Rmd",
-  # "immuno_engin/report.Rmd",
+  "index_riskscore.Rmd",
+  "base_riskscore/report.Rmd",
   "references.Rmd"
 ]

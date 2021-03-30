@@ -7,8 +7,7 @@
 #   processing the raw data into "cleaned" data that
 #   the rest of the team uses
 # NEWS:
-#
-#
+# 2021-03-29: Adding capability for missing timepoints
 #
 #
 
@@ -72,6 +71,9 @@ covid_raw <- read_csv(
   na = "NA")
 
 
+tps <- c("B","Day57")
+
+
 ## Processing ----
 ### variable derivation ----
 covid_processed <- covid_raw %>% 
@@ -90,11 +92,6 @@ covid_processed <- covid_raw %>%
         !any_missing(BbindSpike, BbindRBD, Day29bindSpike, Day29bindRBD, Day57bindSpike, Day57bindRBD) ~ 1,
       TRUE ~ 0),
     
-    TwophasesampInd.2 = case_when(
-      (EventTimePrimaryD29 >= 14 & Perprotocol == 1 | EventTimePrimaryD29 >= 7 & EventTimePrimaryD29 <= 13 & Fullvaccine == 1) & 
-        (SubcohortInd == 1 | EventIndPrimaryD29 == 1 ) & 
-        !any_missing(BbindSpike, BbindRBD, Day29bindSpike, Day29bindRBD) ~ 1,
-      TRUE ~ 0),    
     
     ethnicity = case_when(
       EthnicityNotreported == 1 |
@@ -157,6 +154,22 @@ covid_processed <- covid_raw %>%
       Trt == 1 & Bserostatus == 1 ~ 28
     ))
 
+if( "Day29" %in% tps){
+  
+  covid_processed <- covid_processed %>% 
+    mutate(
+      TwophasesampInd.2 = case_when(
+        (EventTimePrimaryD29 >= 14 & Perprotocol == 1 | EventTimePrimaryD29 >= 7 & EventTimePrimaryD29 <= 13 & Fullvaccine == 1) & 
+          (SubcohortInd == 1 | EventIndPrimaryD29 == 1 ) & 
+          !any_missing(BbindSpike, BbindRBD, Day29bindSpike, Day29bindRBD) ~ 1,
+        TRUE ~ 0),   
+    ) %>% 
+    relocate(
+      TwophasesampInd.2, .after = TwophasesampInd
+    )
+  
+}
+
 ### weight derivation ----
 
 covid_processed_wt <- covid_processed %>% 
@@ -166,20 +179,30 @@ covid_processed_wt <- covid_processed %>%
       TwophasesampInd==1,
       Perprotocol == 1 & EventTimePrimaryD57 >=7
       ),
-    
-    wt.2 = sampling_p(
-      Wstratum, 
-      TwophasesampInd.2==1,
-      EventTimePrimaryD29 >= 14 & Perprotocol == 1 | 
-        EventTimePrimaryD29 >= 7 & EventTimePrimaryD29 <= 13 & Fullvaccine == 1
-      ),
-    
+
     wt.subcohort = sampling_p(
       tps.stratum,
       TwophasesampInd==1 & SubcohortInd==1,
       Perprotocol == 1 & EventTimePrimaryD57 >=7
     )
   )
+
+if( "Day29" %in% tps){
+  
+  covid_processed_wt <- covid_processed_wt %>% 
+    mutate(
+      wt.2 = sampling_p(
+        Wstratum, 
+        TwophasesampInd.2==1,
+        EventTimePrimaryD29 >= 14 & Perprotocol == 1 | 
+          EventTimePrimaryD29 >= 7 & EventTimePrimaryD29 <= 13 & Fullvaccine == 1
+      )
+    ) %>% 
+    relocate(
+      wt.2, .after = wt
+    )
+  
+}
 
 ## Imputation ----
 
@@ -203,7 +226,7 @@ covid_processed_imputed_assay_TwophasesampInd <- covid_processed_wt %>%
       x %>%
       select(
           all_of(c(outer(
-            c("B", "Day29", "Day57"),
+            tps,
             c("bindSpike","bindRBD","pseudoneutid50","pseudoneutid80"),
             paste0)))
       ) %>% 
@@ -217,10 +240,7 @@ covid_processed_imputed_assay_TwophasesampInd <- covid_processed_wt %>%
   
 covid_processed_imputed <- covid_processed_wt %>% 
   filter(TwophasesampInd == 1) %>% 
-  select(-ends_with("bindSpike"),
-         -ends_with("bindRBD"),
-         -ends_with("pseudoneutid50"),
-         -ends_with("pseudoneutid80")) %>% 
+  select(-setdiff(colnames(covid_processed_imputed_assay_TwophasesampInd), "Ptid")) %>% 
   left_join(
     covid_processed_imputed_assay_TwophasesampInd
   ) %>% 
@@ -232,57 +252,61 @@ covid_processed_imputed <- covid_processed_wt %>%
       filter(TwophasesampInd != 1)
   )
 
-covid_processed_imputed_assay_TwophasesampInd_2 <- covid_processed_imputed %>% 
-  filter(TwophasesampInd.2 == 1) %>% 
-  select(
-    Ptid,
-    Trt, 
-    Bserostatus,
-    ends_with("bindSpike"),
-    ends_with("bindRBD"),
-    ends_with("pseudoneutid50"),
-    ends_with("pseudoneutid80")
-  ) %>% 
-  group_split(
-    Trt, Bserostatus
-  ) %>% 
-  map_dfr( function(x){
-    
-    suppressWarnings({
-      x %>%
-        select(
-          all_of(c(outer(
-            c("B", "Day29", "Day57"),
-            c("bindSpike","bindRBD","pseudoneutid50","pseudoneutid80"),
-            paste0)))
-        ) %>% 
-        mice(seed = 1, m = 1,  printFlag = FALSE) %>%
-        complete() %>% 
-        mutate(
-          Ptid = x$Ptid
-        )
+if( "Day29" %in% tps ){
+  
+  covid_processed_imputed_assay_TwophasesampInd_2 <- covid_processed_imputed %>% 
+    filter(TwophasesampInd.2 == 1) %>% 
+    select(
+      Ptid,
+      Trt, 
+      Bserostatus,
+      ends_with("bindSpike"),
+      ends_with("bindRBD"),
+      ends_with("pseudoneutid50"),
+      ends_with("pseudoneutid80")
+    ) %>% 
+    group_split(
+      Trt, Bserostatus
+    ) %>% 
+    map_dfr( function(x){
+      
+      suppressWarnings({
+        x %>%
+          select(
+            all_of(c(outer(
+              c("B", "Day29", "Day57"),
+              c("bindSpike","bindRBD","pseudoneutid50","pseudoneutid80"),
+              paste0)))
+          ) %>% 
+          mice(seed = 1, m = 1,  printFlag = FALSE) %>%
+          complete() %>% 
+          mutate(
+            Ptid = x$Ptid
+          )
+      })
     })
-  })
+  
+  covid_processed_imputed2 <- covid_processed_imputed %>% 
+    filter(TwophasesampInd.2 == 1) %>% 
+    select(-ends_with("bindSpike"),
+           -ends_with("bindRBD"),
+           -ends_with("pseudoneutid50"),
+           -ends_with("pseudoneutid80")) %>% 
+    left_join(
+      covid_processed_imputed_assay_TwophasesampInd_2
+    ) %>% 
+    select(
+      colnames(covid_processed_imputed)
+    ) %>% 
+    bind_rows(
+      covid_processed_imputed %>% 
+        filter(TwophasesampInd.2 != 1)
+    )
 
-covid_processed_imputed2 <- covid_processed_imputed %>% 
-  filter(TwophasesampInd.2 == 1) %>% 
-  select(-ends_with("bindSpike"),
-         -ends_with("bindRBD"),
-         -ends_with("pseudoneutid50"),
-         -ends_with("pseudoneutid80")) %>% 
-  left_join(
-    covid_processed_imputed_assay_TwophasesampInd_2
-  ) %>% 
-  select(
-    colnames(covid_processed_imputed)
-  ) %>% 
-  bind_rows(
-    covid_processed_imputed %>% 
-      filter(TwophasesampInd.2 != 1)
-  )
-
+}
 ## Delta over baseline ----
-covid_processed_delta <- covid_processed_imputed %>% 
+
+covid_processed_delta_interim <- covid_processed_imputed %>% 
   select(
     Ptid,
     BbindSpike:Day57liveneutmn50
@@ -294,7 +318,7 @@ covid_processed_delta <- covid_processed_imputed %>%
   ) %>% 
   mutate(
     visit = case_when(
-      grepl("^B", assay_variable) ~ "Baseline",
+      grepl("^B", assay_variable) ~ "B",
       grepl("^Day29", assay_variable) ~ "Day29",
       grepl("^Day57", assay_variable) ~ "Day57"
     ),
@@ -305,12 +329,24 @@ covid_processed_delta <- covid_processed_imputed %>%
     values_from = value
   ) %>% 
   mutate(
-    `Delta57overB` = log10_fold(Day57,Baseline),
-    `Delta29overB` = log10_fold(Day29,Baseline),
-    `Delta57over29` = log10_fold(Day57,Day29)
+    `Delta57overB` = log10_fold(Day57,B)
+  )
+
+if( "Day29" %in% tps){
+  
+  covid_processed_delta_interim <- covid_processed_delta_interim %>% 
+    mutate(
+      `Delta29overB` = log10_fold(Day29,B),
+      `Delta57over29` = log10_fold(Day57,Day29)
+    ) 
+}
+
+covid_processed_delta <- covid_processed_delta_interim %>% 
+  select(
+    Ptid, assay_variable, starts_with("Delta")
   ) %>% 
   pivot_longer(
-    cols = Baseline:Delta57over29,
+    cols = starts_with("Delta"),
     names_to = "day",
     values_to = "value"
   ) %>% 
@@ -339,6 +375,14 @@ LLOD <- c(
    "pseudoneutid50" = 10,
    "pseudoneutid80" = 10
  )
+
+ULOQ <-c(
+  "bindN" = 19136250, 
+  "bindSpike" = 19136250, 
+  "bindRBD" = 19136250, 
+  "pseudoneutid50" = Inf, 
+  "pseudoneutid80" = Inf, 
+  "liveneutmn50" = 18976.19)
  
 covid_processed_censored <- covid_processed_delta
 
@@ -346,9 +390,14 @@ for(assay_typ in names(LLOD)){
   covid_processed_censored <- covid_processed_censored %>% 
     mutate(
       ## only run this for non-delta fields
-      across(matches(paste0("(^(B|Day29|Day57))",assay_typ,"$")), function(x){
+      across(matches(paste0("^(",paste(tps,collapse = "|"),")",assay_typ,"$")), function(x){
+        
         # cases where x < log10(LLOD) replace with log10(LLOD/2)
         x[x < log10(LLOD[[assay_typ]])] <- log10(LLOD[[assay_typ]]/2)
+        
+        # cases where x > log10(ULOQ), replace with log10(ULOQ)
+        x[x > log10(ULOQ[[assay_typ]])] <- log10(ULOQ[[assay_typ]])
+        
         x
       })
     )
@@ -358,6 +407,6 @@ for(assay_typ in names(LLOD)){
 
 write_csv(
   covid_processed_censored,
-  file = here("data_clean/verification/verification_output/data_clean_verification_output.csv")
+  file = here("data_clean/verification/verification_output/data_clean_verification_output_no_D29.csv")
 )
 

@@ -20,7 +20,7 @@ tlf <-
       stratified by 24 strata defined by enrollment characteristics: Assigned 
       treatment arm $\\\\times$ Baseline SARS-CoV-2 naïve vs. non-naïve status 
       (defined by serostatus and NAAT testing) $\\\\times$ Randomization strata 
-      (Age < 65 and at-risk, Age < 65 and not at-risk, Age $\\\\geq65)\\\\times$ 
+      (Age < 65 and at-risk, Age < 65 and not at-risk, Age $\\\\geq 65)\\\\times$ 
       Communities of color (Yes/No) defined by White Non-Hispanic vs. all 
       others (following the primary COVE trial paper).",
       deselect = "subgroup",
@@ -37,7 +37,7 @@ tlf <-
       stratified by 24 strata defined by enrollment characteristics: Assigned 
       treatment arm $\\\\times$ Baseline SARS-CoV-2 naïve vs. non-naïve status 
       (defined by serostatus and NAAT testing) $\\\\times$ Randomization strata 
-      (Age < 65 and at-risk, Age < 65 and not at-risk, Age $\\\\geq65)\\\\times$ 
+      (Age < 65 and at-risk, Age < 65 and not at-risk, Age $\\\\geq 65)\\\\times$ 
       Communities of color (Yes/No) defined by White Non-Hispanic vs. all 
       others (following the primary COVE trial paper).",
       deselect = "subgroup",
@@ -47,7 +47,7 @@ tlf <-
     
     tab_bind = list(
       table_header = "Percentage of responders, and participants
-      with concentrations $\\geq2\\timesLLODor\\geq4\\times$ LLOD for binding antibody
+      with concentrations $\\geq 2\\times LLODor\\geq 4\\times$ LLOD for binding antibody
       markers",
       table_footer = c(
         "Binding Antibody Responders are defined as participants who had

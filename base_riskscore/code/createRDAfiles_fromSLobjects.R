@@ -4,9 +4,9 @@ renv::activate(project = here::here(".."))
 source(here::here("..", "_common.R"))
 #-----------------------------------------------
 
+library(here)
 library(readr)
 require(tidyverse)
-library(here)
 
 # Create fancy/tidy screen names for use in tables and figures
 # @param avgs dataframe containing Screen, Learner, AUCs information as columns
@@ -30,7 +30,7 @@ get_fancy_screen_names <- function(avgs) {
 drop_seeds_with_error <- function(dat) {
   newdat <- vector(mode = "list", length = 1)
   j <- 1
-  for (i in 1:10) {
+  for (i in seq_along(dat)) {
     if (typeof(dat[[i]][1]) == "list") {
       newdat[[j]] <- dat[[i]]
       j <- j + 1
@@ -44,15 +44,18 @@ drop_seeds_with_error <- function(dat) {
 # @param dat object containing all 10 fits (as lists) from the CV.Superlearner with folds and auc information
 # @return dataframe containing CV-AUCs
 convert_SLobject_to_Slresult_dataframe <- function(dat) {
-  
-  newdat <- drop_seeds_with_error(dat) # Remove any iteration seeds that returned an error (if any)!
+  # Remove any iteration seeds that returned an error (if any)!
+  newdat <- drop_seeds_with_error(dat)
   if (!is.null(newdat[[1]])) {
     as_tibble(do.call(rbind.data.frame, lapply(newdat, function(x) x$aucs))) %>%
       group_by(Learner, Screen) %>%
-      summarise(AUC = mean(AUC), ci_ll = mean(ci_ll), ci_ul = mean(ci_ul), .groups = "drop") %>%
+      summarise(AUC = mean(AUC), ci_ll = mean(ci_ll), ci_ul = mean(ci_ul),
+                .groups = "drop") %>%
       arrange(-AUC) %>%
       mutate(
-        AUCstr = paste0(format(round(AUC, 3), nsmall = 3), " [", format(round(ci_ll, 3), nsmall = 3), ", ", format(round(ci_ul, 3), nsmall = 3), "]"),
+        AUCstr = paste0(format(round(AUC, 3), nsmall = 3), " [",
+                        format(round(ci_ll, 3), nsmall = 3), ", ",
+                        format(round(ci_ul, 3), nsmall = 3), "]"),
         Learner = as.character(Learner),
         Screen = as.character(Screen),
         LearnerScreen = paste(Learner, Screen)

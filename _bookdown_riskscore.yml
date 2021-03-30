@@ -3,6 +3,7 @@ book_filename: "covpn_correlates_riskscore"
 before_chapter_script: "_common.R"
 output_dir: "_report_riskscore"
 clean: packages.bib
+keep_tex: true
 
 language:
   label:

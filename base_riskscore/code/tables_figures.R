@@ -65,22 +65,7 @@ dat %>%
 ######## learner-screens #######################################################
 caption <- "All learner-screen combinations (28 in total) used as input to the superlearner."
 
-if (run_demo) {
-  tab <- risk_placebo_cvaucs %>%
-    filter(!Learner %in% c("SL", "Discrete SL")) %>%
-    select(Learner, Screen) %>%
-    mutate(
-      Screen = fct_relevel(Screen, c(
-        "all", "glmnet", "univar_logistic_pval",
-        "highcor_random"
-      )),
-      Learner = as.factor(Learner),
-      Learner = fct_relevel(Learner, c("SL.mean", "SL.glm"))
-    ) %>%
-    arrange(Learner, Screen) %>%
-    distinct(Learner, Screen) %>%
-    rename("Screen*" = Screen)
-} else if (run_prod) {
+if (run_prod) {
   tab <- risk_placebo_cvaucs %>%
     filter(!Learner %in% c("SL", "Discrete SL")) %>%
     select(Learner, Screen) %>%
@@ -95,6 +80,21 @@ if (run_demo) {
         "SL.glmnet", "SL.gam", 
         "SL.xgboost", "SL.ranger"#, "SL.cforest", "SL.bayesglm"
       ))
+    ) %>%
+    arrange(Learner, Screen) %>%
+    distinct(Learner, Screen) %>%
+    rename("Screen*" = Screen)
+} else {
+  tab <- risk_placebo_cvaucs %>%
+    filter(!Learner %in% c("SL", "Discrete SL")) %>%
+    select(Learner, Screen) %>%
+    mutate(
+      Screen = fct_relevel(Screen, c(
+        "all", "glmnet", "univar_logistic_pval",
+        "highcor_random"
+      )),
+      Learner = as.factor(Learner),
+      Learner = fct_relevel(Learner, c("SL.mean", "SL.glm"))
     ) %>%
     arrange(Learner, Screen) %>%
     distinct(Learner, Screen) %>%
@@ -115,29 +115,32 @@ sl.perf %>% write.csv(here("output", "SLperformance-plac.csv"))
 ################################################################################
 # Forest plots for risk_placebo model, yd57 endpoint
 options(bitmapType = "cairo")
-if (run_demo) {
-  png(file = here("figs", "risk_placebo_cvaucs.png"), width = 1000, height = 700)
-  top_learner <- make_forest_plot_demo(risk_placebo_cvaucs)
-} else if (run_prod) {
-  png(file = here("figs", "risk_placebo_cvaucs.png"), width = 1000, height = 1100)
+if (run_prod) {
+  png(file = here("figs", "risk_placebo_cvaucs.png"),
+      width = 1000, height = 1100)
   top_learner <- make_forest_plot_prod(risk_placebo_cvaucs)
+} else {
+  png(file = here("figs", "risk_placebo_cvaucs.png"),
+      width = 1000, height = 700)
+  top_learner <- make_forest_plot_demo(risk_placebo_cvaucs)
 }
-grid.arrange(top_learner$top_learner_nms_plot, top_learner$top_learner_plot, ncol = 2)
+grid.arrange(top_learner$top_learner_nms_plot, top_learner$top_learner_plot,
+             ncol = 2)
 dev.off()
 
 ################################################################################
 # plot ROC curve and pred.Prob with SL, Discrete SL and top 2 best-performing individual Learners
 top2_plac <- bind_rows(
-  risk_placebo_cvaucs %>% arrange(-AUC) %>% 
-    filter(!Learner %in% c("SL", "Discrete SL")) %>% 
+  risk_placebo_cvaucs %>% arrange(-AUC) %>%
+    filter(!Learner %in% c("SL", "Discrete SL")) %>%
     dplyr::slice(1:2),
-  risk_placebo_cvaucs %>% 
+  risk_placebo_cvaucs %>%
     filter(Learner == "SL"),
-  risk_placebo_cvaucs %>% 
+  risk_placebo_cvaucs %>%
     filter(Learner == "Discrete SL")
 ) %>%
   mutate(LearnerScreen = ifelse(Learner == "SL", "Super Learner",
-                                ifelse(Learner == "Discrete SL", Learner, 
+                                ifelse(Learner == "Discrete SL", Learner,
                                        paste0(Learner, "_", Screen_fromRun))))
 
 # Get cvsl fit and extract cv predictions
@@ -146,14 +149,16 @@ pred <- get_cv_predictions(cv_fit = cvfits[[1]], cvaucDAT = top2_plac)
 
 # plot ROC curve
 options(bitmapType = "cairo")
-png(file = here("figs", "ROCcurve_riskscore_plac.png"), width = 750, height = 750)
+png(file = here("figs", "ROCcurve_riskscore_plac.png"),
+    width = 750, height = 750)
 p1 <- plot_roc_curves(pred, cvaucDAT = top2_plac)
 print(p1)
 dev.off()
 
 # plot pred prob plot
 options(bitmapType = "cairo")
-png(file = here("figs", "predProb_riskscore_plac.png"), width = 1000, height = 1200)
+png(file = here("figs", "predProb_riskscore_plac.png"),
+    width = 1000, height = 1200)
 p2 <- plot_predicted_probabilities(pred)
 print(p2)
 dev.off()
@@ -166,5 +171,6 @@ plac <- bind_cols(
 ) %>%
   mutate(risk_score = log(pred / (1 - pred)))
 
-write.csv(plac, here("output", "placebo_ptids_with_riskscores.csv"), row.names = FALSE)
+write.csv(plac, here("output", "placebo_ptids_with_riskscores.csv"),
+          row.names = FALSE)
 rm(cvfits, pred, p1, p2)

@@ -40,25 +40,30 @@ screen_all <- function(Y, X, family, obsWeights, id, nVar = maxVar, ...) {
   listp[listp][rankedVars > nVar] <- FALSE
   vars <- listp
   names(vars) <- names(X)
-
   return(vars)
 }
 
 ## screen based on lasso
-screen_glmnet <- function(Y, X, family, obsWeights, id, alpha = 1, minscreen = 2, nfolds = 10, nlambda = 100, nVar = maxVar, ...) {
+screen_glmnet <- function(Y, X, family, obsWeights, id, alpha = 1,
+                          minscreen = 2, nfolds = 10, nlambda = 100,
+                          nVar = maxVar, ...) {
   set.seed(123)
-  vars <- screen.glmnet(Y, X, family, obsWeights, id, alpha = 1, minscreen = 2, nfolds = 10, nlambda = 100, ...)
+  vars <- screen.glmnet(Y, X, family, obsWeights, id, alpha = 1, minscreen = 2,
+                        nfolds = 10, nlambda = 100, ...)
   # keep only a max of nVar immune markers; rank by univariate p-value
   X_initial_screen <- X %>%
     select(names(X)[vars])
-  ranked_vars <- rank_univariate_logistic_pval(Y, X_initial_screen, family, obsWeights, id)
+  ranked_vars <- rank_univariate_logistic_pval(Y, X_initial_screen, family,
+                                               obsWeights, id)
   vars[vars][ranked_vars > nVar] <- FALSE
   names(vars) <- names(X)
   return(vars)
 }
 
 ## screen based on logistic regression univariate p-value < level
-screen_univariate_logistic_pval <- function(Y, X, family, obsWeights, id, minPvalue = 0.1, minscreen = 2, nVar = maxVar, ...) {
+screen_univariate_logistic_pval <- function(Y, X, family, obsWeights, id,
+                                            minPvalue = 0.1, minscreen = 2,
+                                            nVar = maxVar, ...) {
   ## logistic regression of outcome on each variable
   listp <- apply(X, 2, function(x, Y, family) {
     summ <- coef(summary(glm(Y ~ x,
@@ -74,15 +79,16 @@ screen_univariate_logistic_pval <- function(Y, X, family, obsWeights, id, minPva
   # keep only a max of nVar immune markers; rank by univariate p-value
   X_initial_screen <- X %>%
     select(names(X)[vars])
-  ranked_vars <- rank_univariate_logistic_pval(Y, X_initial_screen, family, obsWeights, id)
+  ranked_vars <- rank_univariate_logistic_pval(Y, X_initial_screen, family,
+                                               obsWeights, id)
 
   vars[vars][ranked_vars > nVar] <- FALSE
   return(vars)
 }
 
 ## screen to avoid high-correlation amongst risk variables
-screen_highcor_random <- function(Y, X, family, obsWeights, id, nVar = maxVar, ...) {
-
+screen_highcor_random <- function(Y, X, family, obsWeights, id, nVar = maxVar,
+                                  ...) {
   # set all vars to FALSE
   vars <- rep(FALSE, ncol(X))
   # compute pairwise correlations between all marker vars
@@ -111,12 +117,12 @@ screen_highcor_random <- function(Y, X, family, obsWeights, id, nVar = maxVar, .
   # keep only a max of nVar immune markers; rank by univariate p-value
   X_initial_screen <- X %>%
     select(names(X)[vars])
-  ranked_vars <- rank_univariate_logistic_pval(Y, X_initial_screen, family, obsWeights, id)
+  ranked_vars <- rank_univariate_logistic_pval(Y, X_initial_screen, family,
+                                               obsWeights, id)
 
   vars[vars][ranked_vars > nVar] <- FALSE
   return(vars)
 }
-
 
 
 ## -------------------------------------------------------------------------------------
@@ -232,7 +238,8 @@ SL.stumpboost <- function(Y, X, newX, family, obsWeights, ...) {
 }
 
 # random forests
-SL.ranger.imp <- function (Y, X, newX, family, obsWeights = rep(1, length(Y)), num.trees = 500, mtry = floor(sqrt(ncol(X))),
+SL.ranger.imp <- function (Y, X, newX, family, obsWeights = rep(1, length(Y)),
+                           num.trees = 500, mtry = floor(sqrt(ncol(X))),
                            write.forest = TRUE, probability = family$family == "binomial",
                            min.node.size = ifelse(family$family == "gaussian", 5, 1),
                            replace = TRUE, sample.fraction = ifelse(replace, 1, 0.632),
@@ -281,24 +288,24 @@ predict.SL.naivebayes <- function(object, newdata, ...) {
   return(pred)
 }
 
-## -------------------------------------------------------------------------------------
+## ----------------------------------------------------------------------------
 ## Create SL Library
-## -------------------------------------------------------------------------------------
-if (run_demo) {
+## ----------------------------------------------------------------------------
+if (run_prod) {
+  # NOTE: fancier library for production run
+  # learners in the method1 are also combined with no screen
+  methods1 <- c("SL.mean", "SL.glm", "SL.glmnet", "SL.xgboost",
+                "SL.ranger.imp")
+
+  # learners in the method2 are learners that can have screens
+  methods2 <- c("SL.glm", "SL.glm.interaction", "SL.gam")
+} else {
+  # NOTE: smaller library for ~faster~ demo run
   # learners in the method1 are also combined with no screen
   methods1 <- c("SL.mean", "SL.glm")
 
   # learners in the method2 are learners that can have screens
   methods2 <- c("SL.glm")
-}
-
-if (run_prod) {
-  # learners in the method1 are also combined with no screen
-  methods1 <- c("SL.mean", "SL.glm", "SL.glmnet", "SL.xgboost", "SL.ranger.imp")
-
-  # learners in the method2 are learners that can have screens
-  methods2 <- c(
-    "SL.glm", "SL.glm.interaction", "SL.gam")
 }
 
 screens1 <- "screen_all"

@@ -33,7 +33,7 @@ top_models <- sl_weights %>%
   .$Learner
 
 # Get predictors selected in the models with highest weights
-for (i in 1:length(top_models)) {
+for (i in seq_along(top_models)) {
   if(top_models[i] %in% c("SL.glm_screen_univariate_logistic_pval", 
                           "SL.glm.interaction_screen_highcor_random",
                           "SL.glm_screen_all",
@@ -52,8 +52,8 @@ for (i in 1:length(top_models)) {
         `Odds Ratio` = exp(`Coefficient`),
         Learner = top_models[i])
   }
-  
-  if(top_models[i] %in% c("SL.glmnet_screen_all")) {
+
+  if (top_models[i] %in% c("SL.glmnet_screen_all")) {
     model <- coef(sl_riskscore_slfits[["fitLibrary"]][[top_models[i]]]$object) %>%
       as.matrix() %>%
       as.data.frame() %>%
@@ -62,21 +62,21 @@ for (i in 1:length(top_models)) {
       mutate(`Odds Ratio` = exp(`Coefficient`),
              Learner = top_models[i])
   }
-  
-  if(top_models[i] %in% c("SL.xgboost_screen_all")) {
-    model <- xgboost::xgb.importance(model = sl_riskscore_slfits[["fitLibrary"]][[top_models[i]]]$object) %>% 
+
+  if (top_models[i] %in% c("SL.xgboost_screen_all")) {
+    model <- xgboost::xgb.importance(model = sl_riskscore_slfits[["fitLibrary"]][[top_models[i]]]$object) %>%
       as.data.frame() %>%
       mutate(Learner = top_models[i])
   }
-  
-  if(top_models[i] %in% c("SL.ranger.imp_screen_all")) {
+
+  if (top_models[i] %in% c("SL.ranger.imp_screen_all")) {
     model <- sl_riskscore_slfits[["fitLibrary"]][[top_models[i]]]$object$variable.importance %>%
       as.data.frame() %>%
       rename(Importance = ".") %>%
       tibble::rownames_to_column(var = "Predictors") %>%
       mutate(Learner = top_models[i])
   }
-  
+
   if (i == 1) {
     all_models <- model
   } else {
@@ -99,7 +99,8 @@ all_models %>%
     Screen = paste0("screen_", sapply(strsplit(Learner, "_screen_"), `[`, 2)),
     Learner = sapply(strsplit(Learner, "_screen"), `[`, 1)
   ) %>%
-  select(Learner, Screen, `SL Weights`, Predictors, Coefficient, `Odds Ratio`, Importance, Feature, Gain, Cover, Frequency) %>%
+  select(Learner, Screen, `SL Weights`, Predictors, Coefficient, `Odds Ratio`,
+         Importance, Feature, Gain, Cover, Frequency) %>%
   write.csv(here("output", "SL_all_models_with_predictors.csv"))
 
 rm(sl_riskscore_slfits)

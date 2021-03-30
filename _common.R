@@ -87,6 +87,10 @@ names(labels.assays.short) <- c("bindN",
   "pseudoneutid80",
   "liveneutmn50")
 
+# hacky fix for tabular, since unclear who else is using
+# the truncated labels.assays.short later
+labels.assays.short.tabular <- labels.assays.short
+
 labels.time <- c("Day 1", "Day 29", "Day 57", 
                  "D29 fold-rise over D1", 
                  "D57 fold-rise over D1", 
@@ -159,19 +163,18 @@ demo.stratum.labels <- c(
 knitr::opts_chunk$set(
   comment = "#>",
   collapse = TRUE,
-  #cache = TRUE,
   out.width = "80%",
   out.extra = "",
+  fig.pos = "H",
+  fig.show = "hold",
   fig.align = "center",
   fig.width = 6,
   fig.asp = 0.618,
   fig.retina = 0.8,
-  fig.show = "hold",
   dpi = 300,
   echo = FALSE,
   message = FALSE,
-  warning = FALSE,
-  fig.pos = "H"
+  warning = FALSE
 )
 
 # global options

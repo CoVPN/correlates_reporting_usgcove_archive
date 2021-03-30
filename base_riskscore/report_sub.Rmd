@@ -1,5 +1,5 @@
 ---
-  header-includes:
+header-includes:
   - \usepackage{float}
 output:
   pdf_document: default

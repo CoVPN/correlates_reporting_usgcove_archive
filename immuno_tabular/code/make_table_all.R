@@ -40,7 +40,7 @@ ds_long_ttl <- bind_rows(
 ) %>% 
   mutate(subgroup_cat = case_when(
     subgroup=="Age, Risk for Severe Covid-19" & 
-      grepl("$\\geq$", subgroup_cat, fixed=T)~"Age $\\geq$ 65",
+      grepl("$\\geq$", subgroup_cat, fixed=T)~"Age $\\geq$ 65 ",
     is.na(subgroup_cat) ~ "Missing data",
     TRUE ~ subgroup_cat))
 
@@ -122,8 +122,9 @@ tab_dm <- full_join(
                                            "Hispanic or Latino","Not Hispanic or Latino",
                                            "Not reported and unknown ",
                                            "At-risk","Not at-risk",
-                                           "Age $<$ 65 At-risk","Age $<$ 65 Not at-risk"))) %>% 
-  arrange(`Baseline SARS-CoV-2`, subgroup, Characteristics)
+                                           "Age $<$ 65 At-risk","Age $<$ 65 Not at-risk",
+                                           "Age $\\geq$ 65 "
+                                           ))) %>%   arrange(`Baseline SARS-CoV-2`, subgroup, Characteristics)
 
 tab_dm_pos <- tab_dm %>% 
   dplyr::filter(`Baseline SARS-CoV-2` == "Positive") %>% 

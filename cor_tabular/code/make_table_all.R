@@ -24,13 +24,8 @@ tlf <-
     tab_dm_neg = list(
       table_header = "Demographic and Clinical Characteristics at Baseline in 
       the baseline SARS-CoV-2 negative per-protocol cohort",
-      table_footer = "This table summarises the random subcohort, which
-      was randomly sampled from the per-protocol individuals without a COVID failure
-      event $<$ 7 days post Day 57. The sampling was stratified by the key baseline 
-      covariates: assigned treatment arm, baseline SARS-CoV-2 status 
-      (defined by serostatus and possibly also NAAT and/or RNA PCR testing), 
-      any additional important demographic factors such as the randomization strata 
-      (e.g., defined by age and/or co-morbidities).",
+      table_footer = "This table summarises the per-protocol individuals 
+      without a COVID failure event $<$ 7 days post Day 57.",
       deselect = "subgroup",
       pack_row = "subgroup",
       col1="7cm"
@@ -39,13 +34,8 @@ tlf <-
     tab_dm_pos = list(
       table_header = "Demographic and Clinical Characteristics at Baseline in 
       the baseline SARS-CoV-2 positive per-protocol cohort",
-      table_footer = "This table summarises the random subcohort, which
-      was randomly sampled from the per-protocol individuals without a COVID failure
-      event $<$ 7 days post Day 57. The sampling was stratified by the key baseline 
-      covariates: assigned treatment arm, baseline SARS-CoV-2 status 
-      (defined by serostatus and possibly also NAAT and/or RNA PCR testing), 
-      any additional important demographic factors such as the randomization strata 
-      (e.g., defined by age and/or co-morbidities).",
+      table_footer = "This table summarises the per-protocol individuals 
+      without a COVID failure event $<$ 7 days post Day 57.",
       deselect = "subgroup",
       pack_row = "subgroup",
       col1="7cm"
@@ -189,9 +179,8 @@ dat.mock <- read.csv(here::here("../data_clean", data_name))
 
 # The stratified random cohort for immunogenicity
 ds_s <- dat.mock %>%
-  dplyr::filter(SubcohortInd == 1 & TwophasesampInd == 1 & Perprotocol == 1) %>%
-  dplyr::filter(!is.na(wt.subcohort)) %>%
-  # The subgroup variables need to be character not factors
+  # dplyr::filter(SubcohortInd == 1 & TwophasesampInd == 1 & Perprotocol == 1) %>%
+  dplyr::filter(!is.na(wt)) %>%
   mutate(
     raceC = as.character(race),
     ethnicityC = case_when(EthnicityHispanic==1 ~ "Hispanic or Latino",
@@ -322,8 +311,6 @@ ds_mag_l <- pivot_longer(ds,
 ###################################################
 #             Generating the Tables               #
 ###################################################
-
-
 
 num_v1 <- c("Age") # Summaries - Mean & Range
 num_v2 <- c("BMI") # Summaries - Mean & St.d
@@ -460,9 +447,9 @@ rpcnt_case <- ds_resp_case %>%
 tab_rr_case <- rpcnt_case %>%
   inner_join(
     ds_resp_case %>%
-      mutate(rspndr = response*wt.subcohort) %>% 
+      mutate(rspndr = response*wt) %>% 
       group_by(across(all_of(gsub("`","",sub_grp_col)))) %>%
-      summarise(N = n(), Nw = sum(wt.subcohort), rspndr = sum(rspndr),
+      summarise(N = n(), Nw = sum(wt), rspndr = sum(rspndr),
                 .groups = 'drop'),
     by = sub_grp_col) %>%
   mutate(Responder = case_when(

@@ -1,5 +1,3 @@
-#! /app/software/R/4.0.2-foss-2019b/bin/Rscript
-
 # This script executes code under the heading of: Run Superlearner on placebo arm data (SL_fit) 
 
 #-----------------------------------------------

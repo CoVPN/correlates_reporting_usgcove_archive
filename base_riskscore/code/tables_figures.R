@@ -78,7 +78,7 @@ if (run_prod) {
       Learner = fct_relevel(Learner, c(
         "SL.mean", "SL.glm", "SL.glm.interaction",
         "SL.glmnet", "SL.gam", 
-        "SL.xgboost", "SL.ranger"#, "SL.cforest", "SL.bayesglm"
+        "SL.xgboost", "SL.ranger.imp"
       ))
     ) %>%
     arrange(Learner, Screen) %>%
@@ -117,11 +117,11 @@ sl.perf %>% write.csv(here("output", "SLperformance-plac.csv"))
 options(bitmapType = "cairo")
 if (run_prod) {
   png(file = here("figs", "risk_placebo_cvaucs.png"),
-      width = 1000, height = 1100)
+      width = 2000, height = 1100)
   top_learner <- make_forest_plot_prod(risk_placebo_cvaucs)
 } else {
   png(file = here("figs", "risk_placebo_cvaucs.png"),
-      width = 1000, height = 700)
+      width = 2000, height = 700)
   top_learner <- make_forest_plot_demo(risk_placebo_cvaucs)
 }
 grid.arrange(top_learner$top_learner_nms_plot, top_learner$top_learner_plot,
@@ -150,7 +150,7 @@ pred <- get_cv_predictions(cv_fit = cvfits[[1]], cvaucDAT = top2_plac)
 # plot ROC curve
 options(bitmapType = "cairo")
 png(file = here("figs", "ROCcurve_riskscore_plac.png"),
-    width = 750, height = 750)
+    width = 1000, height = 1000)
 p1 <- plot_roc_curves(pred, cvaucDAT = top2_plac)
 print(p1)
 dev.off()
@@ -158,7 +158,7 @@ dev.off()
 # plot pred prob plot
 options(bitmapType = "cairo")
 png(file = here("figs", "predProb_riskscore_plac.png"),
-    width = 1000, height = 1200)
+    width = 1100, height = 1400)
 p2 <- plot_predicted_probabilities(pred)
 print(p2)
 dev.off()

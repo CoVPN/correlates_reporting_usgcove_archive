@@ -109,6 +109,8 @@ blas_set_num_threads(1)
 print(blas_get_num_procs())
 stopifnot(blas_get_num_procs() == 1)
 
+set.seed(20210216)
+
 # run super learner ensemble
 fits <- run_cv_sl_once(
   Y = Y,

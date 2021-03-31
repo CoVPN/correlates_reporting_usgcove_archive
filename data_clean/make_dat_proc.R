@@ -186,11 +186,19 @@ for (trt in unique(dat_proc$Trt)) {
 for (sero in unique(dat_proc$Bserostatus)) {
 
   #summary(subset(dat.tmp.impute, Trt == 1 & Bserostatus==0)[imp.markers])
-    
+  
   imp <- dat.tmp.impute %>%
     dplyr::filter(Trt == trt & Bserostatus==sero) %>%
-    select(all_of(imp.markers)) %>%
-    mice(m = n.imp, printFlag = FALSE, seed=1)
+    select(all_of(imp.markers)) 
+    
+  # deal with constant variables
+  for (a in names(imp)) {
+    if (all(imp[[a]]==min(imp[[a]], na.rm=TRUE), na.rm=TRUE)) imp[[a]]=min(imp[[a]], na.rm=TRUE)
+  }
+    
+  # diagnostics = FALSE , remove_collinear=F are needed to avoid errors due to collinearity
+  imp <- imp %>%
+    mice(m = n.imp, printFlag = FALSE, seed=1, diagnostics = FALSE , remove_collinear = FALSE)
     
   dat.tmp.impute[dat.tmp.impute$Trt == trt & dat.tmp.impute$Bserostatus == sero , imp.markers] <-
     mice::complete(imp, action = 1)
@@ -225,8 +233,16 @@ if(has29) {
         
       imp <- dat.tmp.impute %>%
         dplyr::filter(Trt == trt & Bserostatus==sero) %>%
-        select(all_of(imp.markers)) %>%
-        mice(m = n.imp, printFlag = FALSE, seed=1)
+        select(all_of(imp.markers)) 
+      
+      # deal with constant variables  
+      for (a in names(imp)) {
+        if (all(imp[[a]]==min(imp[[a]], na.rm=TRUE), na.rm=TRUE)) imp[[a]]=min(imp[[a]], na.rm=TRUE)
+      }
+      
+      # diagnostics = FALSE , remove_collinear=F are needed to avoid errors due to collinearity
+      imp <- imp %>%
+        mice(m = n.imp, printFlag = FALSE, seed=1, diagnostics = FALSE , remove_collinear = FALSE)
         
       dat.tmp.impute[dat.tmp.impute$Trt == trt & dat.tmp.impute$Bserostatus == sero , imp.markers] <-
         mice::complete(imp, action = 1)

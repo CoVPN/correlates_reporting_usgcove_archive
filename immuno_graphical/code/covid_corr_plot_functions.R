@@ -121,7 +121,6 @@ covid_corr_pairplots <- function(plot_dat, ## data for plotting
     filename = filename, plot = pairplots, width = width, height = height,
     units = units
   )
-  return(pairplots)
 }
 
 
@@ -245,7 +244,6 @@ covid_corr_pairplots_by_time <- function(plot_dat, ## data for plotting
     filename = filename, plot = pairplots, width = width, height = height,
     units = units
   )
-  return(pairplots)
 }
 
 
@@ -308,21 +306,21 @@ covid_corr_rcdf_facets <- function(plot_dat,
                                    axis_titles,
                                    axis_title_size = 9,
                                    arrange_nrow =
-                                     ceiling(nlevels(plot_dat[, facet_by]) / 2),
+                                     ceiling(nlevels(plot_dat[,facet_by]) / 2),
                                    arrange_ncol = 2,
                                    height = 6.5,
                                    width = 6.5,
                                    units = "in",
                                    filename) {
-  
   plot_dat <- plot_dat[!is.na(plot_dat[, color]), ]
-  
+
   rcdf_dat <- plot_dat[, unique(c(x, weight, color, facet_by))] %>%
     split(., list(.[, color], .[, facet_by])) %>%
     lapply(function(subdat) {
       subdat <- subdat[complete.cases(subdat), ]
       if (nrow(subdat) == 0) return(NULL) else {
-        ecdf_fct <- with(subdat, spatstat::ewcdf(subdat[, x], subdat[, weight]))
+        ecdf_fct <- with(subdat, spatstat.geom::ewcdf(subdat[, x],
+                                                      subdat[, weight]))
         rcdf_mat <- data.frame(x = seq(xlim[1], xlim[2], length.out = 500),
                                color = rep(subdat[1, color], 500),
                                facet_by = rep(subdat[1, facet_by], 500))
@@ -332,7 +330,7 @@ covid_corr_rcdf_facets <- function(plot_dat,
       }
     }) %>% bind_rows()
 
-  
+
   rcdf_list <- vector("list", nlevels(plot_dat[, facet_by]))
   for (aa in 1:nlevels(plot_dat[, facet_by])) {
     rcdf_list[[aa]] <- ggplot(
@@ -375,7 +373,6 @@ covid_corr_rcdf_facets <- function(plot_dat,
     filename = filename, plot = output_plot, width = width,
     height = height, units = units
   )
-  return(output_plot)
 }
 
 ###############################################################################
@@ -442,7 +439,8 @@ covid_corr_rcdf <- function(plot_dat,
       lapply(function(subdat) {
         subdat <- subdat[complete.cases(subdat), ]
         if (nrow(subdat) == 0) return(NULL) else {
-          ecdf_fct <- with(subdat, spatstat::ewcdf(subdat[, x], subdat[, weight]))
+          ecdf_fct <- with(subdat, spatstat.geom::ewcdf(subdat[, x],
+                                                        subdat[, weight]))
           rcdf_mat <- data.frame(x = seq(xlim[1], xlim[2], length.out = 500),
                                  lty = rep(subdat[1, lty], 500),
                                  color = rep(subdat[1, color], 500))
@@ -457,7 +455,8 @@ covid_corr_rcdf <- function(plot_dat,
       lapply(function(subdat) {
         subdat <- subdat[complete.cases(subdat), ]
         if (nrow(subdat) == 0) return(NULL) else {
-          ecdf_fct <- with(subdat, spatstat::ewcdf(subdat[, x], subdat[, weight]))
+          ecdf_fct <- with(subdat, spatstat.geom::ewcdf(subdat[, x],
+                                                        subdat[, weight]))
           rcdf_mat <- data.frame(x = seq(xlim[1], xlim[2], length.out = 500),
                                  color = rep(subdat[1, color], 500))
           rcdf_mat$rcdf <- 1 - ecdf_fct(rcdf_mat$x)
@@ -466,7 +465,7 @@ covid_corr_rcdf <- function(plot_dat,
         }
       }) %>% bind_rows()
   }
-  
+
   output_plot <- ggplot(
     rcdf_dat,
     aes_string(
@@ -497,7 +496,6 @@ covid_corr_rcdf <- function(plot_dat,
     filename = filename, plot = output_plot, width = width,
     height = height, units = units
   )
-  return(output_plot)
 }
 
 ###############################################################################
@@ -640,7 +638,6 @@ covid_corr_scatter_facets <- function(plot_dat,
     filename = filename, plot = output_plot, width = width,
     height = height, units = units
   )
-  return(output_plot)
 }
 
 ###############################################################################
@@ -944,7 +941,7 @@ covid_corr_spaghetti_facets <- function(plot_dat,
       legend.title = element_blank(),
       legend.text = element_text(size = legend_size, face = "bold")
     )
-  
+
   ggsave(
     filename = filename, plot = output_plot, width = width,
     height = height, units = units

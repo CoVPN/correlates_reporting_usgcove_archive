@@ -29,33 +29,29 @@ library(xtable) # this is a dependency of kyotil
 
 # population is either 57 or 29
 Args <- commandArgs(trailingOnly=TRUE)
-if (length(Args)==0) Args=c(pop="29")
+if (length(Args)==0) Args=c(pop="57")
 pop=Args[1]; print(pop)
+
+if(!has29 & pop=="29") {
+    print("Quitting because there are no Day 29 markers")
+    quit()
+}
 
 save.results.to = paste0(here::here("output"), "/D", pop,"/");
 if (!dir.exists(save.results.to))  dir.create(save.results.to)
 print(paste0("save.results.to equals ", save.results.to))
 
 
-
-# important subsets of data
 if (pop=="57") {
-    dat.vacc.pop=subset(dat.mock, Trt==1 & Bserostatus==0 & EventTimePrimaryD57>=7 & Perprotocol==1)
-    dat.plac.pop=subset(dat.mock, Trt==0 & Bserostatus==0 & EventTimePrimaryD57>=7 & Perprotocol==1)
-    dat.vacc.pop$TwophasesampInd.0 = dat.vacc.pop$TwophasesampInd
-    dat.plac.pop$TwophasesampInd.0 = dat.plac.pop$TwophasesampInd    
-    dat.vacc.pop$wt.0=dat.vacc.pop$wt
-    dat.plac.pop$wt.0=dat.plac.pop$wt
-    
+    dat.mock$wt.0=dat.mock$wt
+    dat.mock$TwophasesampInd.0 = dat.mock$TwophasesampInd    
 } else if (pop=="29") {
-    dat.vacc.pop=subset(dat.mock, Trt==1 & Bserostatus==0 & (EventTimePrimaryD29>=14 & Perprotocol==1 | EventTimePrimaryD29>=7 & EventTimePrimaryD29<=13 & Fullvaccine==1))
-    dat.plac.pop=subset(dat.mock, Trt==0 & Bserostatus==0 & (EventTimePrimaryD29>=14 & Perprotocol==1 | EventTimePrimaryD29>=7 & EventTimePrimaryD29<=13 & Fullvaccine==1))    
-    dat.vacc.pop$TwophasesampInd.0 = dat.vacc.pop$TwophasesampInd.2
-    dat.plac.pop$TwophasesampInd.0 = dat.plac.pop$TwophasesampInd.2
-    dat.vacc.pop$wt.0=dat.vacc.pop$wt.2
-    dat.plac.pop$wt.0=dat.plac.pop$wt.2
-    
+    dat.mock$wt.0=dat.mock$wt.2
+    dat.mock$TwophasesampInd.0 = dat.mock$TwophasesampInd.2    
 } else stop("wrong pop")
+# the following data frame define the phase 1 ptids
+dat.vacc.pop=subset(dat.mock, Trt==1 & Bserostatus==0 & !is.na(wt.0))
+dat.plac.pop=subset(dat.mock, Trt==0 & Bserostatus==0 & !is.na(wt.0))
 
 
 # define trichotomized markers
@@ -134,8 +130,8 @@ pvals.cont = sapply(fits, function(x) {
 # mean and max followup time in the vaccine arm
 write(round(mean(dat.vacc.pop[["EventTimePrimaryD"%.%pop]])), file=paste0(save.results.to, "CoR_mean_followup_time_vacc_"%.%study_name))
 write(round(max (dat.vacc.pop[["EventTimePrimaryD"%.%pop]])), file=paste0(save.results.to, "CoR_max_followup_time_vacc_"%.% study_name))
-rv$CoR_mean_followup_time_vacc=mean((dat.vacc.pop[["EventTimePrimaryD"%.%pop]]))
-rv$CoR_max_followup_time_vacc= max ((dat.vacc.pop[["EventTimePrimaryD"%.%pop]]))
+#rv$CoR_mean_followup_time_vacc=mean((dat.vacc.pop[["EventTimePrimaryD"%.%pop]]))
+#rv$CoR_max_followup_time_vacc= max ((dat.vacc.pop[["EventTimePrimaryD"%.%pop]]))
 
 
 ######################################
@@ -329,20 +325,34 @@ theforestplot <- function(cohort=NA,group,nEvents=NA,totFU=NA,rate=NA,point.esti
   # remove.redundancy <- function(x){ifelse(!is.na(dplyr::lag(x)) & x==dplyr::lag(x), NA, x)}
   show.decimals <- function(x){format(round(x, decimal.places), nsmall=decimal.places)}
   
+  group_edit <- sapply(group, function(x){
+    if(grepl(">=", x)){
+      ssplit <- strsplit(x, split = ">=")[[1]]
+      eval(parse(text = paste0('expression("', ssplit[1], '" >= "', ssplit[2], '")')))
+    }else if(grepl("<", x)){
+      ssplit <- strsplit(x, split = "<")[[1]]
+      eval(parse(text = paste0('expression("', ssplit[1], '" < "', ssplit[2], '")')))
+    }else{
+      x
+    }
+  }, simplify = FALSE)
+  group <- group_edit
+
   if(all(is.na(p.values))){
-    tabletext <- cbind(
+    tabletext <- list(
       # c(table.labels[1], remove.redundancy(as.character(cohort))),
-      c(table.labels[1], as.character(group)),
+      c(table.labels[1], group),
       c(table.labels[3], nEvents),
       # c(table.labels[4], totFU),
       # c(table.labels[5], rate),
       c(paste0(table.labels[2]), 
         paste0(sapply(point.estimates, show.decimals), " (", sapply(lower.bounds, show.decimals), ", ", sapply(upper.bounds, show.decimals), ")")),
       c(" ", rep(NA, length(point.estimates)))
-    )} else{
-      tabletext <- cbind(
+    )
+  } else{
+      tabletext <- list(
         # c(table.labels[1], remove.redundancy(as.character(cohort))),
-        c(table.labels[1], as.character(group)),
+        c(table.labels[1], group),
         c(table.labels[3], nEvents),
         # c(table.labels[4], totFU),
         # c(table.labels[5], rate),
@@ -352,10 +362,10 @@ theforestplot <- function(cohort=NA,group,nEvents=NA,totFU=NA,rate=NA,point.esti
       )}    
     
   replaceNA <- function(x){ifelse(grepl("NA", x), NA, x)}
-  tabletext[,3] <- sapply(tabletext[,3], replaceNA)
+  tabletext[[3]] <- sapply(tabletext[[3]], replaceNA)
   
   replaceDash <- function(x){gsub("-", "\u2013", x)}
-  tabletext[,3] <- sapply(tabletext[,3], replaceDash)
+  tabletext[[3]] <- sapply(tabletext[[3]], replaceDash)
   
   if(!is.na(dashed.line)){grid.line <- structure(dashed.line, gp = gpar(lty = 2, col = "red", lwd=0.5))} else{grid.line <- FALSE}
   
@@ -420,7 +430,7 @@ for (a in assays) {
             tmp=getFixedEf(fit, exp=T, robust=T)
             tmp[nrow(tmp),c("HR", "(lower", "upper)", "p.value")]
         })
-        theforestplot (point.estimates=est.ci[1,], lower.bounds=est.ci[2,], upper.bounds=est.ci[3,], p.values=NA, graphwidth=unit(120, "mm"), fontsize=1.2,
+        theforestplot(point.estimates=est.ci[1,], lower.bounds=est.ci[2,], upper.bounds=est.ci[3,], p.values=NA, graphwidth=unit(120, "mm"), fontsize=1.2,
             table.labels = c("Group", "HR (95% CI)","No. Events"), group=colnames(est.ci), decimal.places=2, nEvents=nevents, title=paste0(labels.assays.long["Day"%.%pop,a]))
     dev.off()
     
@@ -600,8 +610,8 @@ if(!file.exists(paste0(save.results.to, "marginalized.risk.1.",study_name,".Rdat
     load(paste0(save.results.to, "marginalized.risk.1."%.%study_name%.%".Rdata"))
 }
 
-rv$marginalized.risk.S.eq.s=list()
-for (a in assays) rv$marginalized.risk.S.eq.s[[a]] = risks.all.1[[a]][c("marker","prob")]
+#rv$marginalized.risk.S.eq.s=list()
+#for (a in assays) rv$marginalized.risk.S.eq.s[[a]] = risks.all.1[[a]][c("marker","prob")]
 
 
 # vaccine arm, conditional on S>=s    
@@ -658,8 +668,8 @@ if(!file.exists(paste0(save.results.to, "marginalized.risk.2.",study_name,".Rdat
     load(file=paste0(save.results.to, "marginalized.risk.2."%.%study_name%.%".Rdata"))
 }
 
-rv$marginalized.risk.S.geq.s=list()
-for (a in assays) rv$marginalized.risk.S.geq.s[[a]] = risks.all.2[[a]][c("marker","prob")]
+#rv$marginalized.risk.S.geq.s=list()
+#for (a in assays) rv$marginalized.risk.S.geq.s[[a]] = risks.all.2[[a]][c("marker","prob")]
 
 
 ## these results are close to bootstrap results. they are not used later and only for sanity check

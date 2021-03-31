@@ -1,6 +1,10 @@
 #-----------------------------------------------
 # obligatory to append to the top of each script
 renv::activate(project = here::here(".."))
+    
+# There is a bug on Windows that prevents renv from working properly. The following code provides a workaround:
+if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
+    
 source(here::here("..", "_common.R"))
 #-----------------------------------------------
 
@@ -108,6 +112,8 @@ blas_get_num_procs()
 blas_set_num_threads(1)
 print(blas_get_num_procs())
 stopifnot(blas_get_num_procs() == 1)
+
+set.seed(20210216)
 
 # run super learner ensemble
 fits <- run_cv_sl_once(

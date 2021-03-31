@@ -64,6 +64,37 @@ log10_fold <- function(x, y){
   x - y
 }
 
+
+impute_vars <- function(dat, timepoints,assay) {
+  dat_tmp <- dat %>%
+    select(all_of(c(outer(
+      timepoints,
+      assay,
+      paste0
+    ))))
+  
+  dat_tmp %>%
+    mutate(across(everything(), ~impute_constant(.x))) %>%
+    mice(
+      seed = 1,
+      m = 1,
+      diagnostics = FALSE,
+      remove_collinear = F,
+      printFlag = FALSE
+    ) %>%
+    complete()
+}
+
+impute_constant <- function(x){
+  ## if column is a constant with NA's, 
+  ## replace NA's with constant
+  x_tmp <- x[!is.na(x)]
+  if(length(unique(x_tmp)) == 1){
+    x[is.na(x)] <- unique(x_tmp)
+  }
+  x
+}
+
 ## load Raw data ----
 covid_raw <- read_csv(
   here("data_raw/COVID_VEtrial_practicedata_primarystage1.csv"),
@@ -71,7 +102,11 @@ covid_raw <- read_csv(
   na = "NA")
 
 
-tps <- c("B","Day57")
+tps <- c(
+  "B",
+  "Day29",
+  "Day57"
+  )
 
 
 ## Processing ----
@@ -221,17 +256,9 @@ covid_processed_imputed_assay_TwophasesampInd <- covid_processed_wt %>%
     Trt, Bserostatus
   ) %>% 
   map_dfr( function(x){
-    
     suppressWarnings({
       x %>%
-      select(
-          all_of(c(outer(
-            tps,
-            c("bindSpike","bindRBD","pseudoneutid50","pseudoneutid80"),
-            paste0)))
-      ) %>% 
-      mice(seed = 1, m = 1,  printFlag = FALSE) %>%
-      complete() %>% 
+      impute_vars(tps, c("bindSpike","bindRBD","pseudoneutid50","pseudoneutid80")) %>% 
       mutate(
           Ptid = x$Ptid
         )
@@ -272,14 +299,7 @@ if( "Day29" %in% tps ){
       
       suppressWarnings({
         x %>%
-          select(
-            all_of(c(outer(
-              c("B", "Day29", "Day57"),
-              c("bindSpike","bindRBD","pseudoneutid50","pseudoneutid80"),
-              paste0)))
-          ) %>% 
-          mice(seed = 1, m = 1,  printFlag = FALSE) %>%
-          complete() %>% 
+          impute_vars(tps, c("bindSpike","bindRBD","pseudoneutid50","pseudoneutid80"))%>% 
           mutate(
             Ptid = x$Ptid
           )
@@ -288,10 +308,7 @@ if( "Day29" %in% tps ){
   
   covid_processed_imputed2 <- covid_processed_imputed %>% 
     filter(TwophasesampInd.2 == 1) %>% 
-    select(-ends_with("bindSpike"),
-           -ends_with("bindRBD"),
-           -ends_with("pseudoneutid50"),
-           -ends_with("pseudoneutid80")) %>% 
+    select(-setdiff(colnames(covid_processed_imputed_assay_TwophasesampInd_2), "Ptid")) %>%  %>% 
     left_join(
       covid_processed_imputed_assay_TwophasesampInd_2
     ) %>% 
@@ -405,8 +422,16 @@ for(assay_typ in names(LLOD)){
 
 ## save output ----
 
+filename <- "data_clean_verification_output"
+
+if(!"Day29" %in% tps){
+  filename <- paste0(filename,"_no_D29")
+}
+
+filename <- paste0(filename,".csv")
+
 write_csv(
   covid_processed_censored,
-  file = here("data_clean/verification/verification_output/data_clean_verification_output_no_D29.csv")
+  file = here("data_clean/verification/verification_output", filename)
 )
 

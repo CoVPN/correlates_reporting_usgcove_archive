@@ -3,35 +3,6 @@
 # read in max_var
 max_var <- readRDS(here::here("output", "max_var.rds"))
 
-SL.ranger.imp <- function (Y, X, newX, family, obsWeights = rep(1, length(Y)),
-                           num.trees = 500, mtry = floor(sqrt(ncol(X))),
-                           write.forest = TRUE, probability = family$family == "binomial",
-                           min.node.size = ifelse(family$family == "gaussian", 5, 1),
-                           replace = TRUE, sample.fraction = ifelse(replace, 1, 0.632),
-                           num.threads = 1, verbose = T, ...) {
-  SuperLearner:::.SL.require("ranger")
-  if (family$family == "binomial") {
-    Y = as.factor(Y)
-  }
-  if (is.matrix(X)) {
-    X = data.frame(X)
-  }
-  fit <- ranger::ranger(`_Y` ~ ., data = cbind(`_Y` = Y, X),
-                        num.trees = num.trees, mtry = mtry, min.node.size = min.node.size,
-                        replace = replace, sample.fraction = sample.fraction,
-                        case.weights = obsWeights, write.forest = write.forest,
-                        probability = probability, num.threads = num.threads,
-                        verbose = verbose, importance = "impurity")
-  pred <- predict(fit, data = newX)$predictions
-  if (family$family == "binomial") {
-    pred = pred[, "1"]
-  }
-  fit <- list(object = fit, verbose = verbose)
-  class(fit) <- c("SL.ranger")
-  out <- list(pred = pred, fit = fit)
-  return(out)
-}
-
 # SCREENS	In all 4 screens, if total variables passing the screen > maxVar, 
 # then the variables are ranked by significance determined from a logistic regression of 
 # each variable with endpoint as outcome, and the most significant variables are selected in the model.	
@@ -52,6 +23,7 @@ screen_all <- eval(parse(text = paste0(
 # screen_glmnet alpha = 1, minscreen = 2, nfolds = 10, nlambda = 100
 screen_glmnet <- eval(parse(text = paste0(
   "function(Y, X, id, family = binomial(), max_var = ", max_var, ", ...){\n",
+    "set.seed(123)\n",
     "out <- SuperLearner::screen.glmnet(Y = Y, X = X, family = family, ...)\n",
       "pvals <- univariate_logistic_pval(Y = Y, X = X[,out,drop=FALSE], family = family)\n",
       "ii <- rank(pvals)\n",

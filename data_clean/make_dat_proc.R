@@ -15,8 +15,9 @@ library(Hmisc) # wtd.quantile, cut2
 library(mice)
 library(dplyr)
 
+
 # load data and rename first column (ID)
-dat_proc <- read_csv(here(
+dat_proc <- read.csv(here(
   "data_raw", data_in_file
 ))
 colnames(dat_proc)[1] <- "Ptid"
@@ -29,9 +30,14 @@ dat_proc <- dat_proc %>%
     TwophasesampInd = Fullvaccine == 1 &
       (SubcohortInd | EventIndPrimaryD29 == 1) &
       complete.cases(cbind(
-        BbindSpike, Day29bindSpike, Day57bindSpike,
-        BbindRBD, Day29bindRBD, Day57bindRBD
-      )),
+        BbindSpike, if(has29) Day29bindSpike, Day57bindSpike,
+        BbindRBD,   if(has29) Day29bindRBD,   Day57bindRBD
+      ))
+  )
+
+
+if(has29) dat_proc <- dat_proc %>%
+  mutate(
     # for D29 analyses
     TwophasesampInd.2 = Fullvaccine == 1 &
       (SubcohortInd | EventIndPrimaryD29 == 1) &
@@ -40,13 +46,11 @@ dat_proc <- dat_proc %>%
         BbindRBD, Day29bindRBD
       ))
   )
-
+  
+  
 # ethnicity labeling
-dat_proc$ethnicity <- ifelse(dat_proc$EthnicityHispanic == 1,
-  labels.ethnicity[1], labels.ethnicity[2]
-)
-dat_proc$ethnicity[dat_proc$EthnicityNotreported == 1 |
-  dat_proc$EthnicityUnknown == 1] <- labels.ethnicity[3]
+dat_proc$ethnicity <- ifelse(dat_proc$EthnicityHispanic == 1, labels.ethnicity[1], labels.ethnicity[2])
+dat_proc$ethnicity[dat_proc$EthnicityNotreported == 1 | dat_proc$EthnicityUnknown == 1] <- labels.ethnicity[3]
 dat_proc$ethnicity <- factor(dat_proc$ethnicity, levels = labels.ethnicity)
 
 # race labeling
@@ -98,7 +102,7 @@ dat_proc$URM[is.na(dat_proc$URM)] = 0
 # Moderna: 1 ~ 3, defines the 3 baseline strata within trt/serostatus
 dat_proc <- dat_proc %>%
   mutate(
-    Bstratum = ifelse (URM==1, ifelse(Age >= 65, 1, ifelse(HighRiskInd == 1, 2, 3)), 3+ifelse(Age >= 65, 1, ifelse(HighRiskInd == 1, 2, 3)))
+    Bstratum = ifelse(Age >= 65, 1, ifelse(HighRiskInd == 1, 2, 3))
   )
 names(Bstratum.labels) <- Bstratum.labels
 
@@ -142,55 +146,119 @@ dat_proc$wt[!with(dat_proc, Perprotocol == 1 & EventTimePrimaryD57>=7)] <- NA
 
 
 # wt.2, for D29 correlates analyses
-wts_table2 <- dat_proc %>%
-  dplyr::filter(EventTimePrimaryD29 >= 14 & Perprotocol == 1 |
-                EventTimePrimaryD29 >= 7 & EventTimePrimaryD29 <= 13 & Fullvaccine == 1) %>%
-  with(table(Wstratum, TwophasesampInd.2))
-wts_norm2 <- rowSums(wts_table2) / wts_table2[, 2]
-dat_proc$wt.2 <- wts_norm2[dat_proc$Wstratum]
-dat_proc$wt.2[!with(dat_proc, EventTimePrimaryD29 >= 14 & Perprotocol == 1 |
-                    EventTimePrimaryD29 >= 7 & EventTimePrimaryD29 <= 13 &
-                    Fullvaccine == 1)] <- NA
+if(has29) {
+    wts_table2 <- dat_proc %>%
+      dplyr::filter(EventTimePrimaryD29 >= 14 & Perprotocol == 1 |
+                    EventTimePrimaryD29 >= 7 & EventTimePrimaryD29 <= 13 & Fullvaccine == 1) %>%
+      with(table(Wstratum, TwophasesampInd.2))
+    wts_norm2 <- rowSums(wts_table2) / wts_table2[, 2]
+    dat_proc$wt.2 <- wts_norm2[dat_proc$Wstratum]
+    dat_proc$wt.2[!with(dat_proc, EventTimePrimaryD29 >= 14 & Perprotocol == 1 | EventTimePrimaryD29 >= 7 & EventTimePrimaryD29 <= 13 & Fullvaccine == 1)] <- NA
+}
 
 
-# wt.subcohort, for immunogenicity analyses that are use subcohort only and are not enriched by cases outside subcohort
+# wt.subcohort, for immunogenicity analyses that use subcohort only and are not enriched by cases outside subcohort
 wts_table <- dat_proc %>%
   dplyr::filter(Perprotocol == 1 & EventTimePrimaryD57 >= 7) %>%
-  with(table(tps.stratum, TwophasesampInd))
+  with(table(tps.stratum, TwophasesampInd & SubcohortInd))
 wts_norm <- rowSums(wts_table) / wts_table[, 2]
 dat_proc$wt.subcohort <- wts_norm[dat_proc$tps.stratum]
 dat_proc$wt.subcohort[!with(dat_proc, Perprotocol == 1 & EventTimePrimaryD57>=7)] <- NA
 
 
+dat_proc$TwophasesampInd[!with(dat_proc, Perprotocol == 1 & EventTimePrimaryD57>=7)] <- 0
+if(has29) dat_proc$TwophasesampInd.2[!with(dat_proc, EventTimePrimaryD29 >= 14 & Perprotocol == 1 | EventTimePrimaryD29 >= 7 & EventTimePrimaryD29 <= 13 & Fullvaccine == 1)] <- 0
 
 
 ###############################################################################
 # impute missing neut biomarkers in ph2
-#     impute vaccine and placebo separately
+#     impute vaccine and placebo, baseline pos and neg, separately
 #     use all assays
-#     use baseline and D57, but not Delta
+#     use baseline, D29 and D57, but not Delta
 ###############################################################################
 
-n.imp <- 10
+n.imp <- 1
 dat.tmp.impute <- subset(dat_proc, TwophasesampInd == 1)
 
-for (trt in unique(dat_proc$Trt)) {
-  imp <- dat.tmp.impute %>%
-    dplyr::filter(Trt == trt) %>%
-    select(all_of(markers)) %>%
-    mice(m = n.imp, printFlag = FALSE)
+imp.markers=c(outer(c("B", if(has29) "Day29", "Day57"), assays, "%.%"))
 
-  dat.tmp.impute[dat.tmp.impute$Trt == trt, markers] <-
+for (trt in unique(dat_proc$Trt)) {
+for (sero in unique(dat_proc$Bserostatus)) {
+
+  #summary(subset(dat.tmp.impute, Trt == 1 & Bserostatus==0)[imp.markers])
+  
+  imp <- dat.tmp.impute %>%
+    dplyr::filter(Trt == trt & Bserostatus==sero) %>%
+    select(all_of(imp.markers)) 
+    
+  # deal with constant variables
+  for (a in names(imp)) {
+    if (all(imp[[a]]==min(imp[[a]], na.rm=TRUE), na.rm=TRUE)) imp[[a]]=min(imp[[a]], na.rm=TRUE)
+  }
+    
+  # diagnostics = FALSE , remove_collinear=F are needed to avoid errors due to collinearity
+  imp <- imp %>%
+    mice(m = n.imp, printFlag = FALSE, seed=1, diagnostics = FALSE , remove_collinear = FALSE)
+    
+  dat.tmp.impute[dat.tmp.impute$Trt == trt & dat.tmp.impute$Bserostatus == sero , imp.markers] <-
     mice::complete(imp, action = 1)
+    
+}
 }
 
 stopifnot(
-  all(table(dat.tmp.impute$Wstratum, complete.cases(dat.tmp.impute[markers])))
+  all(table(dat.tmp.impute$Wstratum, complete.cases(dat.tmp.impute[imp.markers])))
 )
 
-# populate dat_proc markers with the imputed values
-dat_proc[markers] <-
-  dat.tmp.impute[markers][match(dat_proc$Ptid, dat.tmp.impute$Ptid), ]
+# populate dat_proc imp.markers with the imputed values
+dat_proc[dat_proc$TwophasesampInd==1, imp.markers] <-
+  dat.tmp.impute[imp.markers][match(dat_proc[dat_proc$TwophasesampInd==1, "Ptid"], dat.tmp.impute$Ptid), ]
+
+
+
+###############################################################################
+# impute again for TwophasesampInd.2
+#     use baseline and D29
+
+if(has29) {
+    n.imp <- 1
+    dat.tmp.impute <- subset(dat_proc, TwophasesampInd.2 == 1)
+    
+    imp.markers=c(outer(c("B", "Day29"), assays, "%.%"))
+    
+    for (trt in unique(dat_proc$Trt)) {
+    for (sero in unique(dat_proc$Bserostatus)) {
+    
+      #summary(subset(dat.tmp.impute, Trt == 1 & Bserostatus==0)[imp.markers])
+        
+      imp <- dat.tmp.impute %>%
+        dplyr::filter(Trt == trt & Bserostatus==sero) %>%
+        select(all_of(imp.markers)) 
+      
+      # deal with constant variables  
+      for (a in names(imp)) {
+        if (all(imp[[a]]==min(imp[[a]], na.rm=TRUE), na.rm=TRUE)) imp[[a]]=min(imp[[a]], na.rm=TRUE)
+      }
+      
+      # diagnostics = FALSE , remove_collinear=F are needed to avoid errors due to collinearity
+      imp <- imp %>%
+        mice(m = n.imp, printFlag = FALSE, seed=1, diagnostics = FALSE , remove_collinear = FALSE)
+        
+      dat.tmp.impute[dat.tmp.impute$Trt == trt & dat.tmp.impute$Bserostatus == sero , imp.markers] <-
+        mice::complete(imp, action = 1)
+        
+    }
+    }
+    
+    stopifnot(
+      all(table(dat.tmp.impute$Wstratum, complete.cases(dat.tmp.impute[imp.markers])))
+    )
+    
+    # populate dat_proc imp.markers with the imputed values
+    dat_proc[dat_proc$TwophasesampInd.2==1, imp.markers] <-
+      dat.tmp.impute[imp.markers][match(dat_proc[dat_proc$TwophasesampInd.2==1, "Ptid"], dat.tmp.impute$Ptid), ]    
+}
+
 
 
 ###############################################################################
@@ -199,10 +267,12 @@ dat_proc[markers] <-
 
 dat_proc["Delta57overB" %.% assays] <-
   dat_proc["Day57" %.% assays] - dat_proc["B" %.% assays]
-dat_proc["Delta29overB" %.% assays] <-
-  dat_proc["Day29" %.% assays] - dat_proc["B" %.% assays]
-dat_proc["Delta57over29" %.% assays] <-
-  dat_proc["Day57" %.% assays] - dat_proc["Day29" %.% assays]
+if(has29) {
+    dat_proc["Delta29overB" %.% assays] <-
+      dat_proc["Day29" %.% assays] - dat_proc["B" %.% assays]
+    dat_proc["Delta57over29" %.% assays] <-
+      dat_proc["Day57" %.% assays] - dat_proc["Day29" %.% assays]
+}
 
 
 ###############################################################################
@@ -211,9 +281,9 @@ dat_proc["Delta57over29" %.% assays] <-
 ###############################################################################
 
 for (a in assays) {
-  for (t in times) {
-    dat_proc[[t %.% a]] <- ifelse(dat_proc[[t %.% a]] < log10(llods[a]),
-                                  log10(llods[a] / 2), dat_proc[[t %.% a]])
+  for (t in times[1:ifelse(has29,3,2)]) {
+    dat_proc[[t %.% a]] <- ifelse(dat_proc[[t %.% a]] < log10(llods[a]), log10(llods[a] / 2), dat_proc[[t %.% a]])
+    dat_proc[[t %.% a]] <- ifelse(dat_proc[[t %.% a]] > log10(uloqs[a]), log10(uloqs[a]    ), dat_proc[[t %.% a]])
   }
 }
 

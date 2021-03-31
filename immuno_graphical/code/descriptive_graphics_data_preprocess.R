@@ -29,7 +29,7 @@ dat.long.subject_level <- dat[, c(
   "Ptid", "Trt", "MinorityInd", "HighRiskInd", "Age", "Sex",
   "Bserostatus", "Fullvaccine", "Perprotocol", "EventIndPrimaryD29",
   "EventIndPrimaryD57", "SubcohortInd", "age.geq.65", "TwophasesampInd",
-  "Bstratum", "wt", "wt.2", "race",
+  "Bstratum", "wt", "wt.2", "wt.subcohort", "race",
   "EthnicityHispanic","EthnicityNotreported", "EthnicityUnknown",
   "WhiteNonHispanic"
 )] %>%
@@ -78,41 +78,6 @@ dat.long$assay <- factor(dat.long$assay, levels = assays, labels = assays)
 dat.long.twophase.sample <- dat.long[dat.long$Ptid %in% twophase_sample_id, ]
 dat.twophase.sample <- subset(dat, Ptid %in% twophase_sample_id)
 
-## label the subjects according to their case-control status
-dat.long.twophase.sample <- dat.long.twophase.sample %>%
-  mutate(
-    EventD29 = factor(EventIndPrimaryD29,
-      levels = c(0, 1),
-      labels = c("Non-Case", "Case")
-    ),
-    EventD57 = factor(EventIndPrimaryD57,
-      levels = c(0, 1),
-      labels = c("Non-Case", "Case")
-    )
-  )
-dat.long <- dat.long %>%
-  mutate(
-    EventD29 = factor(EventIndPrimaryD29,
-      levels = c(0, 1),
-      labels = c("Non-Case", "Case")
-    ),
-    EventD57 = factor(EventIndPrimaryD57,
-      levels = c(0, 1),
-      labels = c("Non-Case", "Case")
-    )
-  )
-
-# # matrix to decide the sampling strata
-dat.long$demo_lab <-
-  with(dat.long, factor(paste0(age.geq.65, HighRiskInd),
-    levels = c("00", "01", "10", "11"),
-    labels = c(
-      "Age < 65 not at risk",
-      "Age < 65 at risk",
-      "Age >= 65 not at risk",
-      "Age >= 65 at risk"
-    )
-  ))
 
 # labels of the demographic strata for the subgroup plotting
 dat.long.twophase.sample$trt_bstatus_label <-

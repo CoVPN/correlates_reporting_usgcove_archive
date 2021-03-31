@@ -15,16 +15,16 @@ linkcolor: blue
 bibliography: ref.bib
 ---
 
-<!-- this file is a copy of report.Rmd with the change that cor_copxh is removed -->
+```{r, include=FALSE}
+source(here::here("..", "_common.R"), local = knitr::knit_global())
+```
+<!-- Note that there is no need to source _common.R in report.Rmd because it is taken care of elsewhere in yml -->
 
 
-\newcommand{\studyname}{mock}
-
-
-\newcommand{\pathCoRoutput}{output/D}
 
 ```{r, echo=FALSE}
 Day <- 57
+pathCoRoutput <- "output/D57"
 ```
 
 ```{r, child=c(here::here('.', 'report_sub.Rmd'))}
@@ -35,7 +35,8 @@ Day <- 57
 
 ```{r, echo=FALSE}
 Day <- 29
+pathCoRoutput <- "output/D29"
 ```
 
-```{r, child=c(here::here('.', 'report_sub.Rmd'))}
+```{r, child=if (has29) c(here::here('.', 'report_sub.Rmd'))}
 ```

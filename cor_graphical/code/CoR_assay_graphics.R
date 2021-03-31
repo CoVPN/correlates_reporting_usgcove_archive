@@ -121,8 +121,8 @@ for (bstatus in 1:2) {
               strip.text = element_text(size = 10, face = "bold"),
               legend.title = element_blank())
       if (tt <= 3) {
-        boxplot_list[[aa]] <- boxplot_list[[aa]] + geom_hline(yintercept = LLOD[aa], linetype = 2, color = "black", lwd = 1) +
-          geom_text(x = 0.7, vjust = "right", y = LLOD[aa] - 0.5 , label = "LLOD", size = 5) 
+        boxplot_list[[aa]] <- boxplot_list[[aa]] + geom_hline(yintercept = log10(llods[aa]), linetype = 2, color = "black", lwd = 1) +
+          geom_text(x = 0.7, vjust = "right", y = log10(llods[aa]) - 0.5 , label = "LLOD", size = 5) 
       }
     }
     
@@ -197,8 +197,8 @@ for (bstatus in 1:2) {
               legend.text = element_text(size = 10))
       
       if (tt <= 3) {
-        boxplots <- boxplots + geom_hline(yintercept = LLOD[aa], linetype = 2, color = "black", lwd = 1) +
-          geom_text(x = 0.7, vjust = "right", y = LLOD[aa] - 0.5 , label = "LLOD", size = 5) 
+        boxplots <- boxplots + geom_hline(yintercept = log10(llods[aa]), linetype = 2, color = "black", lwd = 1) +
+          geom_text(x = 0.7, vjust = "right", y = log10(llods[aa]) - 0.5 , label = "LLOD", size = 5) 
       }
       
       

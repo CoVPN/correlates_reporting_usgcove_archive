@@ -26,7 +26,7 @@ dat.long.twophase.sample <- readRDS(here(
 ))
 dat.twophase.sample <- readRDS(here("data_clean", "twophase_data.rds"))
 
-wts <- c("wt", "wt.2", "wt", "wt.2", "wt")
+
 
 ## ============================================================================
 ## boxplots and weighted rcdf plots of assay readouts at time points versus
@@ -42,9 +42,19 @@ wts <- c("wt", "wt.2", "wt", "wt.2", "wt")
 ## plot for each treatment group by baseline status
 ## ============================================================================
 
-for (tt in 2:5) {
+tps <- c("Day29", "Day57", "Delta29overB", "Delta57overB")
+for (tp in tps[tps %in% times]) {
   for (trt in 1:2) {
     for (bstatus in 1:2) {
+      if(tp == "Day29"){
+        tt <- 2
+      }else if(tp == "Day57"){
+        tt <- 3
+      }else if(tp == "Delta29overB"){
+        tt <- 4
+      }else if(tp == "Delta57overB"){
+        tt <- 5
+      }
       subdat <- subset(
         dat.long.twophase.sample,
         Bserostatus == bstatus.labels[bstatus] &
@@ -68,7 +78,7 @@ for (tt in 2:5) {
           bstatus.labels.2[bstatus],
           "_trt_", trt.labels[trt],
           "_by_age_group_",
-          study.name, ".png"
+          study_name, ".png"
         )
       )
 
@@ -77,7 +87,7 @@ for (tt in 2:5) {
         x = times[tt],
         facet_by = "assay",
         color = "age_geq_65_label",
-        weight = wts[tt],
+        weight = "wt.subcohort",
         panel_titles = labels.title2[tt, ] %>% unlist(),
         axis_titles = labels.axis[tt, ] %>% unlist(),
         filename = paste0(
@@ -86,7 +96,7 @@ for (tt in 2:5) {
           times[tt], "_trt_",
           c("placebo_", "vaccine_")[trt],
           bstatus.labels.2[bstatus],
-          "_by_age_group_", study.name,
+          "_by_age_group_", study_name,
           ".png"
         )
       )
@@ -108,7 +118,7 @@ for (tt in 2:5) {
           bstatus.labels.2[bstatus],
           "_trt_", trt.labels[trt],
           "_by_risk_group_",
-          study.name, ".png"
+          study_name, ".png"
         )
       )
 
@@ -117,7 +127,7 @@ for (tt in 2:5) {
         x = times[tt],
         facet_by = "assay",
         color = "highrisk_label",
-        weight = wts[tt],
+        weight = "wt.subcohort",
         panel_titles = labels.title2[tt, ] %>% unlist(),
         axis_titles = labels.axis[tt, ] %>% unlist(),
         filename = paste0(
@@ -126,7 +136,7 @@ for (tt in 2:5) {
           times[tt], "_trt_",
           c("placebo_", "vaccine_")[trt],
           bstatus.labels.2[bstatus],
-          "_by_risk_group_", study.name,
+          "_by_risk_group_", study_name,
           ".png"
         )
       )
@@ -149,7 +159,7 @@ for (tt in 2:5) {
           bstatus.labels.2[bstatus],
           "_trt_", trt.labels[trt],
           "_by_age_x_risk_group_",
-          study.name, ".png"
+          study_name, ".png"
         )
       )
 
@@ -158,7 +168,7 @@ for (tt in 2:5) {
         x = times[tt],
         facet_by = "assay",
         color = "age_risk_label",
-        weight = wts[tt],
+        weight = "wt.subcohort",
         panel_titles = labels.title2[tt, ] %>% unlist(),
         axis_titles = labels.axis[tt, ] %>% unlist(),
         height = 7,
@@ -169,7 +179,7 @@ for (tt in 2:5) {
           c("placebo_", "vaccine_")[trt],
           bstatus.labels.2[bstatus],
           "_by_age_risk_group_",
-          study.name, ".png"
+          study_name, ".png"
         )
       )
 
@@ -189,7 +199,7 @@ for (tt in 2:5) {
           times[tt], "_",
           bstatus.labels.2[bstatus],
           "_trt_", trt.labels[trt],
-          "_by_sex_", study.name,
+          "_by_sex_", study_name,
           ".png"
         )
       )
@@ -199,7 +209,7 @@ for (tt in 2:5) {
         x = times[tt],
         facet_by = "assay",
         color = "sex_label",
-        weight = wts[tt],
+        weight = "wt.subcohort",
         panel_titles = labels.title2[tt, ] %>% unlist(),
         axis_titles = labels.axis[tt, ] %>% unlist(),
         filename = paste0(
@@ -208,7 +218,7 @@ for (tt in 2:5) {
           times[tt], "_trt_",
           c("placebo_", "vaccine_")[trt],
           bstatus.labels.2[bstatus],
-          "_by_sex_group_", study.name,
+          "_by_sex_group_", study_name,
           ".png"
         )
       )
@@ -231,7 +241,7 @@ for (tt in 2:5) {
           bstatus.labels.2[bstatus],
           "_trt_", trt.labels[trt],
           "_by_age_x_sex_group_",
-          study.name, ".png"
+          study_name, ".png"
         )
       )
 
@@ -240,7 +250,7 @@ for (tt in 2:5) {
         x = times[tt],
         facet_by = "assay",
         color = "age_sex_label",
-        weight = wts[tt],
+        weight = "wt.subcohort",
         panel_titles = labels.title2[tt, ] %>% unlist(),
         axis_titles = labels.axis[tt, ] %>% unlist(),
         height = 7,
@@ -251,7 +261,7 @@ for (tt in 2:5) {
           c("placebo_", "vaccine_")[trt],
           bstatus.labels.2[bstatus],
           "_by_age_sex_group_",
-          study.name, ".png"
+          study_name, ".png"
         )
       )
 
@@ -272,7 +282,7 @@ for (tt in 2:5) {
           times[tt], "_",
           bstatus.labels.2[bstatus],
           "_trt_", trt.labels[trt],
-          "_by_ethnicity_", study.name,
+          "_by_ethnicity_", study_name,
           ".png"
         )
       )
@@ -282,7 +292,7 @@ for (tt in 2:5) {
         x = times[tt],
         facet_by = "assay",
         color = "ethnicity_label",
-        weight = wts[tt],
+        weight = "wt.subcohort",
         panel_titles = labels.title2[tt, ] %>% unlist(),
         axis_titles = labels.axis[tt, ] %>% unlist(),
         height = 7,
@@ -292,7 +302,7 @@ for (tt in 2:5) {
           times[tt], "_trt_",
           c("placebo_", "vaccine_")[trt],
           bstatus.labels.2[bstatus],
-          "_by_ethnicity_", study.name,
+          "_by_ethnicity_", study_name,
           ".png"
         )
       )
@@ -316,7 +326,7 @@ for (tt in 2:5) {
           times[tt], "_",
           bstatus.labels.2[bstatus],
           "_trt_", trt.labels[trt],
-          "_by_race_", study.name,
+          "_by_race_", study_name,
           ".png"
         )
       )
@@ -328,7 +338,7 @@ for (tt in 2:5) {
         x = times[tt],
         facet_by = "assay",
         color = "race",
-        weight = wts[tt],
+        weight = "wt.subcohort",
         panel_titles = labels.title2[tt, ] %>% unlist(),
         axis_titles = labels.axis[tt, ] %>% unlist(),
         height = 7.5,
@@ -338,7 +348,7 @@ for (tt in 2:5) {
           times[tt], "_trt_",
           c("placebo_", "vaccine_")[trt],
           bstatus.labels.2[bstatus],
-          "_by_race_", study.name,
+          "_by_race_", study_name,
           ".png"
         )
       )
@@ -360,7 +370,7 @@ for (tt in 2:5) {
           bstatus.labels.2[bstatus],
           "_trt_", trt.labels[trt],
           "_by_minority_group_",
-          study.name, ".png"
+          study_name, ".png"
         )
       )
 
@@ -369,7 +379,7 @@ for (tt in 2:5) {
         x = times[tt],
         facet_by = "assay",
         color = "minority_label",
-        weight = wts[tt],
+        weight = "wt.subcohort",
         panel_titles = labels.title2[tt, ] %>% unlist(),
         axis_titles = labels.axis[tt, ] %>% unlist(),
         filename = paste0(
@@ -379,7 +389,7 @@ for (tt in 2:5) {
           c("placebo_", "vaccine_")[trt],
           bstatus.labels.2[bstatus],
           "_by_minority_group_",
-          study.name, ".png"
+          study_name, ".png"
         )
       )
 
@@ -401,7 +411,7 @@ for (tt in 2:5) {
           bstatus.labels.2[bstatus],
           "_trt_", trt.labels[trt],
           "_by_age_x_minority_",
-          study.name, ".png"
+          study_name, ".png"
         )
       )
 
@@ -410,7 +420,7 @@ for (tt in 2:5) {
         x = times[tt],
         facet_by = "assay",
         color = "age_minority_label",
-        weight = wts[tt],
+        weight = "wt.subcohort",
         panel_titles = labels.title2[tt, ] %>% unlist(),
         axis_titles = labels.axis[tt, ] %>% unlist(),
         height = 7,
@@ -421,7 +431,7 @@ for (tt in 2:5) {
           c("placebo_", "vaccine_")[trt],
           bstatus.labels.2[bstatus],
           "_by_age_minority_group_",
-          study.name, ".png"
+          study_name, ".png"
         )
       )
       print(paste0("Done with loop of tt=", tt, ", trt=",

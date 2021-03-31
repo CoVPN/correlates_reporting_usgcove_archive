@@ -3,7 +3,7 @@ book_filename: "covpn_correlates_cor"
 before_chapter_script: "_common.R"
 output_dir: "_report_cor"
 clean: packages.bib
-
+keep_tex: true
 language:
   label:
     fig: "FIGURE "
@@ -14,6 +14,7 @@ language:
 # abbreviated cor report
 rmd_files: [
   "index_cor.Rmd",
+  "cor_tabular/report.Rmd",
   "cor_graphical/report.Rmd",
   "cor_coxph/report.Rmd",
   "cor_threshold/report.Rmd",

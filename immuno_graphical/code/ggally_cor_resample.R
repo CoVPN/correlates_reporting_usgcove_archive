@@ -246,9 +246,10 @@ ggally_cor_resample <- function(
                                 strata,
                                 weight,
                                 B = 200,
+                                seed = 12345,
                                 ...,
                                 stars = TRUE,
-                                method = "pearson",
+                                method = "spearman",
                                 use = "complete.obs",
                                 display_grid = FALSE,
                                 digits = 3,
@@ -293,13 +294,21 @@ ggally_cor_resample <- function(
     text_fn = function(x, y, st, wt, B) {
       x <- as.numeric(x)
       y <- as.numeric(y)
+      nn <- length(x)
       corvec <- rep(NA, B)
-
+      set.seed(seed)
+      resamp_mat <- sapply(1:B, function(ii) sample.int(n = nn, replace = TRUE, prob = wt))
+      # write.csv(data.frame(x = x, y = y, strata = st), "input_columns.csv", row.names = FALSE)
+      
+      # write.csv(resamp_mat, "output_row_number.csv", row.names = FALSE)
       for (bb in seq_len(B)) {
-        resamp_vec <- sample.int(n = length(x), replace = TRUE, prob = wt)
+        resamp_vec <- resamp_mat[, bb]
         x_resamp <- x[resamp_vec]
         y_resamp <- y[resamp_vec]
-        st_resamp <- strata[resamp_vec]
+        st_resamp <- st[resamp_vec]
+        
+        # write.csv(data.frame(x = x_resamp, y = y_resamp, strata = st_resamp), "input_columns_last_resamp.csv", row.names = FALSE)
+
 
         suppressWarnings(st_resamp_dummy <-
           dummies::dummy(st_resamp, sep = "_"))
@@ -326,12 +335,11 @@ ggally_cor_resample <- function(
 
         # make sure all values have X-many decimal places
         corvec[bb] <- ifelse(class(corObj) == "try-error",
-          cor(resamp_data$x, resamp_data$y,
-            method = method
-          ),
+          NA,
           corObj
         )
       }
+      # saveRDS(corvec, file = "corvec.RDS")
       cor_est <- mean(corvec, na.rm = TRUE)
       cor_txt <- formatC(cor_est, digits = digits, format = "f")
       cor_txt

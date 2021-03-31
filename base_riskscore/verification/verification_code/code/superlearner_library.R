@@ -39,7 +39,7 @@ if(this_library == "demo"){
     c("SL.glm", "screen_all"),
     c("SL.glmnet", "screen_all"), # no need for screens
     c("SL.xgboost", "screen_all"), # no need for screens
-    c("SL.ranger.imp", "screen_all"),   # faster than cforest?
+    c("SL.ranger", "screen_all"),   # faster than cforest?
     c("SL.glm", "screen_glmnet"),
     c("SL.glm", "screen_univariate_logistic_pval"),
     c("SL.glm", "screen_highcor_random"),

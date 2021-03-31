@@ -20,8 +20,9 @@ cv_auc_from_sl <- function(sl){
     return(out)
 }
 
-rslt <- matrix(NA, nrow = 10, ncol = 5)
-for(i in 1:10){
+num_repeated_cv_seeds <- 1
+rslt <- matrix(NA, nrow = num_repeated_cv_seeds, ncol = 5)
+for(i in 1:num_repeated_cv_seeds){
   sl <- readRDS(here::here("output", paste0("cv_sl_fit_", i, ".rds")))
   rslt[i,] <- sl %>% cv_auc_from_sl %>% unlist
 }

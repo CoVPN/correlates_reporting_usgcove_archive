@@ -1,0 +1,64 @@
+---
+title: Verification Report for Super Learner Risk Score Calculations
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+header-includes:
+    - \usepackage{xcolor}
+output: pdf_document
+---
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
+# obligatory to append to the top of each script #
+library(here)
+renv::activate(project = here::here("..", ".."))
+source(here("..", "..", "_common.R"))
+# tolerance level of tests
+tol <- 1e-4
+```
+
+```{r, cv-auc-test}
+# programmer
+cvsl_rslt <- readRDS(here("..", "output", "cvsl_riskscore_cvaucs.rds"))
+cvauc_table <- cvsl_rslt[[1]]$aucs
+cvauc_sl <- cvauc_table[cvauc_table$Learner == "SL", c("AUC", "ci_ll", "ci_ul")]
+
+# tester
+cvsl_rslt_test <- readRDS(here("verification_code", "output", "cv_auc_tab.rds"))
+cvauc_sl_test <- cvsl_rslt_test[,c("cvAUC", "ci.l", "ci.u")]
+comp_table <- rbind(as.numeric(cvauc_sl), as.numeric(cvauc_sl_test))
+pass_check1 <- all(abs(comp_table[1,] - comp_table[2,]) < tol)
+```
+
+```{r, risk-score-test}
+# programmer
+risk_score_frame <- readr::read_csv(here("..", "output", "vaccine_ptids_with_riskscores.csv"))
+risk_scores <- risk_score_frame$risk_score
+
+# tester
+risk_scores_test <- readRDS(here("verification_code", "output", "risk_scores.rds"))
+
+pass_check2 <- all(abs(risk_scores - risk_scores_test) < tol)
+```
+
+## Result
+
+The verification `r ifelse(pass_check1 & pass_check2, "succeeded", "failed")`.
+
+### CV-AUC of super learner
+
+Figure 1.1 compares the CV-AUC of each prediction algorithm as well as the super learner and discrete super learner. The high risk result in this table is the CV-AUC of the super learner, which is the algorithm that the SAP specifies will be advanced to the analysis for the risk score. The other reported CV-AUCs in this table are deemed to be low risk, since their purpose in the analysis is merely descriptive. This test passes if the point estimate and confidence interval limits of the tester and programmers results are within `r tol`.
+
+Below is the comparison of the programmer and tester's results for the point estimate and 95% confidence interval for CV-AUC.
+
+```{r}
+row.names(comp_table) <- c("Programmer", "Tester")
+colnames(comp_table) <- c("CV-AUC", "95% CI", "95% CI")
+knitr::kable(comp_table, digits = 6)
+```
+
+This test `r ifelse(pass_check1, "passed", "failed")`.
+
+### Risk scores
+
+The primary output of the baseline risk score analysis is the risk scores themselves. This test passes if the assigned risk scores for the vaccinated individuals as computed by the tester and programmer are all within `r tol` units of one another.
+
+This test `r ifelse(pass_check2, "passed", "failed")`.

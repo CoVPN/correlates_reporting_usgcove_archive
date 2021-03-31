@@ -12,7 +12,7 @@ library(stringr)
 library(ggplot2)
 library(ggpubr)
 library(GGally)
-library(SWIM)
+library(spatstat)
 library(scales)
 library(dummies)
 library(gridExtra)
@@ -356,7 +356,7 @@ if(all(c("B", "Day29", "Day57") %in% times)){
     filter(Ptid %in% spaghetti_ptid) %>%
     pivot_longer(cols = c("B", "Day29", "Day57"),
                  names_to = "time") %>%
-    mutate(assay_label = factor(assay, levels = assays, labels = labels.assays.short),
+    mutate(assay_label = factor(assay, labels = labels.assays.short),
            time_label = factor(time, levels = c("B", "Day29", "Day57"),
                                labels = c("D1", "D29", "D57"))) %>%
     as.data.frame

@@ -319,7 +319,7 @@ covid_corr_rcdf_facets <- function(plot_dat,
     lapply(function(subdat) {
       subdat <- subdat[complete.cases(subdat), ]
       if (nrow(subdat) == 0) return(NULL) else {
-        ecdf_fct <- with(subdat, spatstat.geom::ewcdf(subdat[, x],
+        ecdf_fct <- with(subdat, spatstat::ewcdf(subdat[, x],
                                                       subdat[, weight]))
         rcdf_mat <- data.frame(x = seq(xlim[1], xlim[2], length.out = 500),
                                color = rep(subdat[1, color], 500),
@@ -439,7 +439,7 @@ covid_corr_rcdf <- function(plot_dat,
       lapply(function(subdat) {
         subdat <- subdat[complete.cases(subdat), ]
         if (nrow(subdat) == 0) return(NULL) else {
-          ecdf_fct <- with(subdat, spatstat.geom::ewcdf(subdat[, x],
+          ecdf_fct <- with(subdat, spatstat::ewcdf(subdat[, x],
                                                         subdat[, weight]))
           rcdf_mat <- data.frame(x = seq(xlim[1], xlim[2], length.out = 500),
                                  lty = rep(subdat[1, lty], 500),
@@ -455,7 +455,7 @@ covid_corr_rcdf <- function(plot_dat,
       lapply(function(subdat) {
         subdat <- subdat[complete.cases(subdat), ]
         if (nrow(subdat) == 0) return(NULL) else {
-          ecdf_fct <- with(subdat, spatstat.geom::ewcdf(subdat[, x],
+          ecdf_fct <- with(subdat, spatstat::ewcdf(subdat[, x],
                                                         subdat[, weight]))
           rcdf_mat <- data.frame(x = seq(xlim[1], xlim[2], length.out = 500),
                                  color = rep(subdat[1, color], 500))

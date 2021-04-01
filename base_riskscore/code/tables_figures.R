@@ -173,4 +173,7 @@ plac <- bind_cols(
 
 write.csv(plac, here("output", "placebo_ptids_with_riskscores.csv"),
           row.names = FALSE)
+
+save(top2_plac, file = here("output", "plac_top2learners_SL_discreteSL.rda"))
+
 rm(cvfits, pred, p1, p2)

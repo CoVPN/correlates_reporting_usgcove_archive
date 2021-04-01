@@ -84,7 +84,7 @@ knitr::include_graphics(here::here("base_riskscore", "figs", "predProb_riskscore
 \clearpage
 
 
-```{r, echo=FALSE, out.width="95%", out.height="95%", fig.cap="ROC curves for the top 2 learners, Superlearner and Discrete SL."}
+```{r, echo=FALSE, out.width="95%", out.height="95%", fig.cap="ROC curves based off CV-estimated predicted probabilities for the top 2 learners, Superlearner and Discrete SL."}
 knitr::include_graphics(here::here("base_riskscore", "figs", "ROCcurve_riskscore_plac.png"))
 ```
 
@@ -127,3 +127,15 @@ read.csv(here("base_riskscore", "output", "SL_all_models_with_predictors.csv"),
   row_spec(0,bold=TRUE)
 ```
 \end{landscape}
+
+
+```{r, echo=FALSE, out.width="100%", out.height="90%", fig.cap="Superlearner predicted probabilities of COVID-19 disease in vaccinees 7 days after Day 57 by case/control status."}
+knitr::include_graphics(here::here("base_riskscore", "figs", "predProb_riskscore_vacc_onlySL.png"))
+```
+
+\clearpage
+
+
+```{r, echo=FALSE, out.width="95%", out.height="95%", fig.cap="ROC curves based off Superlearner predicted probabilities in vaccinees."}
+knitr::include_graphics(here::here("base_riskscore", "figs", "ROCcurve_riskscore_vacc_onlySL.png"))
+```

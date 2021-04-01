@@ -136,6 +136,6 @@ knitr::include_graphics(here::here("base_riskscore", "figs", "predProb_riskscore
 \clearpage
 
 
-```{r, echo=FALSE, out.width="95%", out.height="95%", fig.cap="ROC curves based off Superlearner predicted probabilities in vaccinees."}
+```{r, echo=FALSE, out.width="95%", out.height="95%", fig.cap="ROC curve based off Superlearner predicted probabilities in vaccinees."}
 knitr::include_graphics(here::here("base_riskscore", "figs", "ROCcurve_riskscore_vacc_onlySL.png"))
 ```

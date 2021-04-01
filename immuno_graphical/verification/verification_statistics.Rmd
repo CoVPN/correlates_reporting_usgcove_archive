@@ -12,7 +12,7 @@ Load the libraries and datasets
 
 ```{r load_lib_dat, warning = FALSE, message = FALSE}
 library(here)
-library(spatstat)
+library(spatstat.geom)
 library(dplyr)
 
 source(here::here("..", "_common.R"))
@@ -57,8 +57,11 @@ for (bstatus in 1:2) {
       filter(complete.cases(.))
     
     ecdf_res <- with(subdat, ewcdf(Day57, wt.subcohort))
-    
-    print(data.frame(x = 1:10, wrcdf = 1 - ecdf_res(1:10)))
+    eval_matrix <- data.frame(x = 1:10, wrcdf = 1 - ecdf_res(1:10))
+    write.csv(eval_matrix, sprintf("day57_wrcdf_rcdf_plots_bstatus_%s_%s.csv",
+                                   bstatus.labels.2[bstatus],
+                                   assays[aa]), row.names = FALSE)
+    print(eval_matrix)
   }
 }
 
@@ -80,8 +83,12 @@ for (trt in 1:2) {
              Trt == trt.labels[trt]) %>%
       select(Day57) %>%
       filter(complete.cases(.))
-    
     print(summary(subdat$Day57))
+    
+    day57_sum <- summary(subdat$Day57) 
+    day57_sum_mat <- data.frame(summary = attr(day57_sum, "names"),
+                                value = as.numeric(day57_sum))
+    write.csv(day57_sum_mat, sprintf("boxplots_day57_summary_trt_%s_%s.csv", trt.labels[trt], assays[aa]), row.names = FALSE)
   }
 }
 ```
@@ -98,6 +105,24 @@ for (trt in 1:2) {
                      Bserostatus == "Baseline Neg",
                      Trt == trt.labels[trt])
     
+    sum_B <- summary(subdat$B)
+    sum_B_mat <- data.frame(summary = attr(sum_B, "names"),
+                            value = as.numeric(sum_B))
+    write.csv(sum_B_mat, sprintf("spaghetti_plots_summary_B_trt_%s_%s.csv", trt.labels[trt], assays[aa]),
+              row.names = FALSE)
+    
+    sum_day29 <- summary(subdat$Day29)
+    sum_day29_mat <- data.frame(summary = attr(sum_day29, "names"),
+                                value = as.numeric(sum_day29))
+    write.csv(sum_day29_mat, sprintf("spaghetti_plots_summary_day29_trt_%s_%s.csv", trt.labels[trt], assays[aa]),
+              row.names = FALSE)
+    
+    sum_day57 <- summary(subdat$Day57)
+    sum_day57_mat <- data.frame(summary = attr(sum_day57, "names"),
+                                value = as.numeric(sum_day57))
+    write.csv(sum_day57_mat, sprintf("spaghetti_plots_summary_day57_trt_%s_%s.csv", trt.labels[trt], assays[aa]),
+              row.names = FALSE)
+     
     cat("D1:\n")
     print(summary(subdat$B))
     cat("D29:\n")

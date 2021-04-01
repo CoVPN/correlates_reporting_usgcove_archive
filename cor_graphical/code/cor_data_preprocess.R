@@ -145,7 +145,7 @@ dat.long.cor.subset$age_geq_65_label <-
     dat.long.cor.subset,
     factor(age.geq.65,
            levels = c(0, 1),
-           labels = c("Age >= 65", "Age < 65")
+           labels = c("Age < 65", "Age >= 65")
     )
   )
 

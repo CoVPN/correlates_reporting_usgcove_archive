@@ -37,7 +37,7 @@ before_install:
 # tinytex installs tlmgr to a directory that is symlinked to $HOME/bin
 install:
   - cd .. && Rscript -e "install.packages(c('here', 'renv', 'tinytex'))"
-  - Rscript -e "tinytex::install_tinytex(repository = 'https://ctan.math.illinois.edu/systems/texlive/tlnet/')"
+  - Rscript -e "tinytex::install_tinytex(TRUE, repository = 'https://ctan.math.illinois.edu/systems/texlive/tlnet/')"
   - export PATH=$HOME/bin:${PATH}
   - tlmgr install threeparttablex
   - cd $TRAVIS_BUILD_DIR && Rscript -e "renv::restore()"

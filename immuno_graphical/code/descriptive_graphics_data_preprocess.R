@@ -190,6 +190,8 @@ dat.long.twophase.sample$age_minority_label <-
 dat.long.twophase.sample$race <- as.factor(dat.long.twophase.sample$race)
 dat.twophase.sample$race <- as.factor(dat.twophase.sample$race)
 
+dat.long.twophase.sample$Ptid <- as.character(dat.long.twophase.sample$Ptid) 
+dat.twophase.sample$Ptid <- as.character(dat.twophase.sample$Ptid) 
 
 saveRDS(as.data.frame(dat.long.twophase.sample),
   file = here("data_clean", "long_twophase_data.rds")

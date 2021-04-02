@@ -308,6 +308,8 @@ saveRDS(plot.25sample3, file = here("data_clean", "plot.25sample3.rds"))
 
 
 
+dat.long.cor.subset$Ptid <- as.character(dat.long.cor.subset$Ptid) 
+dat.cor.subset$Ptid <- as.character(dat.cor.subset$Ptid) 
 
 
 saveRDS(as.data.frame(dat.long.cor.subset),

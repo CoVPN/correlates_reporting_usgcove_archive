@@ -30,14 +30,14 @@ apt_packages:
   - libcurl4-openssl-dev
 
 before_install:
-  - sudo apt-get install -y texlive-extra-utils ghostscript
+  - sudo apt-get install -y texlive-extra-utils ghostscript # do we need these anymore?
 
 # R packages cannot be installed in TRAVIS_BUILD_DIR; they need to be installed
 # separately from the lockfile
 # tinytex installs tlmgr to a directory that is symlinked to $HOME/bin
 install:
   - cd .. && Rscript -e "install.packages(c('here', 'renv', 'tinytex'))"
-  - Rscript -e "tinytex::reinstall_tinytex()"
+  - Rscript -e "tinytex::install_tinytex(repository = 'https://ctan.math.illinois.edu/systems/texlive/tlnet/')"
   - export PATH=$HOME/bin:${PATH}
   - tlmgr install threeparttablex
   - cd $TRAVIS_BUILD_DIR && Rscript -e "renv::restore()"

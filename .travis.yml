@@ -39,7 +39,6 @@ install:
   - cd .. && Rscript -e "install.packages(c('here', 'renv', 'tinytex'))"
   - Rscript -e "tinytex::install_tinytex()"
   - export PATH=$HOME/bin:${PATH}
-  - tlmgr install threeparttablex
   - cd $TRAVIS_BUILD_DIR && Rscript -e "renv::restore()"
 
 # turn down number of bootstraps and permutations in CoR for faster builds

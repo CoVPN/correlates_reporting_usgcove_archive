@@ -16,7 +16,9 @@ source(here::here("..", "_common.R"))
 #-----------------------------------------------
 
 source(here::here("code", "params.R"))
-dat.mock <- read.csv(here::here("..", "data_clean", data_name))
+#dat.mock <- read.csv(here::here("..", "data_clean", data_name))
+data_name_updated <- sub(".csv", "_with_riskscore.csv", data_name)
+dat.mock <- read.csv(here::here("..", "data_clean", data_name_updated))
 
 library(kyotil) # p.adj.perm, getFormattedSummary
 library(marginalizedRisk)
@@ -79,13 +81,13 @@ t0=max(dat.vacc.pop[dat.vacc.pop[["EventIndPrimaryD"%.%pop]]==1, "EventTimePrima
 write(t0, file=paste0(save.results.to, "timepoints_cum_risk_"%.%study_name))
 # trial-specific formula
 form.s = as.formula(paste0("Surv(EventTimePrimaryD",pop,", EventIndPrimaryD",pop,") ~ 1"))
-if (study_name == "mock") {
-    form.0 =            update (form.s, ~.+ MinorityInd + HighRiskInd + Age) #  Age is to be replaced by BRiskScore
-    form.0.logistic = as.formula(paste0("EventIndPrimaryD",pop,"  ~ MinorityInd + HighRiskInd + Age"))  #  Age is to be replaced by BRiskScore
-} else if (study_name == "moderna") {
-    form.0 =            update (form.s, ~.+ MinorityInd + HighRiskInd + BRiskScore)
-    form.0.logistic = as.formula(paste0("EventIndPrimaryD",pop,"  ~ MinorityInd + HighRiskInd + BRiskScore"))
-} else stop("")
+if (endsWith(data_name, "riskscore.csv")) {
+    form.0 =            update (form.s, ~.+ MinorityInd + HighRiskInd + risk_score)
+    form.0.logistic = as.formula(paste0("EventIndPrimaryD",pop,"  ~ MinorityInd + HighRiskInd + risk_score"))
+} else {
+    form.0 =            update (form.s, ~.+ MinorityInd + HighRiskInd + Age) 
+    form.0.logistic = as.formula(paste0("EventIndPrimaryD",pop,"  ~ MinorityInd + HighRiskInd + Age"))  
+}
 # covariate length without markers
 p.cov=length(terms(form.0))
 # 

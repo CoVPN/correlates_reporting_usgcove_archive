@@ -48,16 +48,17 @@ name_grid <- expand.grid(
   cc = c("", "CPV", paste(".imp", 1:10, sep = ""))
 )
 
-dat.long.assay_value.names <- paste(name_grid$aa, name_grid$cc, sep = "")
+
+dat.long.assay_value.names <- times
 dat.long.assay_value <- as.data.frame(matrix(
   nrow = nrow(dat) * length(assays),
   ncol = length(dat.long.assay_value.names)
 ))
 colnames(dat.long.assay_value) <- dat.long.assay_value.names
 
-for (ii in 1:nrow(name_grid)) {
-  dat_mock_col_names <- paste(name_grid$aa[ii], assays, name_grid$cc[ii], sep = "")
-  dat.long.assay_value[, dat.long.assay_value.names[ii]] <- unlist(lapply(
+for (tt in seq_along(times)) {
+  dat_mock_col_names <- paste(times[tt], assays, sep = "")
+  dat.long.assay_value[, dat.long.assay_value.names[tt]] <- unlist(lapply(
     dat_mock_col_names,
     function(nn) {
       if (nn %in% colnames(dat)) {

@@ -177,7 +177,7 @@ dat.long.cor.subset$sex_label <-
   with(
     dat.long.cor.subset,
     factor(Sex,
-           levels = c(0, 1),
+           levels = c(1, 0),
            labels = c("Female", "Male")
     )
   )

@@ -126,7 +126,7 @@ dat.long.twophase.sample$sex_label <-
   with(
     dat.long.twophase.sample,
     factor(Sex,
-      levels = c(0, 1),
+      levels = c(1, 0),
       labels = c("Female", "Male")
     )
   )

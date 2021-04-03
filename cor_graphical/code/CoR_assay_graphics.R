@@ -237,7 +237,7 @@ spaghetti_ptid <- dat.cor.subset[, c("Ptid", "Bserostatus", "Trt", var_names, "c
     } else {
       return(sample(xx$Ptid, 15))
     }
-  }) %>% unlist %>% as.numeric
+  }) %>% unlist %>% as.character
 
 spaghetti_dat <- dat.long.cor.subset[, c("Ptid", "Bserostatus", "cohort_event", 
                                          "B", "Day29", "Day57", "assay")] %>%

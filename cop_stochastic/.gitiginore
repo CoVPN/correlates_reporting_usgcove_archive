@@ -1,0 +1,4 @@
+figs/*.pdf
+figs/*.png
+output/*.rds
+data_clean/*.rds

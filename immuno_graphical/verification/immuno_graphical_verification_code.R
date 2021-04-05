@@ -2,17 +2,17 @@
 # File: immuno_graphical_verification_code.R
 # Author: Di Lu
 # Creation Date: 2021/03/19
-# Last Edit Date: 2021/03/28
+# Last Edit Date: 2021/04/04
 # Description: Verification of the plots targeted for
 # independent double programming
-# NEWS:
+# 
 #
 #
 #
 #
 
-#renv::activate()
-#renv::snapshot()
+renv::activate()
+
 
 # Libraries
 library(ggplot2)
@@ -177,32 +177,35 @@ spearman_corr_wide <- bnegative_vaccine_wide %>%
   mutate(x1 = ifelse(Bstratum == 2, 1, 0),
          x2 = ifelse(Bstratum == 3, 1, 0))
 
-#spearman_corr_wide$wt.subcohort <- spearman_corr_wide$wt.subcohort / sum(spearman_corr_wide$wt.subcohort)
 
 spearman_corr_calculation <- function(var1_var2) {
+  set.seed(12345)
   c <- 0
-  for (i in 1:500) {
+  for (i in 1:200) {
     resample_id <- sample(x = c(1:nrow(spearman_corr_wide)), size = nrow(spearman_corr_wide), replace = TRUE, prob = spearman_corr_wide$wt.subcohort)
     resample <- spearman_corr_wide[resample_id, ]
     formula_x <- formula(paste0(var1_var2, "~", paste0("x", 1:2, collapse = "+")))
     a <- partial_Spearman(formula_x, fit.x = "lm", fit.y = "lm", data = resample)
     c[i] <- a$TS$TB$ts
   }
-  return(list(var1_var2, mean(c)))
+  return(data.frame(x=sub(".*Day57", "",sub("\\|.*", "", var1_var2)),y=sub(".*Day57", "",sub(".*\\|", "", var1_var2)),corr=mean(c)))
 }
 
-set.seed(12345)
-spearman_corr_calculation("Day57bindSpike|Day57bindRBD")
-set.seed(12345)
-spearman_corr_calculation("Day57bindSpike|Day57pseudoneutid50")
-set.seed(12345)
-spearman_corr_calculation("Day57bindSpike|Day57pseudoneutid80")
-set.seed(12345)
-spearman_corr_calculation("Day57bindRBD|Day57pseudoneutid50")
-set.seed(12345)
-spearman_corr_calculation("Day57bindRBD|Day57pseudoneutid50")
-set.seed(12345)
-spearman_corr_calculation("Day57pseudoneutid50|Day57pseudoneutid80")
+corr<-rbind(spearman_corr_calculation("Day57bindRBD|Day57bindSpike"),
+            spearman_corr_calculation("Day57pseudoneutid50|Day57bindSpike"),
+            spearman_corr_calculation("Day57pseudoneutid80|Day57bindSpike"),
+            spearman_corr_calculation("Day57pseudoneutid50|Day57bindRBD"),
+            spearman_corr_calculation("Day57pseudoneutid80|Day57bindRBD"),
+            spearman_corr_calculation("Day57pseudoneutid80|Day57pseudoneutid50"))
+
+
+write.csv(corr,
+          here("immuno_graphical/verification/output/output_tester/spearman_correlation_result.csv"),
+          row.names = FALSE
+)
+
+
+
 
 
 #RCDF plots for D57 Ab markers: baseline negative vaccine arm
@@ -223,15 +226,60 @@ RCDF_plots_data_placebo <- dat %>%
          Perprotocol == 1)
 
   
-Ecdf(x=RCDF_plots_data_vaccine$Day57bindSpike,weights=RCDF_plots_data_vaccine$wt.subcohort,what="1-F",xlim=c(0,10),col="blue",lty=1)
-Ecdf(x=RCDF_plots_data_vaccine$Day57bindRBD,weights=RCDF_plots_data_vaccine$wt.subcohort,what="1-F",xlim=c(0,10),add=TRUE,,col="red",lty=1)
-Ecdf(x=RCDF_plots_data_vaccine$Day57pseudoneutid50,weights=RCDF_plots_data_vaccine$wt.subcohort,what="1-F",xlim=c(0,10),add=TRUE,,col="green",lty=1)
-Ecdf(x=RCDF_plots_data_vaccine$Day57pseudoneutid80,weights=RCDF_plots_data_vaccine$wt.subcohort,what="1-F",xlim=c(0,10),add=TRUE,,col="orange",lty=1)
+Ecdf(x=RCDF_plots_data_vaccine$Day57bindSpike,
+     weights=RCDF_plots_data_vaccine$wt.subcohort,what="1-F",
+     xlim=c(0,10),
+     col="blue",lty=1)
 
-Ecdf(x=RCDF_plots_data_placebo$Day57bindSpike,weights=RCDF_plots_data_placebo$wt.subcohort,what="1-F",xlim=c(0,10),add=TRUE,col="blue",lty=2)
-Ecdf(x=RCDF_plots_data_placebo$Day57bindRBD,weights=RCDF_plots_data_placebo$wt.subcohort,what="1-F",xlim=c(0,10),add=TRUE,,col="red",lty=2)
-Ecdf(x=RCDF_plots_data_placebo$Day57pseudoneutid50,weights=RCDF_plots_data_placebo$wt.subcohort,what="1-F",xlim=c(0,10),add=TRUE,,col="green",lty=2)
-Ecdf(x=RCDF_plots_data_placebo$Day57pseudoneutid80,weights=RCDF_plots_data_placebo$wt.subcohort,what="1-F",xlim=c(0,10),add=TRUE,,col="orange",lty=2)
+Ecdf(x=RCDF_plots_data_vaccine$Day57bindRBD,
+     weights=RCDF_plots_data_vaccine$wt.subcohort,
+     what="1-F",xlim=c(0,10),
+     add=TRUE,col="red",
+     lty=1)
+
+Ecdf(x=RCDF_plots_data_vaccine$Day57pseudoneutid50,
+     weights=RCDF_plots_data_vaccine$wt.subcohort,
+     what="1-F",
+     xlim=c(0,10),
+     add=TRUE,
+     col="lightblue",lty=1)
+
+Ecdf(x=RCDF_plots_data_vaccine$Day57pseudoneutid80,
+     weights=RCDF_plots_data_vaccine$wt.subcohort,
+     what="1-F",
+     xlim=c(0,10),
+     add=TRUE,
+     col="orange",lty=1)
+
+Ecdf(x=RCDF_plots_data_placebo$Day57bindSpike,
+     weights=RCDF_plots_data_placebo$wt.subcohort,
+     what="1-F",
+     xlim=c(0,10),
+     add=TRUE,
+     col="blue",
+     lty=2)
+
+Ecdf(x=RCDF_plots_data_placebo$Day57bindRBD,
+     weights=RCDF_plots_data_placebo$wt.subcohort,
+     what="1-F",
+     xlim=c(0,10),
+     add=TRUE,
+     col="red",
+     lty=2)
+
+Ecdf(x=RCDF_plots_data_placebo$Day57pseudoneutid50,
+     weights=RCDF_plots_data_placebo$wt.subcohort,
+     what="1-F",
+     xlim=c(0,10),
+     add=TRUE,
+     col="lightblue",lty=2)
+
+Ecdf(x=RCDF_plots_data_placebo$Day57pseudoneutid80,
+     weights=RCDF_plots_data_placebo$wt.subcohort,
+     what="1-F",
+     xlim=c(0,10),
+     add=TRUE,
+     col="orange",lty=2)
 
 
 
@@ -295,7 +343,7 @@ ggplot(dat.long.twophase.sample%>%
                geom = "errorbar", 
                width = 0.5) +  
   geom_boxplot(aes(x=assay))  +
-  scale_y_continuous(breaks=c(0,1,2,3,4,5,6,7,8,9,10))
+  ylim(0,10)
 
 # baseline Negative vaccine arm
 
@@ -306,7 +354,7 @@ ggplot(dat.long.twophase.sample%>%
                geom = "errorbar", 
                width = 0.5) +  
   geom_boxplot(aes(x=assay))  +
-  scale_y_continuous(breaks=c(0,1,2,3,4,5,6,7,8,9,10))
+  ylim(0,10)
 
 
 
@@ -342,5 +390,81 @@ Spaghetti_plot("bindRBD","Placebo")
 Spaghetti_plot("pseudoneutid50","Placebo")
 Spaghetti_plot("pseudoneutid80","Placebo")
 
+
+
+Spaghetti_plot_neg <- read.csv(
+  here("immuno_graphical/verification/input/output_primary_programmer/spaghetti_plot_data_BaselineNeg.csv")
+) %>% select(Ptid) %>% unique()
+
+Spaghetti_plot_pos <- read.csv(
+  here("immuno_graphical/verification/input/output_primary_programmer/spaghetti_plot_data_BaselinePos.csv")
+) %>% select(Ptid) %>% unique() 
+
+Spaghetti_plot_neg1 <- dat.long.twophase.sample %>% 
+  select(Ptid,Trt,Bserostatus,assay,B,Day29,Day57) %>% 
+  filter(Bserostatus == "Baseline Neg") %>%
+  inner_join(Spaghetti_plot_neg,by="Ptid")
+
+
+
+Spaghetti_plot_pos1 <- dat.long.twophase.sample %>% 
+  select(Ptid,Trt,Bserostatus,assay,B,Day29,Day57) %>% 
+  filter(Bserostatus == "Baseline Pos") %>%
+  inner_join(Spaghetti_plot_pos,by="Ptid")
+
+Spaghetti_plot_neg1_long<-reshape(Spaghetti_plot_neg1, 
+                                  direction = "long",
+                                  varying = list(names(Spaghetti_plot_neg1)[5:7]),
+                                  v.names = "value",
+                                  idvar = c("Ptid", "Trt","Bserostatus","assay"),
+                                  timevar = "time",
+                                  times = c("B","Day29","Day57")) %>%
+  
+  mutate(assay = case_when(assay == "bindRBD" ~ "Anti RBD IgG (IU/ml)",
+                            assay == "bindSpike" ~ "Anti Spike IgG (IU/ml)",
+                            assay == "pseudoneutid50" ~ "Pseudovirus-nAb ID50",
+                            assay == "pseudoneutid80" ~ "Pseudovirus-nAb ID80")) %>%
+  
+  mutate(time_label = case_when(time == "B" ~ "D1",
+                                time == "Day29" ~ "D29",
+                                time == "Day57" ~ "D57"))
+
+
+Spaghetti_plot_pos1_long<-reshape(Spaghetti_plot_pos1, 
+                                  direction = "long",
+                                  varying = list(names(Spaghetti_plot_pos1)[5:7]),
+                                  v.names = "value",
+                                  idvar = c("Ptid", "Trt","Bserostatus","assay"),
+                                  timevar = "time",
+                                  times = c("B","Day29","Day57")) %>%
+  
+  mutate(assay = case_when(assay == "bindRBD" ~ "Anti RBD IgG (IU/ml)",
+                           assay == "bindSpike" ~ "Anti Spike IgG (IU/ml)",
+                           assay == "pseudoneutid50" ~ "Pseudovirus-nAb ID50",
+                           assay == "pseudoneutid80" ~ "Pseudovirus-nAb ID80")) %>%
+  
+  mutate(time_label = case_when(time == "B" ~ "D1",
+                                time == "Day29" ~ "D29",
+                                time == "Day57" ~ "D57"))
+
+write.csv(Spaghetti_plot_neg1_long,
+          here("immuno_graphical/verification/output/output_tester/spaghetti_plot_data_BaselineNeg.csv"),
+          row.names = FALSE
+)
+
+write.csv(Spaghetti_plot_pos1_long,
+          here("immuno_graphical/verification/output/output_tester/spaghetti_plot_data_BaselinePos.csv"),
+          row.names = FALSE
+) 
+
+ggplot(data=Spaghetti_plot_neg1_long,aes(x=time, y=value, group=Ptid)) +
+  geom_line() +
+  geom_point() +
+  facet_wrap(~ assay)
+
+ggplot(data=Spaghetti_plot_pos1_long,aes(x=time, y=value, group=Ptid)) +
+  geom_line() +
+  geom_point() +
+  facet_wrap(~ assay) 
 
 

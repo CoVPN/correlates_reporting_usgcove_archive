@@ -1,0 +1,12 @@
+data_clean/*.RData
+data_clean/*.rda
+data_clean/*.rds
+data_clean/*.csv
+figs/*.png
+figs/*.pdf
+output/*.csv
+output/*.pdf
+output/*.RData
+output/*.rda
+output/*.rds
+report.pdf

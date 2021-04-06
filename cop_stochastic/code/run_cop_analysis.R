@@ -39,12 +39,21 @@ lapply(markers, function(marker) {
   marker_name <- str_remove(marker, this_time)
 
   # load estimation-ready data for this timepoint
-  data_est <- readRDS(
+  data_full <- readRDS(
     here("data_clean", paste0("data_est_", this_time, ".rds"))
   )
+  data_est <- data_full %>%
+    filter(Trt == 1) %>%
+    select(-Trt)
+
+  # get P(Y(0) = 1) = P(Y = 1 | A = 0), by randomization
+  ve_control_risk <- data_full %>%
+    filter(Trt == 1) %>%
+    summarise(mean(outcome)) %>%
+    as.numeric()
 
   # estimate stochastic CoP based on risk
-  mcop_msm <- msm_vimshift(
+  mcop_risk_msm <- msm_vimshift(
     Y = data_est$outcome,
     A = as.numeric(scale(data_est[[marker]])),
     W = data_est[, covariates],
@@ -72,15 +81,20 @@ lapply(markers, function(marker) {
     eif_reg_type = "hal"
   )
 
-  # save CoP results
+  # save CoP risk results
   saveRDS(
-    object = mcop_msm,
+    object = mcop_risk_msm,
     file = here("output", paste0("mcop_risk_", marker, ".rds"))
   )
 
   # TODO: stochastic VE analysis
   # NOTE: this should only require transforming the CoP results
+  mcop_sve_msm <- sve_transform(mcop_risk_msm, ve_control_risk)
 
-
+  # save CoP SVE results
+  saveRDS(
+    object = mcop_sve_msm,
+    file = here("output", paste0("mcop_sve_", marker, ".rds"))
+  )
 #}, future.seed = TRUE)
 })

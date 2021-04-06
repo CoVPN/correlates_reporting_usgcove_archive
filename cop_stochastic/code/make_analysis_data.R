@@ -79,8 +79,8 @@ for (time in times) {
       cens_ind = cens_ind,
     ) %>%
     # NOTE: used to have Perprotocol == 1 as well, still needed?
-    filter(Trt == 1, Bserostatus == 0, !is.na(samp_wts)) %>%
-    select(-Trt, -Bserostatus)
+    filter(Bserostatus == 0, !is.na(samp_wts)) %>%
+    select(-Bserostatus)
 
   # save estimation-ready data for this analysis
   saveRDS(

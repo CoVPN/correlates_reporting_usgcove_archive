@@ -32,17 +32,18 @@ if (run_forrest_run) {
 }
 
 # run analysis for each marker at each time
-#future_lapply(markers, function(marker) {
 lapply(markers, function(marker) {
-  # get timepoint for marker
+#future_lapply(markers, function(marker) {
+  # get timepoint for marker and marker name
   this_time <- marker_to_time[[marker]]
+  marker_name <- str_remove(marker, this_time)
 
   # load estimation-ready data for this timepoint
   data_est <- readRDS(
     here("data_clean", paste0("data_est_", this_time, ".rds"))
   )
 
-  # estimate stochastic VE
+  # estimate stochastic CoP based on risk
   mcop_msm <- msm_vimshift(
     Y = data_est$outcome,
     A = as.numeric(scale(data_est[[marker]])),
@@ -71,6 +72,15 @@ lapply(markers, function(marker) {
     eif_reg_type = "hal"
   )
 
-  # TODO: save results? create plots?
-})
+  # save CoP results
+  saveRDS(
+    object = mcop_msm,
+    file = here("output", paste0("mcop_risk_", marker, ".rds"))
+  )
+
+  # TODO: stochastic VE analysis
+  # NOTE: this should only require transforming the CoP results
+
+
 #}, future.seed = TRUE)
+})

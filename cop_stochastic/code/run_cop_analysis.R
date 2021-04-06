@@ -46,12 +46,6 @@ lapply(markers, function(marker) {
     filter(Trt == 1) %>%
     select(-Trt)
 
-  # get P(Y(0) = 1) = P(Y = 1 | A = 0), by randomization
-  ve_control_risk <- data_full %>%
-    filter(Trt == 1) %>%
-    summarise(mean(outcome)) %>%
-    as.numeric()
-
   # estimate stochastic CoP based on risk
   mcop_risk_msm <- msm_vimshift(
     Y = data_est$outcome,
@@ -59,7 +53,7 @@ lapply(markers, function(marker) {
     W = data_est[, covariates],
     C_samp = data_est$samp_ind,
     V = c("W", "Y"),
-    delta_grid = seq(-0.5, 0.5, 0.1),
+    delta_grid = delta_grid,
     msm_form = list(type = "linear", knot = NA),
     estimator = "tmle",
     weighting = "identity",
@@ -89,7 +83,7 @@ lapply(markers, function(marker) {
 
   # TODO: stochastic VE analysis
   # NOTE: this should only require transforming the CoP results
-  mcop_sve_msm <- sve_transform(mcop_risk_msm, ve_control_risk)
+  mcop_sve_msm <- sve_transform(mcop_risk_msm, data_full)
 
   # save CoP SVE results
   saveRDS(

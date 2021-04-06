@@ -6,6 +6,7 @@ source(here::here("..", "_common.R"))
 
 # load packages
 library(here)
+library(future)
 library(tidyverse)
 library(conflicted)
 library(hal9001)
@@ -81,9 +82,12 @@ lapply(markers, function(marker) {
     file = here("output", paste0("mcop_risk_", marker, ".rds"))
   )
 
-  # TODO: stochastic VE analysis
-  # NOTE: this should only require transforming the CoP results
-  mcop_sve_msm <- sve_transform(mcop_risk_msm, data_full)
+  # transform risk estimates to the stochastic VE scale
+  mcop_sve_msm <- sve_transform(
+    mcop_risk_msm,
+    data_full,
+    weighting_type = "variance"
+  )
 
   # save CoP SVE results
   saveRDS(

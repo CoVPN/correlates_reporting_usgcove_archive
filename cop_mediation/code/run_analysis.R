@@ -56,12 +56,18 @@ for (marker in markers) {
 	    Y = data_full$outcome,
 	    gRn = 1 / data_full$wt,
 	    glm_gA = "1",
-	    SL_gAS = sl_library,
-	    SL_QY_WAS = sl_library,
-	    SL_QY_WACY = sl_library,
-	    SL_QD_WACY = sl_library,
-	    SL_QY_W = sl_library,
-	    SL_QY_WA = sl_library
+	    glm_gAS = NULL,
+      	    SL_gAS = sl_library,
+            glm_QY_WAS = NULL,
+            SL_QY_WAS = sl_library,
+            glm_QY_WACY = NULL,
+            SL_QY_WACY = sl_library,
+            glm_QD_WACY = NULL,
+            SL_QD_WACY = sl_library,
+            glm_QY_W = NULL,
+            SL_QY_W = sl_library,
+            glm_QY_WA = NULL,
+            SL_QY_WA = sl_library
 	  )
 	  this_row <- format_row(fit)
 	}else{
@@ -81,12 +87,18 @@ for (marker in markers) {
 	    Y = data_cat$outcome,
 	    gRn = 1 / data_cat$wt,
 	    glm_gA = "1",
-	    SL_gAS = sl_library,
-	    SL_QY_WAS = sl_library,
-	    SL_QY_WACY = sl_library,
-	    SL_QD_WACY = sl_library,
-	    SL_QY_W = sl_library,
-	    SL_QY_WA = sl_library
+	    glm_gAS = NULL,
+      	    SL_gAS = sl_library,
+            glm_QY_WAS = NULL,
+            SL_QY_WAS = sl_library,
+            glm_QY_WACY = NULL,
+            SL_QY_WACY = sl_library,
+            glm_QD_WACY = NULL,
+            SL_QD_WACY = sl_library,
+            glm_QY_W = NULL,
+            SL_QY_W = sl_library,
+            glm_QY_WA = NULL,
+            SL_QY_WA = sl_library
 	  )
   this_row <- format_row(fit_cat)
 	cat_result <- rbind(cat_result, this_row)

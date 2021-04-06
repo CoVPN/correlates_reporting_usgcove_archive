@@ -1,4 +1,4 @@
-#-----------------------------------------------
+#----------------------------------------------- 
 # obligatory to append to the top of each script
 renv::activate(project = here::here(".."))
 
@@ -16,7 +16,9 @@ source(here::here("..", "_common.R"))
 #-----------------------------------------------
 
 source(here::here("code", "params.R"))
-dat.mock <- read.csv(here::here("..", "data_clean", data_name))
+#dat.mock <- read.csv(here::here("..", "data_clean", data_name))
+data_name_updated <- sub(".csv", "_with_riskscore.csv", data_name)
+dat.mock <- read.csv(here::here("..", "data_clean", data_name_updated))
 
 library(kyotil) # p.adj.perm, getFormattedSummary
 library(marginalizedRisk)
@@ -79,13 +81,13 @@ t0=max(dat.vacc.pop[dat.vacc.pop[["EventIndPrimaryD"%.%pop]]==1, "EventTimePrima
 write(t0, file=paste0(save.results.to, "timepoints_cum_risk_"%.%study_name))
 # trial-specific formula
 form.s = as.formula(paste0("Surv(EventTimePrimaryD",pop,", EventIndPrimaryD",pop,") ~ 1"))
-if (study_name == "mock") {
-    form.0 =            update (form.s, ~.+ MinorityInd + HighRiskInd + Age) #  Age is to be replaced by BRiskScore
-    form.0.logistic = as.formula(paste0("EventIndPrimaryD",pop,"  ~ MinorityInd + HighRiskInd + Age"))  #  Age is to be replaced by BRiskScore
-} else if (study_name == "moderna") {
-    form.0 =            update (form.s, ~.+ MinorityInd + HighRiskInd + BRiskScore)
-    form.0.logistic = as.formula(paste0("EventIndPrimaryD",pop,"  ~ MinorityInd + HighRiskInd + BRiskScore"))
-} else stop("")
+if (endsWith(data_name_updated, "riskscore.csv")) {
+    form.0 =            update (form.s, ~.+ MinorityInd + HighRiskInd + risk_score)
+    form.0.logistic = as.formula(paste0("EventIndPrimaryD",pop,"  ~ MinorityInd + HighRiskInd + risk_score"))
+} else {
+    form.0 =            update (form.s, ~.+ MinorityInd + HighRiskInd + Age) 
+    form.0.logistic = as.formula(paste0("EventIndPrimaryD",pop,"  ~ MinorityInd + HighRiskInd + Age"))  
+}
 # covariate length without markers
 p.cov=length(terms(form.0))
 # 
@@ -544,7 +546,7 @@ marginalized.risk.svycoxph.boot=function(formula, marker.name, type, data, t, we
     
     } else if (type==2) {
     # conditional on S>=s
-        ss=quantile(data[[marker.name]], seq(0,.9,by=0.05), na.rm=TRUE)
+        ss=quantile(data[[marker.name]], seq(0,.9,by=0.05), na.rm=TRUE); myprint(ss)
         prob=marginalized.risk.threshold (formula, marker.name, data=subset(data, TwophasesampInd.0==1), weights=weights[data$TwophasesampInd.0==1], t=t, ss=ss)
        
     } else stop("wrong type")
@@ -784,15 +786,17 @@ for (idx in 1:2) { # 1 with placebo lines, 2 without placebo lines. Implementati
 
 
 
-# controlled VE curves
+# controlled VE curves for S=s and S>=s
 s2="85%"; s1="15%" # these two reference quantiles are used in the next two blocks of code
 RRud=RReu=4
-mypdf(onefile=F, file=paste0(save.results.to, "controlled_ve_curves_"%.%study_name), mfrow=.mfrow, oma=c(1,0,0,0))
+for (ii in 1:2) {  # 1 conditional on s,   2 is conditional on S>=s
+mypdf(onefile=F, file=paste0(save.results.to, "controlled_ve_curves",ii,"_"%.%study_name), mfrow=.mfrow, oma=c(0,0,0,0))
     lwd=2.5
     par(las=1, cex.axis=0.9, cex.lab=1)# axis label orientation
     for (a in assays) {        
-        risks=risks.all.1[[a]]
-        xlim=quantile(dat.vacc.pop[["Day"%.%pop%.%a]],c(.025,.975),na.rm=T)
+        risks=get("risks.all."%.%ii)[[a]]
+    
+        xlim=quantile(dat.vacc.pop[["Day"%.%pop%.%a]],if(ii==1) c(.025,.975) else c(0,.95),na.rm=T)
         
         # compute Bias as a vector, which is a function of s
         # choose a reference marker value
@@ -802,20 +806,18 @@ mypdf(onefile=F, file=paste0(save.results.to, "controlled_ve_curves_"%.%study_na
         s.ref=risks$marker[which]
         Bias=controlled.risk.bias.factor(ss=risks$marker, s.cent=s.ref, s1=risks$marker[s1], s2=risks$marker[s2], RRud) 
     
-        ylim=c(0.5, 1)
+        ylim=if(ii==1) c(0.5, 1) else c(0.8, 1)
     
+        ncases=sapply(risks$marker, function(s) sum(dat.vacc.pop$yy[dat.vacc.pop[["Day"%.%pop%.%a]]>=s], na.rm=T))        
+        .subset=if(ii==1) rep(T, length(risks$marker)) else ncases>=5
+        
         # CVE
         est = 1 - risks$prob*Bias/res.plac.cont["est"]
         boot = 1 - t( t(risks$boot*Bias)/res.plac.cont[2:(1+ncol(risks$boot))] ) # res.plac.cont may have more bootstrap replicates than risks$boot
         ci.band=apply(boot, 1, function (x) quantile(x, c(.025,.975)))
-        mymatplot(risks$marker, t(rbind(est, ci.band)), type="l", lty=c(1,2,2), col="red", lwd=lwd, make.legend=F, ylab=paste0("Controlled VE against COVID by Day ",t0), main=paste0(labels.assays.long["Day"%.%pop,a]),
-            xlab=labels.assays.short[a]%.%" (=s)", ylim=ylim, xlim=xlim, yaxt="n", xaxt="n", draw.x.axis=F)
-        # VE
-        est = 1 - risks$prob/res.plac.cont["est"]
-        boot = 1 - t( t(risks$boot)/res.plac.cont[2:(1+ncol(risks$boot))] )                         
-        ci.band=apply(boot, 1, function (x) quantile(x, c(.025,.975)))
-        mymatplot(risks$marker, t(rbind(est, ci.band)), type="l", lty=c(1,2,2), col="pink", lwd=lwd, make.legend=F, add=T)
-        mylegend(x=1,legend=c("Controlled VE Sens. Analysis","Controlled VE"), lty=1, col=c("red","pink"), lwd=2, cex=.8)
+    
+        mymatplot(risks$marker[.subset], t(rbind(est, ci.band))[.subset,], type="l", lty=c(1,2,2), col=if(ii==1) "red" else "white", lwd=lwd, make.legend=F, ylab=paste0("Controlled VE against COVID by Day ",t0), main=paste0(labels.assays.long["Day"%.%pop,a]),
+            xlab=labels.assays.short[a]%.%ifelse(ii==1," (=s)"," (>=s)"), ylim=ylim, xlim=xlim, yaxt="n", xaxt="n", draw.x.axis=F)
         # labels
         yat=seq(.5,1,by=.1)
         axis(side=2,at=yat,labels=(yat*100)%.%"%")
@@ -823,7 +825,20 @@ mypdf(onefile=F, file=paste0(save.results.to, "controlled_ve_curves_"%.%study_na
         xx=seq(floor(min(risks$marker)), ceiling(max(risks$marker)))
         for (x in xx) axis(1, at=x, labels=if (log10(llods[a])==x) "lod" else if (x>=3) bquote(10^.(x)) else 10^x )
         if(!any(log10(llods[a])==xx)) axis(1, at=log10(llods[a]), labels="lod")
-
+            
+        # VE
+        est = 1 - risks$prob/res.plac.cont["est"]
+        boot = 1 - t( t(risks$boot)/res.plac.cont[2:(1+ncol(risks$boot))] )                         
+        ci.band=apply(boot, 1, function (x) quantile(x, c(.025,.975)))
+        
+        mymatplot(risks$marker[.subset], t(rbind(est, ci.band))[.subset,], type="l", lty=c(1,2,2), col="pink", lwd=lwd, make.legend=F, add=T)
+        
+        if(ii==1) {
+            mylegend(x=1,legend=c("Controlled VE Sens. Analysis","Controlled VE"), lty=1, col=c("red","pink"), lwd=2, cex=.8)
+        } else {
+            mylegend(x=1,legend=c("Controlled VE"), lty=1, col=c("pink"), lwd=2, cex=.8)
+        }
+    
         # add histogram
         par(new=TRUE) 
         col <- c(col2rgb("olivedrab3")) # orange, darkgoldenrod2
@@ -836,7 +851,7 @@ mypdf(onefile=F, file=paste0(save.results.to, "controlled_ve_curves_"%.%study_na
         #title(main="Controlled Vaccine Efficacy against COVID by Antibody Titer", outer=T, line=-1)    
     }
 dev.off()    
-
+}
 
 
 ####################################################################

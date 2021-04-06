@@ -18,8 +18,8 @@ format_row <- function(fit, digits = 3){
   # compute proportion mediated
   prop_med <- 1 - log(direct_eff) / log(total_eff)
 	g <- matrix(c(log(direct_eff)/(log(total_eff))^2*1/risk_est[1], log(indirect_eff)/(log(total_eff))^2*1/risk_est[2],
-              -1/(risk_est[3]*log(total_eff)), nrow = 1))
-	se_prop_med <- t(g) %*% fit$cov %*% g
+              -1/(risk_est[3]*log(total_eff)), 0))
+	se_prop_med <- sqrt(t(g) %*% fit$cov %*% g)
 	cil <- prop_med - qnorm(0.975) * se_prop_med
   ciu <- prop_med + qnorm(0.975) * se_prop_med
 

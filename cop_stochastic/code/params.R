@@ -24,10 +24,10 @@ marker_to_assay <- sapply(markers, function(v) {
 marker_to_name <- list(
   bindSpike = "spike protein binding antibody",
   bindRBD = "RBD binding antibody",
-  #liveneutid50 = "live virus-neutralizing antibody ID50",
-  #liveneutid80 = "live virus-neutralizing antibody ID80",
-  pseudoneutid50 = "pseudo-neutralizing antibody ID50",
-  pseudoneutid80 = "pseudo-neutralizing antibody ID80"
+  #liveneutid50 = "live virus-neutralizing antibody (ID50)",
+  #liveneutid80 = "live virus-neutralizing antibody (ID80)",
+  pseudoneutid50 = "pseudo-neutralizing antibody (ID50)",
+  pseudoneutid80 = "pseudo-neutralizing antibody (ID80)"
 )
 
 # analysis with more minimal super learner library

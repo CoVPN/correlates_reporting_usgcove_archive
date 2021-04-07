@@ -9,14 +9,17 @@ library(here)
 library(tidyverse)
 library(latex2exp)
 library(txshift)
-library(conflicted)
-conflict_prefer("filter", "dplyr")
 
 # run helper scripts
 source(here("code", "params.R"))
 
 # load analysis results and make sumary figures for each marker at each time
 lapply(markers, function(marker) {
+  # get timepoint for marker and marker name
+  this_time <- marker_to_time[[marker]]
+  marker_name_short <- str_remove(marker, this_time)
+  marker_name_long <- marker_to_name[[marker_name_short]]
+
   # load output data with risk-based and SVE results
   risk_results_msm <- readRDS(
     here("output", paste0("mcop_risk_", marker, ".rds"))
@@ -25,15 +28,14 @@ lapply(markers, function(marker) {
     here("output", paste0("mcop_sve_", marker, ".rds"))
   )
 
-  # TODO: make plots
+  # plot for counterfactual infection risk in vaccinees
   p_risk_msm <- plot(risk_results_msm) +
-    geom_point(size = 6) +
     geom_hline(yintercept = risk_results_msm$param_est[delta == 0, psi],
-               linetype = "dotted", colour = "red") +
-    geom_vline(xintercept = 0, linetype = "dotted", colour = "blue") +
+               linetype = "dashed", colour = "red") +
+    geom_vline(xintercept = 0, linetype = "dashed", colour = "blue") +
+    geom_point(size = 4, alpha = 0.5) +
     labs(
-      x = paste("Posited change in standardized RBD binding antibody",
-                "(ID50)"),
+      x = paste("Posited change in standardized", marker_name_long),
       y = "Risk of symptomatic COVID-19 infection in vaccinees",
       title = "Estimates of mean symptomatic COVID-19 infection risks",
       subtitle = TeX(paste("working MSM summary:",
@@ -42,12 +44,65 @@ lapply(markers, function(marker) {
                            ", ", "p-value = ",
                            round(risk_results_msm$msm_est$p_value[2], 4),
                            ")"))),
-      caption = "
-        Counterfactual COVID-19 infection risks across standardized shifts in
-        RBD binding antibody activity levels. Projection of dose-response curve
-        onto a linear working model provides evidence of decreased expected
-        infection risk with increases in RBD binding antibody activity."
+      caption = paste("
+        Counterfactual COVID-19 infection risks across standardized shifts
+        in", marker_name_long, "levels, with projection of
+        dose-response curve onto a linear working model for summarization.")
     ) +
-    scale_x_continuous(breaks = seq(-1, 1, 0.1))
+    scale_x_continuous(breaks = seq(-min(delta_grid), max(delta_grid), 0.1)) +
+    theme(
+      legend.position = "bottom",
+      legend.background =
+        element_rect(fill = "gray90", size = 0.25, linetype = "dotted"),
+      legend.title = element_blank(),
+      text = element_text(size = 25),
+      axis.text.x = element_text(colour = "black", size = 22, hjust = 1,
+                                 angle = 30),
+      axis.text.y = element_text(colour = "black", size = 22)
+    )
   p_risk_msm
+  ggsave_custom(
+    filename = here("figs", paste0("mcop_risk_", marker, ".pdf")),
+    plot = p_risk_msm
+  )
+
+  # plot for counterfactual stochastic interventional vaccine efficacy
+  p_sve_msm <- plot(sve_results_msm) +
+    geom_hline(yintercept = sve_results_msm$param_est[delta == 0, psi],
+               linetype = "dashed", colour = "red") +
+    geom_vline(xintercept = 0, linetype = "dashed", colour = "blue") +
+    geom_point(size = 4, alpha = 0.5) +
+    labs(
+      x = paste("Posited change in standardized", marker_name_long),
+      y = paste("Stochastic interventional vaccine efficacy against",
+                "symptomatic COVID-19 infection"),
+      title = paste("Estimates of mean vaccine efficacy against symptomatic",
+                    "COVID-19 infection"),
+      subtitle = TeX(paste("working MSM summary:",
+                           paste0("($\\hat{\\beta}_{TMLE}$ = ",
+                           round(sve_results_msm$msm_est$param_est[2], 4),
+                           ", ", "p-value = ",
+                           round(sve_results_msm$msm_est$p_value[2], 4),
+                           ")"))),
+      caption = paste("
+        Stochastic counterfactual vaccine efficacy v. COVID-19 infection across
+        standardized shifts in", marker_name_long, "levels, with projection
+        of dose-response curve onto a linear working model for summarization.")
+    ) +
+    scale_x_continuous(breaks = seq(-min(delta_grid), max(delta_grid), 0.1)) +
+    theme(
+      legend.position = "bottom",
+      legend.background =
+        element_rect(fill = "gray90", size = 0.25, linetype = "dotted"),
+      legend.title = element_blank(),
+      text = element_text(size = 25),
+      axis.text.x = element_text(colour = "black", size = 22, hjust = 1,
+                                 angle = 30),
+      axis.text.y = element_text(colour = "black", size = 22)
+    )
+  p_sve_msm
+  ggsave_custom(
+    filename = here("figs", paste0("mcop_sve_", marker, ".pdf")),
+    plot = p_sve_msm
+  )
 })

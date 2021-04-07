@@ -18,7 +18,6 @@ library(txshift)
 sl3_debug_mode()
 options(sl3.pcontinuous = 0)
 conflict_prefer("filter", "dplyr")
-plan(multicore, workers = 4L)
 
 # load data
 data_name_amended <- paste0(str_remove(data_name, ".csv"),
@@ -29,6 +28,9 @@ data_name_check <- file.exists(here("..", "data_clean", data_name_amended))
 source(here("code", "params.R"))
 source(here("code", "sl_lrnr_libs.R"))
 source(here("code", "sve_utils.R"))
+
+# parallelization
+plan(multicore, workers = as.integer(availableCores() - 2))
 
 # add risk score to covariates list if defined
 if (data_name_check) {

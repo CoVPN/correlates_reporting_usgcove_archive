@@ -148,6 +148,19 @@ The compiled `pdf` report will appear in `_report_immuno/covpn_correlates_immuno
 
 The immunogenecity report is outcome blinded and may be used both to validate the veracity of the assay data and to inform other aspects of the correlates analysis. 
 
+#### Baseline risk score report
+
+The baseline risk score report can be generated using a similar `make` command. 
+
+```bash
+make risk_report
+```
+
+This compiled `pdf` report will appear in `_report_riskscore/covpn_correlates_report_riskscore.pdf`.
+
+This command also saves an additional data object to the `data_clean` folder that is subsequently used in the correlates of risk reporting detailed below. Thus, __this report must be compiled prior to building the correlates of risk report__.
+
+
 #### Tier 1 correlates report
 
 After the immunogenecity report has been satisfactorily examined, a correlates report can be generated using `make` commands as follows.

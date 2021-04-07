@@ -1,17 +1,24 @@
 #' Stochastic VE from MCoP Analysis Results
 #'
-#' @param mcop_risk_results TODO
-#' @param data_cleaned TODO
-#' @param weighting_type TODO
+#' @param mcop_risk_results An object of class \code{txshift_msm}, containing
+#'  estimates of the stochastic interventional risk under different posited
+#'  shifts of the candidate mechanistic correlate of protection.
+#' @param data_cleaned The full analysis data, including observations in both
+#'  the vaccination and placebo arms of the trial. This is used to compute the
+#'  control risk (in the placebo arm) and to properly scale the estimated EIF.
+#' @param weighting Whether to weight each parameter estimate by the inverse of
+#'  its variance (in order to improve stability of the resultant MSM fit) or to
+#'  simply weight all parameter estimates equally. The default is the option
+#'  "identity", weighting all estimates identically.
 #'
 #' @importFrom data.table as.data.table copy setnames setDT
 #' @importFrom stats as.formula cov lm model.matrix pnorm qnorm
 #' @importFrom matrixStats colVars
 sve_transform <- function(mcop_risk_results,
                           data_cleaned,
-                          weighting_type = c("identity", "variance")) {
+                          weighting = c("identity", "variance")) {
   # set weighting to identity by default
-  weighting_type <- match.arg(weighting_type)
+  weighting <- match.arg(weighting)
 
   # set input data as data.table
   data.table::setDT(data_cleaned)
@@ -29,7 +36,7 @@ sve_transform <- function(mcop_risk_results,
   mcop_risk_est <- mcop_risk_results$param_est$psi
 
   # apply the delta method to get the EIFs for SVE for each delta
-  # NOTE: letting psi_1: interventional risk and psi_0: control risk
+  # NOTE: letting psi_1: interventional vaccinee risk, psi_0: control risk
   #       EIF(SVE) = [EIF(psi_1) / psi_1] - [EIF(psi_0) / psi_0]
   mcop_sve_eifs <- lapply(seq_along(delta_grid), function(delta_idx) {
     (mcop_risk_eif[, delta_idx] / mcop_risk_est[delta_idx]) -
@@ -57,9 +64,9 @@ sve_transform <- function(mcop_risk_results,
     )
 
   # construct MSM point estimate
-  if (weighting_type == "variance") {
+  if (weighting == "variance") {
     weights_eif <- as.numeric(1 / diag(stats::cov(mcop_sve_eifs)))
-  } else if (weighting_type == "identity") {
+  } else if (weighting == "identity") {
     weights_eif <- rep(1, ncol(mcop_sve_eifs))
   }
   x_mat <- stats::model.matrix(

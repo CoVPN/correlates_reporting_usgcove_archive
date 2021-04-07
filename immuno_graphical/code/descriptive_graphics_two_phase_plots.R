@@ -12,7 +12,7 @@ library(stringr)
 library(ggplot2)
 library(ggpubr)
 library(GGally)
-library(SWIM)
+library(spatstat.geom)
 library(scales)
 library(dummies)
 library(gridExtra)
@@ -340,7 +340,7 @@ if(all(c("B", "Day29", "Day57") %in% times)){
 
   spaghetti_ptid <- dat.twophase.sample[, c("Ptid", "Bserostatus", "Trt", var_names)] %>%
     filter(., complete.cases(.)) %>%
-    transmute(BT = paste0(Bserostatus, Trt),
+    transmute(BT = paste0(as.character(Bserostatus), as.character(Trt)),
               Ptid = Ptid) %>%
     split(., .$BT) %>%
     lapply(function(xx) {
@@ -349,14 +349,14 @@ if(all(c("B", "Day29", "Day57") %in% times)){
       } else {
         sample(xx$Ptid, 20)  ## sample 20 vaccine recipients
       }
-    }) %>% unlist %>% as.numeric
+    }) %>% unlist %>% as.character
 
   spaghetti_dat <- dat.long.twophase.sample[, c("Ptid", "Bserostatus", "Trt", 
                                                 "B", "Day29", "Day57", "assay")] %>%
     filter(Ptid %in% spaghetti_ptid) %>%
     pivot_longer(cols = c("B", "Day29", "Day57"),
                  names_to = "time") %>%
-    mutate(assay_label = factor(assay, levels = assays, labels = labels.assays.short),
+    mutate(assay = factor(assay, labels = labels.assays.short),
            time_label = factor(time, levels = c("B", "Day29", "Day57"),
                                labels = c("D1", "D29", "D57"))) %>%
     as.data.frame
@@ -368,7 +368,7 @@ if(all(c("B", "Day29", "Day57") %in% times)){
                                 y = "value",
                                 id = "Ptid",
                                 color = "Trt",
-                                facet_by = "assay_label",
+                                facet_by = "assay",
                                 plot_title = paste0(
                                   "Baseline ",
                                   c("Negative", "Positive")[bstatus],

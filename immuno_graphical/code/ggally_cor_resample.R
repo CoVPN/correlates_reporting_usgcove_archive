@@ -346,3 +346,120 @@ ggally_cor_resample <- function(
     }
   )
 }
+
+
+
+
+ggally_cor_resample_for_verification <- function(
+  data,
+  mapping,
+  strata,
+  weight,
+  file_name,
+  B = 200,
+  seed = 12345,
+  ...,
+  stars = TRUE,
+  method = "spearman",
+  use = "complete.obs",
+  display_grid = FALSE,
+  digits = 3,
+  title_args = list(...),
+  group_args = list(...),
+  justify_labels = "right",
+  align_percent = 0.5,
+  title = "Corr",
+  alignPercent = warning("deprecated. Use `align_percent`"),
+  displayGrid = warning("deprecated. Use `display_grid`")) {
+  if (!missing(alignPercent)) {
+    warning("`alignPercent` is deprecated. Please use `align_percent` if alignment still needs to be adjusted")
+    align_percent <- alignPercent
+  }
+  if (!missing(displayGrid)) {
+    warning("`displayGrid` is deprecated. Please use `display_grid`")
+    display_grid <- displayGrid
+  }
+  
+  na.rm <-
+    if (missing(use)) {
+      # display warnings
+      NA
+    } else {
+      (use %in% c("complete.obs", "pairwise.complete.obs", "na.or.complete"))
+    }
+  
+  ggally_statistic_resample(
+    data = data,
+    mapping = mapping,
+    strata = strata,
+    weight = weight,
+    na.rm = na.rm,
+    align_percent = align_percent,
+    display_grid = display_grid,
+    title_args = title_args,
+    group_args = group_args,
+    justify_labels = justify_labels,
+    justify_text = "left",
+    sep = if ("colour" %in% names(mapping)) ": " else ":\n",
+    title = title,
+    text_fn = function(x, y, st, wt, B) {
+      x <- as.numeric(x)
+      y <- as.numeric(y)
+      nn <- length(x)
+      corvec <- rep(NA, B)
+      set.seed(seed)
+      resamp_mat <- sapply(1:B, function(ii) sample.int(n = nn, replace = TRUE, prob = wt))
+      # write.csv(data.frame(x = x, y = y, strata = st), "input_columns.csv", row.names = FALSE)
+      
+      # write.csv(resamp_mat, "output_row_number.csv", row.names = FALSE)
+      for (bb in seq_len(B)) {
+        resamp_vec <- resamp_mat[, bb]
+        x_resamp <- x[resamp_vec]
+        y_resamp <- y[resamp_vec]
+        st_resamp <- st[resamp_vec]
+        
+        # write.csv(data.frame(x = x_resamp, y = y_resamp, strata = st_resamp), "input_columns_last_resamp.csv", row.names = FALSE)
+        
+        
+        suppressWarnings(st_resamp_dummy <-
+                           dummies::dummy(st_resamp, sep = "_"))
+        
+        resamp_data <- cbind(
+          data.frame(x = x_resamp, y = y_resamp),
+          st_resamp_dummy[, 1:(ncol(st_resamp_dummy) - 1)]
+        )
+        names(resamp_data)[3:ncol(resamp_data)] <-
+          paste0("strata", 1:(ncol(st_resamp_dummy) - 1))
+        
+        fml <- formula(paste0(
+          "y | x ~ ",
+          paste0("strata", 1:(ncol(st_resamp_dummy) - 1),
+                 collapse = "+"
+          )
+        ))
+        corObj <- try(partial_Spearman(
+          formula = fml, data = resamp_data,
+          fit.x = "lm", fit.y = "lm"
+        )$TS$TB$ts,
+        silent = TRUE
+        )
+        
+        # make sure all values have X-many decimal places
+        corvec[bb] <- ifelse(class(corObj) == "try-error",
+                             NA,
+                             corObj
+        )
+      }
+      # saveRDS(corvec, file = "corvec.RDS")
+      cor_est <- mean(corvec, na.rm = TRUE)
+      
+      cor_res <- readRDS(file_name)
+      cor_res <- c(cor_res, cor_est)
+      saveRDS(cor_res, file_name)
+      
+      cor_txt <- formatC(cor_est, digits = digits, format = "f")
+      cor_txt
+    }
+  )
+}
+

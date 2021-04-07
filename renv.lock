@@ -2017,10 +2017,10 @@
     },
     "xgboost": {
       "Package": "xgboost",
-      "Version": "1.2.0.1",
+      "Version": "1.1.1.1",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "e83e1df3948005afbddd83db86f3a0cb"
+      "Hash": "17b1f93f73844394d1578de45a681bea"
     },
     "xml2": {
       "Package": "xml2",

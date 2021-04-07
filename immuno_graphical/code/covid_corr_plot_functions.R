@@ -124,6 +124,104 @@ covid_corr_pairplots <- function(plot_dat, ## data for plotting
 }
 
 
+## the pairplot function used for verification
+covid_corr_pairplots_for_verification <- function(plot_dat, ## data for plotting
+                                                  time,
+                                                  assays,
+                                                  strata,
+                                                  weight,
+                                                  plot_title,
+                                                  column_labels,
+                                                  seed = 12345,
+                                                  height = 5.1,
+                                                  width = 5.05,
+                                                  units = "in",
+                                                  corr_size = 5,
+                                                  point_size = 0.5,
+                                                  loess_lwd = 1,
+                                                  plot_title_size = 10,
+                                                  column_label_size = 6.5,
+                                                  axis_label_size = 9,
+                                                  corr_file_name = "corr.rds") {
+  dat.tmp <- plot_dat[, paste0(time, assays)]
+  rr <- range(dat.tmp, na.rm = TRUE)
+  
+  if (rr[1] == rr[2]) {
+    rr <- c(rr[1] - 1, rr[2] + 1)
+  }
+  
+  if (rr[2] - rr[1] < 2) {
+    rr <- floor(rr[1]):ceiling(rr[2])
+  }
+  
+  breaks <- floor(rr[1]):ceiling(rr[2])
+  
+  if (rr[2] > ceiling(rr[1])) {
+    breaks <- ceiling(rr[1]):floor(rr[2])
+  } else {
+    breaks <- floor(rr[1]):ceiling(rr[2]) ## breaks on the axis
+  }
+  
+  if (max(breaks) - min(breaks) >= 6) {
+    breaks <- breaks[breaks %% 2 == 0]
+  }
+  
+  saveRDS(cor_res <- NULL, corr_file_name)
+  pairplots <- ggpairs(
+    data = dat.tmp, title = plot_title,
+    columnLabels = column_labels,
+    upper = list(
+      continuous =
+        wrap(ggally_cor_resample_for_verification,
+             stars = FALSE,
+             size = corr_size,
+             seed = seed,
+             file_name = corr_file_name,
+             strata = subdat[, strata],
+             weight = subdat[, weight]
+        )
+    ),
+    lower = list(
+      continuous =
+        wrap("points", size = point_size)
+    )
+  ) +
+    theme_bw() +
+    theme(
+      plot.title = element_text(hjust = 0.5, size = plot_title_size),
+      strip.text = element_text(size = column_label_size, face = "bold"),
+      axis.text = element_text(size = axis_label_size),
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank()
+    )
+  pairplots[1, 1] <- pairplots[1, 1] +
+    scale_x_continuous(limits = rr, breaks = breaks) + ylim(0, 1.2)
+  for (j in 2:pairplots$nrow) {
+    for (k in 1:(j - 1)) {
+      pairplots[j, k] <- pairplots[j, k] +
+        stat_smooth(
+          method = "loess", color = "red", se = FALSE,
+          lwd = loess_lwd
+        ) +
+        scale_x_continuous(
+          limits = rr, breaks = breaks,
+          labels = label_math(10^.x)
+        ) +
+        scale_y_continuous(
+          limits = rr, breaks = breaks,
+          labels = label_math(10^.x)
+        )
+    }
+    pairplots[j, j] <- pairplots[j, j] +
+      scale_x_continuous(
+        limits = rr, breaks = breaks,
+        labels = label_math(10^.x)
+      ) + ylim(0, 1.2)
+  }
+  
+  return(pairplots)
+}
+
 #' Pairplots of assay readout over time
 #'
 #' Produce the pairplots of assay readouts. The correlation is calculated by

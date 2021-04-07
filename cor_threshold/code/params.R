@@ -6,6 +6,7 @@ source(here::here("..", "_common.R"))
 #-----------------------------------------------
 
 
+
 ### #####
 #### NOTE Currently only supports Day29 and Day57 markers
 #########
@@ -24,9 +25,14 @@ source(here::here("..", "_common.R"))
 # 7. Make sure you have at least two covariates to adjust for.
 ################################
 
+##### Compute reference times for analysis -semi hard coded
 
+data <- read.csv(here::here("..", "data_clean", data_name))
+tf_Day29 <- max(data[data$EventIndPrimaryD29==1 & data$Trt == 1 & data$Bserostatus == 0 & !is.na(data$wt.2), "EventTimePrimaryD29" ])
+tf_Day57 <- max(data[data$EventIndPrimaryD57==1 & data$Trt == 1 & data$Bserostatus == 0 & !is.na(data$wt), "EventTimePrimaryD57" ])
 
-tf <- list("Day57" = 172, "Day29" = 200) # Reference time to perform analysis. Y = 1(T <= tf) where T is event time of Covid.
+print(colnames(data))
+tf <- list("Day57" = tf_Day57, "Day29" = tf_Day29) # Reference time to perform analysis. Y = 1(T <= tf) where T is event time of Covid.
 # tf should be large enough that most events are observed but small enough so that not many people are right censored. For the practice dataset, tf = 170 works.
 # Right-censoring is taken into account for  this analysis.
 covariate_adjusted <- TRUE #### Estimate threshold-response function with covariate adjustment
@@ -49,9 +55,9 @@ plotting_assay_title_generator <- function(marker) {
   time <- marker_to_time[marker]
   assay <- marker_to_assay[marker]
   title <- labels.title[time, assay]
-  
+
   return(title)
-  
+
 }
 
 times <- intersect(c("Day57", "Day29"), times)
@@ -70,7 +76,13 @@ marker_to_assay <- sapply(markers, function(v) {
 
 # Covariates to adjust for. SHOULD BE AT LEAST TWO VARIABLES OR GLMNET WILL ERROR
 
-covariates <- c("MinorityInd", "HighRiskInd") # , "BRiskScore") # Add "age"?
+covariates <- c("MinorityInd", "HighRiskInd", "risk_score") # , "BRiskScore") # Add "age"?
+if("risk_score" %in% covariates) {
+  append_data <- "_with_riskscore"
+} else {
+  append_data <- ""
+}
+
 # Indicator variable for whether an event was observed (0 is censored or end of study, 1 is COVID endpoint)
 Event_Ind_variable <- list("Day57" = "EventIndPrimaryD57", "Day29" = "EventIndPrimaryD29") # "B" = "EventIndPrimaryD57")
 # Time until event (censoring, end of study, or COVID infection)

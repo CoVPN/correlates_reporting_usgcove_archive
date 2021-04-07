@@ -25,12 +25,12 @@ sl_weights <- sl_riskscore_slfits$coef %>%
   arrange(-Weights)
 
 sl_weights %>%
-  mutate(SL.Weights = format(round(Weights, 3), nsmall = 3)) %>%
+  mutate(Weight = format(round(Weights, 3), nsmall = 3)) %>%
   mutate(
     Screen = paste0("screen_", sapply(strsplit(Learner, "_screen_"), `[`, 2)),
     Learner = sapply(strsplit(Learner, "_screen"), `[`, 1)
   ) %>%
-  select(Learner, Screen, SL.Weights) %>%
+  select(Learner, Screen, Weight) %>%
   write.csv(here("output", "SL_weights.csv"))
 
 top_models <- sl_weights %>%
@@ -91,7 +91,7 @@ for (i in seq_along(top_models)) {
 all_models %>%
   left_join(sl_weights, by = "Learner") %>%
   mutate(
-    `SL Weights` = format(round(Weights, 3), nsmall = 3),
+    Weight = format(round(Weights, 3), nsmall = 3),
     Coefficient = format(round(Coefficient, 3), nsmall = 3),
     `Odds Ratio` = format(round(`Odds Ratio`, 3), nsmall = 3),
     Importance = format(round(Importance, 3), nsmall = 3),
@@ -103,7 +103,7 @@ all_models %>%
     Screen = paste0("screen_", sapply(strsplit(Learner, "_screen_"), `[`, 2)),
     Learner = sapply(strsplit(Learner, "_screen"), `[`, 1)
   ) %>%
-  select(Learner, Screen, `SL Weights`, Predictors, Coefficient, `Odds Ratio`,
+  select(Learner, Screen, Weight, Predictors, Coefficient, `Odds Ratio`,
          Importance, Feature, Gain, Cover, Frequency) %>%
   write.csv(here("output", "SL_all_models_with_predictors.csv"))
 

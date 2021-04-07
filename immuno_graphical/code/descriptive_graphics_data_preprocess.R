@@ -36,21 +36,17 @@ dat.long.subject_level <- dat[, c(
   replicate(length(assays), ., simplify = FALSE) %>%
   bind_rows()
 
-name_grid <- expand.grid(
-  aa = times,
-  cc = c("", "CPV", paste(".imp", 1:10, sep = ""))
-)
 
-dat.long.assay_value.names <- paste(name_grid$aa, name_grid$cc, sep = "")
+dat.long.assay_value.names <- times
 dat.long.assay_value <- as.data.frame(matrix(
   nrow = nrow(dat) * length(assays),
   ncol = length(dat.long.assay_value.names)
 ))
 colnames(dat.long.assay_value) <- dat.long.assay_value.names
 
-for (ii in 1:nrow(name_grid)) {
-  dat_mock_col_names <- paste(name_grid$aa[ii], assays, name_grid$cc[ii], sep = "")
-  dat.long.assay_value[, dat.long.assay_value.names[ii]] <- unlist(lapply(
+for (tt in seq_along(times)) {
+  dat_mock_col_names <- paste(times[tt], assays, sep = "")
+  dat.long.assay_value[, dat.long.assay_value.names[tt]] <- unlist(lapply(
     dat_mock_col_names,
     function(nn) {
       if (nn %in% colnames(dat)) {
@@ -99,7 +95,7 @@ dat.long.twophase.sample$age_geq_65_label <-
     dat.long.twophase.sample,
     factor(age.geq.65,
       levels = c(0, 1),
-      labels = c("Age >= 65", "Age < 65")
+      labels = c("Age < 65", "Age >= 65")
     )
   )
 
@@ -130,7 +126,7 @@ dat.long.twophase.sample$sex_label <-
   with(
     dat.long.twophase.sample,
     factor(Sex,
-      levels = c(0, 1),
+      levels = c(1, 0),
       labels = c("Female", "Male")
     )
   )
@@ -194,6 +190,8 @@ dat.long.twophase.sample$age_minority_label <-
 dat.long.twophase.sample$race <- as.factor(dat.long.twophase.sample$race)
 dat.twophase.sample$race <- as.factor(dat.twophase.sample$race)
 
+dat.long.twophase.sample$Ptid <- as.character(dat.long.twophase.sample$Ptid) 
+dat.twophase.sample$Ptid <- as.character(dat.twophase.sample$Ptid) 
 
 saveRDS(as.data.frame(dat.long.twophase.sample),
   file = here("data_clean", "long_twophase_data.rds")

@@ -319,10 +319,20 @@ impute_missing_values <- function(X, riskVars) {
   } else {
     print(paste("Imputing missing values in following variables: ", paste(as.character(covars), collapse = ", ")))
     set.seed(20210216)
-    n.imp <- 10
-    invisible(capture.output(imp = mice(X, m = n.imp)))
-    # use the first imputation by default
-    X <- mice::complete(imp, action = 1)
+    n.imp <- 1
+
+    imp <- X %>% select(all_of(covars))
+    
+    # deal with constant variables
+    for (a in names(imp)) {
+      if (all(imp[[a]]==min(imp[[a]], na.rm=TRUE), na.rm=TRUE)) imp[[a]]=min(imp[[a]], na.rm=TRUE)
+    }
+    
+    # diagnostics = FALSE , remove_collinear=F are needed to avoid errors due to collinearity
+    imp <- imp %>%
+      mice(m = n.imp, printFlag = FALSE, seed=1, diagnostics = FALSE, remove_collinear = FALSE)
+    
+    X[, covars] <- mice::complete(imp, action = 1L)
   }
   return(X)
 }

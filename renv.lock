@@ -1,6 +1,6 @@
 {
   "R": {
-    "Version": "4.0.4",
+    "Version": "4.0.5",
     "Repositories": [
       {
         "Name": "CRAN",
@@ -427,10 +427,10 @@
     },
     "cli": {
       "Package": "cli",
-      "Version": "2.3.1",
+      "Version": "2.4.0",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "3e3f28efcadfda442cd18651fbcbbecf"
+      "Hash": "be982c9bcbfbe9e59c0225b0ed37d47e"
     },
     "clipr": {
       "Package": "clipr",
@@ -871,16 +871,16 @@
     },
     "haldensify": {
       "Package": "haldensify",
-      "Version": "0.0.9",
+      "Version": "0.0.8",
       "Source": "GitHub",
+      "Remotes": "github::tlverse/hal9001@devel",
       "RemoteType": "github",
-      "RemoteUsername": "nhejazi",
-      "RemoteRepo": "haldensify",
-      "RemoteRef": "master",
-      "RemoteSha": "87e8f9c1744f55411d2b479b170682a3c11b0e40",
       "RemoteHost": "api.github.com",
-      "Remotes": "github::tlverse/hal9001@3f0503f",
-      "Hash": "6dd32da8ee9ba7d9fef7765951af63e8"
+      "RemoteRepo": "haldensify",
+      "RemoteUsername": "nhejazi",
+      "RemoteRef": "fe3aac4",
+      "RemoteSha": "fe3aac40601a4f45aadfc8ebe810f77e695a4bbf",
+      "Hash": "b6cf149da74797cb9552e8c9621b74e9"
     },
     "haven": {
       "Package": "haven",
@@ -1466,10 +1466,10 @@
     },
     "rbibutils": {
       "Package": "rbibutils",
-      "Version": "2.0",
+      "Version": "2.1",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "7d9d967e4064739de11e50b108c1b894"
+      "Hash": "3c3ec9715adae9b3c5185b42da2a2b34"
     },
     "rcmdcheck": {
       "Package": "rcmdcheck",
@@ -1522,10 +1522,10 @@
     },
     "renv": {
       "Package": "renv",
-      "Version": "0.13.1",
+      "Version": "0.13.2",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "be02499761baab60d58b808efd08c3fc"
+      "Hash": "079cb1f03ff972b30401ed05623cbe92"
     },
     "repr": {
       "Package": "repr",
@@ -1902,15 +1902,16 @@
     },
     "txshift": {
       "Package": "txshift",
-      "Version": "0.3.5",
+      "Version": "0.3.6",
       "Source": "GitHub",
+      "Remotes": "github::tlverse/hal9001@3f0503f,\ngithub::nhejazi/haldensify@fe3aac4",
       "RemoteType": "github",
-      "RemoteUsername": "nhejazi",
-      "RemoteRepo": "txshift",
-      "RemoteRef": "HEAD",
-      "RemoteSha": "7106a25f760ad97a8cb5b7c032cf83d3639a9d50",
       "RemoteHost": "api.github.com",
-      "Hash": "b4a5fe6a1760d34dd4692163ee581335"
+      "RemoteRepo": "txshift",
+      "RemoteUsername": "nhejazi",
+      "RemoteRef": "return_eif_mat",
+      "RemoteSha": "42df00d32fe0927d82403dda947cf64c05942da3",
+      "Hash": "dee4e1489c13c3055fe545f6352bb2fe"
     },
     "usethis": {
       "Package": "usethis",
@@ -1935,10 +1936,10 @@
     },
     "vctrs": {
       "Package": "vctrs",
-      "Version": "0.3.6",
+      "Version": "0.3.7",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "5cf1957f93076c19fdc81d01409d240b"
+      "Hash": "5540dc30a203a43a1ce5dc6a89532b3b"
     },
     "vimp": {
       "Package": "vimp",

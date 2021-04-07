@@ -53,8 +53,7 @@ dm_cat <- inner_join(
          rslt2 = sprintf("%s/%s = %.1f%%", n, N, n / N * 100),
          subgroup = ifelse(subgroup_cat == "Communities of Color", 
                            "Race", as.character(subgroup))) %>% 
-  dplyr::filter(subgroup %in% cat_v) %>% 
-  arrange(`Baseline SARS-CoV-2`, Arm, subgroup)
+  dplyr::filter(subgroup %in% cat_v) 
 
 # Calculate mean and range for numeric covariates
 dm_num <- ds_long_ttl %>%
@@ -72,7 +71,8 @@ dm_num <- ds_long_ttl %>%
     .groups = 'drop'
   ) %>% 
   mutate(subgroup_cat = case_when(subgroup %in% num_v1 ~ "Mean (Range)",
-                                  subgroup %in% num_v2 ~ "Mean $\\pm$ SD"))
+                                  subgroup %in% num_v2 ~ "Mean $\\pm$ SD"),
+         subgroup=ifelse(subgroup=="Age", "Age65C", subgroup))
 
 char_lev <- c("Age $<$ 65", "Age $\\geq$ 65", "Mean (Range)","Mean $\\pm$ SD",
               "Female","Male","White Non-Hispanic ","Black or African American",
@@ -83,10 +83,7 @@ char_lev <- c("Age $<$ 65", "Age $\\geq$ 65", "Mean (Range)","Mean $\\pm$ SD",
               "Not reported and unknown ","At-risk","Not at-risk",
               "Age $<$ 65 At-risk","Age $<$ 65 Not at-risk", "Age $\\geq$ 65 ")
 
-tab_dm <- full_join(dm_cat, dm_num,
-  by = c("Baseline SARS-CoV-2", "Arm", "subgroup", 
-         "subgroup_cat", "N", "rslt1", "rslt2")
-) %>%
+tab_dm <- bind_rows(dm_cat, dm_num) %>%
   mutate(rslt = case_when(subgroup %in% cat_v ~ rslt1,
                           subgroup %in% num_v1 ~ rslt1,
                           subgroup %in% num_v2 ~ rslt2)) %>%
@@ -101,8 +98,9 @@ tab_dm <- full_join(dm_cat, dm_num,
               names_from = Arm, 
               names_sort = T,
               values_from = c(rslt)) %>%
-  mutate(Characteristics = factor(subgroup_cat, levels=char_lev)) %>%
-  arrange(`Baseline SARS-CoV-2`, Characteristics)
+  mutate(Characteristics = factor(subgroup_cat, levels=char_lev),
+         subgroup=factor(subgroup, subgrp)) %>%
+  arrange(`Baseline SARS-CoV-2`, subgroup, Characteristics)
 
 tab_dm_pos <- tab_dm %>% 
   dplyr::filter(`Baseline SARS-CoV-2` == "Positive") %>% 
@@ -351,7 +349,7 @@ tab_Rx <- full_join(tab_rr, tab_gm,
   pivot_wider(id_cols = c(subgroup, Group, `Baseline SARS-CoV-2`, Marker, Visit),  
               names_from = Arm, 
               values_from = c(N, Responder, `GMT/GMC`)) %>% 
-  inner_join(rrdiff_Rx, 
+  inner_join(rrdiff_Rx %>% dplyr::filter(Ind=="Responder"), 
              by = c("subgroup", "Baseline SARS-CoV-2", "Visit", "Marker")) %>% 
   inner_join(rgmt_Rx, 
              by = c("Baseline SARS-CoV-2", "Visit", "Marker")) %>% 

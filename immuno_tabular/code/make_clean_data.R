@@ -115,6 +115,7 @@ ds <- bind_cols(
 subgrp <- c(
   All = "All participants", 
   Age65C = "Age",
+  BMI="BMI",
   HighRiskC = "Risk for Severe Covid-19",
   AgeRiskC = "Age, Risk for Severe Covid-19",
   AgeRisk1 = "Age < 65, Risk for Severe Covid-19",
@@ -124,9 +125,7 @@ subgrp <- c(
   ethnicityC = "Hispanic or Latino ethnicity", 
   RaceEthC = "Race",
   MinorityC = "Underrepresented minority status",
-  AgeMinorC = "Age, Underrepresented minority status",
-  Age = "Age ", 
-  BMI="BMI"
+  AgeMinorC = "Age, Underrepresented minority status"
 )
 
 grplev <- c("", "Age $<$ 65",  "Age $\\geq$ 65", "At-risk", "Not at-risk", 

@@ -261,6 +261,7 @@ ds <- bind_cols(
 subgrp <- c(
   All = "All participants", 
   Age65C = "Age",
+  BMI="BMI",
   HighRiskC = "Risk for Severe Covid-19",
   AgeRiskC = "Age, Risk for Severe Covid-19",
   AgeRisk1 = "Age $<$ 65, Risk for Severe Covid-19",
@@ -270,25 +271,9 @@ subgrp <- c(
   ethnicityC = "Hispanic or Latino ethnicity", 
   RaceEthC = "Race",
   MinorityC = "Underrepresented minority status",
-  AgeMinorC = "Age, Underrepresented minority status",
-  Age = "Age ", 
-  BMI="BMI"
-)
+  AgeMinorC = "Age, Underrepresented minority status"
 
-grplev <- c("", "Age $<$ 65",  "Age $\\geq$ 65", "At-risk", "Not at-risk", 
-            "Age $<$ 65 At-risk", "Age $<$ 65 Not at-risk", 
-            "Age $\\geq$ 65 At-risk", "Age $\\geq$ 65 Not at-risk", "Male", "Female", 
-            "Age $<$ 65 Female", "Age $<$ 65 Male", 
-            "Age $\\geq$ 65 Male", "Age $\\geq$ 65 Female", 
-            "Hispanic or Latino", "Not Hispanic or Latino", "Not reported and unknown ", 
-            "White Non-Hispanic ", "Black or African American", "Asian", 
-            "American Indian or Alaska Native", 
-            "Native Hawaiian or Other Pacific Islander", 
-            "Multiracial", "Other", "Not reported and unknown",  
-            "Communities of Color", "White Non-Hispanic",
-            "Age $<$ 65 Communities of Color", "Age $<$ 65 White Non-Hispanic",  
-            "Age $\\geq$ 65 Communities of Color", "Age $\\geq$ 65 White Non-Hispanic")
-names(grplev) <- c("All participants", grplev[-1])
+)
 
 ###################################################
 #             Generating the Tables               #
@@ -355,7 +340,8 @@ dm_num <- ds_long_ttl %>%
     N = n(),
     .groups = 'drop') %>% 
   mutate(subgroup_cat = case_when(subgroup %in% num_v1 ~ "Mean (Range)",
-                                  subgroup %in% num_v2 ~ "Mean $\\pm$ SD"))
+                                  subgroup %in% num_v2 ~ "Mean $\\pm$ SD"),
+         subgroup=ifelse(subgroup=="Age", "Age65C", subgroup))
 
 char_lev <- c("Age $<$ 65", "Age $\\geq$ 65", "Mean (Range)","Mean $\\pm$ SD",
               "Female","Male","White Non-Hispanic ","Black or African American",
@@ -367,10 +353,7 @@ char_lev <- c("Age $<$ 65", "Age $\\geq$ 65", "Mean (Range)","Mean $\\pm$ SD",
               "Age $<$ 65 At-risk","Age $<$ 65 Not at-risk", "Age $\\geq$ 65 ")
 
 
-tab_dm <- full_join(dm_cat, dm_num,
-  by = c("Day", "Baseline SARS-CoV-2", "Arm", "subgroup", 
-         "subgroup_cat", "N", "rslt1", "rslt2")
-) %>%
+tab_dm <- bind_rows(dm_cat, dm_num) %>%
   mutate(rslt = case_when(subgroup %in% cat_v ~ rslt1,
                           subgroup %in% num_v1 ~ rslt1,
                           subgroup %in% num_v2 ~ rslt2)) %>%
@@ -385,8 +368,9 @@ tab_dm <- full_join(dm_cat, dm_num,
               names_from = Arm,
               names_sort = T,
               values_from = c(rslt)) %>%
-  mutate(Characteristics = factor(subgroup_cat, levels=char_lev)) %>%
-  arrange(Day, `Baseline SARS-CoV-2`, Characteristics)
+  mutate(Characteristics = factor(subgroup_cat, levels=char_lev), 
+         subgroup=factor(subgroup, subgrp)) %>%
+  arrange(Day, `Baseline SARS-CoV-2`, subgroup, Characteristics)
 
 tab_dm_pos <- tab_dm %>% 
   dplyr::filter(`Baseline SARS-CoV-2` == "Positive" & Day == 57) %>% 
@@ -456,12 +440,12 @@ print("Done with table 2 & 3")
 if(has29){
   corr.design2 <- twophase(list(~Ptid, ~Ptid), 
                            strata=list(NULL, ~ Wstratum),
-                           weights=list(NULL, ~ wt),
-                           subset= ~ corrset1,
+                           weights=list(NULL, ~ wt.2),
+                           subset= ~ corrset2,
                            method="simple",
                            data=subset(ds, cohort2))
   
-  rpcnt_case2 <- get_rr(ds, resp.v, subs, sub.by, design=corr.design2, "wt", "corrset2")
+  rpcnt_case2 <- get_rr(ds, resp.v, subs, sub.by, design=corr.design2, "wt.2", "corrset2")
   rgm_case2 <- get_gm(ds, gm.v, subs, sub.by, design=corr.design2, "corrset2")
   rgmt_case2 <- get_rgmt(ds, gm.v, subs, comp_lev=comp_i, sub.by, "Wstratum", "wt.2", "corrset2")
 

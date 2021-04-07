@@ -103,7 +103,7 @@ include_graphics(here(
 \clearpage
 ### Baseline SARS-CoV-2 Positive
 
-```{r, fig.cap = "Pair plots of D29 Ab markers: baseline negative vaccine arm", eval = ('Day29' %in% times)}
+```{r, fig.cap = "Pair plots of D29 Ab markers: baseline positive vaccine arm", eval = ('Day29' %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0(
@@ -114,7 +114,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "Pair plots of D57 Ab markers: baseline negative vaccine arm", eval = ('Day57' %in% times)}
+```{r, fig.cap = "Pair plots of D57 Ab markers: baseline positive vaccine arm", eval = ('Day57' %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0(
@@ -125,7 +125,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "Pair plots of D29 fold-rise over D1 Ab markers: baseline negative vaccine arm", eval = ('Delta29overB' %in% times)}
+```{r, fig.cap = "Pair plots of D29 fold-rise over D1 Ab markers: baseline positive vaccine arm", eval = ('Delta29overB' %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0(
@@ -136,7 +136,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "Pair plots of D57 fold-rise over D1 Ab markers: baseline negative vaccine arm", eval = ('Delta57overB' %in% times)}
+```{r, fig.cap = "Pair plots of D57 fold-rise over D1 Ab markers: baseline positive vaccine arm", eval = ('Delta57overB' %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0(
@@ -146,7 +146,7 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "Pair plots of D1, D29 and D57 Binding Antibody to Spike: baseline negative vaccine arm", eval = (all(c('B', 'Day29', 'Day57') %in% times) & 'bindSpike' %in% assays)}
+```{r, fig.cap = "Pair plots of D1, D29 and D57 Binding Antibody to Spike: baseline positive vaccine arm", eval = (all(c('B', 'Day29', 'Day57') %in% times) & 'bindSpike' %in% assays)}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0(
@@ -157,7 +157,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "Pair plots of D1, D29 and D57 Binding Antibody to RBD: baseline negative vaccine arm", eval = (all(c('B', 'Day29', 'Day57') %in% times) & 'bindRBD' %in% assays)}
+```{r, fig.cap = "Pair plots of D1, D29 and D57 Binding Antibody to RBD: baseline positive vaccine arm", eval = (all(c('B', 'Day29', 'Day57') %in% times) & 'bindRBD' %in% assays)}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0(
@@ -168,7 +168,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "Pair plots of D1, D29 and D57 PsV Neutralization 50\\% Titer: baseline negative vaccine arm", eval = (all(c('B', 'Day29', 'Day57') %in% times) & 'pseudoneutid50' %in% assays)}
+```{r, fig.cap = "Pair plots of D1, D29 and D57 PsV Neutralization 50\\% Titer: baseline positive vaccine arm", eval = (all(c('B', 'Day29', 'Day57') %in% times) & 'pseudoneutid50' %in% assays)}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0(
@@ -179,7 +179,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "Pair plots of D1, D29 and D57 PsV Neutralization 80\\% Titer: Baseline negative vaccine arm", eval = (all(c('B', 'Day29', 'Day57') %in% times) & 'pseudoneutid80' %in% assays)}
+```{r, fig.cap = "Pair plots of D1, D29 and D57 PsV Neutralization 80\\% Titer: Baseline positive vaccine arm", eval = (all(c('B', 'Day29', 'Day57') %in% times) & 'pseudoneutid80' %in% assays)}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0(

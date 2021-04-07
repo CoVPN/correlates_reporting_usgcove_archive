@@ -48,16 +48,17 @@ name_grid <- expand.grid(
   cc = c("", "CPV", paste(".imp", 1:10, sep = ""))
 )
 
-dat.long.assay_value.names <- paste(name_grid$aa, name_grid$cc, sep = "")
+
+dat.long.assay_value.names <- times
 dat.long.assay_value <- as.data.frame(matrix(
   nrow = nrow(dat) * length(assays),
   ncol = length(dat.long.assay_value.names)
 ))
 colnames(dat.long.assay_value) <- dat.long.assay_value.names
 
-for (ii in 1:nrow(name_grid)) {
-  dat_mock_col_names <- paste(name_grid$aa[ii], assays, name_grid$cc[ii], sep = "")
-  dat.long.assay_value[, dat.long.assay_value.names[ii]] <- unlist(lapply(
+for (tt in seq_along(times)) {
+  dat_mock_col_names <- paste(times[tt], assays, sep = "")
+  dat.long.assay_value[, dat.long.assay_value.names[tt]] <- unlist(lapply(
     dat_mock_col_names,
     function(nn) {
       if (nn %in% colnames(dat)) {
@@ -145,7 +146,7 @@ dat.long.cor.subset$age_geq_65_label <-
     dat.long.cor.subset,
     factor(age.geq.65,
            levels = c(0, 1),
-           labels = c("Age >= 65", "Age < 65")
+           labels = c("Age < 65", "Age >= 65")
     )
   )
 
@@ -176,7 +177,7 @@ dat.long.cor.subset$sex_label <-
   with(
     dat.long.cor.subset,
     factor(Sex,
-           levels = c(0, 1),
+           levels = c(1, 0),
            labels = c("Female", "Male")
     )
   )
@@ -307,6 +308,8 @@ saveRDS(plot.25sample3, file = here("data_clean", "plot.25sample3.rds"))
 
 
 
+dat.long.cor.subset$Ptid <- as.character(dat.long.cor.subset$Ptid) 
+dat.cor.subset$Ptid <- as.character(dat.cor.subset$Ptid) 
 
 
 saveRDS(as.data.frame(dat.long.cor.subset),

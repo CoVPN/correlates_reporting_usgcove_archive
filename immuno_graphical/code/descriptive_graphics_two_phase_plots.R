@@ -349,7 +349,7 @@ if(all(c("B", "Day29", "Day57") %in% times)){
       } else {
         sample(xx$Ptid, 20)  ## sample 20 vaccine recipients
       }
-    }) %>% unlist %>% as.numeric
+    }) %>% unlist %>% as.character
 
   spaghetti_dat <- dat.long.twophase.sample[, c("Ptid", "Bserostatus", "Trt", 
                                                 "B", "Day29", "Day57", "assay")] %>%

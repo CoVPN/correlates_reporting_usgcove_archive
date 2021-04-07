@@ -92,101 +92,103 @@ setDelta <- function(data, marker, timepoints, time.ref = NA) {
 
 #' Wrapper function to generate response rates based on svyciprop()
 #'
-#' @param x The dataframe used for the svydesign() data argument
-#' @param sug_grp_col A formula specifying factors that define subsets to run the model, used for svyby() by argument
-#' @param stratum The stratum used for svydesign()
-#' @param weights The weights used for svydesign()
-get_rr <- function(x, weights, stratum, sub_grp_col){
-  cat("TableRR of ", paste(mutate_at(x, sub_grp_col, as.character) %>% 
-                            distinct_at(sub_grp_col) , collapse = ", "),
-      "\n")
-  if (nrow(x)>1) {
-    ret <- svyciprop(~ response, svydesign(ids = ~ Ptid, 
-                                           strata = as.formula(sprintf("~%s", stratum)),
-                                           weights = as.formula(sprintf("~%s", weights)),
-                                           data = x))
-    ret <- x %>% 
-      distinct_at(sub_grp_col) %>% 
-      mutate(response = ret['response'], 
-             ci_l = attributes(ret)$ci['2.5%'], 
-             ci_u = attributes(ret)$ci['97.5%'])
-  } else{
-    ret <- x %>% 
-      mutate(ci_l = NaN, 
-             ci_u = NaN) %>% 
-      distinct_at(c(sub_grp_col, "response", "ci_l", "ci_u"))
+get_rr <- function(dat, v, subs, sub.by, design, weights, subset){
+  rpcnt <- NULL
+  for (i in v){
+    for (j in subs){
+      cat(i,"--",j,"\n")
+      ret <- svyby(as.formula(sprintf("~%s", i)),
+                   by=as.formula(sprintf("~%s", paste(c(j, sub.by), collapse="+"))),
+                   design=design,
+                   svyciprop, vartype="ci", na.rm=T)
+      
+      retn <- dat %>%
+        dplyr::filter(!!as.name(subset) & !is.na(!!as.name(i))) %>%
+        mutate(rspndr =!!as.name(i)*!!as.name(weights)) %>%
+        group_by_at(gsub("`", "", c(j, sub.by))) %>%
+        summarise(N=n(), Nw=round(sum(!!as.name(weights)),1), rspndr= round(sum(rspndr),1), .groups="drop")
+      
+      rpcnt <- bind_rows(
+        inner_join(ret, retn, by = c(j, gsub("`", "", sub.by))) %>%
+          rename(response=!!as.name(i), Group=!!as.name(j)) %>% 
+          mutate(subgroup=!!j, resp_cat=!!i,
+                 rslt = ifelse(is.na(ci_l)|is.na(ci_u),
+                               sprintf("%s/%s = %.1f%%", rspndr, Nw, response*100),
+                               sprintf("%s/%s = %.1f%%\n(%.1f%%, %.1f%%)",
+                                       rspndr, Nw, response*100, ci_l*100, ci_u*100))),
+        rpcnt)
+    }
   }
-  ret
+  rpcnt <- inner_join(rpcnt, distinct(labels_all, resp_cat, Visit, Marker, Ind), by = "resp_cat")
+  return(rpcnt)
 }
-
-
 
 #' Wrapper function to generate ratio of geometric mean based on svymean()
 #'
-#' @param x The dataframe used for the svydesign() data argument
-#' @param sug_grp_col A formula specifying factors that define subsets to run the model, used for svyby() by argument
-#' @param stratum The stratum used for svydesign()
-#' @param weights The weights used for svydesign()
-get_gm <- function(x, weights, stratum, sub_grp_col){
-  cat("TableGM of ", paste(mutate_at(x, sub_grp_col, as.character) %>% 
-                             distinct_at(sub_grp_col) , collapse = ", "),
-      "\n")
-  if (nrow(x)>1) {
-    ret <- svymean(~ mag, svydesign(ids = ~ Ptid, 
-                                           strata = as.formula(sprintf("~%s", stratum)),
-                                           weights = as.formula(sprintf("~%s", weights)),
-                                           data = x))
-    ret <- x %>% 
-      distinct_at(sub_grp_col) %>% 
-      mutate(mag = ret['mag'], 
-             ci_l = confint(ret)[,'2.5 %'], 
-             ci_u = confint(ret)[,'97.5 %'])
-  } else{
-    ret <- x %>% 
-      mutate(mag = mag, 
-             ci_l = mag, 
-             ci_u = mag) %>% 
-      distinct_at(c(sub_grp_col, "mag", "ci_l", "ci_u"))
+get_gm <- function(dat, v, subs, sub.by, design, subset){
+  rgm <- NULL
+  for (i in v){
+    for (j in subs){
+      cat(i,"--",j,"\n")
+      ret <- svyby(as.formula(sprintf("~%s", i)),
+                   by=as.formula(sprintf("~%s", paste(c(j, sub.by), collapse="+"))),
+                   design=design,
+                   svymean, vartype="ci", na.rm=T)
+      
+      retn <- dat %>%
+        dplyr::filter(!!as.name(subset) & !is.na(!!as.name(i))) %>%
+        group_by_at(gsub("`", "", c(j, sub.by))) %>%
+        summarise(N=n(), .groups="drop")
+      
+      rgm <- bind_rows( 
+        inner_join(ret, retn, by = gsub("`", "", c(j, sub.by))) %>% 
+          rename(mag=!!as.name(i), Group=!!as.name(j)) %>% 
+          mutate(subgroup=!!j, mag_cat=!!i,
+                 `GMT/GMC`= sprintf("%.0f\n(%.0f, %.0f)", 10^mag, 10^ci_l, 10^ci_u)),
+        rgm)
+      
+    }
   }
-  ret
+  rgm <- inner_join(rgm, distinct(labels_all, mag_cat, Visit, Marker), by = "mag_cat") 
+  return(rgm)
 }
 
 #' Wrapper function to generate ratio of geometric magnitude based on svyglm()
 #'
-#' @param x The dataframe used for the svydesign() data argument
-#' @param comp_v The covariate for comparison
-#' @param f_v The model formula used for svyglm()
-#' @param sug_grp_col A formula specifying factors that define subsets to run the model, used for svyby() by argument
-#' @param stratum The stratum used for svydesign()
-#' @param weights The weights used for svydesign()
-get_rgmt <- function(comp_v, comp_lev=NULL, f_v, sub_grp_col, stratum, weights, x) {
-  cat("Table of ", paste(mutate_at(x, sub_grp_col, as.character) %>% 
-                           distinct_at(sub_grp_col) , collapse = ", "),
-      "\n")
-
-  x <- data.frame(x, check.names = F)
-  comp_i <- unique(sort(x[, comp_v]))
-  if(is.null(comp_lev)) comp_lev <- comp_i
-  x[, comp_v] <- factor(x[, comp_v], levels = comp_lev)
-  comp <- paste(comp_lev, collapse = " vs ")
-  contrasts(x[, comp_v]) <- contr.treatment(2, base = 2)
-    
-  svy <- svydesign(ids = ~ Ptid, 
-                   strata = as.formula(paste0("~", stratum)),
-                   weights = as.formula(paste0("~", weights)),
-                   data = x)
-    
-  rslt <- svyglm(f_v, design = svy)
-  ret <- x %>% 
-    mutate(comp = !!comp) %>% 
-    distinct_at(c("comp", sub_grp_col)) %>% 
-    mutate(Estimate = rslt$coefficients[2], 
-           ci_l = confint(rslt)[2, "2.5 %"],
-           ci_u = confint(rslt)[2, "97.5 %"])
-  
-  return(ret)
+get_rgmt <- function(dat, v, groups, comp_lev, sub.by, strata, weights, subset){
+  rgmt <- NULL
+  for (j in groups){
+    comp_i <- comp_lev[comp_lev %in% dat[, gsub("`","",j)]]
+    dat[, gsub("`","",j)] <- factor(dat[, gsub("`","",j)], levels = comp_i)
+    contrasts(dat[, gsub("`","",j)]) <- contr.treatment(2, base = 2)
+  }
+  design <- twophase(list(~Ptid, ~Ptid), 
+                     strata=list(NULL, as.formula(sprintf("~%s", strata))),
+                     weights=list(NULL, as.formula(sprintf("~%s", weights))),
+                     subset=as.formula(sprintf("~%s", subset)),
+                     method="simple",
+                     data=dat)
+  for (j in groups){
+    for (i in v){
+      comp_i <- paste(comp_lev[comp_lev %in% dat[, gsub("`","",j)]], collapse=" vs ")
+      cat(i,"--",j, comp_i, "\n")
+      ret <- svyby(as.formula(sprintf("%s~%s", i, j)),
+                   by=as.formula(sprintf("~%s", paste(sub.by, collapse="+"))),
+                   design=design,
+                   svyglm, vartype="ci")
+      
+      rgmt <- bind_rows(
+        ret %>% 
+          rename_all(gsub, pattern=paste0(j, 1), replacement="Estimate", fixed=T) %>%
+          mutate(subgroup=gsub("`","",!!j), mag_cat=!!i, comp=!!comp_i,  
+                 `Ratios of GMT/GMC` = sprintf("%.2f\n(%.2f, %.2f)", 
+                                               10^Estimate, 10^ci_l.Estimate, 10^ci_u.Estimate)),
+        rgmt)
+    }
+  }
+  rgmt <- inner_join(rgmt, distinct(labels_all, mag_cat, Visit, Marker), by="mag_cat")
+  return(rgmt)
 }
-
 
 #' Function to remove duplicate key rows from table outputs.
 #'

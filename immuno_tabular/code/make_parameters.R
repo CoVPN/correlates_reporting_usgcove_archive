@@ -47,7 +47,7 @@ tlf <-
     
     tab_bind = list(
       table_header = "Percentage of responders, and participants
-      with concentrations $\\geq 2\\times LLODor\\geq 4\\times$ LLOD for binding antibody
+      with concentrations $\\geq 2\\times$ LLOD or $\\geq 4\\times$ LLOD for binding antibody
       markers",
       table_footer = c(
         "Binding Antibody Responders are defined as participants who had
@@ -98,7 +98,7 @@ tlf <-
       pack_row = "subgroup"
     ),
     
-    tab_gmt = list(
+    tab_gm = list(
       table_header = "Geometric mean titers (GMTs) and geometric mean
       concentrations (GMCs)",
       table_footer = "",
@@ -116,24 +116,30 @@ tlf <-
       loop = "subgroup",
       group_table_col = c("Rx", "Group", "Baseline", "Visit", "N", "Marker"),
       deselect = "subgroup",
-      pack_row = "subgroup"
+      pack_row = "subgroup",
+      col1="4cm"
     ),
     
     tab_rgmt = list(
       table_header = "The ratios of GMTs/GMCs between groups",
       table_footer = " ",
+      loop = "subgroup",
+      pack_row = "subgroup",
       deselect = "subgroup",
-      group_table_col = c("subgroup","Rx", "Baseline", "Visit")
+      group_table_col = c("subgroup","Rx", "Baseline", "Visit"),
+      col1="4cm"
     ),
     
     tab_rrdiff = list(
       table_header = "Differences in the responder rates, 2FRs, 4FRs between 
-      the vaccine arm and the placebo arm",
+      the groups",
       table_footer = "Percentages are calculated for the whole per-protocol 
       group/subgroup, using inverse probability weighting.",
       loop = "subgroup",
+      pack_row = "subgroup",
       group_table_col = c( "Group", "Baseline","Visit", "Marker"),
-      deselect = "subgroup"
+      deselect = "subgroup",
+      col1="4cm"
     ),
     
     

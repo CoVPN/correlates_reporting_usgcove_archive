@@ -66,6 +66,11 @@ maxVar <- max(20, floor(np / 20))
 # Remove any risk_vars that have fewer than 10 1s
 dat.ph1 <- drop_riskVars_with_fewer_1s(dat.ph1, risk_vars)
 
+# Update risk_vars
+risk_vars <- dat.ph1 %>%
+  select(-Ptid, -Trt, -all_of(endpoint)) %>%
+  colnames()
+
 # Remove any risk_vars with more than 5% missing values. Impute the missing
 # values for other risk variables using mice package!
 dat.ph1 <- drop_riskVars_with_high_total_missing_values(dat.ph1, risk_vars)

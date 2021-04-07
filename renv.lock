@@ -511,10 +511,10 @@
     },
     "cpp11": {
       "Package": "cpp11",
-      "Version": "0.2.6",
+      "Version": "0.2.7",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "f08909ebdad90b19d8d3930da4220564"
+      "Hash": "730eebcc741a5c36761f7d4d0f5e37b8"
     },
     "crayon": {
       "Package": "crayon",
@@ -1711,12 +1711,12 @@
       "Version": "1.4.3",
       "Source": "GitHub",
       "RemoteType": "github",
-      "RemoteUsername": "tlverse",
-      "RemoteRepo": "sl3",
-      "RemoteRef": "devel",
-      "RemoteSha": "9b76e9de8aa6746340eb80cc9f4898f5ea02283f",
       "RemoteHost": "api.github.com",
-      "Hash": "bdd90673fd421e88560307bdea091ef9"
+      "RemoteRepo": "sl3",
+      "RemoteUsername": "tlverse",
+      "RemoteRef": "devel",
+      "RemoteSha": "ed37c3302cf82a8f6564028c2a052ecb45c46a3e",
+      "Hash": "07101889ad3ed0624000075cafe674a3"
     },
     "sp": {
       "Package": "sp",

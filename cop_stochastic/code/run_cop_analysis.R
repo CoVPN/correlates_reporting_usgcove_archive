@@ -18,18 +18,39 @@ library(txshift)
 sl3_debug_mode()
 options(sl3.pcontinuous = 0)
 conflict_prefer("filter", "dplyr")
-plan(multicore, workers = 4L)
+
+# load data
+data_name_amended <- paste0(str_remove(data_name, ".csv"),
+                            "_with_riskscore.csv")
+data_name_check <- file.exists(here("..", "data_clean", data_name_amended))
 
 # run helper scripts
 source(here("code", "params.R"))
 source(here("code", "sl_lrnr_libs.R"))
+source(here("code", "sve_utils.R"))
+
+# parallelization
+plan(multicore, workers = as.integer(availableCores() - 2))
+
+# add risk score to covariates list if defined
+if (data_name_check) {
+  covariates <- c(covariates, "risk_score")
+}
 
 # use faster SL library for testing?
-if (run_forrest_run) {
-  sl_learner_regression <- Lrnr_sl$new(
-    learners = list(mean_lrnr, glm_lrnr),
-    metalearner = logistic_metalearner
+if (run_fast) {
+  # simplify learner libraries for outcome and conditional density models
+  sl_lrnr_reg <- Lrnr_sl$new(
+    learners = list(mean_lrnr, glm_lrnr, bayesglm_lrnr),
+    metalearner = discrete_metalrnr
   )
+  sl_lrnr_dens <- Lrnr_sl$new(
+    learners = list(hose_glm_lrnr, hose_hal_lrnr),
+    metalearner = Lrnr_solnp_density$new()
+  )
+
+  # smaller grid of shift values
+  delta_grid <- seq(-2, 2, 1)
 }
 
 # run analysis for each marker at each time
@@ -60,20 +81,20 @@ lapply(markers, function(marker) {
     weighting = "identity",
     ci_level = 0.95,
     ci_type = "marginal",
-    # arguments passed to txshift()
+    # NOTE: arguments passed through to txshift()
     samp_fit_args = list(
-      fit_type = "glm"
+      fit_type = "external"
     ),
     g_exp_fit_args = list(
       fit_type = "sl",
-      sl_learners_density = hose_hal_lrnr
+      sl_learners_density = sl_lrnr_dens
     ),
     Q_fit_args = list(
       fit_type = "sl",
-      #sl_learners = Lrnr_glm$new()
-      sl_learners = sl_learner_regression
+      sl_learners = sl_lrnr_reg
     ),
-    eif_reg_type = "hal"
+    # NOTE: need to pass in sampling probabilities, not weights
+    samp_fit_ext = 1 / data_est$samp_wts
   )
 
   # save CoP risk results
@@ -86,7 +107,7 @@ lapply(markers, function(marker) {
   mcop_sve_msm <- sve_transform(
     mcop_risk_msm,
     data_full,
-    weighting_type = "variance"
+    weighting = "identity"
   )
 
   # save CoP SVE results

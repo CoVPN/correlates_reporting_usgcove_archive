@@ -1,85 +1,149 @@
-# SL learners for outcome regression
+# SL regression learners for outcome mechanism
+## "simpler" learners: mean, GLMs, regularized regression, regression splines
 mean_lrnr <- Lrnr_mean$new()
 glm_lrnr <- Lrnr_glm$new()
+bayesglm_lrnr <- Lrnr_bayesglm$new()
 ridge_lrnr <- Lrnr_glmnet$new(alpha = 0, nfolds = 3)
 lasso_lrnr <- Lrnr_glmnet$new(alpha = 1, nfolds = 3)
-enet_lrnr_reg25 <- Lrnr_glmnet$new(alpha = 0.25, nfolds = 3)
-enet_lrnr_reg50 <- Lrnr_glmnet$new(alpha = 0.50, nfolds = 3)
-enet_lrnr_reg75 <- Lrnr_glmnet$new(alpha = 0.75, nfolds = 3)
-ranger_lrnr_base <- Lrnr_ranger$new()
-ranger_lrnr_ntrees50 <- Lrnr_ranger$new(num.trees = 50)
-ranger_lrnr_ntrees100 <- Lrnr_ranger$new(num.trees = 100)
-ranger_lrnr_ntrees500 <- Lrnr_ranger$new(num.trees = 500)
-xgb_lrnr_base <- Lrnr_xgboost$new()
-xgb50_lrnr <- Lrnr_xgboost$new(nrounds = 50)
-xgb100_lrnr <- Lrnr_xgboost$new(nrounds = 100)
-xgb300_lrnr <- Lrnr_xgboost$new(nrounds = 300)
-hal_lrnr_base <- Lrnr_hal9001$new(fit_type = "glmnet",
-                                  family = "binomial",
-                                  n_folds = 3,
-                                  standardize = FALSE)
-hal_lrnr_custom <- Lrnr_hal9001$new(fit_type = "glmnet",
-                                    family = "gaussian",
-                                    n_folds = 3,
-                                    standardize = FALSE,
-                                    lambda.min.ratio = 0.0001)
-earth_sl_lrnr <- make_learner(Lrnr_pkg_SuperLearner, "SL.earth")
-polymars_sl_lrnr <- make_learner(Lrnr_pkg_SuperLearner, "SL.polymars")
-nnet_sl_lrnr <- make_learner(Lrnr_pkg_SuperLearner, "SL.nnet")
-bayesglm_sl_lrnr <- make_learner(Lrnr_pkg_SuperLearner, "SL.bayesglm")
+enet_lrnr <- Lrnr_glmnet$new(alpha = 0.50, nfolds = 3)
+earth_lrnr <- Lrnr_earth$new()
+## "fancier" machine learners: ranger, LightGBM, Xgboost
+ranger_ntrees100_lrnr <- Lrnr_ranger$new(num.trees = 100)
+ranger_ntrees500_lrnr <- Lrnr_ranger$new(num.trees = 500)
+### an Xgboost grid for "true" SL
+xgb_tune_grid <- list(
+  max_depth = c(3, 6),
+  eta = c(0.01, 0.1, 0.3),
+  #gamma = c(0.05, 0.25, 0.75),
+  nrounds = c(20, 100)
+)
+xgb_tune_grid <- expand.grid(xgb_tune_grid, KEEP.OUT.ATTRS = FALSE)
+xgb_lrnr_list <- apply(xgb_tune_grid, MARGIN = 1, function(tuning_params) {
+  do.call(Lrnr_xgboost$new, as.list(tuning_params))
+})
+### a LightGBM grid for "true" SL
+lgb_tune_grid <- list(
+  bagging_fraction = 0.8,
+  learning_rate = c(0.01, 0.1, 0.5),
+  boosting = c("gbdt", "dart"),
+  num_iterations = c(10, 50)
+)
+lgb_tune_grid <- expand.grid(lgb_tune_grid, KEEP.OUT.ATTRS = FALSE)
+lgb_lrnr_list <- apply(lgb_tune_grid, MARGIN = 1, function(tuning_params) {
+  do.call(Lrnr_lightgbm$new, as.list(tuning_params))
+})
+## ...and one machine learning algorithm to rule them all...
+hal_lrnr_faster <- Lrnr_hal9001$new(
+  fit_type = "glmnet",
+  family = "binomial",
+  max_degree = 2,
+  n_folds = 3,
+  reduce_basis = 0.05,
+  standardize = FALSE
+)
+hal_lrnr_deeper <- Lrnr_hal9001$new(
+  fit_type = "glmnet",
+  family = "gaussian",
+  max_degree = 3,
+  n_folds = 3,
+  reduce_basis = 0.2,
+  standardize = FALSE,
+  lambda.min.ratio = 0.0001
+)
 
-# meta-learner to ensure predicted probabilities do not go outside [0,1]
-logistic_metalearner <- make_learner(Lrnr_solnp, metalearner_logistic_binomial,
-                                     loss_loglik_binomial)
+# SL screeners, always including baseline COVID-19 exposure risk score
+screen_lgb <- Lrnr_screener_augment$new(
+  Lrnr_screener_importance$new(
+    learner = lgb_lrnr_list[[12]],
+    num_screen = 2
+  ),
+  default_covariates = "risk_score"
+)
+screen_coefs_glm <- Lrnr_screener_augment$new(
+  Lrnr_screener_coefs$new(
+    learner = glm_lrnr
+  ),
+  default_covariates = "risk_score"
+)
+screen_coefs_ridge <- Lrnr_screener_augment$new(
+  Lrnr_screener_coefs$new(
+    learner = ridge_lrnr,
+    min_screen = 2
+  ),
+  default_covariates = "risk_score"
+)
 
 # SL learners for fitting the generalized propensity score fit
 hose_glm_lrnr <- Lrnr_density_semiparametric$new(
-    mean_learner = glm_lrnr
-  )
+  mean_learner = glm_lrnr
+)
 hese_glm_lrnr <- Lrnr_density_semiparametric$new(
   mean_learner = glm_lrnr,
   var_learner = glm_lrnr
 )
 hose_rf_lrnr <- Lrnr_density_semiparametric$new(
-    mean_learner = ranger_lrnr_ntrees500
-  )
+  mean_learner = ranger_ntrees500_lrnr
+)
 hese_rf_lrnr <- Lrnr_density_semiparametric$new(
-  mean_learner = ranger_lrnr_ntrees500,
-  var_learner = glm_lrnr
+  mean_learner = ranger_ntrees500_lrnr,
+  var_learner = ranger_ntrees100_lrnr
 )
-hose_xgb_lrnr <- Lrnr_density_semiparametric$new(
-  mean_learner = xgb100_lrnr
+hose_lgb_lrnr <- Lrnr_density_semiparametric$new(
+  mean_learner = lgb_lrnr_list[[5]]
 )
-hese_xgb_lrnr <- Lrnr_density_semiparametric$new(
-  mean_learner = xgb100_lrnr,
-  var_learner = glm_lrnr
+hese_lgb_lrnr <- Lrnr_density_semiparametric$new(
+  mean_learner = lgb_lrnr_list[[5]],
+  var_learner = lgb_lrnr_list[[5]]
 )
 hose_hal_lrnr <- Lrnr_density_semiparametric$new(
-  mean_learner = hal_lrnr_custom
+  mean_learner = hal_lrnr_deeper
 )
 hese_hal_lrnr <- Lrnr_density_semiparametric$new(
-  mean_learner = hal_lrnr_custom,
-  var_learner = hal_lrnr_custom
+  mean_learner = hal_lrnr_deeper,
+  var_learner = hal_lrnr_deeper
 )
 
-# setup SL libraries g_A and Q_Y
-sl_learner_regression <- Lrnr_sl$new(
-  learners = list(mean_lrnr,
-                  ranger_lrnr_base,
-                  ranger_lrnr_ntrees50,
-                  ranger_lrnr_ntrees100,
-                  xgb_lrnr_base,
-                  xgb50_lrnr,
-                  xgb100_lrnr,
-                  xgb300_lrnr,
-                  bayesglm_sl_lrnr,
-                  hal_lrnr_base,
-                  hal_lrnr_custom,
-                  glm_lrnr),
-  metalearner = logistic_metalearner
+# meta-learners: (1) predicted probabilities inside [0,1], (2) discrete SL
+logistic_metalrnr <- Lrnr_solnp$new(
+  metalearner_logistic_binomial,
+  loss_loglik_binomial
+)
+discrete_metalrnr <- Lrnr_cv_selector$new()
+
+# screening pipelines added to a subset of the algorithms
+lrnrs_to_screen <- Stack$new(
+  mean_lrnr, glm_lrnr, bayesglm_lrnr, earth_lrnr, hal_lrnr_deeper
+)
+stack_screen_lgb <- Pipeline$new(screen_lgb, lrnrs_to_screen)
+stack_screen_glm <- Pipeline$new(screen_coefs_glm, lrnrs_to_screen)
+stack_screen_ridge <- Pipeline$new(screen_coefs_ridge, lrnrs_to_screen)
+
+# setup SL library for outcome regression
+sl_lrnr_reg <- Lrnr_sl$new(
+  learners = unlist(
+    list(
+      mean_lrnr,
+      glm_lrnr,
+      bayesglm_lrnr,
+      earth_lrnr,
+      lasso_lrnr,
+      ridge_lrnr,
+      enet_lrnr,
+      ranger_ntrees100_lrnr,
+      ranger_ntrees500_lrnr,
+      #xgb_lrnr_list,
+      lgb_lrnr_list,
+      hal_lrnr_faster,
+      stack_screen_lgb,
+      stack_screen_glm,
+      stack_screen_ridge
+    ), recursive = TRUE),
+  metalearner = logistic_metalrnr
 )
 
-sl_learner_density <- Lrnr_sl$new(
-  learners = list(hose_glm_lrnr, hose_hal_lrnr),
+# setup SL library for conditional density estimation for propensity score
+sl_lrnr_dens <- Lrnr_sl$new(
+    learners = list(hose_glm_lrnr, hose_rf_lrnr, hose_lgb_lrnr, hose_hal_lrnr,
+                    hese_glm_lrnr, hese_rf_lrnr, hese_lgb_lrnr, hese_hal_lrnr),
   metalearner = Lrnr_solnp_density$new()
 )

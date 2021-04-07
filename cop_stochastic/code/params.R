@@ -31,7 +31,7 @@ marker_to_name <- list(
 )
 
 # analysis with more minimal super learner library
-run_forrest_run <- TRUE
+run_fast <- TRUE
 
 # baseline covariates to adjust for
 covariates <- c("MinorityInd", "Age", "HighRiskInd")

@@ -190,29 +190,6 @@ original.dat.long.twophase.sample <- read.csv(
 
 ```
 
-```{r echo=FALSE}
-
-verification.dat.long.twophase.sample$B <- signif(verification.dat.long.twophase.sample$B, 5)
-verification.dat.long.twophase.sample$Day29 <- signif(verification.dat.long.twophase.sample$Day29, 5)
-verification.dat.long.twophase.sample$Day57 <- signif(verification.dat.long.twophase.sample$Day57, 5)
-verification.dat.long.twophase.sample$Delta57overB <- signif(verification.dat.long.twophase.sample$Delta57overB, 5)
-verification.dat.long.twophase.sample$Delta29overB <- signif(verification.dat.long.twophase.sample$Delta29overB, 5)
-verification.dat.long.twophase.sample$Delta57over29 <- signif(verification.dat.long.twophase.sample$Delta57over29, 5)
-verification.dat.long.twophase.sample$wt <- signif(verification.dat.long.twophase.sample$wt, 5)
-verification.dat.long.twophase.sample$wt.2 <- signif(verification.dat.long.twophase.sample$wt.2, 5)
-verification.dat.long.twophase.sample$wt.subcohort <- signif(verification.dat.long.twophase.sample$wt.subcohort, 5)
-
-original.dat.long.twophase.sample$B <- signif(original.dat.long.twophase.sample$B, 5)
-original.dat.long.twophase.sample$Day29 <- signif(original.dat.long.twophase.sample$Day29, 5)
-original.dat.long.twophase.sample$Day57 <- signif(original.dat.long.twophase.sample$Day57, 5)
-original.dat.long.twophase.sample$Delta57overB <- signif(original.dat.long.twophase.sample$Delta57overB, 5)
-original.dat.long.twophase.sample$Delta29overB <- signif(original.dat.long.twophase.sample$Delta29overB, 5)
-original.dat.long.twophase.sample$Delta57over29 <- signif(original.dat.long.twophase.sample$Delta57over29, 5)
-original.dat.long.twophase.sample$wt <- signif(original.dat.long.twophase.sample$wt, 5)
-original.dat.long.twophase.sample$wt.2 <- signif(original.dat.long.twophase.sample$wt.2, 5)
-original.dat.long.twophase.sample$wt.subcohort <- signif(original.dat.long.twophase.sample$wt.subcohort, 5)
-
-```
 
 ### Verification
 

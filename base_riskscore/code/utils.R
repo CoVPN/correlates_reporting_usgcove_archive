@@ -253,14 +253,14 @@ run_cv_sl_once <- function(seed = 1, Y = NULL, X_mat = NULL,
 }
 
 ##########################################################################################################
-# remove any binary risk variables with fewer than 10 ptids that have a 1 for that variable
+# remove any binary risk variables with fewer than 10 ptids that have a 0 or 1 for that variable
 # @param dat the phase 1 dataset
 # @param risk_vars the vector of column names of risk variables
-# @return a data frame upon removal of any binary risk variables with fewer than 10 ptids that have a 1 for that variable
-drop_riskVars_with_fewer_1s <- function(dat, risk_vars) {
+# @return a data frame upon removal of any binary risk variables with fewer than 10 ptids that have a 0 or 1 for that variable
+drop_riskVars_with_fewer_0s_or_1s <- function(dat, risk_vars) {
   for (i in 1:length(risk_vars)) {
     if ((dat %>% select(matches(risk_vars[i])) %>% unique() %>% dim())[1] == 2) {
-      if (dim(dat %>% filter(get(risk_vars[i]) == 1))[1] < 10) {
+      if ((dim(dat %>% filter(get(risk_vars[i]) == 1))[1] < 10) | (dim(dat %>% filter(get(risk_vars[i]) == 0))[1] < 10)){
         dat <- dat %>% select(-matches(risk_vars[i]))
       }
     }

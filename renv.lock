@@ -240,13 +240,6 @@
       "Repository": "CRAN",
       "Hash": "516a3e2104cf2eace9f5d2ad5c7badb3"
     },
-    "arm": {
-      "Package": "arm",
-      "Version": "1.11-2",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "21b26dbe61da18158451c105decd10d8"
-    },
     "askpass": {
       "Package": "askpass",
       "Version": "1.1",
@@ -445,13 +438,6 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "5ea8f54741ff907e2c0b5efabc9de729"
-    },
-    "coda": {
-      "Package": "coda",
-      "Version": "0.19-4",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "24b6d006b8b2343876cf230687546932"
     },
     "codetools": {
       "Package": "codetools",
@@ -1714,9 +1700,9 @@
       "RemoteHost": "api.github.com",
       "RemoteRepo": "sl3",
       "RemoteUsername": "tlverse",
-      "RemoteRef": "devel",
-      "RemoteSha": "ed37c3302cf82a8f6564028c2a052ecb45c46a3e",
-      "Hash": "07101889ad3ed0624000075cafe674a3"
+      "RemoteRef": "docs",
+      "RemoteSha": "982f4d654892cceacf4abe6fd0b16139693b238d",
+      "Hash": "3339c9e959b3ec1d04d03ed2d35c0e8d"
     },
     "sp": {
       "Package": "sp",

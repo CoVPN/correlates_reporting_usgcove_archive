@@ -49,7 +49,6 @@ lapply(markers, function(marker) {
         in", marker_name_long, "levels, with projection of
         dose-response curve onto a linear working model for summarization.")
     ) +
-    scale_x_continuous(breaks = seq(-min(delta_grid), max(delta_grid), 0.1)) +
     theme(
       legend.position = "bottom",
       legend.background =
@@ -60,7 +59,6 @@ lapply(markers, function(marker) {
                                  angle = 30),
       axis.text.y = element_text(colour = "black", size = 22)
     )
-  p_risk_msm
   ggsave_custom(
     filename = here("figs", paste0("mcop_risk_", marker, ".pdf")),
     plot = p_risk_msm
@@ -89,7 +87,6 @@ lapply(markers, function(marker) {
         standardized shifts in", marker_name_long, "levels, with projection
         of dose-response curve onto a linear working model for summarization.")
     ) +
-    scale_x_continuous(breaks = seq(-min(delta_grid), max(delta_grid), 0.1)) +
     theme(
       legend.position = "bottom",
       legend.background =
@@ -100,7 +97,6 @@ lapply(markers, function(marker) {
                                  angle = 30),
       axis.text.y = element_text(colour = "black", size = 22)
     )
-  p_sve_msm
   ggsave_custom(
     filename = here("figs", paste0("mcop_sve_", marker, ".pdf")),
     plot = p_sve_msm

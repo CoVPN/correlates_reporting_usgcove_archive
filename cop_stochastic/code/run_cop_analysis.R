@@ -48,9 +48,6 @@ if (run_fast) {
     learners = list(hose_glm_lrnr, hese_glm_lrnr),
     metalearner = Lrnr_solnp_density$new()
   )
-
-  # smaller grid of shift values
-  delta_grid <- seq(-2, 2, 1)
 }
 
 # run analysis for each marker at each time

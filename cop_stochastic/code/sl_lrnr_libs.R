@@ -114,7 +114,7 @@ discrete_metalrnr <- Lrnr_cv_selector$new()
 lrnrs_to_screen <- Stack$new(
   mean_lrnr, glm_lrnr, bayesglm_lrnr, earth_lrnr, hal_lrnr_deeper
 )
-stack_screen_lgb <- Pipeline$new(screen_xgb, lrnrs_to_screen)
+stack_screen_xgb <- Pipeline$new(screen_xgb, lrnrs_to_screen)
 stack_screen_glm <- Pipeline$new(screen_coefs_glm, lrnrs_to_screen)
 stack_screen_ridge <- Pipeline$new(screen_coefs_ridge, lrnrs_to_screen)
 

@@ -239,7 +239,7 @@ for (bstatus in 1:2) {
   
   for (day in c("29", "57")[c("Day29", "Day57") %in% times]) {
     covid_corr_rcdf(
-      plot_dat = subset(dat.long.twophase.sample, Trt == "Vaccine", Bserostatus == bstatus.labels[bstatus]),
+      plot_dat = filter(dat.long.twophase.sample, Trt == "Vaccine", Bserostatus == bstatus.labels[bstatus]),
       x = paste0("Delta", day, "overB"),
       color = "assay",
       lty = NULL,

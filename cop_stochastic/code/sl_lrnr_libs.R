@@ -52,9 +52,9 @@ hal_lrnr_deeper <- Lrnr_hal9001$new(
 )
 
 # SL screeners, always including baseline COVID-19 exposure risk score
-screen_lgb <- Lrnr_screener_augment$new(
+screen_xgb <- Lrnr_screener_augment$new(
   Lrnr_screener_importance$new(
-    learner = lgb_lrnr_list[[12]],
+    learner = xgb_lrnr_list[[5]],
     num_screen = 2
   ),
   default_covariates = "risk_score"
@@ -88,12 +88,12 @@ hese_rf_lrnr <- Lrnr_density_semiparametric$new(
   mean_learner = ranger_ntrees500_lrnr,
   var_learner = ranger_ntrees100_lrnr
 )
-hose_lgb_lrnr <- Lrnr_density_semiparametric$new(
-  mean_learner = lgb_lrnr_list[[5]]
+hose_xgb_lrnr <- Lrnr_density_semiparametric$new(
+  mean_learner = xgb_lrnr_list[[5]]
 )
-hese_lgb_lrnr <- Lrnr_density_semiparametric$new(
-  mean_learner = lgb_lrnr_list[[5]],
-  var_learner = lgb_lrnr_list[[5]]
+hese_xgb_lrnr <- Lrnr_density_semiparametric$new(
+  mean_learner = xgb_lrnr_list[[5]],
+  var_learner = xgb_lrnr_list[[5]]
 )
 hose_hal_lrnr <- Lrnr_density_semiparametric$new(
   mean_learner = hal_lrnr_deeper
@@ -114,7 +114,7 @@ discrete_metalrnr <- Lrnr_cv_selector$new()
 lrnrs_to_screen <- Stack$new(
   mean_lrnr, glm_lrnr, bayesglm_lrnr, earth_lrnr, hal_lrnr_deeper
 )
-stack_screen_lgb <- Pipeline$new(screen_lgb, lrnrs_to_screen)
+stack_screen_lgb <- Pipeline$new(screen_xgb, lrnrs_to_screen)
 stack_screen_glm <- Pipeline$new(screen_coefs_glm, lrnrs_to_screen)
 stack_screen_ridge <- Pipeline$new(screen_coefs_ridge, lrnrs_to_screen)
 
@@ -131,10 +131,10 @@ sl_lrnr_reg <- Lrnr_sl$new(
       enet_lrnr,
       ranger_ntrees100_lrnr,
       ranger_ntrees500_lrnr,
-      #xgb_lrnr_list,
-      lgb_lrnr_list,
+      xgb_lrnr_list,
+      #lgb_lrnr_list,
       hal_lrnr_faster,
-      stack_screen_lgb,
+      stack_screen_xgb,
       stack_screen_glm,
       stack_screen_ridge
     ), recursive = TRUE),
@@ -143,7 +143,7 @@ sl_lrnr_reg <- Lrnr_sl$new(
 
 # setup SL library for conditional density estimation for propensity score
 sl_lrnr_dens <- Lrnr_sl$new(
-    learners = list(hose_glm_lrnr, hose_rf_lrnr, hose_lgb_lrnr, hose_hal_lrnr,
-                    hese_glm_lrnr, hese_rf_lrnr, hese_lgb_lrnr, hese_hal_lrnr),
+    learners = list(hose_glm_lrnr, hose_rf_lrnr, hose_xgb_lrnr, hose_hal_lrnr,
+                    hese_glm_lrnr, hese_rf_lrnr, hese_xgb_lrnr, hese_hal_lrnr),
   metalearner = Lrnr_solnp_density$new()
 )

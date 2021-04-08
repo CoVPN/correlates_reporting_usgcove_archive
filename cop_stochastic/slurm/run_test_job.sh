@@ -32,5 +32,5 @@
 export TMPDIR='/global/scratch/nhejazi/rtmp'  # resolve update issues for compiled packages as per https://github.com/r-lib/devtools/issues/32
 export R_LIBS_USER='/global/scratch/nhejazi/R'  # personal package library
 module load gcc/6.3.0 r/4.0.3 r-packages/default
-cd ~/covpn_correlates
+cd ~/correlates_reporting
 $(MAKE) -k -C cop_stochastic all

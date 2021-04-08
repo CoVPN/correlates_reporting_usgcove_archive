@@ -87,7 +87,7 @@ hose_hal_lrnr <- Lrnr_density_semiparametric$new(
 )
 hese_hal_lrnr <- Lrnr_density_semiparametric$new(
   mean_learner = hal_lrnr_deeper,
-  var_learner = hal_lrnr_faster
+  var_learner = hal_lrnr_deeper
 )
 
 # meta-learners: (1) predicted probabilities inside [0,1], (2) discrete SL

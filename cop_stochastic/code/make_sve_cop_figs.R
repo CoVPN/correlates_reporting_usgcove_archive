@@ -33,7 +33,7 @@ lapply(markers, function(marker) {
     geom_hline(yintercept = risk_results_msm$param_est[delta == 0, psi],
                linetype = "dashed", colour = "red") +
     geom_vline(xintercept = 0, linetype = "dashed", colour = "blue") +
-    geom_point(size = 4, alpha = 0.5) +
+    geom_point(size = 6, alpha = 0.5) +
     labs(
       x = paste("Posited change in standardized", marker_name_long),
       y = "Risk of symptomatic COVID-19 infection in vaccinees",
@@ -54,14 +54,14 @@ lapply(markers, function(marker) {
       legend.background =
         element_rect(fill = "gray90", size = 0.25, linetype = "dotted"),
       legend.title = element_blank(),
-      text = element_text(size = 25),
-      axis.text.x = element_text(colour = "black", size = 22, hjust = 1,
+      text = element_text(size = 30),
+      axis.text.x = element_text(colour = "black", size = 25, hjust = 1,
                                  angle = 30),
-      axis.text.y = element_text(colour = "black", size = 22)
+      axis.text.y = element_text(colour = "black", size = 25)
     )
-  ggsave_custom(
+  ggsave(
     filename = here("figs", paste0("mcop_risk_", marker, ".pdf")),
-    plot = p_risk_msm
+    plot = p_risk_msm, height = 20, width = 25
   )
 
   # plot for counterfactual stochastic interventional vaccine efficacy
@@ -69,7 +69,7 @@ lapply(markers, function(marker) {
     geom_hline(yintercept = sve_results_msm$param_est[delta == 0, psi],
                linetype = "dashed", colour = "red") +
     geom_vline(xintercept = 0, linetype = "dashed", colour = "blue") +
-    geom_point(size = 4, alpha = 0.5) +
+    geom_point(size = 6, alpha = 0.5) +
     labs(
       x = paste("Posited change in standardized", marker_name_long),
       y = paste("Stochastic interventional vaccine efficacy against",
@@ -92,13 +92,13 @@ lapply(markers, function(marker) {
       legend.background =
         element_rect(fill = "gray90", size = 0.25, linetype = "dotted"),
       legend.title = element_blank(),
-      text = element_text(size = 25),
-      axis.text.x = element_text(colour = "black", size = 22, hjust = 1,
+      text = element_text(size = 30),
+      axis.text.x = element_text(colour = "black", size = 25, hjust = 1,
                                  angle = 30),
-      axis.text.y = element_text(colour = "black", size = 22)
+      axis.text.y = element_text(colour = "black", size = 25)
     )
-  ggsave_custom(
+  ggsave(
     filename = here("figs", paste0("mcop_sve_", marker, ".pdf")),
-    plot = p_sve_msm
+    plot = p_sve_msm, height = 20, width = 25
   )
 })

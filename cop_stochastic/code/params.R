@@ -1,9 +1,3 @@
-#-----------------------------------------------
-# obligatory to append to the top of each script
-renv::activate(project = here::here(".."))
-source(here::here("..", "_common.R"))
-#-----------------------------------------------
-
 # reference time for analysis: Y = 1(T <= tf) where T is event time of COVID-19
 tf_ind <- list(Day57 = 172, Day29 = 200)
 times <- intersect(c("Day57", "Day29"), times)

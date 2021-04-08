@@ -1,17 +1,253 @@
-# CoP: Stochastic Interventional Vaccine Efficacy Effects {#cop-stochastic}
+---
+output:
+  pdf_document: default
+  html_document: default
+---
 
-```{r cop-stochastic-setup, echo = FALSE, message = FALSE}
+# Stochastic Interventional Risk and Vaccine Efficacy Effects {#cop-stochastic}
+
+```{r cop-stochastic-setup, echo = FALSE, message = FALSE, warning=FALSE}
 here::i_am("cop_stochastic/report.Rmd")
+renv::activate(project = here::here())
 library(here)
-library(latex2exp)
+library(knitr)
+library(stringr)
+source(here("_common.R"))
+source(here("cop_stochastic", "code", "params.R"))
+
+# make figures bigger
+knitr::opts_chunk$set(
+  out.width = "95%"
+)
 ```
 
 We estimate the counterfactual mean of symptomatic COVID-19 infection under
-posited shifts in the measured activity levels of each of four CoP biomarkers.
-By shifting the _standardized_ CoP biomarker activity levels by standard units
-$\{-0.5, -0.4, \ldots, 0.4, 0.5\}$, we can assess the degree to which vaccines
-that possibly enhance the CoP biomarker activity to these levels could mitigate
-COVID-19 infection in terms of counterfactual risk.
+posited shifts in the measured activity levels of each of
+`r length(marker_to_name)` _candidate_ mechanistic correlates of protection
+(mCoP) biomarkers. By shifting the _standardized_ biomarker activity levels by
+standard unit shifts along the grid {`r delta_grid`}, we can assess the degree
+to which vaccines that possibly enhance the mCoP biomarker activity to these
+levels could mitigate COVID-19 infection in terms of counterfactual stochastic
+interventional risk and vaccine efficacy (VE).
 
-## Receptor binding domain (RBD) binding antibody
+## Figures with estimates and confidence intervals for Day 57 {#sve-day57}
 
+```{r cop-stochastic-day57-setup, echo=FALSE, message=FALSE}
+# munging marker names
+this_time <- "Day57"
+markers_name_short <- str_remove(markers[, this_time], this_time)
+```
+
+### Stochastic interventional risk: `r marker_to_name[[markers_name_short[1]]]`
+
+```{r marker1-risk-day57}
+include_graphics(
+  here(
+    "cop_stochastic", "figs",
+    paste0("mcop_risk_", this_time, markers_name_short[1], ".pdf")
+  )
+)
+```
+
+\clearpage
+
+### Stochastic interventional VE: `r marker_to_name[[markers_name_short[1]]]`
+
+```{r marker1-sve-day57}
+include_graphics(
+  here(
+    "cop_stochastic", "figs",
+    paste0("mcop_sve_", this_time, markers_name_short[1], ".pdf")
+  )
+)
+```
+
+\clearpage
+
+### Stochastic interventional risk: `r marker_to_name[[markers_name_short[2]]]`
+
+```{r marker2-risk-day57}
+include_graphics(
+  here(
+    "cop_stochastic", "figs",
+    paste0("mcop_risk_", this_time, markers_name_short[2], ".pdf")
+  )
+)
+```
+
+\clearpage
+
+### Stochastic interventional VE: `r marker_to_name[[markers_name_short[2]]]`
+
+```{r marker2-sve-day57}
+include_graphics(
+  here(
+    "cop_stochastic", "figs",
+    paste0("mcop_sve_", this_time, markers_name_short[2], ".pdf")
+  )
+)
+```
+
+\clearpage
+
+### Stochastic interventional risk: `r marker_to_name[[markers_name_short[3]]]`
+
+```{r marker3-risk-day57}
+include_graphics(
+  here(
+    "cop_stochastic", "figs",
+    paste0("mcop_risk_", this_time, markers_name_short[3], ".pdf")
+  )
+)
+```
+
+\clearpage
+
+### Stochastic interventional VE: `r marker_to_name[[markers_name_short[3]]]`
+
+```{r marker3-sve-day57}
+include_graphics(
+  here(
+    "cop_stochastic", "figs",
+    paste0("mcop_sve_", this_time, markers_name_short[3], ".pdf")
+  )
+)
+```
+
+\clearpage
+
+### Stochastic interventional risk: `r marker_to_name[[markers_name_short[4]]]`
+
+```{r marker4-risk-day57}
+include_graphics(
+  here(
+    "cop_stochastic", "figs",
+    paste0("mcop_risk_", this_time, markers_name_short[4], ".pdf")
+  )
+)
+```
+
+\clearpage
+
+### Stochastic interventional VE: `r marker_to_name[[markers_name_short[4]]]`
+
+```{r marker4-sve-day57}
+include_graphics(
+  here(
+    "cop_stochastic", "figs",
+    paste0("mcop_sve_", this_time, markers_name_short[4], ".pdf")
+  )
+)
+```
+
+\clearpage
+
+## Figures with estimates and confidence intervals for Day 29 {#sve-day29}
+
+```{r cop-stochastic-day29-setup, echo=FALSE, message=FALSE}
+# munging marker names
+this_time <- "Day29"
+markers_name_short <- str_remove(markers[, this_time], this_time)
+```
+
+### Stochastic interventional risk: `r marker_to_name[[markers_name_short[1]]]`
+
+```{r marker1-risk-day29}
+include_graphics(
+  here(
+    "cop_stochastic", "figs",
+    paste0("mcop_risk_", this_time, markers_name_short[1], ".pdf")
+  )
+)
+```
+
+\clearpage
+
+### Stochastic interventional VE: `r marker_to_name[[markers_name_short[1]]]`
+
+```{r marker1-sve-day29}
+include_graphics(
+  here(
+    "cop_stochastic", "figs",
+    paste0("mcop_sve_", this_time, markers_name_short[1], ".pdf")
+  )
+)
+```
+
+\clearpage
+
+### Stochastic interventional risk: `r marker_to_name[[markers_name_short[2]]]`
+
+```{r marker2-risk-day29}
+include_graphics(
+  here(
+    "cop_stochastic", "figs",
+    paste0("mcop_risk_", this_time, markers_name_short[2], ".pdf")
+  )
+)
+```
+
+\clearpage
+
+### Stochastic interventional VE: `r marker_to_name[[markers_name_short[2]]]`
+
+```{r marker2-sve-day29}
+include_graphics(
+  here(
+    "cop_stochastic", "figs",
+    paste0("mcop_sve_", this_time, markers_name_short[2], ".pdf")
+  )
+)
+```
+
+\clearpage
+
+### Stochastic interventional risk: `r marker_to_name[[markers_name_short[3]]]`
+
+```{r marker3-risk-day29}
+include_graphics(
+  here(
+    "cop_stochastic", "figs",
+    paste0("mcop_risk_", this_time, markers_name_short[3], ".pdf")
+  )
+)
+```
+
+\clearpage
+
+### Stochastic interventional VE: `r marker_to_name[[markers_name_short[3]]]`
+
+```{r marker3-sve-day29}
+include_graphics(
+  here(
+    "cop_stochastic", "figs",
+    paste0("mcop_sve_", this_time, markers_name_short[3], ".pdf")
+  )
+)
+```
+
+\clearpage
+
+### Stochastic interventional risk: `r marker_to_name[[markers_name_short[4]]]`
+
+```{r marker4-risk-day29}
+include_graphics(
+  here(
+    "cop_stochastic", "figs",
+    paste0("mcop_risk_", this_time, markers_name_short[4], ".pdf")
+  )
+)
+```
+
+\clearpage
+
+### Stochastic interventional VE: `r marker_to_name[[markers_name_short[4]]]`
+
+```{r marker4-sve-day29}
+include_graphics(
+  here(
+    "cop_stochastic", "figs",
+    paste0("mcop_sve_", this_time, markers_name_short[4], ".pdf")
+  )
+)
+```

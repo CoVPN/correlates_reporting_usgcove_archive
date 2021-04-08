@@ -323,6 +323,53 @@ include_graphics(here(
 ))
 ```
 
+
+
+\clearpage
+```{r, fig.cap = "RCDF plots for D29 Ab markers: baseline positive vaccine arm", eval = ("Day29" %in% times)}
+include_graphics(here(
+  "immuno_graphical", "figs",
+  paste0(
+    "Marker_Rcdf_Day29_trt_vaccine_bstatus_Pos_",
+    study_name, ".png"
+  )
+))
+```
+
+\clearpage
+```{r, fig.cap = "RCDF plots for D57 Ab markers: baseline positive vaccine arm", eval = ("Day57" %in% times)}
+include_graphics(here(
+  "immuno_graphical", "figs",
+  paste0(
+    "Marker_Rcdf_Day57_trt_vaccine_bstatus_Pos_",
+    study_name, ".png"
+  )
+))
+```
+
+\clearpage
+```{r, fig.cap = "RCDF plots for D29 fold-rise over D1 Ab markers: baseline positive vaccine arm", eval = ("Delta29overB" %in% times)}
+include_graphics(here(
+  "immuno_graphical", "figs",
+  paste0(
+    "Marker_Rcdf_Delta29overB_trt_vaccine_bstatus_Pos_",
+    study_name, ".png"
+  )
+))
+```
+
+\clearpage
+```{r, fig.cap = "RCDF plots for D57 fold-rise over D1 Ab markers: baseline positive vaccine arm", eval = ("Delta57overB" %in% times)}
+include_graphics(here(
+  "immuno_graphical", "figs",
+  paste0(
+    "Marker_Rcdf_Delta57overB_trt_vaccine_bstatus_Pos_",
+    study_name, ".png"
+  )
+))
+```
+
+
 \clearpage
 ## Scatter plots of antibody markers versus age for overall per-protocol cohort
 

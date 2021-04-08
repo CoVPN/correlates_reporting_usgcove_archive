@@ -218,44 +218,44 @@ for (day in c("29", "57")[c("Day29", "Day57") %in% times]) {
 # RCDF plot of four day 57 assay readouts in one plot for only the vaccine
 # recipients with baseline negative sero viral status
 #-----------------------------------------------
-
-for (day in c("29", "57")[c("Day29", "Day57") %in% times]) {
-  covid_corr_rcdf(
-    plot_dat = filter(dat.long.twophase.sample, Trt == "Vaccine", Bserostatus == "Baseline Neg"),
-    x = paste0("Day", day),
-    color = "assay",
-    lty = NULL,
-    weight = "wt.subcohort",
-    xlab = paste0(
-      "D", day,
-      " Binding Ab (IU/ml) / Pseudovirus nAb ID50 or ID80"
-    ),
-    filename = paste0(
-      save.results.to, "/Marker_Rcdf_Day", day,
-      "_trt_vaccine_bstatus_Neg_", study_name, ".png"
+for (bstatus in 1:2) {
+  for (day in c("29", "57")[c("Day29", "Day57") %in% times]) {
+    covid_corr_rcdf(
+      plot_dat = filter(dat.long.twophase.sample, Trt == "Vaccine", Bserostatus == bstatus.labels[bstatus]),
+      x = paste0("Day", day),
+      color = "assay",
+      lty = NULL,
+      weight = "wt.subcohort",
+      xlab = paste0(
+        "D", day,
+        " Binding Ab (IU/ml) / Pseudovirus nAb ID50 or ID80"
+      ),
+      filename = paste0(
+        save.results.to, "/Marker_Rcdf_Day", day,
+        "_trt_vaccine_bstatus_", c("Neg", "Pos")[bstatus], "_", study_name, ".png"
+      )
     )
-  )
-}
-
-for (day in c("29", "57")[c("Day29", "Day57") %in% times]) {
-  covid_corr_rcdf(
-    plot_dat = subset(dat.long.twophase.sample, Trt == "Vaccine"),
-    x = paste0("Delta", day, "overB"),
-    color = "assay",
-    lty = NULL,
-    weight = "wt.subcohort",
-    xlab = paste0(
-      "D", day,
-      " Fold-rise over D1 Binding Ab (IU/ml) / Pseudovirus nAb ID50 or ID80"
-    ),
-    filename = paste0(
-      save.results.to, "/Marker_Rcdf_Delta", day,
-      "overB_trt_vaccine_bstatus_Neg_", study_name, ".png"
+  }
+  
+  for (day in c("29", "57")[c("Day29", "Day57") %in% times]) {
+    covid_corr_rcdf(
+      plot_dat = filter(dat.long.twophase.sample, Trt == "Vaccine", Bserostatus == bstatus.labels[bstatus]),
+      x = paste0("Delta", day, "overB"),
+      color = "assay",
+      lty = NULL,
+      weight = "wt.subcohort",
+      xlab = paste0(
+        "D", day,
+        " Fold-rise over D1 Binding Ab (IU/ml) / Pseudovirus nAb ID50 or ID80"
+      ),
+      filename = paste0(
+        save.results.to, "/Marker_Rcdf_Delta", day,
+        "overB_trt_vaccine_bstatus_", c("Neg", "Pos")[bstatus], "_", study_name, ".png"
+      )
     )
-  )
+  }
+  
 }
-
-
 
 
 #-----------------------------------------------

@@ -845,15 +845,15 @@
     },
     "hal9001": {
       "Package": "hal9001",
-      "Version": "0.2.8",
+      "Version": "0.3.0",
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
       "RemoteRepo": "hal9001",
       "RemoteUsername": "tlverse",
-      "RemoteRef": "3f0503f",
-      "RemoteSha": "3f0503ffb73508821c19ba57b3a2aabdcf854aba",
-      "Hash": "1301f628a337446a769a7aaa3edf5935"
+      "RemoteRef": "devel",
+      "RemoteSha": "f02c6a9c1d1ff337b4e85cf581c1550263c82d77",
+      "Hash": "e10d3bf706b21826113669a34b9a3889"
     },
     "haldensify": {
       "Package": "haldensify",

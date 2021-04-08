@@ -11,7 +11,7 @@ ranger_ntrees100_lrnr <- Lrnr_ranger$new(num.trees = 100)
 ranger_ntrees500_lrnr <- Lrnr_ranger$new(num.trees = 500)
 ### an Xgboost grid for "true" SL
 xgb_tune_grid <- list(
-  max_depth = c(3, 6),
+  #max_depth = c(3, 6),
   eta = c(0.01, 0.1, 0.3),
   #gamma = c(0.05, 0.25, 0.75),
   nrounds = c(20, 100)
@@ -35,23 +35,22 @@ lgb_lrnr_list <- apply(lgb_tune_grid, MARGIN = 1, function(tuning_params) {
 ## ...and one machine learning algorithm to rule them all...
 hal_lrnr_faster <- Lrnr_hal9001$new(
   fit_type = "glmnet",
-  family = "binomial",
-  max_degree = 2,
-  n_folds = 3,
-  reduce_basis = 0.1,
-  standardize = FALSE
-)
-hal_lrnr_deeper <- Lrnr_hal9001$new(
-  fit_type = "glmnet",
   family = "gaussian",
   max_degree = 3,
   n_folds = 3,
   reduce_basis = 0.2,
+  standardize = FALSE
+)
+hal_lrnr_deeper <- Lrnr_hal9001$new(
+  fit_type = "glmnet",
+  max_degree = 3,
+  n_folds = 3,
+  reduce_basis = 0.1,
   standardize = FALSE,
   lambda.min.ratio = 0.0001
 )
 
-# SL screeners, always including baseline COVID-19 exposure risk score
+# SL screeners
 screen_coefs_glm <- Lrnr_screener_coefs$new(
   learner = glm_lrnr
 )
@@ -69,10 +68,10 @@ hese_glm_lrnr <- Lrnr_density_semiparametric$new(
   var_learner = glm_lrnr
 )
 hose_rf_lrnr <- Lrnr_density_semiparametric$new(
-  mean_learner = ranger_ntrees500_lrnr
+  mean_learner = ranger_ntrees100_lrnr
 )
 hese_rf_lrnr <- Lrnr_density_semiparametric$new(
-  mean_learner = ranger_ntrees500_lrnr,
+  mean_learner = ranger_ntrees100_lrnr,
   var_learner = ranger_ntrees100_lrnr
 )
 hose_xgb_lrnr <- Lrnr_density_semiparametric$new(
@@ -83,11 +82,11 @@ hese_xgb_lrnr <- Lrnr_density_semiparametric$new(
   var_learner = xgb_lrnr_list[[length(xgb_lrnr_list)]]
 )
 hose_hal_lrnr <- Lrnr_density_semiparametric$new(
-  mean_learner = hal_lrnr_deeper
+  mean_learner = hal_lrnr_faster
 )
 hese_hal_lrnr <- Lrnr_density_semiparametric$new(
-  mean_learner = hal_lrnr_deeper,
-  var_learner = hal_lrnr_deeper
+  mean_learner = hal_lrnr_faster,
+  var_learner = hal_lrnr_faster
 )
 
 # meta-learners: (1) predicted probabilities inside [0,1], (2) discrete SL
@@ -118,7 +117,7 @@ sl_lrnr_reg <- Lrnr_sl$new(
       ranger_ntrees500_lrnr,
       xgb_lrnr_list,
       #lgb_lrnr_list,
-      hal_lrnr_faster,
+      hal_lrnr_deeper,
       stack_screen_glm,
       stack_screen_ridge
     ), recursive = TRUE),

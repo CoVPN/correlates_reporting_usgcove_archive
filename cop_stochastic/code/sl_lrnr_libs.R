@@ -24,9 +24,9 @@ xgb_lrnr_list <- apply(xgb_tune_grid, MARGIN = 1, function(tuning_params) {
 lgb_tune_grid <- list(
   bagging_freq = 10,
   bagging_fraction = 0.8,
-  learning_rate = c(0.01, 0.1, 0.5),
+  learning_rate = c(0.01, 0.1, 0.3),
   boosting = c("gbdt", "dart"),
-  nrounds = c(50, 100, 200)
+  nrounds = c(20, 200)
 )
 lgb_tune_grid <- expand.grid(lgb_tune_grid, KEEP.OUT.ATTRS = FALSE)
 lgb_lrnr_list <- apply(lgb_tune_grid, MARGIN = 1, function(tuning_params) {
@@ -38,7 +38,7 @@ hal_lrnr_faster <- Lrnr_hal9001$new(
   family = "binomial",
   max_degree = 2,
   n_folds = 3,
-  reduce_basis = 0.05,
+  reduce_basis = 0.1,
   standardize = FALSE
 )
 hal_lrnr_deeper <- Lrnr_hal9001$new(
@@ -87,7 +87,7 @@ hose_hal_lrnr <- Lrnr_density_semiparametric$new(
 )
 hese_hal_lrnr <- Lrnr_density_semiparametric$new(
   mean_learner = hal_lrnr_deeper,
-  var_learner = hal_lrnr_deeper
+  var_learner = hal_lrnr_faster
 )
 
 # meta-learners: (1) predicted probabilities inside [0,1], (2) discrete SL
@@ -117,7 +117,7 @@ sl_lrnr_reg <- Lrnr_sl$new(
       ranger_ntrees100_lrnr,
       ranger_ntrees500_lrnr,
       xgb_lrnr_list,
-      lgb_lrnr_list,
+      #lgb_lrnr_list,
       hal_lrnr_faster,
       stack_screen_glm,
       stack_screen_ridge
@@ -127,7 +127,7 @@ sl_lrnr_reg <- Lrnr_sl$new(
 
 # setup SL library for conditional density estimation for propensity score
 sl_lrnr_dens <- Lrnr_sl$new(
-    learners = list(hose_glm_lrnr, hose_rf_lrnr, hose_xgb_lrnr, hose_hal_lrnr,
-                    hese_glm_lrnr, hese_rf_lrnr, hese_xgb_lrnr, hese_hal_lrnr),
+    learners = list(hose_glm_lrnr, hose_rf_lrnr, hose_hal_lrnr,
+                    hese_glm_lrnr, hese_rf_lrnr, hese_hal_lrnr),
   metalearner = Lrnr_solnp_density$new()
 )

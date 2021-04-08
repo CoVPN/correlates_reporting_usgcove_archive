@@ -26,7 +26,7 @@ lgb_tune_grid <- list(
   bagging_fraction = 0.8,
   learning_rate = c(0.01, 0.1, 0.5),
   boosting = c("gbdt", "dart"),
-  num_iterations = c(50, 100, 200)
+  nrounds = c(50, 100, 200)
 )
 lgb_tune_grid <- expand.grid(lgb_tune_grid, KEEP.OUT.ATTRS = FALSE)
 lgb_lrnr_list <- apply(lgb_tune_grid, MARGIN = 1, function(tuning_params) {

@@ -61,18 +61,18 @@
 
 ## Correlates of Risk Plots for Cases vs Non-cases  
 ### RCDF Plots
-1.  For baseline negative subjects, make a weighted RCDF plot that consists of four panels of baseline assay readouts, each panel for one type of assay. Each panel consists of weighted RCDF lines with different colors, indicating different combination of `Trt` and `cohort_event` fields. Make the same plots for Day 29 assay readouts, Day 57 assay readouts, Day 29 fold-rise over baseline and Day 57 fold-rise over baseline. The weights are given by the `wt.2` field for Day 29 readouts and Day 29 fold-rise over baseline and `wt` for Day 57 readouts and Day 57 over baseline. 
+1.  For baseline negative subjects, make a weighted RCDF plot that consists of four panels of baseline assay readouts, each panel for one type of assay. Each panel consists of weighted RCDF lines with different colors, indicating different combination of `Trt` and `cohort_event` fields. Make the same plots for Day 29 assay readouts, Day 57 assay readouts, Day 29 fold-rise over baseline and Day 57 fold-rise over baseline. The weights are given by the `wt.2` field for Day 29 readouts and Day 29 fold-rise over baseline and `wt` for Day 57 readouts and Day 57 over baseline. The subjects with `cohort_event == "Intercurrent Cases"` were excluded for Day 57 analyses.
 
 2. Repeat 1 for baseline positive subjects.
 
 ### Box plots
-1.  For baseline negative vaccine group subjects, make box plots that consists of four panels of baseline assay readouts, each panel for one type of assay. Each panel contains bars representing subjects with different values of the `cohort_event` field. Each box plot is overlaid with 30 randomly chosen sample points. Use dashline to indicate LLOD. Make the same plots for Day 29 assay readouts, Day 57 assay readouts, Day 29 fold-rise over baseline and Day 57 fold-rise over baseline. There is no LLOD line in the plots of Day 29 fold-rise over baseline and Day 57 fold-rise over baseline. 
+1.  For baseline negative vaccine group subjects, make box plots that consists of four panels of baseline assay readouts, each panel for one type of assay. Each panel contains bars representing subjects with different values of the `cohort_event` field. Each box plot is overlaid with 30 randomly chosen sample points. Use dashline to indicate LLOD. Make the same plots for Day 29 assay readouts, Day 57 assay readouts, Day 29 fold-rise over baseline and Day 57 fold-rise over baseline. There is no LLOD line in the plots of Day 29 fold-rise over baseline and Day 57 fold-rise over baseline. The subjects with `cohort_event == "Intercurrent Cases"` were excluded for Day 57 analyses.
 bAb LLOQ = log10(20); nAb ID50 LLOQ = log10(10); nAb ID80 LLOQ = log10(10).
 
 
 2. Repeat 1 for baseline positive vaccine group subjects.
 
-3.  For baseline negative vaccine group subjects, make box plots of Anti-Spike readouts (assay == "bindSpike"), faceted by `demo_lab`. Each panel contains bars representing subjects with different values of the `cohort_event` field. Each box plot is overlaid with 30 randomly chosen sample points. Use dashline to indicate LLOD. Make the same plots for Day 29 assay readouts, Day 57 assay readouts, Day 29 fold-rise over baseline and Day 57 fold-rise over baseline. There is no LLOD line in the plots of Day 29 fold-rise over baseline and Day 57 fold-rise over baseline. 
+3.  For baseline negative vaccine group subjects, make box plots of Anti-Spike readouts (assay == "bindSpike"), faceted by `demo_lab`. Each panel contains bars representing subjects with different values of the `cohort_event` field. Each box plot is overlaid with 30 randomly chosen sample points. Use dashline to indicate LLOD. Make the same plots for Day 29 assay readouts, Day 57 assay readouts, Day 29 fold-rise over baseline and Day 57 fold-rise over baseline. There is no LLOD line in the plots of Day 29 fold-rise over baseline and Day 57 fold-rise over baseline. The subjects with `cohort_event == "Intercurrent Cases"` were excluded for Day 57 analyses.
 bAb LLOQ = log10(20); nAb ID50 LLOQ = log10(10); nAb ID80 LLOQ = log10(10).
 
 

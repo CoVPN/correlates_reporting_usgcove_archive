@@ -45,7 +45,7 @@ if (run_fast) {
     metalearner = discrete_metalrnr
   )
   sl_lrnr_dens <- Lrnr_sl$new(
-    learners = list(hose_glm_lrnr, hose_hal_lrnr),
+    learners = list(hose_glm_lrnr, hese_glm_lrnr),
     metalearner = Lrnr_solnp_density$new()
   )
 

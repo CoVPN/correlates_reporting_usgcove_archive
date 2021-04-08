@@ -52,25 +52,12 @@ hal_lrnr_deeper <- Lrnr_hal9001$new(
 )
 
 # SL screeners, always including baseline COVID-19 exposure risk score
-screen_xgb <- Lrnr_screener_augment$new(
-  Lrnr_screener_importance$new(
-    learner = xgb_lrnr_list[[5]],
-    num_screen = 2
-  ),
-  default_covariates = "risk_score"
+screen_coefs_glm <- Lrnr_screener_coefs$new(
+  learner = glm_lrnr
 )
-screen_coefs_glm <- Lrnr_screener_augment$new(
-  Lrnr_screener_coefs$new(
-    learner = glm_lrnr
-  ),
-  default_covariates = "risk_score"
-)
-screen_coefs_ridge <- Lrnr_screener_augment$new(
-  Lrnr_screener_coefs$new(
-    learner = ridge_lrnr,
-    min_screen = 2
-  ),
-  default_covariates = "risk_score"
+screen_coefs_ridge <- Lrnr_screener_coefs$new(
+  learner = ridge_lrnr,
+  min_screen = 2
 )
 
 # SL learners for fitting the generalized propensity score fit
@@ -114,7 +101,6 @@ discrete_metalrnr <- Lrnr_cv_selector$new()
 lrnrs_to_screen <- Stack$new(
   mean_lrnr, glm_lrnr, bayesglm_lrnr, earth_lrnr, hal_lrnr_deeper
 )
-stack_screen_xgb <- Pipeline$new(screen_xgb, lrnrs_to_screen)
 stack_screen_glm <- Pipeline$new(screen_coefs_glm, lrnrs_to_screen)
 stack_screen_ridge <- Pipeline$new(screen_coefs_ridge, lrnrs_to_screen)
 
@@ -126,15 +112,14 @@ sl_lrnr_reg <- Lrnr_sl$new(
       glm_lrnr,
       bayesglm_lrnr,
       earth_lrnr,
-      lasso_lrnr,
-      ridge_lrnr,
-      enet_lrnr,
+      #lasso_lrnr,
+      #ridge_lrnr,
+      #enet_lrnr,
       ranger_ntrees100_lrnr,
       ranger_ntrees500_lrnr,
       xgb_lrnr_list,
       #lgb_lrnr_list,
       hal_lrnr_faster,
-      stack_screen_xgb,
       stack_screen_glm,
       stack_screen_ridge
     ), recursive = TRUE),

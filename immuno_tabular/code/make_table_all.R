@@ -29,7 +29,7 @@ options(survey.lonely.psu="adjust")
 
 num_v1 <- c("Age") # Summaries - Mean & Range
 num_v2 <- c("BMI") # Summaries - Mean & St.d
-cat_v <- c("Age65C", "SexC", "RaceEthC", "ethnicityC", "HighRiskC", "AgeRiskC")
+cat_v <- c("Age65C", "SexC", "RaceEthC", "ethnicityC", "HighRiskC", "AgeRiskC", "MinorityC")
 
 ds_long_ttl <- ds %>%
   dplyr::filter(randomset) %>% 
@@ -52,7 +52,7 @@ dm_cat <- inner_join(
          rslt1 = sprintf("%s (%.1f%%)", n, n / N * 100), 
          rslt2 = sprintf("%s/%s = %.1f%%", n, N, n / N * 100),
          subgroup = ifelse(subgroup_cat == "Communities of Color", 
-                           "Race", as.character(subgroup))) %>% 
+                           "RaceEthC", as.character(subgroup))) %>% 
   dplyr::filter(subgroup %in% cat_v) 
 
 # Calculate mean and range for numeric covariates
@@ -136,9 +136,7 @@ print("Done with table 1")
 
 immuno.design <- twophase(list(~Ptid, ~Ptid), 
                           strata=list(NULL, ~tps.stratum),
-                          weights=list(NULL, ~wt.subcohort),
                           subset=~randomset,
-                          method="simple",
                           data=ds)
 
 sub.by <- c("Arm", "`Baseline SARS-CoV-2`")

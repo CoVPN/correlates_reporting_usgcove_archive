@@ -101,13 +101,6 @@ tlf <-
 
 # Depends on the Incoming data
 
-llods <-c(bindN = 20, bindSpike = 20, bindRBD = 20, pseudoneutid50 = 10, 
-          pseudoneutid80 = 10, liveneutmn50 = 62.16) 
-lloqs <-c(bindN = 34, bindSpike = 34, bindRBD = 34, pseudoneutid50 = 49, 
-          pseudoneutid80 = 43, liveneutmn50 = 117.35) 
-uloqs <-c(bindN = 19136250, bindSpike = 19136250, bindRBD = 19136250, 
-          pseudoneutid50 = Inf, pseudoneutid80 = Inf, liveneutmn50 = 18976.19) 
-
 labels.assays.short <- c(bindN = "Anti N IgG (IU/ml)", 
                          bindSpike = "Anti Spike IgG (IU/ml)", 
                          bindRBD = "Anti RBD IgG (IU/ml)", 
@@ -281,7 +274,7 @@ subgrp <- c(
 
 num_v1 <- c("Age") # Summaries - Mean & Range
 num_v2 <- c("BMI") # Summaries - Mean & St.d
-cat_v <- c("Age65C", "SexC", "RaceEthC", "ethnicityC", "HighRiskC", "AgeRiskC")
+cat_v <- c("Age65C", "SexC", "RaceEthC", "ethnicityC", "HighRiskC", "AgeRiskC", "MinorityC")
 
 ds_long_ttl <- ds %>%
   dplyr::filter(corrset1) %>% 
@@ -322,7 +315,7 @@ dm_cat <- inner_join(
          rslt1 = sprintf("%s (%.1f%%)", n, n / N * 100), 
          rslt2 = sprintf("%s/%s = %.1f%%", n, N, n / N * 100),
          subgroup = ifelse(subgroup_cat == "Communities of Color", 
-                           "Race", as.character(subgroup))) %>% 
+                           "RaceEthC", as.character(subgroup))) %>% 
   dplyr::filter(subgroup %in% cat_v) 
 
 # Calculate mean and range for numeric covariates
@@ -417,9 +410,7 @@ print("Done with table 1")
 
 corr.design1 <- twophase(list(~Ptid, ~Ptid), 
                         strata=list(NULL, ~ Wstratum),
-                        weights=list(NULL, ~ wt),
                         subset= ~ corrset1,
-                        method="simple",
                         data=subset(ds, cohort1))
 
 sub.by <- c("Arm", "`Baseline SARS-CoV-2`")
@@ -440,9 +431,7 @@ print("Done with table 2 & 3")
 if(has29){
   corr.design2 <- twophase(list(~Ptid, ~Ptid), 
                            strata=list(NULL, ~ Wstratum),
-                           weights=list(NULL, ~ wt.2),
                            subset= ~ corrset2,
-                           method="simple",
                            data=subset(ds, cohort2))
   
   rpcnt_case2 <- get_rr(ds, resp.v, subs, sub.by, design=corr.design2, "wt.2", "corrset2")

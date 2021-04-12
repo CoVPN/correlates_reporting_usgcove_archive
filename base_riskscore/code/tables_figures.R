@@ -43,8 +43,8 @@ dat %>%
       `Variable Name` == "BMI" ~ "BMI at enrollment (kg/m^2)",
       `Variable Name` == "MinorityInd" ~ "Baseline covariate underrepresented minority status (1=minority, 0=non-minority)",
       `Variable Name` == "EthnicityHispanic" ~ "Indicator ethnicity = Hispanic (0 = Non-Hispanic)",
-      #`Variable Name` == "EthnicityNotreported" ~ "Indicator ethnicity = Not reported (0 = Non-Hispanic)",
-      #`Variable Name` == "EthnicityUnknown" ~ "Indicator ethnicity = Unknown (0 = Non-Hispanic)",
+      `Variable Name` == "EthnicityNotreported" ~ "Indicator ethnicity = Not reported (0 = Non-Hispanic)",
+      `Variable Name` == "EthnicityUnknown" ~ "Indicator ethnicity = Unknown (0 = Non-Hispanic)",
       `Variable Name` == "Black" ~ "Indicator race = Black (0 = White)",
       `Variable Name` == "Asian" ~ "Indicator race = Asian (0 = White)",
       `Variable Name` == "NatAmer" ~ "Indicator race = American Indian or Alaska Native (0 = White)",
@@ -52,8 +52,8 @@ dat %>%
       `Variable Name` == "WhiteNonHispanic" ~ "Indicator race = White or Caucasian (1 = White)",
       `Variable Name` == "Multiracial" ~ "Indicator race = Multiracial (0 = White)",
       `Variable Name` == "Other" ~ "Indicator race = Other (0 = White)",
-      #`Variable Name` == "Notreported" ~ "Indicator race = Not reported (0 = White)",
-      #`Variable Name` == "Unknown" ~ "Indicator race = unknown (0 = White)",
+      `Variable Name` == "Notreported" ~ "Indicator race = Not reported (0 = White)",
+      `Variable Name` == "Unknown" ~ "Indicator race = unknown (0 = White)",
       `Variable Name` == "HighRiskInd" ~ "Baseline covariate high risk pre-existing condition (1=yes, 0=no)"
     ),
     Comments = ""

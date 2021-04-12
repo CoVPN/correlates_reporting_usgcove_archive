@@ -102,7 +102,7 @@ dat.long.cor.subset$Dich_RaceEthnic = with(dat.long.cor.subset,
                                                   ifelse(EthnicityHispanic==0 & EthnicityNotreported==0 & EthnicityUnknown==0, "Not Hispanic or Latino", NA)))
 
 # add LLoD value to show in the plot
-dat.long.cor.subset$LLoD = log10(llods[dat.long.cor.subset$assay])
+dat.long.cor.subset$LLoD = log10(llods[as.character(dat.long.cor.subset$assay)])
 
 # add ULoQ value
 dat.long.cor.subset$ULoQ = with(dat.long.cor.subset, ifelse(assay %in% c("bindSpike","bindRBD"), log10(19136250), Inf))
@@ -276,7 +276,8 @@ dat.longer.cor.subset.plot1 <-
   dat.longer.cor.subset %>% group_by_at(groupby_vars1) %>%
   mutate(num = round(sum(response*wt.2), 1),
          denom = round(sum(wt.2), 1),
-         RespRate = paste0(num,"/",denom,"=\n",round(num/denom*100, 1),"%"))
+         RespRate = paste0(num,"/",denom,"=\n",round(num/denom*100, 1),"%"),
+         )
 saveRDS(dat.longer.cor.subset.plot1, file = here("data_clean", "longer_cor_data_plot1.rds"))
 
 

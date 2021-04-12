@@ -174,18 +174,23 @@ for (tt in seq_along(times)) {
 # RCDF plot of four day 29 and day 57 assay readouts in one plot, with the
 # line-types  distinguishing the baseline serostatus
 #-----------------------------------------------
+dat.long.twophase.sample$assay_labels <-
+  factor(dat.long.twophase.sample$assay,
+         levels = assays,
+         labels = labels.assays.short)
 
 for (day in c("29", "57")[c("Day29", "Day57") %in% times]) {
   covid_corr_rcdf(
     plot_dat = subset(dat.long.twophase.sample, Trt == "Vaccine"),
     x = paste0("Day", day),
-    color = "assay",
+    color = "assay_labels",
     lty = "Bserostatus",
     weight = "wt.subcohort",
     xlab = paste0(
       "D", day,
-      " Binding Ab (IU/ml) / Pseudovirus nAb ID50 or ID80"
+      " Ab Markers"
     ),
+    plot_title = paste0("Day ", day, " Ab Markers"),
     filename = paste0(
       save.results.to, "/Marker_Rcdf_Day", day,
       "_trt_vaccine_bstatus_both_", study_name, ".png"
@@ -202,10 +207,11 @@ for (day in c("29", "57")[c("Day29", "Day57") %in% times]) {
   covid_corr_rcdf(
     plot_dat = subset(dat.long.twophase.sample, Trt == "Vaccine"),
     x = paste0("Delta", day, "overB"),
-    color = "assay",
+    color = "assay_labels",
     lty = "Bserostatus",
     weight = "wt.subcohort",
-    xlab = paste0("D", day, " Fold-rise over D1 Binding Ab (IU/ml) / Pseudovirus nAb ID50 or ID80"),
+    xlab = paste0("D", day, " Fold-rise over D1 Ab Markers"),
+    plot_title = paste0("Day ", day, " over Baseline Ab Markers"),
     filename = paste0(
       save.results.to, "/Marker_Rcdf_Delta", day,
       "overB_trt_vaccine_bstatus_both_", study_name, ".png"
@@ -223,13 +229,14 @@ for (bstatus in 1:2) {
     covid_corr_rcdf(
       plot_dat = filter(dat.long.twophase.sample, Trt == "Vaccine", Bserostatus == bstatus.labels[bstatus]),
       x = paste0("Day", day),
-      color = "assay",
+      color = "assay_labels",
       lty = NULL,
       weight = "wt.subcohort",
       xlab = paste0(
         "D", day,
-        " Binding Ab (IU/ml) / Pseudovirus nAb ID50 or ID80"
+        " Ab Markers"
       ),
+      plot_title = paste0("Day ", day, " Ab Markers"),
       filename = paste0(
         save.results.to, "/Marker_Rcdf_Day", day,
         "_trt_vaccine_bstatus_", c("Neg", "Pos")[bstatus], "_", study_name, ".png"
@@ -241,13 +248,14 @@ for (bstatus in 1:2) {
     covid_corr_rcdf(
       plot_dat = filter(dat.long.twophase.sample, Trt == "Vaccine", Bserostatus == bstatus.labels[bstatus]),
       x = paste0("Delta", day, "overB"),
-      color = "assay",
+      color = "assay_labels",
       lty = NULL,
       weight = "wt.subcohort",
       xlab = paste0(
         "D", day,
-        " Fold-rise over D1 Binding Ab (IU/ml) / Pseudovirus nAb ID50 or ID80"
+        " Fold-rise over D1 Ab Markers"
       ),
+      plot_title = paste0("Day ", day, " Fold-rise over Baseline Ab Markers"),
       filename = paste0(
         save.results.to, "/Marker_Rcdf_Delta", day,
         "overB_trt_vaccine_bstatus_", c("Neg", "Pos")[bstatus], "_", study_name, ".png"

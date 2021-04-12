@@ -63,8 +63,13 @@ dat.ph1 <- inputFile %>%
 np <- sum(dat.ph1 %>% select(matches(endpoint)))
 maxVar <- max(20, floor(np / 20))
 
-# Remove any risk_vars that have fewer than 10 1s
-dat.ph1 <- drop_riskVars_with_fewer_1s(dat.ph1, risk_vars)
+# Remove any risk_vars that are indicator variables and have fewer than 10  0's or 1's
+dat.ph1 <- drop_riskVars_with_fewer_0s_or_1s(dat.ph1, risk_vars)
+
+# Update risk_vars
+risk_vars <- dat.ph1 %>%
+  select(-Ptid, -Trt, -all_of(endpoint)) %>%
+  colnames()
 
 # Remove any risk_vars with more than 5% missing values. Impute the missing
 # values for other risk variables using mice package!
@@ -113,10 +118,10 @@ blas_set_num_threads(1)
 print(blas_get_num_procs())
 stopifnot(blas_get_num_procs() == 1)
 
-set.seed(20210216)
 
 # run super learner ensemble
 fits <- run_cv_sl_once(
+  seed = 20210216,
   Y = Y,
   X_mat = X_riskVars,
   family = "binomial",

@@ -42,15 +42,15 @@ llods <-c(bindN = 20,
 lloqs <-c(bindN = 34, 
           bindSpike = 34, 
           bindRBD = 34, 
-          pseudoneutid50 = 49, 
-          pseudoneutid80 = 43, 
+          pseudoneutid50 = 18.5, 
+          pseudoneutid80 = 14.3, 
           liveneutmn50 = 117.35) 
 
 uloqs <-c(bindN = 19136250, 
           bindSpike = 19136250, 
           bindRBD = 19136250, 
-          pseudoneutid50 = Inf, 
-          pseudoneutid80 = Inf, 
+          pseudoneutid50 = 4404, 
+          pseudoneutid80 = 1295, 
           liveneutmn50 = 18976.19) 
 
 ###############################################################################

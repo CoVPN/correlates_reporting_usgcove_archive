@@ -113,7 +113,8 @@ for (typ in c("line","violin")) {
                       type=typ,
                       facetby=vars(cohort_event),
                       ylim=c(0.5, 7.71),
-                      ybreaks=seq(1, 7)
+                      ybreaks=seq(1, 7),
+                      inpanel.cex=4.7
                       
           )
           file_name <- paste0(typ, "box_", gsub("bind","",gsub("pseudoneut","pnAb_",plots[i])), "_", trt[k], "_", gsub(" ","",bstatus[j]), "_",length(unlist(times[t])),"tp","_", study.name, ".pdf")

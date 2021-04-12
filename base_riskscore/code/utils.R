@@ -233,6 +233,7 @@ run_cv_sl_once <- function(seed = 1, Y = NULL, X_mat = NULL,
                            z_lib = "SL.glm",
                            scale = "identity",
                            vimp = FALSE) {
+  
   set.seed(seed)
   fit <- SuperLearner::CV.SuperLearner(
     Y = Y, X = X_mat, family = family,
@@ -252,14 +253,14 @@ run_cv_sl_once <- function(seed = 1, Y = NULL, X_mat = NULL,
 }
 
 ##########################################################################################################
-# remove any binary risk variables with fewer than 10 ptids that have a 1 for that variable
+# remove any binary risk variables with fewer than 10 ptids that have a 0 or 1 for that variable
 # @param dat the phase 1 dataset
 # @param risk_vars the vector of column names of risk variables
-# @return a data frame upon removal of any binary risk variables with fewer than 10 ptids that have a 1 for that variable
-drop_riskVars_with_fewer_1s <- function(dat, risk_vars) {
+# @return a data frame upon removal of any binary risk variables with fewer than 10 ptids that have a 0 or 1 for that variable
+drop_riskVars_with_fewer_0s_or_1s <- function(dat, risk_vars) {
   for (i in 1:length(risk_vars)) {
     if ((dat %>% select(matches(risk_vars[i])) %>% unique() %>% dim())[1] == 2) {
-      if (dim(dat %>% filter(get(risk_vars[i]) == 1))[1] < 10) {
+      if ((dim(dat %>% filter(get(risk_vars[i]) == 1))[1] < 10) | (dim(dat %>% filter(get(risk_vars[i]) == 0))[1] < 10)){
         dat <- dat %>% select(-matches(risk_vars[i]))
       }
     }
@@ -318,10 +319,20 @@ impute_missing_values <- function(X, riskVars) {
   } else {
     print(paste("Imputing missing values in following variables: ", paste(as.character(covars), collapse = ", ")))
     set.seed(20210216)
-    n.imp <- 10
-    invisible(capture.output(imp = mice(X, m = n.imp)))
-    # use the first imputation by default
-    X <- mice::complete(imp, action = 1)
+    n.imp <- 1
+
+    imp <- X %>% select(all_of(covars))
+    
+    # deal with constant variables
+    for (a in names(imp)) {
+      if (all(imp[[a]]==min(imp[[a]], na.rm=TRUE), na.rm=TRUE)) imp[[a]]=min(imp[[a]], na.rm=TRUE)
+    }
+    
+    # diagnostics = FALSE , remove_collinear=F are needed to avoid errors due to collinearity
+    imp <- imp %>%
+      mice(m = n.imp, printFlag = FALSE, seed=1, diagnostics = FALSE, remove_collinear = FALSE)
+    
+    X[, covars] <- mice::complete(imp, action = 1L)
   }
   return(X)
 }
@@ -403,7 +414,12 @@ plot_roc_curves <- function(predict, cvaucDAT) {
     theme(
       legend.position = "top",
       legend.direction = "vertical",
-      legend.box = "horizontal"
+      legend.box = "horizontal",
+      legend.title=element_text(size=20),
+      legend.text=element_text(size=20),
+      axis.ticks.length = unit(.35, "cm"),
+      axis.text = element_text(size = 23),
+      axis.title = element_text(size = 30)
     ) +
     labs(x = "Cross-Validated False Positive Rate", y = "Cross-Validated True Positive Rate", col = "Model (CV-AUC)") +
     geom_abline(intercept = 0, slope = 1)
@@ -423,12 +439,13 @@ plot_predicted_probabilities <- function(pred) {
     theme_bw() +
     scale_color_manual(values = c("#56B4E9", "#E69F00")) +
     facet_wrap(vars(learnerScreen), ncol = 1) +
-    labs(y = "CV estimated probability of COVID disease", x = "") +
+    labs(y = "CV estimated predicted probability of COVID disease", x = "") +
     theme(
       legend.position = "none",
-      strip.text.x = element_text(size = 11),
-      axis.text = element_text(size = 12),
-      axis.title.y = element_text(size = 14)
+      strip.text.x = element_text(size = 25),
+      axis.text = element_text(size = 23),
+      axis.ticks.length = unit(.35, "cm"),
+      axis.title.y = element_text(size = 30)
     )
 }
 
@@ -494,19 +511,20 @@ make_forest_plot_demo <- function(avgs) {
 make_forest_plot_prod <- function(avgs) {
   lowestXTick <- floor(min(avgs$ci_ll) * 10) / 10
   top_learner_plot <- ggplot() +
-    geom_pointrange(avgs %>% mutate(LearnerScreen = fct_reorder(LearnerScreen, AUC, .desc = F)), mapping = aes(x = LearnerScreen, y = AUC, ymin = ci_ll, ymax = ci_ul), size = 1, color = "blue", fill = "blue", shape = 20) +
+    geom_pointrange(avgs %>% mutate(LearnerScreen = fct_reorder(LearnerScreen, AUC, .desc = F)), mapping = aes(x = LearnerScreen, y = AUC, ymin = ci_ll, ymax = ci_ul), size = 3, color = "blue", fill = "blue", shape = 20) +
     coord_flip() +
     scale_y_continuous(breaks = seq(lowestXTick, 1, 0.1), labels = seq(lowestXTick, 1, 0.1), limits = c(lowestXTick, 1)) +
     theme_bw() +
     labs(y = "CV-AUC [95% CI]", x = "") +
     theme(
-      panel.grid.major.x = element_blank(),
-      panel.grid.minor.x = element_blank(),
+      #panel.grid.major.x = element_blank(),
+      #panel.grid.minor.x = element_blank(),
       axis.title.y = element_blank(),
-      axis.text.x = element_text(size = 16),
-      axis.title.x = element_text(size = 16),
+      axis.text = element_text(size = 30),
+      axis.title = element_text(size = 30),
+      axis.ticks.length = unit(.35, "cm"),
       axis.text.y = element_blank(),
-      plot.margin = unit(c(1, -0.15, 1, -0.15), "cm"),
+      plot.margin = unit(c(0.8, -0.15, 0.2, -0.15), "cm"),
       panel.border = element_blank(),
       axis.line = element_line(colour = "black")
     )
@@ -526,10 +544,10 @@ make_forest_plot_prod <- function(avgs) {
     )
 
   top_learner_nms_plot <- ggplot(avgs_withCoord, aes(x = xcoord, y = ycoord, label = strDisplay)) +
-    geom_text(hjust = 1, vjust = 0, size = 5) +
+    geom_text(hjust = 1, vjust = 0, size = 10) +
     xlim(0.7, 2) +
     theme(
-      plot.margin = unit(c(1.0, -0.15, 1.4, -0.15), "cm"),
+      plot.margin = unit(c(1.0, -0.15, 1.7, -0.15), "cm"),
       axis.line = element_blank(),
       axis.text.y = element_blank(),
       axis.text.x = element_text(size = 2, color = "white"),

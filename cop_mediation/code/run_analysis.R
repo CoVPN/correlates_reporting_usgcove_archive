@@ -4,6 +4,7 @@ renv::activate(project = here::here(".."))
 source(here::here("..", "_common.R"))
 #-----------------------------------------------
 library(here)
+library(SuperLearner)
 source(here("code", "params.R"))
 source(here("code", "sl_screen_fn.R"))
 source(here("code", "format_utils.R"))

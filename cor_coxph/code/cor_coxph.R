@@ -57,17 +57,28 @@ dat.plac.pop=subset(dat.mock, Trt==0 & Bserostatus==0 & !is.na(wt.0))
 
 
 # define trichotomized markers
-#   adding 1e-6 to the first cut point helps avoid an error when 33% is the minimial value
-#   -Inf and Inf are added to q.a because otherwise cut2 may assign the rows with the minimum value NA
 marker.cutpoints <- list()    
 for (a in assays) {
     marker.cutpoints[[a]] <- list()    
     for (ind.t in c("Day"%.%pop, "Delta"%.%pop%.%"overB")) {
         q.a <- wtd.quantile(dat.vacc.pop[[ind.t %.% a]], weights = dat.vacc.pop$wt.0, probs = c(1/3, 2/3))
-        q.a[1]=q.a[1]+1e-6
-        dat.vacc.pop[[ind.t %.% a %.% "cat"]] <- factor(cut2(dat.vacc.pop[[ind.t %.% a]], cuts = c(-Inf, q.a, Inf)))
+        if(q.a[1]==q.a[2] | q.a[1]==min(dat.vacc.pop[[ind.t %.% a]], na.rm=TRUE) | q.a[2]==max(dat.vacc.pop[[ind.t %.% a]], na.rm=TRUE)) {
+            # if there is a huge point mass, this would happen
+            # the fix is to call cut. Note that this does not incorporate weights
+            tmp=cut(dat.vacc.pop[[ind.t %.% a]], breaks=3)
+            stopifnot(length(table(tmp))==3)
+            dat.vacc.pop[[ind.t %.% a %.% "cat"]] = tmp
+            # extract cut points from factor level labels
+            tmpname = names(table(tmp))[2]
+            tmpname = substr(tmpname, 2, nchar(tmpname)-1)
+            marker.cutpoints[[a]][[ind.t]] <- as.numeric(strsplit(tmpname, ",")[[1]])
+        } else {
+            # -Inf and Inf are added to q.a because otherwise cut2 may assign the rows with the minimum value NA
+            dat.vacc.pop[[ind.t %.% a %.% "cat"]] <- factor(cut2(dat.vacc.pop[[ind.t %.% a]], cuts = c(-Inf, q.a, Inf)))
+            marker.cutpoints[[a]][[ind.t]] <- q.a
+        }
         stopifnot(length(table(dat.vacc.pop[[ind.t %.% a %.% "cat"]])) == 3)
-        marker.cutpoints[[a]][[ind.t]] <- q.a
+        print(table(dat.vacc.pop[[ind.t %.% a %.% "cat"]]))
     }
 }
 

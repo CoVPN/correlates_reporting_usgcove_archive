@@ -295,11 +295,12 @@ for (a in assays) {
 
 convf=c(bindSpike=0.0090, bindN=0.0024, bindRBD=0.0272)
 
-for (a in names(convf)) {
-  for (t in if(has29) times else times[c(1,3,5)]) {
-    dat_proc[[t %.% a]] <- dat_proc[[t %.% a]] * convf[a]
-  }
+for (a in c("bindSpike", "bindRBD")) {
+  for (t in if(has29) times else times[c(1,3,5)]) dat_proc[[t %.% a]] <- dat_proc[[t %.% a]] * convf[a]
 }
+
+# do bindN separately because there are not delta variables
+a="bindN"; for (t in if(has29) times[1:3] else times[c(1,3)]) dat_proc[[t %.% a]] <- dat_proc[[t %.% a]] * convf[a]
 
 
 ###############################################################################

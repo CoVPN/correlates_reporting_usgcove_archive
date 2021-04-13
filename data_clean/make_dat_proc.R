@@ -275,6 +275,7 @@ if(has29) {
 }
 
 
+
 ###############################################################################
 # censoring values below LLOD
 # llods defined in _common.R
@@ -284,6 +285,19 @@ for (a in assays) {
   for (t in times[1:ifelse(has29,3,2)]) {
     dat_proc[[t %.% a]] <- ifelse(dat_proc[[t %.% a]] < log10(llods[a]), log10(llods[a] / 2), dat_proc[[t %.% a]])
     dat_proc[[t %.% a]] <- ifelse(dat_proc[[t %.% a]] > log10(uloqs[a]), log10(uloqs[a]    ), dat_proc[[t %.% a]])
+  }
+}
+
+
+###############################################################################
+# converting binding variables from AU to IU
+###############################################################################
+
+convf=c(bindSpike=0.0090, bindN=0.0024, bindRBD=0.0272)
+
+for (a in names(convf)) {
+  for (t in if(has29) times else times[c(1,3,5)]) {
+    dat_proc[[t %.% a]] <- dat_proc[[t %.% a]] * convf[a]
   }
 }
 

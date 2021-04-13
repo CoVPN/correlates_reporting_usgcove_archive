@@ -53,9 +53,9 @@
 
   \item Define Delta57overBxxx, Delta29overBxxx, and Delta57over29xxx for each xxx in the variable assays+bindN. This step needs to happen before censoring. Deltas are computed by taking the difference between two markers. Since the markers are on the log scale, the deltas represent the log10 fold rise. No transformation is needed. Negative values are left as they are.
   
-  \item Censor each of the markers in all markers (including bindN) measured by baseline, Day29 and Day57. Censoring means setting values < lower limits of detection (llods, defined in _common.R) to half of the llods and setting values > uloqs to uloqs. Note that llods are on the antilog scale and need to be transformed.
+  \item Apply conversion factor (defined in _common.R) to all the binding variables.
   
-  \item Appply conversion factor (bindSpike=0.0090, bindN=0.0024, bindRBD=0.0272) to all the binding variables.
+  \item Censor each of the markers in all markers (including bindN) measured by baseline, Day29 and Day57. Censoring means setting values < lower limits of detection (llods, defined in _common.R) to half of the llods and setting values > uloqs to uloqs. Note that llods are on the antilog scale and need to be transformed.
   
   \item Finally, if a dataset does not have the Day29 markers, the previous steps are adjusted accordingly. For example, TwophasesampInd.2 and wt.2 will not be defined. 
   

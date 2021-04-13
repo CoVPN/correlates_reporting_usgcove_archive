@@ -295,14 +295,8 @@ for (a in assays.includeN) {
 # converting binding variables from AU to IU
 ###############################################################################
 
-convf=c(bindSpike=0.0090, bindN=0.0024, bindRBD=0.0272)
-
 for (a in c("bindSpike", "bindRBD", "bindN")) {
   for (t in if(has29) times else times[c(1,3,5)]) dat_proc[[t %.% a]] <- dat_proc[[t %.% a]] * convf[a]
-  # scale llods etc
-  llods[a] = llods[a] * convf[a]
-  lloqs[a] = lloqs[a] * convf[a]
-  uloqs[a] = uloqs[a] * convf[a]
 }
 
 

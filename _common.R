@@ -53,6 +53,16 @@ uloqs <-c(bindN = 19136250,
           pseudoneutid80 = 1295, 
           liveneutmn50 = 18976.19) 
 
+
+convf=c(bindSpike=0.0090, bindN=0.0024, bindRBD=0.0272)
+
+for (a in c("bindSpike", "bindRBD", "bindN")) {
+  llods[a] = llods[a] * convf[a]
+  lloqs[a] = lloqs[a] * convf[a]
+  uloqs[a] = uloqs[a] * convf[a]
+}
+
+
 ###############################################################################
 # figure labels and titles for markers
 ###############################################################################

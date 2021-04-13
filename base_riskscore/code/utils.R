@@ -318,7 +318,6 @@ impute_missing_values <- function(X, riskVars) {
     print("No missing values to impute in any risk variables!")
   } else {
     print(paste("Imputing missing values in following variables: ", paste(as.character(covars), collapse = ", ")))
-    set.seed(20210216)
     n.imp <- 1
 
     imp <- X %>% select(all_of(covars))

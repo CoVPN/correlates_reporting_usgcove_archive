@@ -173,7 +173,7 @@ if(has29) dat_proc$TwophasesampInd.2[!with(dat_proc, EventTimePrimaryD29 >= 14 &
 ###############################################################################
 # impute missing neut biomarkers in ph2
 #     impute vaccine and placebo, baseline pos and neg, separately
-#     use all assays
+#     use all assays (not bindN)
 #     use baseline, D29 and D57, but not Delta
 ###############################################################################
 
@@ -265,13 +265,15 @@ if(has29) {
 # define delta for dat_proc
 ###############################################################################
 
-dat_proc["Delta57overB" %.% assays] <-
-  dat_proc["Day57" %.% assays] - dat_proc["B" %.% assays]
+assays.includeN=c(assays, "bindN")
+
+dat_proc["Delta57overB" %.% assays.includeN] <-
+  dat_proc["Day57" %.% assays.includeN] - dat_proc["B" %.% assays.includeN]
 if(has29) {
-    dat_proc["Delta29overB" %.% assays] <-
-      dat_proc["Day29" %.% assays] - dat_proc["B" %.% assays]
-    dat_proc["Delta57over29" %.% assays] <-
-      dat_proc["Day57" %.% assays] - dat_proc["Day29" %.% assays]
+    dat_proc["Delta29overB" %.% assays.includeN] <-
+      dat_proc["Day29" %.% assays.includeN] - dat_proc["B" %.% assays.includeN]
+    dat_proc["Delta57over29" %.% assays.includeN] <-
+      dat_proc["Day57" %.% assays.includeN] - dat_proc["Day29" %.% assays.includeN]
 }
 
 
@@ -281,7 +283,7 @@ if(has29) {
 # llods defined in _common.R
 ###############################################################################
 
-for (a in assays) {
+for (a in assays.includeN) {
   for (t in times[1:ifelse(has29,3,2)]) {
     dat_proc[[t %.% a]] <- ifelse(dat_proc[[t %.% a]] < log10(llods[a]), log10(llods[a] / 2), dat_proc[[t %.% a]])
     dat_proc[[t %.% a]] <- ifelse(dat_proc[[t %.% a]] > log10(uloqs[a]), log10(uloqs[a]    ), dat_proc[[t %.% a]])
@@ -295,12 +297,10 @@ for (a in assays) {
 
 convf=c(bindSpike=0.0090, bindN=0.0024, bindRBD=0.0272)
 
-for (a in c("bindSpike", "bindRBD")) {
+for (a in c("bindSpike", "bindRBD", "bindN")) {
   for (t in if(has29) times else times[c(1,3,5)]) dat_proc[[t %.% a]] <- dat_proc[[t %.% a]] * convf[a]
 }
 
-# do bindN separately because there are not delta variables
-a="bindN"; for (t in if(has29) times[1:3] else times[c(1,3)]) dat_proc[[t %.% a]] <- dat_proc[[t %.% a]] * convf[a]
 
 
 ###############################################################################

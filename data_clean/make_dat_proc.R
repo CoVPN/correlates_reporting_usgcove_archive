@@ -279,6 +279,18 @@ if(has29) {
 
 
 ###############################################################################
+# converting binding variables from AU to IU
+###############################################################################
+
+for (a in c("bindSpike", "bindRBD", "bindN")) {
+  for (t in if(has29) times else times[c(1,3,5)]) {
+      dat_proc[[t %.% a]] <- dat_proc[[t %.% a]] + log10(convf[a])
+  }
+}
+
+
+
+###############################################################################
 # censoring values below LLOD
 # llods defined in _common.R
 ###############################################################################
@@ -289,16 +301,6 @@ for (a in assays.includeN) {
     dat_proc[[t %.% a]] <- ifelse(dat_proc[[t %.% a]] > log10(uloqs[a]), log10(uloqs[a]    ), dat_proc[[t %.% a]])
   }
 }
-
-
-###############################################################################
-# converting binding variables from AU to IU
-###############################################################################
-
-for (a in c("bindSpike", "bindRBD", "bindN")) {
-  for (t in if(has29) times else times[c(1,3,5)]) dat_proc[[t %.% a]] <- dat_proc[[t %.% a]] * convf[a]
-}
-
 
 
 ###############################################################################

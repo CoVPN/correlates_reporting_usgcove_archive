@@ -110,7 +110,7 @@ screen_highcor_random <- function(Y, X, family, obsWeights, id, nVar = maxVar,
   ) %>%
     filter(corr == "FALSE")
 
-  if (dim(long.cormat)[1] > 0) { # NEEDS TO BE UPDATED; CHECK SAP
+  if (dim(long.cormat)[1] > 0) { 
     # select random element out of any pair
     long.cormat$randCol <- apply(long.cormat, 1, function(x) sample(c(x[1], x[2]), 1, replace = T))
     # get the unique columns

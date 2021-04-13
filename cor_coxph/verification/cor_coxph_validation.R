@@ -24,7 +24,7 @@ library(Hmisc)
 library(xtable) 
 
 # Read in data file
-inputFile <- read.csv(here::here("..", "data_clean", data_name)) 
+inputFile <- read.csv(here::here("..", "data_clean", "practice_data_with_riskscore.csv")) 
 
 # Define marker data for analysis, Day 57 or Day 29 as this will determine the data subset for analysis (Add the intercurrent cases in Day 29 analyses!)
 markerDay = 57
@@ -58,7 +58,7 @@ rm(vec_cutpoints)
 dat.D57.design <- twophase(id=list(~Ptid,~Ptid),strata=list(NULL,~Wstratum),
                            data=dat.D57, subset=~TwophasesampInd)
 
-fit <- survey::svycoxph(Surv(EventTimePrimaryD57, EventIndPrimaryD57) ~ Day57bindSpike + Day57bindRBD + Day57pseudoneutid50 + Day57pseudoneutid80 + MinorityInd + HighRiskInd + Age, design=dat.D57.design)
+fit <- survey::svycoxph(Surv(EventTimePrimaryD57, EventIndPrimaryD57) ~ Day57bindSpike + Day57bindRBD + Day57pseudoneutid50 + Day57pseudoneutid80 + MinorityInd + HighRiskInd + risk_score, design=dat.D57.design)
 
 survey::svycoxph(Surv(EventTimePrimaryD57, EventIndPrimaryD57) ~ Day57bindSpikecat + Day57bindRBDcat + Day57pseudoneutid50cat + Day57pseudoneutid80cat + MinorityInd + HighRiskInd + Age, design=dat.D57.design)
 

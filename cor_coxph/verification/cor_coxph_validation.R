@@ -30,36 +30,144 @@ inputFile <- read.csv(here::here("..", "data_clean", "practice_data_with_risksco
 markerDay = 57
 
 # create data subsets
-phase1.D57 <- inputFile %>% filter(is.na(wt))
-phase2.D57 <- inputFile %>% filter(TwophasesampInd == 1)
-dat.D57 <- bind_rows(phase1.D57, phase2.D57)
+dat <- inputFile %>% filter(Trt == 1 & Bserostatus == 0)
 
-phase1.D29 <- inputFile %>% filter(is.na(wt.2))
-phase2.D29 <- inputFile %>% filter(TwophasesampInd.2 == 1)
-dat.D29 <- bind_rows(phase1.D29, phase2.D29)
 
-# Define trichotomized version of the markers: Day57bindSpike, Day57bindRBD, Day57pseudoneutid50, Day57pseudoneutid80
-vec_cutpoints <- c(-Inf, Hmisc::wtd.quantile(dat.D57$Day57bindSpike, probs = c(1/3, 2/3)) + c(1e-6, 0), Inf)
-dat.D57$Day57bindSpikecat <- Hmisc::cut2(dat.D57$Day57bindSpike, vec_cutpoints)
-rm(vec_cutpoints)
+################################################## 
+# Day 57 analysis
 
-vec_cutpoints <- c(-Inf, Hmisc::wtd.quantile(dat.D57$Day57bindRBD, probs = c(1/3, 2/3)) + c(1e-6, 0), Inf)
-dat.D57$Day57bindRBDcat <- Hmisc::cut2(dat.D57$Day57bindRBD, vec_cutpoints)
-rm(vec_cutpoints)
+dat.D57 <- dat %>% filter(!is.na(wt))
 
-vec_cutpoints <- c(-Inf, Hmisc::wtd.quantile(dat.D57$Day57pseudoneutid50, probs = c(1/3, 2/3)) + c(1e-6, 0), Inf)
-dat.D57$Day57pseudoneutid50cat <- Hmisc::cut2(dat.D57$Day57pseudoneutid50, vec_cutpoints)
-rm(vec_cutpoints)
-
-vec_cutpoints <- c(-Inf, Hmisc::wtd.quantile(dat.D57$Day57pseudoneutid80, probs = c(1/3, 2/3)) + c(1e-6, 0), Inf)
-dat.D57$Day57pseudoneutid80cat <- Hmisc::cut2(dat.D57$Day57pseudoneutid80, vec_cutpoints)
-rm(vec_cutpoints)
-
-dat.D57.design <- twophase(id=list(~Ptid,~Ptid),strata=list(NULL,~Wstratum),
+dat.D57.design <- twophase(id=list(~Ptid, ~Ptid),strata=list(NULL, ~Wstratum),
                            data=dat.D57, subset=~TwophasesampInd)
 
-fit <- survey::svycoxph(Surv(EventTimePrimaryD57, EventIndPrimaryD57) ~ Day57bindSpike + Day57bindRBD + Day57pseudoneutid50 + Day57pseudoneutid80 + MinorityInd + HighRiskInd + risk_score, design=dat.D57.design)
+fit <- survey::svycoxph(Surv(EventTimePrimaryD57, EventIndPrimaryD57) ~ Day57bindSpike + MinorityInd + HighRiskInd + risk_score, design=dat.D57.design)
 
-survey::svycoxph(Surv(EventTimePrimaryD57, EventIndPrimaryD57) ~ Day57bindSpikecat + Day57bindRBDcat + Day57pseudoneutid50cat + Day57pseudoneutid80cat + MinorityInd + HighRiskInd + Age, design=dat.D57.design)
+# Define trichotomized version of the markers: Day57bindSpike, Day57bindRBD, Day57pseudoneutid50, Day57pseudoneutid80
+vec_cutpoints <- c(-Inf, Hmisc::wtd.quantile(dat.D57$Day57bindSpike, weights = dat.D57$wt, probs = c(1/3, 2/3)), Inf)
+if((vec_cutpoints[[2]] == min(dat.D57$Day57bindSpike, na.rm = T)) | 
+   (vec_cutpoints[[3]] == max(dat.D57$Day57bindSpike, na.rm = T)) |
+   (vec_cutpoints[[2]] == vec_cutpoints[[3]])){
+  dat.D57$Day57bindSpikecat <- Hmisc::cut2(dat.D57$Day57bindSpike, breaks = 3)
+} else {
+    dat.D57$Day57bindSpikecat <- Hmisc::cut2(dat.D57$Day57bindSpike, vec_cutpoints)}
+rm(vec_cutpoints)
+
+
+
+vec_cutpoints <- c(-Inf, Hmisc::wtd.quantile(dat.D57$Day57bindRBD, weights = dat.D57$wt, probs = c(1/3, 2/3)), Inf)
+if((vec_cutpoints[[2]] == min(dat.D57$Day57bindRBD, na.rm = T)) | 
+   (vec_cutpoints[[3]] == max(dat.D57$Day57bindRBD, na.rm = T)) |
+   (vec_cutpoints[[2]] == vec_cutpoints[[3]])){
+  dat.D57$Day57bindRBDcat <- Hmisc::cut2(dat.D57$Day57bindRBD, breaks = 3)
+} else {
+  dat.D57$Day57bindRBDcat <- Hmisc::cut2(dat.D57$Day57bindRBD, vec_cutpoints)}
+rm(vec_cutpoints)
+
+
+
+
+vec_cutpoints <- c(-Inf, Hmisc::wtd.quantile(dat.D57$Day57pseudoneutid50, weights = dat.D57$wt, probs = c(1/3, 2/3)), Inf)
+if((vec_cutpoints[[2]] == min(dat.D57$Day57pseudoneutid50, na.rm = T)) | 
+   (vec_cutpoints[[3]] == max(dat.D57$Day57pseudoneutid50, na.rm = T)) |
+   (vec_cutpoints[[2]] == vec_cutpoints[[3]])){
+  dat.D57$Day57pseudoneutid50cat <- Hmisc::cut2(dat.D57$Day57pseudoneutid50, breaks = 3)
+} else {
+  dat.D57$Day57pseudoneutid50cat <- Hmisc::cut2(dat.D57$Day57pseudoneutid50, vec_cutpoints)}
+rm(vec_cutpoints)
+
+
+
+
+vec_cutpoints <- c(-Inf, Hmisc::wtd.quantile(dat.D57$Day57pseudoneutid80, weights = dat.D57$wt, probs = c(1/3, 2/3)), Inf)
+if((vec_cutpoints[[2]] == min(dat.D57$Day57pseudoneutid80, na.rm = T)) | 
+   (vec_cutpoints[[3]] == max(dat.D57$Day57pseudoneutid80, na.rm = T)) |
+   (vec_cutpoints[[2]] == vec_cutpoints[[3]])){
+  dat.D57$Day57pseudoneutid80cat <- cut(dat.D57$Day57pseudoneutid80, breaks = 3)
+} else {
+  dat.D57$Day57pseudoneutid80cat <- Hmisc::cut2(dat.D57$Day57pseudoneutid80, vec_cutpoints)}
+rm(vec_cutpoints)
+
+
+
+dat.D57 <- dat.D57 %>%
+  mutate(Day57bindSpikecat = factor(Day57bindSpikecat),
+         Day57bindRBDcat = factor(Day57bindRBDcat),
+         Day57pseudoneutid50cat = factor(Day57pseudoneutid50cat),
+         Day57pseudoneutid80cat = factor(Day57pseudoneutid80cat))
+
+
+dat.D57.design <- twophase(id=list(~Ptid, ~Ptid),strata=list(NULL, ~Wstratum),
+                           data=dat.D57, subset=~TwophasesampInd)
+
+fitcat <- survey::svycoxph(Surv(EventTimePrimaryD57, EventIndPrimaryD57) ~ Day57bindSpikecat + MinorityInd + HighRiskInd + risk_score, design=dat.D57.design)
+
+################################################## 
+# Day 29 analysis
+dat.D29 <- dat %>% filter(!is.na(wt.2))
+
+dat.D29.design <- twophase(id=list(~Ptid, ~Ptid),strata=list(NULL, ~Wstratum),
+                           data=dat.D29, subset=~TwophasesampInd.2)
+
+fit <- survey::svycoxph(Surv(EventTimePrimaryD29, EventIndPrimaryD29) ~ Day29bindSpike + MinorityInd + HighRiskInd + risk_score, design=dat.D29.design)
+
+# Define trichotomized version of the markers: Day29bindSpike, Day29bindRBD, Day29pseudoneutid50, Day29pseudoneutid80
+vec_cutpoints <- c(-Inf, Hmisc::wtd.quantile(dat.D29$Day29bindSpike, weights = dat.D29$wt.2, probs = c(1/3, 2/3)), Inf)
+if((vec_cutpoints[[2]] == min(dat.D29$Day29bindSpike, na.rm = T)) | 
+   (vec_cutpoints[[3]] == max(dat.D29$Day29bindSpike, na.rm = T)) |
+   (vec_cutpoints[[2]] == vec_cutpoints[[3]])){
+  dat.D29$Day29bindSpikecat <- Hmisc::cut2(dat.D29$Day29bindSpike, breaks = 3)
+} else {
+  dat.D29$Day29bindSpikecat <- Hmisc::cut2(dat.D29$Day29bindSpike, vec_cutpoints)}
+rm(vec_cutpoints)
+
+
+
+vec_cutpoints <- c(-Inf, Hmisc::wtd.quantile(dat.D29$Day29bindRBD, weights = dat.D29$wt.2, probs = c(1/3, 2/3)), Inf)
+if((vec_cutpoints[[2]] == min(dat.D29$Day29bindRBD, na.rm = T)) | 
+   (vec_cutpoints[[3]] == max(dat.D29$Day29bindRBD, na.rm = T)) |
+   (vec_cutpoints[[2]] == vec_cutpoints[[3]])){
+  dat.D29$Day29bindRBDcat <- Hmisc::cut2(dat.D29$Day29bindRBD, breaks = 3)
+} else {
+  dat.D29$Day29bindRBDcat <- Hmisc::cut2(dat.D29$Day29bindRBD, vec_cutpoints)}
+rm(vec_cutpoints)
+
+
+
+
+vec_cutpoints <- c(-Inf, Hmisc::wtd.quantile(dat.D29$Day29pseudoneutid50, weights = dat.D29$wt.2, probs = c(1/3, 2/3)), Inf)
+if((vec_cutpoints[[2]] == min(dat.D29$Day29pseudoneutid50, na.rm = T)) | 
+   (vec_cutpoints[[3]] == max(dat.D29$Day29pseudoneutid50, na.rm = T)) |
+   (vec_cutpoints[[2]] == vec_cutpoints[[3]])){
+  dat.D29$Day29pseudoneutid50cat <- Hmisc::cut2(dat.D29$Day29pseudoneutid50, breaks = 3)
+} else {
+  dat.D29$Day29pseudoneutid50cat <- Hmisc::cut2(dat.D29$Day29pseudoneutid50, vec_cutpoints)}
+rm(vec_cutpoints)
+
+
+
+
+vec_cutpoints <- c(-Inf, Hmisc::wtd.quantile(dat.D29$Day29pseudoneutid80, weights = dat.D29$wt.2, probs = c(1/3, 2/3)), Inf)
+if((vec_cutpoints[[2]] == min(dat.D29$Day29pseudoneutid80, na.rm = T)) | 
+   (vec_cutpoints[[3]] == max(dat.D29$Day29pseudoneutid80, na.rm = T)) |
+   (vec_cutpoints[[2]] == vec_cutpoints[[3]])){
+  dat.D29$Day29pseudoneutid80cat <- cut(dat.D29$Day29pseudoneutid80, breaks = 3)
+} else {
+  dat.D29$Day29pseudoneutid80cat <- Hmisc::cut2(dat.D29$Day29pseudoneutid80, vec_cutpoints)}
+rm(vec_cutpoints)
+
+
+
+dat.D29 <- dat.D29 %>%
+  mutate(Day29bindSpikecat = factor(Day29bindSpikecat),
+         Day29bindRBDcat = factor(Day29bindRBDcat),
+         Day29pseudoneutid50cat = factor(Day29pseudoneutid50cat),
+         Day29pseudoneutid80cat = factor(Day29pseudoneutid80cat))
+
+
+dat.D29.design <- twophase(id=list(~Ptid, ~Ptid),strata=list(NULL, ~Wstratum),
+                           data=dat.D29, subset=~TwophasesampInd.2)
+
+fitcat <- survey::svycoxph(Surv(EventTimePrimaryD29, EventIndPrimaryD29) ~ Day29bindSpikecat + MinorityInd + HighRiskInd + risk_score, design=dat.D29.design)
 
 

@@ -8,7 +8,7 @@ source(here::here("code", "covid_corr_plot_functions.R"))
 library(ggpubr)
 library(scales)
 library(ggplot2)
-
+library(tidyr)
 
 dat.long.cor.subset <- readRDS(here(
   "data_clean",

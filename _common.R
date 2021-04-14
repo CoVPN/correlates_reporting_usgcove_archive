@@ -107,7 +107,7 @@ labels.axis <- outer(
   "%.%"
 )
 labels.axis <- as.data.frame(labels.axis)
-  rownames(labels.axis) <- times
+rownames(labels.axis) <- times
 
 labels.assays <- c("Binding Antibody to Spike", 
                    "Binding Antibody to RBD",
@@ -115,7 +115,9 @@ labels.assays <- c("Binding Antibody to Spike",
                    "PsV Neutralization 80% Titer",
                    "WT LV Neutralization 50% Titer")
 
-names(labels.assays) <- c("bindSpike", "bindRBD", "pseudoneutid50",
+names(labels.assays) <- c("bindSpike", 
+                          "bindRBD", 
+                          "pseudoneutid50",
                           "pseudoneutid80",
                           "liveneutmn50")
 

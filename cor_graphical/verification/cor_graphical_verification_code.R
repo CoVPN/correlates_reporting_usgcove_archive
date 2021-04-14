@@ -316,7 +316,7 @@ lineplots_neg_vaccine_bindSpike_2 %>%
   unique()
 
 
-#violinplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm (2 timepoints)
+#lineplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm (2 timepoints)
 lineplots_neg_vaccine_pseudoneutid50_2 <- dat.longer.cor.subset.plot1_verification %>% 
   filter(Trt == "Vaccine", 
          Bserostatus == "Baseline Neg", 

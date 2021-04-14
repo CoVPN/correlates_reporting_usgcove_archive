@@ -286,7 +286,10 @@ drop_riskVars_with_high_total_missing_values <- function(X, riskVars) {
     }
   }
 
-  return(X %>% select(-all_of(covars_highNAvalues)))
+  if(length(covars_highNAvalues) == 0)
+    return(X)
+  else
+    return(X %>% select(-all_of(covars_highNAvalues)))
 }
 
 

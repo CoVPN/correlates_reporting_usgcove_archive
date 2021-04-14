@@ -165,6 +165,8 @@ get_rgmt <- function(dat, v, groups, comp_lev, sub.by, strata, weights, subset){
   design <- twophase(list(~Ptid, ~Ptid), 
                      strata=list(NULL, as.formula(sprintf("~%s", strata))),
                      subset=as.formula(sprintf("~%s", subset)),
+                     method="simple",
+                     weights = list(NULL, ~wt.subcohort),
                      data=dat)
   for (j in groups){
     for (i in v){

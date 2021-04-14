@@ -410,7 +410,9 @@ print("Done with table 1")
 
 corr.design1 <- twophase(list(~Ptid, ~Ptid), 
                         strata=list(NULL, ~ Wstratum),
+                        weights=list(NULL, ~ wt),
                         subset= ~ corrset1,
+                        method="simple",
                         data=subset(ds, cohort1))
 
 sub.by <- c("Arm", "`Baseline SARS-CoV-2`")
@@ -431,7 +433,9 @@ print("Done with table 2 & 3")
 if(has29){
   corr.design2 <- twophase(list(~Ptid, ~Ptid), 
                            strata=list(NULL, ~ Wstratum),
+                           weights=list(NULL, ~ wt.2),
                            subset= ~ corrset2,
+                           method="simple",
                            data=subset(ds, cohort2))
   
   rpcnt_case2 <- get_rr(ds, resp.v, subs, sub.by, design=corr.design2, "wt.2", "corrset2")

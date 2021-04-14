@@ -137,6 +137,8 @@ print("Done with table 1")
 immuno.design <- twophase(list(~Ptid, ~Ptid), 
                           strata=list(NULL, ~tps.stratum),
                           subset=~randomset,
+                          method="simple",
+                          weights = list(NULL, ~wt.subcohort),
                           data=ds)
 
 sub.by <- c("Arm", "`Baseline SARS-CoV-2`")

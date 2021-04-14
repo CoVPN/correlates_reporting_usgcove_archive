@@ -19,7 +19,7 @@ dat.mock <- read.csv(here::here("..", "data_clean", data_name))
 
 # The stratified random cohort for immunogenicity
 ds_s <- dat.mock %>%
-  dplyr::filter(Perprotocol == 1 & EventTimePrimaryD57 >= 7) %>%
+  dplyr::filter(!is.na(wt.subcohort)) %>%
   mutate(
     raceC = as.character(race),
     ethnicityC = case_when(EthnicityHispanic==1 ~ "Hispanic or Latino",
@@ -59,8 +59,7 @@ ds_s <- dat.mock %>%
     AgeRisk1 = ifelse(Age65C=="Age $<$ 65", AgeRiskC, NA),
     AgeRisk2 = ifelse(Age65C=="Age $\\geq$ 65", AgeRiskC, NA),
     All = "All participants",
-    randomset = (SubcohortInd == 1 & TwophasesampInd == 1 &
-                   Perprotocol == 1 & !is.na(wt.subcohort))
+    randomset = (SubcohortInd == 1 & TwophasesampInd == 1 & !is.na(wt.subcohort))
   ) 
 
 

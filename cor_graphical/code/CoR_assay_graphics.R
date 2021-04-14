@@ -4,11 +4,22 @@ renv::activate(project = here::here(".."))
 source(here::here("..", "_common.R"))
 #-----------------------------------------------
 source(here::here("code", "params.R"))
-source(here::here("code", "cor_data_preprocess.R"))
 source(here::here("code", "covid_corr_plot_functions.R"))
 library(ggpubr)
 library(scales)
 library(ggplot2)
+
+
+dat.long.cor.subset <- readRDS(here(
+  "data_clean",
+  "long_cor_data.rds"
+))
+
+dat.cor.subset <- readRDS(here(
+  "data_clean",
+  "cor_data.rds"
+))
+
 #=========================================================================================================================
 # Reverse empirical cdf (rcdf) plots for the Baseline/Day 57/Baseline-subtracted Day 57assay readouts, 
 # stratified by treatment group and event status, in baseline negative or positive subjects

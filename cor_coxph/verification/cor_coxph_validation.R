@@ -27,11 +27,7 @@ library(broom)
 # Read in data file
 inputFile <- read.csv(here::here("..", "data_clean", "practice_data_with_riskscore.csv")) 
 
-# Define marker data for analysis, Day 57 or Day 29 as this will determine the data subset for analysis (Add the intercurrent cases in Day 29 analyses!)
-markerDay = 57
 
-# create data subsets
-dat <- inputFile %>% filter(Trt == 1 & Bserostatus == 0)
 
 # This function takes marker name as string, and the design.
 # It returns the HR for the marker, CI and p.value
@@ -80,81 +76,95 @@ getHR_D57_categorical_marker <- function(marker, design, data, group){
                       ifelse(marker_cut == "Middle", length(data_middle$EventIndPrimaryD57),
                              length(data_upper$EventIndPrimaryD57))),
            group = group)
-  
 }
 
 ################################################## 
-# Day 57 analysis
-dat.D57 <- dat %>% filter(!is.na(wt))
+get_results_in_df_D57 <- function(dat, group){
+  # Day 57 analysis
+  dat.D57 <- dat %>% filter(!is.na(wt))
 
-# Define trichotomized version of the markers
-# trichotomize Day57bindSpike
-vec_cutpoints <- c(-Inf, Hmisc::wtd.quantile(dat.D57$Day57bindSpike, weights = dat.D57$wt, probs = c(1/3, 2/3)), Inf)
-if((vec_cutpoints[[2]] == min(dat.D57$Day57bindSpike, na.rm = T)) | 
-   (vec_cutpoints[[3]] == max(dat.D57$Day57bindSpike, na.rm = T)) |
-   (vec_cutpoints[[2]] == vec_cutpoints[[3]])){
-  dat.D57$Day57bindSpikecat <- Hmisc::cut2(dat.D57$Day57bindSpike, breaks = 3)
-} else {
-  dat.D57$Day57bindSpikecat <- Hmisc::cut2(dat.D57$Day57bindSpike, vec_cutpoints)}
-rm(vec_cutpoints)
+  dat.D57.design <- twophase(id=list(~Ptid, ~Ptid),strata=list(NULL, ~Wstratum),
+                             data=dat.D57, subset=~TwophasesampInd)
+  
+  tab1 <- getHR_D57_continuous_marker(marker = "Day57bindSpike", design = dat.D57.design, data = dat.D57, group = group) %>%
+    bind_rows(getHR_D57_continuous_marker(marker = "Day57bindRBD", design = dat.D57.design, data = dat.D57, group = group),
+              getHR_D57_continuous_marker(marker = "Day57pseudoneutid50", design = dat.D57.design, data = dat.D57, group = group),
+              getHR_D57_continuous_marker(marker = "Day57pseudoneutid80", design = dat.D57.design, data = dat.D57, group = group)) %>%
+    mutate(markerFormat = "continuous")
+  
+  if(group == "All baseline negative, vaccine"){
+    
+    # Define trichotomized version of the markers
+    # trichotomize Day57bindSpike
+    vec_cutpoints <- c(-Inf, Hmisc::wtd.quantile(dat.D57$Day57bindSpike, weights = dat.D57$wt, probs = c(1/3, 2/3)), Inf)
+    if((vec_cutpoints[[2]] == min(dat.D57$Day57bindSpike, na.rm = T)) | 
+       (vec_cutpoints[[3]] == max(dat.D57$Day57bindSpike, na.rm = T)) |
+       (vec_cutpoints[[2]] == vec_cutpoints[[3]])){
+      dat.D57$Day57bindSpikecat <- Hmisc::cut2(dat.D57$Day57bindSpike, breaks = 3)
+    } else {
+      dat.D57$Day57bindSpikecat <- Hmisc::cut2(dat.D57$Day57bindSpike, vec_cutpoints)}
+    rm(vec_cutpoints)
+    
+    # trichotomize Day57bindRBD
+    vec_cutpoints <- c(-Inf, Hmisc::wtd.quantile(dat.D57$Day57bindRBD, weights = dat.D57$wt, probs = c(1/3, 2/3)), Inf)
+    if((vec_cutpoints[[2]] == min(dat.D57$Day57bindRBD, na.rm = T)) | 
+       (vec_cutpoints[[3]] == max(dat.D57$Day57bindRBD, na.rm = T)) |
+       (vec_cutpoints[[2]] == vec_cutpoints[[3]])){
+      dat.D57$Day57bindRBDcat <- Hmisc::cut2(dat.D57$Day57bindRBD, breaks = 3)
+    } else {
+      dat.D57$Day57bindRBDcat <- Hmisc::cut2(dat.D57$Day57bindRBD, vec_cutpoints)}
+    rm(vec_cutpoints)
+    
+    # trichotomize Day57pseudoneutid50
+    vec_cutpoints <- c(-Inf, Hmisc::wtd.quantile(dat.D57$Day57pseudoneutid50, weights = dat.D57$wt, probs = c(1/3, 2/3)), Inf)
+    if((vec_cutpoints[[2]] == min(dat.D57$Day57pseudoneutid50, na.rm = T)) | 
+       (vec_cutpoints[[3]] == max(dat.D57$Day57pseudoneutid50, na.rm = T)) |
+       (vec_cutpoints[[2]] == vec_cutpoints[[3]])){
+      dat.D57$Day57pseudoneutid50cat <- Hmisc::cut2(dat.D57$Day57pseudoneutid50, breaks = 3)
+    } else {
+      dat.D57$Day57pseudoneutid50cat <- Hmisc::cut2(dat.D57$Day57pseudoneutid50, vec_cutpoints)}
+    rm(vec_cutpoints)
+    
+    # trichotomize Day57pseudoneutid80
+    vec_cutpoints <- c(-Inf, Hmisc::wtd.quantile(dat.D57$Day57pseudoneutid80, weights = dat.D57$wt, probs = c(1/3, 2/3)), Inf)
+    if((vec_cutpoints[[2]] == min(dat.D57$Day57pseudoneutid80, na.rm = T)) | 
+       (vec_cutpoints[[3]] == max(dat.D57$Day57pseudoneutid80, na.rm = T)) |
+       (vec_cutpoints[[2]] == vec_cutpoints[[3]])){
+      dat.D57$Day57pseudoneutid80cat <- cut(dat.D57$Day57pseudoneutid80, breaks = 3)
+    } else {
+      dat.D57$Day57pseudoneutid80cat <- Hmisc::cut2(dat.D57$Day57pseudoneutid80, vec_cutpoints)}
+    rm(vec_cutpoints)
+    
+    dat.D57 <- dat.D57 %>%
+      mutate(Day57bindSpikecat = factor(Day57bindSpikecat),
+             Day57bindRBDcat = factor(Day57bindRBDcat),
+             Day57pseudoneutid50cat = factor(Day57pseudoneutid50cat),
+             Day57pseudoneutid80cat = factor(Day57pseudoneutid80cat))
+    
+    dat.D57.design <- twophase(id=list(~Ptid, ~Ptid),strata=list(NULL, ~Wstratum),
+                               data=dat.D57, subset=~TwophasesampInd)
+    
+    tab2 <- getHR_D57_categorical_marker(marker = "Day57bindSpikecat", design = dat.D57.design, data = dat.D57, group = group) %>%
+      bind_rows(getHR_D57_categorical_marker(marker = "Day57bindRBDcat", design = dat.D57.design, data = dat.D57, group = group),
+                getHR_D57_categorical_marker(marker = "Day57pseudoneutid50cat", design = dat.D57.design, data = dat.D57, group = group),
+                getHR_D57_categorical_marker(marker = "Day57pseudoneutid80cat", design = dat.D57.design, data = dat.D57, group = group)) %>%
+      mutate(markerFormat = "categorical")
+    
+    return(bind_rows(tab1, tab2))
+  }
+  
+  if(group != "All baseline negative, vaccine"){
+    return(tab1)
+  }
+}
 
-# trichotomize Day57bindRBD
-vec_cutpoints <- c(-Inf, Hmisc::wtd.quantile(dat.D57$Day57bindRBD, weights = dat.D57$wt, probs = c(1/3, 2/3)), Inf)
-if((vec_cutpoints[[2]] == min(dat.D57$Day57bindRBD, na.rm = T)) | 
-   (vec_cutpoints[[3]] == max(dat.D57$Day57bindRBD, na.rm = T)) |
-   (vec_cutpoints[[2]] == vec_cutpoints[[3]])){
-  dat.D57$Day57bindRBDcat <- Hmisc::cut2(dat.D57$Day57bindRBD, breaks = 3)
-} else {
-  dat.D57$Day57bindRBDcat <- Hmisc::cut2(dat.D57$Day57bindRBD, vec_cutpoints)}
-rm(vec_cutpoints)
-
-# trichotomize Day57pseudoneutid50
-vec_cutpoints <- c(-Inf, Hmisc::wtd.quantile(dat.D57$Day57pseudoneutid50, weights = dat.D57$wt, probs = c(1/3, 2/3)), Inf)
-if((vec_cutpoints[[2]] == min(dat.D57$Day57pseudoneutid50, na.rm = T)) | 
-   (vec_cutpoints[[3]] == max(dat.D57$Day57pseudoneutid50, na.rm = T)) |
-   (vec_cutpoints[[2]] == vec_cutpoints[[3]])){
-  dat.D57$Day57pseudoneutid50cat <- Hmisc::cut2(dat.D57$Day57pseudoneutid50, breaks = 3)
-} else {
-  dat.D57$Day57pseudoneutid50cat <- Hmisc::cut2(dat.D57$Day57pseudoneutid50, vec_cutpoints)}
-rm(vec_cutpoints)
-
-# trichotomize Day57pseudoneutid80
-vec_cutpoints <- c(-Inf, Hmisc::wtd.quantile(dat.D57$Day57pseudoneutid80, weights = dat.D57$wt, probs = c(1/3, 2/3)), Inf)
-if((vec_cutpoints[[2]] == min(dat.D57$Day57pseudoneutid80, na.rm = T)) | 
-   (vec_cutpoints[[3]] == max(dat.D57$Day57pseudoneutid80, na.rm = T)) |
-   (vec_cutpoints[[2]] == vec_cutpoints[[3]])){
-  dat.D57$Day57pseudoneutid80cat <- cut(dat.D57$Day57pseudoneutid80, breaks = 3)
-} else {
-  dat.D57$Day57pseudoneutid80cat <- Hmisc::cut2(dat.D57$Day57pseudoneutid80, vec_cutpoints)}
-rm(vec_cutpoints)
-
-dat.D57 <- dat.D57 %>%
-  mutate(Day57bindSpikecat = factor(Day57bindSpikecat),
-         Day57bindRBDcat = factor(Day57bindRBDcat),
-         Day57pseudoneutid50cat = factor(Day57pseudoneutid50cat),
-         Day57pseudoneutid80cat = factor(Day57pseudoneutid80cat))
-
-##########################################
-
-
-dat.D57.design <- twophase(id=list(~Ptid, ~Ptid),strata=list(NULL, ~Wstratum),
-                           data=dat.D57, subset=~TwophasesampInd)
-
-tab1 <- getHR_D57_continuous_marker(marker = "Day57bindSpike", design = dat.D57.design, data = dat.D57, group = "All baseline negative, vaccine") %>%
-  bind_rows(getHR_D57_continuous_marker(marker = "Day57bindRBD", design = dat.D57.design, data = dat.D57, group = "All baseline negative, vaccine"),
-            getHR_D57_continuous_marker(marker = "Day57pseudoneutid50", design = dat.D57.design, data = dat.D57, group = "All baseline negative, vaccine"),
-            getHR_D57_continuous_marker(marker = "Day57pseudoneutid80", design = dat.D57.design, data = dat.D57, group = "All baseline negative, vaccine"))
-
-tab2 <- getHR_D57_categorical_marker(marker = "Day57bindSpikecat", design = dat.D57.design, data = dat.D57, group = "All baseline negative, vaccine") %>%
-  bind_rows(getHR_D57_categorical_marker(marker = "Day57bindRBDcat", design = dat.D57.design, data = dat.D57, group = "All baseline negative, vaccine"),
-            getHR_D57_categorical_marker(marker = "Day57pseudoneutid50cat", design = dat.D57.design, data = dat.D57, group = "All baseline negative, vaccine"),
-            getHR_D57_categorical_marker(marker = "Day57pseudoneutid80cat", design = dat.D57.design, data = dat.D57, group = "All baseline negative, vaccine")) 
 
 ################################################## 
-# Age >= 65
-# create data subsets
-dat <- inputFile %>% filter(Trt == 1 & Bserostatus == 0 & Age >= 65)
-dat.D57 <- dat %>% filter(!is.na(wt))
+# All analyses
+tab <- get_results_in_df_D57(dat = inputFile %>% filter(Trt == 1 & Bserostatus == 0), group = "All baseline negative, vaccine") %>%
+  bind_rows(get_results_in_df_D57(dat = inputFile %>% filter(Trt == 1 & Bserostatus == 0 & Age >= 65), group = "Age >= 65"),
+            get_results_in_df_D57(dat = inputFile %>% filter(Trt == 1 & Bserostatus == 0 & Age < 65 & HighRiskInd == 1), group = "Age < 65, At risk"))
+
 
 
 

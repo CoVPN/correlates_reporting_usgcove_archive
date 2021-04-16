@@ -281,7 +281,7 @@ p=  c(rbind("N/A", getFormattedSummary(fits.tri, exp=T, robust=T, rows=rows, typ
 # 
 tab=cbind(
     rep(c("Lower","Middle","Upper"), length(p)/3), 
-    paste0(nevents, "/", format(natrisk, big.mark=",",digit=0)), 
+    paste0(nevents, "/", format(natrisk, big.mark=",",digit=0, scientific=F)), 
     formatDouble(nevents/natrisk, digit=4, remove.leading0=F),
     est, ci, p, overall.p.0, overall.p.1, overall.p.2
 )

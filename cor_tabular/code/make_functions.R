@@ -1,22 +1,3 @@
-#' Truncate the endpoint at LLOD and ULOQ
-#'
-#' @param x An endpoint vector.
-#' @param llod The LLOD for endpoint \code{x}.
-#' @param uloq The ULOQ for endpoint \code{x}.
-#'
-#' @return The endpoint vector after truncation.
-setLOD <- function(x,
-                   uloq = Inf,
-                   llod = -Inf) {
-  
-  llod.half <- ifelse(is.infinite(llod), llod, log10(round(llod, 0)/2))
-  llod <- ifelse(is.infinite(llod), llod, log10(llod))
-  uloq <- log10(uloq)
-  x <- ifelse(x < llod, llod.half, x)
-  x <- ifelse(x > uloq, uloq, x)
-}
-
-
 #' Derive indicators of magnitudes greater than 2xLLOD and 4xLLOD
 #'
 #' @param x An endpoint vector.
@@ -89,16 +70,43 @@ setDelta <- function(data, marker, timepoints, time.ref = NA) {
   return(ret)
 }
 
+
 #' Wrapper function to generate response rates based on svyciprop()
-#'
-get_rr <- function(dat, v, subs, sub.by, design, weights, subset){
+#' @param dat a data frame containing the variables in the function
+#' @param v binary response variables
+#' @param subs subpopulation groups
+#' @param sub.by subpopulations that are always applied 
+#' @param strata used in twophase()
+#' @param weights used in twophase()
+#' @param subset used in twophase()
+#' 
+get_rr <- function(dat, v, subs, sub.by, strata, weights, subset){
   rpcnt <- NULL
   for (i in v){
     for (j in subs){
+      j.n <- match(j, subs)
+      dat <- dat %>% 
+        group_by_at(gsub("`", "", c(j, sub.by))) %>% 
+        mutate(nagrp=cur_group_id())
+      tab.sub <- table(!is.na(dat[as.vector(dat[,subset]==1),i]), dat[as.vector(dat[,subset]==1),]$nagrp)["TRUE",]==0
+      na.sub <- names(tab.sub[tab.sub])  
+      dat[,paste0(i,j.n)] <- !(as.character(dat$nagrp) %in% na.sub)
+    }
+  }
+  design.full <- twophase(id=list(~Ptid, ~Ptid), 
+                          strata=list(NULL, as.formula(sprintf("~%s", strata))),
+                          weights=list(NULL, as.formula(sprintf("~%s", weights))),
+                          method="simple",
+                          subset=as.formula(sprintf("~%s", subset)),
+                          data=dat)
+  for (i in v){
+    for (j in subs){
+      j.n <- match(j, subs)
       cat(i,"--",j,"\n")
+      design.ij <- subset(design.full, eval(parse(text=sprintf("%s%s & !is.na(%s)",i,j.n,j))))
       ret <- svyby(as.formula(sprintf("~%s", i)),
                    by=as.formula(sprintf("~%s", paste(c(j, sub.by), collapse="+"))),
-                   design=design,
+                   design=design.ij,
                    svyciprop, vartype="ci", na.rm=T)
       
       retn <- dat %>%
@@ -123,15 +131,41 @@ get_rr <- function(dat, v, subs, sub.by, design, weights, subset){
 }
 
 #' Wrapper function to generate ratio of geometric mean based on svymean()
-#'
-get_gm <- function(dat, v, subs, sub.by, design, subset){
+#' @param dat a data frame containing the variables in the function
+#' @param v continuous response variables
+#' @param subs subpopulation groups
+#' @param sub.by subpopulations that are always applied 
+#' @param strata used in twophase()
+#' @param weights used in twophase()
+#' @param subset used in twophase()
+#' 
+get_gm <- function(dat, v, subs, sub.by, strata, weights, subset){
   rgm <- NULL
   for (i in v){
     for (j in subs){
+      j.n <- match(j, subs)
+      dat <- dat %>% 
+        group_by_at(gsub("`", "", c(j, sub.by))) %>% 
+        mutate(nagrp=cur_group_id())
+      tab.sub <- table(!is.na(dat[as.vector(dat[,subset]==1),i]), dat[as.vector(dat[,subset]==1),]$nagrp)["TRUE",]==0
+      na.sub <- names(tab.sub[tab.sub])  
+      dat[,paste0(i,j.n)] <- !(as.character(dat$nagrp) %in% na.sub)
+    }
+  }
+  design.full <- twophase(id=list(~Ptid, ~Ptid), 
+                          strata=list(NULL, as.formula(sprintf("~%s", strata))),
+                          weights=list(NULL, as.formula(sprintf("~%s", weights))),
+                          method="simple",
+                          subset=as.formula(sprintf("~%s", subset)),
+                          data=dat)
+  for (i in v){
+    for (j in subs){
       cat(i,"--",j,"\n")
+      j.n <- match(j, subs)
+      design.ij <- subset(design.full, eval(parse(text=sprintf("%s%s & !is.na(%s)",i,j.n,j))))
       ret <- svyby(as.formula(sprintf("~%s", i)),
                    by=as.formula(sprintf("~%s", paste(c(j, sub.by), collapse="+"))),
-                   design=design,
+                   design=design.ij,
                    svymean, vartype="ci", na.rm=T)
       
       retn <- dat %>%
@@ -143,7 +177,7 @@ get_gm <- function(dat, v, subs, sub.by, design, subset){
         inner_join(ret, retn, by = gsub("`", "", c(j, sub.by))) %>% 
           rename(mag=!!as.name(i), Group=!!as.name(j)) %>% 
           mutate(subgroup=!!j, mag_cat=!!i,
-                 `GMT/GMC`= sprintf("%.0f\n(%.0f, %.0f)", 10^mag, 10^ci_l, 10^ci_u)),
+                 `GMT/GMC`= sprintf("%.2f\n(%.2f, %.2f)", 10^mag, 10^ci_l, 10^ci_u)),
         rgm)
       
     }
@@ -153,27 +187,45 @@ get_gm <- function(dat, v, subs, sub.by, design, subset){
 }
 
 #' Wrapper function to generate ratio of geometric magnitude based on svyglm()
-#'
+#' @param dat a data frame containing the variables in the function
+#' @param v continuous response variables
+#' @param groups subpopulation groups to be compared within
+#' @param comp_lev a vector of the compared groups to set the reference group
+#' @param sub.by subpopulations that are always applied 
+#' @param strata used in twophase()
+#' @param weights used in twophase()
+#' @param subset used in twophase()
 get_rgmt <- function(dat, v, groups, comp_lev, sub.by, strata, weights, subset){
   rgmt <- NULL
   for (j in groups){
+    j.n <- match(j, groups)
     comp_i <- comp_lev[comp_lev %in% dat[, gsub("`","",j)]]
     dat[, gsub("`","",j)] <- factor(dat[, gsub("`","",j)], levels = comp_i)
     contrasts(dat[, gsub("`","",j)]) <- contr.treatment(2, base = 2)
+    for (i in v){
+      dat <- dat %>% 
+        group_by_at(gsub("`", "", c(j, sub.by))) %>% 
+        mutate(nagrp=cur_group_id())
+      tab.sub <- table(!is.na(dat[as.vector(dat[,subset]==1),i]), dat[as.vector(dat[,subset]==1),]$nagrp)["TRUE",]==0
+      na.sub <- names(tab.sub[tab.sub])  
+      dat[,paste0(i,j.n)] <- !(as.character(dat$nagrp) %in% na.sub)
+    }
   }
-  design <- twophase(list(~Ptid, ~Ptid), 
+  design.full <- twophase(list(~Ptid, ~Ptid), 
                      strata=list(NULL, as.formula(sprintf("~%s", strata))),
-                     weights=list(NULL, as.formula(sprintf("~%s", weights))),
+                     weights=list(NULL, as.formula(sprintf("~%s", weights))), 
                      subset=as.formula(sprintf("~%s", subset)),
                      method="simple",
                      data=dat)
   for (j in groups){
+    j.n <- match(j, groups)
     for (i in v){
       comp_i <- paste(comp_lev[comp_lev %in% dat[, gsub("`","",j)]], collapse=" vs ")
       cat(i,"--",j, comp_i, "\n")
+      design.ij <- subset(design.full, eval(parse(text=sprintf("%s%s & !is.na(%s)",i,j.n,j))))
       ret <- svyby(as.formula(sprintf("%s~%s", i, j)),
                    by=as.formula(sprintf("~%s", paste(sub.by, collapse="+"))),
-                   design=design,
+                   design=design.ij,
                    svyglm, vartype="ci")
       
       rgmt <- bind_rows(

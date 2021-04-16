@@ -101,13 +101,6 @@ tlf <-
 
 # Depends on the Incoming data
 
-llods <-c(bindN = 20, bindSpike = 20, bindRBD = 20, pseudoneutid50 = 10, 
-          pseudoneutid80 = 10, liveneutmn50 = 62.16) 
-lloqs <-c(bindN = 34, bindSpike = 34, bindRBD = 34, pseudoneutid50 = 49, 
-          pseudoneutid80 = 43, liveneutmn50 = 117.35) 
-uloqs <-c(bindN = 19136250, bindSpike = 19136250, bindRBD = 19136250, 
-          pseudoneutid50 = Inf, pseudoneutid80 = Inf, liveneutmn50 = 18976.19) 
-
 labels.assays.short <- c(bindN = "Anti N IgG (IU/ml)", 
                          bindSpike = "Anti Spike IgG (IU/ml)", 
                          bindRBD = "Anti RBD IgG (IU/ml)", 
@@ -210,27 +203,12 @@ ds_s <- dat.mock %>%
     Case = case_when(Perprotocol == 1 & EventIndPrimaryD29 == 1 & 
                        EventIndPrimaryD57 == 1 ~ "Cases",
                      TRUE ~ "Non-Cases"),
-    Case2 = case_when(EventIndPrimaryD29 == 1 & EventIndPrimaryD57 == 0 ~ 
-                        "Per-protocol Intercurrent cases",
-                      Perprotocol == 1 & EventIndPrimaryD29 == 1 & 
-                        EventIndPrimaryD57 == 1 ~ "Per-protocol cases",
-                      Perprotocol == 1 & EventIndPrimaryD29 == 0 & 
-                        EventIndPrimaryD57 == 0 ~ "Per-protocol non-cases"),
     AgeRisk1 = ifelse(Age65C=="Age $<$ 65", AgeRiskC, NA),
     AgeRisk2 = ifelse(Age65C=="Age $\\geq$ 65", AgeRiskC, NA),
     All = "All participants",
     cohort1 = (Perprotocol == 1 & EventTimePrimaryD57 >= 7),
     corrset1 = !is.na(wt))
 
-# SAP Section 9.1.1 Antibody Marker Data
-# Step1: Truncation - LLOD, ULOQ
-# SAP Section 9.1.1 Antibody Marker Data
-# Step1: Truncation - LLOD, ULOQ
-ds1 <- ds_s
-for(x in names(labels.assays.short)) {
-  ds1 <- mutate_at(ds1, grep(x, names(ds1), value=T), 
-                   setLOD, llod = llods[x], uloq = uloqs[x])
-} 
 
 # Step2: Responders
 # Post baseline visits
@@ -239,10 +217,10 @@ post_n <- length(post)
 
 ds <- bind_cols(
   # Original ds
-  ds1,
+  ds_s,
   # Responses post baseline
   pmap(list(
-    data = replicate(length(assays)*post_n, ds1, simplify = FALSE),
+    data = replicate(length(assays)*post_n, ds_s, simplify = FALSE),
     bl = as.vector(outer(rep("B", post_n), assays, paste0)),
     post = as.vector(outer(post, assays, paste0)),
     llod = llods[rep(assays, each = post_n)]),
@@ -251,7 +229,7 @@ ds <- bind_cols(
   
   # % > 2lloq and 4lloq
   pmap(list(
-    data = replicate(length(assays_col), ds1, simplify = FALSE),
+    data = replicate(length(assays_col), ds_s, simplify = FALSE),
     x = assays_col,
     llod = llods[rep(assays, each = (post_n + 1))]),
     .f = grtLLOD) %>%
@@ -281,7 +259,7 @@ subgrp <- c(
 
 num_v1 <- c("Age") # Summaries - Mean & Range
 num_v2 <- c("BMI") # Summaries - Mean & St.d
-cat_v <- c("Age65C", "SexC", "RaceEthC", "ethnicityC", "HighRiskC", "AgeRiskC")
+cat_v <- c("Age65C", "SexC", "RaceEthC", "ethnicityC", "HighRiskC", "AgeRiskC", "MinorityC")
 
 ds_long_ttl <- ds %>%
   dplyr::filter(corrset1) %>% 
@@ -322,7 +300,7 @@ dm_cat <- inner_join(
          rslt1 = sprintf("%s (%.1f%%)", n, n / N * 100), 
          rslt2 = sprintf("%s/%s = %.1f%%", n, N, n / N * 100),
          subgroup = ifelse(subgroup_cat == "Communities of Color", 
-                           "Race", as.character(subgroup))) %>% 
+                           "RaceEthC", as.character(subgroup))) %>% 
   dplyr::filter(subgroup %in% cat_v) 
 
 # Calculate mean and range for numeric covariates
@@ -415,39 +393,35 @@ print("Done with table 1")
 # (Per Peter's email Feb 5, 2021)
 # Cases vs Non-cases
 
-corr.design1 <- twophase(list(~Ptid, ~Ptid), 
-                        strata=list(NULL, ~ Wstratum),
-                        weights=list(NULL, ~ wt),
-                        subset= ~ corrset1,
-                        method="simple",
-                        data=subset(ds, cohort1))
+ds1 <- subset(ds, corrset1)
+ds2 <- subset(ds, corrset2)
 
 sub.by <- c("Arm", "`Baseline SARS-CoV-2`")
-resp.v <- grep("Resp", names(ds), value = T) 
-gm.v <- assays_col
+resp.v.57 <- intersect(grep("Resp", names(ds), value = T),
+                       grep("57", names(ds), value = T))
+gm.v.57 <- intersect(assays_col, grep("57", names(ds), value = T))
+
+resp.v.29 <- intersect(grep("Resp", names(ds), value = T),
+                       grep("29", names(ds), value = T))
+gm.v.29 <- intersect(assays_col, grep("29", names(ds), value = T))
+
 subs=c("Case")
 comp_i <- c("Cases", "Non-Cases")
 
-rpcnt_case <- get_rr(ds, resp.v, subs, sub.by, design=corr.design1, "wt", "corrset1") %>% 
+rpcnt_case <- get_rr(ds1, resp.v.57, subs, sub.by, strata="Wstratum", 
+                     weights="wt", subset="corrset1") %>% 
   mutate(Day=57)
-rgm_case <- get_gm(ds, gm.v, subs, sub.by, design=corr.design1, "corrset1") %>% 
+rgm_case <- get_gm(ds1, gm.v.57, subs, sub.by, strata="Wstratum", weights="wt", "corrset1") %>% 
   mutate(Day=57)
-rgmt_case <- get_rgmt(ds, gm.v, subs, comp_lev=comp_i, sub.by, "Wstratum", "wt", "corrset1") %>% 
+rgmt_case <- get_rgmt(ds1, gm.v.57, subs, comp_lev=comp_i, sub.by, "Wstratum", "wt", "corrset1") %>% 
   mutate(Day=57)
 
 print("Done with table 2 & 3") 
 
 if(has29){
-  corr.design2 <- twophase(list(~Ptid, ~Ptid), 
-                           strata=list(NULL, ~ Wstratum),
-                           weights=list(NULL, ~ wt.2),
-                           subset= ~ corrset2,
-                           method="simple",
-                           data=subset(ds, cohort2))
-  
-  rpcnt_case2 <- get_rr(ds, resp.v, subs, sub.by, design=corr.design2, "wt.2", "corrset2")
-  rgm_case2 <- get_gm(ds, gm.v, subs, sub.by, design=corr.design2, "corrset2")
-  rgmt_case2 <- get_rgmt(ds, gm.v, subs, comp_lev=comp_i, sub.by, "Wstratum", "wt.2", "corrset2")
+  rpcnt_case2 <- get_rr(ds2, resp.v.29, subs, sub.by, "Wstratum", "wt.2", "corrset2")
+  rgm_case2 <- get_gm(ds2, gm.v.29, subs, sub.by, "Wstratum", "wt.2", "corrset2")
+  rgmt_case2 <- get_rgmt(ds2, gm.v.29, subs, comp_lev=comp_i, sub.by, "Wstratum", "wt.2", "corrset2")
 
   rpcnt_case <- bind_rows(rpcnt_case, mutate(rpcnt_case2, Day=29))
   rgm_case <- bind_rows(rgm_case, mutate(rgm_case2, Day=29))

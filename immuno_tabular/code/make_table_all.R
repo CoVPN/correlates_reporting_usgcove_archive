@@ -134,19 +134,12 @@ print("Done with table 1")
 # Arm and Baseline: Assigned treatment Arms * Baseline SARS-CoV-2-19 Status
 # Group: Category in each subgroup
 
-immuno.design <- twophase(list(~Ptid, ~Ptid), 
-                          strata=list(NULL, ~tps.stratum),
-                          subset=~randomset,
-                          method="simple",
-                          weights = list(NULL, ~wt.subcohort),
-                          data=ds)
-
 sub.by <- c("Arm", "`Baseline SARS-CoV-2`")
 resp.v <- grep("Resp|2llod|4llod|FR2|FR4", names(ds), value = T) 
-subs=c("All", "Age65C", "HighRiskC", "AgeRiskC", "AgeRisk1", "AgeRisk2", "SexC",
+subs <- c("All", "Age65C", "HighRiskC", "AgeRiskC", "AgeRisk1", "AgeRisk2", "SexC",
        "AgeSexC", "ethnicityC", "RaceEthC", "MinorityC", "AgeMinorC")
-rpcnt <- get_rr(ds, resp.v, subs, sub.by, immuno.design, "wt.subcohort", "randomset")
-
+rpcnt <- get_rr(dat=ds, v=resp.v, subs=subs, sub.by=sub.by, strata="tps.stratum",
+                weights="wt.subcohort", subset="randomset")
 tab_rr <- rpcnt %>% 
   dplyr::filter(!subgroup %in% c("AgeRisk1", "AgeRisk2") & Visit != "Day 1" & Group %in% names(grplev)) %>% 
   mutate(subgroup=factor(subgrp[subgroup], levels=subgrp), Group=factor(grplev[Group], levels=grplev)) %>% 
@@ -199,7 +192,8 @@ print("Done with table3 & 4")
 # 
 # Output: tab_gm
 gm.v <- c(assays_col, grep("Delta", names(ds), value = T))
-rgm <- get_gm(ds, gm.v, subs, sub.by, immuno.design, "randomset")
+rgm <- get_gm(dat=ds, v=gm.v, subs=subs, sub.by=sub.by, strata="tps.stratum",
+              weights="wt.subcohort", subset="randomset")
 
 tab_gm <- rgm %>% 
   dplyr::filter(!subgroup %in% c("AgeRisk1", "AgeRisk2") & !grepl("Delta", mag_cat) & Group %in% names(grplev)) %>% 

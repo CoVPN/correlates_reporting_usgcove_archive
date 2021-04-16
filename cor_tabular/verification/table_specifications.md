@@ -6,17 +6,17 @@
 2. 1). For analysis at **Day 57**: Subset the data to "phase 1 ptids" for the correlates at Day 57 cohort (`Perprotocol == 1 & EventTimePrimaryD57 >= 7`). Derive the indicator for the correlates of risk at Day 57(`!is.na(wt)`).\
 
 2).For analysis at **Day 29**:
-Subset the full data to "phase 1 ptids" for the correlates at Day 29 cohort (`(EventTimePrimaryD29 >= 14 & Perprotocol == 1)|(EventTimePrimaryD29 >= 7 & EventTimePrimaryD29 <= 13 & Fullvaccine == 1)`). Derive the indicator for the correlates of risk at Day 29(`!is.na(wt.2)`). Repeat the steps of Table 3-5 for correlates cohort at Day 29 with weights `wt.2` and stratum `Wstratum`.
+Subset the full data to "phase 1 ptids" for the correlates at Day 29 cohort (`(EventTimePrimaryD29 >= 14 & Perprotocol == 1)|(EventTimePrimaryD29 >= 7 & EventTimePrimaryD29 <= 13 & Fullvaccine == 1)`). Derive the indicator for the correlates of risk at Day 29(`!is.na(wt.2)`). 
 
 3. For all marker response magnitudes, set magnitudes < LLOD to LLOD/2, and magnitudes > ULOQ to ULOQ. All the analyses will be based on the truncated magntiudes from this step. Please notice the endpoint values from the data is on log scale while the LLOD and ULOQ are on the linear scale.
 
-4. Derive indicators of 2 fold-rise (FR2) and 4 fold-rise (FR4) based on the truncated magnitudes for neutralizing antibody ID50 titers (Pseudovirus-nAb ID50, Live virus-nAb MN50) at each post-enrollment visit. FR2 = 1 if the ratio of post/pre >=2 and FR4 = 1 if the ratio >=4. 
+4. Derive indicators of 2 fold-rise (FR2) and 4 fold-rise (FR4) based on the truncated magnitudes for neutralizing antibody ID50 titers (Pseudovirus-nAb ID50, Live virus-nAb MN50) at each post-enrollment visit. FR2 = 1 if the ratio of post/pre $geq$2 and FR4 = 1 if the ratio $geq$4. 
 
-5. Derive indicators of >= 2 x LLOD (2llod) and >= 4 x LLOD (4llod) based on the truncated magnitudes for binding antibody markers (Anti N IgG (IU/ml), Anti Spike IgG (IU/ml), Anti RBD IgG (IU/ml)). 2llod = 1 if the magnitude >= 2 x LLOD and 4llod = 1 if the magnitude >= 4 x LLOD.
+5. Derive indicators of $geq$ 2 x LLOD (2llod) and $geq$ 4 x LLOD (4llod) based on the truncated magnitudes for binding antibody markers (Anti N IgG (IU/ml), Anti Spike IgG (IU/ml), Anti RBD IgG (IU/ml)). 2llod = 1 if the magnitude $geq$ 2 x LLOD and 4llod = 1 if the magnitude $geq$ 4 x LLOD.
 
 6. Derive the log10-ratios of post vs. pre enrollment of each marker based on the truncated magnitudes: Calculate the differences of the log magnitudes between the post- and pre-enrollment. 
 
-7. Derive the indicators of positive responders: responders aredefined as participants who had baseline values < LLOD with post-enrollment endpoint values above the LLOD; or participants who had baseline values >= LLOD with a 4-fold increase (FR4 = 1).
+7. Derive the indicators of positive responders: responders aredefined as participants who had baseline values < LLOD with post-enrollment endpoint values above the LLOD; or participants who had baseline values $geq$ LLOD with a 4-fold increase (FR4 = 1).
 
 8. Derive the indicators of cases and non-cases: Cases are defined as per-protocol participants with the symptomatic infection COVID-19 primary endpoint diagnosed starting 7 days after the Day 57 study visit. (`Perprotocol == 1 & EventIndPrimaryD57 == 1`);
 Non-cases/Controls are defined as per-protocol participants sampled into the random subcohort with no evidence of SARS-CoV-2 infection up to the time of data cut (`Perprotocol == 1 & EventIndPrimaryD57 == 0`)
@@ -25,20 +25,37 @@ Non-cases/Controls are defined as per-protocol participants sampled into the ran
 
 10. Define the covariate "Underrepresented Minority Status in the U.S." as White Non-Hispanic(`WhiteNonHispanic==1`); Communities of Color(`WhiteNonHispanic==0`)
 
-11. Set `options(survey.lonely.psu="adjust")` to avoid error message for stratums that contain only one participant.
+11. Set `options(survey.lonely.psu="adjust")` to avoid error message for strata that contain only one participant.
 
 
 ## Table 1-2. Demographics 
 Title: Demographic
 Column names: Characteristics, Placebo (N = ),	Vaccine (N = ),	Total (N = )
 
-1. List the categories, frequencies (n), and proportions (%) by baseline COVID status and assigned arms for: Age (<65, >=65), Sex (Female, Male), Hispanic or Latino ethnicity (Hispanic or Latino, Not Hispanic or Latino, Not reported and unknown), Race (Asian, American Indian or Alaska Native, Black or African American, Multiracial, Native Hawaiian or Other Pacific Islander, White Non-Hispanic, Other, Not reported and unknown, Communities of Color), Risk for Severe Covid-19 (At-risk, Not at-risk), Age x Risk for Severe Covid-19 (<65 At risk, <65 Not at risk, >=65). Within each covariate.
+1. List the categories, frequencies (n), and proportions (%) by baseline COVID status and assigned arms for: 
+Age (<65, $geq$65), 
+Sex (Female, Male), 
+Hispanic or Latino ethnicity (Hispanic or Latino, Not Hispanic or Latino, Not reported and unknown), 
+Race (Asian, American Indian or Alaska Native, Black or African American, Multiracial, Native Hawaiian or Other Pacific Islander, White Non-Hispanic, Other, Not reported and unknown, Communities of Color), 
+Risk for Severe Covid-19 (At-risk, Not at-risk), 
+Age x Risk for Severe Covid-19 (<65 At risk, <65 Not at risk, $geq$65).
 
 2. List the mean and range for: Age
 
 3. List the mean and sd for: BMI
 
-4. The results are separate into two tables by baseline COVID status and displayed in a wide format by arms: Placebo, Vaccine, Total (placebo and vaccine). The total count of each arm should be displayed in the header.
+4. The results are separate into two tables by baseline COVID status and displayed in a wide format by arms: Placebo, Vaccine, Total. The total count of each arm should be displayed in the header.
+
+All the analyses below are generated using the survey package. This is a two-phase sampling design (SAP). For the immunogenicity analyses, the "phase 1" participants are the per-protocol individuals excluding individuals with a COVID failure event < 7 days post Day 57. The ”phase 2” participants are the subset of those phase 1 ptids in the subcohort with Day 1, 29, and 57 Ab marker data available. The design used in survey functions is:
+
+`immuno_design <- twophase( id = list(~Ptid, ~Ptid),
+                            strata = list(NULL, ~tps.stratum),
+                            weights = list(NULL, ~wt.subcohort),
+                            subset = ~I_corrset,
+                            method = "simple",
+                            data = ph1data)`
+
+The first element in each list of the arguments represents parameters of "phase 1" and the second element represents parameters of "phase 2". `wt.subcohort` and `tps.stratum` is the the inverse sampling probability weight and the strata used for stratified sampling used for phase 2. `I_immunoset` is the indicator of phase 2 participants (the immunogenicity cohort) as defined in Initial data processing step 3. `ph1data` includes all and only phase 1 participants and does not include duplicate (e.g., long format of covariates). Method "simple" uses standard error calculation from survey v3.14 and earlier, which uses much less memory and is exact for designs with simple random sampling at phase 1 and stratified random sampling at phase 2. We decided to use method "simple" though here phase 1 is not a simple random sampling as a trade-off of less processing time.
 
 # Table 3-5. Antibody level comparison of Cases vs Non-Cases by baseline COVID status and assigned arms at Day 57
 The weights and strata variable in the mock data used for Table 3-5: `wt` and `Wstratum`.
@@ -64,3 +81,4 @@ Column names: Visit,	Marker,	Cases(N,	Resp rate,	GMT/GMC),	Non-cases(N, Resp rat
 10. Subset the table into Baseline SARS-CoV-2 Negative Vaccine Recipients (Table 3), Baseline SARS-CoV-2 Positive Vaccine Recipients (Table 4), and Baseline SARS-CoV-2 Positive Placebo Recipients (Table 5).
 
 11. Subset the full data to "Phase 1 ptids" for the correlates cohort at **Day 29** (`(EventTimePrimaryD29 >= 14 & Perprotocol == 1)|(EventTimePrimaryD29 >= 7 & EventTimePrimaryD29 <= 13 & Fullvaccine == 1)`). Derive the indicator for the correlates of risk at Day 29(`!is.na(wt.2)`). Repeat the steps of Table 3-5 for correlates cohort at Day 29 with weights `wt.2` and stratum `Wstratum`.
+Repeat the steps of Table 3-5 for correlates cohort at Day 29 with weights `wt.2` and stratum `Wstratum`.

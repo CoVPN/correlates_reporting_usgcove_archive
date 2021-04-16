@@ -73,19 +73,19 @@ Two-phase Cox regression models are fitted to subgroups in the vaccine arm for t
 \end{center}
 
 
-The subgroups are as follows. For some subgroups we cannot adjust for all baseline demographic variables, e.g. in the at risk subgroup we cannot adjust for HighRiskInd.
+The subgroups are as follows. For some subgroups we cannot adjust for all baseline demographic variables, indicated below in parenthesis.
 
 \begin{itemize}
     \item age >= 65
     \item age < 65
-    \item at risk (HighRiskInd)
-    \item Not at risk (HighRiskInd)
-    \item Comm of color (MinorityInd)
-    \item White non-Hispanic (MinorityInd)
-    \item Men (Sex)
-    \item Women (Sex)
-    \item age<65 and at risk
-    \item age<65 and not at risk 
+    \item at risk (remove HighRiskInd)
+    \item Not at risk (remove HighRiskInd)
+    \item Comm of color (remove MinorityInd)
+    \item White non-Hispanic (remove MinorityInd)
+    \item Men 
+    \item Women
+    \item age<65 and at risk (remove HighRiskInd)
+    \item age<65 and not at risk (remove HighRiskInd)
 \end{itemize}
 
 

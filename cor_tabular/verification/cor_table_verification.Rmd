@@ -29,7 +29,7 @@ source(here::here("..", "_common.R"))
 ```{r dataio, echo=FALSE}
 
 # read in practice data
-dat.mock <- read.csv(here("verification","practice_data.csv"), stringsAsFactors = F)
+dat.mock <- read.csv(here("verification","verification_input","practice_data.csv"), stringsAsFactors = F)
 
 # reset all delta values
 dat$Delta57overBbindSpike = dat$Day57bindSpike - dat$BbindSpike
@@ -147,16 +147,18 @@ decimal_f <- function(x, d) { # rounding values
   trimws(format(round(x, d), nsmall=d))
 }
 
-load(here("verification","Tables_verificatiton_cor.Rdata"))
+load(here("verification","verification_input","Tables_verificatiton_cor.Rdata"))
 ```
 
 \captionsetup[table]{labelformat=empty}
 
 \clearpage
 
-## Table 1. Demographic  
 
 ```{r table1, results = "asis", echo=FALSE, message=FALSE}
+#######################################################################################
+## Table 1. Demographic 
+
 fig_footer <- c("")
 
 for (i in c("Negative", "Positive")){
@@ -232,23 +234,22 @@ for (i in c("Negative", "Positive")){
   if (i=="Negative"){
     # comparison
     tab_dm_neg[] <- lapply(tab_dm_neg, as.character)
-    rr_table1 = tab_dm_neg[, c("subgroup","Characteristics")] %>% left_join(rr_table1, by=c("subgroup","Characteristics"))
-    testthat::expect_equal(rr_table1, tab_dm_neg)
-    
+    rr_table1.1 = tab_dm_neg[, c("subgroup","Characteristics")] %>% left_join(rr_table1, by=c("subgroup","Characteristics"))
+    testthat::expect_equal(rr_table1.1, tab_dm_neg)
+
   } else if (i=="Postive"){
     # comparison
     tab_dm_pos[] <- lapply(tab_dm_pos, as.character)
-    rr_table1 = tab_dm_pos[, c("subgroup","Characteristics")] %>% left_join(rr_table1, by=c("subgroup","Characteristics"))
-    testthat::expect_equal(rr_table1, tab_dm_pos)
+    rr_table1.2 = tab_dm_pos[, c("subgroup","Characteristics")] %>% left_join(rr_table1, by=c("subgroup","Characteristics"))
+    testthat::expect_equal(rr_table1.2, tab_dm_pos)
+    
   }
   
 }
-```
 
-\clearpage
-
+#######################################################################################
 ## Tables 3-5. Antibody level comparison of Cases vs Non-Cases by baseline COVID status and assigned arms at Day 57
-```{r table3, results = "asis", echo=FALSE, warning=FALSE, message=F}
+
 fig_footer <- c("")
 options(survey.lonely.psu="adjust") 
 
@@ -430,28 +431,53 @@ rr3_table_all <- rr3_rate_all %>%
   left_join(rr3_magdiff_all, by=c("Visit","Baseline","Trt_lb","Marker")) %>%
   rename_with(~ gsub("GMT","GMT/GMC",.x)) %>%
   rename_with(~ gsub("Non_cases_Control","Non-Cases",.x)) %>%
-  filter(! (Baseline=="Negative" & Trt_lb=="Placebo")) %>%
-  select(1:4,5,7,9,6,8,10,11,12)
+  filter((Baseline=="Negative" & Trt_lb=="Vaccine")) %>%
+  ungroup() %>%
+  select(1,4,5,7,9,6,8,10,11,12)
 
-case_vacc_neg$Baseline="Negative"
-case_vacc_neg$Trt_lb="Vaccine"
+rr4_table_all <- rr3_rate_all %>%
+  left_join(rr3_mag_all, by=c("Visit", "Marker", "Baseline","Trt_lb","N_Non_cases_Control","N_Cases")) %>%
+  left_join(rr3_ratediff_all, by=c("Visit","Baseline","Trt_lb","Marker")) %>%
+  left_join(rr3_magdiff_all, by=c("Visit","Baseline","Trt_lb","Marker")) %>%
+  rename_with(~ gsub("GMT","GMT/GMC",.x)) %>%
+  rename_with(~ gsub("Non_cases_Control","Non-Cases",.x)) %>%
+  filter((Baseline=="Positive" & Trt_lb=="Vaccine")) %>%
+  ungroup() %>%
+  select(1,4,5,7,9,6,8,10,11,12)
 
-case_plcb_pos$Baseline="Positive"
-case_plcb_pos$Trt_lb="Placebo"
 
-case_vacc_pos$Baseline="Positive"
-case_vacc_pos$Trt_lb="Vaccine"
+rr5_table_all <- rr3_rate_all %>%
+  left_join(rr3_mag_all, by=c("Visit", "Marker", "Baseline","Trt_lb","N_Non_cases_Control","N_Cases")) %>%
+  left_join(rr3_ratediff_all, by=c("Visit","Baseline","Trt_lb","Marker")) %>%
+  left_join(rr3_magdiff_all, by=c("Visit","Baseline","Trt_lb","Marker")) %>%
+  rename_with(~ gsub("GMT","GMT/GMC",.x)) %>%
+  rename_with(~ gsub("Non_cases_Control","Non-Cases",.x)) %>%
+  filter((Baseline=="Positive" & Trt_lb=="Placebo")) %>%
+  ungroup() %>%
+  select(1,4,5,7,9,6,8,10,11,12)
 
-all_cases=rbind(case_vacc_neg, case_plcb_pos, case_vacc_pos) %>%
-  select(1,11,12,2,3:10)
 
-dim(rr3_table_all)==dim(all_cases) 
-
-all_cases[] <- lapply(all_cases, as.character)
+case_vacc_neg[] <- lapply(case_vacc_neg, as.character)
+case_vacc_pos[] <- lapply(case_vacc_pos, as.character)
+case_plcb_pos[] <- lapply(case_plcb_pos, as.character)
 rr3_table_all[] <- lapply(rr3_table_all, as.character)
+rr4_table_all[] <- lapply(rr4_table_all, as.character)
+rr5_table_all[] <- lapply(rr5_table_all, as.character)
 
-rr3_table_all <- all_cases[, c("Visit","Baseline","Trt_lb","Marker")] %>%
-  left_join(rr3_table_all, by=c("Visit","Baseline","Trt_lb","Marker"))
+rr3_table_all <- case_vacc_neg[, c("Visit","Marker")] %>%
+  left_join(rr3_table_all, by=c("Visit","Marker"))
 
-testthat::expect_equal(all_cases, rr3_table_all)
+rr4_table_all <- case_vacc_pos[, c("Visit","Marker")] %>%
+  left_join(rr4_table_all, by=c("Visit","Marker"))
+
+rr5_table_all <- case_plcb_pos[, c("Visit","Marker")] %>%
+  left_join(rr5_table_all, by=c("Visit","Marker"))
+
+testthat::expect_equal(case_vacc_neg, rr3_table_all)
+testthat::expect_equal(case_vacc_pos, rr4_table_all)
+testthat::expect_equal(case_plcb_pos, rr5_table_all)
+
+  
+save(rr_table1.1, rr_table1.2, rr3_table_all, rr4_table_all, rr5_table_all,
+    file = here::here("verification", "verification_output", "cor_tabular_verification_output.rds"))
 ```

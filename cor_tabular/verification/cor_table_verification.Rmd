@@ -246,7 +246,7 @@ for (i in c("Negative", "Positive")){
 }
 
 save(rr_table1.1, rr_table1.2,
-    file = here::here("verification", "verification_output", "cor_tabular_verification_output_tables1.rds")) 
+    file = here::here("verification", "verification_output", "cor_tabular_verification_output_tables1.Rdata")) 
 
 ```
 
@@ -483,11 +483,11 @@ testthat::expect_equal(case_vacc_pos, rr4_table_all)
 testthat::expect_equal(case_plcb_pos, rr5_table_all)
 
 save(rr3_table_all,
-    file = here::here("verification", "verification_output", "cor_tabular_verification_output_table3.rds"))
+    file = here::here("verification", "verification_output", "cor_tabular_verification_output_table3.Rdata"))
 
 save(rr4_table_all, 
-    file = here::here("verification", "verification_output", "cor_tabular_verification_output_table4.rds"))
+    file = here::here("verification", "verification_output", "cor_tabular_verification_output_table4.Rdata"))
 
 save(rr5_table_all,
-    file = here::here("verification", "verification_output", "cor_tabular_verification_output_tables5.rds"))
+    file = here::here("verification", "verification_output", "cor_tabular_verification_output_table5.Rdata"))
 ```

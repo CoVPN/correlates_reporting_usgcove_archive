@@ -154,10 +154,8 @@ load(here("verification","verification_input","Tables_verificatiton_cor.Rdata"))
 
 \clearpage
 
-
-```{r table1, results = "asis", echo=FALSE, message=FALSE}
-#######################################################################################
 ## Table 1. Demographic 
+```{r table1, results = "asis", echo=FALSE, message=FALSE}
 
 fig_footer <- c("")
 
@@ -247,9 +245,16 @@ for (i in c("Negative", "Positive")){
   
 }
 
-#######################################################################################
+save(rr_table1.1, rr_table1.2,
+    file = here::here("verification", "verification_output", "cor_tabular_verification_output_tables1.rds")) 
+
+```
+
+\clearpage
+
 ## Tables 3-5. Antibody level comparison of Cases vs Non-Cases by baseline COVID status and assigned arms at Day 57
 
+```{r table2, results = "asis", echo=FALSE, message=FALSE}
 fig_footer <- c("")
 options(survey.lonely.psu="adjust") 
 
@@ -477,7 +482,12 @@ testthat::expect_equal(case_vacc_neg, rr3_table_all)
 testthat::expect_equal(case_vacc_pos, rr4_table_all)
 testthat::expect_equal(case_plcb_pos, rr5_table_all)
 
-  
-save(rr_table1.1, rr_table1.2, rr3_table_all, rr4_table_all, rr5_table_all,
-    file = here::here("verification", "verification_output", "cor_tabular_verification_output.rds"))
+save(rr3_table_all,
+    file = here::here("verification", "verification_output", "cor_tabular_verification_output_table3.rds"))
+
+save(rr4_table_all, 
+    file = here::here("verification", "verification_output", "cor_tabular_verification_output_table4.rds"))
+
+save(rr5_table_all,
+    file = here::here("verification", "verification_output", "cor_tabular_verification_output_tables5.rds"))
 ```

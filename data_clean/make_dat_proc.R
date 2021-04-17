@@ -283,7 +283,7 @@ if(has29) {
 ###############################################################################
 
 for (a in c("bindSpike", "bindRBD", "bindN")) {
-  for (t in if(has29) times else times[c(1,3,5)]) {
+  for (t in if(has29) times[1:3] else times[c(1,3)]) {
       dat_proc[[t %.% a]] <- dat_proc[[t %.% a]] + log10(convf[a])
   }
 }

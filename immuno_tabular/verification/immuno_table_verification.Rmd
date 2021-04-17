@@ -21,13 +21,14 @@ header-includes: \usepackage{caption}
   options(scipen=999) # Turn off scientific notation
   options(survey.lonely.psu="adjust") 
   renv::activate(project = here::here(".."))
+  source(here::here("..", "_common.R"))
   
 ```
 
 ```{r dataio, echo=FALSE}
 
 # read in practice data
-dat.mock <- read.csv(here("verification","practice_data.csv"), stringsAsFactors = F)
+dat.mock <- read.csv(here("verification","verification_input","practice_data.csv"), stringsAsFactors = F)
 
 # indicator for immunogenicity reporting
 dat <- subset(dat.mock, Perprotocol == 1 & EventTimePrimaryD57 >= 7)
@@ -190,7 +191,7 @@ decimal_f <- function(x, d) { # rounding values
   trimws(format(round(x, d), nsmall=d))
 }
 
-load(here("verification","Tables_verificatiton_immuno.Rdata"))
+load(here("verification","verification_input","Tables_verificatiton_immuno.Rdata"))
 
 ```
 
@@ -276,17 +277,20 @@ for (i in c("Negative", "Positive")){
   if (i=="Negative"){
     # comparison
     tab_dm_neg[] <- lapply(tab_dm_neg, as.character)
-    rr_table1 = tab_dm_neg[, c("subgroup","Characteristics")] %>% left_join(rr_table1, by=c("subgroup","Characteristics"))
-    testthat::expect_equal(rr_table1, tab_dm_neg)
+    rr_table1.1 = tab_dm_neg[, c("subgroup","Characteristics")] %>% left_join(rr_table1, by=c("subgroup","Characteristics"))
+    testthat::expect_equal(rr_table1.1, tab_dm_neg)
     
   } else if (i=="Postive"){
     # comparison
     tab_dm_pos[] <- lapply(tab_dm_pos, as.character)
-    rr_table1 = tab_dm_pos[, c("subgroup","Characteristics")] %>% left_join(rr_table1, by=c("subgroup","Characteristics"))
-    testthat::expect_equal(rr_table1, tab_dm_pos)
+    rr_table1.2 = tab_dm_pos[, c("subgroup","Characteristics")] %>% left_join(rr_table1, by=c("subgroup","Characteristics"))
+    testthat::expect_equal(rr_table1.2, tab_dm_pos)
   }
 
 }
+
+save(rr_table1.1, rr_table1.2,
+    file = here::here("verification", "verification_output", "immuno_tabular_verification_output_tables1.Rdata"))
 
 ```
 
@@ -358,6 +362,9 @@ rr_table2_all[] <- lapply(rr_table2_all, as.character)
 rr_table2_all = tab_bind[,c("subgroup","Group","Visit","Arm","Baseline SARS-CoV-2","Marker")] %>% left_join(rr_table2_all, by=c("subgroup","Group","Visit","Arm","Baseline SARS-CoV-2","Marker"))
 
 testthat::expect_equal(rr_table2_all, tab_bind)
+
+save(rr_table2_all,
+    file = here::here("verification", "verification_output", "immuno_tabular_verification_output_table2.Rdata"))
 ```
 
 \clearpage
@@ -441,6 +448,9 @@ rr_table3_all_sub <- tab_pseudo[, c("subgroup","Group","Visit","Arm","Baseline S
   left_join(rr_table3_all_sub, by=c("subgroup","Group","Visit","Arm","Baseline SARS-CoV-2","Marker"))
 
 testthat::expect_equal(rr_table3_all_sub, tab_pseudo)
+
+save(rr_table3_all_sub,
+    file = here::here("verification", "verification_output", "immuno_tabular_verification_output_table3.Rdata"))
 ```
 
 \clearpage
@@ -521,6 +531,9 @@ rr_table4_all <- tab_wt[, c("subgroup","Group","Visit","Arm","Baseline SARS-CoV-
   left_join(rr_table4_all, by=c("subgroup","Group","Visit","Arm","Baseline SARS-CoV-2","Marker"))
 
 testthat::expect_equal(rr_table4_all, tab_wt)
+
+save(rr_table4_all,
+    file = here::here("verification", "verification_output", "immuno_tabular_verification_output_table4.Rdata"))
 ```
 
 \clearpage
@@ -574,6 +587,9 @@ rr_table5_all[] <- lapply(rr_table5_all, as.character)
 rr_table5_all <- tab_gm[, c("subgroup","Group","Visit","Arm","Baseline SARS-CoV-2","Marker")] %>% left_join(rr_table5_all, by=c("subgroup","Group","Visit","Arm","Baseline SARS-CoV-2","Marker"))
 
 testthat::expect_equal(rr_table5_all, tab_gm)
+
+save(rr_table5_all,
+    file = here::here("verification", "verification_output", "immuno_tabular_verification_output_table5.Rdata"))
 ```
 
 \clearpage
@@ -631,6 +647,9 @@ rr_table6_all <- tab_gmr[, c("subgroup","Group","Visit","Arm", "Baseline SARS-Co
 dim(rr_table6_all)==dim(tab_gmr)
 
 testthat::expect_equal(rr_table6_all, tab_gmr)
+
+save(rr_table6_all,
+    file = here::here("verification", "verification_output", "immuno_tabular_verification_output_table6.Rdata"))
 ```
 
 \clearpage
@@ -739,6 +758,9 @@ dim(rr_table7_all)==dim(tab_rgmt)
 rr_table7_all <- tab_rgmt[, c("Group 1 vs 2", "subgroup", "Visit","Arm", "Baseline SARS-CoV-2", "Marker")] %>% left_join(rr_table7_all, c("Group 1 vs 2", "subgroup", "Visit","Arm", "Baseline SARS-CoV-2", "Marker"))
 
 testthat::expect_equal(rr_table7_all, tab_rgmt)
+
+save(rr_table7_all,
+    file = here::here("verification", "verification_output", "immuno_tabular_verification_output_table7.Rdata"))
 ```
 
 \clearpage
@@ -870,6 +892,9 @@ rr_table8_all <- tab_rrdiff[, c("Comparison", "subgroup", "Baseline SARS-CoV-2",
 rr_table8_all <- rr_table8_all[, c("Comparison", "subgroup","Baseline SARS-CoV-2","Arm","Visit","Marker","% 4-Fold Rise", "% 2-Fold Rise","Responder")]
 
 testthat::expect_equal(rr_table8_all, tab_rrdiff)
+
+save(rr_table8_all,
+    file = here::here("verification", "verification_output", "immuno_tabular_verification_output_table8.Rdata"))
 ```
 
 \clearpage
@@ -940,6 +965,9 @@ rr_table9_all <- tab_neg[, c("Visit","Marker")] %>%
   left_join(rr_table9_all, by=c("Visit","Marker"))
 
 testthat::expect_equal(rr_table9_all, tab_neg)
+
+save(rr_table9_all,
+    file = here::here("verification", "verification_output", "immuno_tabular_verification_output_table9.Rdata"))
 ```
 
 \clearpage
@@ -1010,6 +1038,9 @@ rr_table10_all <- tab_neg[, c("Visit","Marker")] %>%
   left_join(rr_table10_all, by=c("Visit","Marker"))
 
 testthat::expect_equal(rr_table10_all, tab_pos)
+
+save(rr_table10_all,
+    file = here::here("verification", "verification_output", "immuno_tabular_verification_output_table10.Rdata"))
 ```
 
 \clearpage
@@ -1100,6 +1131,9 @@ rr_table11_all <- tab_vacc[, c("Visit","Marker")] %>%
   left_join(rr_table11_all, by=c("Visit","Marker"))
 
 testthat::expect_equal(rr_table11_all, tab_vacc)
+
+save(rr_table11_all,
+    file = here::here("verification", "verification_output", "immuno_tabular_verification_output_table11.Rdata"))
 ```
 
 \clearpage
@@ -1190,4 +1224,7 @@ rr_table12_all <- tab_plcb[, c("Visit","Marker")] %>%
   left_join(rr_table12_all, by=c("Visit","Marker"))
 
 testthat::expect_equal(rr_table12_all, tab_plcb)
+
+save(rr_table12_all,
+    file = here::here("verification", "verification_output", "immuno_tabular_verification_output_table12.Rdata"))
 ```

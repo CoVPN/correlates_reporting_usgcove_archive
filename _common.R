@@ -53,6 +53,16 @@ uloqs <-c(bindN = 19136250,
           pseudoneutid80 = 1295, 
           liveneutmn50 = 18976.19) 
 
+
+convf=c(bindSpike=0.0090, bindN=0.0024, bindRBD=0.0272)
+
+for (a in c("bindSpike", "bindRBD", "bindN")) {
+  llods[a] = llods[a] * convf[a]
+  lloqs[a] = lloqs[a] * convf[a]
+  uloqs[a] = uloqs[a] * convf[a]
+}
+
+
 ###############################################################################
 # figure labels and titles for markers
 ###############################################################################
@@ -107,7 +117,7 @@ labels.axis <- outer(
   "%.%"
 )
 labels.axis <- as.data.frame(labels.axis)
-  rownames(labels.axis) <- times
+rownames(labels.axis) <- times
 
 labels.assays <- c("Binding Antibody to Spike", 
                    "Binding Antibody to RBD",
@@ -115,7 +125,9 @@ labels.assays <- c("Binding Antibody to Spike",
                    "PsV Neutralization 80% Titer",
                    "WT LV Neutralization 50% Titer")
 
-names(labels.assays) <- c("bindSpike", "bindRBD", "pseudoneutid50",
+names(labels.assays) <- c("bindSpike", 
+                          "bindRBD", 
+                          "pseudoneutid50",
                           "pseudoneutid80",
                           "liveneutmn50")
 

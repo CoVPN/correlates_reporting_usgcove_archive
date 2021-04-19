@@ -240,7 +240,8 @@ run_cv_sl_once <- function(seed = 1, Y = NULL, X_mat = NULL,
     obsWeights = obsWeights,
     SL.library = sl_lib,
     method = method, cvControl = cvControl,
-    innerCvControl = innerCvControl
+    innerCvControl = innerCvControl,
+    verbose = TRUE
   )
 
   aucs <- get_all_aucs(sl_fit = fit, scale = scale)

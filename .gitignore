@@ -171,3 +171,6 @@ cor_coxph/output/D57/controlled_ve_curves2_mock.pdf
 cor_coxph/output/D29/controlled_ve_curves1_mock.pdf
 cor_coxph/output/D57/controlled_ve_curves1_mock.pdf
 cor_coxph/output/D29/controlled_ve_curves2_mock.pdf
+data_raw/COVID_VEtrial_practicedata_primarystage1.zip
+cor_graphical/data_clean/longer_cor_data_plot1.csv
+cor_graphical/data_clean/plot.25sample1.csv

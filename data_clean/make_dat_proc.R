@@ -173,7 +173,7 @@ if(has29) dat_proc$TwophasesampInd.2[!with(dat_proc, EventTimePrimaryD29 >= 14 &
 ###############################################################################
 # impute missing neut biomarkers in ph2
 #     impute vaccine and placebo, baseline pos and neg, separately
-#     use all assays
+#     use all assays (not bindN)
 #     use baseline, D29 and D57, but not Delta
 ###############################################################################
 
@@ -265,22 +265,38 @@ if(has29) {
 # define delta for dat_proc
 ###############################################################################
 
-dat_proc["Delta57overB" %.% assays] <-
-  dat_proc["Day57" %.% assays] - dat_proc["B" %.% assays]
+assays.includeN=c(assays, "bindN")
+
+dat_proc["Delta57overB" %.% assays.includeN] <-
+  dat_proc["Day57" %.% assays.includeN] - dat_proc["B" %.% assays.includeN]
 if(has29) {
-    dat_proc["Delta29overB" %.% assays] <-
-      dat_proc["Day29" %.% assays] - dat_proc["B" %.% assays]
-    dat_proc["Delta57over29" %.% assays] <-
-      dat_proc["Day57" %.% assays] - dat_proc["Day29" %.% assays]
+    dat_proc["Delta29overB" %.% assays.includeN] <-
+      dat_proc["Day29" %.% assays.includeN] - dat_proc["B" %.% assays.includeN]
+    dat_proc["Delta57over29" %.% assays.includeN] <-
+      dat_proc["Day57" %.% assays.includeN] - dat_proc["Day29" %.% assays.includeN]
 }
+
+
+
+###############################################################################
+# converting binding variables from AU to IU for binding assays
+# times[1:ifelse(has29,3,2)] is aimed at capturing B and D29 and D57 when having D29, and B and D57 when not having D29
+###############################################################################
+
+for (a in c("bindSpike", "bindRBD", "bindN")) {
+  for (t in times[1:ifelse(has29,3,2)]) {
+      dat_proc[[t %.% a]] <- dat_proc[[t %.% a]] + log10(convf[a])
+  }
+}
+
 
 
 ###############################################################################
 # censoring values below LLOD
-# llods defined in _common.R
+# times[1:ifelse(has29,3,2)] is aimed at capturing B and D29 and D57 when having D29, and B and D57 when not having D29
 ###############################################################################
 
-for (a in assays) {
+for (a in assays.includeN) {
   for (t in times[1:ifelse(has29,3,2)]) {
     dat_proc[[t %.% a]] <- ifelse(dat_proc[[t %.% a]] < log10(llods[a]), log10(llods[a] / 2), dat_proc[[t %.% a]])
     dat_proc[[t %.% a]] <- ifelse(dat_proc[[t %.% a]] > log10(uloqs[a]), log10(uloqs[a]    ), dat_proc[[t %.% a]])

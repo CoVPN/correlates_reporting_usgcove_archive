@@ -28,11 +28,16 @@ library(broom)
 inputFile <- read.csv(here::here("..", "data_clean", "practice_data_with_riskscore.csv")) 
 
 
-
 # This function takes marker name as string, and the design.
 # It returns the HR for the marker, CI and p.value
 getHR_D57_continuous_marker <- function(marker, design, data, group){
-  fm = as.formula(paste("Surv(EventTimePrimaryD57, EventIndPrimaryD57) ~ ", marker, " + MinorityInd + HighRiskInd + risk_score"))
+  if(group %in% c("Age < 65, At risk", "Age < 65, Not at risk", "At risk", "Not at risk")){
+    fm = as.formula(paste("Surv(EventTimePrimaryD57, EventIndPrimaryD57) ~ ", marker, " + MinorityInd + risk_score"))
+  } else if (group %in% c("WhiteNonHispanic", "Comm. of color")){
+    fm = as.formula(paste("Surv(EventTimePrimaryD57, EventIndPrimaryD57) ~ ", marker, " + HighRiskInd + risk_score"))
+  }else{
+    fm = as.formula(paste("Surv(EventTimePrimaryD57, EventIndPrimaryD57) ~ ", marker, " + MinorityInd + HighRiskInd + risk_score"))
+  }
   
   fit <- survey::svycoxph(fm, design=design)
   
@@ -40,8 +45,8 @@ getHR_D57_continuous_marker <- function(marker, design, data, group){
     select(term, estimate, conf.low, conf.high, p.value) %>%
     filter(!term %in% c("MinorityInd", "HighRiskInd", "risk_score")) %>%
     rename(marker = term) %>%
-    mutate(events = sum(data$EventIndPrimaryD57),
-           n = length(data$EventIndPrimaryD57),
+    mutate(cases = sum(data$EventIndPrimaryD57),
+           atRisk = length(data$EventIndPrimaryD57),
            group = group) 
 }
 
@@ -54,9 +59,8 @@ getHR_D57_categorical_marker <- function(marker, design, data, group){
   data_lower <- data %>% filter(get(marker) == (data %>% pull(marker) %>% levels())[1])
   data_middle <- data %>% filter(get(marker) == (data %>% pull(marker) %>% levels())[2])
   data_upper <- data %>% filter(get(marker) == (data %>% pull(marker) %>% levels())[3])
-  # data_lower <- data %>% filter(str_detect(get(marker), '-Inf'))
-  # data_middle <- data %>% filter(!str_detect(get(marker), 'Inf'))
-  # data_upper <- data %>% filter(str_detect(get(marker), ', Inf]') | str_detect(marker, '3.11'))
+  
+  
 
   fm = as.formula(paste("Surv(EventTimePrimaryD57, EventIndPrimaryD57) ~ ", marker, " + MinorityInd + HighRiskInd + risk_score"))
   
@@ -69,12 +73,13 @@ getHR_D57_categorical_marker <- function(marker, design, data, group){
     add_row(marker = "Lower", estimate = 1, conf.low = NA, conf.high = NA, p.value = NA) %>%
     mutate(marker_cut = c("Middle", "Upper", "Lower")) %>%
     arrange(marker_cut) %>%
-    mutate(events = ifelse(marker_cut == "Lower", sum(data_lower$EventIndPrimaryD57),
-                           ifelse(marker_cut == "Middle", sum(data_middle$EventIndPrimaryD57),
-                                  sum(data_upper$EventIndPrimaryD57))),
-           n = ifelse(marker_cut == "Lower", length(data_lower$EventIndPrimaryD57),
-                      ifelse(marker_cut == "Middle", length(data_middle$EventIndPrimaryD57),
-                             length(data_upper$EventIndPrimaryD57))),
+    mutate(cases = ifelse(marker_cut == "Lower", sum(data_lower %>% filter(EventIndPrimaryD57 == 1) %>% .$wt),
+                           ifelse(marker_cut == "Middle", sum(data_middle %>% filter(EventIndPrimaryD57 == 1) %>% .$wt),
+                                  sum(data_upper %>% filter(EventIndPrimaryD57 == 1) %>% .$wt))),
+           atRisk = ifelse(marker_cut == "Lower", sum(data_lower %>% .$wt),
+                      ifelse(marker_cut == "Middle", sum(data_middle %>% .$wt),
+                             sum(data_upper %>% .$wt))),
+           `Attack rate` = cases/atRisk,
            group = group)
 }
 
@@ -96,43 +101,54 @@ get_results_in_df_D57 <- function(dat, group){
     
     # Define trichotomized version of the markers
     # trichotomize Day57bindSpike
-    vec_cutpoints <- c(-Inf, Hmisc::wtd.quantile(dat.D57$Day57bindSpike, weights = dat.D57$wt, probs = c(1/3, 2/3)), Inf)
-    if((vec_cutpoints[[2]] == min(dat.D57$Day57bindSpike, na.rm = T)) | 
-       (vec_cutpoints[[3]] == max(dat.D57$Day57bindSpike, na.rm = T)) |
-       (vec_cutpoints[[2]] == vec_cutpoints[[3]])){
-      dat.D57$Day57bindSpikecat <- Hmisc::cut2(dat.D57$Day57bindSpike, breaks = 3)
+    vec_cutpoints <- Hmisc::wtd.quantile(dat.D57$Day57bindSpike, weights = dat.D57$wt, probs = c(1/3, 2/3))
+    if((vec_cutpoints[[1]] == min(dat.D57$Day57bindSpike, na.rm = T)) | 
+       (vec_cutpoints[[2]] == max(dat.D57$Day57bindSpike, na.rm = T)) |
+       (vec_cutpoints[[1]] == vec_cutpoints[[2]])){
+      dat.D57$Day57bindSpikecat <- cut(dat.D57$Day57bindSpike, breaks = 3)
     } else {
-      dat.D57$Day57bindSpikecat <- Hmisc::cut2(dat.D57$Day57bindSpike, vec_cutpoints)}
+      vec_cutpoints <- c(-Inf, vec_cutpoints, Inf)
+      dat.D57$Day57bindSpikecat <- Hmisc::cut2(dat.D57$Day57bindSpike, vec_cutpoints)
+      }
     rm(vec_cutpoints)
     
     # trichotomize Day57bindRBD
-    vec_cutpoints <- c(-Inf, Hmisc::wtd.quantile(dat.D57$Day57bindRBD, weights = dat.D57$wt, probs = c(1/3, 2/3)), Inf)
-    if((vec_cutpoints[[2]] == min(dat.D57$Day57bindRBD, na.rm = T)) | 
-       (vec_cutpoints[[3]] == max(dat.D57$Day57bindRBD, na.rm = T)) |
-       (vec_cutpoints[[2]] == vec_cutpoints[[3]])){
-      dat.D57$Day57bindRBDcat <- Hmisc::cut2(dat.D57$Day57bindRBD, breaks = 3)
+    vec_cutpoints <- Hmisc::wtd.quantile(dat.D57$Day57bindRBD, weights = dat.D57$wt, probs = c(1/3, 2/3))
+    #vec_cutpoints[[2]] = vec_cutpoints[[2]] + 1e-6
+    if((vec_cutpoints[[1]] == min(dat.D57$Day57bindRBD, na.rm = T)) | 
+       (vec_cutpoints[[2]] == max(dat.D57$Day57bindRBD, na.rm = T)) |
+       (vec_cutpoints[[1]] == vec_cutpoints[[1]])){
+      dat.D57$Day57bindRBDcat <- cut(dat.D57$Day57bindRBD, breaks = 3)
     } else {
-      dat.D57$Day57bindRBDcat <- Hmisc::cut2(dat.D57$Day57bindRBD, vec_cutpoints)}
+      vec_cutpoints <- c(-Inf, vec_cutpoints, Inf)
+      dat.D57$Day57bindRBDcat <- Hmisc::cut2(dat.D57$Day57bindRBD, vec_cutpoints)
+      }
     rm(vec_cutpoints)
     
     # trichotomize Day57pseudoneutid50
-    vec_cutpoints <- c(-Inf, Hmisc::wtd.quantile(dat.D57$Day57pseudoneutid50, weights = dat.D57$wt, probs = c(1/3, 2/3)), Inf)
-    if((vec_cutpoints[[2]] == min(dat.D57$Day57pseudoneutid50, na.rm = T)) | 
-       (vec_cutpoints[[3]] == max(dat.D57$Day57pseudoneutid50, na.rm = T)) |
-       (vec_cutpoints[[2]] == vec_cutpoints[[3]])){
-      dat.D57$Day57pseudoneutid50cat <- Hmisc::cut2(dat.D57$Day57pseudoneutid50, breaks = 3)
+    vec_cutpoints <- Hmisc::wtd.quantile(dat.D57$Day57pseudoneutid50, weights = dat.D57$wt, probs = c(1/3, 2/3))
+    #vec_cutpoints[[2]] = vec_cutpoints[[2]] + 1e-6
+    if((vec_cutpoints[[1]] == min(dat.D57$Day57pseudoneutid50, na.rm = T)) | 
+       (vec_cutpoints[[2]] == max(dat.D57$Day57pseudoneutid50, na.rm = T)) |
+       (vec_cutpoints[[1]] == vec_cutpoints[[2]])){
+      dat.D57$Day57pseudoneutid50cat <- cut(dat.D57$Day57pseudoneutid50, breaks = 3)
     } else {
-      dat.D57$Day57pseudoneutid50cat <- Hmisc::cut2(dat.D57$Day57pseudoneutid50, vec_cutpoints)}
+      vec_cutpoints <- c(-Inf, vec_cutpoints, Inf)
+      dat.D57$Day57pseudoneutid50cat <- Hmisc::cut2(dat.D57$Day57pseudoneutid50, vec_cutpoints)
+      }
     rm(vec_cutpoints)
     
     # trichotomize Day57pseudoneutid80
-    vec_cutpoints <- c(-Inf, Hmisc::wtd.quantile(dat.D57$Day57pseudoneutid80, weights = dat.D57$wt, probs = c(1/3, 2/3)), Inf)
-    if((vec_cutpoints[[2]] == min(dat.D57$Day57pseudoneutid80, na.rm = T)) | 
-       (vec_cutpoints[[3]] == max(dat.D57$Day57pseudoneutid80, na.rm = T)) |
-       (vec_cutpoints[[2]] == vec_cutpoints[[3]])){
+    vec_cutpoints <- Hmisc::wtd.quantile(dat.D57$Day57pseudoneutid80, weights = dat.D57$wt, probs = c(1/3, 2/3))
+    #vec_cutpoints[[2]] = vec_cutpoints[[2]] + 1e-6
+    if((vec_cutpoints[[1]] == min(dat.D57$Day57pseudoneutid80, na.rm = T)) | 
+       (vec_cutpoints[[2]] == max(dat.D57$Day57pseudoneutid80, na.rm = T)) |
+       (vec_cutpoints[[1]] == vec_cutpoints[[1]])){
       dat.D57$Day57pseudoneutid80cat <- cut(dat.D57$Day57pseudoneutid80, breaks = 3)
     } else {
-      dat.D57$Day57pseudoneutid80cat <- Hmisc::cut2(dat.D57$Day57pseudoneutid80, vec_cutpoints)}
+      vec_cutpoints <- c(-Inf, vec_cutpoints, Inf)
+      dat.D57$Day57pseudoneutid80cat <- Hmisc::cut2(dat.D57$Day57pseudoneutid80, vec_cutpoints)
+      }
     rm(vec_cutpoints)
     
     dat.D57 <- dat.D57 %>%
@@ -160,10 +176,17 @@ get_results_in_df_D57 <- function(dat, group){
 
 
 ################################################## 
-# All analyses
+# All D57 analyses
 tab <- get_results_in_df_D57(dat = inputFile %>% filter(Trt == 1 & Bserostatus == 0), group = "All baseline negative, vaccine") %>%
   bind_rows(get_results_in_df_D57(dat = inputFile %>% filter(Trt == 1 & Bserostatus == 0 & Age >= 65), group = "Age >= 65"),
-            get_results_in_df_D57(dat = inputFile %>% filter(Trt == 1 & Bserostatus == 0 & Age < 65 & HighRiskInd == 1), group = "Age < 65, At risk"))
+            get_results_in_df_D57(dat = inputFile %>% filter(Trt == 1 & Bserostatus == 0 & Age < 65 & HighRiskInd == 1), group = "Age < 65, At risk"),
+            get_results_in_df_D57(dat = inputFile %>% filter(Trt == 1 & Bserostatus == 0 & Age < 65 & HighRiskInd == 0), group = "Age < 65, Not at risk"),
+            get_results_in_df_D57(dat = inputFile %>% filter(Trt == 1 & Bserostatus == 0 & HighRiskInd == 1), group = "At risk"),
+            get_results_in_df_D57(dat = inputFile %>% filter(Trt == 1 & Bserostatus == 0 & HighRiskInd == 0), group = "Not at risk"),
+            get_results_in_df_D57(dat = inputFile %>% filter(Trt == 1 & Bserostatus == 0 & MinorityInd==1), group = "Comm. of color"),
+            get_results_in_df_D57(dat = inputFile %>% filter(Trt == 1 & Bserostatus == 0 & MinorityInd == 0), group = "WhiteNonHispanic"),
+            get_results_in_df_D57(dat = inputFile %>% filter(Trt == 1 & Bserostatus == 0 & Sex == 1), group = "Men"),
+            get_results_in_df_D57(dat = inputFile %>% filter(Trt == 1 & Bserostatus == 0 & Sex == 0), group = "Women"))
 
 
 

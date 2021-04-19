@@ -16,9 +16,13 @@ source(here::here("..", "_common.R"))
 #-----------------------------------------------
 
 source(here::here("code", "params.R"))
-#dat.mock <- read.csv(here::here("..", "data_clean", data_name))
 data_name_updated <- sub(".csv", "_with_riskscore.csv", data_name)
-dat.mock <- read.csv(here::here("..", "data_clean", data_name_updated))
+if (file.exists(here::here("..", "data_clean", data_name_updated))) {
+    dat.mock <- read.csv(here::here("..", "data_clean", data_name_updated))
+} else {
+    dat.mock <- read.csv(here::here("..", "data_clean", data_name))
+}
+
 
 library(kyotil) # p.adj.perm, getFormattedSummary
 library(marginalizedRisk)

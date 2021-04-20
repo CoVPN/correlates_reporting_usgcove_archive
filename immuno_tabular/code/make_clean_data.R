@@ -8,6 +8,7 @@ source(here::here("..", "_common.R")) #
 
 # Reload clean_data
 base::load(here::here("data_clean", "params.Rdata"))
+source(here::here("code", "make_functions.R"))
 
 library(tidyverse)
 library(dplyr, warn.conflicts = FALSE)
@@ -19,7 +20,7 @@ dat.mock <- read.csv(here::here("..", "data_clean", data_name))
 
 # The stratified random cohort for immunogenicity
 ds_s <- dat.mock %>%
-  dplyr::filter(Perprotocol == 1 & EventTimePrimaryD57 >= 7) %>%
+  dplyr::filter(!is.na(wt.subcohort)) %>%
   mutate(
     raceC = as.character(race),
     ethnicityC = case_when(EthnicityHispanic==1 ~ "Hispanic or Latino",
@@ -50,27 +51,11 @@ ds_s <- dat.mock %>%
     Case = case_when(Perprotocol == 1 & EventIndPrimaryD29 == 1 & 
                        EventIndPrimaryD57 == 1 ~ "Cases",
                      TRUE ~ "Non-Cases"),
-    Case2 = case_when(EventIndPrimaryD29 == 1 & EventIndPrimaryD57 == 0 ~ 
-                        "Per-protocol Intercurrent cases",
-                      Perprotocol == 1 & EventIndPrimaryD29 == 1 & 
-                        EventIndPrimaryD57 == 1 ~ "Per-protocol cases",
-                      Perprotocol == 1 & EventIndPrimaryD29 == 0 & 
-                        EventIndPrimaryD57 == 0 ~ "Per-protocol non-cases"),
     AgeRisk1 = ifelse(Age65C=="Age $<$ 65", AgeRiskC, NA),
     AgeRisk2 = ifelse(Age65C=="Age $\\geq$ 65", AgeRiskC, NA),
     All = "All participants",
-    randomset = (SubcohortInd == 1 & TwophasesampInd == 1 &
-                   Perprotocol == 1 & !is.na(wt.subcohort))
+    randomset = (SubcohortInd == 1 & TwophasesampInd == 1 & !is.na(wt.subcohort))
   ) 
-
-
-# SAP Section 9.1.1 Antibody Marker Data
-# Step1: Truncation - LLOD, ULOQ
-ds1 <- ds_s
-for(x in names(labels.assays.short)) {
-  ds1 <- mutate_at(ds1, grep(x, names(ds1), value=T), 
-                   setLOD, llod = llods[x], uloq = uloqs[x])
-} 
 
 # Step2: Responders
 # Post baseline visits
@@ -79,10 +64,10 @@ post_n <- length(post)
 
 ds2 <- bind_cols(
   # Original ds
-  ds1,
+  ds_s,
   # Responses post baseline
   pmap(list(
-    data = replicate(length(assays)*post_n, ds1, simplify = FALSE),
+    data = replicate(length(assays)*post_n, ds_s, simplify = FALSE),
     bl = as.vector(outer(rep("B", post_n), assays, paste0)),
     post = as.vector(outer(post, assays, paste0)),
     llod = llods[rep(assays, each = post_n)]),
@@ -91,7 +76,7 @@ ds2 <- bind_cols(
   
   # % > 2lloq and 4lloq
   pmap(list(
-    data = replicate(length(assays_col), ds1, simplify = FALSE),
+    data = replicate(length(assays_col), ds_s, simplify = FALSE),
     x = assays_col,
     llod = llods[rep(assays, each = (post_n + 1))]),
     .f = grtLLOD) %>%

@@ -83,8 +83,8 @@ dat_proc$WhiteNonHispanic <-
     dat_proc$ethnicity == "Hispanic or Latino", 0,
     dat_proc$WhiteNonHispanic
   )
-dat_proc$URM = 1-dat_proc$WhiteNonHispanic
-dat_proc$URM[is.na(dat_proc$URM)] = 0
+dat_proc$MinorityInd = 1-dat_proc$WhiteNonHispanic
+dat_proc$MinorityInd[is.na(dat_proc$MinorityInd)] = 0
 
 # check coding via tables
 #table(dat_proc$race, useNA = "ifany")
@@ -110,7 +110,7 @@ names(Bstratum.labels) <- Bstratum.labels
 # Moderna: 1 ~ 6 defines the 6 baseline strata within trt/serostatus
 dat_proc <- dat_proc %>%
   mutate(
-    demo.stratum = ifelse (URM==1, ifelse(Age >= 65, 1, ifelse(HighRiskInd == 1, 2, 3)), 3+ifelse(Age >= 65, 1, ifelse(HighRiskInd == 1, 2, 3)))
+    demo.stratum = ifelse (MinorityInd==1, ifelse(Age >= 65, 1, ifelse(HighRiskInd == 1, 2, 3)), 3+ifelse(Age >= 65, 1, ifelse(HighRiskInd == 1, 2, 3)))
   )
 names(demo.stratum.labels) <- demo.stratum.labels
 

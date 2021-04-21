@@ -30,6 +30,9 @@ source(here::here("..", "_common.R"))
 
 # read in practice data
 dat.mock <- read.csv(here("verification","verification_input","practice_data.csv"), stringsAsFactors = F)
+dat <- dat.mock %>% mutate(cohort_2_ind=ifelse((Perprotocol == 1 & EventTimePrimaryD57 >= 7), 1,0),
+           cohort_1_ind=ifelse(((EventTimePrimaryD29 >= 14 & Perprotocol == 1)|(EventTimePrimaryD29 >= 7 & EventTimePrimaryD29 <= 13 & Fullvaccine == 1)), 1, 0))
+
 
 # reset all delta values
 dat$Delta57overBbindSpike = dat$Day57bindSpike - dat$BbindSpike
@@ -235,7 +238,7 @@ for (i in c("Negative", "Positive")){
     rr_table1.1 = tab_dm_neg[, c("subgroup","Characteristics")] %>% left_join(rr_table1, by=c("subgroup","Characteristics"))
     testthat::expect_equal(rr_table1.1, tab_dm_neg)
 
-  } else if (i=="Postive"){
+  } else if (i=="Positive"){
     # comparison
     tab_dm_pos[] <- lapply(tab_dm_pos, as.character)
     rr_table1.2 = tab_dm_pos[, c("subgroup","Characteristics")] %>% left_join(rr_table1, by=c("subgroup","Characteristics"))

@@ -833,6 +833,7 @@ mypdf(onefile=F, file=paste0(save.results.to, "controlled_ve_curves",ii,"_"%.%st
         which=which.min(abs(risks$prob-mean(tmp)))
         s.ref=risks$marker[which]
         Bias=controlled.risk.bias.factor(ss=risks$marker, s.cent=s.ref, s1=risks$marker[s1], s2=risks$marker[s2], RRud) 
+        if (is.nan(Bias[1])) Bias=rep(1,length(Bias))
     
         ylim=if(ii==1) c(0.5, 1) else c(0.8, 1)
     

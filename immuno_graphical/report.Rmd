@@ -286,7 +286,7 @@ include_graphics(here(
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0(
-    "Marker_Rcdf_Day57_bAb_trt_vaccine_bstatus_both_",
+    "Marker_Rcdf_bAb_Day57_trt_vaccine_bstatus_both_",
     study_name, ".png"
   )
 ))
@@ -297,7 +297,7 @@ include_graphics(here(
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0(
-    "Marker_Rcdf_Day57_nonbAb_trt_vaccine_bstatus_both_",
+    "Marker_Rcdf_nonbAb_Day57_trt_vaccine_bstatus_both_",
     study_name, ".png"
   )
 ))

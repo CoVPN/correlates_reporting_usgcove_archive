@@ -280,7 +280,7 @@ for (i in c("Negative", "Positive")){
     rr_table1.1 = tab_dm_neg[, c("subgroup","Characteristics")] %>% left_join(rr_table1, by=c("subgroup","Characteristics"))
     testthat::expect_equal(rr_table1.1, tab_dm_neg)
     
-  } else if (i=="Postive"){
+  } else if (i=="Positive"){
     # comparison
     tab_dm_pos[] <- lapply(tab_dm_pos, as.character)
     rr_table1.2 = tab_dm_pos[, c("subgroup","Characteristics")] %>% left_join(rr_table1, by=c("subgroup","Characteristics"))

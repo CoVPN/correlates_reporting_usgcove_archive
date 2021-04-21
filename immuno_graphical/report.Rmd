@@ -258,16 +258,7 @@ include_graphics(here(
 ))
 ```
 
-\clearpage
-```{r, fig.cap = "RCDF plots for D29 Ab markers: by baseline status for the vaccine arm", eval = ("Day29" %in% times)}
-include_graphics(here(
-  "immuno_graphical", "figs",
-  paste0(
-    "Marker_Rcdf_Day29_trt_vaccine_bstatus_both_",
-    study_name, ".png"
-  )
-))
-```
+
 
 \clearpage
 ```{r, fig.cap = "RCDF plots for D29 bAb markers: by baseline status for the vaccine arm", eval = ("Day29" %in% times)}

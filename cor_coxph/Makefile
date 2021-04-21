@@ -14,6 +14,14 @@ cor_coxph:
 report:
 	Rscript -e "rmarkdown::render('cor_coxph_report.Rmd')"
 
+# turn down number of bootstraps and permutations in CoR for faster builds
+before_script:
+	echo "B <- 5" >> code/params.R
+	echo "numPerm <- 5" >> code/params.R
+
+test: before_script clean cor_coxph report
+
+
 # type 'make help' to show all make commands
 help: Makefile
 	@sed -n 's/^##//p' $<

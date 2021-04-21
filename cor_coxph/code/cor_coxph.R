@@ -65,10 +65,17 @@ marker.cutpoints <- list()
 for (a in assays) {
     marker.cutpoints[[a]] <- list()    
     for (ind.t in c("Day"%.%pop, "Delta"%.%pop%.%"overB")) {
+        myprint(a, ind.t)
         q.a <- wtd.quantile(dat.vacc.pop[[ind.t %.% a]], weights = dat.vacc.pop$wt.0, probs = c(1/3, 2/3))
-        if(q.a[1]==q.a[2] | q.a[1]==min(dat.vacc.pop[[ind.t %.% a]], na.rm=TRUE) | q.a[2]==max(dat.vacc.pop[[ind.t %.% a]], na.rm=TRUE)) {
-            # if there is a huge point mass, this would happen
-            # the fix is to call cut. Note that this does not incorporate weights
+        
+        # -Inf and Inf are added to q.a because otherwise cut2 may assign the rows with the minimum value NA
+        tmp=try(factor(cut2(dat.vacc.pop[[ind.t %.% a]], cuts = c(-Inf, q.a, Inf))), silent=T)
+        # if there is a huge point mass, an error would occur
+        if (!inherits(tmp, "try-error")) {
+            dat.vacc.pop[[ind.t %.% a %.% "cat"]] <- tmp
+            marker.cutpoints[[a]][[ind.t]] <- q.a
+        } else {
+            # cut is more robust but it does not incorporate weights
             tmp=cut(dat.vacc.pop[[ind.t %.% a]], breaks=3)
             stopifnot(length(table(tmp))==3)
             dat.vacc.pop[[ind.t %.% a %.% "cat"]] = tmp
@@ -76,10 +83,6 @@ for (a in assays) {
             tmpname = names(table(tmp))[2]
             tmpname = substr(tmpname, 2, nchar(tmpname)-1)
             marker.cutpoints[[a]][[ind.t]] <- as.numeric(strsplit(tmpname, ",")[[1]])
-        } else {
-            # -Inf and Inf are added to q.a because otherwise cut2 may assign the rows with the minimum value NA
-            dat.vacc.pop[[ind.t %.% a %.% "cat"]] <- factor(cut2(dat.vacc.pop[[ind.t %.% a]], cuts = c(-Inf, q.a, Inf)))
-            marker.cutpoints[[a]][[ind.t]] <- q.a
         }
         stopifnot(length(table(dat.vacc.pop[[ind.t %.% a %.% "cat"]])) == 3)
         print(table(dat.vacc.pop[[ind.t %.% a %.% "cat"]]))
@@ -254,7 +257,9 @@ mytex(tab.1, file.name="CoR_univariable_svycoxph_pretty_"%.%study_name, align="c
     ")
 )
 
-rv$tab.1=tab.1
+tab.1.nop12=cbind(paste0(nevents, "/", format(natrisk, big.mark=",")), t(est), t(ci), t(p))
+rownames(tab.1)=c(labels.axis["Day"%.%tab.1.nop12, assays])
+rv$tab.1=tab.1.nop12
 
 
 
@@ -282,7 +287,7 @@ nevents = round(c(sapply (c("Day"%.%pop%.%assays, "Delta"%.%pop%.%"overB"%.%assa
 est=c(rbind(1.00,  getFormattedSummary(fits.tri, exp=T, robust=T, rows=rows, type=1)))
 ci= c(rbind("N/A", getFormattedSummary(fits.tri, exp=T, robust=T, rows=rows, type=13)))
 p=  c(rbind("N/A", getFormattedSummary(fits.tri, exp=T, robust=T, rows=rows, type=10))); p=sub("0.000","<0.001",p)
-# 
+
 tab=cbind(
     rep(c("Lower","Middle","Upper"), length(p)/3), 
     paste0(nevents, "/", format(natrisk, big.mark=",",digit=0, scientific=F)), 
@@ -315,7 +320,15 @@ mytex(tab[1:(nrow(tab)/2),], file.name="CoR_univariable_svycoxph_cat_pretty_"%.%
     )
 )
 
-rv$tab.2=tab
+
+tab.nop12=cbind(
+    rep(c("Lower","Middle","Upper"), length(p)/3), 
+    paste0(nevents, "/", format(natrisk, big.mark=",",digit=0, scientific=F)), 
+    formatDouble(nevents/natrisk, digit=4, remove.leading0=F),
+    est, ci, p, overall.p.0
+)
+rownames(tab.nop12)=c(rbind(c(labels.axis["Day"%.%pop, assays], labels.axis["Delta"%.%pop%.%"overB", assays]), "", ""))
+rv$tab.2=tab.nop12
 
 
 

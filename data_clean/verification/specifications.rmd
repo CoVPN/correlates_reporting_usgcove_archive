@@ -30,11 +30,11 @@
 
   \item Define WhiteNonHispanic, a binary variable that takes value 1 if race is White and ethnicity is not Hispanic, 0 if race is not "white or unknown" OR ethnicity is Hispanic, and NA otherwise
   
-  \item Define URM, a binary variable that takes value 1 if WhiteNonHispanic is 0, and 0 otherwise including when WhiteNonHispanic is NA
+  \item Define MinorityInd, a binary variable that takes value 1 if WhiteNonHispanic is 0, and 0 otherwise including when WhiteNonHispanic is NA
   
   \item Define Bstratum, an integer variable to index randomization strata. For Moderna, there are three strata: age >= 65, age < 65 and HighRiskInd==1, age < 65 and HighRiskInd==0
   
-  \item Define demo.stratum, an integer variable to index the demographics strata. For Moderna, there are six strata: URM [1, 0] x Bstratum
+  \item Define demo.stratum, an integer variable to index the demographics strata. For Moderna, there are six strata: MinorityInd [1, 0] x Bstratum
   
   \item Define tps.stratum, an integer variable to index correlates sampling strata. For Moderna, there are 24 strata: [placebo/baseline negative, placebo/baseline positive, vaccine/baseline negative, vaccine/baseline positive] x demo.stratum
 

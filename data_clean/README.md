@@ -19,6 +19,7 @@ The data sets represent an expected COVID-19 vaccine efficacy
 * `race`: factor variable.
 * `ethnicity`: factor variable.
 * `WhiteNonHispanic`: 0, 1, or NA.
+* `MinorityInd`: opposite of WhiteNonHispanic
 * `age.geq.65`: 1 if `age>=65`, 0 otherwise.
 * `Bstratum`: Stratum indicator 1-k. The population is divided into three
    strata: `age>=65`, `age<65 & high risk`, `age<65 & low risk`.

@@ -283,13 +283,12 @@ if(has29) {
 # times[1:ifelse(has29,3,2)] is aimed at capturing B and D29 and D57 when having D29, and B and D57 when not having D29
 ###############################################################################
 
-## new dataset already in IU
-#for (a in c("bindSpike", "bindRBD", "bindN")) {
-#  for (t in times[1:ifelse(has29,3,2)]) {
-#      dat_proc[[t %.% a]] <- dat_proc[[t %.% a]] + log10(convf[a])
-#  }
-#}
-#
+for (a in c("bindSpike", "bindRBD", "bindN")) {
+  for (t in times[1:ifelse(has29,3,2)]) {
+      dat_proc[[t %.% a]] <- dat_proc[[t %.% a]] + log10(convf[a])
+  }
+}
+
 
 
 ###############################################################################

@@ -34,6 +34,7 @@ library(forestplot)
 library(Hmisc) # wtd.quantile, cut2
 library(xtable) # this is a dependency of kyotil
 
+
 # population is either 57 or 29
 Args <- commandArgs(trailingOnly=TRUE)
 if (length(Args)==0) Args=c(pop="57")
@@ -71,8 +72,12 @@ for (a in assays) {
         
         # -Inf and Inf are added to q.a because otherwise cut2 may assign the rows with the minimum value NA
         tmp=try(factor(cut2(dat.vacc.pop[[ind.t %.% a]], cuts = c(-Inf, q.a, Inf))), silent=T)
+        do.cut=FALSE # if TRUE, use cut function which does not use weights
         # if there is a huge point mass, an error would occur
-        if (!inherits(tmp, "try-error")) {
+        # or it may not break into 3 groups
+        if (inherits(tmp, "try-error")) do.cut=TRUE else if(length(table(tmp)) != 3) do.cut=TRUE
+        
+        if(!do.cut) {
             dat.vacc.pop[[ind.t %.% a %.% "cat"]] <- tmp
             marker.cutpoints[[a]][[ind.t]] <- q.a
         } else {
@@ -89,6 +94,8 @@ for (a in assays) {
         print(table(dat.vacc.pop[[ind.t %.% a %.% "cat"]]))
     }
 }
+
+
 
 # define an alias for EventIndPrimaryDxx
 dat.vacc.pop$yy=dat.vacc.pop[["EventIndPrimaryD"%.%pop]]
@@ -279,11 +286,12 @@ overall.p.1=c(rbind(overall.p.1, NA,NA))
 overall.p.2=c(rbind(overall.p.2, NA,NA))
 
 
+# if "Delta"%.%pop%.%"overB" is included, nevents have a problem because some markers may have only two category in the cases
+
 # n cases and n at risk
-natrisk = round(c(sapply (c("Day"%.%pop%.%assays, "Delta"%.%pop%.%"overB"%.%assays)%.%"cat", function(a) aggregate(dat.vacc.pop$wt.0, dat.vacc.pop[a], sum, na.rm=T)[,2] )))
+natrisk = round(c(sapply (c("Day"%.%pop%.%assays)%.%"cat", function(a) aggregate(dat.vacc.pop$wt.0, dat.vacc.pop[a], sum, na.rm=T)[,2] )))
 colSums(matrix(natrisk, nrow=3))
-nevents = round(c(sapply (c("Day"%.%pop%.%assays, "Delta"%.%pop%.%"overB"%.%assays)%.%"cat", function(a) aggregate(subset(dat.vacc.pop,yy==1)[["wt.0"]], 
-                                                                                                                   subset(dat.vacc.pop,yy==1)[a], sum, na.rm=T)[,2] )))
+nevents = round(c(sapply (c("Day"%.%pop%.%assays)%.%"cat", function(a) aggregate(subset(dat.vacc.pop,yy==1)[["wt.0"]], subset(dat.vacc.pop,yy==1)[a], sum, na.rm=T)[,2] )))
 # regression parameters
 est=c(rbind(1.00,  getFormattedSummary(fits.tri, exp=T, robust=T, rows=rows, type=1)))
 ci= c(rbind("N/A", getFormattedSummary(fits.tri, exp=T, robust=T, rows=rows, type=13)))
@@ -295,22 +303,17 @@ tab=cbind(
     formatDouble(nevents/natrisk, digit=4, remove.leading0=F),
     est, ci, p, overall.p.0, overall.p.1, overall.p.2
 )
-## move unit to another row if too long, code depends on length of assay
-#tmp=rbind(c(labels.axis["Day"%.%pop, assays], labels.axis["Delta"%.%pop%.%"overB", assays]), c("(IU/ml)", "(IU/ml)", "ID50", "ID80"), "")
-#tmp[1,]=sub(" \\(IU/ml)","", tmp[1,])
-#tmp[1,]=sub(" ID50","", tmp[1,])
-#tmp[1,]=sub(" ID80","", tmp[1,])
-tmp=rbind(c(labels.axis["Day"%.%pop, assays], labels.axis["Delta"%.%pop%.%"overB", assays]), "", "")
+tmp=rbind(c(labels.axis["Day"%.%pop, assays]), "", "")
 rownames(tab)=c(tmp)
 tab
 
-mytex(tab[1:(nrow(tab)/2),], file.name="CoR_univariable_svycoxph_cat_pretty_"%.%study_name, align="c", include.colnames = F, save2input.only=T, input.foldername=save.results.to,
+mytex(tab[1:(nrow(tab)),], file.name="CoR_univariable_svycoxph_cat_pretty_"%.%study_name, align="c", include.colnames = F, save2input.only=T, input.foldername=save.results.to,
     col.headers=paste0("\\hline\n 
          \\multicolumn{1}{l}{", toTitleCase(study_name), "} & \\multicolumn{1}{c}{Tertile}   & \\multicolumn{1}{c}{No. cases /}   & \\multicolumn{1}{c}{Attack}   & \\multicolumn{2}{c}{Haz. Ratio}                     & \\multicolumn{1}{c}{P-value}   & \\multicolumn{1}{c}{Overall P-}      & \\multicolumn{1}{c}{Overall q-}   & \\multicolumn{1}{c}{Overall} \\\\ 
          \\multicolumn{1}{l}{Immunologic Marker}            & \\multicolumn{1}{c}{}          & \\multicolumn{1}{c}{No. at-risk**} & \\multicolumn{1}{c}{rate}   & \\multicolumn{1}{c}{Pt. Est.} & \\multicolumn{1}{c}{95\\% CI} & \\multicolumn{1}{c}{(2-sided)} & \\multicolumn{1}{c}{value***} & \\multicolumn{1}{c}{value} & \\multicolumn{1}{c}{FWER} \\\\ 
          \\hline\n 
     "),        
-    add.to.row=list(list(nrow(tab)/2), # insert at the beginning of table, and at the end of, say, the first table
+    add.to.row=list(list(nrow(tab)), # insert at the beginning of table, and at the end of, say, the first table
         c(paste0(" \n \\multicolumn{8}{l}{} \\\\ \n", 
                   "\n \\multicolumn{2}{l}{Placebo} & ", 
                  paste0(sum(dat.plac.pop$yy), "/", format(nrow(dat.plac.pop), big.mark=",")), "&",  
@@ -328,7 +331,7 @@ tab.nop12=cbind(
     formatDouble(nevents/natrisk, digit=4, remove.leading0=F),
     est, ci, p, overall.p.0
 )
-rownames(tab.nop12)=c(rbind(c(labels.axis["Day"%.%pop, assays], labels.axis["Delta"%.%pop%.%"overB", assays]), "", ""))
+rownames(tab.nop12)=c(rbind(c(labels.axis["Day"%.%pop, assays]), "", ""))
 rv$tab.2=tab.nop12
 
 
@@ -772,7 +775,9 @@ for (idx in 1:2) { # 1 with placebo lines, 2 without placebo lines. Implementati
             ylab=paste0("Probability* of COVID by Day ", t0), lwd=lwd, ylim=ylim, type="n", main=paste0(labels.assays.long["Day"%.%pop,a]), xaxt="n")
         # x axis
         xx=seq(floor(min(risks$marker)), ceiling(max(risks$marker)))
+        #myprint(a, xx)
         for (x in xx) axis(1, at=x, labels=if (log10(llods[a])==x) "lod" else if (x>=3) bquote(10^.(x)) else 10^x )
+        if(last(xx)<5) for (x in c(250,500,2000,4000)) axis(1, at=log10(x), labels=if (x>=1000) bquote(.(x/1000)%*%10^3) else x )
         if(!any(log10(llods[a])==xx)) axis(1, at=log10(llods[a]), labels="lod")
         
         

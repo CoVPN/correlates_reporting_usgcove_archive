@@ -107,7 +107,7 @@ EventIndPrimaryD57 = Indicator that the failure time is <= the right-censoring t
                   the analysis have failure time >= 7 days. Individuals with failure time 1 to 6 days
                   are excluded from the analysis.
 BbindSpike      = Day 1 (enrollment) value of log10 IgG binding antibody concentration to Spike protein, which is a continuous variable 
-                  (scale log10 IU/ml).  The lower limit of quantification (LLOQ) of the assay is log10(34) on the arbitrary units (AU/ml)
+                  (scale log10 AU/ml).  The lower limit of quantification (LLOQ) of the assay is log10(34) on the arbitrary units (AU/ml)
                   scale from a standard curve that we will align to the WHO standards for use on efficacy trials samples. 
                   On the AU/ml scale, the upper limit of quantitation (ULOQ) is 19,136,250 AU/ml, the LLOQ = 34 AU/ml,
                   and the LLOD is 20 AU/ml.  On the AU/ml scale, values below log10(LLOD) are reported as log10(LLOD/2) = log10(10).
@@ -125,8 +125,8 @@ BbindSpike      = Day 1 (enrollment) value of log10 IgG binding antibody concent
     			bAb RBD: LLOD = 0.544, LLOQ = 0.9248, ULOQ = 520,506.0
     			bAb N: LLOD = 0.048, LLOQ = 0.0816, ULOQ = 45,927.0
 
-BbindRBD        = Day 1 (enrollment) value of IgG binding antibody readout to RBD, in IU/ml.
-BbindN          = Day 1 (enrollment) value of IgG binding antibody readout to N protein, in IU/ml.
+BbindRBD        = Day 1 (enrollment) value of IgG binding antibody readout to RBD, in log10 AU/ml.
+BbindN          = Day 1 (enrollment) value of IgG binding antibody readout to N protein, in log 10 AU/ml.
 Bpseudoneutid50 = Day 1 value of the Duke pseudo-neutralizing antibody readout, reported as log10 estimated serum inhibitory dilution
                   50% titer (ID50), which is the reciprocal of the dilution at which RLU (relative luminescence units)
                   are reduced by either 50% (ID50) compared to virus control wells after subtraction of background 

@@ -22,6 +22,10 @@ dat_proc <- read.csv(here(
 ))
 colnames(dat_proc)[1] <- "Ptid"
 
+#show a distribution
+#hist(dat_proc$Day57bindSpike[dat_proc$Trt==1])
+
+
 # define age cutoff and two-phase sampling indicator
 dat_proc <- dat_proc %>%
   mutate(
@@ -308,3 +312,7 @@ for (a in assays.includeN) {
 # bundle data sets and save as CSV
 ###############################################################################
 write_csv(dat_proc, file = here("data_clean", data_name))
+
+
+#show a distribution
+#hist(dat_proc$Day57bindSpike[dat_proc$Trt==1])

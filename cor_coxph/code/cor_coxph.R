@@ -23,6 +23,7 @@ if (file.exists(here::here("..", "data_clean", data_name_updated))) {
     dat.mock <- read.csv(here::here("..", "data_clean", data_name))
 }
 
+hist(dat.mock$Day57bindSpike)
 
 library(kyotil) # p.adj.perm, getFormattedSummary
 library(marginalizedRisk)

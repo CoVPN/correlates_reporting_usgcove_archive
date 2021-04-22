@@ -121,7 +121,7 @@ BbindSpike      = Day 1 (enrollment) value of log10 IgG binding antibody concent
                   are also applied to yield the LLOD, LLOQ, and ULOQ on the WHO IU/ml scale.  
                   These values on the IU/ml scale are as follows:
 
-			bAb Spike: LLOD = 0.180, LLOQ = 0.3060, ULOQ = 172,226.2
+				bAb Spike: LLOD = 0.180, LLOQ = 0.3060, ULOQ = 172,226.2
     			bAb RBD: LLOD = 0.544, LLOQ = 0.9248, ULOQ = 520,506.0
     			bAb N: LLOD = 0.048, LLOQ = 0.0816, ULOQ = 45,927.0
 

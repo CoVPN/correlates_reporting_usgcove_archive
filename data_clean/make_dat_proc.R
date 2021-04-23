@@ -31,7 +31,7 @@ dat_proc <- dat_proc %>%
   mutate(
     age.geq.65 = as.integer(Age >= 65),    
     # create two-phase sampling indicators for D57 analyses
-    TwophasesampInd = Fullvaccine == 1 &
+    TwophasesampInd = Perprotocol == 1 &
       (SubcohortInd | EventIndPrimaryD29 == 1) &
       complete.cases(cbind(
         BbindSpike, if(has29) Day29bindSpike, Day57bindSpike,
@@ -43,7 +43,7 @@ dat_proc <- dat_proc %>%
 if(has29) dat_proc <- dat_proc %>%
   mutate(
     # for D29 analyses
-    TwophasesampInd.2 = Fullvaccine == 1 &
+    TwophasesampInd.2 = Perprotocol == 1 &
       (SubcohortInd | EventIndPrimaryD29 == 1) &
       complete.cases(cbind(
         BbindSpike, Day29bindSpike,
@@ -152,12 +152,11 @@ dat_proc$wt[!with(dat_proc, Perprotocol == 1 & EventTimePrimaryD57>=7)] <- NA
 # wt.2, for D29 correlates analyses
 if(has29) {
     wts_table2 <- dat_proc %>%
-      dplyr::filter(EventTimePrimaryD29 >= 14 & Perprotocol == 1 |
-                    EventTimePrimaryD29 >= 7 & EventTimePrimaryD29 <= 13 & Fullvaccine == 1) %>%
+      dplyr::filter(Perprotocol == 1 & EventTimePrimaryD29 >= 7) %>%
       with(table(Wstratum, TwophasesampInd.2))
     wts_norm2 <- rowSums(wts_table2) / wts_table2[, 2]
     dat_proc$wt.2 <- wts_norm2[dat_proc$Wstratum]
-    dat_proc$wt.2[!with(dat_proc, EventTimePrimaryD29 >= 14 & Perprotocol == 1 | EventTimePrimaryD29 >= 7 & EventTimePrimaryD29 <= 13 & Fullvaccine == 1)] <- NA
+    dat_proc$wt.2[!with(dat_proc, Perprotocol == 1 & EventTimePrimaryD29 >= 7)] <- NA
 }
 
 
@@ -171,7 +170,7 @@ dat_proc$wt.subcohort[!with(dat_proc, Perprotocol == 1 & EventTimePrimaryD57>=7)
 
 
 dat_proc$TwophasesampInd[!with(dat_proc, Perprotocol == 1 & EventTimePrimaryD57>=7)] <- 0
-if(has29) dat_proc$TwophasesampInd.2[!with(dat_proc, EventTimePrimaryD29 >= 14 & Perprotocol == 1 | EventTimePrimaryD29 >= 7 & EventTimePrimaryD29 <= 13 & Fullvaccine == 1)] <- 0
+if(has29) dat_proc$TwophasesampInd.2[!with(dat_proc, Perprotocol == 1 & EventTimePrimaryD29 >= 7)] <- 0
 
 
 ###############################################################################

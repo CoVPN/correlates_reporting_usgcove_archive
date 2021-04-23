@@ -22,6 +22,10 @@ dat_proc <- read.csv(here(
 ))
 colnames(dat_proc)[1] <- "Ptid"
 
+#show a distribution
+#hist(dat_proc$Day57bindSpike[dat_proc$Trt==1])
+
+
 # define age cutoff and two-phase sampling indicator
 dat_proc <- dat_proc %>%
   mutate(
@@ -83,8 +87,8 @@ dat_proc$WhiteNonHispanic <-
     dat_proc$ethnicity == "Hispanic or Latino", 0,
     dat_proc$WhiteNonHispanic
   )
-dat_proc$URM = 1-dat_proc$WhiteNonHispanic
-dat_proc$URM[is.na(dat_proc$URM)] = 0
+dat_proc$MinorityInd = 1-dat_proc$WhiteNonHispanic
+dat_proc$MinorityInd[is.na(dat_proc$MinorityInd)] = 0
 
 # check coding via tables
 #table(dat_proc$race, useNA = "ifany")
@@ -110,7 +114,7 @@ names(Bstratum.labels) <- Bstratum.labels
 # Moderna: 1 ~ 6 defines the 6 baseline strata within trt/serostatus
 dat_proc <- dat_proc %>%
   mutate(
-    demo.stratum = ifelse (URM==1, ifelse(Age >= 65, 1, ifelse(HighRiskInd == 1, 2, 3)), 3+ifelse(Age >= 65, 1, ifelse(HighRiskInd == 1, 2, 3)))
+    demo.stratum = ifelse (MinorityInd==1, ifelse(Age >= 65, 1, ifelse(HighRiskInd == 1, 2, 3)), 3+ifelse(Age >= 65, 1, ifelse(HighRiskInd == 1, 2, 3)))
   )
 names(demo.stratum.labels) <- demo.stratum.labels
 
@@ -173,7 +177,7 @@ if(has29) dat_proc$TwophasesampInd.2[!with(dat_proc, EventTimePrimaryD29 >= 14 &
 ###############################################################################
 # impute missing neut biomarkers in ph2
 #     impute vaccine and placebo, baseline pos and neg, separately
-#     use all assays
+#     use all assays (not bindN)
 #     use baseline, D29 and D57, but not Delta
 ###############################################################################
 
@@ -265,23 +269,37 @@ if(has29) {
 # define delta for dat_proc
 ###############################################################################
 
-dat_proc["Delta57overB" %.% assays] <-
-  dat_proc["Day57" %.% assays] - dat_proc["B" %.% assays]
+assays.includeN=c(assays, "bindN")
+
+dat_proc["Delta57overB" %.% assays.includeN] <-
+  dat_proc["Day57" %.% assays.includeN] - dat_proc["B" %.% assays.includeN]
 if(has29) {
-    dat_proc["Delta29overB" %.% assays] <-
-      dat_proc["Day29" %.% assays] - dat_proc["B" %.% assays]
-    dat_proc["Delta57over29" %.% assays] <-
-      dat_proc["Day57" %.% assays] - dat_proc["Day29" %.% assays]
+    dat_proc["Delta29overB" %.% assays.includeN] <-
+      dat_proc["Day29" %.% assays.includeN] - dat_proc["B" %.% assays.includeN]
+    dat_proc["Delta57over29" %.% assays.includeN] <-
+      dat_proc["Day57" %.% assays.includeN] - dat_proc["Day29" %.% assays.includeN]
 }
+
+
+
+###############################################################################
+# converting binding variables from AU to IU for binding assays
+###############################################################################
+
+for (a in c("bindSpike", "bindRBD", "bindN")) {
+  for (t in if(has29) c("B", "Day29", "Day57") else c("B", "Day57") ) {
+      dat_proc[[t %.% a]] <- dat_proc[[t %.% a]] + log10(convf[a])
+  }
+}
+
 
 
 ###############################################################################
 # censoring values below LLOD
-# llods defined in _common.R
 ###############################################################################
 
-for (a in assays) {
-  for (t in times[1:ifelse(has29,3,2)]) {
+for (a in assays.includeN) {
+  for (t in if(has29) c("B", "Day29", "Day57") else c("B", "Day57") ) {
     dat_proc[[t %.% a]] <- ifelse(dat_proc[[t %.% a]] < log10(llods[a]), log10(llods[a] / 2), dat_proc[[t %.% a]])
     dat_proc[[t %.% a]] <- ifelse(dat_proc[[t %.% a]] > log10(uloqs[a]), log10(uloqs[a]    ), dat_proc[[t %.% a]])
   }
@@ -292,3 +310,7 @@ for (a in assays) {
 # bundle data sets and save as CSV
 ###############################################################################
 write_csv(dat_proc, file = here("data_clean", data_name))
+
+
+#show a distribution
+#hist(dat_proc$Day57bindSpike[dat_proc$Trt==1])

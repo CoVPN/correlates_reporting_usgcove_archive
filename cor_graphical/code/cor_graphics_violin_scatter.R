@@ -1,6 +1,10 @@
 #-----------------------------------------------
 # obligatory to append to the top of each script
 renv::activate(project = here::here(".."))
+    
+# There is a bug on Windows that prevents renv from working properly. The following code provides a workaround:
+if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
+    
 source(here::here("..", "_common.R"))
 #-----------------------------------------------
 
@@ -107,16 +111,19 @@ for (typ in c("line","violin")) {
       for (k in 1:length(trt)) {
         for (t in 1:length(times)) {
           
+          y.breaks <- seq(ifelse(plots[i] %in% c("bindSpike","bindRBD"), -1, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 6, 4), 1)
+          y.lim=c(ifelse(plots[i] %in% c("bindSpike","bindRBD"), -1.5, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 6, 4))
+          
           p <- myplot(dat=subset(longer_cor_data_plot1, assay==plots[i] & Bserostatus==bstatus[j] & Trt==trt[k] & !is.na(value) & time %in% unlist(times[t])), 
                       dat.sample=subset(plot.25sample1, assay==plots[i] & Bserostatus==bstatus[j] & Trt==trt[k] & !is.na(value) & time %in% unlist(times[t])), 
                       ytitle=plots_ytitles[i],toptitle=plots_titles[i],
                       type=typ,
                       facetby=vars(cohort_event),
-                      ylim=c(0.5, 7.71),
-                      ybreaks=seq(1, 7),
-                      inpanel.cex=4.7
-                      
-          )
+                      ylim=y.lim,
+                      ybreaks=y.breaks,
+                      inpanel.cex=4.7,
+                      rate.y.pos=max(y.breaks)
+                      )
           file_name <- paste0(typ, "box_", gsub("bind","",gsub("pseudoneut","pnAb_",plots[i])), "_", trt[k], "_", gsub(" ","",bstatus[j]), "_","v",t,"_", study.name, ".pdf")
           ggsave2(plot = p, filename = here("figs", file_name), width = 16, height = 11)
         }
@@ -161,16 +168,19 @@ for (typ in c("line","violin")) {
               select(c("Ptid", groupby_vars2[!groupby_vars2 %in% "time"])) %>%
               inner_join(longer_cor_data_sub2, by=c("Ptid", groupby_vars2[!groupby_vars2 %in% "time"]))
             
+            y.breaks <- seq(ifelse(plots[i] %in% c("bindSpike","bindRBD"), -1, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 6, 4), 1)
+            y.lim=c(ifelse(plots[i] %in% c("bindSpike","bindRBD"), -1.5, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 7.4, 5.2))
             
             p <- myplot(dat=subset(longer_cor_data_sub2, assay==plots[i] & Bserostatus==bstatus[j] & Trt==trt[k] & !is.na(value) & time %in% unlist(times[t])), 
                         dat.sample=subset(plot.25sample2, assay==plots[i] & Bserostatus==bstatus[j] & Trt==trt[k] & !is.na(value) & time %in% unlist(times[t])), 
                         ytitle=plots_ytitles[i],toptitle=plots_titles[i],
                         type=typ,
                         facetby=as.formula(paste("~",s,"+cohort_event")),
-                        ylim=c(0.5, 8.2),
-                        ybreaks=seq(1, 7),
+                        ylim=y.lim,
+                        ybreaks=y.breaks,
                         inpanel.cex=5,
-                        rate.y.pos=7.9)
+                        rate.y.pos=max(y.lim)-0.3
+                        )
             
             s1 <- ifelse(s=="age_geq_65_label", "Age", ifelse(s=="highrisk_label", "Risk", ifelse(s=="sex_label","Sex", ifelse(s=="minority_label","RaceEthnic", ifelse(s=="Dich_RaceEthnic","Dich_RaceEthnic",NA)))))
             file_name <- paste0(typ, "box_", gsub("bind","",gsub("pseudoneut","pnAb_",plots[i])), "_", trt[k], "_", gsub(" ","",bstatus[j]), "_", s1, "_","v", t,"_", study.name, ".pdf")
@@ -191,16 +201,19 @@ for (typ in c("line","violin")) {
       for (k in 1:length(trt)) {
         for (t in 1:length(times)) {
           
+          y.breaks <- seq(ifelse(plots[i] %in% c("bindSpike","bindRBD"), -1, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 6, 4), 2)
+          y.lim=c(ifelse(plots[i] %in% c("bindSpike","bindRBD"), -1.5, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 8, 6))
+          
           p <- myplot(dat=subset(longer_cor_data_plot3, assay==plots[i] & Bserostatus==bstatus[j] & Trt==trt[k] & !is.na(value) & time %in% unlist(times[t])), 
                       dat.sample=subset(plot.25sample3, assay==plots[i] & Bserostatus==bstatus[j] & Trt==trt[k] & !is.na(value) & time %in% unlist(times[t])), 
                       ytitle=plots_ytitles[i],toptitle=plots_titles[i],
                       type=typ,
                       facetby=as.formula("age_risk_label~cohort_event"),
-                      ylim=c(0.5, 9.2),
-                      ybreaks=seq(1, 8, 2),
+                      ylim=y.lim,
+                      ybreaks=y.breaks,
                       facetopt = "grid",
-                      inpanel.cex=5.3,
-                      rate.y.pos=8.5
+                      inpanel.cex=5.2,
+                      rate.y.pos=max(y.lim)-0.6
           )
           file_name <- paste0(typ, "box_", gsub("bind","",gsub("pseudoneut","pnAb_",plots[i])), "_", trt[k], "_", gsub(" ","",bstatus[j]), "_Age_Risk_", "v", t,"_", study.name, ".pdf")
           ggsave2(plot = p, filename = here("figs", file_name), width = 16, height = 13.5)
@@ -221,8 +234,8 @@ for (i in 1:length(plots)) {
       # subset for vaccine baseline neg arm
       if (c=="Vaccine_BaselineNeg"){ds.tmp <- subset(ds.tmp, Bserostatus=="Baseline Neg" & Trt=="Vaccine")}
       
-      y.breaks <- seq(1, ifelse(plots[i] %in% c("bindSpike","bindRBD"), 7, 5))
-      y.lim=c(0.5, ifelse(plots[i] %in% c("bindSpike","bindRBD"), 7.7, 5))
+      y.breaks <- seq(ifelse(plots[i] %in% c("bindSpike","bindRBD"), -1, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 6, 4))
+      y.lim=c(ifelse(plots[i] %in% c("bindSpike","bindRBD"), -1.5, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 6, 4))
       
       p <- ggplot(ds.tmp, aes(x = Age, y = value))
       

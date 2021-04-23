@@ -31,27 +31,34 @@ include_bindN <- TRUE
 times <- c("B", "Day29", "Day57", 
            "Delta29overB", "Delta57overB", "Delta57over29")
 
-# limits for each assay
-llods <-c(bindN = 20, 
-          bindSpike = 20, 
-          bindRBD = 20, 
+# limits for each assay (IU for bAb, no need to convert again)
+llods <-c(
+          bindSpike = 0.180, 
+          bindRBD = 0.544, 
+          bindN = 0.048, 
           pseudoneutid50 = 10, 
           pseudoneutid80 = 10, 
           liveneutmn50 = 62.16)
 
-lloqs <-c(bindN = 34, 
-          bindSpike = 34, 
-          bindRBD = 34, 
+lloqs <-c(
+          bindSpike = 0.3060, 
+          bindRBD = 0.9248, 
+          bindN = 0.0816, 
           pseudoneutid50 = 18.5, 
           pseudoneutid80 = 14.3, 
           liveneutmn50 = 117.35) 
 
-uloqs <-c(bindN = 19136250, 
-          bindSpike = 19136250, 
-          bindRBD = 19136250, 
+uloqs <-c(
+          bindSpike = 172226.2, 
+          bindRBD = 520506.0, 
+          bindN = 45927.0, 
           pseudoneutid50 = 4404, 
           pseudoneutid80 = 1295, 
           liveneutmn50 = 18976.19) 
+
+
+convf=c(bindSpike=0.0090, bindN=0.0024, bindRBD=0.0272)
+
 
 ###############################################################################
 # figure labels and titles for markers

@@ -27,7 +27,6 @@ dat.long.twophase.sample <- readRDS(here(
 dat.twophase.sample <- readRDS(here("data_clean", "twophase_data.rds"))
 
 
-
 ## ============================================================================
 ## boxplots and weighted rcdf plots of assay readouts at time points versus
 ##  (1) age >= 65 or age < 65
@@ -151,7 +150,6 @@ for (tp in tps[tps %in% times]) {
         LLOD = log10(llods),
         axis_titles_y = labels.axis[tt, ] %>% unlist(),
         panel_titles = labels.title2[tt, ] %>% unlist(),
-        height = 7,
         filename = paste0(
           save.results.to,
           "/demographics/boxplots_",
@@ -171,7 +169,6 @@ for (tp in tps[tps %in% times]) {
         weight = "wt.subcohort",
         panel_titles = labels.title2[tt, ] %>% unlist(),
         axis_titles = labels.axis[tt, ] %>% unlist(),
-        height = 7,
         filename = paste0(
           save.results.to,
           "/demographics/Marker_Rcdf_",
@@ -233,7 +230,6 @@ for (tp in tps[tps %in% times]) {
         LLOD = log10(llods),
         axis_titles_y = labels.axis[tt, ] %>% unlist(),
         panel_titles = labels.title2[tt, ] %>% unlist(),
-        height = 7,
         filename = paste0(
           save.results.to,
           "/demographics/boxplots_",
@@ -253,7 +249,6 @@ for (tp in tps[tps %in% times]) {
         weight = "wt.subcohort",
         panel_titles = labels.title2[tt, ] %>% unlist(),
         axis_titles = labels.axis[tt, ] %>% unlist(),
-        height = 7,
         filename = paste0(
           save.results.to,
           "/demographics/Marker_Rcdf_",
@@ -275,7 +270,6 @@ for (tp in tps[tps %in% times]) {
         LLOD = log10(llods),
         axis_titles_y = labels.axis[tt, ] %>% unlist(),
         panel_titles = labels.title2[tt, ] %>% unlist(),
-        height = 7,
         filename = paste0(
           save.results.to,
           "/demographics/boxplots_",
@@ -295,7 +289,6 @@ for (tp in tps[tps %in% times]) {
         weight = "wt.subcohort",
         panel_titles = labels.title2[tt, ] %>% unlist(),
         axis_titles = labels.axis[tt, ] %>% unlist(),
-        height = 7,
         filename = paste0(
           save.results.to,
           "/demographics/Marker_Rcdf_",
@@ -319,7 +312,6 @@ for (tp in tps[tps %in% times]) {
         LLOD = log10(llods),
         axis_titles_y = labels.axis[tt, ] %>% unlist(),
         panel_titles = labels.title2[tt, ] %>% unlist(),
-        height = 7.5,
         filename = paste0(
           save.results.to,
           "/demographics/boxplots_",
@@ -341,7 +333,6 @@ for (tp in tps[tps %in% times]) {
         weight = "wt.subcohort",
         panel_titles = labels.title2[tt, ] %>% unlist(),
         axis_titles = labels.axis[tt, ] %>% unlist(),
-        height = 7.5,
         filename = paste0(
           save.results.to,
           "/demographics/Marker_Rcdf_",
@@ -403,7 +394,6 @@ for (tp in tps[tps %in% times]) {
         LLOD = log10(llods),
         axis_titles_y = labels.axis[tt, ] %>% unlist(),
         panel_titles = labels.title2[tt, ] %>% unlist(),
-        height = 7,
         filename = paste0(
           save.results.to,
           "/demographics/boxplots_",
@@ -423,7 +413,6 @@ for (tp in tps[tps %in% times]) {
         weight = "wt.subcohort",
         panel_titles = labels.title2[tt, ] %>% unlist(),
         axis_titles = labels.axis[tt, ] %>% unlist(),
-        height = 7,
         filename = paste0(
           save.results.to,
           "/demographics/Marker_Rcdf_",

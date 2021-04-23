@@ -263,6 +263,7 @@ if(has29) {
 }
 
 
+assays.includeN=c(assays, "bindN")
 
 ###############################################################################
 # converting binding variables from AU to IU for binding assays
@@ -290,8 +291,6 @@ for (a in assays.includeN) {
 ###############################################################################
 # define delta for dat_proc
 ###############################################################################
-
-assays.includeN=c(assays, "bindN")
 
 dat_proc["Delta57overB" %.% assays.includeN] <-
   dat_proc["Day57" %.% assays.includeN] - dat_proc["B" %.% assays.includeN]

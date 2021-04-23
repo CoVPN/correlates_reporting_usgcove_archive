@@ -82,6 +82,7 @@ The data sets represent an expected COVID-19 vaccine efficacy
 
 ## Additional details
 
+* bAb marker values have been converted to IU/ml from AU/ml.
 * All marker values are on the log10 scale.
 * There is no missingness in the markers in ph2 since we impute the missing
   data here. Ten imputed copies are created. The first copy is used as default,

@@ -108,7 +108,7 @@ read.csv(here("base_riskscore", "output", "SL_weights.csv"), row.names = 1,
 \clearpage
 
 ```{r SLtopmodels, warning=FALSE, echo=FALSE}
-caption <- "Predictors in learners assigned weight > 0.5 by Superlearner."
+caption <- "Predictors in learners assigned weight > 0.0 by Superlearner."
 
 read.csv(here("base_riskscore", "output", "SL_all_models_with_predictors.csv"),
          row.names = 1, header = TRUE) %>%

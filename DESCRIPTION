@@ -3,7 +3,7 @@ Title: CoVPN COVID-19 Correlates Analyses
 Version: 0.1.0
 Authors@R: c(
     person("USG COVID-19 Response Biostatistics Team", "", email = "",
-           role = c("aut", "cre", "cph"))
+           role = c("aut", "cre", "cph")),
     person("Peter", "Gilbert", email = "",
            role = "aut",
            comment = c(ORCID = "")),
@@ -121,3 +121,4 @@ URL: https://github.com/CoVPN/correlates_reporting
 BugReports: https://github.com/CoVPN/correlates_reporting/issues
 RoxygenNote: 7.1.1
 License: GPL (>= 3)
+Encoding: UTF-8

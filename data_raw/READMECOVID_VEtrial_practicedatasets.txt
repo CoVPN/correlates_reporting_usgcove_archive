@@ -84,7 +84,12 @@ Age             = Age at enrollment in years, between 18 and 85. Note that the r
 BMI             = BMI at enrollment (kg/m^2)
 Bserostatus     = Indicator of baseline SARS-CoV-2 seropositive (1=yes, 0=no)
 Fullvaccine     = Indicator of receipt of both vaccinations.
-Perprotocol     = Indicator of qualifying per-protocol (received both vaccinations without specified protocol violations)
+Perprotocol        = Indicator of qualifying per-protocol (received both vaccinations without specified protocol violations,
+                  and not diagnosed with the COVID endpoint by the Day 29 / Dose 2 visit).
+                  Importantly, this indicator may differ from the Per-protocol indicator in the clinical data base for the
+                  primary analysis of vaccine efficacy, because that indicator may be zero for COVID cases with event time
+                  prior to 14 days post dose 2. Perprotocol is a cohort-qualification indicator that is used for defining
+                  inclusion of participants for immunogenicity and immune correlates analyses.
 EventTimePrimaryD1 = Minimum of of the time from Day 1 (first dose) until the COVID-19 endpoint or 
                      right-censoring (in days). For ITT analysis.
 EventIndPrimaryD1 = Indicator that the ITT failure time is <= the right-censoring time.
@@ -121,7 +126,7 @@ BbindSpike      = Day 1 (enrollment) value of log10 IgG binding antibody concent
                   are also applied to yield the LLOD, LLOQ, and ULOQ on the WHO IU/ml scale.  
                   These values on the IU/ml scale are as follows:
 
-				bAb Spike: LLOD = 0.180, LLOQ = 0.3060, ULOQ = 172,226.2
+			bAb Spike: LLOD = 0.180, LLOQ = 0.3060, ULOQ = 172,226.2
     			bAb RBD: LLOD = 0.544, LLOQ = 0.9248, ULOQ = 520,506.0
     			bAb N: LLOD = 0.048, LLOQ = 0.0816, ULOQ = 45,927.0
 
@@ -264,10 +269,10 @@ cases and for PP cases, side by side.
 # and binding antibody assays use lower limit of detection (LLOD) values.
 
 # Day 29 marker analyses include the following ptids:
-EventTimePrimaryD29 >= 14 & Perprotocol == 1 | EventTimePrimaryD29 >= 7 & EventTimePrimaryD29 <= 13 & Fullvaccine == 1
+Perprotocol == 1 & EventTimePrimaryD29 >= 7
 
 # Day 57 marker analyses include the following ptids:
-Perprotocol == 1 & EventTimePrimaryD57>=7
+Perprotocol == 1 & EventTimePrimaryD57 >= 7
 
 #################################################################################
 Note 1/21/21: The live virus neutralization data may be available 2 months later

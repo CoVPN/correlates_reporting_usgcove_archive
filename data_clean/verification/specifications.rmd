@@ -51,7 +51,7 @@
   \item Repeat single imputation for the subjects satisfying TwophasesampInd.2==1 and only impute these variables: c(outer(c("B", "Day29"), c("bindSpike", "bindRBD", "pseudoneutid50", "pseudoneutid80"), "%.%")).  
 
 
-  \item Apply conversion factors (defined in _common.R) to all the binding variables at baseline, Day29 and Day57. No need to apply conversion factors to deltas because they are fold changes and the conversion factors cancel out.
+  \item Apply conversion factors (defined in _common.R) to all the binding variables at baseline, Day29 and Day57. No need to apply conversion factors to deltas because they are fold changes and the conversion factors cancel out. Note that conversion factor is on antilog scale.
   
   \item Censor each of the markers in all markers (including bindN but not liveneutmn50 yet) measured by baseline, Day29 and Day57. Censoring means setting values < lower limits of detection (llods, defined in _common.R) to half of the llods and setting values > uloqs to uloqs. Note that llods are on the antilog scale and need to be transformed.
   

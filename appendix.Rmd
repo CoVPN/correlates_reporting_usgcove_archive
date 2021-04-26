@@ -29,5 +29,5 @@ processed_file_digest <- digest::digest(file = processed_file, algo = hash_algor
 This report was built on code from the commit hash `r paste0("\"",commit_hash,"\"")`  in the [`CoVPN/correlates_reporting`](https://github.com/CoVPN/correlates_reporting) repository.
 
 The raw input file, `r paste0("\"",data_in_file,"\"")`'s `r hash_algorithm` hash sum is `r raw_file_digest`.
-The raw input file, `r paste0("\"",data_name,"\"")`'s `r hash_algorithm` hash sum is `r processed_file_digest`.
+The processed file, `r paste0("\"",data_name,"\"")`'s `r hash_algorithm` hash sum is `r processed_file_digest`.
 

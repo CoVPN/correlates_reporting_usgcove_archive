@@ -42,7 +42,7 @@
   
   \item Define wt, a double variable for D57 correlates analyses. The weights equal the sampling probabilities of TwophasesampInd==1 within each Wstratum. This variable is only defined for subjects satisfying Perprotocol == 1 and EventTimePrimaryD57>=7 and set to NA otherwise
   
-  \item Define wt.2, a double variable for D29 correlates analyses. The weights equal the sampling probabilities of TwophasesampInd.2==1 within each Wstratum. This variable is only defined for subjects satisfying EventTimePrimaryD29 >= 14 & Perprotocol == 1 | EventTimePrimaryD29 >= 7 & EventTimePrimaryD29 <= 13 & Fullvaccine == 1 and set to NA otherwise
+  \item Define wt.2, a double variable for D29 correlates analyses. The weights equal the sampling probabilities of TwophasesampInd.2==1 within each Wstratum. This variable is only defined for subjects satisfying EventTimePrimaryD29 >= 7 & Perprotocol == 1 and set to NA otherwise
   
   \item Define wt.subcohort, a double variable for immunogenicity analyses that use subcohort only and are not enriched by cases outside subcohort. The weights equal the sampling probabilities of TwophasesampInd==1 and SubcohortInd==1 within each tps.stratum. This variable is only defined for subjects satisfying Perprotocol == 1 and EventTimePrimaryD57>=7 and set to NA otherwise
   

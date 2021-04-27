@@ -473,9 +473,8 @@ for (tp in tps[tps %in% times]) {
       }
       
       output_plot <- ggarrange(
-        plotlist = scatter_plot_list, ncol = 2,
-        nrow = ceiling(length(assay_immuno) / 2),
-        legend = "none", align = "h"
+        plotlist = scatter_plot_list, ncol = 3,
+        nrow = 2, legend = "none", align = "h"
       )
       
       ggsave(

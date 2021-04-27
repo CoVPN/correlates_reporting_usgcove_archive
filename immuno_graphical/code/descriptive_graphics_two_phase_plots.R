@@ -165,6 +165,9 @@ for (tt in seq_along(times)) {
     facet_by = "assay",
     color = "trt_bstatus_label",
     weight = "wt.subcohort",
+    xlim = assay_lim[, tt, ],
+    arrange_ncol = 3,
+    arrange_nrow = 2,
     panel_titles = labels.title2[tt, ] %>% unlist(),
     axis_titles = labels.axis[tt, ] %>% unlist(),
     filename = paste0(
@@ -186,7 +189,7 @@ dat.long.twophase.sample$assay_labels <-
 # plot bAb and PsV assays separately
 for (bAb in c(0, 1)) {
   
-  if (bAb == 0) {
+  if (bAb == 1) {
     rcdf_assays <- intersect(c("bindN", "bindSpike", "bindRBD"), assay_immuno) 
   } else {
     rcdf_assays <- assay_immuno[!assay_immuno %in% c("bindN", "bindSpike", "bindRBD")]
@@ -204,9 +207,11 @@ for (day in c("29", "57")[c("Day29", "Day57") %in% times]) {
       "D", day,
       " Ab Markers"
     ),
+    xlim = c(c(0, -2)[bAb + 1], c(4, 6)[bAb + 1]),
+    xbreaks = seq(0, -2)[bAb + 1], c(4, 6)[bAb + 1], 2),
     plot_title = paste0("Day ", day, " Ab Markers"),
     filename = paste0(
-      save.results.to, "/Marker_Rcdf_", c("nonbAb", "bAb")[bAb + 1], "_Day", day,
+      save.results.to, "/Marker_Rcdf_", c("nAb", "bAb")[bAb + 1], "_Day", day,
       "_trt_vaccine_bstatus_both_", study_name, ".png"
     )
   )
@@ -225,9 +230,11 @@ for (day in c("29", "57")[c("Day29", "Day57") %in% times]) {
     lty = "Bserostatus",
     weight = "wt.subcohort",
     xlab = paste0("D", day, " Fold-rise over D1 Ab Markers"),
+    xlim = c(-2, 10),
+    xbreaks = seq(-2, 10, 2),
     plot_title = paste0("Day ", day, " over Baseline Ab Markers"),
     filename = paste0(
-      save.results.to, "/Marker_Rcdf_", c("nonbAb", "bAb")[bAb + 1], "_Delta", day,
+      save.results.to, "/Marker_Rcdf_", c("nAb", "bAb")[bAb + 1], "_Delta", day,
       "overB_trt_vaccine_bstatus_both_", study_name, ".png"
     )
   )
@@ -252,9 +259,11 @@ for (bstatus in 1:2) {
         "D", day,
         " Ab Markers"
       ),
+      xlim = c(c(0, -2)[bAb + 1], c(4, 6)[bAb + 1]),
+      xbreaks = seq(c(0, -2)[bAb + 1], c(4, 6)[bAb + 1], 2),
       plot_title = paste0("Day ", day, " Ab Markers"),
       filename = paste0(
-        save.results.to, "/Marker_Rcdf_", c("nonbAb", "bAb")[bAb + 1], "_Day", day,
+        save.results.to, "/Marker_Rcdf_", c("nAb", "bAb")[bAb + 1], "_Day", day,
         "_trt_vaccine_bstatus_", c("Neg", "Pos")[bstatus], "_", study_name, ".png"
       )
     )
@@ -274,9 +283,11 @@ for (bstatus in 1:2) {
         "D", day,
         " Fold-rise over D1 Ab Markers"
       ),
+      xlim = c(-2, 8),
+      xbreaks = seq(-2, 8, 2),
       plot_title = paste0("Day ", day, " Fold-rise over Baseline Ab Markers"),
       filename = paste0(
-        save.results.to, "/Marker_Rcdf_", c("nonbAb", "bAb")[bAb + 1], "_Delta", day,
+        save.results.to, "/Marker_Rcdf_", c("nAb", "bAb")[bAb + 1], "_Delta", day,
         "overB_trt_vaccine_bstatus_", c("Neg", "Pos")[bstatus], "_", study_name, ".png"
       )
     )
@@ -383,7 +394,7 @@ if(all(c("B", "Day29", "Day57") %in% times)){
     filter(Ptid %in% spaghetti_ptid) %>%
     pivot_longer(cols = c("B", "Day29", "Day57"),
                  names_to = "time") %>%
-    mutate(assay = factor(assay, levels = assay_immuno, labels = labels.assays.short),
+    mutate(assay = factor(assay, levels = assay_immuno, labels = assay_immuno),
            time_label = factor(time, levels = c("B", "Day29", "Day57"),
                                labels = c("D1", "D29", "D57"))) %>%
     as.data.frame
@@ -396,11 +407,15 @@ if(all(c("B", "Day29", "Day57") %in% times)){
                                 id = "Ptid",
                                 color = "Trt",
                                 facet_by = "assay",
+                                ylim = assay_lim[, 3,],
+                                panel_titles = labels.assays.short,
                                 plot_title = paste0(
                                   "Baseline ",
                                   c("Negative", "Positive")[bstatus],
                                   " PP Placebo + Vaccine group"
                                 ),
+                                arrange_nrow = 2,
+                                arrange_ncol = 3,
                                 filename = paste0(
                                   save.results.to, "/spaghetti_plot_",
                                   bstatus.labels.2[bstatus], "_",
@@ -428,27 +443,7 @@ for (tp in tps[tps %in% times]) {
       
       ## setting the range of the axes
       xrange <- range(dat.long.twophase.sample$Age)
-      rr <- range(subdat[, times[tt]], na.rm = TRUE)
       
-      if (rr[1] == rr[2]) {
-        rr <- c(rr[1] - 1, rr[2] + 1)
-      }
-      
-      if (rr[2] - rr[1] < 2) {
-        rr <- c(floor(rr[1]), ceiling(rr[2]))
-      }
-      
-      ybreaks <- floor(rr[1]):ceiling(rr[2])
-      
-      if (rr[2] > ceiling(rr[1])) {
-        ybreaks <- ceiling(rr[1]):floor(rr[2])
-      } else {
-        ybreaks <- floor(rr[1]):ceiling(rr[2]) ## breaks on the axis
-      }
-      
-      if (max(ybreaks) - min(ybreaks) >= 6) {
-        ybreaks <- ybreaks[ybreaks %% 2 == 0]
-      }
       
       scatter_plot_list <- vector("list", length = length(assay_immuno))
       
@@ -462,8 +457,8 @@ for (tp in tps[tps %in% times]) {
           stat_smooth(method = "loess", color = "red", se = TRUE, lwd = 1) +
           scale_x_continuous(limits = xrange) +
           scale_y_continuous(
-            labels = label_math(10^.x), limits = rr,
-            breaks = ybreaks
+            labels = label_math(10^.x), limits = assay_lim[aa, tt,],
+            breaks = seq(assay_lim[aa, tt, 1], assay_lim[aa, tt, 2], by = 2)
           ) +
           theme_pubr() +
           theme(

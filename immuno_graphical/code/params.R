@@ -7,25 +7,28 @@ trt.labels <- c("Placebo", "Vaccine")
 bstatus.labels <- c("Baseline Neg", "Baseline Pos")
 bstatus.labels.2 <- c("BaselineNeg", "BaselinePos")
 
+all_assays <- c("bindSpike", "bindRBD", "bindN",
+                "pseudoneutid50", "pseudoneutid80", "liveneutmn50")
 # Depends on the Incoming data
 if(include_bindN){
-  assay_immuno <- c("bindN", assays)
-  labels.assays <- c("Binding Antibody to N", labels.assays[assays])
-  names(labels.assays)[1] <- "bindN"
+  assay_immuno <- all_assays[all_assays %in% c(assays, "bindN")]
+  labels.assays.all <- c("Binding Antibody to N", labels.assays)
+  names(labels.assays.all)[1] <- "bindN"
+  labels.assays <- labels.assays.all[assay_immuno]
 } else {
   assay_immuno <- assays
 }
 
 
-labels.assays.short <- c("Anti N IgG (IU/ml)", 
-                         "Anti Spike IgG (IU/ml)", 
+labels.assays.short <- c("Anti Spike IgG (IU/ml)", 
                          "Anti RBD IgG (IU/ml)", 
+                         "Anti N IgG (IU/ml)", 
                          "Pseudovirus-nAb ID50", 
                          "Pseudovirus-nAb ID80", 
                          "Live virus-nAb MN50")
-names(labels.assays.short) <- c("bindN",
-                                "bindSpike",
+names(labels.assays.short) <- c("bindSpike",
                                 "bindRBD",
+                                "bindN",
                                 "pseudoneutid50",
                                 "pseudoneutid80",
                                 "liveneutmn50")
@@ -64,3 +67,14 @@ labels.title2 <- apply(labels.title, c(1, 2), function(st) {
 labels.assays.short <- labels.axis[1, ]
 labels.assays.long <- labels.title
 
+
+# axis limits for plotting assay readouts
+assay_lim <- array(NA, dim = c(6, 6, 2))
+dimnames(assay_lim) <- list(all_assays, times, c("lb", "ub"))
+assay_lim[1:3, 1:6, "lb"] <- -2
+assay_lim[4:5, 1:3, "lb"] <- 0
+assay_lim[4:5, 4:6, "lb"] <- -2
+assay_lim[1:3, 1:3, "ub"] <- 6
+assay_lim[4:5, 1:3, "ub"] <- 4
+assay_lim[1:5, 4:6, "ub"] <- 10
+assay_lim <- assay_lim[assay_immuno, ,]

@@ -70,11 +70,9 @@ labels.assays.long <- labels.title
 
 # axis limits for plotting assay readouts
 assay_lim <- array(NA, dim = c(6, 6, 2))
-dimnames(assay_lim) <- list(all_assays, times, c("lb", "ub"))
-assay_lim[1:3, 1:6, "lb"] <- -2
-assay_lim[4:5, 1:3, "lb"] <- 0
-assay_lim[4:5, 4:6, "lb"] <- -2
-assay_lim[1:3, 1:3, "ub"] <- 6
-assay_lim[4:5, 1:3, "ub"] <- 4
-assay_lim[1:5, 4:6, "ub"] <- 10
+dimnames(assay_lim) <- list(names(llods), times, c("lb", "ub"))
+assay_lim[, 1:3, "lb"] <- floor(log10(llods)) - floor(log10(llods)) %% 2
+assay_lim[, 1:3, "ub"] <- ceiling(log10(uloqs)) + ceiling(log10(uloqs)) %% 2
+assay_lim[, 4:6, "lb"] <- -2
+assay_lim[, 4:6, "ub"] <- ceiling(log10(uloqs / llods)) + ceiling(log10(uloqs / llods)) %% 2
 assay_lim <- assay_lim[assay_immuno, ,]

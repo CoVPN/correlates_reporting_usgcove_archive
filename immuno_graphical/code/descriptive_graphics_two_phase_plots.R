@@ -208,7 +208,7 @@ for (day in c("29", "57")[c("Day29", "Day57") %in% times]) {
       " Ab Markers"
     ),
     xlim = c(c(0, -2)[bAb + 1], c(4, 6)[bAb + 1]),
-    xbreaks = seq(0, -2)[bAb + 1], c(4, 6)[bAb + 1], 2),
+    xbreaks = seq(c(0, -2)[bAb + 1], c(4, 6)[bAb + 1], 2),
     plot_title = paste0("Day ", day, " Ab Markers"),
     filename = paste0(
       save.results.to, "/Marker_Rcdf_", c("nAb", "bAb")[bAb + 1], "_Day", day,

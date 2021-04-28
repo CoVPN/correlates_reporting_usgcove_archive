@@ -300,13 +300,10 @@ for (a in c("bindSpike", "bindRBD", "bindN")) {
 # define delta for dat_proc
 ###############################################################################
 
-dat_proc["Delta57overB" %.% assays.includeN] <-
-  dat_proc["Day57" %.% assays.includeN] - dat_proc["B" %.% assays.includeN]
+dat_proc["Delta57overB"  %.% assays.includeN] <- dat_proc["Day57" %.% assays.includeN] - dat_proc["B" %.% assays.includeN]
 if(has29) {
-    dat_proc["Delta29overB" %.% assays.includeN] <-
-      dat_proc["Day29" %.% assays.includeN] - dat_proc["B" %.% assays.includeN]
-    dat_proc["Delta57over29" %.% assays.includeN] <-
-      dat_proc["Day57" %.% assays.includeN] - dat_proc["Day29" %.% assays.includeN]
+dat_proc["Delta29overB"  %.% assays.includeN] <- dat_proc["Day29" %.% assays.includeN] - dat_proc["B" %.% assays.includeN]
+dat_proc["Delta57over29" %.% assays.includeN] <- dat_proc["Day57" %.% assays.includeN] - dat_proc["Day29" %.% assays.includeN]
 }
 
 
@@ -318,5 +315,25 @@ if(has29) {
 write_csv(dat_proc, file = here("data_clean", data_name))
 
 
-#show a distribution
-#hist(dat_proc$Day57bindSpike[dat_proc$Trt==1])
+
+
+###############################################################################
+# save some common parameters
+###############################################################################
+
+
+
+
+# maxed over all 3 of Spike, RBD, N, restricting to Day 29
+MaxbAbDay29 = max(dat_proc[,paste0("Day29", c("bindSpike", "bindRBD", "bindN"))], na.rm=T)
+
+MaxID50ID80Day29 (maxed over ID50 and ID80, restricting to Day 29)
+
+ 
+
+MaxbAbDay57   (maxed over all 3 of Spike, RBD, N, restricting to Day 57)
+
+MaxID50ID80Day57 (maxed over ID50 and ID80, restricting to Day 57)
+
+ 
+ 

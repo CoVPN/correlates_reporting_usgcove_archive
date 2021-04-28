@@ -287,12 +287,12 @@ for (a in assays.includeN) {
   }
 }
 
-# uloq censoring for binding only
-for (a in c("bindSpike", "bindRBD", "bindN")) {
-  for (t in if(has29) c("B", "Day29", "Day57") else c("B", "Day57") ) {
-    dat_proc[[t %.% a]] <- ifelse(dat_proc[[t %.% a]] > log10(uloqs[a]), log10(uloqs[a]    ), dat_proc[[t %.% a]])
-  }
-}
+## uloq censoring for binding only
+#for (a in c("bindSpike", "bindRBD", "bindN")) {
+#  for (t in if(has29) c("B", "Day29", "Day57") else c("B", "Day57") ) {
+#    dat_proc[[t %.% a]] <- ifelse(dat_proc[[t %.% a]] > log10(uloqs[a]), log10(uloqs[a]    ), dat_proc[[t %.% a]])
+#  }
+#}
 
 
 

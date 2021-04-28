@@ -323,17 +323,17 @@ write_csv(dat_proc, file = here("data_clean", data_name))
 
 
 
-
-# maxed over all 3 of Spike, RBD, N, restricting to Day 29
-MaxbAbDay29 = max(dat_proc[,paste0("Day29", c("bindSpike", "bindRBD", "bindN"))], na.rm=T)
-
-MaxID50ID80Day29 (maxed over ID50 and ID80, restricting to Day 29)
-
- 
-
-MaxbAbDay57   (maxed over all 3 of Spike, RBD, N, restricting to Day 57)
-
-MaxID50ID80Day57 (maxed over ID50 and ID80, restricting to Day 57)
-
- 
- 
+#
+## maxed over all 3 of Spike, RBD, N, restricting to Day 29
+#MaxbAbDay29 = max(dat_proc[,paste0("Day29", c("bindSpike", "bindRBD", "bindN"))], na.rm=T)
+#
+#MaxID50ID80Day29 (maxed over ID50 and ID80, restricting to Day 29)
+#
+# 
+#
+#MaxbAbDay57   (maxed over all 3 of Spike, RBD, N, restricting to Day 57)
+#
+#MaxID50ID80Day57 (maxed over ID50 and ID80, restricting to Day 57)
+#
+# 
+# 

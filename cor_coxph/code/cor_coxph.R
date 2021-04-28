@@ -19,6 +19,7 @@ source(here::here("code", "params.R"))
 data_name_updated <- sub(".csv", "_with_riskscore.csv", data_name)
 if (file.exists(here::here("..", "data_clean", data_name_updated))) {
     dat.mock <- read.csv(here::here("..", "data_clean", data_name_updated))
+    data_name = data_name_updated
 } else {
     dat.mock <- read.csv(here::here("..", "data_clean", data_name))
 }
@@ -107,7 +108,7 @@ t0=max(dat.vacc.pop[dat.vacc.pop[["EventIndPrimaryD"%.%pop]]==1, "EventTimePrima
 write(t0, file=paste0(save.results.to, "timepoints_cum_risk_"%.%study_name))
 # trial-specific formula
 form.s = as.formula(paste0("Surv(EventTimePrimaryD",pop,", EventIndPrimaryD",pop,") ~ 1"))
-if (endsWith(data_name_updated, "riskscore.csv")) {
+if (endsWith(data_name, "riskscore.csv")) {
     form.0 =            update (form.s, ~.+ MinorityInd + HighRiskInd + risk_score)
     form.0.logistic = as.formula(paste0("EventIndPrimaryD",pop,"  ~ MinorityInd + HighRiskInd + risk_score"))
 } else {
@@ -291,7 +292,7 @@ overall.p.2=c(rbind(overall.p.2, NA,NA))
 # n cases and n at risk
 natrisk = round(c(sapply (c("Day"%.%pop%.%assays)%.%"cat", function(a) aggregate(dat.vacc.pop$wt.0, dat.vacc.pop[a], sum, na.rm=T)[,2] )))
 colSums(matrix(natrisk, nrow=3))
-nevents = round(c(sapply (c("Day"%.%pop%.%assays)%.%"cat", function(a) aggregate(subset(dat.vacc.pop,yy==1)[["wt.0"]], subset(dat.vacc.pop,yy==1)[a], sum, na.rm=T)[,2] )))
+nevents = round(c(sapply (c("Day"%.%pop%.%assays)%.%"cat", function(a) aggregate(subset(dat.vacc.pop,yy==1)[["wt.0"]], subset(dat.vacc.pop,yy==1)[a], sum, na.rm=T, drop=F)[,2] )))
 # regression parameters
 est=c(rbind(1.00,  getFormattedSummary(fits.tri, exp=T, robust=T, rows=rows, type=1)))
 ci= c(rbind("N/A", getFormattedSummary(fits.tri, exp=T, robust=T, rows=rows, type=13)))

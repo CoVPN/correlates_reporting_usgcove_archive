@@ -15,6 +15,9 @@ Author: Peter Gilbert, September 16, 2020
                                   changed wildtype live-virus neutralization variables to MN50 (Battelle assay),
                                   and edits for enhancing clarity)
 
+NOTE: This readme is slightly out of date at present. Check READMECOVID_VEtrial_practicedatasets.txt for more recent updates.
+
+
 This `README` file describes the variables in the mock data sets
 * `COVID_VEtrial_practicedata_primarystage1.csv`
 * `COVID_VEtrial_practicedata_longerterm.csv`

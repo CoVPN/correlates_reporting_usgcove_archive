@@ -336,7 +336,7 @@ for (bstatus in 1:2) {
 # boxplots of assay readouts at D1, D29 and D57, versus treatment groups for
 # baseline negative subjects (main group of interest)
 #-----------------------------------------------
-
+tps <- c("Day29", "Day57", "Delta29overB", "Delta57overB")
 for (bstatus in 1:2) {
   for (tp in tps[tps %in% times]) {
     if(tp == "Day29"){

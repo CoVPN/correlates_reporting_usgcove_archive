@@ -23,7 +23,7 @@ if (file.exists(here::here("..", "data_clean", data_name_updated))) {
 } else {
     dat.mock <- read.csv(here::here("..", "data_clean", data_name))
 }
-load(here::here("..", "data_clean/_params.Rdata"))
+#load(here::here("..", "data_clean/_params.Rdata")) # if needed
 
 
 library(kyotil) # p.adj.perm, getFormattedSummary
@@ -38,7 +38,7 @@ library(xtable) # this is a dependency of kyotil
 
 # population is either 57 or 29
 Args <- commandArgs(trailingOnly=TRUE)
-if (length(Args)==0) Args=c(pop="29")
+if (length(Args)==0) Args=c(pop="57")
 pop=Args[1]; print(pop)
 
 if(!has29 & pop=="29") {
@@ -105,7 +105,6 @@ for (a in assays) {
 }
 
 
-
 # define an alias for EventIndPrimaryDxx
 dat.vacc.pop$yy=dat.vacc.pop[["EventIndPrimaryD"%.%pop]]
 dat.plac.pop$yy=dat.plac.pop[["EventIndPrimaryD"%.%pop]]
@@ -131,6 +130,9 @@ rv=list() # results for verification
     
     
     
+    
+    
+
 ####################################################################################################
 # Main regression results tables
 ####################################################################################################
@@ -754,7 +756,6 @@ myprint(prev.vacc)
 
 
 # marginalized risk curves for continuous s
-
 for (ii in 1:2) {  # 1 conditional on s,   2 is conditional on S>=s
 for (idx in 1:2) { # 1 with placebo lines, 2 without placebo lines. Implementation-wise, only difference is in ylim
 # ii=2; idx=2; a=assays[3]
@@ -783,9 +784,9 @@ for (idx in 1:2) { # 1 with placebo lines, 2 without placebo lines. Implementati
         
         plot(prob~marker, risks, xlab=labels.assays.short[a]%.%ifelse(ii==1," (=s)"," (>=s)"), xlim=xlim, 
             ylab=paste0("Probability* of COVID by Day ", t0), lwd=lwd, ylim=ylim, type="n", main=paste0(labels.assays.long["Day"%.%pop,a]), xaxt="n")
-
+    
         draw.x.axis.cor(xlim, llods[a])
-
+    
 #        # x axis
 #        xx=seq(floor(min(risks$marker)), ceiling(max(risks$marker)))
 #        #myprint(a, xx)
@@ -830,6 +831,8 @@ for (idx in 1:2) { # 1 with placebo lines, 2 without placebo lines. Implementati
     dev.off()    
 }
 }
+
+
 
 # controlled VE curves for S=s and S>=s
 s2="85%"; s1="15%" # these two reference quantiles are used in the next two blocks of code

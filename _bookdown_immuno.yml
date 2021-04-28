@@ -16,5 +16,6 @@ rmd_files: [
   "immuno_tabular/report.Rmd",
   "immuno_graphical/report.Rmd",
   # "immuno_engin/report.Rmd",
-  "references.Rmd"
+  "references.Rmd",
+  "appendix.Rmd"
 ]

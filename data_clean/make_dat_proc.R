@@ -233,7 +233,9 @@ stopifnot(
 dat_proc[dat_proc$TwophasesampInd==1, imp.markers] <-
   dat.tmp.impute[imp.markers][match(dat_proc[dat_proc$TwophasesampInd==1, "Ptid"], dat.tmp.impute$Ptid), ]
 
-
+stopifnot(
+  all(complete.cases(dat_proc[dat_proc$TwophasesampInd == 1, imp.markers]))
+)
 
 ###############################################################################
 # impute again for TwophasesampInd.2

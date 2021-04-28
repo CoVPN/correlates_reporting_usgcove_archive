@@ -34,8 +34,18 @@ dat_proc <- dat_proc %>%
     TwophasesampInd = Perprotocol == 1 &
       (SubcohortInd | EventIndPrimaryD29 == 1) &
       complete.cases(cbind(
-        BbindSpike, if(has29) Day29bindSpike, Day57bindSpike,
-        BbindRBD,   if(has29) Day29bindRBD,   Day57bindRBD
+        if("bindSpike" %in% must_have_assays) BbindSpike, 
+        if("bindSpike" %in% must_have_assays & has29) Day29bindSpike, 
+        if("bindSpike" %in% must_have_assays) Day57bindSpike,
+        if("bindRBD" %in% must_have_assays) BbindRBD, 
+        if("bindRBD" %in% must_have_assays & has29) Day29bindRBD, 
+        if("bindRBD" %in% must_have_assays) Day57bindRBD,
+        if("pseudoneutid50" %in% must_have_assays) Bpseudoneutid50, 
+        if("pseudoneutid50" %in% must_have_assays & has29) Day29pseudoneutid50, 
+        if("pseudoneutid50" %in% must_have_assays) Day57pseudoneutid50,
+        if("pseudoneutid80" %in% must_have_assays) Bpseudoneutid80, 
+        if("pseudoneutid80" %in% must_have_assays & has29) Day29pseudoneutid80, 
+        if("pseudoneutid80" %in% must_have_assays) Day57pseudoneutid80
       ))
   )
 
@@ -46,8 +56,14 @@ if(has29) dat_proc <- dat_proc %>%
     TwophasesampInd.2 = Perprotocol == 1 &
       (SubcohortInd | EventIndPrimaryD29 == 1) &
       complete.cases(cbind(
-        BbindSpike, Day29bindSpike,
-        BbindRBD, Day29bindRBD
+        if("bindSpike" %in% must_have_assays) BbindSpike, 
+        if("bindSpike" %in% must_have_assays) Day29bindSpike,
+        if("bindRBD" %in% must_have_assays) BbindRBD, 
+        if("bindRBD" %in% must_have_assays) Day29bindRBD,
+        if("pseudoneutid50" %in% must_have_assays) Bpseudoneutid50, 
+        if("pseudoneutid50" %in% must_have_assays) Day29pseudoneutid50, 
+        if("pseudoneutid80" %in% must_have_assays) Bpseudoneutid80, 
+        if("pseudoneutid80" %in% must_have_assays) Day29pseudoneutid80
       ))
   )
   
@@ -217,7 +233,9 @@ stopifnot(
 dat_proc[dat_proc$TwophasesampInd==1, imp.markers] <-
   dat.tmp.impute[imp.markers][match(dat_proc[dat_proc$TwophasesampInd==1, "Ptid"], dat.tmp.impute$Ptid), ]
 
-
+stopifnot(
+  all(complete.cases(dat_proc[dat_proc$TwophasesampInd == 1, imp.markers]))
+)
 
 ###############################################################################
 # impute again for TwophasesampInd.2

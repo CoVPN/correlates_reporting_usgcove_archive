@@ -59,6 +59,11 @@ uloqs <-c(
 
 convf=c(bindSpike=0.0090, bindN=0.0024, bindRBD=0.0272)
 
+must_have_assays <- c(
+  "bindSpike", "bindRBD"
+  # NOTE: the live neutralization marker will eventually be available
+  #"liveneutmn50"
+)
 
 ###############################################################################
 # figure labels and titles for markers

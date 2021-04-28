@@ -34,18 +34,18 @@ dat_proc <- dat_proc %>%
     TwophasesampInd = Perprotocol == 1 &
       (SubcohortInd | EventIndPrimaryD29 == 1) &
       complete.cases(cbind(
-        if("bindSpike" %in% assays) BbindSpike, 
-        if("bindSpike" %in% assays & has29) Day29bindSpike, 
-        if("bindSpike" %in% assays) Day57bindSpike,
-        if("bindRBD" %in% assays) BbindRBD, 
-        if("bindRBD" %in% assays & has29) Day29bindRBD, 
-        if("bindRBD" %in% assays) Day57bindRBD,
-        if("pseudoneutid50" %in% assays) Bpseudoneutid50, 
-        if("pseudoneutid50" %in% assays & has29) Day29pseudoneutid50, 
-        if("pseudoneutid50" %in% assays) Day57pseudoneutid50,
-        if("pseudoneutid80" %in% assays) Bpseudoneutid80, 
-        if("pseudoneutid80" %in% assays & has29) Day29pseudoneutid80, 
-        if("pseudoneutid80" %in% assays) Day57pseudoneutid80
+        if("bindSpike" %in% must_have_assays) BbindSpike, 
+        if("bindSpike" %in% must_have_assays & has29) Day29bindSpike, 
+        if("bindSpike" %in% must_have_assays) Day57bindSpike,
+        if("bindRBD" %in% must_have_assays) BbindRBD, 
+        if("bindRBD" %in% must_have_assays & has29) Day29bindRBD, 
+        if("bindRBD" %in% must_have_assays) Day57bindRBD,
+        if("pseudoneutid50" %in% must_have_assays) Bpseudoneutid50, 
+        if("pseudoneutid50" %in% must_have_assays & has29) Day29pseudoneutid50, 
+        if("pseudoneutid50" %in% must_have_assays) Day57pseudoneutid50,
+        if("pseudoneutid80" %in% must_have_assays) Bpseudoneutid80, 
+        if("pseudoneutid80" %in% must_have_assays & has29) Day29pseudoneutid80, 
+        if("pseudoneutid80" %in% must_have_assays) Day57pseudoneutid80
       ))
   )
 
@@ -56,14 +56,14 @@ if(has29) dat_proc <- dat_proc %>%
     TwophasesampInd.2 = Perprotocol == 1 &
       (SubcohortInd | EventIndPrimaryD29 == 1) &
       complete.cases(cbind(
-        if("bindSpike" %in% assays) BbindSpike, 
-        if("bindSpike" %in% assays) Day29bindSpike,
-        if("bindRBD" %in% assays) BbindRBD, 
-        if("bindRBD" %in% assays) Day29bindRBD,
-        if("pseudoneutid50" %in% assays) Bpseudoneutid50, 
-        if("pseudoneutid50" %in% assays) Day29pseudoneutid50, 
-        if("pseudoneutid80" %in% assays) Bpseudoneutid80, 
-        if("pseudoneutid80" %in% assays) Day29pseudoneutid80
+        if("bindSpike" %in% must_have_assays) BbindSpike, 
+        if("bindSpike" %in% must_have_assays) Day29bindSpike,
+        if("bindRBD" %in% must_have_assays) BbindRBD, 
+        if("bindRBD" %in% must_have_assays) Day29bindRBD,
+        if("pseudoneutid50" %in% must_have_assays) Bpseudoneutid50, 
+        if("pseudoneutid50" %in% must_have_assays) Day29pseudoneutid50, 
+        if("pseudoneutid80" %in% must_have_assays) Bpseudoneutid80, 
+        if("pseudoneutid80" %in% must_have_assays) Day29pseudoneutid80
       ))
   )
   

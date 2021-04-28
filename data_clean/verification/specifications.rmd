@@ -30,11 +30,11 @@
 
   \item Define WhiteNonHispanic, a binary variable that takes value 1 if race is White and ethnicity is not Hispanic, 0 if race is not "white or unknown" OR ethnicity is Hispanic, and NA otherwise
   
-  \item Define URM, a binary variable that takes value 1 if WhiteNonHispanic is 0, and 0 otherwise including when WhiteNonHispanic is NA
+  \item Define MinorityInd, a binary variable that takes value 1 if WhiteNonHispanic is 0, and 0 otherwise including when WhiteNonHispanic is NA
   
   \item Define Bstratum, an integer variable to index randomization strata. For Moderna, there are three strata: age >= 65, age < 65 and HighRiskInd==1, age < 65 and HighRiskInd==0
   
-  \item Define demo.stratum, an integer variable to index the demographics strata. For Moderna, there are six strata: URM [1, 0] x Bstratum
+  \item Define demo.stratum, an integer variable to index the demographics strata. For Moderna, there are six strata: MinorityInd [1, 0] x Bstratum
   
   \item Define tps.stratum, an integer variable to index correlates sampling strata. For Moderna, there are 24 strata: [placebo/baseline negative, placebo/baseline positive, vaccine/baseline negative, vaccine/baseline positive] x demo.stratum
 
@@ -55,10 +55,11 @@
   
   \item Apply conversion factors (defined in _common.R) to all the binding variables at baseline, Day29 and Day57. No need to apply conversion factors to deltas because they are fold changes and the conversion factors cancel out.
   
-  \item Censor each of the markers in all markers (including bindN) measured by baseline, Day29 and Day57. Censoring means setting values < lower limits of detection (llods, defined in _common.R) to half of the llods and setting values > uloqs to uloqs. Note that llods are on the antilog scale and need to be transformed.
+  \item Censor each of the markers in all markers (including bindN but not liveneutmn50 yet) measured by baseline, Day29 and Day57. Censoring means setting values < lower limits of detection (llods, defined in _common.R) to half of the llods and setting values > uloqs to uloqs. Note that llods are on the antilog scale and need to be transformed.
   
   \item Finally, if a dataset does not have the Day29 markers, the previous steps are adjusted accordingly. For example, TwophasesampInd.2 and wt.2 will not be defined. 
   
+
 \end{itemize}
 
 

@@ -22,6 +22,10 @@ dat_proc <- read.csv(here(
 ))
 colnames(dat_proc)[1] <- "Ptid"
 
+#show a distribution
+#hist(dat_proc$Day57bindSpike[dat_proc$Trt==1])
+
+
 # define age cutoff and two-phase sampling indicator
 dat_proc <- dat_proc %>%
   mutate(
@@ -83,8 +87,8 @@ dat_proc$WhiteNonHispanic <-
     dat_proc$ethnicity == "Hispanic or Latino", 0,
     dat_proc$WhiteNonHispanic
   )
-dat_proc$URM = 1-dat_proc$WhiteNonHispanic
-dat_proc$URM[is.na(dat_proc$URM)] = 0
+dat_proc$MinorityInd = 1-dat_proc$WhiteNonHispanic
+dat_proc$MinorityInd[is.na(dat_proc$MinorityInd)] = 0
 
 # check coding via tables
 #table(dat_proc$race, useNA = "ifany")
@@ -110,7 +114,7 @@ names(Bstratum.labels) <- Bstratum.labels
 # Moderna: 1 ~ 6 defines the 6 baseline strata within trt/serostatus
 dat_proc <- dat_proc %>%
   mutate(
-    demo.stratum = ifelse (URM==1, ifelse(Age >= 65, 1, ifelse(HighRiskInd == 1, 2, 3)), 3+ifelse(Age >= 65, 1, ifelse(HighRiskInd == 1, 2, 3)))
+    demo.stratum = ifelse (MinorityInd==1, ifelse(Age >= 65, 1, ifelse(HighRiskInd == 1, 2, 3)), 3+ifelse(Age >= 65, 1, ifelse(HighRiskInd == 1, 2, 3)))
   )
 names(demo.stratum.labels) <- demo.stratum.labels
 
@@ -280,11 +284,10 @@ if(has29) {
 
 ###############################################################################
 # converting binding variables from AU to IU for binding assays
-# times[1:ifelse(has29,3,2)] is aimed at capturing B and D29 and D57 when having D29, and B and D57 when not having D29
 ###############################################################################
 
 for (a in c("bindSpike", "bindRBD", "bindN")) {
-  for (t in times[1:ifelse(has29,3,2)]) {
+  for (t in if(has29) c("B", "Day29", "Day57") else c("B", "Day57") ) {
       dat_proc[[t %.% a]] <- dat_proc[[t %.% a]] + log10(convf[a])
   }
 }
@@ -293,11 +296,10 @@ for (a in c("bindSpike", "bindRBD", "bindN")) {
 
 ###############################################################################
 # censoring values below LLOD
-# times[1:ifelse(has29,3,2)] is aimed at capturing B and D29 and D57 when having D29, and B and D57 when not having D29
 ###############################################################################
 
 for (a in assays.includeN) {
-  for (t in times[1:ifelse(has29,3,2)]) {
+  for (t in if(has29) c("B", "Day29", "Day57") else c("B", "Day57") ) {
     dat_proc[[t %.% a]] <- ifelse(dat_proc[[t %.% a]] < log10(llods[a]), log10(llods[a] / 2), dat_proc[[t %.% a]])
     dat_proc[[t %.% a]] <- ifelse(dat_proc[[t %.% a]] > log10(uloqs[a]), log10(uloqs[a]    ), dat_proc[[t %.% a]])
   }
@@ -308,3 +310,7 @@ for (a in assays.includeN) {
 # bundle data sets and save as CSV
 ###############################################################################
 write_csv(dat_proc, file = here("data_clean", data_name))
+
+
+#show a distribution
+#hist(dat_proc$Day57bindSpike[dat_proc$Trt==1])

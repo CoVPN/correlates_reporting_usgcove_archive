@@ -1,6 +1,10 @@
 #-----------------------------------------------
 # obligatory to append to the top of each script
 renv::activate(project = here::here(".."))
+    
+# There is a bug on Windows that prevents renv from working properly. The following code provides a workaround:
+if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
+    
 source(here::here("..", "_common.R"))
 #-----------------------------------------------
 
@@ -212,7 +216,7 @@ for (typ in c("line","violin")) {
                       rate.y.pos=max(y.lim)-0.6
           )
           file_name <- paste0(typ, "box_", gsub("bind","",gsub("pseudoneut","pnAb_",plots[i])), "_", trt[k], "_", gsub(" ","",bstatus[j]), "_Age_Risk_", "v", t,"_", study.name, ".pdf")
-          ggsave2(plot = p, filename = here("figs", file_name), width = 16, height = 13.5)
+          suppressWarnings(ggsave2(plot = p, filename = here("figs", file_name), width = 16, height = 13.5))
         }
       }
     }
@@ -239,7 +243,7 @@ for (i in 1:length(plots)) {
       if (c=="all") {p <- p + facet_wrap(~Bserostatus+Trt, nrow = 1)}
       
       p <- p + geom_point(size = 2.5, alpha = 0.4, aes(color = cohort_event, shape = cohort_event)) + 
-        geom_smooth(aes(group = cohort_event, color = cohort_event), size=1.5, method = 'loess', se= F, span = 1) + 
+        geom_smooth(aes(group = cohort_event, color = cohort_event), size=1.5, method = 'loess', se= F, span = 1.15) + 
         scale_y_continuous(limits=y.lim, breaks=y.breaks, labels=math_format(10^.x)) +
         scale_x_continuous(breaks = seq(from=18, to=86, by=17)) +
         scale_color_manual(values = c("#0AB7C9","#FF6F1B","#810094")) +

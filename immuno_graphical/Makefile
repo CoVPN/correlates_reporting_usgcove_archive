@@ -22,7 +22,7 @@ params: code/params.R
 # define the axis limits for the assays
 make_assay_lim: code/descriptive_graphics_two_phase_plots.R \
   plot_data params 
-    Rscript code/make_assay_lim.R
+	Rscript code/make_assay_lim.R
 
 ## clean            : delete contents of data_clean/ and figs/
 clean:

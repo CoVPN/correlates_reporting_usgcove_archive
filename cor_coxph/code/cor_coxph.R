@@ -75,23 +75,20 @@ for (a in assays) {
             # let q.a be median among those < ULOQ and ULOQ
             myprint("more than 1/3 of vaccine recipients have value > ULOQ")
             q.a=c(wtd.quantile(dat.vacc.pop[[ind.t %.% a]][dat.vacc.pop[[ind.t %.% a]]<=uloqs[a]], weights = dat.vacc.pop$wt.0, probs = c(1/2)), uloqs[a])
-            tmp=try(factor(cut(dat.vacc.pop[[ind.t %.% a]], cuts = c(-Inf, q.a, Inf))), silent=T) # cut is left-not inclusive ( , ]
         } else {
             q.a <- wtd.quantile(dat.vacc.pop[[ind.t %.% a]], weights = dat.vacc.pop$wt.0, probs = c(1/3, 2/3))
-            # for cut2, -Inf and Inf are optiona, but adding them to q.a reduce the chance to get NAs
-            tmp=try(factor(cut2(dat.vacc.pop[[ind.t %.% a]], cuts = c(-Inf, q.a, Inf))), silent=T)
         }
+        tmp=try(factor(cut(dat.vacc.pop[[ind.t %.% a]], breaks = c(-Inf, q.a, Inf))), silent=T)
  
         do.cut=FALSE # if TRUE, use cut function which does not use weights
-        # if there is a huge point mass, an error would occur
-        # or it may not break into 3 groups
+        # if there is a huge point mass, an error would occur, or it may not break into 3 groups
         if (inherits(tmp, "try-error")) do.cut=TRUE else if(length(table(tmp)) != 3) do.cut=TRUE
         
         if(!do.cut) {
             dat.vacc.pop[[ind.t %.% a %.% "cat"]] <- tmp
             marker.cutpoints[[a]][[ind.t]] <- q.a
         } else {
-            myprint("call cut")
+            myprint("\ncall cut with breaks=3!!!")
             # cut is more robust but it does not incorporate weights
             tmp=cut(dat.vacc.pop[[ind.t %.% a]], breaks=3)
             stopifnot(length(table(tmp))==3)

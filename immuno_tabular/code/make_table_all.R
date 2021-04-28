@@ -121,6 +121,37 @@ tab_dm_neg <- tab_dm %>%
 
 print("Done with table 1") 
 
+# Added table: 
+
+tab_strtm_header2 <- 13
+names(tab_strtm_header2) <- sprintf("Random Subcohort Sample Sizes (N=%s Participants) (Moderna Trial)", sum(ds$random))
+  
+add_tab_strtm <- list(
+  table_header = "Random Subcohort for Measuring Antibody Markers (Designed)",
+  table_footer = c("Demographic covariate strata",
+                   "1. Age $\\\\geq$ 65 Minority $\\\\qquad$ 4. Age < 65 At-risk Non-Minority",
+                   "2. Age $\\\\geq$ 65 Non-Minority $\\\\qquad$ 5. Age < 65 Not At-risk Minority",
+                   "3. Age < 65 At-risk Minority $\\\\qquad$ 6. Age < 65 Not At-risk Non-Minority"),
+  header_above2 = tab_strtm_header2,
+  header_above1 = c(" "=1, "Baseline SARS-CoV-2 Negative" = 6, "Baseline SARS-CoV-2 Positive" = 6))
+
+tlf <- append(tlf, list(add_tab_strtm), after=2)
+names(tlf)[3] <- "tab_strtm"
+
+demo.ordered <- c("Age >= 65, URM", "Age >= 65, White non-Hisp", "Age < 65, At risk, URM",
+                  "Age < 65, At risk, White non-Hisp", "Age < 65, Not at risk, URM", 
+                  "Age < 65, Not at risk, White non-Hisp")
+
+tab_strtm <- ds %>% 
+  filter(randomset) %>% 
+  mutate(demo.stratum.ordered=match(demo.stratum.labels[demo.stratum], demo.ordered)) %>% 
+  group_by(demo.stratum.ordered, Arm, `Baseline SARS-CoV-2`) %>% 
+  summarise(N=n()) %>% 
+  arrange(`Baseline SARS-CoV-2`, demo.stratum.ordered) %>% 
+  pivot_wider(names_from = c(`Baseline SARS-CoV-2`, demo.stratum.ordered), values_from=N)
+    
+colnames(tab_strtm)=c(" ", paste0(1:6,""), paste0(" ", 1:6))
+
 ### Table 2. Responder Rates & Proportions of Magnitudes >= 2FR, 4FR
 # For each binding antibody marker, the estimated percentage of participants
 # defined as responders, and with concentrations >= 2x LLOD or >=
@@ -304,8 +335,8 @@ tab_rrdiff <- bind_rows(rpcnt %>%
          Estimate = response1-response2,
          ci_l = Estimate-sqrt((response1-ci_l1)^2+(response2-ci_u2)^2),
          ci_u = Estimate+sqrt((response1-ci_u1)^2+(response2-ci_l2)^2),
-         rslt = sprintf("%s%%\n(%s%%, %s%%)", 
-                        round(Estimate*100,1), round(ci_l*100,1), round(ci_u*100,1))) %>%
+         rslt = sprintf("%s\n(%s, %s)", 
+                        round(Estimate,2), round(ci_l,2), round(ci_u,2))) %>%
   dplyr::filter(!is.na(Comparison)) %>%
   select(Comparison, subgroup, `Baseline SARS-CoV-2`, Arm, Visit, Marker, Ind, rslt) %>%
   pivot_wider(names_from = Ind, values_from = rslt) %>%
@@ -332,8 +363,8 @@ rrdiff_Rx <- rpcnt %>%
   mutate(Estimate = response1-response2,
          ci_l = Estimate-sqrt((response1-ci_l1)^2+(response2-ci_u2)^2),
          ci_u = Estimate+sqrt((response1-ci_u1)^2+(response2-ci_l2)^2),
-         rrdiff = sprintf("%s%%\n(%s%%, %s%%)", round(Estimate * 100, 1), 
-                          round(ci_l*100, 1), round(ci_u*100, 1)),
+         rrdiff = sprintf("%s\n(%s, %s)", round(Estimate, 2), 
+                          round(ci_l, 2), round(ci_u, 2)),
          subgroup=factor(subgrp[subgroup], levels=subgrp)) 
 
 tab_Rx <- full_join(tab_rr, tab_gm,
@@ -375,8 +406,8 @@ rrdiff_bl <- rpcnt %>%
   mutate(Estimate = response1-response2,
          ci_l = Estimate-sqrt((response1-ci_l1)^2+(response2-ci_u2)^2),
          ci_u = Estimate+sqrt((response1-ci_u1)^2+(response2-ci_l2)^2),
-         rrdiff = sprintf("%s%%\n(%s%%, %s%%)", round(Estimate * 100, 1), 
-                          round(ci_l*100, 1), round(ci_u*100, 1)),
+         rrdiff = sprintf("%s\n(%s, %s)", round(Estimate, 2), 
+                          round(ci_l, 2), round(ci_u, 2)),
          subgroup=factor(subgrp[subgroup], levels=subgrp))  
 
 rgmt_bl <- get_rgmt(ds, mag_groups, groups, comp_lev = comp_i, sub.by="Arm",
@@ -403,7 +434,7 @@ tab_plcb <- tab_bl %>% dplyr::filter(Arm == "Placebo") %>% select(-Arm)
 
 print("Done with table15") 
 
-save(tlf, tab_dm_pos, tab_dm_neg, tab_bind, tab_pseudo, tab_wt, tab_gm,
+save(tlf, tab_dm_pos, tab_dm_neg, tab_strtm, tab_bind, tab_pseudo, tab_wt, tab_gm,
      tab_gmr, tab_rgmt, tab_rrdiff, tab_neg, tab_pos, tab_vacc, tab_plcb,
      file = here::here("output", "Tables.Rdata"))
 

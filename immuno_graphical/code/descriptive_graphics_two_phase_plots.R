@@ -44,7 +44,7 @@ assay_lim <- readRDS(here("data_clean", "assay_lim.rds"))
 #   serostrata combined
 #-----------------------------------------------
 
-for (tt in 1:4) {
+for (tt in seq_along(times)) {
   for (bserostatus in 0:1) {
     for (trt in c(0, 1)) {
       subdat <- dat.twophase.sample %>%
@@ -52,24 +52,24 @@ for (tt in 1:4) {
 
       covid_corr_pairplots(
         plot_dat = subdat,
-        time = times[tt + 1],
+        time = times[tt],
         assays = assay_immuno,
         strata = "Bstratum",
         weight = "wt.subcohort",
         plot_title = paste0(
           c(
-            "D29", "D57", "D29 Fold-rise over D1",
+            "B", "D29", "D57", "D29 Fold-rise over D1",
             "D57 Fold-rise over D1"
           )[tt],
           " Ab markers: baseline ",
           ifelse(bserostatus, "positive", "negative"), ", ",
           c("placebo", "vaccine")[trt + 1], " arm"
         ),
-        column_labels = labels.axis[tt + 1, seq_along(assay_immuno)] %>% unlist(),
+        column_labels = labels.axis[tt, seq_along(assay_immuno)] %>% unlist(),
         height = 1.3 * length(assay_immuno) + 0.1,
         width = 1.3 * length(assay_immuno),
         filename = paste0(
-          save.results.to, "/pairs_", times[tt + 1],
+          save.results.to, "/pairs_", times[tt],
           "_Markers_", bstatus.labels.2[bserostatus + 1],
           c("_placebo_arm", "_vaccine_arm")[trt + 1], "_",
           study_name, ".png"
@@ -310,7 +310,16 @@ for (bstatus in 1:2) {
 #-----------------------------------------------
 
 for (bstatus in 1:2) {
-  for (tt in seq_along(times)) {
+  for (tp in tps[tps %in% times]) {
+    if(tp == "Day29"){
+      tt <- 2
+    }else if(tp == "Day57"){
+      tt <- 3
+    }else if(tp == "Delta29overB"){
+      tt <- 4
+    }else if(tp == "Delta57overB"){
+      tt <- 5
+    }
     covid_corr_boxplot_facets(
       plot_dat = subset(
         dat.long.twophase.sample,
@@ -339,9 +348,19 @@ for (bstatus in 1:2) {
 #   treatment groups
 # - Make seperate plots for Placebo and Vaccine arms
 #-----------------------------------------------
-
+tps <- c("Day29", "Day57", "Delta29overB", "Delta57overB")
 for (trt in 1:2) {
-  for (tt in seq_along(times)) {
+  for (tp in tps[tps %in% times]) {
+    if(tp == "Day29"){
+      tt <- 2
+    }else if(tp == "Day57"){
+      tt <- 3
+    }else if(tp == "Delta29overB"){
+      tt <- 4
+    }else if(tp == "Delta57overB"){
+      tt <- 5
+    }
+    
     covid_corr_boxplot_facets(
       plot_dat = subset(dat.long.twophase.sample, as.numeric(Trt) == trt),
       x = "Bserostatus",
@@ -370,7 +389,7 @@ for (trt in 1:2) {
 # - Spaghetti plots of antibody marker change over time
 #-----------------------------------------------
 
-if(all(c("B", "Day29", "Day57") %in% times)){
+if (has29) { ## had Day29 marker
   ## in each baseline serostatus group, randomly select 10 placebo recipients and 20 vaccine recipients
   set.seed(12345)
   var_names <- expand.grid(times = c("B", "Day29", "Day57"),
@@ -401,6 +420,59 @@ if(all(c("B", "Day29", "Day57") %in% times)){
                                labels = c("D1", "D29", "D57"))) %>%
     as.data.frame
 
+  for (bstatus in 1:2) {
+    subdat <- subset(spaghetti_dat, Bserostatus == bstatus.labels[bstatus])
+    covid_corr_spaghetti_facets(plot_dat = subdat,
+                                x = "time_label",
+                                y = "value",
+                                id = "Ptid",
+                                color = "Trt",
+                                facet_by = "assay",
+                                ylim = assay_lim[, 3,],
+                                panel_titles = labels.assays.short,
+                                plot_title = paste0(
+                                  "Baseline ",
+                                  c("Negative", "Positive")[bstatus],
+                                  " PP Placebo + Vaccine group"
+                                ),
+                                arrange_nrow = 2,
+                                arrange_ncol = 3,
+                                filename = paste0(
+                                  save.results.to, "/spaghetti_plot_",
+                                  bstatus.labels.2[bstatus], "_",
+                                  study_name, ".png"
+                                ))
+  }
+} else {
+  set.seed(12345)
+  var_names <- expand.grid(times = c("B", "Day57"),
+                           assays = assay_immuno) %>%
+    mutate(var_names = paste0(times, assay_immuno)) %>%
+    .[, "var_names"]
+  
+  spaghetti_ptid <- dat.twophase.sample[, c("Ptid", "Bserostatus", "Trt", var_names)] %>%
+    filter(., complete.cases(.)) %>%
+    transmute(BT = paste0(as.character(Bserostatus), as.character(Trt)),
+              Ptid = Ptid) %>%
+    split(., .$BT) %>%
+    lapply(function(xx) {
+      if (xx$BT[1] %in% c("10", "00")) {
+        sample(xx$Ptid, 10)  ## sample 10 placebo recipients
+      } else {
+        sample(xx$Ptid, 20)  ## sample 20 vaccine recipients
+      }
+    }) %>% unlist %>% as.character
+  
+  spaghetti_dat <- dat.long.twophase.sample[, c("Ptid", "Bserostatus", "Trt", 
+                                                "B", "Day57", "assay")] %>%
+    filter(Ptid %in% spaghetti_ptid) %>%
+    pivot_longer(cols = c("B", "Day57"),
+                 names_to = "time") %>%
+    mutate(assay = factor(assay, levels = assay_immuno, labels = assay_immuno),
+           time_label = factor(time, levels = c("B", "Day57"),
+                               labels = c("D1", "D57"))) %>%
+    as.data.frame
+  
   for (bstatus in 1:2) {
     subdat <- subset(spaghetti_dat, Bserostatus == bstatus.labels[bstatus])
     covid_corr_spaghetti_facets(plot_dat = subdat,

@@ -14,8 +14,7 @@ tlf <-
       table_header = "Demographic and Clinical Characteristics at Baseline in 
       the Baseline SARS-CoV-2 Negative Per-Protocol Cohort",
       table_footer = "This table summarizes the random subcohort, which was 
-      randomly sampled from the per-protocol cohort, and excludes individuals 
-      with a COVID failure event < 7 days post Day 57. The sampling was 
+      randomly sampled from the per-protocol cohort. The sampling was 
       stratified by 24 strata defined by enrollment characteristics: Assigned 
       treatment arm $\\\\times$ Baseline SARS-CoV-2 naïve vs. non-naïve status 
       (defined by serostatus and NAAT testing) $\\\\times$ Randomization strata 
@@ -31,8 +30,7 @@ tlf <-
       table_header = "Demographic and Clinical Characteristics at Baseline in 
       the Baseline SARS-CoV-2 Positive Per-Protocol Cohort",
       table_footer ="This table summarizes the random subcohort, which was 
-      randomly sampled from the per-protocol cohort, and excludes individuals 
-      with a COVID failure event < 7 days post Day 57. The sampling was 
+      randomly sampled from the per-protocol cohort. The sampling was 
       stratified by 24 strata defined by enrollment characteristics: Assigned 
       treatment arm $\\\\times$ Baseline SARS-CoV-2 naïve vs. non-naïve status 
       (defined by serostatus and NAAT testing) $\\\\times$ Randomization strata 

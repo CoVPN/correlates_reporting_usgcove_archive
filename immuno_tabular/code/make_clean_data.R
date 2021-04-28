@@ -109,8 +109,8 @@ subgrp <- c(
   AgeSexC = "Age, sex",
   ethnicityC = "Hispanic or Latino ethnicity", 
   RaceEthC = "Race",
-  MinorityC = "Underrepresented minority status",
-  AgeMinorC = "Age, Underrepresented minority status"
+  MinorityC = "Communities of color",
+  AgeMinorC = "Age, Communities of color"
 )
 
 grplev <- c("", "Age $<$ 65",  "Age $\\geq$ 65", "At-risk", "Not at-risk", 

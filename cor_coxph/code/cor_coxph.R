@@ -68,11 +68,20 @@ marker.cutpoints <- list()
 for (a in assays) {
     marker.cutpoints[[a]] <- list()    
     for (ind.t in c("Day"%.%pop, "Delta"%.%pop%.%"overB")) {
-        myprint(a, ind.t)
-        q.a <- wtd.quantile(dat.vacc.pop[[ind.t %.% a]], weights = dat.vacc.pop$wt.0, probs = c(1/3, 2/3))
+        myprint(a, ind.t, newline=F)
         
-        # -Inf and Inf are added to q.a because otherwise cut2 may assign the rows with the minimum value NA
-        tmp=try(factor(cut2(dat.vacc.pop[[ind.t %.% a]], cuts = c(-Inf, q.a, Inf))), silent=T)
+        if (mean(dat.vacc.pop[[ind.t %.% a]]>uloqs[a], na.rm=T)>1/3 & startsWith(ind.t, "Day")) {
+            # if more than 1/3 of vaccine recipients have value > ULOQ
+            # let q.a be median among those < ULOQ and ULOQ
+            myprint("more than 1/3 of vaccine recipients have value > ULOQ")
+            q.a=c(wtd.quantile(dat.vacc.pop[[ind.t %.% a]][dat.vacc.pop[[ind.t %.% a]]<=uloqs[a]], weights = dat.vacc.pop$wt.0, probs = c(1/2)), uloqs[a])
+            tmp=try(factor(cut(dat.vacc.pop[[ind.t %.% a]], cuts = c(-Inf, q.a, Inf))), silent=T) # cut is left-not inclusive ( , ]
+        } else {
+            q.a <- wtd.quantile(dat.vacc.pop[[ind.t %.% a]], weights = dat.vacc.pop$wt.0, probs = c(1/3, 2/3))
+            # for cut2, -Inf and Inf are optiona, but adding them to q.a reduce the chance to get NAs
+            tmp=try(factor(cut2(dat.vacc.pop[[ind.t %.% a]], cuts = c(-Inf, q.a, Inf))), silent=T)
+        }
+ 
         do.cut=FALSE # if TRUE, use cut function which does not use weights
         # if there is a huge point mass, an error would occur
         # or it may not break into 3 groups
@@ -82,6 +91,7 @@ for (a in assays) {
             dat.vacc.pop[[ind.t %.% a %.% "cat"]] <- tmp
             marker.cutpoints[[a]][[ind.t]] <- q.a
         } else {
+            myprint("call cut")
             # cut is more robust but it does not incorporate weights
             tmp=cut(dat.vacc.pop[[ind.t %.% a]], breaks=3)
             stopifnot(length(table(tmp))==3)
@@ -93,6 +103,7 @@ for (a in assays) {
         }
         stopifnot(length(table(dat.vacc.pop[[ind.t %.% a %.% "cat"]])) == 3)
         print(table(dat.vacc.pop[[ind.t %.% a %.% "cat"]]))
+        cat("\n")
     }
 }
 

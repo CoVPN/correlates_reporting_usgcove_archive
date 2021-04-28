@@ -31,7 +31,7 @@ dat.long.twophase.sample <- readRDS(here(
 ))
 dat.twophase.sample <- readRDS(here("data_clean", "twophase_data.rds"))
 
-
+assay_lim <- readRDS(here("data_clean", "assay_lim.rds"))
 #-----------------------------------------------
 # PAIR PLOTS
 #-----------------------------------------------

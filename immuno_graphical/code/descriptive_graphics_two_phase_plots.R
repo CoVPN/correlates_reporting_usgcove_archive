@@ -103,7 +103,7 @@ for (bserostatus in 0:1) {
         ifelse(bserostatus, "positive", "negative"), ", ",
         c("placebo", "vaccine")[trt + 1], " arm"
       ),
-      column_labels = labels.axis[tt + 1, seq_along(assay_immuno)] %>% unlist(),
+      column_labels = labels.axis[1, seq_along(assay_immuno)] %>% unlist(),
       height = 1.3 * length(assay_immuno) + 0.1,
       width = 1.3 * length(assay_immuno),
       filename = paste0(
@@ -117,7 +117,7 @@ for (bserostatus in 0:1) {
 }
 
 
-if(all(c("B", "Day29", "Day57") %in% times)){
+if (has29) {
   ## pairplots of assay readouts for multiple timepoints
   ## pairplots by baseline serostatus
   for (bserostatus in 0:1) {
@@ -138,6 +138,34 @@ if(all(c("B", "Day29", "Day57") %in% times)){
             c("placebo", "vaccine")[trt + 1], " arm"
           ),
           column_labels = paste(c("D1", "D29", "D57"), labels.axis[, aa][1]),
+          filename = paste0(
+            save.results.to, "/pairs_", aa, "_by_times_",
+            bstatus.labels.2[bserostatus + 1], "_", c("placebo_", "vaccine_")[trt + 1],
+            study_name, ".png"
+          )
+        )
+      }
+    }
+  }
+} else {
+  for (bserostatus in 0:1) {
+    for (trt in 0:1) {
+      subdat <- dat.twophase.sample %>%
+        dplyr::filter(Bserostatus == bserostatus & Trt == trt)
+      
+      for (aa in assay_immuno) {
+        covid_corr_pairplots_by_time(
+          plot_dat = subdat,
+          times = c("B", "Day57"),
+          assay = aa,
+          strata = "Bstratum",
+          weight = "wt.subcohort",
+          plot_title = paste0(
+            labels.assays[aa], ": baseline ",
+            ifelse(bserostatus, "positive ", "negative "),
+            c("placebo", "vaccine")[trt + 1], " arm"
+          ),
+          column_labels = paste(c("D1", "D57"), labels.axis[, aa][1]),
           filename = paste0(
             save.results.to, "/pairs_", aa, "_by_times_",
             bstatus.labels.2[bserostatus + 1], "_", c("placebo_", "vaccine_")[trt + 1],

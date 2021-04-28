@@ -22,12 +22,16 @@ dat_proc <- read.csv(here(
 ))
 colnames(dat_proc)[1] <- "Ptid"
 
+#show a distribution
+#hist(dat_proc$Day57bindSpike[dat_proc$Trt==1])
+
+
 # define age cutoff and two-phase sampling indicator
 dat_proc <- dat_proc %>%
   mutate(
     age.geq.65 = as.integer(Age >= 65),    
     # create two-phase sampling indicators for D57 analyses
-    TwophasesampInd = Fullvaccine == 1 &
+    TwophasesampInd = Perprotocol == 1 &
       (SubcohortInd | EventIndPrimaryD29 == 1) &
       complete.cases(cbind(
         BbindSpike, if(has29) Day29bindSpike, Day57bindSpike,
@@ -39,7 +43,7 @@ dat_proc <- dat_proc %>%
 if(has29) dat_proc <- dat_proc %>%
   mutate(
     # for D29 analyses
-    TwophasesampInd.2 = Fullvaccine == 1 &
+    TwophasesampInd.2 = Perprotocol == 1 &
       (SubcohortInd | EventIndPrimaryD29 == 1) &
       complete.cases(cbind(
         BbindSpike, Day29bindSpike,
@@ -83,8 +87,8 @@ dat_proc$WhiteNonHispanic <-
     dat_proc$ethnicity == "Hispanic or Latino", 0,
     dat_proc$WhiteNonHispanic
   )
-dat_proc$URM = 1-dat_proc$WhiteNonHispanic
-dat_proc$URM[is.na(dat_proc$URM)] = 0
+dat_proc$MinorityInd = 1-dat_proc$WhiteNonHispanic
+dat_proc$MinorityInd[is.na(dat_proc$MinorityInd)] = 0
 
 # check coding via tables
 #table(dat_proc$race, useNA = "ifany")
@@ -110,7 +114,7 @@ names(Bstratum.labels) <- Bstratum.labels
 # Moderna: 1 ~ 6 defines the 6 baseline strata within trt/serostatus
 dat_proc <- dat_proc %>%
   mutate(
-    demo.stratum = ifelse (URM==1, ifelse(Age >= 65, 1, ifelse(HighRiskInd == 1, 2, 3)), 3+ifelse(Age >= 65, 1, ifelse(HighRiskInd == 1, 2, 3)))
+    demo.stratum = ifelse (MinorityInd==1, ifelse(Age >= 65, 1, ifelse(HighRiskInd == 1, 2, 3)), 3+ifelse(Age >= 65, 1, ifelse(HighRiskInd == 1, 2, 3)))
   )
 names(demo.stratum.labels) <- demo.stratum.labels
 
@@ -148,12 +152,11 @@ dat_proc$wt[!with(dat_proc, Perprotocol == 1 & EventTimePrimaryD57>=7)] <- NA
 # wt.2, for D29 correlates analyses
 if(has29) {
     wts_table2 <- dat_proc %>%
-      dplyr::filter(EventTimePrimaryD29 >= 14 & Perprotocol == 1 |
-                    EventTimePrimaryD29 >= 7 & EventTimePrimaryD29 <= 13 & Fullvaccine == 1) %>%
+      dplyr::filter(Perprotocol == 1 & EventTimePrimaryD29 >= 7) %>%
       with(table(Wstratum, TwophasesampInd.2))
     wts_norm2 <- rowSums(wts_table2) / wts_table2[, 2]
     dat_proc$wt.2 <- wts_norm2[dat_proc$Wstratum]
-    dat_proc$wt.2[!with(dat_proc, EventTimePrimaryD29 >= 14 & Perprotocol == 1 | EventTimePrimaryD29 >= 7 & EventTimePrimaryD29 <= 13 & Fullvaccine == 1)] <- NA
+    dat_proc$wt.2[!with(dat_proc, Perprotocol == 1 & EventTimePrimaryD29 >= 7)] <- NA
 }
 
 
@@ -167,13 +170,13 @@ dat_proc$wt.subcohort[!with(dat_proc, Perprotocol == 1 & EventTimePrimaryD57>=7)
 
 
 dat_proc$TwophasesampInd[!with(dat_proc, Perprotocol == 1 & EventTimePrimaryD57>=7)] <- 0
-if(has29) dat_proc$TwophasesampInd.2[!with(dat_proc, EventTimePrimaryD29 >= 14 & Perprotocol == 1 | EventTimePrimaryD29 >= 7 & EventTimePrimaryD29 <= 13 & Fullvaccine == 1)] <- 0
+if(has29) dat_proc$TwophasesampInd.2[!with(dat_proc, Perprotocol == 1 & EventTimePrimaryD29 >= 7)] <- 0
 
 
 ###############################################################################
 # impute missing neut biomarkers in ph2
 #     impute vaccine and placebo, baseline pos and neg, separately
-#     use all assays
+#     use all assays (not bindN)
 #     use baseline, D29 and D57, but not Delta
 ###############################################################################
 
@@ -260,35 +263,77 @@ if(has29) {
 }
 
 
+assays.includeN=c(assays, "bindN")
 
 ###############################################################################
-# define delta for dat_proc
+# converting binding variables from AU to IU for binding assays
 ###############################################################################
 
-dat_proc["Delta57overB" %.% assays] <-
-  dat_proc["Day57" %.% assays] - dat_proc["B" %.% assays]
-if(has29) {
-    dat_proc["Delta29overB" %.% assays] <-
-      dat_proc["Day29" %.% assays] - dat_proc["B" %.% assays]
-    dat_proc["Delta57over29" %.% assays] <-
-      dat_proc["Day57" %.% assays] - dat_proc["Day29" %.% assays]
+for (a in c("bindSpike", "bindRBD", "bindN")) {
+  for (t in if(has29) c("B", "Day29", "Day57") else c("B", "Day57") ) {
+      dat_proc[[t %.% a]] <- dat_proc[[t %.% a]] + log10(convf[a])
+  }
 }
 
 
 ###############################################################################
 # censoring values below LLOD
-# llods defined in _common.R
 ###############################################################################
 
-for (a in assays) {
-  for (t in times[1:ifelse(has29,3,2)]) {
+# llod censoring
+for (a in assays.includeN) {
+  for (t in if(has29) c("B", "Day29", "Day57") else c("B", "Day57") ) {
     dat_proc[[t %.% a]] <- ifelse(dat_proc[[t %.% a]] < log10(llods[a]), log10(llods[a] / 2), dat_proc[[t %.% a]])
+  }
+}
+
+# uloq censoring for binding only
+for (a in c("bindSpike", "bindRBD", "bindN")) {
+  for (t in if(has29) c("B", "Day29", "Day57") else c("B", "Day57") ) {
     dat_proc[[t %.% a]] <- ifelse(dat_proc[[t %.% a]] > log10(uloqs[a]), log10(uloqs[a]    ), dat_proc[[t %.% a]])
   }
 }
+
+
+
+###############################################################################
+# define delta for dat_proc
+###############################################################################
+
+dat_proc["Delta57overB"  %.% assays.includeN] <- dat_proc["Day57" %.% assays.includeN] - dat_proc["B" %.% assays.includeN]
+if(has29) {
+dat_proc["Delta29overB"  %.% assays.includeN] <- dat_proc["Day29" %.% assays.includeN] - dat_proc["B" %.% assays.includeN]
+dat_proc["Delta57over29" %.% assays.includeN] <- dat_proc["Day57" %.% assays.includeN] - dat_proc["Day29" %.% assays.includeN]
+}
+
+
 
 
 ###############################################################################
 # bundle data sets and save as CSV
 ###############################################################################
 write_csv(dat_proc, file = here("data_clean", data_name))
+
+
+
+
+###############################################################################
+# save some common parameters
+###############################################################################
+
+
+
+#
+## maxed over all 3 of Spike, RBD, N, restricting to Day 29
+#MaxbAbDay29 = max(dat_proc[,paste0("Day29", c("bindSpike", "bindRBD", "bindN"))], na.rm=T)
+#
+#MaxID50ID80Day29 (maxed over ID50 and ID80, restricting to Day 29)
+#
+# 
+#
+#MaxbAbDay57   (maxed over all 3 of Spike, RBD, N, restricting to Day 57)
+#
+#MaxID50ID80Day57 (maxed over ID50 and ID80, restricting to Day 57)
+#
+# 
+# 

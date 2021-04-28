@@ -108,11 +108,11 @@ read.csv(here("base_riskscore", "output", "SL_weights.csv"), row.names = 1,
 \clearpage
 
 ```{r SLtopmodels, warning=FALSE, echo=FALSE}
-caption <- "Predictors in learners assigned weight > 0.5 by Superlearner."
+caption <- "Predictors in learners assigned weight > 0.0 by Superlearner."
 
 read.csv(here("base_riskscore", "output", "SL_all_models_with_predictors.csv"),
          row.names = 1, header = TRUE) %>%
-  filter(Weight > 0.5) %>%
+  filter(Weight > 0.0) %>%
   mutate(across(.cols = everything(), ~gsub(" ", "", ., fixed = TRUE))) %>%
   mutate(across(.cols = everything(), ~na_if(., "NA"))) %>%
   select_if(~sum(!is.na(.)) > 0) %>%

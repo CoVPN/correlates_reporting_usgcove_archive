@@ -3,14 +3,24 @@
 renv::activate(project = here::here(".."))
 source(here::here("..", "_common.R"))
 #-----------------------------------------------
-
-source(here::here("code", "cor_data_preprocess.R"))
+source(here::here("code", "params.R"))
 source(here::here("code", "cor_wrcdf_plot_function.R"))
 library(ggpubr)
 library(scales)
 library(survival)
 ## get a crude estimate of VE and upper/lower bound of 95% CI 
 ## using an unadjusted Cox model
+
+dat.long.cor.subset <- readRDS(here(
+  "data_clean",
+  "long_cor_data.rds"
+))
+
+dat.cor.subset <- readRDS(here(
+  "data_clean",
+  "cor_data.rds"
+))
+
 for (bstatus in 0:1) {
   ve_dat <- dat.cor.subset %>%
     filter(EventTimePrimaryD57 >= 7, Bserostatus == bstatus) %>%

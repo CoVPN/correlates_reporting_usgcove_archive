@@ -29,7 +29,7 @@ options(survey.lonely.psu="adjust")
 
 num_v1 <- c("Age") # Summaries - Mean & Range
 num_v2 <- c("BMI") # Summaries - Mean & St.d
-cat_v <- c("Age65C", "SexC", "RaceEthC", "ethnicityC", "HighRiskC", "AgeRiskC")
+cat_v <- c("Age65C", "SexC", "RaceEthC", "ethnicityC", "HighRiskC", "AgeRiskC", "MinorityC")
 
 ds_long_ttl <- ds %>%
   dplyr::filter(randomset) %>% 
@@ -52,7 +52,7 @@ dm_cat <- inner_join(
          rslt1 = sprintf("%s (%.1f%%)", n, n / N * 100), 
          rslt2 = sprintf("%s/%s = %.1f%%", n, N, n / N * 100),
          subgroup = ifelse(subgroup_cat == "Communities of Color", 
-                           "Race", as.character(subgroup))) %>% 
+                           "RaceEthC", as.character(subgroup))) %>% 
   dplyr::filter(subgroup %in% cat_v) 
 
 # Calculate mean and range for numeric covariates
@@ -134,19 +134,12 @@ print("Done with table 1")
 # Arm and Baseline: Assigned treatment Arms * Baseline SARS-CoV-2-19 Status
 # Group: Category in each subgroup
 
-immuno.design <- twophase(list(~Ptid, ~Ptid), 
-                          strata=list(NULL, ~tps.stratum),
-                          weights=list(NULL, ~wt.subcohort),
-                          subset=~randomset,
-                          method="simple",
-                          data=ds)
-
 sub.by <- c("Arm", "`Baseline SARS-CoV-2`")
 resp.v <- grep("Resp|2llod|4llod|FR2|FR4", names(ds), value = T) 
-subs=c("All", "Age65C", "HighRiskC", "AgeRiskC", "AgeRisk1", "AgeRisk2", "SexC",
+subs <- c("All", "Age65C", "HighRiskC", "AgeRiskC", "AgeRisk1", "AgeRisk2", "SexC",
        "AgeSexC", "ethnicityC", "RaceEthC", "MinorityC", "AgeMinorC")
-rpcnt <- get_rr(ds, resp.v, subs, sub.by, immuno.design, "wt.subcohort", "randomset")
-
+rpcnt <- get_rr(dat=ds, v=resp.v, subs=subs, sub.by=sub.by, strata="tps.stratum",
+                weights="wt.subcohort", subset="randomset")
 tab_rr <- rpcnt %>% 
   dplyr::filter(!subgroup %in% c("AgeRisk1", "AgeRisk2") & Visit != "Day 1" & Group %in% names(grplev)) %>% 
   mutate(subgroup=factor(subgrp[subgroup], levels=subgrp), Group=factor(grplev[Group], levels=grplev)) %>% 
@@ -199,7 +192,8 @@ print("Done with table3 & 4")
 # 
 # Output: tab_gm
 gm.v <- c(assays_col, grep("Delta", names(ds), value = T))
-rgm <- get_gm(ds, gm.v, subs, sub.by, immuno.design, "randomset")
+rgm <- get_gm(dat=ds, v=gm.v, subs=subs, sub.by=sub.by, strata="tps.stratum",
+              weights="wt.subcohort", subset="randomset")
 
 tab_gm <- rgm %>% 
   dplyr::filter(!subgroup %in% c("AgeRisk1", "AgeRisk2") & !grepl("Delta", mag_cat) & Group %in% names(grplev)) %>% 

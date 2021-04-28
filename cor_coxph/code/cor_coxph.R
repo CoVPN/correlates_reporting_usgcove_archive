@@ -16,9 +16,15 @@ source(here::here("..", "_common.R"))
 #-----------------------------------------------
 
 source(here::here("code", "params.R"))
-#dat.mock <- read.csv(here::here("..", "data_clean", data_name))
 data_name_updated <- sub(".csv", "_with_riskscore.csv", data_name)
-dat.mock <- read.csv(here::here("..", "data_clean", data_name_updated))
+if (file.exists(here::here("..", "data_clean", data_name_updated))) {
+    dat.mock <- read.csv(here::here("..", "data_clean", data_name_updated))
+    data_name = data_name_updated
+} else {
+    dat.mock <- read.csv(here::here("..", "data_clean", data_name))
+}
+
+hist(dat.mock$Day57bindSpike)
 
 library(kyotil) # p.adj.perm, getFormattedSummary
 library(marginalizedRisk)
@@ -28,6 +34,7 @@ library(parallel)
 library(forestplot)
 library(Hmisc) # wtd.quantile, cut2
 library(xtable) # this is a dependency of kyotil
+
 
 # population is either 57 or 29
 Args <- commandArgs(trailingOnly=TRUE)
@@ -57,19 +64,39 @@ dat.plac.pop=subset(dat.mock, Trt==0 & Bserostatus==0 & !is.na(wt.0))
 
 
 # define trichotomized markers
-#   adding 1e-6 to the first cut point helps avoid an error when 33% is the minimial value
-#   -Inf and Inf are added to q.a because otherwise cut2 may assign the rows with the minimum value NA
 marker.cutpoints <- list()    
 for (a in assays) {
     marker.cutpoints[[a]] <- list()    
     for (ind.t in c("Day"%.%pop, "Delta"%.%pop%.%"overB")) {
+        myprint(a, ind.t)
         q.a <- wtd.quantile(dat.vacc.pop[[ind.t %.% a]], weights = dat.vacc.pop$wt.0, probs = c(1/3, 2/3))
-        q.a[1]=q.a[1]+1e-6
-        dat.vacc.pop[[ind.t %.% a %.% "cat"]] <- factor(cut2(dat.vacc.pop[[ind.t %.% a]], cuts = c(-Inf, q.a, Inf)))
+        
+        # -Inf and Inf are added to q.a because otherwise cut2 may assign the rows with the minimum value NA
+        tmp=try(factor(cut2(dat.vacc.pop[[ind.t %.% a]], cuts = c(-Inf, q.a, Inf))), silent=T)
+        do.cut=FALSE # if TRUE, use cut function which does not use weights
+        # if there is a huge point mass, an error would occur
+        # or it may not break into 3 groups
+        if (inherits(tmp, "try-error")) do.cut=TRUE else if(length(table(tmp)) != 3) do.cut=TRUE
+        
+        if(!do.cut) {
+            dat.vacc.pop[[ind.t %.% a %.% "cat"]] <- tmp
+            marker.cutpoints[[a]][[ind.t]] <- q.a
+        } else {
+            # cut is more robust but it does not incorporate weights
+            tmp=cut(dat.vacc.pop[[ind.t %.% a]], breaks=3)
+            stopifnot(length(table(tmp))==3)
+            dat.vacc.pop[[ind.t %.% a %.% "cat"]] = tmp
+            # extract cut points from factor level labels
+            tmpname = names(table(tmp))[2]
+            tmpname = substr(tmpname, 2, nchar(tmpname)-1)
+            marker.cutpoints[[a]][[ind.t]] <- as.numeric(strsplit(tmpname, ",")[[1]])
+        }
         stopifnot(length(table(dat.vacc.pop[[ind.t %.% a %.% "cat"]])) == 3)
-        marker.cutpoints[[a]][[ind.t]] <- q.a
+        print(table(dat.vacc.pop[[ind.t %.% a %.% "cat"]]))
     }
 }
+
+
 
 # define an alias for EventIndPrimaryDxx
 dat.vacc.pop$yy=dat.vacc.pop[["EventIndPrimaryD"%.%pop]]
@@ -81,7 +108,7 @@ t0=max(dat.vacc.pop[dat.vacc.pop[["EventIndPrimaryD"%.%pop]]==1, "EventTimePrima
 write(t0, file=paste0(save.results.to, "timepoints_cum_risk_"%.%study_name))
 # trial-specific formula
 form.s = as.formula(paste0("Surv(EventTimePrimaryD",pop,", EventIndPrimaryD",pop,") ~ 1"))
-if (endsWith(data_name_updated, "riskscore.csv")) {
+if (endsWith(data_name, "riskscore.csv")) {
     form.0 =            update (form.s, ~.+ MinorityInd + HighRiskInd + risk_score)
     form.0.logistic = as.formula(paste0("EventIndPrimaryD",pop,"  ~ MinorityInd + HighRiskInd + risk_score"))
 } else {
@@ -239,7 +266,9 @@ mytex(tab.1, file.name="CoR_univariable_svycoxph_pretty_"%.%study_name, align="c
     ")
 )
 
-rv$tab.1=tab.1
+tab.1.nop12=cbind(paste0(nevents, "/", format(natrisk, big.mark=",")), t(est), t(ci), t(p))
+rownames(tab.1)=c(labels.axis["Day"%.%tab.1.nop12, assays])
+rv$tab.1=tab.1.nop12
 
 
 
@@ -258,38 +287,34 @@ overall.p.1=c(rbind(overall.p.1, NA,NA))
 overall.p.2=c(rbind(overall.p.2, NA,NA))
 
 
+# if "Delta"%.%pop%.%"overB" is included, nevents have a problem because some markers may have only two category in the cases
+
 # n cases and n at risk
-natrisk = round(c(sapply (c("Day"%.%pop%.%assays, "Delta"%.%pop%.%"overB"%.%assays)%.%"cat", function(a) aggregate(dat.vacc.pop$wt.0, dat.vacc.pop[a], sum, na.rm=T)[,2] )))
+natrisk = round(c(sapply (c("Day"%.%pop%.%assays)%.%"cat", function(a) aggregate(dat.vacc.pop$wt.0, dat.vacc.pop[a], sum, na.rm=T)[,2] )))
 colSums(matrix(natrisk, nrow=3))
-nevents = round(c(sapply (c("Day"%.%pop%.%assays, "Delta"%.%pop%.%"overB"%.%assays)%.%"cat", function(a) aggregate(subset(dat.vacc.pop,yy==1)[["wt.0"]], 
-                                                                                                                   subset(dat.vacc.pop,yy==1)[a], sum, na.rm=T)[,2] )))
+nevents = round(c(sapply (c("Day"%.%pop%.%assays)%.%"cat", function(a) aggregate(subset(dat.vacc.pop,yy==1)[["wt.0"]], subset(dat.vacc.pop,yy==1)[a], sum, na.rm=T, drop=F)[,2] )))
 # regression parameters
 est=c(rbind(1.00,  getFormattedSummary(fits.tri, exp=T, robust=T, rows=rows, type=1)))
 ci= c(rbind("N/A", getFormattedSummary(fits.tri, exp=T, robust=T, rows=rows, type=13)))
 p=  c(rbind("N/A", getFormattedSummary(fits.tri, exp=T, robust=T, rows=rows, type=10))); p=sub("0.000","<0.001",p)
-# 
+
 tab=cbind(
     rep(c("Lower","Middle","Upper"), length(p)/3), 
-    paste0(nevents, "/", format(natrisk, big.mark=",",digit=0)), 
+    paste0(nevents, "/", format(natrisk, big.mark=",",digit=0, scientific=F)), 
     formatDouble(nevents/natrisk, digit=4, remove.leading0=F),
     est, ci, p, overall.p.0, overall.p.1, overall.p.2
 )
-## move unit to another row if too long, code depends on length of assay
-#tmp=rbind(c(labels.axis["Day"%.%pop, assays], labels.axis["Delta"%.%pop%.%"overB", assays]), c("(IU/ml)", "(IU/ml)", "ID50", "ID80"), "")
-#tmp[1,]=sub(" \\(IU/ml)","", tmp[1,])
-#tmp[1,]=sub(" ID50","", tmp[1,])
-#tmp[1,]=sub(" ID80","", tmp[1,])
-tmp=rbind(c(labels.axis["Day"%.%pop, assays], labels.axis["Delta"%.%pop%.%"overB", assays]), "", "")
+tmp=rbind(c(labels.axis["Day"%.%pop, assays]), "", "")
 rownames(tab)=c(tmp)
 tab
 
-mytex(tab[1:(nrow(tab)/2),], file.name="CoR_univariable_svycoxph_cat_pretty_"%.%study_name, align="c", include.colnames = F, save2input.only=T, input.foldername=save.results.to,
+mytex(tab[1:(nrow(tab)),], file.name="CoR_univariable_svycoxph_cat_pretty_"%.%study_name, align="c", include.colnames = F, save2input.only=T, input.foldername=save.results.to,
     col.headers=paste0("\\hline\n 
          \\multicolumn{1}{l}{", toTitleCase(study_name), "} & \\multicolumn{1}{c}{Tertile}   & \\multicolumn{1}{c}{No. cases /}   & \\multicolumn{1}{c}{Attack}   & \\multicolumn{2}{c}{Haz. Ratio}                     & \\multicolumn{1}{c}{P-value}   & \\multicolumn{1}{c}{Overall P-}      & \\multicolumn{1}{c}{Overall q-}   & \\multicolumn{1}{c}{Overall} \\\\ 
          \\multicolumn{1}{l}{Immunologic Marker}            & \\multicolumn{1}{c}{}          & \\multicolumn{1}{c}{No. at-risk**} & \\multicolumn{1}{c}{rate}   & \\multicolumn{1}{c}{Pt. Est.} & \\multicolumn{1}{c}{95\\% CI} & \\multicolumn{1}{c}{(2-sided)} & \\multicolumn{1}{c}{value***} & \\multicolumn{1}{c}{value} & \\multicolumn{1}{c}{FWER} \\\\ 
          \\hline\n 
     "),        
-    add.to.row=list(list(nrow(tab)/2), # insert at the beginning of table, and at the end of, say, the first table
+    add.to.row=list(list(nrow(tab)), # insert at the beginning of table, and at the end of, say, the first table
         c(paste0(" \n \\multicolumn{8}{l}{} \\\\ \n", 
                   "\n \\multicolumn{2}{l}{Placebo} & ", 
                  paste0(sum(dat.plac.pop$yy), "/", format(nrow(dat.plac.pop), big.mark=",")), "&",  
@@ -300,7 +325,15 @@ mytex(tab[1:(nrow(tab)/2),], file.name="CoR_univariable_svycoxph_cat_pretty_"%.%
     )
 )
 
-rv$tab.2=tab
+
+tab.nop12=cbind(
+    rep(c("Lower","Middle","Upper"), length(p)/3), 
+    paste0(nevents, "/", format(natrisk, big.mark=",",digit=0, scientific=F)), 
+    formatDouble(nevents/natrisk, digit=4, remove.leading0=F),
+    est, ci, p, overall.p.0
+)
+rownames(tab.nop12)=c(rbind(c(labels.axis["Day"%.%pop, assays]), "", ""))
+rv$tab.2=tab.nop12
 
 
 
@@ -743,7 +776,9 @@ for (idx in 1:2) { # 1 with placebo lines, 2 without placebo lines. Implementati
             ylab=paste0("Probability* of COVID by Day ", t0), lwd=lwd, ylim=ylim, type="n", main=paste0(labels.assays.long["Day"%.%pop,a]), xaxt="n")
         # x axis
         xx=seq(floor(min(risks$marker)), ceiling(max(risks$marker)))
+        #myprint(a, xx)
         for (x in xx) axis(1, at=x, labels=if (log10(llods[a])==x) "lod" else if (x>=3) bquote(10^.(x)) else 10^x )
+        if(last(xx)<5) for (x in c(250,500,2000,4000)) axis(1, at=log10(x), labels=if (x>=1000) bquote(.(x/1000)%*%10^3) else x )
         if(!any(log10(llods[a])==xx)) axis(1, at=log10(llods[a]), labels="lod")
         
         
@@ -805,6 +840,7 @@ mypdf(onefile=F, file=paste0(save.results.to, "controlled_ve_curves",ii,"_"%.%st
         which=which.min(abs(risks$prob-mean(tmp)))
         s.ref=risks$marker[which]
         Bias=controlled.risk.bias.factor(ss=risks$marker, s.cent=s.ref, s1=risks$marker[s1], s2=risks$marker[s2], RRud) 
+        if (is.nan(Bias[1])) Bias=rep(1,length(Bias))
     
         ylim=if(ii==1) c(0.5, 1) else c(0.8, 1)
     

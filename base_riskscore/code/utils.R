@@ -240,7 +240,8 @@ run_cv_sl_once <- function(seed = 1, Y = NULL, X_mat = NULL,
     obsWeights = obsWeights,
     SL.library = sl_lib,
     method = method, cvControl = cvControl,
-    innerCvControl = innerCvControl
+    innerCvControl = innerCvControl,
+    verbose = TRUE
   )
 
   aucs <- get_all_aucs(sl_fit = fit, scale = scale)
@@ -286,7 +287,10 @@ drop_riskVars_with_high_total_missing_values <- function(X, riskVars) {
     }
   }
 
-  return(X %>% select(-all_of(covars_highNAvalues)))
+  if(length(covars_highNAvalues) == 0)
+    return(X)
+  else
+    return(X %>% select(-all_of(covars_highNAvalues)))
 }
 
 
@@ -318,7 +322,6 @@ impute_missing_values <- function(X, riskVars) {
     print("No missing values to impute in any risk variables!")
   } else {
     print(paste("Imputing missing values in following variables: ", paste(as.character(covars), collapse = ", ")))
-    set.seed(20210216)
     n.imp <- 1
 
     imp <- X %>% select(all_of(covars))

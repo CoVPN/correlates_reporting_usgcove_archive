@@ -50,7 +50,6 @@ tibble::tribble(
   "Dr. David Benkeser", "Programmer",
   "Nima Hejazi",        "Programmer",
   "Chenchen Yu",        "Specifier/Programmer",
-  "Kendric Li",         "Programmer",
   "Yiwen Lu",         "Tester" 
 ) %>% 
   signature_table()
@@ -71,5 +70,5 @@ Mock data used in the verification can be found in the `COVIDcorr` R package, av
 
 ### Verification Assignments
 
-The verification results will be contained in `verification_results.pdf`, where the results of the independent verification will be reported. It will contain a table that lists the table generated, the original source code filename, the verification code filename, the results of the comparison, and the date the testing is completed.
+The verification results will be contained in `verification_report.pdf`, where the results of the independent verification will be reported. It will contain a table that lists the table generated, the original source code filename, the verification code filename, the results of the comparison, and the date the testing is completed.
 

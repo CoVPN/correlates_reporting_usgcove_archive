@@ -33,8 +33,8 @@ covid_corr_pairplots <- function(plot_dat, ## data for plotting
                                  plot_title,
                                  column_labels,
                                  seed = 12345,
-                                 height = 5.1,
-                                 width = 5.05,
+                                 height = 6.1,
+                                 width = 6.05,
                                  units = "in",
                                  corr_size = 5,
                                  point_size = 0.5,
@@ -133,8 +133,8 @@ covid_corr_pairplots_for_verification <- function(plot_dat, ## data for plotting
                                                   plot_title,
                                                   column_labels,
                                                   seed = 12345,
-                                                  height = 5.1,
-                                                  width = 5.05,
+                                                  height = 6.1,
+                                                  width = 6.05,
                                                   units = "in",
                                                   corr_size = 5,
                                                   point_size = 0.5,
@@ -387,8 +387,8 @@ covid_corr_rcdf_facets <- function(plot_dat,
                                    color,
                                    weight,
                                    lwd = 1,
-                                   xlim = c(-2, 10),
-                                   xbreaks = seq(-2, 10, 2),
+                                   xlim = c(-2, 8),
+                                   xbreaks = seq(-2, 8, 2),
                                    palette = c(
                                      "#1749FF", "#D92321", "#0AB7C9",
                                      "#FF6F1B", "#810094", "#378252",
@@ -400,14 +400,14 @@ covid_corr_rcdf_facets <- function(plot_dat,
                                    legend_nrow = ceiling(length(legend) / 2),
                                    panel_titles,
                                    panel_title_size = 10,
-                                   axis_size = 10,
+                                   axis_size = 12,
                                    axis_titles,
-                                   axis_title_size = 9,
+                                   axis_title_size = 12,
                                    arrange_nrow =
                                      ceiling(nlevels(plot_dat[,facet_by]) / 2),
                                    arrange_ncol = 2,
-                                   height = 6.5,
-                                   width = 6.5,
+                                   height = 3 * arrange_nrow + 0.5,
+                                   width = 3 * arrange_ncol,
                                    units = "in",
                                    filename) {
   plot_dat <- plot_dat[!is.na(plot_dat[, color]), ]
@@ -462,7 +462,7 @@ covid_corr_rcdf_facets <- function(plot_dat,
   }
 
   output_plot <- ggarrange(
-    plotlist = rcdf_list, ncol = 2, nrow = 2,
+    plotlist = rcdf_list, ncol = arrange_ncol, nrow = arrange_nrow,
     common.legend = TRUE, legend = "bottom",
     align = "h"
   )
@@ -519,13 +519,14 @@ covid_corr_rcdf <- function(plot_dat,
                             ),
                             xlab,
                             lwd = 1,
-                            xlim = c(-2, 10),
-                            xbreaks = seq(-2, 10, by = 2),
-                            plot_title_size = 10,
+                            xlim = c(-2, 8),
+                            xbreaks = seq(-2, 8, 2),
+                            plot_title = "",
+                            plot_title_size = 14,
                             legend_position = "right",
-                            legend_size = 10,
-                            axis_title_size = 9,
-                            axis_size = 10,
+                            legend_size = 14,
+                            axis_title_size = 16,
+                            axis_size = 16,
                             height = 5,
                             width = 8,
                             units = "in",
@@ -579,6 +580,7 @@ covid_corr_rcdf <- function(plot_dat,
     scale_color_manual(values = palette) +
     ylab("Reverse ECDF") +
     xlab(xlab) +
+    ggtitle(plot_title) +
     theme(
       plot.title = element_text(hjust = 0.5, size = plot_title_size),
       legend.position = legend_position,
@@ -653,8 +655,8 @@ covid_corr_scatter_facets <- function(plot_dat,
                                         nlevels(plot_dat[, facet_by]) / 2
                                       ),
                                       arrange_ncol = 2,
-                                      height = 7,
-                                      width = 7,
+                                      height = 3 * arrange_nrow + 0.5,
+                                      width = 3 * arrange_ncol,
                                       units = "in",
                                       filename) {
   
@@ -814,16 +816,16 @@ covid_corr_boxplot_facets <- function(plot_dat,
                                       axis_titles_y,
                                       xlab_use_letters =
                                         (nlevels(plot_dat[, x]) > 2),
-                                      ylim = c(-2, 10),
-                                      ybreaks = seq(-2, 10, by = 2),
+                                      ylim = c(-2, 8),
+                                      ybreaks = seq(-2, 8, by = 2),
                                       arrange_nrow = ceiling(
                                         nlevels(plot_dat[, facet_by]) / 2
                                       ),
                                       arrange_ncol = 2,
                                       panel_titles,
                                       panel_title_size = 10,
-                                      height = 6.5,
-                                      width = 6.5,
+                                      height = 3 * arrange_nrow + 0.5,
+                                      width = 3 * arrange_ncol,
                                       units = "in",
                                       filename) {
   plot_dat <- plot_dat[!is.na(plot_dat[, x]), ]
@@ -993,15 +995,15 @@ covid_corr_spaghetti_facets <- function(plot_dat,
                                         legend_size = 10,
                                         axis_size = 12,
                                         axis_title_size = 12,
-                                        ylim = c(0, 8),
-                                        ybreaks = seq(0, 8, by = 2),
+                                        ylim = c(-2, 8),
+                                        ybreaks = seq(-2, 8, by = 2),
                                         arrange_nrow = ceiling(
                                           nlevels(plot_dat[, facet_by]) / 2
                                         ),
                                         arrange_ncol = 2,
                                         panel_title_size = 10,
-                                        height = 5,
-                                        width = 4.5,
+                                        height = 2.5 * arrange_nrow + 0.5,
+                                        width = 2.5 * arrange_ncol,
                                         units = "in",
                                         filename) {
   # make a subset of data with 30 sample points for the jitter in each subgroup

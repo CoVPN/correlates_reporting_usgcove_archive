@@ -23,7 +23,7 @@ classoption: landscape
 caption <- ""
 
 dat <- read.csv(file = here("verification", "specifications_risk_score.csv")) %>%
-  dplyr::rename(`Steps in algorithm` = `ï..Steps.in.algorithm`,
+  dplyr::rename(`Steps in algorithm` = `Steps.in.algorithm`,
                 `Value/Derivation` = `Value.Derivation`) %>%
   select(`Steps in algorithm`, Definition, Parameters, `Value/Derivation`, Details) 
   

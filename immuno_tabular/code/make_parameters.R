@@ -5,7 +5,6 @@ source(here::here("..", "_common.R")) #
 ##################################################
 
 library(tidyverse)
-source(here::here("code", "make_functions.R"))
 
 # To select which tables are included in the report.
 # Also to modify the headers, footers, etc. for each table

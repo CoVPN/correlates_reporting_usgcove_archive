@@ -20,7 +20,7 @@ plot_data: code/descriptive_graphics_data_preprocess.R params
 params: code/params.R
 
 # define the axis limits for the assays
-make_assay_lim: params ploy_data code/make_assay_lim.R 
+make_assay_lim: params plot_data code/make_assay_lim.R 
 	Rscript code/make_assay_lim.R
 
 ## clean            : delete contents of data_clean/ and figs/

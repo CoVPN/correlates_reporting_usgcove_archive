@@ -258,3 +258,33 @@ ggsave_custom <- function(filename = default_name(plot),
                           height= 15, width = 21, ...) {
   ggsave(filename = filename, height = height, width = width, ...)
 }
+
+
+
+get.range.cor=function(dat, assay=c("bindSpike", "bindRBD", "pseudoneutid50", "pseudoneutid80"), time=c("57","29")) {
+    assay<-match.arg(assay)    
+    time<-match.arg(time)        
+    if(assay %in% c("bindSpike", "bindRBD")) {
+        ret=quantile(c(dat[["Day"%.%time%.%"bindSpike"]], dat[["Day"%.%time%.%"bindRBD"]]), c(0, 1), na.rm=T)
+    } else {
+        ret=quantile(dat[["Day"%.%time%.%a]], c(0, 1), na.rm=T)
+    }  
+    delta=(ret[2]-ret[1])/20     
+    c(ret[1]-delta, ret[2]+delta)
+}
+
+draw.x.axis.cor=function(xlim, llod){
+    if(xlim[2]<3) {
+        xx = (c(10,25,50,100,250,500,1000))
+        for (x in xx) axis(1, at=log10(x), labels=if (llod==x) "lod" else if (x==1000) bquote(10^3) else x  ) 
+    } else if(xlim[2]<4) {
+        xx = (c(10,50,250,1000,5000,10000))
+        for (x in xx) axis(1, at=log10(x), labels=if (llod==x) "lod" else if (x %in% c(1000,10000)) bquote(10^.(log10(x))) else if (x==5000) bquote(.(x/1000)%*%10^3) else  x ) 
+    } else {
+        xx=seq(floor(xlim[1]), ceiling(xlim[2]))
+        for (x in xx) axis(1, at=x, labels=if (log10(llod)==x) "lod" else if (x>=3) bquote(10^.(x)) else 10^x )
+    }
+    #
+    if(!any(log10(llod)==xx)) axis(1, at=log10(llod), labels="lod")
+    
+}

@@ -357,39 +357,7 @@ MaxID50ID80Delta57overB = max(dat_proc[,paste0("Delta57overB", c("pseudoneutid50
 
 
 
-get.range.cor=function(dat, assay=c("bindSpike", "bindRBD", "pseudoneutid50", "pseudoneutid80"), time=c("57","29")) {
-    assay<-match.arg(assay)    
-    time<-match.arg(time)        
-    if(assay %in% c("bindSpike", "bindRBD")) {
-        ret=quantile(c(dat[["Day"%.%time%.%"bindSpike"]], dat[["Day"%.%time%.%"bindRBD"]]), c(0, 1), na.rm=T)
-    } else {
-        ret=quantile(dat[["Day"%.%time%.%a]], c(0, 1), na.rm=T)
-    }  
-    delta=(ret[2]-ret[1])/20     
-    c(ret[1]-delta, ret[2]+delta)
-}
-
-draw.x.axis.cor=function(xlim, llod){
-    if(xlim[2]<3) {
-        xx = (c(10,25,50,100,200,400))
-        for (x in xx) axis(1, at=log10(x), labels=if (llod==x) "lod" else x ) # bquote(.(x/1000)%*%10^3)
-    } else if(xlim[2]<4) {
-        xx = (c(10,50,250,1000,4000))
-        for (x in xx) axis(1, at=log10(x), labels=if (llod==x) "lod" else x ) # bquote(.(x/1000)%*%10^3)
-    } else {
-        xx=seq(floor(xlim[1]), ceiling(xlim[2]))
-        for (x in xx) axis(1, at=x, labels=if (log10(llod)==x) "lod" else if (x>=3) bquote(10^.(x)) else 10^x )
-    }
-    #
-    if(!any(log10(llod)==xx)) axis(1, at=log10(llod), labels="lod")
-    
-}
-
-
-
-
 save(MaxbAbDay29, MaxbAbDay57, MaxID50ID80Day29, MaxID50ID80Day57, MaxbAbDelta29overB, MaxbAbDelta57overB, MaxID50ID80Delta29overB, MaxID50ID80Delta57overB, 
-    get.range.cor, draw.x.axis.cor,
 file=here("data_clean", "_params.Rdata"))
  
 

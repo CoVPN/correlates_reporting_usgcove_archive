@@ -275,7 +275,7 @@ include_graphics(here(
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0(
-    "Marker_Rcdf_nonbAb_Day29_trt_vaccine_bstatus_both_",
+    "Marker_Rcdf_nAb_Day29_trt_vaccine_bstatus_both_",
     study_name, ".png"
   )
 ))
@@ -297,7 +297,7 @@ include_graphics(here(
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0(
-    "Marker_Rcdf_nonbAb_Day57_trt_vaccine_bstatus_both_",
+    "Marker_Rcdf_nAb_Day57_trt_vaccine_bstatus_both_",
     study_name, ".png"
   )
 ))
@@ -320,7 +320,7 @@ include_graphics(here(
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0(
-    "Marker_Rcdf_nonbAb_Delta29overB_trt_vaccine_bstatus_both_",
+    "Marker_Rcdf_nAb_Delta29overB_trt_vaccine_bstatus_both_",
     study_name, ".png"
   )
 ))
@@ -343,7 +343,7 @@ include_graphics(here(
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0(
-    "Marker_Rcdf_nonbAb_Delta57overB_trt_vaccine_bstatus_both_",
+    "Marker_Rcdf_nAb_Delta57overB_trt_vaccine_bstatus_both_",
     study_name, ".png"
   )
 ))
@@ -365,7 +365,7 @@ include_graphics(here(
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0(
-    "Marker_Rcdf_nonbAb_Day29_trt_vaccine_bstatus_Neg_",
+    "Marker_Rcdf_nAb_Day29_trt_vaccine_bstatus_Neg_",
     study_name, ".png"
   )
 ))
@@ -383,11 +383,11 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "RCDF plots for D57 nonbAb markers: baseline negative vaccine arm", eval = ("Day57" %in% times)}
+```{r, fig.cap = "RCDF plots for D57 nAb markers: baseline negative vaccine arm", eval = ("Day57" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0(
-    "Marker_Rcdf_nonbAb_Day57_trt_vaccine_bstatus_Neg_",
+    "Marker_Rcdf_nAb_Day57_trt_vaccine_bstatus_Neg_",
     study_name, ".png"
   )
 ))
@@ -410,7 +410,7 @@ include_graphics(here(
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0(
-    "Marker_Rcdf_nonbAb_Delta29overB_trt_vaccine_bstatus_Neg_",
+    "Marker_Rcdf_nAb_Delta29overB_trt_vaccine_bstatus_Neg_",
     study_name, ".png"
   )
 ))
@@ -432,7 +432,7 @@ include_graphics(here(
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0(
-    "Marker_Rcdf_nonbAb_Delta57overB_trt_vaccine_bstatus_Neg_",
+    "Marker_Rcdf_nAb_Delta57overB_trt_vaccine_bstatus_Neg_",
     study_name, ".png"
   )
 ))
@@ -455,7 +455,7 @@ include_graphics(here(
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0(
-    "Marker_Rcdf_nonbAb_Day29_trt_vaccine_bstatus_Pos_",
+    "Marker_Rcdf_nAb_Day29_trt_vaccine_bstatus_Pos_",
     study_name, ".png"
   )
 ))
@@ -473,11 +473,11 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "RCDF plots for D57 nonbAb markers: baseline positive vaccine arm", eval = ("Day57" %in% times)}
+```{r, fig.cap = "RCDF plots for D57 nAb markers: baseline positive vaccine arm", eval = ("Day57" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0(
-    "Marker_Rcdf_nonbAb_Day57_trt_vaccine_bstatus_Pos_",
+    "Marker_Rcdf_nAb_Day57_trt_vaccine_bstatus_Pos_",
     study_name, ".png"
   )
 ))
@@ -500,7 +500,7 @@ include_graphics(here(
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0(
-    "Marker_Rcdf_nonbAb_Delta29overB_trt_vaccine_bstatus_Pos_",
+    "Marker_Rcdf_nAb_Delta29overB_trt_vaccine_bstatus_Pos_",
     study_name, ".png"
   )
 ))
@@ -522,7 +522,7 @@ include_graphics(here(
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0(
-    "Marker_Rcdf_nonbAb_Delta57overB_trt_vaccine_bstatus_Pos_",
+    "Marker_Rcdf_nAb_Delta57overB_trt_vaccine_bstatus_Pos_",
     study_name, ".png"
   )
 ))

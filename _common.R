@@ -31,30 +31,68 @@ include_bindN <- TRUE
 times <- c("B", "Day29", "Day57", 
            "Delta29overB", "Delta57overB", "Delta57over29")
 
+
 # limits for each assay (IU for bAb, no need to convert again)
-llods <-c(
-          bindSpike = 0.180, 
-          bindRBD = 0.544, 
-          bindN = 0.048, 
-          pseudoneutid50 = 10, 
-          pseudoneutid80 = 10, 
-          liveneutmn50 = 62.16)
+# the following are copied from SAP to avoid any mistake (get rid of commas)
+tmp=list(
+    bindSpike=c(
+        LLOD = 0.3076,
+        ULOD = 172226.2,
+        LLOQ = 1.7968,
+        ULOQ = 10155.95)
+    ,
+    bindRBD=c(
+        LLOD = 0.9297,
+        ULOD = 520506.0,
+        LLOQ = 5.4302,
+        ULOQ = 30693.537)
+    ,
+    bindN=c( 
+        LLOD = 0.0820,
+        ULOD = 45927.0,
+        LLOQ = 0.4791,
+        ULOQ = 2708.253)
+    ,
+    ID50=c( 
+        LLOD = 10,
+        ULOD = NA,
+        LLOQ = 18.5,
+        ULOQ = 4404)
+    ,
+    ID80=c( 
+        LLOD = 10,
+        ULOD = NA,
+        LLOQ = 14.3,
+        ULOQ = 1295)
+)
 
-lloqs <-c(
-          bindSpike = 0.3060, 
-          bindRBD = 0.9248, 
-          bindN = 0.0816, 
-          pseudoneutid50 = 18.5, 
-          pseudoneutid80 = 14.3, 
-          liveneutmn50 = 117.35) 
+llods=sapply(tmp, function(x) unname(x["LLOD"]))
+lloqs=sapply(tmp, function(x) unname(x["LLOQ"]))
+uloqs=sapply(tmp, function(x) unname(x["ULOQ"]))
 
-uloqs <-c(
-          bindSpike = 172226.2, 
-          bindRBD = 520506.0, 
-          bindN = 45927.0, 
-          pseudoneutid50 = 4404, 
-          pseudoneutid80 = 1295, 
-          liveneutmn50 = 18976.19) 
+#llods <-c(
+#          bindSpike = 0.180, 
+#          bindRBD = 0.544, 
+#          bindN = 0.048, 
+#          pseudoneutid50 = 10, 
+#          pseudoneutid80 = 10, 
+#          liveneutmn50 = 62.16)
+#
+#lloqs <-c(
+#          bindSpike = 0.3060, 
+#          bindRBD = 0.9248, 
+#          bindN = 0.0816, 
+#          pseudoneutid50 = 18.5, 
+#          pseudoneutid80 = 14.3, 
+#          liveneutmn50 = 117.35) 
+#
+#uloqs <-c(
+#          bindSpike = 172226.2, 
+#          bindRBD = 520506.0, 
+#          bindN = 45927.0, 
+#          pseudoneutid50 = 4404, 
+#          pseudoneutid80 = 1295, 
+#          liveneutmn50 = 18976.19) 
 
 
 convf=c(bindSpike=0.0090, bindN=0.0024, bindRBD=0.0272)

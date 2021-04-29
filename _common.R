@@ -53,17 +53,23 @@ tmp=list(
         LLOQ = 0.4791,
         ULOQ = 2708.253)
     ,
-    ID50=c( 
+    pseudoneutid50=c( 
         LLOD = 10,
         ULOD = NA,
         LLOQ = 18.5,
         ULOQ = 4404)
     ,
-    ID80=c( 
+    pseudoneutid80=c( 
         LLOD = 10,
         ULOD = NA,
         LLOQ = 14.3,
         ULOQ = 1295)
+    ,
+    liveneutmn50=c( 
+        LLOD = 62.16,
+        ULOD = NA,
+        LLOQ = 117.35,
+        ULOQ = 18976.19)
 )
 
 llods=sapply(tmp, function(x) unname(x["LLOD"]))

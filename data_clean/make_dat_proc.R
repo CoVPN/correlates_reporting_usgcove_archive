@@ -31,11 +31,21 @@ dat_proc <- dat_proc %>%
   mutate(
     age.geq.65 = as.integer(Age >= 65),    
     # create two-phase sampling indicators for D57 analyses
-    TwophasesampInd = Fullvaccine == 1 &
+    TwophasesampInd = Perprotocol == 1 &
       (SubcohortInd | EventIndPrimaryD29 == 1) &
       complete.cases(cbind(
-        BbindSpike, if(has29) Day29bindSpike, Day57bindSpike,
-        BbindRBD,   if(has29) Day29bindRBD,   Day57bindRBD
+        if("bindSpike" %in% must_have_assays) BbindSpike, 
+        if("bindSpike" %in% must_have_assays & has29) Day29bindSpike, 
+        if("bindSpike" %in% must_have_assays) Day57bindSpike,
+        if("bindRBD" %in% must_have_assays) BbindRBD, 
+        if("bindRBD" %in% must_have_assays & has29) Day29bindRBD, 
+        if("bindRBD" %in% must_have_assays) Day57bindRBD,
+        if("pseudoneutid50" %in% must_have_assays) Bpseudoneutid50, 
+        if("pseudoneutid50" %in% must_have_assays & has29) Day29pseudoneutid50, 
+        if("pseudoneutid50" %in% must_have_assays) Day57pseudoneutid50,
+        if("pseudoneutid80" %in% must_have_assays) Bpseudoneutid80, 
+        if("pseudoneutid80" %in% must_have_assays & has29) Day29pseudoneutid80, 
+        if("pseudoneutid80" %in% must_have_assays) Day57pseudoneutid80
       ))
   )
 
@@ -43,11 +53,17 @@ dat_proc <- dat_proc %>%
 if(has29) dat_proc <- dat_proc %>%
   mutate(
     # for D29 analyses
-    TwophasesampInd.2 = Fullvaccine == 1 &
+    TwophasesampInd.2 = Perprotocol == 1 &
       (SubcohortInd | EventIndPrimaryD29 == 1) &
       complete.cases(cbind(
-        BbindSpike, Day29bindSpike,
-        BbindRBD, Day29bindRBD
+        if("bindSpike" %in% must_have_assays) BbindSpike, 
+        if("bindSpike" %in% must_have_assays) Day29bindSpike,
+        if("bindRBD" %in% must_have_assays) BbindRBD, 
+        if("bindRBD" %in% must_have_assays) Day29bindRBD,
+        if("pseudoneutid50" %in% must_have_assays) Bpseudoneutid50, 
+        if("pseudoneutid50" %in% must_have_assays) Day29pseudoneutid50, 
+        if("pseudoneutid80" %in% must_have_assays) Bpseudoneutid80, 
+        if("pseudoneutid80" %in% must_have_assays) Day29pseudoneutid80
       ))
   )
   
@@ -152,12 +168,11 @@ dat_proc$wt[!with(dat_proc, Perprotocol == 1 & EventTimePrimaryD57>=7)] <- NA
 # wt.2, for D29 correlates analyses
 if(has29) {
     wts_table2 <- dat_proc %>%
-      dplyr::filter(EventTimePrimaryD29 >= 14 & Perprotocol == 1 |
-                    EventTimePrimaryD29 >= 7 & EventTimePrimaryD29 <= 13 & Fullvaccine == 1) %>%
+      dplyr::filter(Perprotocol == 1 & EventTimePrimaryD29 >= 7) %>%
       with(table(Wstratum, TwophasesampInd.2))
     wts_norm2 <- rowSums(wts_table2) / wts_table2[, 2]
     dat_proc$wt.2 <- wts_norm2[dat_proc$Wstratum]
-    dat_proc$wt.2[!with(dat_proc, EventTimePrimaryD29 >= 14 & Perprotocol == 1 | EventTimePrimaryD29 >= 7 & EventTimePrimaryD29 <= 13 & Fullvaccine == 1)] <- NA
+    dat_proc$wt.2[!with(dat_proc, Perprotocol == 1 & EventTimePrimaryD29 >= 7)] <- NA
 }
 
 
@@ -171,7 +186,7 @@ dat_proc$wt.subcohort[!with(dat_proc, Perprotocol == 1 & EventTimePrimaryD57>=7)
 
 
 dat_proc$TwophasesampInd[!with(dat_proc, Perprotocol == 1 & EventTimePrimaryD57>=7)] <- 0
-if(has29) dat_proc$TwophasesampInd.2[!with(dat_proc, EventTimePrimaryD29 >= 14 & Perprotocol == 1 | EventTimePrimaryD29 >= 7 & EventTimePrimaryD29 <= 13 & Fullvaccine == 1)] <- 0
+if(has29) dat_proc$TwophasesampInd.2[!with(dat_proc, Perprotocol == 1 & EventTimePrimaryD29 >= 7)] <- 0
 
 
 ###############################################################################
@@ -218,7 +233,9 @@ stopifnot(
 dat_proc[dat_proc$TwophasesampInd==1, imp.markers] <-
   dat.tmp.impute[imp.markers][match(dat_proc[dat_proc$TwophasesampInd==1, "Ptid"], dat.tmp.impute$Ptid), ]
 
-
+stopifnot(
+  all(complete.cases(dat_proc[dat_proc$TwophasesampInd == 1, imp.markers]))
+)
 
 ###############################################################################
 # impute again for TwophasesampInd.2
@@ -264,23 +281,7 @@ if(has29) {
 }
 
 
-
-###############################################################################
-# define delta for dat_proc
-###############################################################################
-
 assays.includeN=c(assays, "bindN")
-
-dat_proc["Delta57overB" %.% assays.includeN] <-
-  dat_proc["Day57" %.% assays.includeN] - dat_proc["B" %.% assays.includeN]
-if(has29) {
-    dat_proc["Delta29overB" %.% assays.includeN] <-
-      dat_proc["Day29" %.% assays.includeN] - dat_proc["B" %.% assays.includeN]
-    dat_proc["Delta57over29" %.% assays.includeN] <-
-      dat_proc["Day57" %.% assays.includeN] - dat_proc["Day29" %.% assays.includeN]
-}
-
-
 
 ###############################################################################
 # converting binding variables from AU to IU for binding assays
@@ -293,17 +294,37 @@ for (a in c("bindSpike", "bindRBD", "bindN")) {
 }
 
 
-
 ###############################################################################
 # censoring values below LLOD
 ###############################################################################
 
+# llod censoring
 for (a in assays.includeN) {
   for (t in if(has29) c("B", "Day29", "Day57") else c("B", "Day57") ) {
     dat_proc[[t %.% a]] <- ifelse(dat_proc[[t %.% a]] < log10(llods[a]), log10(llods[a] / 2), dat_proc[[t %.% a]])
-    dat_proc[[t %.% a]] <- ifelse(dat_proc[[t %.% a]] > log10(uloqs[a]), log10(uloqs[a]    ), dat_proc[[t %.% a]])
   }
 }
+
+## uloq censoring for binding only
+#for (a in c("bindSpike", "bindRBD", "bindN")) {
+#  for (t in if(has29) c("B", "Day29", "Day57") else c("B", "Day57") ) {
+#    dat_proc[[t %.% a]] <- ifelse(dat_proc[[t %.% a]] > log10(uloqs[a]), log10(uloqs[a]    ), dat_proc[[t %.% a]])
+#  }
+#}
+
+
+
+###############################################################################
+# define delta for dat_proc
+###############################################################################
+
+dat_proc["Delta57overB"  %.% assays.includeN] <- dat_proc["Day57" %.% assays.includeN] - dat_proc["B" %.% assays.includeN]
+if(has29) {
+dat_proc["Delta29overB"  %.% assays.includeN] <- dat_proc["Day29" %.% assays.includeN] - dat_proc["B" %.% assays.includeN]
+dat_proc["Delta57over29" %.% assays.includeN] <- dat_proc["Day57" %.% assays.includeN] - dat_proc["Day29" %.% assays.includeN]
+}
+
+
 
 
 ###############################################################################
@@ -312,5 +333,34 @@ for (a in assays.includeN) {
 write_csv(dat_proc, file = here("data_clean", data_name))
 
 
-#show a distribution
-#hist(dat_proc$Day57bindSpike[dat_proc$Trt==1])
+
+
+###############################################################################
+# save some common parameters and helper functions
+###############################################################################
+
+# maxed over all 3 of Spike, RBD, N, restricting to Day 29 or 57
+MaxbAbDay29 = max(dat_proc[,paste0("Day29", c("bindSpike", "bindRBD", "bindN"))], na.rm=T)
+MaxbAbDay57 = max(dat_proc[,paste0("Day57", c("bindSpike", "bindRBD", "bindN"))], na.rm=T)
+
+# maxed over ID50 and ID80, restricting to Day 29 or 57
+MaxID50ID80Day29 = max(dat_proc[,paste0("Day29", c("pseudoneutid50", "pseudoneutid80"))], na.rm=T)
+MaxID50ID80Day57 = max(dat_proc[,paste0("Day57", c("pseudoneutid50", "pseudoneutid80"))], na.rm=T)
+
+# for fold change, maxed over all 3 of Spike, RBD, N, restricting to Day 29 or 57
+MaxbAbDelta29overB = max(dat_proc[,paste0("Delta29overB", c("bindSpike", "bindRBD", "bindN"))], na.rm=T)
+MaxbAbDelta57overB = max(dat_proc[,paste0("Delta57overB", c("bindSpike", "bindRBD", "bindN"))], na.rm=T)
+
+# for fold change, maxed over ID50 and ID80, restricting to Day 29 or 57
+MaxID50ID80Delta29overB = max(dat_proc[,paste0("Delta29overB", c("pseudoneutid50", "pseudoneutid80"))], na.rm=T)
+MaxID50ID80Delta57overB = max(dat_proc[,paste0("Delta57overB", c("pseudoneutid50", "pseudoneutid80"))], na.rm=T)
+
+
+
+save(MaxbAbDay29, MaxbAbDay57, MaxID50ID80Day29, MaxID50ID80Day57, MaxbAbDelta29overB, MaxbAbDelta57overB, MaxID50ID80Delta29overB, MaxID50ID80Delta57overB, 
+file=here("data_clean", "_params.Rdata"))
+ 
+
+
+ 
+ 

@@ -19,11 +19,12 @@ source(here::here("code", "params.R"))
 data_name_updated <- sub(".csv", "_with_riskscore.csv", data_name)
 if (file.exists(here::here("..", "data_clean", data_name_updated))) {
     dat.mock <- read.csv(here::here("..", "data_clean", data_name_updated))
+    data_name = data_name_updated
 } else {
     dat.mock <- read.csv(here::here("..", "data_clean", data_name))
 }
+#load(here::here("..", "data_clean/_params.Rdata")) # if needed
 
-hist(dat.mock$Day57bindSpike)
 
 library(kyotil) # p.adj.perm, getFormattedSummary
 library(marginalizedRisk)
@@ -67,20 +68,27 @@ marker.cutpoints <- list()
 for (a in assays) {
     marker.cutpoints[[a]] <- list()    
     for (ind.t in c("Day"%.%pop, "Delta"%.%pop%.%"overB")) {
-        myprint(a, ind.t)
-        q.a <- wtd.quantile(dat.vacc.pop[[ind.t %.% a]], weights = dat.vacc.pop$wt.0, probs = c(1/3, 2/3))
+        myprint(a, ind.t, newline=F)
         
-        # -Inf and Inf are added to q.a because otherwise cut2 may assign the rows with the minimum value NA
-        tmp=try(factor(cut2(dat.vacc.pop[[ind.t %.% a]], cuts = c(-Inf, q.a, Inf))), silent=T)
+        if (mean(dat.vacc.pop[[ind.t %.% a]]>uloqs[a], na.rm=T)>1/3 & startsWith(ind.t, "Day")) {
+            # if more than 1/3 of vaccine recipients have value > ULOQ
+            # let q.a be median among those < ULOQ and ULOQ
+            myprint("more than 1/3 of vaccine recipients have value > ULOQ")
+            q.a=c(wtd.quantile(dat.vacc.pop[[ind.t %.% a]][dat.vacc.pop[[ind.t %.% a]]<=uloqs[a]], weights = dat.vacc.pop$wt.0, probs = c(1/2)), uloqs[a])
+        } else {
+            q.a <- wtd.quantile(dat.vacc.pop[[ind.t %.% a]], weights = dat.vacc.pop$wt.0, probs = c(1/3, 2/3))
+        }
+        tmp=try(factor(cut(dat.vacc.pop[[ind.t %.% a]], breaks = c(-Inf, q.a, Inf))), silent=T)
+ 
         do.cut=FALSE # if TRUE, use cut function which does not use weights
-        # if there is a huge point mass, an error would occur
-        # or it may not break into 3 groups
+        # if there is a huge point mass, an error would occur, or it may not break into 3 groups
         if (inherits(tmp, "try-error")) do.cut=TRUE else if(length(table(tmp)) != 3) do.cut=TRUE
         
         if(!do.cut) {
             dat.vacc.pop[[ind.t %.% a %.% "cat"]] <- tmp
             marker.cutpoints[[a]][[ind.t]] <- q.a
         } else {
+            myprint("\ncall cut with breaks=3!!!")
             # cut is more robust but it does not incorporate weights
             tmp=cut(dat.vacc.pop[[ind.t %.% a]], breaks=3)
             stopifnot(length(table(tmp))==3)
@@ -92,9 +100,9 @@ for (a in assays) {
         }
         stopifnot(length(table(dat.vacc.pop[[ind.t %.% a %.% "cat"]])) == 3)
         print(table(dat.vacc.pop[[ind.t %.% a %.% "cat"]]))
+        cat("\n")
     }
 }
-
 
 
 # define an alias for EventIndPrimaryDxx
@@ -107,7 +115,7 @@ t0=max(dat.vacc.pop[dat.vacc.pop[["EventIndPrimaryD"%.%pop]]==1, "EventTimePrima
 write(t0, file=paste0(save.results.to, "timepoints_cum_risk_"%.%study_name))
 # trial-specific formula
 form.s = as.formula(paste0("Surv(EventTimePrimaryD",pop,", EventIndPrimaryD",pop,") ~ 1"))
-if (endsWith(data_name_updated, "riskscore.csv")) {
+if (endsWith(data_name, "riskscore.csv")) {
     form.0 =            update (form.s, ~.+ MinorityInd + HighRiskInd + risk_score)
     form.0.logistic = as.formula(paste0("EventIndPrimaryD",pop,"  ~ MinorityInd + HighRiskInd + risk_score"))
 } else {
@@ -122,6 +130,9 @@ rv=list() # results for verification
     
     
     
+    
+    
+
 ####################################################################################################
 # Main regression results tables
 ####################################################################################################
@@ -291,7 +302,7 @@ overall.p.2=c(rbind(overall.p.2, NA,NA))
 # n cases and n at risk
 natrisk = round(c(sapply (c("Day"%.%pop%.%assays)%.%"cat", function(a) aggregate(dat.vacc.pop$wt.0, dat.vacc.pop[a], sum, na.rm=T)[,2] )))
 colSums(matrix(natrisk, nrow=3))
-nevents = round(c(sapply (c("Day"%.%pop%.%assays)%.%"cat", function(a) aggregate(subset(dat.vacc.pop,yy==1)[["wt.0"]], subset(dat.vacc.pop,yy==1)[a], sum, na.rm=T)[,2] )))
+nevents = round(c(sapply (c("Day"%.%pop%.%assays)%.%"cat", function(a) aggregate(subset(dat.vacc.pop,yy==1)[["wt.0"]], subset(dat.vacc.pop,yy==1)[a], sum, na.rm=T, drop=F)[,2] )))
 # regression parameters
 est=c(rbind(1.00,  getFormattedSummary(fits.tri, exp=T, robust=T, rows=rows, type=1)))
 ci= c(rbind("N/A", getFormattedSummary(fits.tri, exp=T, robust=T, rows=rows, type=13)))
@@ -745,7 +756,6 @@ myprint(prev.vacc)
 
 
 # marginalized risk curves for continuous s
-
 for (ii in 1:2) {  # 1 conditional on s,   2 is conditional on S>=s
 for (idx in 1:2) { # 1 with placebo lines, 2 without placebo lines. Implementation-wise, only difference is in ylim
 # ii=2; idx=2; a=assays[3]
@@ -767,18 +777,22 @@ for (idx in 1:2) { # 1 with placebo lines, 2 without placebo lines. Implementati
     par(las=1, cex.axis=0.9, cex.lab=1)# axis label orientation
     for (a in assays) {        
         risks=risks.all[[a]]
-        xlim=quantile(dat.vacc.pop[["Day"%.%pop%.%a]],if(ii==1) c(.025,.975) else c(0,.95), na.rm=T) 
+        xlim=get.range.cor(dat.vacc.pop, a, pop)
+        #xlim=quantile(dat.vacc.pop[["Day"%.%pop%.%a]],if(ii==1) c(.025,.975) else c(0,.95), na.rm=T) 
         
         ncases=sapply(risks$marker, function(s) sum(dat.vacc.pop$yy[dat.vacc.pop[["Day"%.%pop%.%a]]>=s], na.rm=T))
         
         plot(prob~marker, risks, xlab=labels.assays.short[a]%.%ifelse(ii==1," (=s)"," (>=s)"), xlim=xlim, 
             ylab=paste0("Probability* of COVID by Day ", t0), lwd=lwd, ylim=ylim, type="n", main=paste0(labels.assays.long["Day"%.%pop,a]), xaxt="n")
-        # x axis
-        xx=seq(floor(min(risks$marker)), ceiling(max(risks$marker)))
-        #myprint(a, xx)
-        for (x in xx) axis(1, at=x, labels=if (log10(llods[a])==x) "lod" else if (x>=3) bquote(10^.(x)) else 10^x )
-        if(last(xx)<5) for (x in c(250,500,2000,4000)) axis(1, at=log10(x), labels=if (x>=1000) bquote(.(x/1000)%*%10^3) else x )
-        if(!any(log10(llods[a])==xx)) axis(1, at=log10(llods[a]), labels="lod")
+    
+        draw.x.axis.cor(xlim, llods[a])
+    
+#        # x axis
+#        xx=seq(floor(min(risks$marker)), ceiling(max(risks$marker)))
+#        #myprint(a, xx)
+#        for (x in xx) axis(1, at=x, labels=if (log10(llods[a])==x) "lod" else if (x>=3) bquote(10^.(x)) else 10^x )
+#        if(last(xx)<5) for (x in c(250,500,2000,4000)) axis(1, at=log10(x), labels=if (x>=1000) bquote(.(x/1000)%*%10^3) else x )
+#        if(!any(log10(llods[a])==xx)) axis(1, at=log10(llods[a]), labels="lod")
         
         
         # prevelance lines
@@ -828,9 +842,10 @@ mypdf(onefile=F, file=paste0(save.results.to, "controlled_ve_curves",ii,"_"%.%st
     lwd=2.5
     par(las=1, cex.axis=0.9, cex.lab=1)# axis label orientation
     for (a in assays) {        
-        risks=get("risks.all."%.%ii)[[a]]
+        risks=get("risks.all."%.%ii)[[a]]        
     
-        xlim=quantile(dat.vacc.pop[["Day"%.%pop%.%a]],if(ii==1) c(.025,.975) else c(0,.95),na.rm=T)
+        #xlim=quantile(dat.vacc.pop[["Day"%.%pop%.%a]],if(ii==1) c(.025,.975) else c(0,.95),na.rm=T)
+        xlim=get.range.cor(dat.vacc.pop, a, pop)
         
         # compute Bias as a vector, which is a function of s
         # choose a reference marker value
@@ -856,10 +871,21 @@ mypdf(onefile=F, file=paste0(save.results.to, "controlled_ve_curves",ii,"_"%.%st
         # labels
         yat=seq(.5,1,by=.1)
         axis(side=2,at=yat,labels=(yat*100)%.%"%")
+    
         # x axis
-        xx=seq(floor(min(risks$marker)), ceiling(max(risks$marker)))
-        for (x in xx) axis(1, at=x, labels=if (log10(llods[a])==x) "lod" else if (x>=3) bquote(10^.(x)) else 10^x )
-        if(!any(log10(llods[a])==xx)) axis(1, at=log10(llods[a]), labels="lod")
+        draw.x.axis.cor(xlim, llods[a])
+#        if(xlim[2]<3) {
+#            xx = (c(10,25,50,100,200,400))
+#            for (x in xx) axis(1, at=log10(x), labels=if (llods[a]==x) "lod" else x ) # bquote(.(x/1000)%*%10^3)
+#        } else if(xlim[2]<4) {
+#            xx = (c(10,50,250,1000,4000))
+#            for (x in xx) axis(1, at=log10(x), labels=if (llods[a]==x) "lod" else x ) # bquote(.(x/1000)%*%10^3)
+#        } else {
+#            xx=seq(floor(xlim[1]), ceiling(xlim[2]))
+#            for (x in xx) axis(1, at=x, labels=if (log10(llods[a])==x) "lod" else if (x>=3) bquote(10^.(x)) else 10^x )
+#        }
+#        #
+#        if(!any(log10(llods[a])==xx)) axis(1, at=log10(llods[a]), labels="lod")
             
         # VE
         est = 1 - risks$prob/res.plac.cont["est"]

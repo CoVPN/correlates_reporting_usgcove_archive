@@ -18,7 +18,8 @@ rmd_files: [
   "cor_graphical/report.Rmd",
   "cor_coxph/report.Rmd",
   "cor_threshold/report.Rmd",
-  "references.Rmd"
+  "references.Rmd",
+  "appendix.Rmd"
 ]
 
 # # full cor report

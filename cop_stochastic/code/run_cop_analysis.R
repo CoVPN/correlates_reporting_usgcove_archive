@@ -41,7 +41,7 @@ if (data_name_check) {
 if (run_fast) {
   # simplify learner libraries for outcome and conditional density models
   sl_lrnr_reg <- Lrnr_sl$new(
-    learners = list(mean_lrnr, glm_lrnr, bayesglm_lrnr),
+    learners = list(mean_lrnr, glm_lrnr, bayesglm_lrnr, hal_lrnr_deeper),
     metalearner = discrete_metalrnr
   )
   sl_lrnr_dens <- Lrnr_sl$new(

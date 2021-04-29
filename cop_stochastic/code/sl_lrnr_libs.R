@@ -1,3 +1,12 @@
+# case-control sampling in SL
+# - 5 controls for each case is a reasonable heuristic
+# - consider sampling controls similar to each case (randomness good too)
+# - do stratify CV
+
+# - xgboost and ranger with 1000 trees
+# - xgboost with early stopping
+# - 
+
 # SL regression learners for outcome mechanism
 ## "simpler" learners: mean, GLMs, regularized regression, regression splines
 mean_lrnr <- Lrnr_mean$new()

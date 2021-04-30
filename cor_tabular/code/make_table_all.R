@@ -438,8 +438,8 @@ rrdiff_case <- rpcnt_case %>%
   mutate(Estimate = response1-response2,
          ci_l = Estimate-sqrt((response1-ci_l1)^2+(response2-ci_u2)^2),
          ci_u = Estimate+sqrt((response1-ci_u1)^2+(response2-ci_l2)^2),
-         rrdiff = sprintf("%s%%\n(%s%%, %s%%)", round(Estimate * 100, 1), 
-                          round(ci_l*100, 1), round(ci_u*100, 1))) 
+         rrdiff = sprintf("%s\n(%s, %s)", round(Estimate, 2), 
+                          round(ci_l, 2), round(ci_u, 2))) 
 
 print("Done with table6") 
 

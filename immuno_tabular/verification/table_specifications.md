@@ -181,3 +181,7 @@ Column names: Visit,	Marker,	Baseline SARS-CoV-2 Negative(N,	Resp rate,	GMT/GMC)
 5. Merge the tables from step 2-4 by visit, arm and marker.
 
 6. Subset the table into vaccine recipients (Table 11), and placebo recipients (Table 12).
+
+# Table. Random Subcohort for Measuring Antibody Markers
+1. Derive the counts of participants by treatment arm, baseline COVID status, and the demographic strata (`demo.stratum`)used for the immunogenicity subcohort randomization.
+2. Format the table from step 1 into a wide format by baseline COVID status and demographic strata.

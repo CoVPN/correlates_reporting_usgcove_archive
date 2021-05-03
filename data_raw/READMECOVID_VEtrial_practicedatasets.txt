@@ -17,6 +17,10 @@ Author: Peter Gilbert, September 16, 2020
                                   and edits for enhancing clarity)
         Updated April 15, 2021	 (updated LLOD, LLOQ, ULOQ values, including conversion of bAb readouts to 
                                   the International Units/ml scale)
+        Updated April 23, 2021	 (Changed documentation of Perprotocol variable)
+        Updated April 30, 2021   (Added the variables Earlyinfection,
+                                  NumberdaysD1toD29, NumberdaysD1toD57; derived the variable
+                                  URMforsubcohortsampling; updated LLOD, LLOQ, ULOQ values for bAb)
   
 This README file describes the variables in the mock data sets 
 COVID_VEtrial_practicedata_primarystage1.csv and COVID_VEtrial_practicedata_longerterm.csv
@@ -82,9 +86,11 @@ RiskInd         = Baseline covariate high risk/at-risk pre-existing condition (1
 Sex             = Sex assigned at birth (1=female, 0=male)
 Age             = Age at enrollment in years, between 18 and 85. Note that the randomization strata are 18-64 and 65+.
 BMI             = BMI at enrollment (kg/m^2)
+NumberdaysD1toD29 = number of days between D1 visit and Day 29 visit
+NumberdaysD1toD57 = number of days between D1 visit and Day 57 visit
 Bserostatus     = Indicator of baseline SARS-CoV-2 seropositive (1=yes, 0=no)
 Fullvaccine     = Indicator of receipt of both vaccinations.
-Perprotocol        = Indicator of qualifying per-protocol (received both vaccinations without specified protocol violations,
+Perprotocol     = Indicator of qualifying per-protocol (received both vaccinations without specified protocol violations,
                   and not diagnosed with the COVID endpoint by the Day 29 / Dose 2 visit).
                   Importantly, this indicator may differ from the Per-protocol indicator in the clinical data base for the
                   primary analysis of vaccine efficacy, because that indicator may be zero for COVID cases with event time
@@ -112,7 +118,7 @@ EventIndPrimaryD57 = Indicator that the failure time is <= the right-censoring t
                   the analysis have failure time >= 7 days. Individuals with failure time 1 to 6 days
                   are excluded from the analysis.
 BbindSpike      = Day 1 (enrollment) value of log10 IgG binding antibody concentration to Spike protein, which is a continuous variable 
-                  (scale log10 AU/ml).  The lower limit of quantification (LLOQ) of the assay is log10(34) on the arbitrary units (AU/ml)
+                  (scale log10 IU/ml).  The lower limit of quantification (LLOQ) of the assay is log10(34) on the arbitrary units (AU/ml)
                   scale from a standard curve that we will align to the WHO standards for use on efficacy trials samples. 
                   On the AU/ml scale, the upper limit of quantitation (ULOQ) is 19,136,250 AU/ml, the LLOQ = 34 AU/ml,
                   and the LLOD is 20 AU/ml.  On the AU/ml scale, values below log10(LLOD) are reported as log10(LLOD/2) = log10(10).
@@ -130,8 +136,8 @@ BbindSpike      = Day 1 (enrollment) value of log10 IgG binding antibody concent
     			bAb RBD: LLOD = 0.544, LLOQ = 0.9248, ULOQ = 520,506.0
     			bAb N: LLOD = 0.048, LLOQ = 0.0816, ULOQ = 45,927.0
 
-BbindRBD        = Day 1 (enrollment) value of IgG binding antibody readout to RBD, in log10 AU/ml.
-BbindN          = Day 1 (enrollment) value of IgG binding antibody readout to N protein, in log 10 AU/ml.
+BbindRBD        = Day 1 (enrollment) value of IgG binding antibody readout to RBD, in IU/ml.
+BbindN          = Day 1 (enrollment) value of IgG binding antibody readout to N protein, in IU/ml.
 Bpseudoneutid50 = Day 1 value of the Duke pseudo-neutralizing antibody readout, reported as log10 estimated serum inhibitory dilution
                   50% titer (ID50), which is the reciprocal of the dilution at which RLU (relative luminescence units)
                   are reduced by either 50% (ID50) compared to virus control wells after subtraction of background 
@@ -160,6 +166,7 @@ Day57pseudoneutid80 = Day 57 value of the same marker as Bpseudoneutid80
 Day57liveneutmn50   = Day 57 value of the same marker as Bliveneutmn50 
 SubcohortInd    = Indicator that a participant is sampled into the random subcohort for measurement of Day 1, 29, 57 antibody markers
                   (stratified Benoulli random sampling)
+Earlyinfection = Indicator a participant has SARS-CoV-2 infection < 7 days post Day 57 visit (0 otherwise).
 # The remaining variables with "CPV" in the variable name are only used for correlate of VE CoP analysis:
 BbindSpikeCPV   = Day 1 value of log10 IgG binding antibody readout to Spike protein in non-case placebo recipients undergoing closeout
                   placebo vaccination.  NA if the value is not measured.
@@ -187,92 +194,221 @@ CPVsampInd      = Indicator that a participant is sampled into the closeout plac
                   with CPVsampInd = 1 has data on all of the Day 1, 29, 57 antibody marker variables.
 
 #################################################################################
-# Some important data analysis notes (added December 17, 2020):
+# Data analysis notes 
 
-EventIndPrimaryD29==1 implies EventIndPrimaryD57==1
+EventIndPrimaryD1==1 implies EventIndPrimaryD29==1 implies EventIndPrimaryD57==1
 
-Based on the data set, a new variable TwophasesampIndprimary is defined, which is the indicator that
-a participant has antibody marker data measured.  The missing data structure for the mock data set
-is simple: All participants with TwophasesampIndprimary==1 have complete data for Day 1, 29, 57 markers.
+///////////////////////////////////////////////////////////////////////////////////////////////
+YF: Do you mean the other way around? From the data:
+> with(dat_proc, table(EventIndPrimaryD29, EventIndPrimaryD57, useNA="ifany"))
+                  EventIndPrimaryD57
+EventIndPrimaryD29     0     1
+                 0 29070     0
+                 1   120   810
+///////////////////////////////////////////////////////////////////////////////////////////////
 
-All immunogenicity characterizations (graphical/tabular) are done in the random subcohort
-ignoring case/non-case COVID outcome status, because the random subcohort is representative of the whole cohort.
-Restrict analyses to ppts with
-Perprotocol==1 & SubcohortInd==1 & TwophasesampIndprimary==1
 
-All CoR and CoP analyses that only use Day 57 markers (i.e. do not use Day 29 markers) 
-are done in the per-protocol baseline negative cohort 
-Perprotocol==1 & Bserostatus==0
+Based on the data set, a new variable TwophasesampIndprimary is defined for the processed data set, 
+which is the indicator that a participant has antibody marker data measured.  
+The missing data structure for the mock data set is as follows: All participants with 
+TwophasesampIndprimary==1 have complete data for Day 1, 29, 57 markers, and all immunogenicity 
+report and CoR/CoP analyses based on IPW complete-case restrict to ptids with TwophasesampIndprimary==1.  
+Alternative CoR/CoP analyses that do not restrict to complete-case may not include the TwophasesampIndprimary==1 
+requirement.
 
-CoR and CoP analyses that include Day 29 markers and not Day 57 markers are done in the baseline 
-negative cohort; note these ppts may or may not be per-protocol.
-Bserostatus==0
+///////////////////////////////////////////////////////////////////////////////////////////////
+YF: At some point we decided that we needed both TwophasesampIndprimary and TwophasesampIndprimary.2, the latter is defined similarly as TwophasesampIndprimary but only covers Day 1 and 29.
+///////////////////////////////////////////////////////////////////////////////////////////////
 
-All CoR and CoP analyses that use both Day 29 and Day 57 markers (i.e., multivariable CoR analyses) 
-are done in the per-protocol baseline negative cohort 
-Perprotocol==1 & Bserostatus==0
 
-The inverse probability weighted complete case CoR and CoP analyses of Day 57 marker data only,
-and of Day 29 / Day 57 marker data combined, are done in the cohort
-Perprotocol==1 & Bserostatus==0 & TwophasesampIndprimary==1
-(that is, only perprotocol participants are included)
 
-Only for the analyses of Day 29 markers only (not including Day 57 markers) are the inverse probability 
-weighted complete case CoR and CoP analyses done in the cohort that may not be fully per-protocol: 
-Bserostatus==0 & TwophasesampIndprimary==1
+One other derived variable is needed to define ptids to include in analyses
+Earlyendpoint  = Indicator a participant has Earlyinfection==1 or has a COVID endpoint < 7 days
+                 post Day 57 visit (0 otherwise)   
+[used to exclude ptids from the immunogenicity analyses and to exclude non-cases from CoR/CoP analyses]
+This variable is derived as
+Earlyendpoint <- ifelse(Earlyinfection==1 | 
+(EventIndPrimaryD1==1 & EventTimePrimaryD1 < NumberdaysD1toD57 + 7),1,0)
 
-# CoR/CoP analyses of Day 57 markers only:
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+YF: An alternative way of specifying the following might be to specify first phase 1, second phase 2, and third case variables. For example, these two paragraphs:
+
+CoR/CoP analyses of Day 57 markers only:
 Use the failure time variables (EventTimePrimaryD57, EventIndPrimaryD57) and ignore the variables
 (EventTimePrimaryD29, EventIndPrimaryD29)
+Per-protocol cases in Day 57 marker IPW-complete case analyses include the ptids defined by
+Perprotocol==1 & Bserostatus==0 & TwophasesampIndprimary==1 & EventIndPrimaryD57==1 & EventTimePrimaryD57 >= 7
 
-# CoR/CoP analyses of Day 29 markers only:
+IPW-complete case correlates analyses with Day 57 markers include the following ptids:
+Perprotocol==1 & Bserostatus==0 & TwophasesampIndprimary==1 & EventTimePrimaryD57 >= 7 & (EventIndPrimaryD57==0 & Earlyendpoint==0) 
+
+
+Could become:
+
+CoR/CoP analyses of Day 57 markers only:
+Phase 1: Bserostatus==0 & Earlyendpoint==0 & Perprotocol==1 & EventTimePrimaryD57 >= 7
+Phase 2: TwophasesampIndprimary==1
+Failure time variables: (EventTimePrimaryD57, EventIndPrimaryD57) and ignore the variables (EventTimePrimaryD29, EventIndPrimaryD29)
+
+
+Since this alternative organization more closely aligns with the twophase analysis code, it could help ensure we have the right implementation.
+But I understand it gets complicated in the immunogenecity reports.
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+
+
+Immunogenicity report analyses include ptids with
+Perprotocol==1 & SubcohortInd==1 & TwophasesampIndprimary==1 & Earlyendpoint==0
+
+CoR/CoP analyses of Day 29 markers only:
 Use the failure time variables (EventTimePrimaryD29, EventIndPrimaryD29) and ignore the variables
 (EventTimePrimaryD57, EventIndPrimaryD57)
+Per-protocol cases in Day 29 marker IPW-complete case analyses include the ptids defined by
+Perprotocol==1 & Bserostatus==0 & TwophasesampIndprimary==1 & EventIndPrimaryD29==1 & EventTimePrimaryD29 >= 7
 
-# Multivariable CoR analyses including both Day 29 and Day 57 markers:
+CoR/CoP analyses of Day 57 markers only:
 Use the failure time variables (EventTimePrimaryD57, EventIndPrimaryD57) and ignore the variables
 (EventTimePrimaryD29, EventIndPrimaryD29)
+Per-protocol cases in Day 57 marker IPW-complete case analyses include the ptids defined by
+Perprotocol==1 & Bserostatus==0 & TwophasesampIndprimary==1 & EventIndPrimaryD57==1 & EventTimePrimaryD57 >= 7
 
-# Intercurrent cases are those with event time between 7 days post Day 29 visit and 6 days post Day 57 visit
-# (or, if the Day 57 visit is missed, then between 7 days post Day 29 visit and 34 days post Day 29 visit), 
-# which are defined by
-EventIndPrimaryD29==1 & EventIndPrimaryD57==0
-# Note that intercurrent cases may or may not have Perprotocol==1, depending on the timing of the case and
-# depending on protocol violations.
+Multivariable CoR analyses including both Day 29 and Day 57 markers:
+Use the failure time variables (EventTimePrimaryD57, EventIndPrimaryD57) and ignore the variables
+(EventTimePrimaryD29, EventIndPrimaryD29)
+Per-protocol cases in IPW-complete case analyses including both Day 29 and Day 57 markers include 
+the ptids defined by
+Perprotocol==1 & Bserostatus==0 & TwophasesampIndprimary==1 & EventIndPrimaryD57==1 & EventTimePrimaryD57 >= 7
+(same as for Day 57 markers correlates analyses)
 
-# Per-protocol cases are those with event time starting 7 days after the Day 57 visit, which are defined by
-Perprotocol==1 & EventIndPrimaryD29==1 & EventIndPrimaryD57==1, which is equivalent to
-Perprotocol==1 & EventIndPrimaryD57==1
+Intercurrent Cases are defined as cases with event time between 7 days post Day 29 visit and 6 days 
+post Day 57 visit.  Intercurrent cases have included ptids defined by 
+Perprotocol==1 & Bserostatus==0 & TwophasesampIndprimary==1 & EventIndPrimaryD29==1 & 
+EventTimePrimaryD29 >= 7 & EventIndPrimaryD57==0
 
-# Per-protocol non-cases are those who never register a COVID primary endpoint, defined by
-Perprotocol==1 & EventIndPrimaryD29==0 & EventIndPrimaryD57==0
-# These are the non-cases always used for comparison with Intercurrent cases and with PP cases.
+Per-protocol non-cases are defined as participants who never register a COVID primary endpoint and have no 
+evidence of infection, with ptids for IPW-complete case analyses defined by
+Perprotocol==1 & Bserostatus==0 & TwophasesampIndprimary==1 & EventIndPrimaryD1==0 & Earlyendpoint==0
 
-# Cases vs. non-cases violin plots should include all cases starting 7 days after the Day 29 visit, 
-i.e., all with EventIndPrimaryD29==1 & EventTimePrimaryD29 >= 7. Always use separate plots for intercurrent 
-cases and for PP cases, side by side.
 
+# Based on the above specifications, correlates analyses with Day 29 markers include the following ptids:
+Perprotocol == 1 & Bserostatus==0 & TwophasesampIndprimary==1 & 
+EventTimePrimaryD29 >= 7 & (EventIndPrimaryD29==0 & Earlyendpoint==0) 
+
+IPW-complete case correlates analyses with Day 57 markers include the following ptids:
+Perprotocol == 1 & Bserostatus==0 & TwophasesampIndprimary==1 &  
+EventTimePrimaryD57 >= 7 & (EventIndPrimaryD57==0 & Earlyendpoint==0) 
+
+IPW-complete case correlates analyses with Day 29 and 57 markers include the following ptids:
+Perprotocol == 1 & Bserostatus==0 & TwophasesampIndprimary==1 &  
+EventTimePrimaryD57 >= 7 & (EventIndPrimaryD57==0 & Earlyendpoint==0) 
+
+
+###################
+Descriptive plots in CoR and CoP reports (e.g. violin scatterplots) include 
+"Intercurrent Cases", "Primary Cases", "Non-Cases", side by side.
+
+Intercurrent Cases ptids to include in plots: 
+Perprotocol==1 & Bserostatus==0 & TwophasesampIndprimary==1 &
+EventIndPrimaryD29==1 & EventTimePrimaryD29 >= 7 & EventIndPrimaryD57==0
+
+Primary Cases ptids to include in plots:
+Perprotocol==1 & Bserostatus==0 & TwophasesampIndprimary==1 & 
+EventIndPrimaryD57==1 & EventTimePrimaryD57 >= 7
+
+Non-cases ptids to include in plots:
+Perprotocol==1 & Bserostatus==0 & TwophasesampIndprimary==1 & EventIndPrimaryD1==0 & Earlyendpoint==0
+
+
+#################
+Subgroup analyses for both immunogenicity reporting and CoR/CoP reporting 
+by race ethnicity are based on the URMforsubcohortsampling variable derived
+in the processed data set. IPW weights are also computed using this variable, because the
+subchort sampling design used this variable.
+
+URMforsubcohortsampling = Indicator of a minority (0 = minority).
+   This variable matches the subcohort sampling implemented by Moderna.
+   Minority is defined as: Blacks or African Americans, Hispanics or Latinos, American Indians or 
+   Alaska Natives, NativeHawaiians, and other Pacific Islanders.
+   Non-Minority includes all the others whose race (i.e. Asian, Multiracial, Other) or ethnicity is not unknown, 
+   unreported or missing.  Therefore Unknown and Not reported have NA for this sampling stratum variable.
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+YF: Might be better to use URM in the place of minority here? E.g.:
+URMforsubcohortsampling = Indicator of under-represented minority (URM) (1, 0, or NA).
+   This variable matches the subcohort sampling implemented by Moderna.
+   URM is defined as: Blacks or African Americans, Hispanics or Latinos, American Indians or 
+   Alaska Natives, NativeHawaiians, and other Pacific Islanders.
+   Non-URM includes all the others whose race (i.e. Asian, Multiracial, Other) or ethnicity is not unknown, 
+   unreported or missing.  Therefore Unknown and Not reported have NA for this sampling stratum variable.
+///////////////////////////////////////////////////////////////////////////////////////////////
+
+
+URMforsubcohortsampling <- rep(NA,length(A))
+URMforsubcohortsampling[Black==1] <- 1
+URMforsubcohortsampling[EthnicityHispanic==1] <- 1
+URMforsubcohortsampling[NatAmer==1] <- 1
+URMforsubcohortsampling[PacIsl==1] <- 1
+URMforsubcohortsampling[Asian==1 & EthnicityHispanic!=1] <- 0
+URMforsubcohortsampling[Multiracial==1 & EthnicityHispanic!=1] <- 0
+URMforsubcohortsampling[Other==1 & EthnicityHispanic!=1] <- 0
+# Add observed White Non Hispanic:
+URMforsubcohortsampling[EthnicityHispanic==0 & Black==0 & Asian==0 & NatAmer==0 & PacIsl==0 &
+Multiracial==0 & Other==0 & Notreported==0 & Unknown==0] <- 0
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+YF: To check the def, I defined it another way, similar to how WhiteNonHispanic is defined, except that "Asian","Other","Multiracial" are added to "White". 
+
+# nonURM=1
+dat_proc$nonURM <- NA
+dat_proc$nonURM <-
+  ifelse(dat_proc$race %in% c("White","Asian","Other","Multiracial") &
+    dat_proc$ethnicity == "Not Hispanic or Latino", 1,
+  dat_proc$nonURM
+  )
+# nonURM=0
+dat_proc$nonURM <-
+  ifelse(!dat_proc$race %in% c("White","Asian","Other","Multiracial","Not reported and unknown") |
+    dat_proc$ethnicity == "Hispanic or Latino", 0,
+    dat_proc$nonURM
+  )
+dat_proc$URM = 1-dat_proc$nonURM
+
+
+The two variables match in all except some NAs, and the discrepancy is due to ethnicity NA's.
+
+> with(dat_proc, table(URMforsubcohortsampling, URM.2, useNA="ifany"))
+                       URM.2
+URMforsubcohortsampling     0     1  <NA>
+                   0    17344     0  2736
+                   1        0  7890     0
+                   <NA>     0     0  2030
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+Covariate-adjustment in CoR/CoP analyses adjusts for a WhiteNonHispanic variable that is
+defined differently from URMforsubcohortsampling.
+WhiteNonHispanic==1 means observed White and observed Non-Hispanic
+and is referred to as "White Non-Hispanic", 
+WhiteNonHispanic==0 means observed non-White and/or observed Hispanic.
+In addition, for ptids with not reported or unknown on White Non-Hispanic status, the assigned value
+is 1.  Thus this variable has no NAs, which is convenient for use in covariate-adjustment.
+
+##########################################################################
 # In analyzing the marker data, customs in handling the lower limit of detection (LLOD) need to
 # be handled in the analysis code.  
 # Analyses of baseline markers, and of Day 29 and Day 57 markers (but not fold-rise), set all participants to have
 # minimum marker value LLOD/2.  The LLODs, LLOQs and ULOQs are (on the natural/antilog10 scale):
 
     Marker				LLOD	LLOQ	ULOQ
-#   bindSpike (IU/ml scale) 		0.180	0.3060	172,226.2
-#   bindRBD   (IU/ml scale)		0.544	0.9248	520,506.0
-#   bindN     (IU/ml scale)		0.048	0.0816	45,927.0
+#   bindSpike (IU/ml scale) 		0.3076	1.7968	10,155.95
+#   bindRBD   (IU/ml scale)		0.9297	5.4302 	30,693.537
+#   bindN     (IU/ml scale)		0.0820	0.4791	2708.253
 #   pseudoneutid50  			10	18.5	4404	            	
 #   pseudoneutid80              	10	14.3	1295	
 #   livevirusneutmn50                  	62.16	117.35   18,976.19
 
 # The immunogenicity analyses of positive response rates for the neutralization assays 
 # and binding antibody assays use lower limit of detection (LLOD) values.
-
-# Day 29 marker analyses include the following ptids:
-Perprotocol == 1 & EventTimePrimaryD29 >= 7
-
-# Day 57 marker analyses include the following ptids:
-Perprotocol == 1 & EventTimePrimaryD57 >= 7
 
 #################################################################################
 Note 1/21/21: The live virus neutralization data may be available 2 months later
@@ -304,9 +440,10 @@ value for the variables (given that the antibody markers are measured in all add
 Notes on the two-phase sampling case-cohort design (Prentice, 1986, Biometrika; Breslow et al., 2009, AJE):
 
 There are two kinds of variables: "phase one variables" measured in everyone and "phase two variables" 
-only measured in the case-cohort sample, which consists of the random subcohort with 24 baseline
+only measured in the case-cohort sample.
+For Moderna, this consists of the random subcohort with 24 baseline
 strata defined by
-Trt x WhiteNonHispanic (Yes,No) x [age >= 65, age < 65 & HighRiskInd==1, age < 65 & HighRiskInd==0] x Bserostatus. 
+Trt x URMforsubcohortsampling (Yes,No) x [age >= 65, age < 65 & HighRiskInd==1, age < 65 & HighRiskInd==0] x Bserostatus. 
 
 All variables are phase one variables except the 18 antibody marker variables are phase two variables
 (BbindSpike, BbindRBD, BbindN, Bpseudoneutid50, Bpseudoneutid80, Bliveneutmn50, 
@@ -314,13 +451,13 @@ Day29bindSpike, Day29bindRBD, Day29bindN, Day29pseudoneutid50, Day29pseudoneutid
 Day57bindSpike, Day57bindRBD, Day57N, Day57pseudoneutid50, Day57pseudoneutid80, Day57liveneutmn50).
 
 A variable TwophasesampInd is derived from the data set, which is the indicator that a ppt has
-Day 1, 2, 57 marker data and hence is included in inverse probability weighting (IPW) complete case data analysis.
+Day 1, 29, 57 marker data and hence is included in inverse probability weighting (IPW) complete case data analysis.
 The two-phase sampling probabilities of trial participants, 
 
 P(TwophasesampInd=1|Trt,WhiteNonHispanic Indicator,HighRiskInd,Age Category,Bserostatus,EventIndPrimaryD29), 
 
 can be consistently estimated based on empirical sampling frequencies.  Note that the weights depend
-on case/non-case COVID outcome status.  Note that the WhiteNonHispanic Indicator is derived from the
+on case/non-case COVID outcome status.  Note that the URMforsubcohortsampling Indicator is derived from the
 other ethnicity and race variables.
 
 For the longer term follow-up data set, another variable TwophaseLongtermsampInd is derived from the 
@@ -328,15 +465,15 @@ data set, which is the indicator that a ppt has Day 1, 29, 57 marker data and he
 IPW complete case data analysis (the additional cases are added).  Again, 
 the two-phase sampling probabilities of trial participants, 
 
-P(TwophaseLongtermsampInd=1|Trt,WhiteNonHispanic Indicator,HighRiskInd,Age Category,Bserostatus,EventIndLongtermD29), 
+P(TwophaseLongtermsampInd=1|Trt,URMforsubcohortsampling Indicator,HighRiskInd,Age Category,Bserostatus,EventIndLongtermD29), 
 
 can be consistently estimated based on empirical sampling frequencies.
 
 Notes 11/12/2020: The Moderna data set will be analyzed first.  Therefore, the results should be reported
 using two phase sampling probabilities based on the Moderna design.  Sampling was done based on the 
-strata  (Age >= 65, Age < 65 and at risk, Age < 65 and not at risk) x (baseline negative, baseline positive)
-x (vaccine, placebo).  For reporting of subgroups, the following comparisons are made, where the terms indicate
-the labels that should be used.
+strata  (Age >= 65, Age < 65 and at risk, Age < 65 and not at risk) x (URMforsubcohortsampling Yes, No) 
+x (baseline negative, baseline positive) x (vaccine, placebo).  For reporting of subgroups, the following 
+comparisons are made, where the terms indicate the labels that should be used.
 
 1. Age < 65 vs. Age >= 65
 2. At risk vs. Not at risk
@@ -371,10 +508,12 @@ This is coded as the indicator of Race being White and Ethnicity being Not Hispa
 WhiteNonHispanic <- ifelse(EthnicityHispanic==0 & EthnicityNotreported==0 & EthnicityUnknown==0 
 & Black==0 & Asian==0 & NatAmer==0 & PacIsl==0 & Multiracial==0 & Notreported==0 & 
 Other==0 & Unknown==0,1,0)  
+WhiteNonHispanic[(EthnicityNotreported==0 & EthnicityUnknown==0) & Unknown==1] <- 1
 
-For labeling, Communities of Color (label 'Comm. of Color') is defined by WhiteNonHispanic==0
-and label 'White Non-Hispanic' is defined by WhiteNonHispanic==1.
-The data package derives the variable WhiteNonHispanic.
+For labeling, the Communities of Color subgroup (label 'Comm. of Color'), defined by 
+URMforsubcohortsampling==1, uses label 'Comm. of Color' or 'Communities of Color'.
+The White Non-Hispanic subgroup is defined by URMforsubcohortsampling==0 and is labeled
+by 'White Non-Hispanic'.
 
 There are 9 total levels of Race:  
 1. White 

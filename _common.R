@@ -215,6 +215,15 @@ demo.stratum.labels <- c(
 )
 
 ###############################################################################
+# reproduciblity options
+###############################################################################
+
+# NOTE: used in appendix.Rmd to store digests of input raw/processed data files
+# hash algorithm picked based on https://csrc.nist.gov/projects/hash-functions
+hash_algorithm <- "sha256"
+
+
+###############################################################################
 # theme options
 ###############################################################################
 

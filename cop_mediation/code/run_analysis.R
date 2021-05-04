@@ -101,7 +101,7 @@ for (marker in markers) {
             glm_QY_WA = NULL,
             SL_QY_WA = sl_library
 	  )
-  this_row <- format_row(fit_cat)
+	this_row <- format_row(fit_cat)
 	cat_result <- rbind(cat_result, this_row)
 	day_col <- c(day_col, ifelse(grepl("Day57", marker), "Day 57", "Day 29"))
 	which_assay <- substr(marker, 6, nchar(marker))
@@ -110,10 +110,10 @@ for (marker in markers) {
 
 full_result <- cbind(day_col, assay_col, quant_result)
 row.names(full_result) <- NULL
-colnames(full_result) <- c("Time", "Assay", "Direct Eff.", "Indirect Eff.", "Prop. mediated")
+colnames(full_result) <- c("Time", "Assay", "Direct VE", "Indirect VE", "Prop. mediated")
 full_result_cat <- cbind(day_col, assay_col, cat_result)
 row.names(full_result_cat) <- NULL
-colnames(full_result_cat) <- c("Time", "Assay", "Direct Eff.", "Indirect Eff.", "Prop. mediated")
+colnames(full_result_cat) <- c("Time", "Assay", "Direct VE", "Indirect VE", "Prop. mediated")
 
 saveRDS(full_result, file = here("output", "full_result.rds"))
 saveRDS(full_result_cat, file = here("output", "full_result_cat.rds"))

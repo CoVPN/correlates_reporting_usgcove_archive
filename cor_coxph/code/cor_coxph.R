@@ -27,9 +27,9 @@ if (file.exists(here::here("..", "data_clean", data_name_updated))) {
 
 #summary(dat.mock$Day57bindSpike)
 
-# uloq censoring for binding only
+# uloq censoring
 # note that if delta are used, delta needs to be recomputed
-for (a in c("bindSpike", "bindRBD", "bindN")) {
+for (a in assays_to_be_censored_at_lloq_cor) {
   for (t in c("B", "Day57", if(has29) "Day29") ) {
     dat.mock[[t %.% a]] <- ifelse(dat.mock[[t %.% a]] > log10(uloqs[a]), log10(uloqs[a]), dat.mock[[t %.% a]])
   }

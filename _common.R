@@ -109,6 +109,13 @@ must_have_assays <- c(
   #"liveneutmn50"
 )
 
+
+assays_to_be_censored_at_lloq_cor <- c(
+  "bindSpike", "bindRBD", "pseudoneutid50", "pseudoneutid80"
+  # NOTE: the live neutralization marker will eventually be available
+  #"liveneutmn50"
+)
+
 ###############################################################################
 # figure labels and titles for markers
 ###############################################################################

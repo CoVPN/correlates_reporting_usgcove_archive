@@ -25,10 +25,15 @@ if (file.exists(here::here("..", "data_clean", data_name_updated))) {
 }
 #load(here::here("..", "data_clean/_params.Rdata")) # if needed
 
+#summary(dat.mock$Day57bindSpike)
 
-
-#summary(dat.mock$Day57pseudoneutid50)
-
+# uloq censoring for binding only
+# note that if delta are used, delta needs to be recomputed
+for (a in c("bindSpike", "bindRBD", "bindN")) {
+  for (t in c("B", "Day57", if(has29) "Day29") ) {
+    dat.mock[[t %.% a]] <- ifelse(dat.mock[[t %.% a]] > log10(uloqs[a]), log10(uloqs[a]), dat.mock[[t %.% a]])
+  }
+}
 
 
 library(kyotil) # p.adj.perm, getFormattedSummary

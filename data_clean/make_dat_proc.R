@@ -22,6 +22,12 @@ dat_proc <- read.csv(here(
 ))
 colnames(dat_proc)[1] <- "Ptid"
 
+#summary(dat_proc$Day57pseudoneutid50)
+#
+#tmp=read.csv("D:/downloads/COVID_VEtrial_practicedata_primarystage1.csv")
+#summary(tmp$Day57pseudoneutid50)
+
+
 #hist(dat_proc$Day57bindSpike[dat_proc$Trt==1])
 #with(dat_proc, table(EventIndPrimaryD1, EventIndPrimaryD29, useNA="ifany"))
 #with(dat_proc, table(EventIndPrimaryD1, EventIndPrimaryD57, useNA="ifany"))

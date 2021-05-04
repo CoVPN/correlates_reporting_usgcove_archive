@@ -26,6 +26,11 @@ if (file.exists(here::here("..", "data_clean", data_name_updated))) {
 #load(here::here("..", "data_clean/_params.Rdata")) # if needed
 
 
+
+#summary(dat.mock$Day57pseudoneutid50)
+
+
+
 library(kyotil) # p.adj.perm, getFormattedSummary
 library(marginalizedRisk)
 library(tools) # toTitleCase

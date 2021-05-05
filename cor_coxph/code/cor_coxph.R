@@ -54,7 +54,7 @@ run.svycoxph=function(f, design) {
 
 # population is either 57 or 29
 Args <- commandArgs(trailingOnly=TRUE)
-if (length(Args)==0) Args=c(pop="29")
+if (length(Args)==0) Args=c(pop="57")
 pop=Args[1]; print(pop)
 
 
@@ -88,11 +88,13 @@ for (a in assays) {
     for (ind.t in c("Day"%.%pop, "Delta"%.%pop%.%"overB")) {
         myprint(a, ind.t, newline=F)
         
-        if (mean(dat.vacc.pop[[ind.t %.% a]]>uloqs[a], na.rm=T)>1/3 & startsWith(ind.t, "Day")) {
+        uppercut=log10(uloqs[a])*.9999
+        if (mean(dat.vacc.pop[[ind.t %.% a]]>uppercut, na.rm=T)>1/3 & startsWith(ind.t, "Day")) {
             # if more than 1/3 of vaccine recipients have value > ULOQ
             # let q.a be median among those < ULOQ and ULOQ
             myprint("more than 1/3 of vaccine recipients have value > ULOQ")
-            q.a=c(wtd.quantile(dat.vacc.pop[[ind.t %.% a]][dat.vacc.pop[[ind.t %.% a]]<=uloqs[a]], weights = dat.vacc.pop$wt.0, probs = c(1/2)), uloqs[a])
+            q.a=c(  wtd.quantile(dat.vacc.pop[[ind.t %.% a]][dat.vacc.pop[[ind.t %.% a]]<=uppercut], weights = dat.vacc.pop$wt.0[dat.vacc.pop[[ind.t %.% a]]<=uppercut], probs = c(1/2)), 
+                    uppercut)
         } else {
             q.a <- wtd.quantile(dat.vacc.pop[[ind.t %.% a]], weights = dat.vacc.pop$wt.0, probs = c(1/3, 2/3))
         }
@@ -106,7 +108,7 @@ for (a in assays) {
             dat.vacc.pop[[ind.t %.% a %.% "cat"]] <- tmp
             marker.cutpoints[[a]][[ind.t]] <- q.a
         } else {
-            myprint("\ncall cut with breaks=3!!!")
+            myprint("\ncall cut with breaks=3!!!\n")
             # cut is more robust but it does not incorporate weights
             tmp=cut(dat.vacc.pop[[ind.t %.% a]], breaks=3)
             stopifnot(length(table(tmp))==3)

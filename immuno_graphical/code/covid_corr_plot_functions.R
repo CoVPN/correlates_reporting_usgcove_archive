@@ -75,8 +75,8 @@ covid_corr_pairplots <- function(plot_dat, ## data for plotting
           stars = FALSE,
           size = corr_size,
           seed = seed,
-          strata = subdat[, strata],
-          weight = subdat[, weight]
+          strata = plot_dat[, strata],
+          weight = plot_dat[, weight]
         )
     ),
     lower = list(

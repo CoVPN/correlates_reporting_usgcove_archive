@@ -394,25 +394,30 @@ write_csv(dat_proc, file = here("data_clean", data_name))
 ###############################################################################
 
 # maxed over all 3 of Spike, RBD, N, restricting to Day 29 or 57
-MaxbAbDay29 = max(dat_proc[,paste0("Day29", c("bindSpike", "bindRBD", "bindN"))], na.rm=T)
+if(has29) MaxbAbDay29 = max(dat_proc[,paste0("Day29", c("bindSpike", "bindRBD", "bindN"))], na.rm=T)
 MaxbAbDay57 = max(dat_proc[,paste0("Day57", c("bindSpike", "bindRBD", "bindN"))], na.rm=T)
 
 # maxed over ID50 and ID80, restricting to Day 29 or 57
-MaxID50ID80Day29 = max(dat_proc[,paste0("Day29", c("pseudoneutid50", "pseudoneutid80"))], na.rm=T)
+if(has29) MaxID50ID80Day29 = max(dat_proc[,paste0("Day29", c("pseudoneutid50", "pseudoneutid80"))], na.rm=T)
 MaxID50ID80Day57 = max(dat_proc[,paste0("Day57", c("pseudoneutid50", "pseudoneutid80"))], na.rm=T)
 
 # for fold change, maxed over all 3 of Spike, RBD, N, restricting to Day 29 or 57
-MaxbAbDelta29overB = max(dat_proc[,paste0("Delta29overB", c("bindSpike", "bindRBD", "bindN"))], na.rm=T)
+if(has29) MaxbAbDelta29overB = max(dat_proc[,paste0("Delta29overB", c("bindSpike", "bindRBD", "bindN"))], na.rm=T)
 MaxbAbDelta57overB = max(dat_proc[,paste0("Delta57overB", c("bindSpike", "bindRBD", "bindN"))], na.rm=T)
 
 # for fold change, maxed over ID50 and ID80, restricting to Day 29 or 57
-MaxID50ID80Delta29overB = max(dat_proc[,paste0("Delta29overB", c("pseudoneutid50", "pseudoneutid80"))], na.rm=T)
+if(has29) MaxID50ID80Delta29overB = max(dat_proc[,paste0("Delta29overB", c("pseudoneutid50", "pseudoneutid80"))], na.rm=T)
 MaxID50ID80Delta57overB = max(dat_proc[,paste0("Delta57overB", c("pseudoneutid50", "pseudoneutid80"))], na.rm=T)
 
 
-
-save(MaxbAbDay29, MaxbAbDay57, MaxID50ID80Day29, MaxID50ID80Day57, MaxbAbDelta29overB, MaxbAbDelta57overB, MaxID50ID80Delta29overB, MaxID50ID80Delta57overB, 
-file=here("data_clean", "_params.Rdata"))
+if(has29){
+    save(MaxbAbDay57, MaxID50ID80Day57, MaxbAbDelta57overB, MaxID50ID80Delta57overB, 
+        MaxbAbDelta29overB, MaxID50ID80Delta29overB, MaxbAbDay29, MaxID50ID80Day29, 
+    file=here("data_clean", "_params.Rdata"))
+} else {
+    save(MaxbAbDay57, MaxID50ID80Day57, MaxbAbDelta57overB, MaxID50ID80Delta57overB, 
+    file=here("data_clean", "_params.Rdata"))
+}
  
 
 

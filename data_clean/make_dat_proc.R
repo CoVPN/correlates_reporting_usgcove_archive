@@ -25,7 +25,6 @@ colnames(dat_proc)[1] <- "Ptid"
 #show a distribution
 #hist(dat_proc$Day57bindSpike[dat_proc$Trt==1])
 
-
 # define age cutoff and two-phase sampling indicator
 dat_proc <- dat_proc %>%
   mutate(
@@ -225,14 +224,18 @@ for (sero in unique(dat_proc$Bserostatus)) {
 }
 }
 
-stopifnot(
-  all(table(dat.tmp.impute$Wstratum, complete.cases(dat.tmp.impute[imp.markers])))
-)
+# missing markers imputed properly in each stratum?
+for(w in unique(dat.tmp.impute$Wstratum)){
+  stopifnot(
+    all(complete.cases(dat.tmp.impute[dat.tmp.impute$Wstratum == w, imp.markers]))
+  )  
+}
 
 # populate dat_proc imp.markers with the imputed values
 dat_proc[dat_proc$TwophasesampInd==1, imp.markers] <-
   dat.tmp.impute[imp.markers][match(dat_proc[dat_proc$TwophasesampInd==1, "Ptid"], dat.tmp.impute$Ptid), ]
 
+# imputed values of missing markers merged properly for all individuals in the two phase sample?
 stopifnot(
   all(complete.cases(dat_proc[dat_proc$TwophasesampInd == 1, imp.markers]))
 )
@@ -271,9 +274,12 @@ if(has29) {
     }
     }
     
-    stopifnot(
-      all(table(dat.tmp.impute$Wstratum, complete.cases(dat.tmp.impute[imp.markers])))
-    )
+    # missing markers imputed properly in each stratum?
+    for(w in unique(dat.tmp.impute$Wstratum)){
+      stopifnot(
+        all(complete.cases(dat.tmp.impute[dat.tmp.impute$Wstratum == w, imp.markers]))
+      )  
+    }
     
     # populate dat_proc imp.markers with the imputed values
     dat_proc[dat_proc$TwophasesampInd.2==1, imp.markers] <-
@@ -320,8 +326,8 @@ for (a in assays.includeN) {
 
 dat_proc["Delta57overB"  %.% assays.includeN] <- dat_proc["Day57" %.% assays.includeN] - dat_proc["B" %.% assays.includeN]
 if(has29) {
-dat_proc["Delta29overB"  %.% assays.includeN] <- dat_proc["Day29" %.% assays.includeN] - dat_proc["B" %.% assays.includeN]
-dat_proc["Delta57over29" %.% assays.includeN] <- dat_proc["Day57" %.% assays.includeN] - dat_proc["Day29" %.% assays.includeN]
+  dat_proc["Delta29overB"  %.% assays.includeN] <- dat_proc["Day29" %.% assays.includeN] - dat_proc["B" %.% assays.includeN]
+  dat_proc["Delta57over29" %.% assays.includeN] <- dat_proc["Day57" %.% assays.includeN] - dat_proc["Day29" %.% assays.includeN]
 }
 
 

@@ -586,8 +586,8 @@ for (tp in tps[tps %in% times]) {
           "_", study_name, ".png"
         ), 
         plot = output_plot, 
-        width = 6,
-        height = 0.5 + 3 * ceiling(length(assay_immuno) / 2), 
+        width = 9,
+        height = 0.5 + 3 * ceiling(length(assay_immuno) / 3), 
         units = "in"
       )
       

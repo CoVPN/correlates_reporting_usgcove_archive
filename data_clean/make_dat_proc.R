@@ -22,10 +22,14 @@ dat_proc <- read.csv(here(
 ))
 colnames(dat_proc)[1] <- "Ptid"
 
-#summary(dat_proc$Day57pseudoneutid50)
+#tmp=read.csv("D:/gdrive/Covid19/correlates_reporting/data_raw/COVID_VEtrial_practicedata_primarystage1.csv")
+#summary(tmp$Day57bindSpike+log10(.009))
 #
-#tmp=read.csv("D:/downloads/COVID_VEtrial_practicedata_primarystage1.csv")
-#summary(tmp$Day57pseudoneutid50)
+#library(digest)
+#digest("D:/gdrive/Covid19/correlates_reporting/data_raw/COVID_VEtrial_practicedata_primarystage1.csv", file=T)
+
+
+#dat_proc=subset(dat_proc, !is.na(Bserostatus))
 
 
 #hist(dat_proc$Day57bindSpike[dat_proc$Trt==1])
@@ -202,6 +206,8 @@ dat_proc <- dat_proc %>%
   )
 
 
+#stopifnot(all(!is.na(dat_proc$Wstratum)))
+
 
 ###############################################################################
 # observation-level weights
@@ -342,7 +348,7 @@ assays.includeN=c(assays, "bindN")
 ###############################################################################
 
 for (a in c("bindSpike", "bindRBD", "bindN")) {
-  for (t in if(has29) c("B", "Day29", "Day57") else c("B", "Day57") ) {
+  for (t in c("B", if(has29) "Day29", "Day57") ) {
       dat_proc[[t %.% a]] <- dat_proc[[t %.% a]] + log10(convf[a])
   }
 }
@@ -354,14 +360,14 @@ for (a in c("bindSpike", "bindRBD", "bindN")) {
 
 # llod censoring
 for (a in assays.includeN) {
-  for (t in if(has29) c("B", "Day29", "Day57") else c("B", "Day57") ) {
+  for (t in c("B", if(has29) "Day29", "Day57") ) {
     dat_proc[[t %.% a]] <- ifelse(dat_proc[[t %.% a]] < log10(llods[a]), log10(llods[a] / 2), dat_proc[[t %.% a]])
   }
 }
 
 ## uloq censoring for binding only
 #for (a in c("bindSpike", "bindRBD", "bindN")) {
-#  for (t in if(has29) c("B", "Day29", "Day57") else c("B", "Day57") ) {
+#  for (t in c("B", if(has29) "Day29", "Day57") ) {
 #    dat_proc[[t %.% a]] <- ifelse(dat_proc[[t %.% a]] > log10(uloqs[a]), log10(uloqs[a]    ), dat_proc[[t %.% a]])
 #  }
 #}
@@ -372,10 +378,21 @@ for (a in assays.includeN) {
 # define delta for dat_proc
 ###############################################################################
 
-dat_proc["Delta57overB"  %.% assays.includeN] <- dat_proc["Day57" %.% assays.includeN] - dat_proc["B" %.% assays.includeN]
+
+tmp=list()
+# lloq censoring
+for (a in assays.includeN) {
+  for (t in c("B", if(has29) "Day29", "Day57") ) {
+    tmp[[t %.% a]] <- ifelse(dat_proc[[t %.% a]] < log10(lloqs[a]), log10(lloqs[a] / 2), dat_proc[[t %.% a]])
+  }
+}
+tmp=as.data.frame(tmp) # cannot subtract list from list, but can subtract data frame from data frame
+
+
+dat_proc["Delta57overB"  %.% assays.includeN] <- tmp["Day57" %.% assays.includeN] - tmp["B"     %.% assays.includeN]
 if(has29) {
-dat_proc["Delta29overB"  %.% assays.includeN] <- dat_proc["Day29" %.% assays.includeN] - dat_proc["B" %.% assays.includeN]
-dat_proc["Delta57over29" %.% assays.includeN] <- dat_proc["Day57" %.% assays.includeN] - dat_proc["Day29" %.% assays.includeN]
+dat_proc["Delta29overB"  %.% assays.includeN] <- tmp["Day29" %.% assays.includeN] - tmp["B"     %.% assays.includeN]
+dat_proc["Delta57over29" %.% assays.includeN] <- tmp["Day57" %.% assays.includeN] - tmp["Day29" %.% assays.includeN]
 }
 
 

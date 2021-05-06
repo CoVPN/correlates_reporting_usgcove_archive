@@ -48,7 +48,7 @@
   
   \item Censor each of the markers in all markers (including bindN but not liveneutmn50 yet) measured by baseline, Day29 and Day57. Censoring means setting values < lower limits of detection (llods, defined in _common.R) to half of the llods. (Note that llods are on the antilog scale and need to be transformed.) However, we will not set values > uloqs to uloqs for either binding variables or nAb markers. ULOQ censoring may happen in sub-analyses.
   
-  \item Define Delta57overBxxx, Delta29overBxxx, and Delta57over29xxx for each xxx in the variable assays+bindN. This step needs to happen before censoring. Deltas are computed by taking the difference between two markers. Since the markers are on the log scale, the deltas represent the log10 fold rise. No transformation is needed. Negative values are left as they are.
+  \item Define Delta57overBxxx, Delta29overBxxx, and Delta57over29xxx for each xxx in the variable assays+bindN. This step needs to happen after censoring. Deltas are computed by taking the difference between two markers. Since the markers are on the log scale, the deltas represent the log10 fold rise. No transformation is needed. Negative values are left as they are. One complication here is that we want to censor by lloqs (set values less than lloqs to half of lloqs) before computing the delta, but we want the individual time points markers to remain censored by lloq.
   
   \item Finally, if a dataset does not have the Day29 markers, the previous steps are adjusted accordingly. For example, TwophasesampInd.2 and wt.2 will not be defined. 
   

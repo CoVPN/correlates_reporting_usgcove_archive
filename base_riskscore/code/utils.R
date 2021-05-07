@@ -240,7 +240,8 @@ run_cv_sl_once <- function(seed = 1, Y = NULL, X_mat = NULL,
     obsWeights = obsWeights,
     SL.library = sl_lib,
     method = method, cvControl = cvControl,
-    innerCvControl = innerCvControl
+    innerCvControl = innerCvControl,
+    verbose = TRUE
   )
 
   aucs <- get_all_aucs(sl_fit = fit, scale = scale)
@@ -253,14 +254,14 @@ run_cv_sl_once <- function(seed = 1, Y = NULL, X_mat = NULL,
 }
 
 ##########################################################################################################
-# remove any binary risk variables with fewer than 10 ptids that have a 1 for that variable
+# remove any binary risk variables with fewer than 10 ptids that have a 0 or 1 for that variable
 # @param dat the phase 1 dataset
 # @param risk_vars the vector of column names of risk variables
-# @return a data frame upon removal of any binary risk variables with fewer than 10 ptids that have a 1 for that variable
-drop_riskVars_with_fewer_1s <- function(dat, risk_vars) {
+# @return a data frame upon removal of any binary risk variables with fewer than 10 ptids that have a 0 or 1 for that variable
+drop_riskVars_with_fewer_0s_or_1s <- function(dat, risk_vars) {
   for (i in 1:length(risk_vars)) {
     if ((dat %>% select(matches(risk_vars[i])) %>% unique() %>% dim())[1] == 2) {
-      if (dim(dat %>% filter(get(risk_vars[i]) == 1))[1] < 10) {
+      if ((dim(dat %>% filter(get(risk_vars[i]) == 1))[1] < 10) | (dim(dat %>% filter(get(risk_vars[i]) == 0))[1] < 10)){
         dat <- dat %>% select(-matches(risk_vars[i]))
       }
     }
@@ -286,7 +287,10 @@ drop_riskVars_with_high_total_missing_values <- function(X, riskVars) {
     }
   }
 
-  return(X %>% select(-all_of(covars_highNAvalues)))
+  if(length(covars_highNAvalues) == 0)
+    return(X)
+  else
+    return(X %>% select(-all_of(covars_highNAvalues)))
 }
 
 
@@ -318,11 +322,20 @@ impute_missing_values <- function(X, riskVars) {
     print("No missing values to impute in any risk variables!")
   } else {
     print(paste("Imputing missing values in following variables: ", paste(as.character(covars), collapse = ", ")))
-    set.seed(20210216)
-    n.imp <- 10
-    invisible(capture.output(imp = mice(X, m = n.imp)))
-    # use the first imputation by default
-    X <- mice::complete(imp, action = 1)
+    n.imp <- 1
+
+    imp <- X %>% select(all_of(covars))
+    
+    # deal with constant variables
+    for (a in names(imp)) {
+      if (all(imp[[a]]==min(imp[[a]], na.rm=TRUE), na.rm=TRUE)) imp[[a]]=min(imp[[a]], na.rm=TRUE)
+    }
+    
+    # diagnostics = FALSE , remove_collinear=F are needed to avoid errors due to collinearity
+    imp <- imp %>%
+      mice(m = n.imp, printFlag = FALSE, seed=1, diagnostics = FALSE, remove_collinear = FALSE)
+    
+    X[, covars] <- mice::complete(imp, action = 1L)
   }
   return(X)
 }

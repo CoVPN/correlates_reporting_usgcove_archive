@@ -15,6 +15,9 @@ Author: Peter Gilbert, September 16, 2020
                                   changed wildtype live-virus neutralization variables to MN50 (Battelle assay),
                                   and edits for enhancing clarity)
 
+NOTE: This readme is slightly out of date at present. Check READMECOVID_VEtrial_practicedatasets.txt for more recent updates.
+
+
 This `README` file describes the variables in the mock data sets
 * `COVID_VEtrial_practicedata_primarystage1.csv`
 * `COVID_VEtrial_practicedata_longerterm.csv`
@@ -225,9 +228,9 @@ _Note:_ The variables above with "CPV" in the variable name are only used for co
 
   | Marker                      | LLOQ      | LLOQ/2     | ULOQ             |
   | :-------------------------- | :-------: | ---------: | ---------------: |
-  |  bindSpike, bindRBD, bindN  | 34        | 17         | 19,136,250 AU/ml |          |
-  |  pseudoneutid50             | 49        | 25         |    N/A           |
-  |  pseudoneutid80             | 43        | 22         |    N/A           |
+  |  bindSpike, bindRBD, bindN  | 34        | 17         | 19,136,250 AU/ml |  
+  |  pseudoneutid50             | 18.5      | 9.25       |    4404          |
+  |  pseudoneutid80             | 14.3      | 7.15       |    1295          |
   |  livevirusneutmn50          | 117.35    | 59         | 18,976.19        |
 
 * The immunogenicity analyses of positive response rates for the neutralization
@@ -235,8 +238,8 @@ _Note:_ The variables above with "CPV" in the variable name are only used for co
 
   | Marker                      | LLOD (natural/antilog10 scale) |
   | :-------------------------- | -----------------------------: |
-  |  pseudoneutid50             | 20                             |
-  |  pseudoneutid80             | 20                             |
+  |  pseudoneutid50             | 10                             |
+  |  pseudoneutid80             | 10                             |
   |  livevirusneutmn50          | 62.16                          |
 
 ---
@@ -461,4 +464,3 @@ Wild type live-virus nAb MN50: D57 fold-rise over D1
 Short-hand notation when needed:
 * Pseudovirus-nAb shortened to PsV-nAb
 * Wild type live-virus nAb shortened to WT LV-nAb
-

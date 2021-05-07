@@ -17,5 +17,6 @@ rmd_files: [
   "cop_controlled/report.Rmd",
   "cop_stochastic/report.Rmd",
   "cop_mediation/report.Rmd",
-  "references.Rmd"
+  "references.Rmd",
+  "appendix.Rmd"
 ]

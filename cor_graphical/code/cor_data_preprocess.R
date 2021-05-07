@@ -102,14 +102,11 @@ dat.long.cor.subset$Dich_RaceEthnic = with(dat.long.cor.subset,
                                                   ifelse(EthnicityHispanic==0 & EthnicityNotreported==0 & EthnicityUnknown==0, "Not Hispanic or Latino", NA)))
 
 # add LLoD value to show in the plot
-dat.long.cor.subset$LLoD = log10(llods[dat.long.cor.subset$assay])
-
-# add ULoQ value
-dat.long.cor.subset$ULoQ = with(dat.long.cor.subset, ifelse(assay %in% c("bindSpike","bindRBD"), log10(19136250), Inf))
+dat.long.cor.subset$LLoD = log10(llods[as.character(dat.long.cor.subset$assay)])
 
 # reset Delta29overB & Delta57overB for response call later using LLoD & ULoQ truncated data at Day 1, Day 29, Day 57
-dat.long.cor.subset$Delta29overB = apply(dat.long.cor.subset[,c("Day29","ULoQ")], 1, FUN=min) - dat.long.cor.subset$B
-dat.long.cor.subset$Delta57overB = apply(dat.long.cor.subset[,c("Day57","ULoQ")], 1, FUN=min) - dat.long.cor.subset$B
+dat.long.cor.subset$Delta29overB = dat.long.cor.subset$Day29 - dat.long.cor.subset$B
+dat.long.cor.subset$Delta57overB = dat.long.cor.subset$Day57 - dat.long.cor.subset$B
 
 # # matrix to decide the sampling strata
 dat.long.cor.subset$demo_lab <-
@@ -276,7 +273,21 @@ dat.longer.cor.subset.plot1 <-
   dat.longer.cor.subset %>% group_by_at(groupby_vars1) %>%
   mutate(num = round(sum(response*wt.2), 1),
          denom = round(sum(wt.2), 1),
-         RespRate = paste0(num,"/",denom,"=\n",round(num/denom*100, 1),"%"))
+         RespRate = paste0(num,"/",denom,"=",round(num/denom*100, 1),"%"),
+         min = min(value),
+         q1 = quantile(value, 0.25),
+         median = median(value),
+         q3 = quantile(value, 0.75),
+         max= max(value)
+  )
+write.csv(dat.longer.cor.subset.plot1, file = here("data_clean", "longer_cor_data_plot1.csv"), row.names=F)
+
+dat.longer.cor.subset.plot1 <-
+  dat.longer.cor.subset %>% group_by_at(groupby_vars1) %>%
+  mutate(num = round(sum(response*wt.2), 1),
+         denom = round(sum(wt.2), 1),
+         RespRate = paste0(num,"/",denom,"=\n",round(num/denom*100, 1),"%"),
+  )
 saveRDS(dat.longer.cor.subset.plot1, file = here("data_clean", "longer_cor_data_plot1.rds"))
 
 
@@ -286,6 +297,7 @@ plot.25sample1 <- dat.longer.cor.subset.plot1 %>%
   ungroup() %>%
   select(c("Ptid", groupby_vars1[!groupby_vars1 %in% "time"])) %>%
   inner_join(dat.longer.cor.subset.plot1, by=c("Ptid", groupby_vars1[!groupby_vars1 %in% "time"]))
+write.csv(plot.25sample1, file = here("data_clean", "plot.25sample1.csv"), row.names=F)
 saveRDS(plot.25sample1, file = here("data_clean", "plot.25sample1.rds"))
 
 #### for Figure 3. intercurrent vs pp, case vs non-case, (Day 1) Day 29 Day 57, by if Age >=65 and if at risk

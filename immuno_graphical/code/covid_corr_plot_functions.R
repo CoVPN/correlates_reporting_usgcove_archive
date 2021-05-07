@@ -75,8 +75,8 @@ covid_corr_pairplots <- function(plot_dat, ## data for plotting
           stars = FALSE,
           size = corr_size,
           seed = seed,
-          strata = subdat[, strata],
-          weight = subdat[, weight]
+          strata = plot_dat[, strata],
+          weight = plot_dat[, weight]
         )
     ),
     lower = list(
@@ -387,8 +387,8 @@ covid_corr_rcdf_facets <- function(plot_dat,
                                    color,
                                    weight,
                                    lwd = 1,
-                                   xlim = c(-2, 8),
-                                   xbreaks = seq(-2, 8, 2),
+                                   xlim,
+                                   xbreaks = 2,
                                    palette = c(
                                      "#1749FF", "#D92321", "#0AB7C9",
                                      "#FF6F1B", "#810094", "#378252",
@@ -419,7 +419,7 @@ covid_corr_rcdf_facets <- function(plot_dat,
       if (nrow(subdat) == 0) return(NULL) else {
         ecdf_fct <- with(subdat, spatstat.geom::ewcdf(subdat[, x],
                                                       subdat[, weight]))
-        rcdf_mat <- data.frame(x = seq(xlim[1], xlim[2], length.out = 500),
+        rcdf_mat <- data.frame(x = seq(min(xlim[, 1]), max(xlim[, 2]), length.out = 500),
                                color = rep(subdat[1, color], 500),
                                facet_by = rep(subdat[1, facet_by], 500))
         rcdf_mat$rcdf <- 1 - ecdf_fct(rcdf_mat$x)
@@ -441,8 +441,8 @@ covid_corr_rcdf_facets <- function(plot_dat,
       ylab("Reverse ECDF") +
       xlab(axis_titles[aa]) +
       scale_x_continuous(
-        labels = label_math(10^.x), limits = xlim,
-        breaks = xbreaks
+        labels = label_math(10^.x), limits = xlim[aa, ],
+        breaks = seq(xlim[aa, 1], xlim[aa, 2], by = xbreaks)
       ) +
       scale_color_manual(
         values = palette,
@@ -742,7 +742,7 @@ covid_corr_scatter_facets <- function(plot_dat,
 
 ###############################################################################
 
-#' Weighted boxplots, grouped by a categorical variable
+#' Boxplots, grouped by a categorical variable
 #'
 #' Produce the box plots
 #'
@@ -816,8 +816,8 @@ covid_corr_boxplot_facets <- function(plot_dat,
                                       axis_titles_y,
                                       xlab_use_letters =
                                         (nlevels(plot_dat[, x]) > 2),
-                                      ylim = c(-2, 8),
-                                      ybreaks = seq(-2, 8, by = 2),
+                                      ylim,
+                                      ybreaks = 2,
                                       arrange_nrow = ceiling(
                                         nlevels(plot_dat[, facet_by]) / 2
                                       ),
@@ -877,8 +877,8 @@ covid_corr_boxplot_facets <- function(plot_dat,
       ) +
       scale_x_discrete(labels = xlabels) +
       scale_y_continuous(
-        limits = ylim, labels = label_math(10^.x),
-        breaks = ybreaks
+        limits = ylim[aa, ], labels = label_math(10^.x),
+        breaks = seq(ylim[aa, 1], ylim[aa, 2], by = ybreaks)
       ) +
       theme_pubr(legend = "none") +
       ylab(axis_titles_y[aa]) +
@@ -926,7 +926,7 @@ covid_corr_boxplot_facets <- function(plot_dat,
 
 ###############################################################################
 
-#' Weighted boxplots, grouped by a categorical variable
+#' Spaghetti plots, grouped by a categorical variable
 #'
 #' Produce the box plots
 #'
@@ -995,12 +995,13 @@ covid_corr_spaghetti_facets <- function(plot_dat,
                                         legend_size = 10,
                                         axis_size = 12,
                                         axis_title_size = 12,
-                                        ylim = c(-2, 8),
-                                        ybreaks = seq(-2, 8, by = 2),
+                                        ylim,
+                                        ybreaks = 2,
                                         arrange_nrow = ceiling(
                                           nlevels(plot_dat[, facet_by]) / 2
                                         ),
                                         arrange_ncol = 2,
+                                        panel_titles,
                                         panel_title_size = 10,
                                         height = 2.5 * arrange_nrow + 0.5,
                                         width = 2.5 * arrange_ncol,
@@ -1010,36 +1011,50 @@ covid_corr_spaghetti_facets <- function(plot_dat,
   # defined by Trt:Bserostatus
   
   plot_dat <- plot_dat[!is.na(plot_dat[, x]), ]
-  output_plot <- ggplot(
-    plot_dat, aes_string(x = x, y = y, group = id, color = color, shape = color)
-  ) +
-    geom_point(size = point_size) +
-    geom_line(lwd = lwd, alpha = alpha) +
-    guides(
-      color = guide_legend(nrow = legend_nrow, byrow = TRUE)
+  
+  spaghetti_plot_list <- vector("list", nlevels(plot_dat[, facet_by]))
+  for (aa in 1:nlevels(plot_dat[, facet_by])) {
+    subdat <- subset(plot_dat, plot_dat[, facet_by] ==
+                       levels(plot_dat[, facet_by])[aa])
+    spaghetti_plot_list[[aa]] <- ggplot(
+      subdat, aes_string(x = x, y = y, group = id, color = color, shape = color)
     ) +
-    facet_wrap(facet_by, nrow = arrange_nrow) +
-    scale_y_continuous(
-      limits = ylim, labels = label_math(10^.x),
-      breaks = ybreaks
-    ) +
-    theme_pubr() +
-    ylab(ylab) +
-    xlab(xlab) +
-    scale_color_manual(values = palette, labels = legend) +
-    scale_shape_manual(values = c(19, 17)) +
+      geom_point(size = point_size) +
+      geom_line(lwd = lwd, alpha = alpha) +
+      guides(
+        color = guide_legend(nrow = legend_nrow, byrow = TRUE)
+      ) +
+      scale_y_continuous(
+        limits = ylim[aa,], labels = label_math(10^.x),
+        breaks = seq(ylim[aa, 1], ylim[aa, 2], by = ybreaks)
+      ) +
+      theme_pubr() +
+      ylab(ylab) +
+      xlab(xlab) +
+      scale_color_manual(values = palette, labels = legend) +
+      scale_shape_manual(values = c(19, 17)) +
+      ggtitle(as.character(panel_titles[aa])) +
+      theme(
+        plot.title = element_text(hjust = 0.5, size = panel_title_size),
+        panel.border = element_rect(fill = NA),
+        panel.grid.minor.y = element_line(),
+        panel.grid.major.y = element_line(),
+        axis.title = element_text(size = axis_title_size),
+        axis.text = element_text(size = axis_size),
+        legend.position = legend_position,
+        legend.title = element_blank(),
+        legend.text = element_text(size = legend_size, face = "bold")
+      )
+  }
+  
+  output_plot <- ggarrange(
+    plotlist = spaghetti_plot_list, ncol = arrange_ncol,
+    nrow = arrange_nrow, common.legend = TRUE,
+    legend = "bottom", align = "h"
+  ) + 
     ggtitle(plot_title) +
-    theme(
-      plot.title = element_text(hjust = 0.5, size = plot_title_size),
-      strip.text = element_text(size = panel_title_size),
-      panel.border = element_rect(fill = NA),
-      panel.grid.minor.y = element_line(),
-      panel.grid.major.y = element_line(),
-      axis.title = element_text(size = axis_title_size),
-      axis.text = element_text(size = axis_size),
-      legend.position = legend_position,
-      legend.title = element_blank(),
-      legend.text = element_text(size = legend_size, face = "bold")
+    theme( 
+      plot.title = element_text(hjust = 0.5, size = plot_title_size)
     )
 
   ggsave(

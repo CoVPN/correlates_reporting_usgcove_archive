@@ -77,29 +77,3 @@ if(!pass57){
 if(!pass29){
 	stop("More people in subcohort than in final two-phase sample for Day 29 analysis.")
 }
-
-## missingness in Wstratum
-pass <- !any(is.na(dat_clean$Wstratum))
-if(!pass){
-	stop("Unexpected missing values in Wstratum.")
-}
-
-## missingness in weights
-sum_wt_set_to_NA <- sum(!with(dat_clean, Perprotocol == 1 & EventTimePrimaryD57>=7))
-sum_NA_wt_in_clean_data <- sum(is.na(dat_clean$wt))
-if(sum_wt_set_to_NA != sum_NA_wt_in_clean_data){
-	stop("Unexpected missing values for Day 57 weights.")
-}
-if(has29){
-	sum_wt_set_to_NA <- sum(!with(dat_clean, Perprotocol == 1 & EventTimePrimaryD29>=7))
-	sum_NA_wt_in_clean_data <- sum(is.na(dat_clean$wt.2))
-	if(sum_wt_set_to_NA != sum_NA_wt_in_clean_data){
-		stop("Unexpected missing values for Day 29 weights.")
-	}
-}
-
-
-
-
-
-

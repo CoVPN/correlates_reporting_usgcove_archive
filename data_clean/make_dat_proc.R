@@ -1,5 +1,5 @@
 #-----------------------------------------------
-renv::activate()
+renv::activate(here::here())
     
 # There is a bug on Windows that prevents renv from working properly. The following code provides a workaround:
 if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
@@ -286,9 +286,10 @@ for (sero in unique(dat_proc$Bserostatus)) {
 
 # missing markers imputed properly in each stratum?
 for(w in unique(dat.tmp.impute$Wstratum)){
-  stopifnot(
-    all(complete.cases(dat.tmp.impute[dat.tmp.impute$Wstratum == w, imp.markers]))
-  )  
+  assertthat::assert_that(
+    all(complete.cases(dat.tmp.impute[dat.tmp.impute$Wstratum == w, imp.markers])),
+    msg = "missing markers imputed properly in each stratum?"
+  )    
 }
 
 # populate dat_proc imp.markers with the imputed values
@@ -296,8 +297,9 @@ dat_proc[dat_proc$TwophasesampInd==1, imp.markers] <-
   dat.tmp.impute[imp.markers][match(dat_proc[dat_proc$TwophasesampInd==1, "Ptid"], dat.tmp.impute$Ptid), ]
 
 # imputed values of missing markers merged properly for all individuals in the two phase sample?
-stopifnot(
-  all(complete.cases(dat_proc[dat_proc$TwophasesampInd == 1, imp.markers]))
+assertthat::assert_that(
+  all(complete.cases(dat_proc[dat_proc$TwophasesampInd == 1, imp.markers])),
+  msg = "imputed values of missing markers merged properly for all individuals in the two phase sample?"
 )
 
 ###############################################################################
@@ -336,9 +338,10 @@ if(has29) {
     
     # missing markers imputed properly in each stratum?
     for(w in unique(dat.tmp.impute$Wstratum)){
-      stopifnot(
-        all(complete.cases(dat.tmp.impute[dat.tmp.impute$Wstratum == w, imp.markers]))
-      )  
+      assertthat::assert_that(
+        all(complete.cases(dat.tmp.impute[dat.tmp.impute$Wstratum == w, imp.markers])),
+        msg = "missing markers imputed properly in each stratum for day 29?"
+      ) 
     }
     
     # populate dat_proc imp.markers with the imputed values

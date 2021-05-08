@@ -43,49 +43,11 @@ dat_proc$EarlyendpointD57 <- with(dat_proc, ifelse(EarlyinfectionD57==1 | (Event
 dat_proc$EarlyendpointD29 <- with(dat_proc, ifelse(EarlyinfectionD29==1 | (EventIndPrimaryD1==1 & EventTimePrimaryD1 < NumberdaysD1toD29 + 7),1,0))
 
 
-# define age cutoff and two-phase sampling indicator
 dat_proc <- dat_proc %>%
   mutate(
-    age.geq.65 = as.integer(Age >= 65),    
-    # create two-phase sampling indicators for D57 analyses
-    TwophasesampInd = Perprotocol == 1 &
-      (SubcohortInd | EventIndPrimaryD29 == 1) &
-      complete.cases(cbind(
-        if("bindSpike" %in% must_have_assays) BbindSpike, 
-        if("bindRBD" %in% must_have_assays) BbindRBD, 
-        if("pseudoneutid50" %in% must_have_assays) Bpseudoneutid50, 
-        if("pseudoneutid80" %in% must_have_assays) Bpseudoneutid80, 
-        
-        if("bindSpike" %in% must_have_assays) Day57bindSpike,
-        if("bindRBD" %in% must_have_assays) Day57bindRBD,
-        if("pseudoneutid50" %in% must_have_assays) Day57pseudoneutid50,
-        if("pseudoneutid80" %in% must_have_assays) Day57pseudoneutid80,
-        
-        if("bindSpike" %in% must_have_assays & has29) Day29bindSpike, 
-        if("bindRBD" %in% must_have_assays & has29) Day29bindRBD, 
-        if("pseudoneutid50" %in% must_have_assays & has29) Day29pseudoneutid50, 
-        if("pseudoneutid80" %in% must_have_assays & has29) Day29pseudoneutid80
-      ))
+    age.geq.65 = as.integer(Age >= 65)
   )
 
-
-if(has29) dat_proc <- dat_proc %>%
-  mutate(
-    # for D29 analyses
-    TwophasesampInd.2 = Perprotocol == 1 &
-      (SubcohortInd | EventIndPrimaryD29 == 1) &
-      complete.cases(cbind(
-        if("bindSpike" %in% must_have_assays) BbindSpike, 
-        if("bindRBD" %in% must_have_assays) BbindRBD, 
-        if("pseudoneutid50" %in% must_have_assays) Bpseudoneutid50, 
-        if("pseudoneutid80" %in% must_have_assays) Bpseudoneutid80, 
-        
-        if("bindSpike" %in% must_have_assays) Day29bindSpike,
-        if("bindRBD" %in% must_have_assays) Day29bindRBD,
-        if("pseudoneutid50" %in% must_have_assays) Day29pseudoneutid50, 
-        if("pseudoneutid80" %in% must_have_assays) Day29pseudoneutid80
-      ))
-  )
   
   
 # ethnicity labeling
@@ -214,6 +176,50 @@ dat_proc <- dat_proc %>%
 # observation-level weights
 ###############################################################################
 
+#Wstratum may have NA if any variables to form strata has NA
+
+
+# initially TwophasesampInd just need to be in the case or subcohort and have the necessary markers
+# after defining ph1.xx, we will update TwophasesampInd to be 0 outside ph1.xx
+dat_proc <- dat_proc %>%
+  mutate(
+    TwophasesampInd = 
+      (SubcohortInd | EventIndPrimaryD29 == 1) &
+      complete.cases(cbind(
+        if("bindSpike" %in% must_have_assays) BbindSpike, 
+        if("bindRBD" %in% must_have_assays) BbindRBD, 
+        if("pseudoneutid50" %in% must_have_assays) Bpseudoneutid50, 
+        if("pseudoneutid80" %in% must_have_assays) Bpseudoneutid80, 
+        
+        if("bindSpike" %in% must_have_assays) Day57bindSpike,
+        if("bindRBD" %in% must_have_assays) Day57bindRBD,
+        if("pseudoneutid50" %in% must_have_assays) Day57pseudoneutid50,
+        if("pseudoneutid80" %in% must_have_assays) Day57pseudoneutid80,
+        
+        if("bindSpike" %in% must_have_assays & has29) Day29bindSpike, 
+        if("bindRBD" %in% must_have_assays & has29) Day29bindRBD, 
+        if("pseudoneutid50" %in% must_have_assays & has29) Day29pseudoneutid50, 
+        if("pseudoneutid80" %in% must_have_assays & has29) Day29pseudoneutid80
+      ))
+  )
+
+if(has29) dat_proc <- dat_proc %>%
+  mutate(
+    TwophasesampInd.2 = 
+      (SubcohortInd | EventIndPrimaryD29 == 1) &
+      complete.cases(cbind(
+        if("bindSpike" %in% must_have_assays) BbindSpike, 
+        if("bindRBD" %in% must_have_assays) BbindRBD, 
+        if("pseudoneutid50" %in% must_have_assays) Bpseudoneutid50, 
+        if("pseudoneutid80" %in% must_have_assays) Bpseudoneutid80, 
+        
+        if("bindSpike" %in% must_have_assays) Day29bindSpike,
+        if("bindRBD" %in% must_have_assays) Day29bindRBD,
+        if("pseudoneutid50" %in% must_have_assays) Day29pseudoneutid50, 
+        if("pseudoneutid80" %in% must_have_assays) Day29pseudoneutid80
+      ))
+  )
+  
 
 # wt, for D57 correlates analyses
 wts_table <- dat_proc %>%
@@ -248,9 +254,9 @@ dat_proc$ph1.immuno=!is.na(dat_proc$wt.subcohort)
 
 
 
-dat_proc$TwophasesampInd  [is.na(dat_proc$wt)]   <- 0
+dat_proc$TwophasesampInd  [!dat_proc$ph1.D57] <- 0
 if(has29) {
-dat_proc$TwophasesampInd.2[is.na(dat_proc$wt.2)] <- 0    
+dat_proc$TwophasesampInd.2[!dat_proc$ph1.D29] <- 0    
 }
 
 

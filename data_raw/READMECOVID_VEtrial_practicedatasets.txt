@@ -224,20 +224,19 @@ Failure time variables: (EventTimePrimaryD29, EventIndPrimaryD29) and ignore (Ev
 Immunogenicity report analyses:
 Phase 1 ptids:                  EarlyendpointD57==0 & Perprotocol==1 & SubcohortInd==1 
 Phase 1 indicator: ph1.immuno
-Phase 2 ptids: TwophasesampIndprimary==1
+Phase 2 ptids: TwophasesampIndprimary==1 & SubcohortInd==1
 Weights: wt.subcohort
 
 
 Intercurrent Cases are defined as cases with event time between 7 days post Day 29 visit and 6 days 
 post Day 57 visit.  Intercurrent cases have included ptids defined by 
-Perprotocol==1 & Bserostatus==0 & EarlyendpointD29==0 & TwophasesampIndprimary.2==1 & 
-EventIndPrimaryD29==1 & EventTimePrimaryD29 >= 7 & 
-EventTimePrimaryD29 <= 6 + NumberdaysD1toD57 - NumberdaysD1toD29
+  Perprotocol==1 & Bserostatus==0 & EarlyendpointD29==0 & TwophasesampIndprimary.2==1 & 
+  EventIndPrimaryD29==1 & EventTimePrimaryD29 >= 7 & EventTimePrimaryD29 <= 6 + NumberdaysD1toD57 - NumberdaysD1toD29
 
 Per-protocol non-cases are defined as participants who never register a COVID primary endpoint and 
 have no evidence of infection < 7 days post Day 57 visit, with ptids for IPW-complete case analyses
 defined by
-Perprotocol==1 & Bserostatus==0 & EarlyendpointD57==0 & TwophasesampIndprimary==1 & EventIndPrimaryD1==0 
+  Perprotocol==1 & Bserostatus==0 & EarlyendpointD57==0 & TwophasesampIndprimary==1 & EventIndPrimaryD1==0 
 
 ###################
 Descriptive plots in CoR and CoP reports (e.g. violin scatterplots) include 

@@ -221,6 +221,7 @@ wts_table <- dat_proc %>%
 wts_norm <- rowSums(wts_table) / wts_table[, 2]
 dat_proc$wt <- wts_norm[dat_proc$Wstratum]
 dat_proc$wt[!with(dat_proc, EarlyendpointD57==0 & Perprotocol == 1 & EventTimePrimaryD57>=7)] <- NA
+dat_proc$ph1.D57=!is.na(dat_proc$wt)
 
 
 # wt.2, for D29 correlates analyses
@@ -231,16 +232,19 @@ if(has29) {
     wts_norm2 <- rowSums(wts_table2) / wts_table2[, 2]
     dat_proc$wt.2 <- wts_norm2[dat_proc$Wstratum]
     dat_proc$wt.2[!with(dat_proc, EarlyendpointD29==0 & Perprotocol == 1 & EventTimePrimaryD29 >= 7)] <- NA
+    dat_proc$ph1.D29=!is.na(dat_proc$wt.2)
 }
 
 
 # wt.subcohort, for immunogenicity analyses that use subcohort only and are not enriched by cases outside subcohort
 wts_table <- dat_proc %>%
-  dplyr::filter(EarlyendpointD57==0 & Perprotocol == 1 & EventTimePrimaryD57 >= 7) %>%
-  with(table(tps.stratum, TwophasesampInd & SubcohortInd))
+  dplyr::filter(EarlyendpointD57==0 & Perprotocol == 1 & SubcohortInd) %>%
+  with(table(tps.stratum, TwophasesampInd))
 wts_norm <- rowSums(wts_table) / wts_table[, 2]
 dat_proc$wt.subcohort <- wts_norm[dat_proc$tps.stratum]
-dat_proc$wt.subcohort[!with(dat_proc, EarlyendpointD57==0 & Perprotocol == 1 & EventTimePrimaryD57>=7)] <- NA
+dat_proc$wt.subcohort[!with(dat_proc, EarlyendpointD57==0 & Perprotocol == 1 & SubcohortInd)] <- NA
+dat_proc$ph1.immuno=!is.na(dat_proc$wt.subcohort)
+
 
 
 dat_proc$TwophasesampInd  [is.na(dat_proc$wt)]   <- 0

@@ -30,22 +30,23 @@ source(here("code", "sl_lrnr_libs.R"))
 source(here("code", "sve_utils.R"))
 
 # parallelization
-plan(multicore, workers = as.integer(availableCores() - 2))
+plan(multicore, workers = availableCores())
 
 # add risk score to covariates list if defined
 if (data_name_check) {
   covariates <- c(covariates, "risk_score")
 }
 
-# use faster SL library for testing?
+# use faster SL library for testing
 if (run_fast) {
   # simplify learner libraries for outcome and conditional density models
-  sl_lrnr_reg <- Lrnr_sl$new(
-    learners = list(mean_lrnr, glm_lrnr, bayesglm_lrnr, hal_lrnr_deeper),
-    metalearner = discrete_metalrnr
+  sl_reg <- Lrnr_sl$new(
+    learners = list(fglm, bayesglm, enets[[1]], enets[[length(enets)]],
+                    ranger_70, xgboost_hist),
+    metalearner = Lrnr_cv_selector$new()
   )
-  sl_lrnr_dens <- Lrnr_sl$new(
-    learners = list(hose_glm_lrnr, hese_glm_lrnr),
+  sl_dens <- Lrnr_sl$new(
+    learners = list(hose_rf, hese_glm),
     metalearner = Lrnr_solnp_density$new()
   )
 }
@@ -84,11 +85,11 @@ lapply(markers, function(marker) {
     ),
     g_exp_fit_args = list(
       fit_type = "sl",
-      sl_learners_density = sl_lrnr_dens
+      sl_learners_density = sl_dens
     ),
     Q_fit_args = list(
       fit_type = "sl",
-      sl_learners = sl_lrnr_reg
+      sl_learners = sl_reg
     ),
     # NOTE: need to pass in sampling probabilities, not weights
     samp_fit_ext = 1 / data_est$samp_wts

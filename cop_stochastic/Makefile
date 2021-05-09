@@ -28,5 +28,8 @@ style:
 help: Makefile
 	@sed -n 's/^##//p' $<
 
+report:
+	Rscript -e "renv::activate(here::here('..')); rmarkdown::render('report.Rmd')"
+
 # define PHONYS
 .PHONY: help clean params data

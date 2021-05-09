@@ -50,3 +50,12 @@ twophase_group <- list(Day57 = "Wstratum", Day29 = "Wstratum")
 
 # if TRUE, make sure too many units are not lost to "end of study"
 adjust_censoring <- FALSE
+
+# use a smaller grid of shifts when testing
+if (run_fast) {
+  # smaller grid of shift values
+  delta_grid <- seq(-2, 2, 1)
+} else {
+  # grid for shifting (from SAP)
+  delta_grid <- seq(-2, 2, 0.2)
+}

@@ -26,8 +26,8 @@ posited shifts in the measured activity levels of each of
 `r length(marker_to_name)` _candidate_ mechanistic correlates of protection
 (mCoP) biomarkers. By shifting the _standardized_ biomarker activity levels by
 standard unit shifts along the grid {`r delta_grid`}, we can assess the degree
-to which vaccines that possibly enhance the mCoP biomarker activity to these
-levels could mitigate COVID-19 infection in terms of counterfactual stochastic
+to which vaccines that modulate mCoP biomarker activity to these levels could
+mitigate symptomatic COVID-19 infection in terms of counterfactual stochastic
 interventional risk and vaccine efficacy (VE).
 
 ## Figures with estimates and confidence intervals for Day 57 {#sve-day57}

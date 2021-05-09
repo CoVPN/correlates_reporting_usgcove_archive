@@ -9,4 +9,5 @@ output/*.pdf
 output/*.RData
 output/*.rda
 output/*.rds
+packages.bib
 report.pdf

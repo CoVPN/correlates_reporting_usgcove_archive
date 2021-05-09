@@ -50,14 +50,6 @@ if (run_fast) {
   )
 }
 
-if (run_fast) {
-  # smaller grid of shift values
-  delta_grid <- seq(-2, 2, 1)
-} else {
-  # grid for shifting (from SAP)
-  delta_grid <- seq(-2, 2, 0.2)
-}
-
 # run analysis for each marker at each time
 lapply(markers, function(marker) {
 #future_lapply(markers, function(marker) {

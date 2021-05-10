@@ -86,6 +86,7 @@ stack_reg <- c(lightgbm_goss, lightgbm_gbdt, xgboost_hist, xgboost_approx,
                ranger_100, ranger_70, ranger_40, dbarts, enets, fglm, bayesglm)
 
 # one SL to rule them all...
+discrete_meta <- Lrnr_cv_selector$new()
 logistic_meta <- Lrnr_solnp$new(
   metalearner_logistic_binomial,
   loss_loglik_binomial

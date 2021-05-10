@@ -41,9 +41,8 @@ if (data_name_check) {
 if (run_fast) {
   # simplify learner libraries for outcome and conditional density models
   sl_reg <- Lrnr_sl$new(
-    learners = list(fglm, bayesglm, enets[[1]], enets[[length(enets)]],
-                    ranger_70, xgboost_hist),
-    metalearner = Lrnr_cv_selector$new()
+    learners = list(fglm, bayesglm, enets[[length(enets)]], ranger_70),
+    metalearner = logistic_meta
   )
   sl_dens <- Lrnr_sl$new(
     learners = list(hose_rf, hese_glm),

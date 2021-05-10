@@ -33,5 +33,6 @@ export TMPDIR='/global/scratch/nhejazi/rtmp'  # resolve update issues for compil
 export R_LIBS_USER='/global/scratch/nhejazi/R'  # personal package library
 module load gcc/6.3.0 r/4.0.3 r-packages/default
 cd ~/correlates_reporting
+make data_processed
 echo "run_fast <- FALSE" >> ./cop_stochastic/code/params.R
 make -k -C cop_stochastic all

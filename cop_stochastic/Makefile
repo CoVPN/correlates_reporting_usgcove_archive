@@ -1,5 +1,5 @@
 ## all              : run stochastic interventional analysis and make figures
-all: data analysis figs
+all: clean data analysis figs
 
 ## data             : prepare data for analysis
 data: code/make_analysis_data.R

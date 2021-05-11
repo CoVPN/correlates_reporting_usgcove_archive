@@ -107,9 +107,14 @@ Suggests:
   nnls,
   Rsolnp,
   glmnet,
+  speedglm,
   xgboost,
   lightgbm,
+  ranger,
   dbarts,
+  mgcv,
+  gam,
+  arm,
   tidyverse
 Remotes:
   github::rstudio/bslib,

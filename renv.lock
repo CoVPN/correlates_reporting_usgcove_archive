@@ -240,6 +240,13 @@
       "Repository": "CRAN",
       "Hash": "516a3e2104cf2eace9f5d2ad5c7badb3"
     },
+    "arm": {
+      "Package": "arm",
+      "Version": "1.11-2",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "21b26dbe61da18158451c105decd10d8"
+    },
     "askpass": {
       "Package": "askpass",
       "Version": "1.1",
@@ -438,6 +445,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "ce49bfe5bc0b3ecd43a01fe1b01c2243"
+    },
+    "coda": {
+      "Package": "coda",
+      "Version": "0.19-4",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "24b6d006b8b2343876cf230687546932"
     },
     "codetools": {
       "Package": "codetools",
@@ -1883,6 +1897,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "72200a58cae0d7046e416e6be6d9d322"
+    },
+    "speedglm": {
+      "Package": "speedglm",
+      "Version": "0.3-3",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "5955a9bd4ed0275ad45596a49d75946f"
     },
     "statmod": {
       "Package": "statmod",

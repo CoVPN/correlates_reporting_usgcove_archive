@@ -1310,6 +1310,18 @@
       "Repository": "CRAN",
       "Hash": "69fa7331e7410c2a2cb3f9868513904f"
     },
+    "natmed2": {
+      "Package": "natmed2",
+      "Version": "0.9000",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteRepo": "natmed2",
+      "RemoteUsername": "benkeser",
+      "RemoteRef": "HEAD",
+      "RemoteSha": "28fc89ed504a111b0f21ea184bd1500cfdfeadb8",
+      "Hash": "cfc787d0e0021294aa7e6d6a8fc8aff8"
+    },
     "nleqslv": {
       "Package": "nleqslv",
       "Version": "3.3.2",

@@ -1,6 +1,5 @@
 #-----------------------------------------------
 renv::activate(here::here())
-
 # There is a bug on Windows that prevents renv from working properly. The following code provides a workaround:
 if (.Platform$OS.type == "windows") {
   .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
@@ -41,7 +40,6 @@ colnames(dat_proc)[1] <- "Ptid"
 
 dat_proc$EarlyendpointD57 <- with(dat_proc, ifelse(EarlyinfectionD57==1 | (EventIndPrimaryD1==1 & EventTimePrimaryD1 < NumberdaysD1toD57 + 7),1,0))
 dat_proc$EarlyendpointD29 <- with(dat_proc, ifelse(EarlyinfectionD29==1 | (EventIndPrimaryD1==1 & EventTimePrimaryD1 < NumberdaysD1toD29 + 7),1,0))
-
 
 dat_proc <- dat_proc %>%
   mutate(
@@ -301,16 +299,22 @@ for (sero in unique(dat_proc$Bserostatus)) {
 }
 }
 
-stopifnot(
-  all(table(dat.tmp.impute$Wstratum, complete.cases(dat.tmp.impute[imp.markers])))
-)
+# missing markers imputed properly in each stratum?
+for(w in unique(dat.tmp.impute$Wstratum)){
+  assertthat::assert_that(
+    all(complete.cases(dat.tmp.impute[dat.tmp.impute$Wstratum == w, imp.markers])),
+    msg = "missing markers imputed properly in each stratum?"
+  )    
+}
 
 # populate dat_proc imp.markers with the imputed values
 dat_proc[dat_proc$TwophasesampInd==1, imp.markers] <-
   dat.tmp.impute[imp.markers][match(dat_proc[dat_proc$TwophasesampInd==1, "Ptid"], dat.tmp.impute$Ptid), ]
 
-stopifnot(
-  all(complete.cases(dat_proc[dat_proc$TwophasesampInd == 1, imp.markers]))
+# imputed values of missing markers merged properly for all individuals in the two phase sample?
+assertthat::assert_that(
+  all(complete.cases(dat_proc[dat_proc$TwophasesampInd == 1, imp.markers])),
+  msg = "imputed values of missing markers merged properly for all individuals in the two phase sample?"
 )
 
 ###############################################################################
@@ -347,9 +351,13 @@ if(has29) {
     }
     }
     
-    stopifnot(
-      all(table(dat.tmp.impute$Wstratum, complete.cases(dat.tmp.impute[imp.markers])))
-    )
+    # missing markers imputed properly in each stratum?
+    for(w in unique(dat.tmp.impute$Wstratum)){
+      assertthat::assert_that(
+        all(complete.cases(dat.tmp.impute[dat.tmp.impute$Wstratum == w, imp.markers])),
+        msg = "missing markers imputed properly in each stratum for day 29?"
+      ) 
+    }
     
     # populate dat_proc imp.markers with the imputed values
     dat_proc[dat_proc$TwophasesampInd.2==1, imp.markers] <-
@@ -407,8 +415,8 @@ tmp=as.data.frame(tmp) # cannot subtract list from list, but can subtract data f
 
 dat_proc["Delta57overB"  %.% assays.includeN] <- tmp["Day57" %.% assays.includeN] - tmp["B"     %.% assays.includeN]
 if(has29) {
-dat_proc["Delta29overB"  %.% assays.includeN] <- tmp["Day29" %.% assays.includeN] - tmp["B"     %.% assays.includeN]
-dat_proc["Delta57over29" %.% assays.includeN] <- tmp["Day57" %.% assays.includeN] - tmp["Day29" %.% assays.includeN]
+  dat_proc["Delta29overB"  %.% assays.includeN] <- tmp["Day29" %.% assays.includeN] - tmp["B"     %.% assays.includeN]
+  dat_proc["Delta57over29" %.% assays.includeN] <- tmp["Day57" %.% assays.includeN] - tmp["Day29" %.% assays.includeN]
 }
 
 

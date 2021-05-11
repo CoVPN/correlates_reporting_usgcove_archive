@@ -81,10 +81,15 @@ considers Day 29 and Day 57 markers in the same regression models.
 
 Variables in the Data Set `COVID_VEtrial_practicedata_primarystage1.csv`:
 
+<!-- 
+DB note: removed from table as it no longer appears in mock data
+| MinorityInd                   | Baseline covariate underrepresented
+minority status  (1=minority, 0=non-minority) 
+-->
+
 | Variable                      | Definition                                   |
 | :---------------------------- | -------------------------------------------: |
 | Trt                           | Randomized treatment assignment  (1=vaccine, 0=placebo) |
-| MinorityInd                   | Baseline covariate underrepresented minority status  (1=minority, 0=non-minority)
 | EthnicityHispanic             | Indicator (ethnicity = Hispanic)  (0 = Non-Hispanic) |
 | EthnicityNotreported          | Indiicator (ethnicity = Not reported)  (0 = Non-Hispanic) |
 | EthnicityUnknown              | Indicator (ethnicity = Unknown)  (0 = Non-Hispanic) |
@@ -96,7 +101,8 @@ Variables in the Data Set `COVID_VEtrial_practicedata_primarystage1.csv`:
 | Other                         | Indicator (race = Other)  (0 = White) |
 | Notreported                   | Indicator (race = Not reported)  (0 = White) |
 | Unknown                       | Indicator race = unknown (0 = White)
-| RiskInd                       | Baseline covariate high risk/at-risk pre-existing condition (1=yes, 0=no); this is a randomization strata variable (age <= 64 yes; age <= 64 no)|
+| HighRiskInd                       | Baseline covariate high risk/at-risk
+pre-existing condition (1=yes, 0=no); this is a randomization strata variable (age <= 64 yes; age <= 64 no)|
 | Sex                           | Sex assigned at birth (1=female, 0=male) |
 | Age                           | Age at enrollment in years, between 18 and 85. Note that the randomization strata are 18-64 and 65+ |
 | BMI                           | BMI at enrollment (kg/m^2) |

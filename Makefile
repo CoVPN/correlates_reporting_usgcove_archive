@@ -43,8 +43,21 @@ cop_report: cop_analysis
 ## data_processed         : create processed data from raw data
 # make_dat_proc.R needs to be executed in data_clean folder to correctly
 # active renv
-data_processed:
+data_processed: check_raw_data make_clean_data check_clean_data
+
+check_raw_data: 
+	Rscript data_clean/make_raw_dat_check.R
+make_clean_data: check_raw_data
 	Rscript data_clean/make_dat_proc.R
+check_clean_data: make_clean_data
+	Rscript data_clean/make_clean_dat_check.R
+## help_checks            : see a list of checks that are run on the data during cleaning
+help_tests: data_clean/make_clean_dat_check.R data_clean/make_raw_dat_check.R
+	@echo "\nTests on the raw data: \n"
+	@sed -n 's/^##//p' data_clean/make_raw_dat_check.R
+	@echo "\nTests on the clean data: \n"
+	@sed -n 's/^##//p' data_clean/make_clean_dat_check.R
+	@echo "\n"
 
 ## style                  : re-styles the codebase for consistent formatting
 style:

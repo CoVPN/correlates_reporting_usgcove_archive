@@ -82,4 +82,3 @@ labels.title2 <- apply(labels.title, c(1, 2), function(st) {
 # creating short and long labels
 labels.assays.short <- labels.axis[1, ]
 labels.assays.long <- labels.title
-

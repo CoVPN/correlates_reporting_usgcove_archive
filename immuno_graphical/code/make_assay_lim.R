@@ -42,7 +42,7 @@ if (has29) {
   assay_lim[4:5, 3, "ub"] <- ceiling(MaxID50ID80Day57) + ceiling(MaxID50ID80Day57) %% 2
   
   
-  assay_lim[, 4:5, "lb"] <- -2
+  assay_lim[, 4:6, "lb"] <- -2
   assay_lim[1:3, 4, "ub"] <- ceiling(MaxbAbDay29 - min(log10(llods / 2))) +
     ceiling(MaxbAbDay29 - min(log10(llods / 2))) %% 2
   assay_lim[1:3, 5:6, "ub"] <- ceiling(MaxbAbDay57 - min(log10(llods / 2))) +

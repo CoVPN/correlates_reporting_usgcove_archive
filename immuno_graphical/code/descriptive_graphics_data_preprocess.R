@@ -13,6 +13,7 @@ dat.mock <- read.csv(here("..", "data_clean", data_name), header = TRUE)
 source(here("code", "params.R"))
 dat <- dat.mock
 
+print("Data preprocess")
 
 # For immunogenicity characterization, complete ignore any information on cases
 # vs. non-cases.  The goal is to characterize immunogenicity in the random

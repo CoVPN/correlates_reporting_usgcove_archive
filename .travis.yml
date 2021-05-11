@@ -39,17 +39,17 @@ jobs:
     - name: CoR Report
       env: REPORT_TYPE=COR
       script:
-        - echo "Building correlates of risk (CoR) report"
+        - echo "Building correlates of risk report"
         - make data_processed
         - make risk_report
         - make cor_report
-#    - name: CoP Report
-#      env: REPORT_TYPE=COP
-#      script:
-#        - echo "Building correlates of protection (CoP) report"
-#        - make data_processed
-#        - make risk_report
-#        - make cop_report
+    - name: CoP Report
+      env: REPORT_TYPE=COP
+      script:
+        - echo "Building correlates of protection report"
+        - make data_processed
+        - make risk_report
+        - make cop_report
 
 apt_packages:
   - libxml2-dev

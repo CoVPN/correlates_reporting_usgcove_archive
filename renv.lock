@@ -207,10 +207,10 @@
     },
     "SuperLearner": {
       "Package": "SuperLearner",
-      "Version": "2.0-26",
+      "Version": "2.0-28",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "664b1c3ade05bd5afbd5ca5609c78bf1"
+      "Hash": "8a1b2fdfb6c4a448a4cfa24980124ad9"
     },
     "TH.data": {
       "Package": "TH.data",
@@ -277,10 +277,10 @@
     },
     "bitops": {
       "Package": "bitops",
-      "Version": "1.0-6",
+      "Version": "1.0-7",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "0b118d5900596bae6c4d4865374536a6"
+      "Hash": "b7d8d8ee39869c18d8846a184dd8a1af"
     },
     "blob": {
       "Package": "blob",
@@ -543,6 +543,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "d1b8b1a821ee564a3515fa6c6d5c52dc"
+    },
+    "dbarts": {
+      "Package": "dbarts",
+      "Version": "0.9-19",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "4b309f502a492d58421b96f3ca20c1df"
     },
     "dbplyr": {
       "Package": "dbplyr",
@@ -1129,6 +1136,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "3471fb65971f1a7b2d4ae7848cf2db8d"
+    },
+    "lightgbm": {
+      "Package": "lightgbm",
+      "Version": "3.2.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "aa100baeace1d4cf28ad9f2b93487c53"
     },
     "listenv": {
       "Package": "listenv",

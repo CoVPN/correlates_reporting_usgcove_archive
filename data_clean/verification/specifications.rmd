@@ -42,7 +42,7 @@
 
   \item Define wt (and similarly wt.2), a double variable. The weights equal the sampling probabilities of TwophasesampInd==1 within each Wstratum. This variable is only defined for subjects satisfying EarlyendpointD57==0 & Perprotocol == 1 & EventTimePrimaryD57>=7 and set to NA otherwise. 
   
-  \item Define wt.subcohort, a double variable. The weights equal the sampling probabilities of TwophasesampInd==1 within each tps.stratum. This variable is only defined for subjects satisfying EarlyendpointD57==0 & Perprotocol == 1 & SubcohortInd and set to NA otherwise
+  \item Define wt.subcohort, a double variable. The weights equal the sampling probabilities of TwophasesampInd==1 & SubcohortInd within each tps.stratum. This variable is only defined for subjects satisfying EarlyendpointD57==0 & Perprotocol == 1 and set to NA otherwise
   
   \item Define ph1.D57 as having non-NA wt. Define ph1.D29 as having non-NA wt.2. Define ph1.immuno as having non-NA wt.subcohort.
   

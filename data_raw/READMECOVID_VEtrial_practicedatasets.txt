@@ -1,9 +1,9 @@
 
 README File: Mock COVID-19 Vaccine Efficacy Trial data sets 
-	     COVID_VEtrial_practicedata_primarystage1.csv
+         COVID_VEtrial_practicedata_primarystage1.csv
              COVID_VEtrial_practicedata_longerterm.csv
 
-	     [In Q1 2021 only need to consider COVID_VEtrial_practicedata_primarystage1.csv]
+         [In Q1 2021 only need to consider COVID_VEtrial_practicedata_primarystage1.csv]
 
 Author: Peter Gilbert, September 16, 2020
         Updated October 9, 2020
@@ -15,14 +15,14 @@ Author: Peter Gilbert, September 16, 2020
         Updated January 21, 2021 (Added binding Ab to Nucleocapsid protein (N) for immunogenicity reporting,
                                   changed wildtype live-virus neutralization variables to MN50 (Battelle assay),
                                   and edits for enhancing clarity)
-        Updated April 15, 2021	 (updated LLOD, LLOQ, ULOQ values, including conversion of bAb readouts to 
+        Updated April 15, 2021   (updated LLOD, LLOQ, ULOQ values, including conversion of bAb readouts to 
                                   the International Units/ml scale)
-        Updated April 23, 2021	 (Changed documentation of Perprotocol variable)
+        Updated April 23, 2021   (Changed documentation of Perprotocol variable)
         Updated May 3, 2021      (Added the variables EarlyinfectionD29, EarlyinfectionD57,
                                   NumberdaysD1toD29, NumberdaysD1toD57; URMforsubcohortsampling
                                   (derived from elemental race and ethnicity variables); 
                                   updated LLOD, LLOQ, ULOQ values for bAb MSD VRC assay)
-  	Authors Youyi Fong, Peter Gilbert
+    Authors Youyi Fong, Peter Gilbert
 
 This README file describes the variables in the mock data sets 
 COVID_VEtrial_practicedata_primarystage1.csv and COVID_VEtrial_practicedata_longerterm.csv
@@ -85,11 +85,11 @@ Other           = Indicator race = Other (0 = White)
 Notreported     = Indicator race = Not reported (0 = White)
 Unknown         = Indicator race = unknown (0 = White)
 URMforsubcohortsampling = Indicator of under-represented minority (1=Yes, 0=No, NA)
-   		This variable matches the sampling implemented by Moderna.
-  		Minority is defined as: Blacks or African Americans, Hispanics or Latinos, American Indians or 
-  		Alaska Natives, NativeHawaiians, and other Pacific Islanders.
-   		Non-Minority includes all the others whose race (i.e. Asian, Multiracial, Other) or ethnicity is not unknown, 
-   		unreported or missing.  Therefore Unknown and Not reported have NA for this variable.
+        This variable matches the sampling implemented by Moderna.
+        Minority is defined as: Blacks or African Americans, Hispanics or Latinos, American Indians or 
+        Alaska Natives, NativeHawaiians, and other Pacific Islanders.
+        Non-Minority includes all the others whose race (i.e. Asian, Multiracial, Other) or ethnicity is not unknown, 
+        unreported or missing.  Therefore Unknown and Not reported have NA for this variable.
 RiskInd         = Baseline covariate high risk/at-risk pre-existing condition (1=yes, 0=no)
 Sex             = Sex assigned at birth (1=female, 0=male)
 Age             = Age at enrollment in years, between 18 and 85. Note that the randomization strata are 18-64 and 65+.
@@ -198,7 +198,7 @@ Two other derived variables are helpful to define ptids to include in analyses
 EarlyendpointD57  = Indicator a participant has EarlyinfectionD57==1 or has a COVID endpoint < 7 days
                     post Day 57 visit (0 otherwise) [used to exclude ptids from the immunogenicity analyses 
                                                      and to exclude non-cases from CoR/CoP analyses]
-		    This variable is derived as
+            This variable is derived as
 EarlyendpointD57 <- ifelse(EarlyinfectionD57==1 | (EventIndPrimaryD1==1 & EventTimePrimaryD1 < NumberdaysD1toD57 + 7),1,0)
 
 For parallel structure, we also include:
@@ -207,14 +207,14 @@ EarlyendpointD29  = Indicator a participant has EarlyinfectionD29==1 or has a CO
 EarlyendpointD29 <- ifelse(EarlyinfectionD29==1 | (EventIndPrimaryD1==1 & EventTimePrimaryD1 < NumberdaysD1toD29 + 7),1,0)
 
 
-CoR/CoP analyses of Day 57 markers only, and of both Day 29 and Day 57 markers together:						     
+CoR/CoP analyses of Day 57 markers only, and of both Day 29 and Day 57 markers together:                             
 Phase 1 ptids: Bserostatus==0 & EarlyendpointD57==0 & Perprotocol==1 & EventTimePrimaryD57 >= 7 
 Phase 1 indicator: ph1.D57
 Phase 2 ptids: TwophasesampIndprimary==1
 Weights: wt
 Failure time variables: (EventTimePrimaryD57, EventIndPrimaryD57) and ignore (EventTimePrimaryD29, EventIndPrimaryD29)
 
-CoR/CoP analyses of Day 29 markers only:						     
+CoR/CoP analyses of Day 29 markers only:                             
 Phase 1 ptids: Bserostatus==0 & EarlyendpointD29==0 & Perprotocol==1 & EventTimePrimaryD29 >= 7  
 Phase 1 indicator: ph1.D29
 Phase 2 ptids: TwophasesampIndprimary.2==1
@@ -222,7 +222,7 @@ Weights: wt.2
 Failure time variables: (EventTimePrimaryD29, EventIndPrimaryD29) and ignore (EventTimePrimaryD57, EventIndPrimaryD57)
 
 Immunogenicity report analyses:
-Phase 1 ptids:                  EarlyendpointD57==0 & Perprotocol==1 & SubcohortInd==1 
+Phase 1 ptids:                  EarlyendpointD57==0 & Perprotocol==1
 Phase 1 indicator: ph1.immuno
 Phase 2 ptids: TwophasesampIndprimary==1 & SubcohortInd==1
 Weights: wt.subcohort
@@ -297,13 +297,13 @@ is 1. Thus this variable has no NAs, which is convenient for use in covariate-ad
 
 The LLODs, ULODs, LLOQs and ULOQs are as follows (on the natural/antilog10 scale):
 
-    Marker				LLOD	ULOD		LLOQ	ULOQ
-#   bindSpike (IU/ml scale) 		0.3076	172,226.2	1.7968	10,155.95
-#   bindRBD   (IU/ml scale)		0.9297	520,506.0	5.4302 	30,693.537
-#   bindN     (IU/ml scale)		0.0820	45,927.0	0.4791	2708.253
-#   pseudoneutid50  			10	-		18.5	4404	            	
-#   pseudoneutid80              	10	-		14.3	1295	
-#   livevirusneutmn50                  	62.16	-		117.35  18,976.19
+    Marker              LLOD    ULOD        LLOQ    ULOQ
+#   bindSpike (IU/ml scale)         0.3076  172,226.2   1.7968  10,155.95
+#   bindRBD   (IU/ml scale)     0.9297  520,506.0   5.4302  30,693.537
+#   bindN     (IU/ml scale)     0.0820  45,927.0    0.4791  2708.253
+#   pseudoneutid50              10  -       18.5    4404                    
+#   pseudoneutid80                  10  -       14.3    1295    
+#   livevirusneutmn50                   62.16   -       117.35  18,976.19
 
 
 The VRC has a report on the Conversion of SARS-CoV-2 Binding Assay Results from Arbitrary Units to WHO International Units 
@@ -458,41 +458,41 @@ Short labels if the above labels are too long:
 
 Antibody marker labeling for all figures and tables:
 
-Axis Labels			Title Labels
-Anti Spike IgG (IU/ml)		Binding Antibody to Spike: Day 1
-Anti RBD IgG (IU/ml)		Binding Antibody to RBD: Day 1
-Anti N IgG (IU/ml)		Binding Antibody to N: Day 1
-Pseudovirus-nAb ID50		Pseudovirus Neutralization ID50: Day 1
-Pseudovirus-nAb ID80		Pseudovirus Neutralization ID80: Day 1
-Live virus-nAb MN50		Live virus Neutralization MN50: Day 1
+Axis Labels         Title Labels
+Anti Spike IgG (IU/ml)      Binding Antibody to Spike: Day 1
+Anti RBD IgG (IU/ml)        Binding Antibody to RBD: Day 1
+Anti N IgG (IU/ml)      Binding Antibody to N: Day 1
+Pseudovirus-nAb ID50        Pseudovirus Neutralization ID50: Day 1
+Pseudovirus-nAb ID80        Pseudovirus Neutralization ID80: Day 1
+Live virus-nAb MN50     Live virus Neutralization MN50: Day 1
 
-Anti Spike IgG (IU/ml)		Binding Antibody to Spike: Day 29
-Anti RBD IgG (IU/ml)		Binding Antibody to RBD: Day 29
-Anti N IgG (IU/ml)		Binding Antibody to N: Day 29
-Pseudovirus-nAb ID50		Pseudovirus Neutralization ID50: Day 29
-Pseudovirus-nAb ID80		Pseudovirus Neutralization ID80: Day 29
-Live virus-nAb MN50		Live virus Neutralization MN50: Day 29
+Anti Spike IgG (IU/ml)      Binding Antibody to Spike: Day 29
+Anti RBD IgG (IU/ml)        Binding Antibody to RBD: Day 29
+Anti N IgG (IU/ml)      Binding Antibody to N: Day 29
+Pseudovirus-nAb ID50        Pseudovirus Neutralization ID50: Day 29
+Pseudovirus-nAb ID80        Pseudovirus Neutralization ID80: Day 29
+Live virus-nAb MN50     Live virus Neutralization MN50: Day 29
 
-Anti Spike IgG (IU/ml)  	Binding Antibody to Spike: Day 57
-Anti RBD IgG (IU/ml)   		Binding Antibody to RBD: Day 57
-Anti N IgG (IU/ml)   		Binding Antibody to N: Day 57
-Pseudovirus-nAb ID50		Pseudovirus Neutralization ID50: Day 57
-Pseudovirus-nAb ID80		Pseudovirus Neutralization ID80: Day 57
-Live virus-nAb MN50		Live virus Neutralization MN50: Day 57
+Anti Spike IgG (IU/ml)      Binding Antibody to Spike: Day 57
+Anti RBD IgG (IU/ml)        Binding Antibody to RBD: Day 57
+Anti N IgG (IU/ml)          Binding Antibody to N: Day 57
+Pseudovirus-nAb ID50        Pseudovirus Neutralization ID50: Day 57
+Pseudovirus-nAb ID80        Pseudovirus Neutralization ID80: Day 57
+Live virus-nAb MN50     Live virus Neutralization MN50: Day 57
 
-Anti Spike IgG (IU/ml)		Binding Ab to Spike: D29 fold-rise over D1
-Anti RBD IgG (IU/ml)		Binding Ab to RBD: D29 fold-rise over D1
-Anti N IgG (IU/ml)		Binding Ab to N: D29 fold-rise over D1
-Pseudovirus-nAb ID50		Pseudovirus nAb ID50: D29 fold-rise over D1
-Pseudovirus-nAb ID80		Pseudovirus nAb ID80: D29 fold-rise over D1
-Live virus-nAb MN50		Pseudovirus nAb MN50: D29 fold-rise over D1
+Anti Spike IgG (IU/ml)      Binding Ab to Spike: D29 fold-rise over D1
+Anti RBD IgG (IU/ml)        Binding Ab to RBD: D29 fold-rise over D1
+Anti N IgG (IU/ml)      Binding Ab to N: D29 fold-rise over D1
+Pseudovirus-nAb ID50        Pseudovirus nAb ID50: D29 fold-rise over D1
+Pseudovirus-nAb ID80        Pseudovirus nAb ID80: D29 fold-rise over D1
+Live virus-nAb MN50     Pseudovirus nAb MN50: D29 fold-rise over D1
 
-Anti Spike IgG (IU/ml)		Binding Ab to Spike: D57 fold-rise over D1
-Anti RBD IgG (IU/ml)		Binding Ab to RBD: D57 fold-rise over D1
-Anti N IgG (IU/ml)		Binding Ab to N: D57 fold-rise over D1
-Pseudovirus-nAb ID50		Pseudovirus nAb ID50: D57 fold-rise over D1
-Pseudovirus-nAb ID80		Pseudovirus nAb ID80: D57 fold-rise over D1
-Live virus-nAb MN50		Pseudovirus nAb MN50: D57 fold-rise over D1
+Anti Spike IgG (IU/ml)      Binding Ab to Spike: D57 fold-rise over D1
+Anti RBD IgG (IU/ml)        Binding Ab to RBD: D57 fold-rise over D1
+Anti N IgG (IU/ml)      Binding Ab to N: D57 fold-rise over D1
+Pseudovirus-nAb ID50        Pseudovirus nAb ID50: D57 fold-rise over D1
+Pseudovirus-nAb ID80        Pseudovirus nAb ID80: D57 fold-rise over D1
+Live virus-nAb MN50     Pseudovirus nAb MN50: D57 fold-rise over D1
 
 Risk of symptomatic COVID
 Intercurrent cases
@@ -520,4 +520,3 @@ Wild type live-virus nAb MN50: D57 fold-rise over D1
 Short-hand notation when needed:
 Pseudovirus-nAb shortened to PsV-nAb
 Wild type live-virus nAb shortened to WT LV-nAb
-

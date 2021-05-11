@@ -230,8 +230,6 @@ dat_proc$wt <- wts_norm[dat_proc$Wstratum %.% ""]
 dat_proc$wt[!with(dat_proc, EarlyendpointD57==0 & Perprotocol == 1 & EventTimePrimaryD57>=7)] <- NA
 dat_proc$ph1.D57=!is.na(dat_proc$wt)
 
-# check wt na
-
 
 
 # wt.2, for D29 correlates analyses
@@ -248,11 +246,11 @@ if(has29) {
 
 # wt.subcohort, for immunogenicity analyses that use subcohort only and are not enriched by cases outside subcohort
 wts_table <- dat_proc %>%
-  dplyr::filter(EarlyendpointD57==0 & Perprotocol == 1 & SubcohortInd) %>%
-  with(table(tps.stratum, TwophasesampInd))
+  dplyr::filter(EarlyendpointD57==0 & Perprotocol == 1) %>%
+  with(table(tps.stratum, TwophasesampInd & SubcohortInd))
 wts_norm <- rowSums(wts_table) / wts_table[, 2]
 dat_proc$wt.subcohort <- wts_norm[dat_proc$tps.stratum %.% ""]
-dat_proc$wt.subcohort[!with(dat_proc, EarlyendpointD57==0 & Perprotocol == 1 & SubcohortInd)] <- NA
+dat_proc$wt.subcohort[!with(dat_proc, EarlyendpointD57==0 & Perprotocol == 1)] <- NA
 dat_proc$ph1.immuno=!is.na(dat_proc$wt.subcohort)
 
 
@@ -261,6 +259,23 @@ dat_proc$TwophasesampInd  [!dat_proc$ph1.D57] <- 0
 if(has29) {
 dat_proc$TwophasesampInd.2[!dat_proc$ph1.D29] <- 0    
 }
+
+
+assertthat::assert_that(
+    all(!is.na(dat_proc$wt[with(dat_proc, EarlyendpointD57==0 & Perprotocol == 1 & EventTimePrimaryD57>=7 & !is.na(Wstratum))])),
+    msg = "missing wt for D57 analyses ph1 subjects"
+)    
+
+assertthat::assert_that(
+    all(!is.na(dat_proc$wt.2[with(dat_proc, EarlyendpointD29==0 & Perprotocol == 1 & EventTimePrimaryD29>=7 & !is.na(Wstratum))])),
+    msg = "missing wt for D29 analyses ph1 subjects"
+)    
+
+assertthat::assert_that(
+    all(!is.na(dat_proc$wt.subcohort[with(dat_proc, EarlyendpointD57==0 & Perprotocol == 1 & !is.na(Wstratum))])),
+    msg = "missing wt for immuno analyses ph1 subjects"
+)    
+
 
 
 ###############################################################################

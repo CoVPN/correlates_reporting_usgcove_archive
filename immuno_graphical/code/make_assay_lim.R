@@ -9,7 +9,7 @@ library(dplyr)
 source(here("code", "params.R"))
 
 
-load(here("..", "data_clean","_params.RData"))
+load(here("..", "data_clean","_params.Rdata"))
 
 dat.long.twophase.sample <- readRDS(here(
   "data_clean",

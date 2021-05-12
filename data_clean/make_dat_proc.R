@@ -161,15 +161,14 @@ dat_proc <- dat_proc %>%
 # Differs from tps stratum in that case is a separate stratum within each of the four groups defined by Trt and Bserostatus
 # Used to compute sampling weights. 
 # NOTE: The case is defined using D29 status
-dat_proc <- dat_proc %>%
-  mutate(
-    Wstratum = ifelse(EventIndPrimaryD29 == 1, 4*max(demo.stratum,na.rm=T) + ceiling(tps.stratum/6), tps.stratum)
-  )
-  
+dat_proc$Wstratum = dat_proc$tps.stratum
+max.tps=max(dat_proc$tps.stratum,na.rm=T)
+dat_proc$Wstratum[with(dat_proc, EventIndPrimaryD29==1 & Trt==0 & Bserostatus==0)]=max.tps+1
+dat_proc$Wstratum[with(dat_proc, EventIndPrimaryD29==1 & Trt==0 & Bserostatus==1)]=max.tps+2
+dat_proc$Wstratum[with(dat_proc, EventIndPrimaryD29==1 & Trt==1 & Bserostatus==0)]=max.tps+3
+dat_proc$Wstratum[with(dat_proc, EventIndPrimaryD29==1 & Trt==1 & Bserostatus==1)]=max.tps+4
+
 #subset(dat_proc, Trt==1 & Bserostatus==1 & EventIndPrimaryD29 == 1)[1:3,]
-
-
-#stopifnot(all(!is.na(dat_proc$Wstratum)))
 
 
 ###############################################################################
@@ -262,17 +261,18 @@ dat_proc$TwophasesampInd.2[!dat_proc$ph1.D29] <- 0
 
 
 assertthat::assert_that(
-    all(!is.na(dat_proc$wt[with(dat_proc, EarlyendpointD57==0 & Perprotocol == 1 & EventTimePrimaryD57>=7 & !is.na(Wstratum))])),
+    sum(with(dat_proc, is.na(wt) & EarlyendpointD57==0 & Perprotocol == 1 & EventTimePrimaryD57>=7 & !is.na(Wstratum)), na.rm=T)==0,
     msg = "missing wt for D57 analyses ph1 subjects"
 )    
 
+
 assertthat::assert_that(
-    all(!is.na(dat_proc$wt.2[with(dat_proc, EarlyendpointD29==0 & Perprotocol == 1 & EventTimePrimaryD29>=7 & !is.na(Wstratum))])),
+    sum(with(dat_proc, is.na(wt.2) & EarlyendpointD29==0 & Perprotocol == 1 & EventTimePrimaryD29>=7 & !is.na(Wstratum)), na.rm=T)==0,
     msg = "missing wt for D29 analyses ph1 subjects"
 )    
 
 assertthat::assert_that(
-    all(!is.na(dat_proc$wt.subcohort[with(dat_proc, EarlyendpointD57==0 & Perprotocol == 1 & !is.na(Wstratum))])),
+    sum(with(dat_proc, is.na(wt.subcohort) & EarlyendpointD57==0 & Perprotocol == 1 & !is.na(tps.stratum)), na.rm=T)==0,
     msg = "missing wt for immuno analyses ph1 subjects"
 )    
 

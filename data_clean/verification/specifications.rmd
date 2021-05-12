@@ -5,6 +5,8 @@
 
   \item Rename the first column to Ptid
   
+  \item Subset to !is.na(Bserostatus). The code will assume this variable will not have NA's
+  
   \item Define EarlyendpointD57 (and similarly EarlyendpointD29, always included whether or not has29 is T or F) as: EarlyinfectionD57==1 | (EventIndPrimaryD1==1 & EventTimePrimaryD1 < NumberdaysD1toD57 + 7),1,0))
 
   \item Define age.geq.65, a binary variable indicating Age >= 65
@@ -22,11 +24,11 @@
   
   \item Define Bstratum, an integer variable to index randomization strata. For Moderna, there are three strata: age >= 65, age < 65 and HighRiskInd==1, age < 65 and HighRiskInd==0
   
-  \item Define demo.stratum, an integer variable to index the demographics strata. For Moderna, there are six strata: MinorityInd [1, 0] x Bstratum
+  \item Define demo.stratum, an integer variable to index the demographics strata. For Moderna, there are six strata: URMforsubcohortsampling [1, 0] x Bstratum. Note that there are NA's in URMforsubcohortsampling, so demo.stratum and variables that depend on it would have NA's as well.
   
   \item Define tps.stratum, an integer variable to index correlates sampling strata. For Moderna, there are 24 strata: [placebo/baseline negative, placebo/baseline positive, vaccine/baseline negative, vaccine/baseline positive] x demo.stratum
 
-  \item Define Wstratum, an integer variable to index strata for computing weights. For Moderna, there are 28 strata: if not case (EventIndPrimaryD29==1): tps.stratum, else: [25 - placebo/baseline negative, 26 - placebo/baseline positive, 27 - vaccine/baseline negative, 28 - vaccine/baseline positive] 
+  \item Define Wstratum, an integer variable to index strata for computing weights. For Moderna, there can be 28 strata: if not case (EventIndPrimaryD29==0): tps.stratum, else: [25 - placebo/baseline negative, 26 - placebo/baseline positive, 27 - vaccine/baseline negative, 28 - vaccine/baseline positive]. Notes: a) Some strata may be empty. b) A case will be assigned a stratum from 25 to 28 even if its demo.stratum is NA. c) For trials other than Moderna, add 1-4 to the maximum tps.stratum.
   
   \item Define TwophasesampInd, a 0/1 variable. It is defined as as the intersection of
   \begin{itemize}

@@ -41,49 +41,11 @@ colnames(dat_proc)[1] <- "Ptid"
 dat_proc$EarlyendpointD57 <- with(dat_proc, ifelse(EarlyinfectionD57==1 | (EventIndPrimaryD1==1 & EventTimePrimaryD1 < NumberdaysD1toD57 + 7),1,0))
 dat_proc$EarlyendpointD29 <- with(dat_proc, ifelse(EarlyinfectionD29==1 | (EventIndPrimaryD1==1 & EventTimePrimaryD1 < NumberdaysD1toD29 + 7),1,0))
 
-# define age cutoff and two-phase sampling indicator
 dat_proc <- dat_proc %>%
   mutate(
-    age.geq.65 = as.integer(Age >= 65),    
-    # create two-phase sampling indicators for D57 analyses
-    TwophasesampInd = Perprotocol == 1 &
-      (SubcohortInd | EventIndPrimaryD29 == 1) &
-      complete.cases(cbind(
-        if("bindSpike" %in% must_have_assays) BbindSpike, 
-        if("bindRBD" %in% must_have_assays) BbindRBD, 
-        if("pseudoneutid50" %in% must_have_assays) Bpseudoneutid50, 
-        if("pseudoneutid80" %in% must_have_assays) Bpseudoneutid80, 
-        
-        if("bindSpike" %in% must_have_assays) Day57bindSpike,
-        if("bindRBD" %in% must_have_assays) Day57bindRBD,
-        if("pseudoneutid50" %in% must_have_assays) Day57pseudoneutid50,
-        if("pseudoneutid80" %in% must_have_assays) Day57pseudoneutid80,
-        
-        if("bindSpike" %in% must_have_assays & has29) Day29bindSpike, 
-        if("bindRBD" %in% must_have_assays & has29) Day29bindRBD, 
-        if("pseudoneutid50" %in% must_have_assays & has29) Day29pseudoneutid50, 
-        if("pseudoneutid80" %in% must_have_assays & has29) Day29pseudoneutid80
-      ))
+    age.geq.65 = as.integer(Age >= 65)
   )
 
-
-if(has29) dat_proc <- dat_proc %>%
-  mutate(
-    # for D29 analyses
-    TwophasesampInd.2 = Perprotocol == 1 &
-      (SubcohortInd | EventIndPrimaryD29 == 1) &
-      complete.cases(cbind(
-        if("bindSpike" %in% must_have_assays) BbindSpike, 
-        if("bindRBD" %in% must_have_assays) BbindRBD, 
-        if("pseudoneutid50" %in% must_have_assays) Bpseudoneutid50, 
-        if("pseudoneutid80" %in% must_have_assays) Bpseudoneutid80, 
-        
-        if("bindSpike" %in% must_have_assays) Day29bindSpike,
-        if("bindRBD" %in% must_have_assays) Day29bindRBD,
-        if("pseudoneutid50" %in% must_have_assays) Day29pseudoneutid50, 
-        if("pseudoneutid80" %in% must_have_assays) Day29pseudoneutid80
-      ))
-  )
   
   
 # ethnicity labeling
@@ -203,6 +165,8 @@ dat_proc <- dat_proc %>%
   mutate(
     Wstratum = ifelse(EventIndPrimaryD29 == 1, 4*max(demo.stratum,na.rm=T) + ceiling(tps.stratum/6), tps.stratum)
   )
+  
+#subset(dat_proc, Trt==1 & Bserostatus==1 & EventIndPrimaryD29 == 1)[1:3,]
 
 
 #stopifnot(all(!is.na(dat_proc$Wstratum)))
@@ -212,14 +176,60 @@ dat_proc <- dat_proc %>%
 # observation-level weights
 ###############################################################################
 
+#Wstratum may have NA if any variables to form strata has NA
+
+
+# initially TwophasesampInd just need to be in the case or subcohort and have the necessary markers
+# after defining ph1.xx, we will update TwophasesampInd to be 0 outside ph1.xx
+dat_proc <- dat_proc %>%
+  mutate(
+    TwophasesampInd = 
+      (SubcohortInd | EventIndPrimaryD29 == 1) &
+      complete.cases(cbind(
+        if("bindSpike" %in% must_have_assays) BbindSpike, 
+        if("bindRBD" %in% must_have_assays) BbindRBD, 
+        if("pseudoneutid50" %in% must_have_assays) Bpseudoneutid50, 
+        if("pseudoneutid80" %in% must_have_assays) Bpseudoneutid80, 
+        
+        if("bindSpike" %in% must_have_assays) Day57bindSpike,
+        if("bindRBD" %in% must_have_assays) Day57bindRBD,
+        if("pseudoneutid50" %in% must_have_assays) Day57pseudoneutid50,
+        if("pseudoneutid80" %in% must_have_assays) Day57pseudoneutid80,
+        
+        if("bindSpike" %in% must_have_assays & has29) Day29bindSpike, 
+        if("bindRBD" %in% must_have_assays & has29) Day29bindRBD, 
+        if("pseudoneutid50" %in% must_have_assays & has29) Day29pseudoneutid50, 
+        if("pseudoneutid80" %in% must_have_assays & has29) Day29pseudoneutid80
+      ))
+  )
+
+if(has29) dat_proc <- dat_proc %>%
+  mutate(
+    TwophasesampInd.2 = 
+      (SubcohortInd | EventIndPrimaryD29 == 1) &
+      complete.cases(cbind(
+        if("bindSpike" %in% must_have_assays) BbindSpike, 
+        if("bindRBD" %in% must_have_assays) BbindRBD, 
+        if("pseudoneutid50" %in% must_have_assays) Bpseudoneutid50, 
+        if("pseudoneutid80" %in% must_have_assays) Bpseudoneutid80, 
+        
+        if("bindSpike" %in% must_have_assays) Day29bindSpike,
+        if("bindRBD" %in% must_have_assays) Day29bindRBD,
+        if("pseudoneutid50" %in% must_have_assays) Day29pseudoneutid50, 
+        if("pseudoneutid80" %in% must_have_assays) Day29pseudoneutid80
+      ))
+  )
+  
 
 # wt, for D57 correlates analyses
 wts_table <- dat_proc %>%
   dplyr::filter(EarlyendpointD57==0 & Perprotocol == 1 & EventTimePrimaryD57 >= 7) %>%
   with(table(Wstratum, TwophasesampInd))
 wts_norm <- rowSums(wts_table) / wts_table[, 2]
-dat_proc$wt <- wts_norm[dat_proc$Wstratum]
+dat_proc$wt <- wts_norm[dat_proc$Wstratum %.% ""]
 dat_proc$wt[!with(dat_proc, EarlyendpointD57==0 & Perprotocol == 1 & EventTimePrimaryD57>=7)] <- NA
+dat_proc$ph1.D57=!is.na(dat_proc$wt)
+
 
 
 # wt.2, for D29 correlates analyses
@@ -228,24 +238,44 @@ if(has29) {
       dplyr::filter(EarlyendpointD29==0 & Perprotocol == 1 & EventTimePrimaryD29 >= 7) %>%
       with(table(Wstratum, TwophasesampInd.2))
     wts_norm2 <- rowSums(wts_table2) / wts_table2[, 2]
-    dat_proc$wt.2 <- wts_norm2[dat_proc$Wstratum]
+    dat_proc$wt.2 <- wts_norm2[dat_proc$Wstratum %.% ""]
     dat_proc$wt.2[!with(dat_proc, EarlyendpointD29==0 & Perprotocol == 1 & EventTimePrimaryD29 >= 7)] <- NA
+    dat_proc$ph1.D29=!is.na(dat_proc$wt.2)
 }
 
 
 # wt.subcohort, for immunogenicity analyses that use subcohort only and are not enriched by cases outside subcohort
 wts_table <- dat_proc %>%
-  dplyr::filter(EarlyendpointD57==0 & Perprotocol == 1 & EventTimePrimaryD57 >= 7) %>%
+  dplyr::filter(EarlyendpointD57==0 & Perprotocol == 1) %>%
   with(table(tps.stratum, TwophasesampInd & SubcohortInd))
 wts_norm <- rowSums(wts_table) / wts_table[, 2]
-dat_proc$wt.subcohort <- wts_norm[dat_proc$tps.stratum]
-dat_proc$wt.subcohort[!with(dat_proc, EarlyendpointD57==0 & Perprotocol == 1 & EventTimePrimaryD57>=7)] <- NA
+dat_proc$wt.subcohort <- wts_norm[dat_proc$tps.stratum %.% ""]
+dat_proc$wt.subcohort[!with(dat_proc, EarlyendpointD57==0 & Perprotocol == 1)] <- NA
+dat_proc$ph1.immuno=!is.na(dat_proc$wt.subcohort)
 
 
-dat_proc$TwophasesampInd  [is.na(dat_proc$wt)]   <- 0
+
+dat_proc$TwophasesampInd  [!dat_proc$ph1.D57] <- 0
 if(has29) {
-dat_proc$TwophasesampInd.2[is.na(dat_proc$wt.2)] <- 0    
+dat_proc$TwophasesampInd.2[!dat_proc$ph1.D29] <- 0    
 }
+
+
+assertthat::assert_that(
+    all(!is.na(dat_proc$wt[with(dat_proc, EarlyendpointD57==0 & Perprotocol == 1 & EventTimePrimaryD57>=7 & !is.na(Wstratum))])),
+    msg = "missing wt for D57 analyses ph1 subjects"
+)    
+
+assertthat::assert_that(
+    all(!is.na(dat_proc$wt.2[with(dat_proc, EarlyendpointD29==0 & Perprotocol == 1 & EventTimePrimaryD29>=7 & !is.na(Wstratum))])),
+    msg = "missing wt for D29 analyses ph1 subjects"
+)    
+
+assertthat::assert_that(
+    all(!is.na(dat_proc$wt.subcohort[with(dat_proc, EarlyendpointD57==0 & Perprotocol == 1 & !is.na(Wstratum))])),
+    msg = "missing wt for immuno analyses ph1 subjects"
+)    
+
 
 
 ###############################################################################

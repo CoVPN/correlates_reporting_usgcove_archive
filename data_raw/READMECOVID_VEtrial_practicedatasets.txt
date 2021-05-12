@@ -1,9 +1,9 @@
 
 README File: Mock COVID-19 Vaccine Efficacy Trial data sets 
-	     COVID_VEtrial_practicedata_primarystage1.csv
+         COVID_VEtrial_practicedata_primarystage1.csv
              COVID_VEtrial_practicedata_longerterm.csv
 
-	     [In Q1 2021 only need to consider COVID_VEtrial_practicedata_primarystage1.csv]
+         [In Q1 2021 only need to consider COVID_VEtrial_practicedata_primarystage1.csv]
 
 Author: Peter Gilbert, September 16, 2020
         Updated October 9, 2020
@@ -15,13 +15,15 @@ Author: Peter Gilbert, September 16, 2020
         Updated January 21, 2021 (Added binding Ab to Nucleocapsid protein (N) for immunogenicity reporting,
                                   changed wildtype live-virus neutralization variables to MN50 (Battelle assay),
                                   and edits for enhancing clarity)
-        Updated April 15, 2021	 (updated LLOD, LLOQ, ULOQ values, including conversion of bAb readouts to 
+        Updated April 15, 2021   (updated LLOD, LLOQ, ULOQ values, including conversion of bAb readouts to 
                                   the International Units/ml scale)
-        Updated April 23, 2021	 (Changed documentation of Perprotocol variable)
-        Updated April 30, 2021   (Added the variables Earlyinfection,
-                                  NumberdaysD1toD29, NumberdaysD1toD57; derived the variable
-                                  URMforsubcohortsampling; updated LLOD, LLOQ, ULOQ values for bAb)
-  
+        Updated April 23, 2021   (Changed documentation of Perprotocol variable)
+        Updated May 3, 2021      (Added the variables EarlyinfectionD29, EarlyinfectionD57,
+                                  NumberdaysD1toD29, NumberdaysD1toD57; URMforsubcohortsampling
+                                  (derived from elemental race and ethnicity variables); 
+                                  updated LLOD, LLOQ, ULOQ values for bAb MSD VRC assay)
+    Authors Youyi Fong, Peter Gilbert
+
 This README file describes the variables in the mock data sets 
 COVID_VEtrial_practicedata_primarystage1.csv and COVID_VEtrial_practicedata_longerterm.csv
 
@@ -82,6 +84,12 @@ Multiracial     = Indicator race = Multiracial (0 = White)
 Other           = Indicator race = Other (0 = White)
 Notreported     = Indicator race = Not reported (0 = White)
 Unknown         = Indicator race = unknown (0 = White)
+URMforsubcohortsampling = Indicator of under-represented minority (1=Yes, 0=No, NA)
+        This variable matches the sampling implemented by Moderna.
+        Minority is defined as: Blacks or African Americans, Hispanics or Latinos, American Indians or 
+        Alaska Natives, NativeHawaiians, and other Pacific Islanders.
+        Non-Minority includes all the others whose race (i.e. Asian, Multiracial, Other) or ethnicity is not unknown, 
+        unreported or missing.  Therefore Unknown and Not reported have NA for this variable.
 RiskInd         = Baseline covariate high risk/at-risk pre-existing condition (1=yes, 0=no)
 Sex             = Sex assigned at birth (1=female, 0=male)
 Age             = Age at enrollment in years, between 18 and 85. Note that the randomization strata are 18-64 and 65+.
@@ -105,53 +113,29 @@ EventTimePrimaryD29 = Minimum of of the time from Day 29 (antibody marker measur
 EventIndPrimaryD29 = Indicator that the failure time is <= the right-censoring time.
                   Note that COVID-19 endpoints are only counted starting 7 days post Day 29 visit, 
                   because endpoints occurring over the first 6 days may have already been infected with 
-                  SARS-CoV-2 before endpoint occurrence.  This means that all failure events included in
-                  the analysis have failure time >= 7 days. Individuals with failure time 1 to 6 days
+                  SARS-CoV-2 before endpoint occurrence.  This means that individuals with failure time 1 to 6 days
                   are excluded from the analysis.
 EventTimePrimaryD57 = Minimum of of the time from Day 57 (antibody marker measurement) until the COVID-19 endpoint or 
                   right-censoring (in days). Note that Day 57 is the time origin for studying Day 57 antibody
                   markers as correlates.
-EventIndPrimaryD57 = Indicator that the failure time is <= the right-censoring time.
+EventIndPrimaryD57 = Indicator that the failure time is <= the right-censoring time. 
                   Note that COVID-19 endpoints are only counted starting 7 days post Day 57 visit, 
                   because endpoints occurring over the first 6 days may have already been infected with 
-                  SARS-CoV-2 before endpoint occurrence.  This means that all failure events included in
-                  the analysis have failure time >= 7 days. Individuals with failure time 1 to 6 days
+                  SARS-CoV-2 before endpoint occurrence.  This means that individuals with failure time 1 to 6 days
                   are excluded from the analysis.
 BbindSpike      = Day 1 (enrollment) value of log10 IgG binding antibody concentration to Spike protein, which is a continuous variable 
-                  (scale log10 IU/ml).  The lower limit of quantification (LLOQ) of the assay is log10(34) on the arbitrary units (AU/ml)
-                  scale from a standard curve that we will align to the WHO standards for use on efficacy trials samples. 
-                  On the AU/ml scale, the upper limit of quantitation (ULOQ) is 19,136,250 AU/ml, the LLOQ = 34 AU/ml,
-                  and the LLOD is 20 AU/ml.  On the AU/ml scale, values below log10(LLOD) are reported as log10(LLOD/2) = log10(10).
-                  These values apply for all three antigens Spike, RBD, N.
-
-                  The VRC has a report on the Conversion of SARS-CoV-2 Binding Assay Results from Arbitrary Units to WHO International Units 
-                  (draft March 30, 2021), which establishes conversion factors for MSD to WHO.  
-                  For the three binding antibody variables CoV-2 Spike IgG, CoV-2 N IgG, and CoV-2 RBD IgG, these conversion factors are 0.0090,
-                  0.0024, and 0.0272, respectively.  These conversion factors are applied, such that all
-                  binding Ab readouts are reported in WHO IU/ml.  These conversion factors from AU/ml to IU/ml
-                  are also applied to yield the LLOD, LLOQ, and ULOQ on the WHO IU/ml scale.  
-                  These values on the IU/ml scale are as follows:
-
-			bAb Spike: LLOD = 0.180, LLOQ = 0.3060, ULOQ = 172,226.2
-    			bAb RBD: LLOD = 0.544, LLOQ = 0.9248, ULOQ = 520,506.0
-    			bAb N: LLOD = 0.048, LLOQ = 0.0816, ULOQ = 45,927.0
-
+                  (scale log10 IU/ml).  
 BbindRBD        = Day 1 (enrollment) value of IgG binding antibody readout to RBD, in IU/ml.
 BbindN          = Day 1 (enrollment) value of IgG binding antibody readout to N protein, in IU/ml.
 Bpseudoneutid50 = Day 1 value of the Duke pseudo-neutralizing antibody readout, reported as log10 estimated serum inhibitory dilution
                   50% titer (ID50), which is the reciprocal of the dilution at which RLU (relative luminescence units)
                   are reduced by either 50% (ID50) compared to virus control wells after subtraction of background 
-                  RLUs in cell control wells.  On the natural scale, ULOQ= 4404 and LLOQ= 18.5, and LLOD = 10.  Values 
-                  below log10(LLOD) are reported as log10(LLOD/2) = log10(5).
+                  RLUs in cell control wells.  
 Bpseudoneutid80 = Day 1 value of the Duke pseudo-neutralizing antibody readout, reported as log10 estimated serum inhibitory dilution
                   80% titer (ID80), which is the reciprocal of the dilution at which RLU (relative luminescence units)
                   are reduced by either 80% (ID80) compared to virus control wells after subtraction of background 
-                  RLUs in cell control wells.  On the natural scale, ULOQ= 1295 and LLOQ= 14.3, and LLOD = 10.  Values 
-                  below log10(LLOD) are reported as log10(LLOD/2) = log10(5).
-BliveneutMN50   = Day 1 value of Battelle assay wild type live virus-neutralizing antibody readout, reported as log10 MN50 with LLOQ = 117.35 and 
-                  ULOQ = 18,976.19, and LLOD = 62.16.  For data analysis values below the LLOQ are assigned the value 117.35/2 = 59 and 
-                  values greater than the ULOQ are assigned the value of the ULOQ.  The LLOD is log10(62.16).
-                  Values below log10(LLOD) are reported as log10(LLOD/2) = log10(31.08).  
+                  RLUs in cell control wells.  
+BliveneutMN50   = Day 1 value of Battelle assay wild type live virus-neutralizing antibody readout, reported as log10 MN50. 
 Day29bindSpike  = Day 29 value of the same marker as BbindSpike
 Day29bindRBD    = Day 29 value of the same marker as BbindRBD
 Day29bindN      = Day 29 value of the same marker as BbindN
@@ -166,7 +150,9 @@ Day57pseudoneutid80 = Day 57 value of the same marker as Bpseudoneutid80
 Day57liveneutmn50   = Day 57 value of the same marker as Bliveneutmn50 
 SubcohortInd    = Indicator that a participant is sampled into the random subcohort for measurement of Day 1, 29, 57 antibody markers
                   (stratified Benoulli random sampling)
-Earlyinfection = Indicator a participant has SARS-CoV-2 infection < 7 days post Day 57 visit (0 otherwise).
+EarlyinfectionD29 = Indicator a participant has SARS-CoV-2 infection < 7 days post Day 29 visit (0 otherwise).
+EarlyinfectionD57 = Indicator a participant has SARS-CoV-2 infection < 7 days post Day 57 visit (0 otherwise).
+# Note that infection may be detected by RNA PCR/NAAT or by seroconversion.
 # The remaining variables with "CPV" in the variable name are only used for correlate of VE CoP analysis:
 BbindSpikeCPV   = Day 1 value of log10 IgG binding antibody readout to Spike protein in non-case placebo recipients undergoing closeout
                   placebo vaccination.  NA if the value is not measured.
@@ -196,129 +182,73 @@ CPVsampInd      = Indicator that a participant is sampled into the closeout plac
 #################################################################################
 # Data analysis notes 
 
-EventIndPrimaryD1==1 implies EventIndPrimaryD29==1 implies EventIndPrimaryD57==1
-
-///////////////////////////////////////////////////////////////////////////////////////////////
-YF: Do you mean the other way around? From the data:
-> with(dat_proc, table(EventIndPrimaryD29, EventIndPrimaryD57, useNA="ifany"))
-                  EventIndPrimaryD57
-EventIndPrimaryD29     0     1
-                 0 29070     0
-                 1   120   810
-///////////////////////////////////////////////////////////////////////////////////////////////
-
+EventIndPrimaryD57==1 implies EventIndPrimaryD29==1 implies EventIndPrimaryD1==1
 
 Based on the data set, a new variable TwophasesampIndprimary is defined for the processed data set, 
-which is the indicator that a participant has antibody marker data measured.  
-The missing data structure for the mock data set is as follows: All participants with 
+which is the indicator that a participant has antibody marker data measured, where all participants with 
 TwophasesampIndprimary==1 have complete data for Day 1, 29, 57 markers, and all immunogenicity 
-report and CoR/CoP analyses based on IPW complete-case restrict to ptids with TwophasesampIndprimary==1.  
-Alternative CoR/CoP analyses that do not restrict to complete-case may not include the TwophasesampIndprimary==1 
-requirement.
+report analyses restrict to ptids with TwophasesampIndprimary==1.  
+In addition, all CoR/CoP analyses of Day 57 markers only, and of Day 29 and Day 57 markers together,
+restrict to ptids with TwophasesampIndprimary==1.
+All CoR/CoP analyses of Day 29 markers restrict to ptids with TwophasesampIndprimary.2==1, where all participants
+with TwophasesampIndprimary.2==1 have complete data for Day 1, 29 markers.  The reason a new variable is used is
+because some intercurrent COVID cases (before 6 days post Day 57 visit) may miss the Day 57 visit due to COVID.
 
-///////////////////////////////////////////////////////////////////////////////////////////////
-YF: At some point we decided that we needed both TwophasesampIndprimary and TwophasesampIndprimary.2, the latter is defined similarly as TwophasesampIndprimary but only covers Day 1 and 29.
-///////////////////////////////////////////////////////////////////////////////////////////////
+Two other derived variables are helpful to define ptids to include in analyses
+EarlyendpointD57  = Indicator a participant has EarlyinfectionD57==1 or has a COVID endpoint < 7 days
+                    post Day 57 visit (0 otherwise) [used to exclude ptids from the immunogenicity analyses 
+                                                     and to exclude non-cases from CoR/CoP analyses]
+            This variable is derived as
+EarlyendpointD57 <- ifelse(EarlyinfectionD57==1 | (EventIndPrimaryD1==1 & EventTimePrimaryD1 < NumberdaysD1toD57 + 7),1,0)
 
-
-
-One other derived variable is needed to define ptids to include in analyses
-Earlyendpoint  = Indicator a participant has Earlyinfection==1 or has a COVID endpoint < 7 days
-                 post Day 57 visit (0 otherwise)   
-[used to exclude ptids from the immunogenicity analyses and to exclude non-cases from CoR/CoP analyses]
-This variable is derived as
-Earlyendpoint <- ifelse(Earlyinfection==1 | 
-(EventIndPrimaryD1==1 & EventTimePrimaryD1 < NumberdaysD1toD57 + 7),1,0)
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////
-YF: An alternative way of specifying the following might be to specify first phase 1, second phase 2, and third case variables. For example, these two paragraphs:
-
-CoR/CoP analyses of Day 57 markers only:
-Use the failure time variables (EventTimePrimaryD57, EventIndPrimaryD57) and ignore the variables
-(EventTimePrimaryD29, EventIndPrimaryD29)
-Per-protocol cases in Day 57 marker IPW-complete case analyses include the ptids defined by
-Perprotocol==1 & Bserostatus==0 & TwophasesampIndprimary==1 & EventIndPrimaryD57==1 & EventTimePrimaryD57 >= 7
-
-IPW-complete case correlates analyses with Day 57 markers include the following ptids:
-Perprotocol==1 & Bserostatus==0 & TwophasesampIndprimary==1 & EventTimePrimaryD57 >= 7 & (EventIndPrimaryD57==0 & Earlyendpoint==0) 
+For parallel structure, we also include:
+EarlyendpointD29  = Indicator a participant has EarlyinfectionD29==1 or has a COVID endpoint < 7 days
+                    post Day 29 visit (0 otherwise)   
+EarlyendpointD29 <- ifelse(EarlyinfectionD29==1 | (EventIndPrimaryD1==1 & EventTimePrimaryD1 < NumberdaysD1toD29 + 7),1,0)
 
 
-Could become:
+CoR/CoP analyses of Day 57 markers only, and of both Day 29 and Day 57 markers together:                             
+Phase 1 ptids: Bserostatus==0 & EarlyendpointD57==0 & Perprotocol==1 & EventTimePrimaryD57 >= 7 
+Phase 1 indicator: ph1.D57
+Phase 2 ptids: TwophasesampIndprimary==1
+Weights: wt
+Failure time variables: (EventTimePrimaryD57, EventIndPrimaryD57) and ignore (EventTimePrimaryD29, EventIndPrimaryD29)
 
-CoR/CoP analyses of Day 57 markers only:
-Phase 1: Bserostatus==0 & Earlyendpoint==0 & Perprotocol==1 & EventTimePrimaryD57 >= 7
-Phase 2: TwophasesampIndprimary==1
-Failure time variables: (EventTimePrimaryD57, EventIndPrimaryD57) and ignore the variables (EventTimePrimaryD29, EventIndPrimaryD29)
+CoR/CoP analyses of Day 29 markers only:                             
+Phase 1 ptids: Bserostatus==0 & EarlyendpointD29==0 & Perprotocol==1 & EventTimePrimaryD29 >= 7  
+Phase 1 indicator: ph1.D29
+Phase 2 ptids: TwophasesampIndprimary.2==1
+Weights: wt.2
+Failure time variables: (EventTimePrimaryD29, EventIndPrimaryD29) and ignore (EventTimePrimaryD57, EventIndPrimaryD57)
 
+Immunogenicity report analyses:
+Phase 1 ptids:                  EarlyendpointD57==0 & Perprotocol==1
+Phase 1 indicator: ph1.immuno
+Phase 2 ptids: TwophasesampIndprimary==1 & SubcohortInd==1
+Weights: wt.subcohort
 
-Since this alternative organization more closely aligns with the twophase analysis code, it could help ensure we have the right implementation.
-But I understand it gets complicated in the immunogenecity reports.
-
-///////////////////////////////////////////////////////////////////////////////////////////////
-
-
-Immunogenicity report analyses include ptids with
-Perprotocol==1 & SubcohortInd==1 & TwophasesampIndprimary==1 & Earlyendpoint==0
-
-CoR/CoP analyses of Day 29 markers only:
-Use the failure time variables (EventTimePrimaryD29, EventIndPrimaryD29) and ignore the variables
-(EventTimePrimaryD57, EventIndPrimaryD57)
-Per-protocol cases in Day 29 marker IPW-complete case analyses include the ptids defined by
-Perprotocol==1 & Bserostatus==0 & TwophasesampIndprimary==1 & EventIndPrimaryD29==1 & EventTimePrimaryD29 >= 7
-
-CoR/CoP analyses of Day 57 markers only:
-Use the failure time variables (EventTimePrimaryD57, EventIndPrimaryD57) and ignore the variables
-(EventTimePrimaryD29, EventIndPrimaryD29)
-Per-protocol cases in Day 57 marker IPW-complete case analyses include the ptids defined by
-Perprotocol==1 & Bserostatus==0 & TwophasesampIndprimary==1 & EventIndPrimaryD57==1 & EventTimePrimaryD57 >= 7
-
-Multivariable CoR analyses including both Day 29 and Day 57 markers:
-Use the failure time variables (EventTimePrimaryD57, EventIndPrimaryD57) and ignore the variables
-(EventTimePrimaryD29, EventIndPrimaryD29)
-Per-protocol cases in IPW-complete case analyses including both Day 29 and Day 57 markers include 
-the ptids defined by
-Perprotocol==1 & Bserostatus==0 & TwophasesampIndprimary==1 & EventIndPrimaryD57==1 & EventTimePrimaryD57 >= 7
-(same as for Day 57 markers correlates analyses)
 
 Intercurrent Cases are defined as cases with event time between 7 days post Day 29 visit and 6 days 
 post Day 57 visit.  Intercurrent cases have included ptids defined by 
-Perprotocol==1 & Bserostatus==0 & TwophasesampIndprimary==1 & EventIndPrimaryD29==1 & 
-EventTimePrimaryD29 >= 7 & EventIndPrimaryD57==0
+  Perprotocol==1 & Bserostatus==0 & EarlyendpointD29==0 & TwophasesampIndprimary.2==1 & 
+  EventIndPrimaryD29==1 & EventTimePrimaryD29 >= 7 & EventTimePrimaryD29 <= 6 + NumberdaysD1toD57 - NumberdaysD1toD29
 
-Per-protocol non-cases are defined as participants who never register a COVID primary endpoint and have no 
-evidence of infection, with ptids for IPW-complete case analyses defined by
-Perprotocol==1 & Bserostatus==0 & TwophasesampIndprimary==1 & EventIndPrimaryD1==0 & Earlyendpoint==0
-
-
-# Based on the above specifications, correlates analyses with Day 29 markers include the following ptids:
-Perprotocol == 1 & Bserostatus==0 & TwophasesampIndprimary==1 & 
-EventTimePrimaryD29 >= 7 & (EventIndPrimaryD29==0 & Earlyendpoint==0) 
-
-IPW-complete case correlates analyses with Day 57 markers include the following ptids:
-Perprotocol == 1 & Bserostatus==0 & TwophasesampIndprimary==1 &  
-EventTimePrimaryD57 >= 7 & (EventIndPrimaryD57==0 & Earlyendpoint==0) 
-
-IPW-complete case correlates analyses with Day 29 and 57 markers include the following ptids:
-Perprotocol == 1 & Bserostatus==0 & TwophasesampIndprimary==1 &  
-EventTimePrimaryD57 >= 7 & (EventIndPrimaryD57==0 & Earlyendpoint==0) 
-
+Per-protocol non-cases are defined as participants who never register a COVID primary endpoint and 
+have no evidence of infection < 7 days post Day 57 visit, with ptids for IPW-complete case analyses
+defined by
+  Perprotocol==1 & Bserostatus==0 & EarlyendpointD57==0 & TwophasesampIndprimary==1 & EventIndPrimaryD1==0 
 
 ###################
 Descriptive plots in CoR and CoP reports (e.g. violin scatterplots) include 
 "Intercurrent Cases", "Primary Cases", "Non-Cases", side by side.
 
-Intercurrent Cases ptids to include in plots: 
-Perprotocol==1 & Bserostatus==0 & TwophasesampIndprimary==1 &
-EventIndPrimaryD29==1 & EventTimePrimaryD29 >= 7 & EventIndPrimaryD57==0
+Intercurrent Cases are defined above. 
 
 Primary Cases ptids to include in plots:
-Perprotocol==1 & Bserostatus==0 & TwophasesampIndprimary==1 & 
-EventIndPrimaryD57==1 & EventTimePrimaryD57 >= 7
+Perprotocol==1 & Bserostatus==0 & EarlyendpointD57==0 & TwophasesampIndprimary==1 & 
+EventIndPrimaryD57==1 
 
-Non-cases ptids to include in plots:
-Perprotocol==1 & Bserostatus==0 & TwophasesampIndprimary==1 & EventIndPrimaryD1==0 & Earlyendpoint==0
-
+Non-cases ptids are defined as PP non-cases above. 
 
 #################
 Subgroup analyses for both immunogenicity reporting and CoR/CoP reporting 
@@ -326,98 +256,71 @@ by race ethnicity are based on the URMforsubcohortsampling variable derived
 in the processed data set. IPW weights are also computed using this variable, because the
 subchort sampling design used this variable.
 
-URMforsubcohortsampling = Indicator of a minority (0 = minority).
+URMforsubcohortsampling = Indicator of under-represented minority (URM) (1, 0, or NA).
    This variable matches the subcohort sampling implemented by Moderna.
    Minority is defined as: Blacks or African Americans, Hispanics or Latinos, American Indians or 
    Alaska Natives, NativeHawaiians, and other Pacific Islanders.
    Non-Minority includes all the others whose race (i.e. Asian, Multiracial, Other) or ethnicity is not unknown, 
    unreported or missing.  Therefore Unknown and Not reported have NA for this sampling stratum variable.
 
-///////////////////////////////////////////////////////////////////////////////////////////////
-YF: Might be better to use URM in the place of minority here? E.g.:
-URMforsubcohortsampling = Indicator of under-represented minority (URM) (1, 0, or NA).
-   This variable matches the subcohort sampling implemented by Moderna.
-   URM is defined as: Blacks or African Americans, Hispanics or Latinos, American Indians or 
-   Alaska Natives, NativeHawaiians, and other Pacific Islanders.
-   Non-URM includes all the others whose race (i.e. Asian, Multiracial, Other) or ethnicity is not unknown, 
-   unreported or missing.  Therefore Unknown and Not reported have NA for this sampling stratum variable.
-///////////////////////////////////////////////////////////////////////////////////////////////
-
-
 URMforsubcohortsampling <- rep(NA,length(A))
 URMforsubcohortsampling[Black==1] <- 1
 URMforsubcohortsampling[EthnicityHispanic==1] <- 1
 URMforsubcohortsampling[NatAmer==1] <- 1
 URMforsubcohortsampling[PacIsl==1] <- 1
-URMforsubcohortsampling[Asian==1 & EthnicityHispanic!=1] <- 0
-URMforsubcohortsampling[Multiracial==1 & EthnicityHispanic!=1] <- 0
-URMforsubcohortsampling[Other==1 & EthnicityHispanic!=1] <- 0
+URMforsubcohortsampling[Asian==1 & EthnicityHispanic==0 & EthnicityUnknown==0 & EthnicityNotreported==0] <- 0
+URMforsubcohortsampling[Multiracial==1 & EthnicityHispanic==0 & EthnicityUnknown==0 & EthnicityNotreported==0] <- 0
+URMforsubcohortsampling[Other==1 & EthnicityHispanic==0 & EthnicityUnknown==0 & EthnicityNotreported==0] <- 0
 # Add observed White Non Hispanic:
-URMforsubcohortsampling[EthnicityHispanic==0 & Black==0 & Asian==0 & NatAmer==0 & PacIsl==0 &
+URMforsubcohortsampling[EthnicityHispanic==0 & EthnicityUnknown==0 & EthnicityNotreported==0 & Black==0 & Asian==0 & NatAmer==0 & PacIsl==0 &
 Multiracial==0 & Other==0 & Notreported==0 & Unknown==0] <- 0
-
-///////////////////////////////////////////////////////////////////////////////////////////////
-YF: To check the def, I defined it another way, similar to how WhiteNonHispanic is defined, except that "Asian","Other","Multiracial" are added to "White". 
-
-# nonURM=1
-dat_proc$nonURM <- NA
-dat_proc$nonURM <-
-  ifelse(dat_proc$race %in% c("White","Asian","Other","Multiracial") &
-    dat_proc$ethnicity == "Not Hispanic or Latino", 1,
-  dat_proc$nonURM
-  )
-# nonURM=0
-dat_proc$nonURM <-
-  ifelse(!dat_proc$race %in% c("White","Asian","Other","Multiracial","Not reported and unknown") |
-    dat_proc$ethnicity == "Hispanic or Latino", 0,
-    dat_proc$nonURM
-  )
-dat_proc$URM = 1-dat_proc$nonURM
-
-
-The two variables match in all except some NAs, and the discrepancy is due to ethnicity NA's.
-
-> with(dat_proc, table(URMforsubcohortsampling, URM.2, useNA="ifany"))
-                       URM.2
-URMforsubcohortsampling     0     1  <NA>
-                   0    17344     0  2736
-                   1        0  7890     0
-                   <NA>     0     0  2030
-//////////////////////////////////////////////////////////////////////////////////////////////
 
 Covariate-adjustment in CoR/CoP analyses adjusts for a WhiteNonHispanic variable that is
 defined differently from URMforsubcohortsampling.
-WhiteNonHispanic==1 means observed White and observed Non-Hispanic
-and is referred to as "White Non-Hispanic", 
-WhiteNonHispanic==0 means observed non-White and/or observed Hispanic.
+WhiteNonHispanic==1 if observed White and observed Not Hispanic or Latino
+and is referred to as "White Non-Hispanic".
+WhiteNonHispanic==0 if observed non-White and/or observed Hispanic.
 In addition, for ptids with not reported or unknown on White Non-Hispanic status, the assigned value
-is 1.  Thus this variable has no NAs, which is convenient for use in covariate-adjustment.
+is 1. Thus this variable has no NAs, which is convenient for use in covariate-adjustment.
 
 ##########################################################################
 # In analyzing the marker data, customs in handling the lower limit of detection (LLOD) need to
 # be handled in the analysis code.  
-# Analyses of baseline markers, and of Day 29 and Day 57 markers (but not fold-rise), set all participants to have
-# minimum marker value LLOD/2.  The LLODs, LLOQs and ULOQs are (on the natural/antilog10 scale):
+# Analyses of baseline/Day 1 markers, and of Day 29 and Day 57 markers, assign all 
+# values < LLOD to the value LLOD/2. This is an initial step in the data processing to create
+# an analysis ready data set.
+# Immunogenicity analyses use all actual values above the ULOQ.
+# CoR/CoP analyses assign values above the ULOQ to the ULOQ.
+#
+# In addition, for the Moderna trial, the definitions of positive response, at least 2FR, and at least 4FR,
+# use LLOQ/2 as the lowest possible value, not LLOD/2.
 
-    Marker				LLOD	LLOQ	ULOQ
-#   bindSpike (IU/ml scale) 		0.3076	1.7968	10,155.95
-#   bindRBD   (IU/ml scale)		0.9297	5.4302 	30,693.537
-#   bindN     (IU/ml scale)		0.0820	0.4791	2708.253
-#   pseudoneutid50  			10	18.5	4404	            	
-#   pseudoneutid80              	10	14.3	1295	
-#   livevirusneutmn50                  	62.16	117.35   18,976.19
+The LLODs, ULODs, LLOQs and ULOQs are as follows (on the natural/antilog10 scale):
 
-# The immunogenicity analyses of positive response rates for the neutralization assays 
-# and binding antibody assays use lower limit of detection (LLOD) values.
+    Marker              LLOD    ULOD        LLOQ    ULOQ
+#   bindSpike (IU/ml scale)         0.3076  172,226.2   1.7968  10,155.95
+#   bindRBD   (IU/ml scale)     0.9297  520,506.0   5.4302  30,693.537
+#   bindN     (IU/ml scale)     0.0820  45,927.0    0.4791  2708.253
+#   pseudoneutid50              10  -       18.5    4404                    
+#   pseudoneutid80                  10  -       14.3    1295    
+#   livevirusneutmn50                   62.16   -       117.35  18,976.19
+
+
+The VRC has a report on the Conversion of SARS-CoV-2 Binding Assay Results from Arbitrary Units to WHO International Units 
+(draft March 30, 2021), which establishes conversion factors for the MSD AU/ml units to WHO International Units/ml.  
+For the three binding antibody variables CoV-2 Spike IgG, CoV-2 N IgG, and CoV-2 RBD IgG, these conversion factors are 
+0.0090, 0.0024, and 0.0272, respectively.  These conversion factors are applied, such that all binding Ab readouts 
+are reported in WHO IU/ml.  These conversion factors from AU/ml to IU/ml are applied to yield the LLOD, LLOQ, and 
+ULOQ on the WHO IU/ml scale that are provided in the table above.  
 
 #################################################################################
-Note 1/21/21: The live virus neutralization data may be available 2 months later
+Note 1/21/21: The live virus neutralization data are available later
 than the pseudo virus neutralization data.  Therefore, for the initial reports,
 the following 4 markers are focused on for immunogenicity figures
 bindSpike, bindRBD, pseudoneutid50, pseudoneutid80
-and the following 5 markers are focused on for immunogenicity tables
+and the following 5 markers are focused on for immunogenicity tables and figures
 bindSpike, bindRBD, bindN, pseudoneutid50, pseudoneutid80.
-CoR reporting focuses on the 4 markers
+The first CoR/CoP reports focus on the 4 markers
 bindSpike, bindRBD, pseudoneutid50, pseudoneutid80
 #################################################################################
 
@@ -440,7 +343,7 @@ value for the variables (given that the antibody markers are measured in all add
 Notes on the two-phase sampling case-cohort design (Prentice, 1986, Biometrika; Breslow et al., 2009, AJE):
 
 There are two kinds of variables: "phase one variables" measured in everyone and "phase two variables" 
-only measured in the case-cohort sample.
+only measured in the case-cohort sample for which antibody data are measured.
 For Moderna, this consists of the random subcohort with 24 baseline
 strata defined by
 Trt x URMforsubcohortsampling (Yes,No) x [age >= 65, age < 65 & HighRiskInd==1, age < 65 & HighRiskInd==0] x Bserostatus. 
@@ -459,6 +362,9 @@ P(TwophasesampInd=1|Trt,WhiteNonHispanic Indicator,HighRiskInd,Age Category,Bser
 can be consistently estimated based on empirical sampling frequencies.  Note that the weights depend
 on case/non-case COVID outcome status.  Note that the URMforsubcohortsampling Indicator is derived from the
 other ethnicity and race variables.
+
+A second variable TwophasesampInd.2 is also derived, which is only used as an inclusion indicator for
+CoR/CoP analyses that only include Day 29 markers.
 
 For the longer term follow-up data set, another variable TwophaseLongtermsampInd is derived from the 
 data set, which is the indicator that a ppt has Day 1, 29, 57 marker data and hence is included in 
@@ -552,41 +458,41 @@ Short labels if the above labels are too long:
 
 Antibody marker labeling for all figures and tables:
 
-Axis Labels			Title Labels
-Anti Spike IgG (IU/ml)		Binding Antibody to Spike: Day 1
-Anti RBD IgG (IU/ml)		Binding Antibody to RBD: Day 1
-Anti N IgG (IU/ml)		Binding Antibody to N: Day 1
-Pseudovirus-nAb ID50		Pseudovirus Neutralization ID50: Day 1
-Pseudovirus-nAb ID80		Pseudovirus Neutralization ID80: Day 1
-Live virus-nAb MN50		Live virus Neutralization MN50: Day 1
+Axis Labels         Title Labels
+Anti Spike IgG (IU/ml)      Binding Antibody to Spike: Day 1
+Anti RBD IgG (IU/ml)        Binding Antibody to RBD: Day 1
+Anti N IgG (IU/ml)      Binding Antibody to N: Day 1
+Pseudovirus-nAb ID50        Pseudovirus Neutralization ID50: Day 1
+Pseudovirus-nAb ID80        Pseudovirus Neutralization ID80: Day 1
+Live virus-nAb MN50     Live virus Neutralization MN50: Day 1
 
-Anti Spike IgG (IU/ml)		Binding Antibody to Spike: Day 29
-Anti RBD IgG (IU/ml)		Binding Antibody to RBD: Day 29
-Anti N IgG (IU/ml)		Binding Antibody to N: Day 29
-Pseudovirus-nAb ID50		Pseudovirus Neutralization ID50: Day 29
-Pseudovirus-nAb ID80		Pseudovirus Neutralization ID80: Day 29
-Live virus-nAb MN50		Live virus Neutralization MN50: Day 29
+Anti Spike IgG (IU/ml)      Binding Antibody to Spike: Day 29
+Anti RBD IgG (IU/ml)        Binding Antibody to RBD: Day 29
+Anti N IgG (IU/ml)      Binding Antibody to N: Day 29
+Pseudovirus-nAb ID50        Pseudovirus Neutralization ID50: Day 29
+Pseudovirus-nAb ID80        Pseudovirus Neutralization ID80: Day 29
+Live virus-nAb MN50     Live virus Neutralization MN50: Day 29
 
-Anti Spike IgG (IU/ml)  	Binding Antibody to Spike: Day 57
-Anti RBD IgG (IU/ml)   		Binding Antibody to RBD: Day 57
-Anti N IgG (IU/ml)   		Binding Antibody to N: Day 57
-Pseudovirus-nAb ID50		Pseudovirus Neutralization ID50: Day 57
-Pseudovirus-nAb ID80		Pseudovirus Neutralization ID80: Day 57
-Live virus-nAb MN50		Live virus Neutralization MN50: Day 57
+Anti Spike IgG (IU/ml)      Binding Antibody to Spike: Day 57
+Anti RBD IgG (IU/ml)        Binding Antibody to RBD: Day 57
+Anti N IgG (IU/ml)          Binding Antibody to N: Day 57
+Pseudovirus-nAb ID50        Pseudovirus Neutralization ID50: Day 57
+Pseudovirus-nAb ID80        Pseudovirus Neutralization ID80: Day 57
+Live virus-nAb MN50     Live virus Neutralization MN50: Day 57
 
-Anti Spike IgG (IU/ml)		Binding Ab to Spike: D29 fold-rise over D1
-Anti RBD IgG (IU/ml)		Binding Ab to RBD: D29 fold-rise over D1
-Anti N IgG (IU/ml)		Binding Ab to N: D29 fold-rise over D1
-Pseudovirus-nAb ID50		Pseudovirus nAb ID50: D29 fold-rise over D1
-Pseudovirus-nAb ID80		Pseudovirus nAb ID80: D29 fold-rise over D1
-Live virus-nAb MN50		Pseudovirus nAb MN50: D29 fold-rise over D1
+Anti Spike IgG (IU/ml)      Binding Ab to Spike: D29 fold-rise over D1
+Anti RBD IgG (IU/ml)        Binding Ab to RBD: D29 fold-rise over D1
+Anti N IgG (IU/ml)      Binding Ab to N: D29 fold-rise over D1
+Pseudovirus-nAb ID50        Pseudovirus nAb ID50: D29 fold-rise over D1
+Pseudovirus-nAb ID80        Pseudovirus nAb ID80: D29 fold-rise over D1
+Live virus-nAb MN50     Pseudovirus nAb MN50: D29 fold-rise over D1
 
-Anti Spike IgG (IU/ml)		Binding Ab to Spike: D57 fold-rise over D1
-Anti RBD IgG (IU/ml)		Binding Ab to RBD: D57 fold-rise over D1
-Anti N IgG (IU/ml)		Binding Ab to N: D57 fold-rise over D1
-Pseudovirus-nAb ID50		Pseudovirus nAb ID50: D57 fold-rise over D1
-Pseudovirus-nAb ID80		Pseudovirus nAb ID80: D57 fold-rise over D1
-Live virus-nAb MN50		Pseudovirus nAb MN50: D57 fold-rise over D1
+Anti Spike IgG (IU/ml)      Binding Ab to Spike: D57 fold-rise over D1
+Anti RBD IgG (IU/ml)        Binding Ab to RBD: D57 fold-rise over D1
+Anti N IgG (IU/ml)      Binding Ab to N: D57 fold-rise over D1
+Pseudovirus-nAb ID50        Pseudovirus nAb ID50: D57 fold-rise over D1
+Pseudovirus-nAb ID80        Pseudovirus nAb ID80: D57 fold-rise over D1
+Live virus-nAb MN50     Pseudovirus nAb MN50: D57 fold-rise over D1
 
 Risk of symptomatic COVID
 Intercurrent cases
@@ -614,4 +520,3 @@ Wild type live-virus nAb MN50: D57 fold-rise over D1
 Short-hand notation when needed:
 Pseudovirus-nAb shortened to PsV-nAb
 Wild type live-virus nAb shortened to WT LV-nAb
-

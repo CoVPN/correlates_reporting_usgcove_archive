@@ -38,11 +38,11 @@ for(variable in variables_with_no_missing){
 }
 
 if(length(failed_variables_missing) > 1){
-    stop(paste0("Unexpected missingness in: ", paste(failed_variables_missing, collapse = ", ")))   
+	stop(paste0("Unexpected missingness in: ", paste(failed_variables_missing, collapse = ", ")))	
 }
 
 if(length(failed_variables_missing) > 1){
-    stop(paste0("Unexpected values in: ", paste(failed_variables_01, collapse = ", "))) 
+	stop(paste0("Unexpected values in: ", paste(failed_variables_01, collapse = ", ")))	
 }
 
 # check failure times for sanity

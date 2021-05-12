@@ -1,10 +1,31 @@
-# CoP: Mediators of Vaccine Efficacy {#cop-mediators}
+# Mediators of Vaccine Efficacy {#cop-mediators}
 
-TO FILL IN
-
-```{r cop-mediator-setup}
-# TODO
+```{r cop-mediator-setup, echo = FALSE, message = FALSE, warning = FALSE}
+library(here)
+# so it builds in either directory
+wd <- here()
+root_dir <- gsub("/cop_mediation*", "", wd)
+renv::activate(root_dir)
+source(paste0(root_dir, "/_common.R"))
+full_result <- readRDS(paste0(root_dir, "/cop_mediation/output/full_result.rds"))
+full_result_cat <- readRDS(paste0(root_dir, "/cop_mediation/output/full_result_cat.rds"))
 ```
 
-Here, we take a different approach than that based on the [stochastic
-interventional effects](#cop-stochastic)...
+```{r, mediation-kable-quantitative, output = "asis"}
+init_kable <- knitr::kable(full_result, 
+            format = "latex", row.names = FALSE, booktabs = TRUE, escape = FALSE,
+            caption = paste0("Table of mediation effect estimates for quantitative markers with 95\\% confidence intervals. \\newline{} Direct VE = VE comparing vaccine vs. placebo with marker set to distribution in placebo. \\newline{} Indirect VE = VE in vaccinated comparing observed marker vs. hypothetical marker under placebo. \\newline{} Prop. mediated = fraction of total risk reduction from vaccine attributed to antibody response."),
+            linesep = c(rep("", length(assays)-1), "\\hline"))
+if(any(is.na(full_result))){
+	init_kable <- kableExtra::add_footnote(init_kable, "NA denotes insufficient overlap in antibody response between vaccinated and control participants.")
+}
+kableExtra::kable_styling(init_kable, latex_options = c("scale_down", "hold_position"))
+```
+
+```{r, mediation-kable-categorical, output = "asis"}
+init_kable_cat <- knitr::kable(full_result_cat, 
+            format = "latex", row.names = FALSE, booktabs = TRUE, escape = FALSE,
+            caption = paste0("Table of mediation effect estimates for tertile markers with 95\\% confidence intervals. \\newline{} Direct VE = VE comparing vaccine vs. placebo with marker set to distribution in placebo. \\newline{} Indirect VE = VE in vaccinated comparing observed marker vs. hypothetical marker under placebo. \\newline{} Prop. mediated = fraction of total risk reduction from vaccine attributed to antibody response."),
+            linesep = c(rep("", length(assays)-1), "\\hline"))
+kableExtra::kable_styling(init_kable_cat, latex_options = c("scale_down", "hold_position"))
+```

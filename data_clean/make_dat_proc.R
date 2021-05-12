@@ -261,13 +261,13 @@ dat_proc$TwophasesampInd.2[!dat_proc$ph1.D29] <- 0
 
 
 assertthat::assert_that(
-    sum(with(dat_proc, is.na(wt) & EarlyendpointD57==0 & Perprotocol == 1 & EventTimePrimaryD57>=7 & !is.na(Wstratum)), na.rm=T)==0,
+    sum(with(dat_proc, is.na(wt)           & EarlyendpointD57==0 & Perprotocol == 1 & EventTimePrimaryD57>=7 & !is.na(Wstratum)), na.rm=T)==0,
     msg = "missing wt for D57 analyses ph1 subjects"
 )    
 
 
 assertthat::assert_that(
-    sum(with(dat_proc, is.na(wt.2) & EarlyendpointD29==0 & Perprotocol == 1 & EventTimePrimaryD29>=7 & !is.na(Wstratum)), na.rm=T)==0,
+    sum(with(dat_proc, is.na(wt.2)         & EarlyendpointD29==0 & Perprotocol == 1 & EventTimePrimaryD29>=7 & !is.na(Wstratum)), na.rm=T)==0,
     msg = "missing wt for D29 analyses ph1 subjects"
 )    
 

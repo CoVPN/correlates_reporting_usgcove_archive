@@ -207,10 +207,10 @@
     },
     "SuperLearner": {
       "Package": "SuperLearner",
-      "Version": "2.0-26",
+      "Version": "2.0-28",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "664b1c3ade05bd5afbd5ca5609c78bf1"
+      "Hash": "8a1b2fdfb6c4a448a4cfa24980124ad9"
     },
     "TH.data": {
       "Package": "TH.data",
@@ -239,6 +239,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "516a3e2104cf2eace9f5d2ad5c7badb3"
+    },
+    "arm": {
+      "Package": "arm",
+      "Version": "1.11-2",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "21b26dbe61da18158451c105decd10d8"
     },
     "askpass": {
       "Package": "askpass",
@@ -277,10 +284,10 @@
     },
     "bitops": {
       "Package": "bitops",
-      "Version": "1.0-6",
+      "Version": "1.0-7",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "0b118d5900596bae6c4d4865374536a6"
+      "Hash": "b7d8d8ee39869c18d8846a184dd8a1af"
     },
     "blob": {
       "Package": "blob",
@@ -439,6 +446,13 @@
       "Repository": "CRAN",
       "Hash": "ce49bfe5bc0b3ecd43a01fe1b01c2243"
     },
+    "coda": {
+      "Package": "coda",
+      "Version": "0.19-4",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "24b6d006b8b2343876cf230687546932"
+    },
     "codetools": {
       "Package": "codetools",
       "Version": "0.2-18",
@@ -543,6 +557,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "d1b8b1a821ee564a3515fa6c6d5c52dc"
+    },
+    "dbarts": {
+      "Package": "dbarts",
+      "Version": "0.9-19",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "4b309f502a492d58421b96f3ca20c1df"
     },
     "dbplyr": {
       "Package": "dbplyr",
@@ -1129,6 +1150,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "3471fb65971f1a7b2d4ae7848cf2db8d"
+    },
+    "lightgbm": {
+      "Package": "lightgbm",
+      "Version": "3.2.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "aa100baeace1d4cf28ad9f2b93487c53"
     },
     "listenv": {
       "Package": "listenv",
@@ -1869,6 +1897,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "72200a58cae0d7046e416e6be6d9d322"
+    },
+    "speedglm": {
+      "Package": "speedglm",
+      "Version": "0.3-3",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "5955a9bd4ed0275ad45596a49d75946f"
     },
     "statmod": {
       "Package": "statmod",

@@ -22,8 +22,8 @@ variables_with_no_missing <-
       "EthnicityHispanic", "EthnicityNotreported", "EthnicityUnknown",
       "Black", "Asian", "NatAmer", "PacIsl", "Multiracial",
       "Other", "Notreported", "Unknown", "Perprotocol",
-      "EventTimePrimaryD29", "EventIndPrimaryD29",
-      "EventTimePrimaryD57", "EventIndPrimaryD57",
+      "EventIndPrimaryD29",
+      "EventIndPrimaryD57",
       "SubcohortInd")
 failed_variables_missing <- failed_variables_01 <- NULL
 for(variable in variables_with_no_missing){
@@ -38,11 +38,11 @@ for(variable in variables_with_no_missing){
 }
 
 if(length(failed_variables_missing) > 1){
-    stop(paste0("Unexpected missingness in: ", paste(failed_variables_missing, sep = ", ")))    
+    stop(paste0("Unexpected missingness in: ", paste(failed_variables_missing, collapse = ", ")))   
 }
 
 if(length(failed_variables_missing) > 1){
-    stop(paste0("Unexpected values in: ", paste(failed_variables_01, sep = ", ")))  
+    stop(paste0("Unexpected values in: ", paste(failed_variables_01, collapse = ", "))) 
 }
 
 # check failure times for sanity

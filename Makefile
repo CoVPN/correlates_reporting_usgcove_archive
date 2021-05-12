@@ -21,7 +21,7 @@ cor_analysis: data_processed
 	$(MAKE) -k -C cor_graphical all
 	$(MAKE) -k -C cor_coxph all
 	$(MAKE) -k -C cor_threshold all
-# these will be added to cor report eventually
+# will be added to the CoR report eventually
 #	$(MAKE) -k -C cor_surrogates all
 #	$(MAKE) -k -C cor_nonpar all
 
@@ -31,8 +31,9 @@ cor_report: cor_analysis
 
 ## cop_analysis           : builds Correlates of Protection analyses
 cop_analysis: data_processed
-	$(MAKE) -k -C cop_prinstrat all
-	$(MAKE) -k -C cop_controlled all
+# will be added to the CoP report eventually
+#	$(MAKE) -k -C cop_prinstrat all
+#	$(MAKE) -k -C cop_controlled all
 	$(MAKE) -k -C cop_stochastic all
 	$(MAKE) -k -C cop_mediation all
 

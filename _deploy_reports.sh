@@ -12,15 +12,25 @@ git clone -b gh-pages \
 
 # remove contents from existing gh-pages branch
 cd correlates_reporting
-git rm -rf *
-echo "Remaining files in correlates_reporting/ after git rm:"
-ls -l
+# NOTE: the following is incompatible with simultaneous Travis jobs that post
+#       individual reports independently
+#git rm -rf *
+#echo "Remaining files in correlates_reporting/ after git rm:"
+#ls -l
 
 # replace with reports and note R version
-cp -r $TRAVIS_BUILD_DIR/_report_immuno/* ./
-cp -r $TRAVIS_BUILD_DIR/_report_riskscore/* ./
-cp -r $TRAVIS_BUILD_DIR/_report_cor/* ./
-#cp -r $TRAVIS_BUILD_DIR/_report_cop/* ./
+if [ "$REPORT_TYPE" == "IMMUNO" ]
+then
+  cp -r $TRAVIS_BUILD_DIR/_report_immuno/* ./
+elif [ "$REPORT_TYPE" == "COR" ]
+then
+  cp -r $TRAVIS_BUILD_DIR/_report_riskscore/* ./
+  cp -r $TRAVIS_BUILD_DIR/_report_cor/* ./
+elif [ "$REPORT_TYPE" == "COP" ]
+then
+  cp -r $TRAVIS_BUILD_DIR/_report_riskscore/* ./
+  cp -r $TRAVIS_BUILD_DIR/_report_cop/* ./
+fi
 echo "Reports built with R version $TRAVIS_R_VERSION"
 
 # check what files have been copied to branch gh-pages

@@ -1,142 +1,253 @@
-# CoP: Stochastic Interventional Effects on Risk and Vaccine Efficacy {#cop-stochastic}
+---
+output:
+  pdf_document: default
+  html_document: default
+---
 
-```{r cop-stochastic-setup, echo = FALSE, message = FALSE}
+# Stochastic Interventional Risk and Vaccine Efficacy Effects {#cop-stochastic}
+
+```{r cop-stochastic-setup, echo = FALSE, message = FALSE, warning=FALSE}
 here::i_am("cop_stochastic/report.Rmd")
+renv::activate(project = here::here())
 library(here)
-library(latex2exp)
+library(knitr)
+library(stringr)
+source(here("_common.R"))
+source(here("cop_stochastic", "code", "params.R"))
+
+# make figures bigger
+knitr::opts_chunk$set(
+  out.width = "95%"
+)
 ```
 
 We estimate the counterfactual mean of symptomatic COVID-19 infection under
-posited shifts in the measured activity levels of each of four CoP biomarkers.
-By shifting the _standardized_ CoP biomarker activity levels by standard units
-$\{-0.5, -0.4, \ldots, 0.4, 0.5\}$, we can assess the degree to which vaccines
-that possibly enhance the CoP biomarker activity to these levels could mitigate
-COVID-19 infection in terms of counterfactual risk.
+posited shifts in the measured activity levels of each of
+`r length(marker_to_name)` _candidate_ mechanistic correlates of protection
+(mCoP) biomarkers. By shifting the _standardized_ biomarker activity levels by
+standard unit shifts along the grid {`r delta_grid`}, we can assess the degree
+to which vaccines that modulate mCoP biomarker activity to these levels could
+mitigate symptomatic COVID-19 infection in terms of counterfactual stochastic
+interventional risk and vaccine efficacy (VE).
 
-## Receptor binding domain (RBD) binding antibody
+## Figures with estimates and confidence intervals for Day 57 {#sve-day57}
 
-```{r cop-stochastic-bindRBD, echo = FALSE}
-# load results data from MSM analysis and plot
-ve_msm <- readRDS(here("cop_stochastic", "output",
-                       "ve_results_Day57bindRBD.rds"))
-p_ve_msm <- plot(ve_msm) +
-  geom_point(size = 6) +
-  geom_hline(yintercept = ve_msm$param_est[ve_msm$param_est$delta == 0]$psi,
-             linetype = "dotted", colour = "red") +
-  geom_vline(xintercept = 0, linetype = "dotted", colour = "blue") +
-  labs(
-    x = paste("Posited change in standardized RBD binding antibody",
-              "(ID50)"),
-    y = "Risk of symptomatic COVID-19 infection in vaccinees",
-    title = "Estimates of mean symptomatic COVID-19 infection risks",
-    subtitle = TeX(paste("working MSM summary:",
-                         paste0("($\\hat{\\beta}_{TMLE}$ = ",
-                         round(ve_msm$msm_est$param_est[2], 4), ", ",
-                         "p-value = ", round(ve_msm$msm_est$p_value[2], 4),
-                         ")"))),
-    caption = "
-      Counterfactual COVID-19 infection risks across standardized shifts in RBD
-      binding antibody activity levels. Projection of the dose-response curve
-      onto a linear working model provides evidence of decreased expected
-      infection risk with increases in RBD binding antibody activity."
-  ) +
-  scale_x_continuous(breaks = seq(-0.5, 0.5, 0.1))
-p_ve_msm
+```{r cop-stochastic-day57-setup, echo=FALSE, message=FALSE}
+# munging marker names
+this_time <- "Day57"
+markers_name_short <- str_remove(markers[, this_time], this_time)
 ```
 
-## Spike protein antibody
+### Stochastic interventional risk: `r marker_to_name[[markers_name_short[1]]]`
 
-```{r cop-stochastic-bindSpike, echo = FALSE}
-# load results data from MSM analysis and plot
-ve_msm <- readRDS(here("cop_stochastic", "output",
-                       "ve_results_Day57bindSpike.rds"))
-p_ve_msm <- plot(ve_msm) +
-  geom_point(size = 6) +
-  geom_hline(yintercept = ve_msm$param_est[ve_msm$param_est$delta == 0]$psi,
-             linetype = "dotted", colour = "red") +
-  geom_vline(xintercept = 0, linetype = "dotted", colour = "blue") +
-  labs(
-    x = paste("Posited change in standardized spike protein binding antibody",
-              "(ID50)"),
-    y = "Risk of symptomatic COVID-19 infection in vaccinees",
-    title = "Estimates of mean symptomatic COVID-19 infection risks",
-    subtitle = TeX(paste("working MSM summary:",
-                         paste0("($\\hat{\\beta}_{TMLE}$ = ",
-                         round(ve_msm$msm_est$param_est[2], 4), ", ",
-                         "p-value = ", round(ve_msm$msm_est$p_value[2], 4),
-                         ")"))),
-    caption = "
-     Counterfactual COVID-19 infection risks across standardized shifts
-     in spike protein antibody activity levels. Projection of the dose-response
-     curve onto a linear working model provides limited evidence of decreased
-     expected infection risk with increases in spike protein antibody activity,
-     though the trend flattens sharply beyond negative shifts."
-  ) +
-  scale_x_continuous(breaks = seq(-0.5, 0.5, 0.1))
-p_ve_msm
+```{r marker1-risk-day57}
+include_graphics(
+  here(
+    "cop_stochastic", "figs",
+    paste0("mcop_risk_", this_time, markers_name_short[1], ".pdf")
+  )
+)
 ```
 
-## Live virus-neutralizing antibody
+\clearpage
 
-```{r cop-stochastic-liveneut, echo = FALSE}
-# load results data from MSM analysis and plot
-ve_msm <- readRDS(here("cop_stochastic", "output",
-                       "ve_results_Day57liveneutid80.rds"))
-p_ve_msm <- plot(ve_msm) +
-  geom_point(size = 6) +
-  geom_hline(yintercept = ve_msm$param_est[ve_msm$param_est$delta == 0]$psi,
-             linetype = "dotted", colour = "red") +
-  geom_vline(xintercept = 0, linetype = "dotted", colour = "blue") +
-  labs(
-    x = paste("Posited change in standardized live virus-neutralizing",
-              "antibody (ID50)"),
-    y = "Risk of symptomatic COVID-19 infection in vaccinees",
-    title = "Estimates of mean symptomatic COVID-19 infection risks",
-    subtitle = TeX(paste("working MSM summary:",
-                         paste0("($\\hat{\\beta}_{TMLE}$ = ",
-                         round(ve_msm$msm_est$param_est[2], 4), ", ",
-                         "p-value = ", round(ve_msm$msm_est$p_value[2], 4),
-                         ")"))),
-    caption = "
-      Counterfactual COVID-19 infection risks across standardized shifts
-      in live virus-neutralizing antibody activity levels. Projection of the
-      dose-response curve onto a linear working model provides no evidence of
-      of decreased expected infection risk with increases in live
-      virus-neutralizing antibody activity."
-  ) +
-  scale_x_continuous(breaks = seq(-0.5, 0.5, 0.1))
-p_ve_msm
+### Stochastic interventional VE: `r marker_to_name[[markers_name_short[1]]]`
+
+```{r marker1-sve-day57}
+include_graphics(
+  here(
+    "cop_stochastic", "figs",
+    paste0("mcop_sve_", this_time, markers_name_short[1], ".pdf")
+  )
+)
 ```
 
-## Pseudo-neutralizing antibody
+\clearpage
 
-```{r cop-stochastic-pseudoneut, echo = FALSE}
-# load results data from MSM analysis and plot
-ve_msm <- readRDS(here("cop_stochastic", "output",
-                       "ve_results_Day57pseudoneutid80.rds"))
-p_ve_msm <- plot(ve_msm) +
-  geom_point(size = 6) +
-  geom_hline(yintercept = ve_msm$param_est[ve_msm$param_est$delta == 0]$psi,
-             linetype = "dotted", colour = "red") +
-  geom_vline(xintercept = 0, linetype = "dotted", colour = "blue") +
-  labs(
-    x = paste("Posited change in standardized pseudo-neutralizing antibody",
-              "(ID50)"),
-    y = "Risk of symptomatic COVID-19 infection in vaccinees",
-    title = "Estimates of mean symptomatic COVID-19 infection risks",
-    subtitle = TeX(paste("working MSM summary:",
-                         paste0("($\\hat{\\beta}_{TMLE}$ = ",
-                         round(ve_msm$msm_est$param_est[2], 4), ", ",
-                         "p-value = ", round(ve_msm$msm_est$p_value[2], 4),
-                         ")"))),
-    caption = "
-     Counterfactual COVID-19 infection risks across standardized shifts
-     in pseudo-neutralizing antibody activity levels. Projection of the
-     dose-response curve onto a linear working model provides limited evidence
-     of decreased expected infection risk with increases in pseudo-neutralizing
-     antibody activity."
-  ) +
-  scale_x_continuous(breaks = seq(-0.5, 0.5, 0.1))
-p_ve_msm
+### Stochastic interventional risk: `r marker_to_name[[markers_name_short[2]]]`
+
+```{r marker2-risk-day57}
+include_graphics(
+  here(
+    "cop_stochastic", "figs",
+    paste0("mcop_risk_", this_time, markers_name_short[2], ".pdf")
+  )
+)
 ```
 
+\clearpage
+
+### Stochastic interventional VE: `r marker_to_name[[markers_name_short[2]]]`
+
+```{r marker2-sve-day57}
+include_graphics(
+  here(
+    "cop_stochastic", "figs",
+    paste0("mcop_sve_", this_time, markers_name_short[2], ".pdf")
+  )
+)
+```
+
+\clearpage
+
+### Stochastic interventional risk: `r marker_to_name[[markers_name_short[3]]]`
+
+```{r marker3-risk-day57}
+include_graphics(
+  here(
+    "cop_stochastic", "figs",
+    paste0("mcop_risk_", this_time, markers_name_short[3], ".pdf")
+  )
+)
+```
+
+\clearpage
+
+### Stochastic interventional VE: `r marker_to_name[[markers_name_short[3]]]`
+
+```{r marker3-sve-day57}
+include_graphics(
+  here(
+    "cop_stochastic", "figs",
+    paste0("mcop_sve_", this_time, markers_name_short[3], ".pdf")
+  )
+)
+```
+
+\clearpage
+
+### Stochastic interventional risk: `r marker_to_name[[markers_name_short[4]]]`
+
+```{r marker4-risk-day57}
+include_graphics(
+  here(
+    "cop_stochastic", "figs",
+    paste0("mcop_risk_", this_time, markers_name_short[4], ".pdf")
+  )
+)
+```
+
+\clearpage
+
+### Stochastic interventional VE: `r marker_to_name[[markers_name_short[4]]]`
+
+```{r marker4-sve-day57}
+include_graphics(
+  here(
+    "cop_stochastic", "figs",
+    paste0("mcop_sve_", this_time, markers_name_short[4], ".pdf")
+  )
+)
+```
+
+\clearpage
+
+## Figures with estimates and confidence intervals for Day 29 {#sve-day29}
+
+```{r cop-stochastic-day29-setup, echo=FALSE, message=FALSE}
+# munging marker names
+this_time <- "Day29"
+markers_name_short <- str_remove(markers[, this_time], this_time)
+```
+
+### Stochastic interventional risk: `r marker_to_name[[markers_name_short[1]]]`
+
+```{r marker1-risk-day29}
+include_graphics(
+  here(
+    "cop_stochastic", "figs",
+    paste0("mcop_risk_", this_time, markers_name_short[1], ".pdf")
+  )
+)
+```
+
+\clearpage
+
+### Stochastic interventional VE: `r marker_to_name[[markers_name_short[1]]]`
+
+```{r marker1-sve-day29}
+include_graphics(
+  here(
+    "cop_stochastic", "figs",
+    paste0("mcop_sve_", this_time, markers_name_short[1], ".pdf")
+  )
+)
+```
+
+\clearpage
+
+### Stochastic interventional risk: `r marker_to_name[[markers_name_short[2]]]`
+
+```{r marker2-risk-day29}
+include_graphics(
+  here(
+    "cop_stochastic", "figs",
+    paste0("mcop_risk_", this_time, markers_name_short[2], ".pdf")
+  )
+)
+```
+
+\clearpage
+
+### Stochastic interventional VE: `r marker_to_name[[markers_name_short[2]]]`
+
+```{r marker2-sve-day29}
+include_graphics(
+  here(
+    "cop_stochastic", "figs",
+    paste0("mcop_sve_", this_time, markers_name_short[2], ".pdf")
+  )
+)
+```
+
+\clearpage
+
+### Stochastic interventional risk: `r marker_to_name[[markers_name_short[3]]]`
+
+```{r marker3-risk-day29}
+include_graphics(
+  here(
+    "cop_stochastic", "figs",
+    paste0("mcop_risk_", this_time, markers_name_short[3], ".pdf")
+  )
+)
+```
+
+\clearpage
+
+### Stochastic interventional VE: `r marker_to_name[[markers_name_short[3]]]`
+
+```{r marker3-sve-day29}
+include_graphics(
+  here(
+    "cop_stochastic", "figs",
+    paste0("mcop_sve_", this_time, markers_name_short[3], ".pdf")
+  )
+)
+```
+
+\clearpage
+
+### Stochastic interventional risk: `r marker_to_name[[markers_name_short[4]]]`
+
+```{r marker4-risk-day29}
+include_graphics(
+  here(
+    "cop_stochastic", "figs",
+    paste0("mcop_risk_", this_time, markers_name_short[4], ".pdf")
+  )
+)
+```
+
+\clearpage
+
+### Stochastic interventional VE: `r marker_to_name[[markers_name_short[4]]]`
+
+```{r marker4-sve-day29}
+include_graphics(
+  here(
+    "cop_stochastic", "figs",
+    paste0("mcop_sve_", this_time, markers_name_short[4], ".pdf")
+  )
+)
+```

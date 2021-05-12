@@ -219,6 +219,8 @@ if(has29) dat_proc <- dat_proc %>%
       ))
   )
   
+# note this logic of defining ph1 is problematic if any of EarlyendpointD57, Perprotocol, EventTimePrimaryD57 is NA. 
+# better to define it positively, i.e. ph1.D57 is 1 if conditions are satisfied
 
 # wt, for D57 correlates analyses
 wts_table <- dat_proc %>%

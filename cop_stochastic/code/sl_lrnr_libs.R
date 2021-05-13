@@ -1,6 +1,6 @@
 # SL regression learners for outcome mechanism
 
-## mean of the outcome
+## naive mean of the outcome
 mean_y <- Lrnr_mean$new()
 
 ## 1) LightGBM

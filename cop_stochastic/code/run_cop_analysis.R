@@ -7,11 +7,10 @@ source(here::here("..", "_common.R"))
 # load packages
 library(here)
 library(future)
-library(tidyverse)
+library(future.apply)
 library(conflicted)
-library(hal9001)
+library(tidyverse)
 library(sl3)
-library(SuperLearner)
 library(txshift)
 
 # set options

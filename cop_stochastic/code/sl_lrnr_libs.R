@@ -1,4 +1,8 @@
 # SL regression learners for outcome mechanism
+
+## mean of the outcome
+mean_y <- Lrnr_mean$new()
+
 ## 1) LightGBM
 ## LightGBM grid
 # lgb_tune_grid <- list(
@@ -16,7 +20,7 @@ lightgbm_goss <- Lrnr_lightgbm$new(
   max_depth = 50, num_leaves = 2500, num_iterations = 1000,
   min_data_in_leaf = 5000, min_data_in_bin = 5000,
   early_stopping_rounds = 50, scale_pos_weight = 7,
-  verbose = 1, boosting = "goss"
+  boosting = "goss", verbose = 1
 )
 lightgbm_gbdt <- Lrnr_lightgbm$new(
   max_depth = 50, num_leaves = 2500, num_iterations = 1000,
@@ -80,6 +84,9 @@ dbarts <- Lrnr_dbarts$new(
 ## 6) GLM and Bayesian GLM
 fglm <- Lrnr_glm_fast$new()
 bayesglm <- Lrnr_bayesglm$new()
+
+## 7) HAL?
+## NOTE: should we add one?
 
 # just stack all them learners
 stack_reg <- c(lightgbm_goss, lightgbm_gbdt, xgboost_hist, xgboost_approx,

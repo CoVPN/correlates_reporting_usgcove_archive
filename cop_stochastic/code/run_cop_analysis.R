@@ -41,18 +41,17 @@ if (data_name_check) {
 if (run_fast) {
   # simplify learner libraries for outcome and conditional density models
   sl_reg <- Lrnr_sl$new(
-    learners = list(fglm, bayesglm, enets[[length(enets)]], ranger_70),
+    learners = list(fglm, bayesglm, mean_y),
     metalearner = logistic_meta
   )
   sl_dens <- Lrnr_sl$new(
-    learners = list(hose_rf, hese_glm),
+    learners = list(hose_glm, hese_glm),
     metalearner = Lrnr_solnp_density$new()
   )
 }
 
 # run analysis for each marker at each time
-lapply(markers, function(marker) {
-#future_lapply(markers, function(marker) {
+future_lapply(markers, function(marker) {
   # get timepoint for marker and marker name
   this_time <- marker_to_time[[marker]]
   marker_name <- str_remove(marker, this_time)
@@ -112,5 +111,4 @@ lapply(markers, function(marker) {
     object = mcop_sve_msm,
     file = here("output", paste0("mcop_sve_", marker, ".rds"))
   )
-#}, future.seed = TRUE)
-})
+}, future.seed = TRUE)

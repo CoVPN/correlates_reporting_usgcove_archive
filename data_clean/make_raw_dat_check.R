@@ -21,9 +21,11 @@ variables_with_no_missing <-
     c("Trt", "Bserostatus",
       "EthnicityHispanic", "EthnicityNotreported", "EthnicityUnknown",
       "Black", "Asian", "NatAmer", "PacIsl", "Multiracial",
-      "Other", "Notreported", "Unknown", "Perprotocol",
-      "EventIndPrimaryD29",
-      "EventIndPrimaryD57",
+      "Other", "Notreported", "Unknown", 
+                           "EventIndPrimaryD1",  "EventTimePrimaryD1", 
+      "EarlyinfectionD57", "EventIndPrimaryD57", "EventTimePrimaryD57",
+      "EarlyinfectionD29", "EventIndPrimaryD29", "EventTimePrimaryD29",
+      "NumberdaysD1toD57",
       "SubcohortInd")
 failed_variables_missing <- failed_variables_01 <- NULL
 for(variable in variables_with_no_missing){

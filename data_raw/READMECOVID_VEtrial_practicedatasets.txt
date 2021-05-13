@@ -105,24 +105,24 @@ Perprotocol     = Indicator of qualifying per-protocol (received both vaccinatio
                   prior to 14 days post dose 2. Perprotocol is a cohort-qualification indicator that is used for defining
                   inclusion of participants for immunogenicity and immune correlates analyses.
 EventTimePrimaryD1 = Minimum of of the time from Day 1 (first dose) until the COVID-19 endpoint or 
-                     right-censoring (in days). For ITT analysis.
-EventIndPrimaryD1 = Indicator that the ITT failure time is <= the right-censoring time.
+                     right-censoring (in days). For ITT analysis. NA's not allowed.
+EventIndPrimaryD1 = Indicator that the ITT failure time is <= the right-censoring time. NA's not allowed.
 EventTimePrimaryD29 = Minimum of of the time from Day 29 (antibody marker measurement) until the COVID-19 endpoint or 
                   right-censoring (in days). Note that Day 29 is the time origin for studying Day 57 antibody
-                  markers as correlates.
+                  markers as correlates.  NA's not allowed.
 EventIndPrimaryD29 = Indicator that the failure time is <= the right-censoring time.
                   Note that COVID-19 endpoints are only counted starting 7 days post Day 29 visit, 
                   because endpoints occurring over the first 6 days may have already been infected with 
                   SARS-CoV-2 before endpoint occurrence.  This means that individuals with failure time 1 to 6 days
-                  are excluded from the analysis.
+                  are excluded from the analysis.  NA's not allowed.
 EventTimePrimaryD57 = Minimum of of the time from Day 57 (antibody marker measurement) until the COVID-19 endpoint or 
                   right-censoring (in days). Note that Day 57 is the time origin for studying Day 57 antibody
-                  markers as correlates.
+                  markers as correlates.  NA's not allowed.
 EventIndPrimaryD57 = Indicator that the failure time is <= the right-censoring time. 
                   Note that COVID-19 endpoints are only counted starting 7 days post Day 57 visit, 
                   because endpoints occurring over the first 6 days may have already been infected with 
                   SARS-CoV-2 before endpoint occurrence.  This means that individuals with failure time 1 to 6 days
-                  are excluded from the analysis.
+                  are excluded from the analysis.  NA's not allowed.
 BbindSpike      = Day 1 (enrollment) value of log10 IgG binding antibody concentration to Spike protein, which is a continuous variable 
                   (scale log10 IU/ml).  
 BbindRBD        = Day 1 (enrollment) value of IgG binding antibody readout to RBD, in IU/ml.
@@ -150,8 +150,8 @@ Day57pseudoneutid80 = Day 57 value of the same marker as Bpseudoneutid80
 Day57liveneutmn50   = Day 57 value of the same marker as Bliveneutmn50 
 SubcohortInd    = Indicator that a participant is sampled into the random subcohort for measurement of Day 1, 29, 57 antibody markers
                   (stratified Benoulli random sampling)
-EarlyinfectionD29 = Indicator a participant has SARS-CoV-2 infection < 7 days post Day 29 visit (0 otherwise).
-EarlyinfectionD57 = Indicator a participant has SARS-CoV-2 infection < 7 days post Day 57 visit (0 otherwise).
+EarlyinfectionD29 = Indicator a participant has SARS-CoV-2 infection < 7 days post Day 29 visit (0 otherwise).  NA's not allowed.
+EarlyinfectionD57 = Indicator a participant has SARS-CoV-2 infection < 7 days post Day 57 visit (0 otherwise).  NA's not allowed.
 # Note that infection may be detected by RNA PCR/NAAT or by seroconversion.
 # The remaining variables with "CPV" in the variable name are only used for correlate of VE CoP analysis:
 BbindSpikeCPV   = Day 1 value of log10 IgG binding antibody readout to Spike protein in non-case placebo recipients undergoing closeout

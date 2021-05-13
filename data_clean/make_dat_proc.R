@@ -219,6 +219,8 @@ if(has29) dat_proc <- dat_proc %>%
       ))
   )
   
+# note this logic of defining ph1 is problematic if any of EarlyendpointD57, Perprotocol, EventTimePrimaryD57 is NA. 
+# better to define it positively, i.e. ph1.D57 is 1 if conditions are satisfied
 
 # wt, for D57 correlates analyses
 wts_table <- dat_proc %>%
@@ -261,13 +263,13 @@ dat_proc$TwophasesampInd.2[!dat_proc$ph1.D29] <- 0
 
 
 assertthat::assert_that(
-    sum(with(dat_proc, is.na(wt) & EarlyendpointD57==0 & Perprotocol == 1 & EventTimePrimaryD57>=7 & !is.na(Wstratum)), na.rm=T)==0,
+    sum(with(dat_proc, is.na(wt)           & EarlyendpointD57==0 & Perprotocol == 1 & EventTimePrimaryD57>=7 & !is.na(Wstratum)), na.rm=T)==0,
     msg = "missing wt for D57 analyses ph1 subjects"
 )    
 
 
 assertthat::assert_that(
-    sum(with(dat_proc, is.na(wt.2) & EarlyendpointD29==0 & Perprotocol == 1 & EventTimePrimaryD29>=7 & !is.na(Wstratum)), na.rm=T)==0,
+    sum(with(dat_proc, is.na(wt.2)         & EarlyendpointD29==0 & Perprotocol == 1 & EventTimePrimaryD29>=7 & !is.na(Wstratum)), na.rm=T)==0,
     msg = "missing wt for D29 analyses ph1 subjects"
 )    
 

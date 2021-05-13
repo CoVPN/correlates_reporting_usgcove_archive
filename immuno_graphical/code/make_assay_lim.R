@@ -8,10 +8,14 @@ library(here)
 library(dplyr)
 source(here("code", "params.R"))
 
+
+load(here("..", "data_clean","_params.Rdata"))
+
 dat.long.twophase.sample <- readRDS(here(
   "data_clean",
   "long_twophase_data.rds"
 ))
+
 
 MaxbAbB <- dat.long.twophase.sample %>%
   filter(assay %in% c("bindSpike", "bindRBD", "bindN")) %>%
@@ -23,30 +27,8 @@ MaxID50ID80B <- dat.long.twophase.sample %>%
   select(B) %>%
   max(na.rm = TRUE)
 
-if (has29) {
-  MaxbAbDay29 <- dat.long.twophase.sample %>%
-    filter(assay %in% c("bindSpike", "bindRBD", "bindN")) %>%
-    select(Day29) %>%
-    max(na.rm = TRUE)
-  
-  MaxID50ID80Day29 <- dat.long.twophase.sample %>%
-    filter(assay %in% c("pseudoneutid50", "pseudoneutid80")) %>%
-    select(Day29) %>%
-    max(na.rm = TRUE)
-}
-
-MaxbAbDay57 <- dat.long.twophase.sample %>%
-  filter(assay %in% c("bindSpike", "bindRBD", "bindN")) %>%
-  select(Day57) %>%
-  max(na.rm = TRUE)
-
-MaxID50ID80Day57 <- dat.long.twophase.sample %>%
-  filter(assay %in% c("pseudoneutid50", "pseudoneutid80")) %>%
-  select(Day57) %>%
-  max(na.rm = TRUE)
-
 # axis limits for plotting assay readouts
-assay_lim <- array(NA, dim = c(6, length(times), 2))
+assay_lim <- array(NA, dim = c(length(llods), length(times), 2))
 dimnames(assay_lim) <- list(names(llods), times, c("lb", "ub"))
 
 if (has29) {

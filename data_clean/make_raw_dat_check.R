@@ -18,7 +18,7 @@ colnames(dat_proc)[1] <- "Ptid"
 ## missing values in variables that should have no missing values
 ## binary variables only take values 0/1
 variables_with_no_missing <- 
-    c("Trt", "Bserostatus",
+    c("Trt", "Bserostatus", "Age",
       "EthnicityHispanic", "EthnicityNotreported", "EthnicityUnknown",
       "Black", "Asian", "NatAmer", "PacIsl", "Multiracial",
       "Other", "Notreported", "Unknown", 
@@ -40,11 +40,11 @@ for(variable in variables_with_no_missing){
 }
 
 if(length(failed_variables_missing) > 1){
-	stop(paste0("Unexpected missingness in: ", paste(failed_variables_missing, collapse = ", ")))	
+    stop(paste0("Unexpected missingness in: ", paste(failed_variables_missing, collapse = ", ")))   
 }
 
 if(length(failed_variables_missing) > 1){
-	stop(paste0("Unexpected values in: ", paste(failed_variables_01, collapse = ", ")))	
+    stop(paste0("Unexpected values in: ", paste(failed_variables_01, collapse = ", "))) 
 }
 
 # check failure times for sanity

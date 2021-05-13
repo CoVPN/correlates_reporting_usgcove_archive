@@ -322,6 +322,7 @@ get_preds_TSM <- function(task_list, lrnr_A = NULL, lrnr_Y = NULL, lrnr_Delta = 
       lrnr_Y <- Lrnr_mean$new()
     }
     lrnr_A_u <- NULL
+    lrnr_Y_u <- NULL
     tryCatch({
        
     lrnr_A_u <- lrnr_A$train(task_list[["A"]][["train_u"]])
@@ -333,6 +334,7 @@ get_preds_TSM <- function(task_list, lrnr_A = NULL, lrnr_Y = NULL, lrnr_Delta = 
       print("Default to unadjusted estimator")
     }
     )
+    
     tryCatch({
       lrnr_Y_u <- lrnr_Y$train(task_list[["Y"]][["train_u"]])
     }, error = function(cond) {

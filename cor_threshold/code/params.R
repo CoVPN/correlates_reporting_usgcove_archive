@@ -102,7 +102,7 @@ twophasegroup_variable <- "Wstratum"
 # between the threshold at lower_quantile and threshold at upper_quantile
 # Best to have these be away from 0 and 1.
 lower_quantile <- 0
-upper_quantile <- 1
+upper_quantile <- 0.99
 risks_to_estimate_thresh_of_protection <- NULL ### Risk values at which to estimate threshold of protection...
 ###                Leaving at NULL (default) is recommended to ensure risks fall in range of estimate. Example: c(0, 0.0005, 0.001, 0.002, 0.003)
 threshold_grid_size <- max(threshold_grid_size, 15)

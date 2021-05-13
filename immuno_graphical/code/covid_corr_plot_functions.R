@@ -797,8 +797,9 @@ covid_corr_boxplot_facets <- function(plot_dat,
                                       ),
                                       plot_LLOD = TRUE,
                                       LLOD = NULL,
-                                      LLOD_label_size = 3.5,
-                                      LLOW_lwd = 1,
+                                      LLOD_lwd = 0.5,
+                                      LLOQ = NULL,
+                                      ULOQ = NULL,
                                       lwd = 1,
                                       point_size = 1.2,
                                       box_width = 0.6,
@@ -901,13 +902,16 @@ covid_corr_boxplot_facets <- function(plot_dat,
       boxplot_list[[aa]] <- boxplot_list[[aa]] +
         geom_hline(
           yintercept = LLOD[aa], linetype = 2, color = "black",
-          lwd = LLOW_lwd
+          lwd = LLOD_lwd
         ) +
-        geom_text(
-          x = 0.65 + 0.05 * nlevels(plot_dat[, x]), vjust = "right",
-          y = LLOD[aa] - 0.5, label = "LLOD", size = LLOD_label_size,
-          color = "black", show.legend = FALSE
-        )
+        geom_hline(
+          yintercept = LLOQ[aa], linetype = 2, color = "black",
+          lwd = LLOD_lwd
+        ) +
+        geom_hline(
+          yintercept = ULOQ[aa], linetype = 2, color = "black",
+          lwd = LLOD_lwd
+        ) 
     }
   }
   output_plot <- ggarrange(

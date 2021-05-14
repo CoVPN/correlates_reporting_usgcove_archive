@@ -229,6 +229,7 @@ wts_norm <- rowSums(wts_table) / wts_table[, 2]
 dat_proc$wt <- wts_norm[dat_proc$Wstratum %.% ""]
 dat_proc$wt = ifelse(with(dat_proc, EarlyendpointD57==0 & Perprotocol == 1 & EventTimePrimaryD57>=7), dat_proc$wt, NA)
 dat_proc$ph1.D57=!is.na(dat_proc$wt)
+dat_proc$ph2.D57=with(dat_proc, ph1.D57 & TwophasesampInd)
 
 # wt.2, for D29 correlates analyses
 if(has29) {
@@ -238,6 +239,7 @@ if(has29) {
     dat_proc$wt.2 <- wts_norm2[dat_proc$Wstratum %.% ""]
     dat_proc$wt.2 = ifelse(with(dat_proc, EarlyendpointD29==0 & Perprotocol == 1 & EventTimePrimaryD29 >= 7), dat_proc$wt.2, NA)
     dat_proc$ph1.D29=!is.na(dat_proc$wt.2)
+    dat_proc$ph2.D29=with(dat_proc, ph1.D29 & TwophasesampInd.2)
 }
 
 # wt.subcohort, for immunogenicity analyses that use subcohort only and are not enriched by cases outside subcohort
@@ -247,11 +249,14 @@ wts_norm <- rowSums(wts_table) / wts_table[, 2]
 dat_proc$wt.subcohort <- wts_norm[dat_proc$tps.stratum %.% ""]
 dat_proc$wt.subcohort = ifelse(with(dat_proc, EarlyendpointD57==0 & Perprotocol == 1), dat_proc$wt.subcohort, NA)
 dat_proc$ph1.immuno=!is.na(dat_proc$wt.subcohort)
+dat_proc$ph2.immuno=with(dat_proc, ph1.immuno & SubcohortInd & TwophasesampInd)
 
-dat_proc$TwophasesampInd  [!dat_proc$ph1.D57] <- 0
-if(has29) {
-dat_proc$TwophasesampInd.2[!dat_proc$ph1.D29] <- 0    
-}
+
+# the following should not be defined because TwophasesampIndD57 and TwophasesampIndD29 are not ph2
+#dat_proc$TwophasesampInd  [!dat_proc$ph1.D57] <- 0
+#if(has29) {
+#dat_proc$TwophasesampInd.2[!dat_proc$ph1.D29] <- 0    
+#}
 
 assertthat::assert_that(
     all(!is.na(subset(dat_proc, EarlyendpointD57==0 & Perprotocol == 1 & EventTimePrimaryD57>=7 & !is.na(Wstratum), select=wt, drop=T))),

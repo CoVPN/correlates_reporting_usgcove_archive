@@ -42,15 +42,15 @@ tlf <-
       col1="7cm"
     ),
     
-    tab_bind = list(
+    tab_bind1 = list(
       table_header = "Percentage of responders, and participants
-      with concentrations $\\geq 2\\times$ LLOD or $\\geq 4\\times$ LLOD for binding antibody
+      with concentrations $\\geq 2\\times$ LLOQ or $\\geq 4\\times$ LLOQ for binding antibody
       markers",
       table_footer = c(
         "Binding Antibody Responders are defined as participants who had
-        baseline values below the LLOD with detectable antibody concentration
-        above the assay LLOD, or as participants with baseline values above
-        the LLOD with a 4-fold increase in antibody concentration.",
+        baseline values below the LLOQ with detectable antibody concentration
+        above the assay LLOQ, or as participants with baseline values above
+        the LLOQ with a 4-fold increase in antibody concentration.",
         "Percentages are calculated for the whole per-protocol group/subgroup, 
         using inverse probability weighting."),
       loop = "subgroup",
@@ -59,15 +59,33 @@ tlf <-
       pack_row = "subgroup"
     ),
     
+    tab_bind2 = list(
+      table_header = "Percentage of responders, and participants
+      with 2-fold rise, and participants with 4-fold rise for binding antibody
+      markers",
+      table_footer = c(
+        "Binding Antibody Responders are defined as participants who had
+        baseline values below the LLOQ with detectable antibody concentration
+        above the assay LLOQ, or as participants with baseline values above
+        the LLOQ with a 4-fold increase in antibody concentration.",
+        "Percentages are calculated for the whole per-protocol group/subgroup, 
+        using inverse probability weighting."),
+      loop = "subgroup",
+      group_table_col = c("Rx", "Group", "Baseline", "Visit", "N", "Marker"),
+      deselect = "subgroup",
+      pack_row = "subgroup"
+    ),
+    
+    
     tab_pseudo = list(
       table_header = "Percentage of responders, and participants
       participants with 2-fold rise, and participants with 4-fold rise for 
       ID50 pseudo-virus neutralization antibody markers",
       table_footer = c(
         "Neutralization Responders are defined as participants who had baseline
-        values below the lower limit of detection (LLOD) with detectable
-        ID50 neutralization titer above the assay LLOD, or as participants with
-        baseline values above the LLOD with a 4-fold increase in ID50.",
+        values below the lower limit of detection (LLOQ) with detectable
+        ID50 neutralization titer above the assay LLOQ, or as participants with
+        baseline values above the LLOQ with a 4-fold increase in ID50.",
         "Percentages are calculated for the whole per-protocol group/subgroup, 
         using inverse probability weighting."
       ),
@@ -83,9 +101,9 @@ tlf <-
       for MN50 WT live virus neutralization antibody markers",
       table_footer = c(
         "Neutralization Responders are defined as participants who had baseline
-        values below the lower limit of detection (LLOD) with detectable
-        ID50 neutralization titer above the assay LLOD, or as participants with
-        baseline values above the LLOD with a 4-fold increase in ID50.",
+        values below the lower limit of detection (LLOQ) with detectable
+        ID50 neutralization titer above the assay LLOQ, or as participants with
+        baseline values above the LLOQ with a 4-fold increase in ID50.",
         "Percentages are calculated for the whole per-protocol group/subgroup, 
         using inverse probability weighting."
       ),
@@ -222,14 +240,14 @@ labels.assays <- expand.grid(
 
 resp.lb <- expand.grid(
   time = visits, marker = assays,
-  ind = c("Resp", "FR2", "FR4", "2llod", "4llod"), stringsAsFactors = F
+  ind = c("Resp", "FR2", "FR4", "2lloq", "4lloq"), stringsAsFactors = F
 ) %>%
   mutate(Ind = case_when(
     ind == "FR2" ~ "% 2-Fold Rise",
     ind == "FR4" ~ "% 4-Fold Rise",
     ind == "Resp" ~ "Responder",
-    ind == "2llod" ~ "% Greater than 2xLLOD",
-    ind == "4llod" ~ "% Greater than 4xLLOD"
+    ind == "2lloq" ~ "% Greater than 2xLLOQ",
+    ind == "4lloq" ~ "% Greater than 4xLLOQ"
   )) 
 
 labels_all <- full_join(labels.assays, resp.lb, by = c("time", "marker")) %>% 

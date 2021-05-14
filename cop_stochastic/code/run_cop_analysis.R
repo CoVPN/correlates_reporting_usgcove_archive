@@ -91,7 +91,7 @@ with_progress({
         fit_type = "sl",
         sl_learners = sl_reg
       ),
-      eif_reg_type = "glm",  # NOTE: alternative is HAL regression
+      eif_reg_type = ifelse(run_fast, "glm", "hal"),
       # NOTE: need to pass in sampling probabilities, not weights
       samp_fit_ext = 1 / data_est$samp_wts
     )

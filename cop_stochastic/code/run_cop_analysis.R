@@ -18,7 +18,6 @@ library(txshift)
 sl3_debug_mode()
 options(sl3.pcontinuous = 0)
 conflict_prefer("filter", "dplyr")
-handlers("txtprogressbar")
 
 # load data
 data_name_amended <- paste0(str_remove(data_name, ".csv"),
@@ -30,8 +29,9 @@ source(here("code", "params.R"))
 source(here("code", "sl_lrnr_libs.R"))
 source(here("code", "sve_utils.R"))
 
-# parallelization
+# parallelization and progress bar specification
 plan(multicore, workers = availableCores())
+handlers("txtprogressbar")
 
 # add risk score to covariates list if defined
 if (data_name_check) {
@@ -54,7 +54,7 @@ if (run_fast) {
 # run analysis for each marker at each time
 with_progress({
   # instantiate progress bar
-  p <- progressor(steps = 2 * length(markers))
+  p <- progressor(steps = length(markers))
 
   future_lapply(markers, function(marker) {
     # get timepoint for marker and marker name
@@ -68,9 +68,6 @@ with_progress({
     data_est <- data_full %>%
       filter(Trt == 1) %>%
       select(-Trt)
-
-    # increment the progress bar
-    p(message = paste("Now evaluating", marker_name, "at", this_time))
 
     # estimate stochastic CoP based on risk
     mcop_risk_msm <- msm_vimshift(
@@ -109,7 +106,8 @@ with_progress({
     )
 
     # increment the progress bar
-    p(message = paste("Evaluation of", marker_name, "at", this_time, "done"))
+    p(message = paste("Finished evaluating", marker_name, "at", this_time),
+      class = "sticky")
 
     # save CoP risk results
     saveRDS(

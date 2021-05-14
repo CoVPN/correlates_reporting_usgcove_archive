@@ -63,6 +63,9 @@ future_lapply(markers, function(marker) {
     filter(Trt == 1) %>%
     select(-Trt)
 
+  # print marker and timepoint for reference
+  message("Beginning to evaluate marker ", marker_name, " at ", this_time)
+
   # estimate stochastic CoP based on risk
   mcop_risk_msm <- msm_vimshift(
     Y = data_est$outcome,
@@ -110,4 +113,7 @@ future_lapply(markers, function(marker) {
     object = mcop_sve_msm,
     file = here("output", paste0("mcop_sve_", marker, ".rds"))
   )
+
+  # print marker and timepoint for reference
+  message("Finished evaluating marker ", marker_name, " at ", this_time)
 }, future.seed = TRUE)

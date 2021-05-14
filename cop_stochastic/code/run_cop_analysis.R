@@ -118,5 +118,5 @@ with_progress({
       object = mcop_sve_msm,
       file = here("output", paste0("mcop_sve_", marker, ".rds"))
     )
-  }, future.seed = TRUE)
+  }, future.seed = TRUE, future.conditions = "message")
 })

@@ -45,10 +45,7 @@ if (run_fast) {
     learners = list(fglm, bayesglm, mean_y),
     metalearner = logistic_meta
   )
-  sl_dens <- Lrnr_sl$new(
-    learners = list(hose_glm, hese_glm),
-    metalearner = Lrnr_solnp_density$new()
-  )
+  sl_dens <- hose_glm
 }
 
 # run analysis for each marker at each time
@@ -94,6 +91,7 @@ with_progress({
         fit_type = "sl",
         sl_learners = sl_reg
       ),
+      eif_reg_type = "glm",  # NOTE: alternative is HAL regression
       # NOTE: need to pass in sampling probabilities, not weights
       samp_fit_ext = 1 / data_est$samp_wts
     )

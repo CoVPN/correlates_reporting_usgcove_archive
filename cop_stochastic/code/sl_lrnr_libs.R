@@ -127,9 +127,16 @@ hese_xgb <- Lrnr_density_semiparametric$new(
   mean_learner = xgboost_approx,
   var_learner = xgboost_approx
 )
+hose_lgb <- Lrnr_density_semiparametric$new(
+  mean_learner = lightgbm_goss
+)
+hese_lgb <- Lrnr_density_semiparametric$new(
+  mean_learner = lightgbm_goss,
+  var_learner = lightgbm_goss
+)
 
 # gotta stack them all
-dens_reg <- c(hose_glm, hose_rf, hose_xgb, hese_glm, hese_rf, hese_xgb)
+dens_reg <- c(hose_glm, hose_rf, hose_lgb, hese_glm, hese_rf, hese_lgb)
 
 # setup SL library for conditional density estimation for propensity score
 sl_dens <- Lrnr_sl$new(

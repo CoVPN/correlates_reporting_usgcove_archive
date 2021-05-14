@@ -246,7 +246,7 @@ knitr::opts_chunk$set(
   fig.width = 6,
   fig.asp = 0.618,
   fig.retina = 0.8,
-  dpi = 300,
+  dpi = 600,
   echo = FALSE,
   message = FALSE,
   warning = FALSE

@@ -1,15 +1,16 @@
 #' Derive indicators of magnitudes greater than 2xLLOD and 4xLLOD
 #'
 #' @param x An endpoint vector.
-#' @param llod The LLOD for endpoint \code{x}.
+#' @param cutoff The LLOD or LLOQ for the endpoint \code{x}.
 #'
-#' @return Two indicator variables \emph{x}_2llod and \emph{x}_4llod .
-grtLLOD <- function(data,
-                    x, 
-                    llod = -Inf) {
-  data[, paste0(x, "2llod")] <- ifelse(10^data[,x] >= llod*2, 1, 0)
-  data[, paste0(x, "4llod")] <- ifelse(10^data[,x] >= llod*4, 1, 0)
-  return(select_at(data, paste0(x, c(2, 4),"llod")))
+#' @return Two indicator variables \emph{x}_2lloq(d) and \emph{x}_4lloq(d).
+grtLL <- function(data,
+                  x, 
+                  cutoff.name, 
+                  cutoff = -Inf) {
+  data[, paste0(x, "2", cutoff.name)] <- ifelse(10^data[,x] >= cutoff*2, 1, 0)
+  data[, paste0(x, "4", cutoff.name)] <- ifelse(10^data[,x] >= cutoff*4, 1, 0)
+  return(select_at(data, paste0(x, c(2, 4), cutoff.name)))
 }
 
 
@@ -24,52 +25,32 @@ grtLLOD <- function(data,
 #' @param bl The variable of endpoint value at baseline
 #' @param post The variable of endpoint value at post-baseline
 #' @param folds Folds to generate fold-rise indicator
-#' @param llod LLOD
+#' @param cutoff LLOD or LLOQ
 #' @param respoderFR Fold-rise used for response call positivity criteria
 #'
 #' @return Response calls and fold-rise indicator for \code{bl}: \emph{bl}Resp,
 #'  \emph{bl}FR\emph{folds}
-setResponder <- function(data, bl, post, folds = c(2, 4), llod,
+setResponder <- function(data, 
+                         bl, 
+                         post, 
+                         folds = c(2, 4), 
+                         cutoff, 
                          responderFR = 4) {
   data[, paste0(post, "FR")] <- 10^(data[, post] - data[, bl])
-  foldsInd <- sapply(folds, function(x) {
-    as.numeric(data[, paste0(post, "FR")] >= x)
-  }) %>% data.frame()
+  foldsInd <- data.frame(sapply(folds, function(x)as.numeric(data[, paste0(post, "FR")] >= x)))
   names(foldsInd) <- paste0(post, "FR", folds)
   data <- cbind(data, foldsInd)
-  data[, paste0(post, "Resp")] <-
-    ifelse((data[, bl] < log10(llod) & data[, post] > log10(llod)) |
-             (data[, bl] >= log10(llod) & data[, paste0(post, "FR", responderFR)] == 1),
-           1,
-           0
-    )
+  # Responders at each pre-defined timepoint are defined as participants who had 
+  # baseline values below the LLOQ with detectable ID50 neutralization titer 
+  # above the assay LLOQ, or as participants with baseline values above the LLOQ 
+  # with a 4-fold increase in neutralizing antibody titer.
+  data[, paste0(post, "Resp")] <- ifelse((data[, bl] < log10(cutoff) & data[, post] > log10(cutoff)) |
+                                         (data[, bl] >= log10(cutoff) & data[, paste0(post, "FR", responderFR)] == 1),
+                                         1,
+                                         0
+                                         )
   return(select_at(data, c(paste0(post, "Resp"), paste0(post, "FR", folds))))
 }
-
-#' Generate delta, difference of endpoint between timepoint t1 and t2
-#'
-#' @param data The dataframe with the endpoint of interest at \code{t1} and
-#'  \code{t2}.
-#' @param marker The marker (as in the column name).
-#' @param timepoints Timepoints for comparisons.
-#' @param time.ref The reference timepoint to compare with all other timepoints. Pairwise comparisons between all timepoints if not specified.
-#'
-#' @return A vector of delta: Delta\emph{t2}over\emph{t1Endpoint}.
-setDelta <- function(data, marker, timepoints, time.ref = NA) {
-  ret <- data.frame(matrix(ncol = 0, nrow = nrow(data)))
-  if (is.na(time.ref)) {
-    timepairs <- gtools::combinations(n = length(timepoints), r = 2, v = timepoints)
-  } else {
-    timepairs <- matrix(c(setdiff(timepoints, time.ref), rep(time.ref, length(timepoints)-1)), ncol = 2)
-  }
-  for (i in 1:nrow(timepairs)){
-    t1 <- timepairs[i, 1]
-    t2 <- timepairs[i, 2]
-    ret[, gsub("Day", "", paste0("Delta", t2, "over", t1, marker))] <- data[paste0(t2, marker)] - data[paste0(t1, marker)]
-  }
-  return(ret)
-}
-
 
 #' Wrapper function to generate response rates based on svyciprop()
 #' @param dat a data frame containing the variables in the function
@@ -201,45 +182,58 @@ get_rgmt <- function(dat, v, groups, comp_lev, sub.by, strata, weights, subset){
   rgmt <- NULL
   for (j in groups){
     j.n <- match(j, groups)
+    comp_i <- comp_lev[comp_lev %in% dat[, gsub("`","",j)]]
+    if (length(comp_i)!=2) {
+      warning(paste(j, "has more/less than 2 levels"))
+      next
+    }
+    dat[, gsub("`","",j)] <- factor(dat[, gsub("`","",j)], levels = comp_i)
+    contrasts(dat[, gsub("`","",j)]) <- contr.treatment(2, base = 2)
     for (i in v){
       dat <- dat %>% 
         group_by_at(gsub("`", "", c(j, sub.by))) %>% 
-        mutate(nagrp=cur_group_id()) %>% 
-        ungroup() %>% 
-        data.frame(check.names=F)
+        mutate(nagrp=cur_group_id())
       tab.sub <- table(!is.na(dat[as.vector(dat[,subset]==1),i]), dat[as.vector(dat[,subset]==1),]$nagrp)["TRUE",]==0
       na.sub <- names(tab.sub[tab.sub])  
       dat[,paste0(i,j.n)] <- !(as.character(dat$nagrp) %in% na.sub)
     }
-    comp_i <- comp_lev[comp_lev %in% dat[, gsub("`","",j)]]
-    dat[, gsub("`","",j)] <- factor(dat[, gsub("`","",j)], levels = comp_i)
-    contrasts(dat[, gsub("`","",j)]) <- contr.treatment(2, base = 2)
-    
   }
   design.full <- twophase(list(~Ptid, ~Ptid), 
-                     strata=list(NULL, as.formula(sprintf("~%s", strata))),
-                     subset=as.formula(sprintf("~%s", subset)),
-                     method="simple",
-                     weights = list(NULL, ~wt.subcohort),
-                     data=dat)
+                          strata=list(NULL, as.formula(sprintf("~%s", strata))),
+                          weights=list(NULL, as.formula(sprintf("~%s", weights))), 
+                          subset=as.formula(sprintf("~%s", subset)),
+                          method="simple",
+                          data=dat)
   for (j in groups){
     j.n <- match(j, groups)
+    comp_vs <- paste(comp_lev[comp_lev %in% dat[, gsub("`","",j)]], collapse=" vs ")
     for (i in v){
-      comp_i <- paste(comp_lev[comp_lev %in% dat[, gsub("`","",j)]], collapse=" vs ")
-      cat(i,"--",j, comp_i, "\n")
-      design.ij <- subset(design.full, eval(parse(text=sprintf("%s%s & !is.na(%s)",i,j.n,j))))
-      ret <- svyby(as.formula(sprintf("%s~%s", i, j)),
-                   by=as.formula(sprintf("~%s", paste(sub.by, collapse="+"))),
-                   design=design.ij,
-                   svyglm, vartype="ci")
-      
-      rgmt <- bind_rows(
-        ret %>% 
-          rename_all(gsub, pattern=paste0(j, 1), replacement="Estimate", fixed=T) %>%
-          mutate(subgroup=gsub("`","",!!j), mag_cat=!!i, comp=!!comp_i,  
-                 `Ratios of GMT/GMC` = sprintf("%.2f\n(%.2f, %.2f)", 
-                                               10^Estimate, 10^ci_l.Estimate, 10^ci_u.Estimate)),
-        rgmt)
+      cat(i,"--",j, comp_vs, "\n")
+      if (length(comp_i)==2) {
+        design.ij <- subset(design.full, eval(parse(text=sprintf("%s%s & !is.na(%s)",i,j.n,j))))
+        ret <- svyby(as.formula(sprintf("%s~%s", i, j)),
+                     by=as.formula(sprintf("~%s", paste(sub.by, collapse="+"))),
+                     design=design.ij,
+                     svyglm, vartype="ci")
+        
+        rgmt <- bind_rows(
+          ret %>% 
+            rename_all(gsub, pattern=paste0(j, 1), replacement="Estimate", fixed=T) %>%
+            mutate(subgroup=gsub("`","",!!j), mag_cat=!!i, comp=!!comp_vs,  
+                   `Ratios of GMT/GMC` = sprintf("%.2f\n(%.2f, %.2f)", 
+                                                 10^Estimate, 10^ci_l.Estimate, 10^ci_u.Estimate)),
+          rgmt)
+      } else {
+        rgmt <- bind_rows(
+          dat %>% 
+            distinct_at(gsub("`","",sub.by)) %>% 
+            mutate(subgroup=gsub("`","", j), 
+                   mag_cat=!!i, 
+                   comp=!!comp_vs, 
+                   `Ratios of GMT/GMC` = "-"),
+          rgmt
+        )
+      }
     }
   }
   rgmt <- inner_join(rgmt, distinct(labels_all, mag_cat, Visit, Marker), by="mag_cat")

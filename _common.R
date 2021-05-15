@@ -388,4 +388,3 @@ get.labels.x.axis.cor=function(xlim, llod){
   }
   return(list(ticks = x_ticks, labels = labels))
 }
-

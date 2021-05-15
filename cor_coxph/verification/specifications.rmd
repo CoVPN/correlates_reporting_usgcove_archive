@@ -21,8 +21,8 @@ General considerations:
 
 Due to the two-phase sampling design, the survey package svycoxph function (using twophase function to create the design object) will be used for fitting Cox models and getting confidence intervals and P values. The differences between Day 57 and Day 29 analyses are
 \begin{itemize}
-    \item Phase 1 ptids in Day 57 analyses are defined by !is.na(wt); in Day 29 analyses they are defined by !is.na(wt.2)
-    \item Phase 2 ptids in Day 57 analyses are defined by TwophasesampInd; in Day 29 analyses they are defined by TwophasesampInd.2
+    \item Phase 1 ptids in Day 57 analyses are defined by ph1.D57; in Day 29 analyses they are defined by ph1.D29
+    \item Phase 2 ptids in Day 57 analyses are defined by ph2.D57; in Day 29 analyses they are defined by ph2.D29
 \end{itemize}
 
 

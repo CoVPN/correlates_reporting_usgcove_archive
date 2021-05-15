@@ -16,7 +16,7 @@ lot: yes
 lof: yes
 always_allow_html: yes
 header-includes:
-   - \usepackage{eso-pic,graphicx,transparent,caption,pdflscape}
+   - \usepackage{eso-pic,graphicx,transparent,caption,pdflscape,float}
    - \usepackage[margin=1in]{geometry}
 ---
 

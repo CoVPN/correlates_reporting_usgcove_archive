@@ -315,22 +315,34 @@ get_preds_TSM <- function(task_list, lrnr_A = NULL, lrnr_Y = NULL, lrnr_Delta = 
     task_A_train <- task_list[["A"]][["train_u"]]
     task_Y_train <- task_list[["Y"]][["train_u"]]
 
-    if (length(unique(task_A_train$Y)) == 1) {
+    if (length(unique(task_A_train$Y)) ==1 || min(table(task_A_train$Y))  <= 10) {
       lrnr_A <- Lrnr_mean$new()
     }
-    if (length(unique(task_Y_train$Y)) == 1) {
+    if (length(unique(task_Y_train$Y)) ==1 ||min(table(task_Y_train$Y)) <= 4) {
       lrnr_Y <- Lrnr_mean$new()
     }
+    lrnr_A_u <- NULL
+    lrnr_Y_u <- NULL
     tryCatch({
+       
     lrnr_A_u <- lrnr_A$train(task_list[["A"]][["train_u"]])
     }, error = function(cond) {
+      lrnr_A <<- Lrnr_mean$new()
+      lrnr_A_u <<- lrnr_A$train(task_list[["A"]][["train_u"]])
+      print(table(task_A_train$Y))
       print("Failed on training treatment learner")
+      print("Default to unadjusted estimator")
     }
     )
+    
     tryCatch({
       lrnr_Y_u <- lrnr_Y$train(task_list[["Y"]][["train_u"]])
     }, error = function(cond) {
+      lrnr_Y <<- Lrnr_mean$new()
+      lrnr_Y_u <<- lrnr_Y$train(task_list[["Y"]][["train_u"]])
+      print(table(task_A_train$Y))
       print("Failed on training outcome learner")
+      print("Default to unadjusted estimator")
     }
     )
     

@@ -21,6 +21,9 @@ source(here::here("..", "_common.R"), local = knitr::knit_global())
 <!-- Note that there is no need to source _common.R in report.Rmd because it is taken care of elsewhere in yml -->
 
 
+\counterwithin{table}{section}
+\counterwithin{figure}{section}
+
 
 ```{r, echo=FALSE}
 Day <- 57

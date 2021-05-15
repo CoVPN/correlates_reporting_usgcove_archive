@@ -15,6 +15,12 @@ data <- dat.mock
 
 # Generate the outcome and censoring indicator variables
 for (time in times) {
+  if(time == "Day57") {
+    Earlyendpoint <- "EarlyendpointD57"
+  } else if(time == "Day29") {
+    Earlyendpoint <- "EarlyendpointD29"
+    
+  }
   print(time)
   data <- dat.mock
   outcome <-
@@ -49,8 +55,9 @@ for (time in times) {
       "outcome",
       "Delta"
     )
-  keep <- data$Trt == 1 & data$Bserostatus == 0 & !is.na(data$wt)
 
+  keep <- data[[Earlyendpoint]] ==0 & data$Trt == 1 & data$Bserostatus == 0 & data$Perprotocol==1 & !is.na(data$wt) & data[[Event_Time_variable[[time]]]] >=7
+  
   data_firststage <- data[keep, variables_to_keep]
   #data_firststage <- na.omit(data_firststage)
   data_secondstage <- na.omit(data_firststage[data_firststage$TwophasesampInd == 1, ])

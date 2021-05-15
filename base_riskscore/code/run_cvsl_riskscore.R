@@ -42,7 +42,8 @@ inputFile <- dat_cleaned
 # Identify the risk demographic variable names that will be used to compute the risk score
 risk_vars <- c(
   "MinorityInd", "EthnicityHispanic", "EthnicityNotreported", "EthnicityUnknown", 
-  "Black", "Asian", "NatAmer", "PacIsl",   "WhiteNonHispanic", "Multiracial", "Other", 
+  "Black", "Asian", "NatAmer", "PacIsl", "WhiteNonHispanic", 
+  "Multiracial", "Other", 
   "Notreported", "Unknown",
   "HighRiskInd", "Sex", "Age", "BMI"
 )

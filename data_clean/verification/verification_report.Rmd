@@ -1,11 +1,14 @@
 ---
 title: "Verification Report: data_clean"
 author: "Ellis Hughes"
-date: "2021/04/26"
+date: "`r Sys.Date()`"
 output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
+
+renv::activate(here::here())
+
 knitr::opts_chunk$set(echo = TRUE)
 
 library(tidyverse)
@@ -153,11 +156,11 @@ In this document, the output of `make_data_proc.R` is compared against the outpu
 
 `process_data_raw.R` was independently double programmed based on the specifications found in `dat_clean_specifications.pdf`. This script outputs its processing to \newline `data_clean/verification/verification_output/data_clean_verification_output.csv`
 
-The file `data_clean/verification/verification_input/practice_data w29.csv` was provided by the original programmer to the tester for verification purposes of `make_data_proc.R` when all time points are available.s
-Its md5 hash is `r digest::digest(file = here("data_clean/verification/verification_input","practice_data w29.csv"))`.
+The file `data_clean/verification/verification_input/practice_data_w29.csv` was provided by the original programmer to the tester for verification purposes of `make_data_proc.R` when all time points are available.s
+Its md5 hash is `r digest::digest(file = here("data_clean/verification/verification_input","practice_data_w29.csv"))`.
 
-The file `data_clean/verification/verification_input/practice_data wo29.csv` was provided by the original programmer to the tester for verification purposes of `make_data_proc.R` when only baseline and Day 57 were available.
-Its md5 hash is `r digest::digest(file = here("data_clean/verification/verification_input","practice_data wo29.csv"))`.
+The file `data_clean/verification/verification_input/practice_data_wo29.csv` was provided by the original programmer to the tester for verification purposes of `make_data_proc.R` when only baseline and Day 57 were available.
+Its md5 hash is `r digest::digest(file = here("data_clean/verification/verification_input","practice_data_wo29.csv"))`.
 
 
 The file `data_clean/verification/verification_output/data_clean_verification_output.csv` was created by the tester for verification using the `process_data_Raw.R` script and using all time points available.
@@ -171,11 +174,11 @@ Its md5 hash is `r digest::digest(file = here("data_clean/verification/verificat
 
 ```{r Load-Data, message=FALSE}
 original_data <- read_csv(
-  here("data_clean/verification/verification_input","practice_data w29.csv"),
+  here("data_clean/verification/verification_input","practice_data_w29.csv"),
   guess_max = 30000)
 
 original_data_no_d29 <- read_csv(
-  here("data_clean/verification/verification_input","practice_data wo29.csv"),
+  here("data_clean/verification/verification_input","practice_data_wo29.csv"),
   guess_max = 30000)
 
 verification_data <- read_csv(
@@ -197,7 +200,7 @@ data_clean_comparison <- compare_datasets(
 )
 
 data_clean_comparison_no_d29 <- compare_datasets(
-  cols =  colnames(original_data_no_d29), index = "Ptid",
+  cols = colnames(original_data_no_d29), index = "Ptid",
   ds1 = original_data_no_d29, ds2 = verification_data_no_d29
 )
 

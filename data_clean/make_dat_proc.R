@@ -30,6 +30,7 @@ colnames(dat_proc)[1] <- "Ptid"
 
 
 #dat_proc=subset(dat_proc, !is.na(Bserostatus))
+dat_proc=subset(dat_proc, !is.na(EventTimePrimaryD1) & !is.na(EventTimePrimaryD57) & !is.na(EventTimePrimaryD29))
 
 
 #hist(dat_proc$Day57bindSpike[dat_proc$Trt==1])

@@ -104,25 +104,45 @@ Perprotocol     = Indicator of qualifying per-protocol (received both vaccinatio
                   primary analysis of vaccine efficacy, because that indicator may be zero for COVID cases with event time
                   prior to 14 days post dose 2. Perprotocol is a cohort-qualification indicator that is used for defining
                   inclusion of participants for immunogenicity and immune correlates analyses.
+EventTimePrimaryD1  = Minimum of of the time from Day 1 (innoculation) until the COVID endpoint or 
+                      right-censoring (integer in days, NA if missing/undefined). For ITT analysis.
+
+EventIndPrimaryD1   = Indicator that the ITT failure time is <= the right-censoring time (1=COVID endpoint, 
+                      0=right-censored, NA if EventTimePrimaryD1 is NA).
+
+EventTimePrimaryD29 = Minimum of of the time from Day 29 (antibody marker measurement) until the COVID endpoint or 
+                      right-censoring (integer in days, negative if the time is before Day 29, NA if missing/undefined).  Day 29 is the time origin for studying Day 29 antibody markers as CoRs and as CoPs. 
+
+EventIndPrimaryD29  = Indicator that the EventTimePrimaryD29 failure time is <= the right-censoring time (1=COVID 
+                      endpoint, 0=right-censored, NA if EventTimePrimaryD29 is NA).
+                      COVID endpoints are only counted starting 7 days post Day 29 visit, 
+                      because endpoints occurring during the first 6 days may have already been infected with 
+                      SARS-CoV-2 before endpoint occurrence.  This means that individuals with failure time 1 
+                      to 6 days post Day 29 visit are excluded from the analysis, which will be achieved through the definition of ph1.D29 defined below. 
+
 EventTimePrimaryD1 = Minimum of of the time from Day 1 (first dose) until the COVID-19 endpoint or 
-                     right-censoring (in days). For ITT analysis. NA not allowed.
-EventIndPrimaryD1 = Indicator that the ITT failure time is <= the right-censoring time. NA not allowed.
+                     right-censoring (integer in days, NA if missing/undefined). For ITT analysis.
+EventIndPrimaryD1 = Indicator that the ITT failure time is <= the right-censoring time. (1=COVID endpoint, 
+                      0=right-censored, NA if EventTimePrimaryD1 is NA)
+
 EventTimePrimaryD29 = Minimum of of the time from Day 29 (antibody marker measurement) until the COVID-19 endpoint or 
-                  right-censoring (in days). Note that Day 29 is the time origin for studying Day 57 antibody
-                  markers as correlates.  NA not allowed.
-EventIndPrimaryD29 = Indicator that the failure time is <= the right-censoring time.
+                  right-censoring (integer in days, negative if the time is before Day 29, NA if missing/undefined). Note that Day 29 is the time origin for studying Day 57 antibody markers as correlates.
+EventIndPrimaryD29 = Indicator that the failure time is <= the right-censoring time. (1=COVID 
+                      endpoint, 0=right-censored, NA if EventTimePrimaryD29 is NA)
                   Note that COVID-19 endpoints are only counted starting 7 days post Day 29 visit, 
                   because endpoints occurring over the first 6 days may have already been infected with 
                   SARS-CoV-2 before endpoint occurrence.  This means that individuals with failure time 1 to 6 days
-                  are excluded from the analysis.  NA not allowed.
+                  are excluded from the analysis.  
+
 EventTimePrimaryD57 = Minimum of of the time from Day 57 (antibody marker measurement) until the COVID-19 endpoint or 
-                  right-censoring (in days). Note that Day 57 is the time origin for studying Day 57 antibody
-                  markers as correlates.  NA not allowed.
-EventIndPrimaryD57 = Indicator that the failure time is <= the right-censoring time. 
+                  right-censoring (integer in days, negative if the time is before Day 29, NA if missing/undefined). Note that Day 57 is the time origin for studying Day 57 antibody markers as correlates. 
+EventIndPrimaryD57 = Indicator that the failure time is <= the right-censoring time. (1=COVID 
+                      endpoint, 0=right-censored, NA if EventTimePrimaryD57 is NA)
                   Note that COVID-19 endpoints are only counted starting 7 days post Day 57 visit, 
                   because endpoints occurring over the first 6 days may have already been infected with 
                   SARS-CoV-2 before endpoint occurrence.  This means that individuals with failure time 1 to 6 days
-                  are excluded from the analysis.  NA not allowed.
+                  are excluded from the analysis.  
+
 BbindSpike      = Day 1 (enrollment) value of log10 IgG binding antibody concentration to Spike protein, which is a continuous variable 
                   (scale log10 IU/ml).  
 BbindRBD        = Day 1 (enrollment) value of IgG binding antibody readout to RBD, in IU/ml.
@@ -184,17 +204,6 @@ CPVsampInd      = Indicator that a participant is sampled into the closeout plac
 
 EventIndPrimaryD57==1 implies EventIndPrimaryD29==1 implies EventIndPrimaryD1==1
 
-Based on the data set, a new variable TwophasesampIndprimary is defined for the processed data set, 
-which is the indicator that a participant has antibody marker data measured, where all participants with 
-TwophasesampIndprimary==1 have complete data for Day 1, 29, 57 markers, and all immunogenicity 
-report analyses restrict to ptids with TwophasesampIndprimary==1.  
-In addition, all CoR/CoP analyses of Day 57 markers only, and of Day 29 and Day 57 markers together,
-restrict to ptids with TwophasesampIndprimary==1.
-All CoR/CoP analyses of Day 29 markers restrict to ptids with TwophasesampIndprimary.2==1, where all participants
-with TwophasesampIndprimary.2==1 have complete data for Day 1, 29 markers.  The reason a new variable is used is
-because some intercurrent COVID cases (before 6 days post Day 57 visit) may miss the Day 57 visit due to COVID.
-
-Two other derived variables are helpful to define ptids to include in analyses
 EarlyendpointD57  = Indicator a participant has EarlyinfectionD57==1 or has a COVID endpoint < 7 days
                     post Day 57 visit (0 otherwise) [used to exclude ptids from the immunogenicity analyses 
                                                      and to exclude non-cases from CoR/CoP analyses]
@@ -206,26 +215,32 @@ EarlyendpointD29  = Indicator a participant has EarlyinfectionD29==1 or has a CO
                     post Day 29 visit (0 otherwise)   
 EarlyendpointD29 <- ifelse(EarlyinfectionD29==1 | (EventIndPrimaryD1==1 & EventTimePrimaryD1 < NumberdaysD1toD29 + 7),1,0)
 
+TwophasesampIndD29 = 0/1 indicator that a participant 1) has required antibody marker data measured at Day 1 and 29; and 2) either is a case or belongs to the subcohort.
+
+TwophasesampIndD57 = 0/1 indicator that a participant 1) has required antibody marker data measured at Day 1, 29 and 57; and 2) either is a case or belongs to the subcohort.
+
+tps.stratum = Stratum indicator based on treatment arm, baseline serostatus, and demographical variables
+
+Wstratum = Stratum indicator, same as tps.stratum except that cases in each of the four {vaccine, placebo} x {baseline pos, baseline neg} groups are assigned to their own strata. Thus the maximum number of strata defined by Wstratum is 4 plus the maxium number of strata defined by tps.stratum, although some case strata may be empty.
+
+
+
+Immunogenicity report analyses:
+Phase 1 ptids: ph1.immuno = EarlyendpointD57==0 & Perprotocol==1 & !is.na(tps.stratum)
+Phase 2 ptids: ph2.immuno = ph1.immuno & TwophasesampIndD57 & SubcohortInd==1
+Weights: wt.subcohort = inverse sampling probability for each tps.stratum
 
 CoR/CoP analyses of Day 57 markers only, and of both Day 29 and Day 57 markers together:                             
-Phase 1 ptids: Bserostatus==0 & EarlyendpointD57==0 & Perprotocol==1 & EventTimePrimaryD57 >= 7 & !is.na(Wstratum)
-Phase 1 indicator: ph1.D57
-Phase 2 ptids: TwophasesampIndprimary==1
-Weights: wt
+Phase 1 ptids: ph1.D57 = Bserostatus==0 & EarlyendpointD57==0 & Perprotocol==1 & EventTimePrimaryD57 >= 7 & !is.na(Wstratum)
+Phase 2 ptids: ph2.D57 = ph1.D57 & TwophasesampIndD57
+Weights: wt.D57  = inverse sampling probability for each W.stratum
 Failure time variables: (EventTimePrimaryD57, EventIndPrimaryD57) and ignore (EventTimePrimaryD29, EventIndPrimaryD29)
 
 CoR/CoP analyses of Day 29 markers only:                             
-Phase 1 ptids: Bserostatus==0 & EarlyendpointD29==0 & Perprotocol==1 & EventTimePrimaryD29 >= 7 & !is.na(Wstratum)
-Phase 1 indicator: ph1.D29
-Phase 2 ptids: TwophasesampIndprimary.2==1
-Weights: wt.2
+Phase 1 ptids: ph1.D29 = Bserostatus==0 & EarlyendpointD29==0 & Perprotocol==1 & EventTimePrimaryD29 >= 7 & !is.na(Wstratum)
+Phase 2 ptids: ph2.D29 = ph1.D29 & TwophasesampIndD29
+Weights: wt.D29  = inverse sampling probability for each W.stratum
 Failure time variables: (EventTimePrimaryD29, EventIndPrimaryD29) and ignore (EventTimePrimaryD57, EventIndPrimaryD57)
-
-Immunogenicity report analyses:
-Phase 1 ptids:                  EarlyendpointD57==0 & Perprotocol==1 & !is.na(tps.stratum)
-Phase 1 indicator: ph1.immuno
-Phase 2 ptids: TwophasesampIndprimary==1 & SubcohortInd==1 & !is.na(tps.stratum)
-Weights: wt.subcohort
 
 Note that ph1.D57 does not include non-cases whose demo.stratum is NA but does include cases whose demo.stratum is NA because all cases belong to the case strata.
 

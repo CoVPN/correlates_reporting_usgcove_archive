@@ -92,7 +92,7 @@ for (a in assays) {
         if (mean(dat.vacc.pop[[ind.t %.% a]]>uppercut, na.rm=T)>1/3 & startsWith(ind.t, "Day")) {
             # if more than 1/3 of vaccine recipients have value > ULOQ
             # let q.a be median among those < ULOQ and ULOQ
-            myprint("more than 1/3 of vaccine recipients have value > ULOQ")
+            print("more than 1/3 of vaccine recipients have value > ULOQ")
             q.a=c(  wtd.quantile(dat.vacc.pop[[ind.t %.% a]][dat.vacc.pop[[ind.t %.% a]]<=uppercut], weights = dat.vacc.pop$wt.0[dat.vacc.pop[[ind.t %.% a]]<=uppercut], probs = c(1/2)), 
                     uppercut)
         } else {

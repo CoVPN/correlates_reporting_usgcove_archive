@@ -36,16 +36,16 @@ if(length(failed_llod_check) > 1){
 ## missing values in variables that should have no missing values
 ## binary variables only take values 0/1
 variables_with_no_missing <- 
-    c("Trt", "EthnicityHispanic", "EthnicityNotreported", "EthnicityUnknown",
-      "Black", "Asian", "NatAmer", "PacIsl", "Multiracial",
-      "Other", "Notreported", "Unknown", "Perprotocol",
-      "EventIndPrimaryD29",
-      "EventIndPrimaryD57",
-      "SubcohortInd",
-      "age.geq.65",
+    c(
+                           "EventIndPrimaryD1",  "EventTimePrimaryD1", 
+      "EarlyinfectionD57", "EventIndPrimaryD57", "EventTimePrimaryD57",
+      "EarlyinfectionD29", "EventIndPrimaryD29", "EventTimePrimaryD29",
+      "NumberdaysD1toD57",
+      "age.geq.65", "MinorityInd",
       "TwophasesampInd","TwophasesampInd.2",
-      "MinorityInd",
-      "EarlyendpointD57", "EarlyendpointD29"
+      "EarlyendpointD57", "EarlyendpointD29",
+      "ph1.D57", "ph1.D29", "ph1.immuno",
+      "ph2.D57", "ph2.D29", "ph2.immuno"
       )
 
 failed_variables_missing <- failed_variables_01 <- NULL

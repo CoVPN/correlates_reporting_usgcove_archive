@@ -1,7 +1,7 @@
 #-----------------------------------------------
 # obligatory to append to the top of each script
-renv::activate(project = here::here(".."))
-source(here::here("..", "_common.R"))
+renv::activate(project = here::here("..", ".."))
+source(here::here("..", "..", "_common.R"))
 #-----------------------------------------------
 
 # load required libraries and functions
@@ -25,25 +25,24 @@ library(xtable)
 library(broom)
 
 # Read in data file
-inputFile <- read.csv(here::here("..", "data_clean", "practice_data_with_riskscore.csv")) 
-
+inputFile <- read.csv(here::here("..", "..", "..", "..", "cor_coxph_dev_results_20210514", "practice_data.csv")) 
 
 # This function takes marker name as string, and the design.
 # It returns the HR for the marker, CI and p.value
 getHR_D57_continuous_marker <- function(marker, design, data, group){
   if(group %in% c("Age < 65, At risk", "Age < 65, Not at risk", "At risk", "Not at risk")){
-    fm = as.formula(paste("Surv(EventTimePrimaryD57, EventIndPrimaryD57) ~ ", marker, " + MinorityInd + risk_score"))
+    fm = as.formula(paste("Surv(EventTimePrimaryD57, EventIndPrimaryD57) ~ ", marker, " + MinorityInd + Age"))
   } else if (group %in% c("WhiteNonHispanic", "Comm. of color")){
-    fm = as.formula(paste("Surv(EventTimePrimaryD57, EventIndPrimaryD57) ~ ", marker, " + HighRiskInd + risk_score"))
+    fm = as.formula(paste("Surv(EventTimePrimaryD57, EventIndPrimaryD57) ~ ", marker, " + HighRiskInd + Age"))
   }else{
-    fm = as.formula(paste("Surv(EventTimePrimaryD57, EventIndPrimaryD57) ~ ", marker, " + MinorityInd + HighRiskInd + risk_score"))
+    fm = as.formula(paste("Surv(EventTimePrimaryD57, EventIndPrimaryD57) ~ ", marker, " + MinorityInd + HighRiskInd + Age"))
   }
   
   fit <- survey::svycoxph(fm, design=design)
   
   tidy(fit, conf.int = T, exponentiate = T) %>% data.frame() %>%
     select(term, estimate, conf.low, conf.high, p.value) %>%
-    filter(!term %in% c("MinorityInd", "HighRiskInd", "risk_score")) %>%
+    filter(!term %in% c("MinorityInd", "HighRiskInd", "Age")) %>%
     rename(marker = term) %>%
     mutate(cases = sum(data$EventIndPrimaryD57),
            atRisk = length(data$EventIndPrimaryD57),
@@ -60,15 +59,13 @@ getHR_D57_categorical_marker <- function(marker, design, data, group){
   data_middle <- data %>% filter(get(marker) == (data %>% pull(marker) %>% levels())[2])
   data_upper <- data %>% filter(get(marker) == (data %>% pull(marker) %>% levels())[3])
   
-  
-
-  fm = as.formula(paste("Surv(EventTimePrimaryD57, EventIndPrimaryD57) ~ ", marker, " + MinorityInd + HighRiskInd + risk_score"))
+  fm = as.formula(paste("Surv(EventTimePrimaryD57, EventIndPrimaryD57) ~ ", marker, " + MinorityInd + HighRiskInd + Age"))
   
   fit <- survey::svycoxph(fm, design=design)
   
   dat <- tidy(fit, conf.int = T, exponentiate = T) %>% data.frame() %>%
     select(term, estimate, conf.low, conf.high, p.value) %>%
-    filter(!term %in% c("MinorityInd", "HighRiskInd", "risk_score")) %>%
+    filter(!term %in% c("MinorityInd", "HighRiskInd", "Age")) %>%
     rename(marker = term) %>%
     add_row(marker = "Lower", estimate = 1, conf.low = NA, conf.high = NA, p.value = NA) %>%
     mutate(marker_cut = c("Middle", "Upper", "Lower")) %>%
@@ -101,7 +98,13 @@ get_results_in_df_D57 <- function(dat, group){
     
     # Define trichotomized version of the markers
     # trichotomize Day57bindSpike
-    vec_cutpoints <- Hmisc::wtd.quantile(dat.D57$Day57bindSpike, weights = dat.D57$wt, probs = c(1/3, 2/3))
+    uloq_babSpike = 10155.95
+    if(quantile(dat.D57$Day57bindSpike, probs = c(2/3), na.rm = T) > log10(uloq_babSpike)){
+      vec_cutpoints <- Hmisc::wtd.quantile(dat.D57$Day57bindSpike, weights = dat.D57$wt, probs = c(1/2))
+    }else{
+      vec_cutpoints <- Hmisc::wtd.quantile(dat.D57$Day57bindSpike, weights = dat.D57$wt, probs = c(1/3, 2/3))
+    }
+    
     if((vec_cutpoints[[1]] == min(dat.D57$Day57bindSpike, na.rm = T)) | 
        (vec_cutpoints[[2]] == max(dat.D57$Day57bindSpike, na.rm = T)) |
        (vec_cutpoints[[1]] == vec_cutpoints[[2]])){
@@ -113,6 +116,7 @@ get_results_in_df_D57 <- function(dat, group){
     rm(vec_cutpoints)
     
     # trichotomize Day57bindRBD
+    uloq_babRBD = 30693.537
     vec_cutpoints <- Hmisc::wtd.quantile(dat.D57$Day57bindRBD, weights = dat.D57$wt, probs = c(1/3, 2/3))
     #vec_cutpoints[[2]] = vec_cutpoints[[2]] + 1e-6
     if((vec_cutpoints[[1]] == min(dat.D57$Day57bindRBD, na.rm = T)) | 
@@ -126,6 +130,7 @@ get_results_in_df_D57 <- function(dat, group){
     rm(vec_cutpoints)
     
     # trichotomize Day57pseudoneutid50
+    uloq_psneutID50 = 4404
     vec_cutpoints <- Hmisc::wtd.quantile(dat.D57$Day57pseudoneutid50, weights = dat.D57$wt, probs = c(1/3, 2/3))
     #vec_cutpoints[[2]] = vec_cutpoints[[2]] + 1e-6
     if((vec_cutpoints[[1]] == min(dat.D57$Day57pseudoneutid50, na.rm = T)) | 
@@ -139,6 +144,7 @@ get_results_in_df_D57 <- function(dat, group){
     rm(vec_cutpoints)
     
     # trichotomize Day57pseudoneutid80
+    uloq_psneutID80 = 1295
     vec_cutpoints <- Hmisc::wtd.quantile(dat.D57$Day57pseudoneutid80, weights = dat.D57$wt, probs = c(1/3, 2/3))
     #vec_cutpoints[[2]] = vec_cutpoints[[2]] + 1e-6
     if((vec_cutpoints[[1]] == min(dat.D57$Day57pseudoneutid80, na.rm = T)) | 
@@ -188,10 +194,6 @@ tab <- get_results_in_df_D57(dat = inputFile %>% filter(Trt == 1 & Bserostatus =
             get_results_in_df_D57(dat = inputFile %>% filter(Trt == 1 & Bserostatus == 0 & Sex == 1), group = "Men"),
             get_results_in_df_D57(dat = inputFile %>% filter(Trt == 1 & Bserostatus == 0 & Sex == 0), group = "Women"))
 
-
-
-
-
 ###############################################################################
 ###############################################################################
 ###############################################################################
@@ -199,18 +201,18 @@ tab <- get_results_in_df_D57(dat = inputFile %>% filter(Trt == 1 & Bserostatus =
 # It returns the HR for the marker, CI and p.value
 getHR_D29_continuous_marker <- function(marker, design, data, group){
   if(group %in% c("Age < 65, At risk", "Age < 65, Not at risk", "At risk", "Not at risk")){
-    fm = as.formula(paste("Surv(EventTimePrimaryD29, EventIndPrimaryD29) ~ ", marker, " + MinorityInd + risk_score"))
+    fm = as.formula(paste("Surv(EventTimePrimaryD29, EventIndPrimaryD29) ~ ", marker, " + MinorityInd + Age"))
   } else if (group %in% c("WhiteNonHispanic", "Comm. of color")){
-    fm = as.formula(paste("Surv(EventTimePrimaryD29, EventIndPrimaryD29) ~ ", marker, " + HighRiskInd + risk_score"))
+    fm = as.formula(paste("Surv(EventTimePrimaryD29, EventIndPrimaryD29) ~ ", marker, " + HighRiskInd + Age"))
   }else{
-    fm = as.formula(paste("Surv(EventTimePrimaryD29, EventIndPrimaryD29) ~ ", marker, " + MinorityInd + HighRiskInd + risk_score"))
+    fm = as.formula(paste("Surv(EventTimePrimaryD29, EventIndPrimaryD29) ~ ", marker, " + MinorityInd + HighRiskInd + Age"))
   }
   
   fit <- survey::svycoxph(fm, design=design)
   
   tidy(fit, conf.int = T, exponentiate = T) %>% data.frame() %>%
     select(term, estimate, conf.low, conf.high, p.value) %>%
-    filter(!term %in% c("MinorityInd", "HighRiskInd", "risk_score")) %>%
+    filter(!term %in% c("MinorityInd", "HighRiskInd", "Age")) %>%
     rename(marker = term) %>%
     mutate(cases = sum(data$EventIndPrimaryD29),
            atRisk = length(data$EventIndPrimaryD29),
@@ -227,15 +229,13 @@ getHR_D29_categorical_marker <- function(marker, design, data, group){
   data_middle <- data %>% filter(get(marker) == (data %>% pull(marker) %>% levels())[2])
   data_upper <- data %>% filter(get(marker) == (data %>% pull(marker) %>% levels())[3])
   
-  
-  
-  fm = as.formula(paste("Surv(EventTimePrimaryD29, EventIndPrimaryD29) ~ ", marker, " + MinorityInd + HighRiskInd + risk_score"))
+  fm = as.formula(paste("Surv(EventTimePrimaryD29, EventIndPrimaryD29) ~ ", marker, " + MinorityInd + HighRiskInd + Age"))
   
   fit <- survey::svycoxph(fm, design=design)
   
   dat <- tidy(fit, conf.int = T, exponentiate = T) %>% data.frame() %>%
     select(term, estimate, conf.low, conf.high, p.value) %>%
-    filter(!term %in% c("MinorityInd", "HighRiskInd", "risk_score")) %>%
+    filter(!term %in% c("MinorityInd", "HighRiskInd", "Age")) %>%
     rename(marker = term) %>%
     add_row(marker = "Lower", estimate = 1, conf.low = NA, conf.high = NA, p.value = NA) %>%
     mutate(marker_cut = c("Middle", "Upper", "Lower")) %>%

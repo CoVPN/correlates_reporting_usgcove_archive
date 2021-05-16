@@ -36,7 +36,7 @@ dat.long.subject_level <- dat[, c(
   "Ptid", "Trt", "MinorityInd", "EthnicityHispanic", "EthnicityNotreported",
   "EthnicityUnknown", "HighRiskInd", "Age", "BMI", "Sex",
   "Bserostatus", "Fullvaccine", "Perprotocol", "EventIndPrimaryD29",
-  "EventIndPrimaryD57", "SubcohortInd", "age.geq.65", "TwophasesampInd",
+  "EventIndPrimaryD57", "SubcohortInd", "age.geq.65", "TwophasesampIndD57",
   "Bstratum", "wt", "wt.2", "race",
   "WhiteNonHispanic", "cohort_event"
 )] %>%
@@ -91,7 +91,7 @@ dat.long$assay <- factor(dat.long$assay, levels = assays, labels = assays)
 # subcohort, which is a stratified sample of enrolled participants. So,
 # immunogenicity analysis is always done in ppts that meet all of the criteria.
 dat.cor.subset <- dat %>%
-  dplyr::filter(TwophasesampInd == 1)
+  dplyr::filter(TwophasesampIndD57 == 1)
 cor.subset.id <- dat.cor.subset$Ptid
 
 

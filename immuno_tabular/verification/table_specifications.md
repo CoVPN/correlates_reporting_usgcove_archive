@@ -5,7 +5,7 @@
 
 2. Filter the data to the "**phase 1 ptids** of the immunogenicity cohort (`!is.na(wt.subcohort)`).
 
-3. Derive the indicator for the immunogenicity cohort (`SubcohortInd == 1 & TwophasesampInd == 1 & !is.na(wt.subcohort)`).
+3. Derive the indicator for the immunogenicity cohort (`SubcohortInd == 1 & TwophasesampIndD57 == 1 & !is.na(wt.subcohort)`).
 
 4. For all marker response magnitudes, set magnitudes < LLOD to LLOD/2, and magnitudes > ULOQ to ULOQ. All the analyses will be based on the truncated magntiudes from this step. Please notice the endpoint values from the data is on log scale while the LLOD and ULOQ are on the linear scale.
 

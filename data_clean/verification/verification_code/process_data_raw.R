@@ -139,7 +139,7 @@ covid_processed <- covid_raw %>%
       Age >=65 ~  1 ,
       TRUE ~ 0),
 
-    TwophasesampInd = case_when(
+    TwophasesampIndD57 = case_when(
         (SubcohortInd == 1 | EventIndPrimaryD29 == 1 ) &
         !any_missing(BbindSpike, BbindRBD, Day29bindSpike, Day29bindRBD, Day57bindSpike, Day57bindRBD) ~ 1,
       TRUE ~ 0),
@@ -210,14 +210,14 @@ if( "Day29" %in% tps){
   covid_processed <- covid_processed %>%
     mutate(
 
-      TwophasesampInd.2 = case_when(
+      TwophasesampIndD29 = case_when(
           (SubcohortInd == 1 | EventIndPrimaryD29 == 1 ) &
           !any_missing(BbindSpike, BbindRBD, Day29bindSpike, Day29bindRBD) ~ 1,
         TRUE ~ 0)
 
     ) %>%
     relocate(
-      TwophasesampInd.2, .after = TwophasesampInd
+      TwophasesampIndD29, .after = TwophasesampIndD57
     )
 
 }
@@ -228,13 +228,13 @@ covid_processed_wt <- covid_processed %>%
   mutate(
     wt =  sampling_p(
       Wstratum,
-      TwophasesampInd == 1,
+      TwophasesampIndD57 == 1,
       EarlyendpointD57==0 & Perprotocol == 1 & EventTimePrimaryD57>=7
       ),
 
     wt.subcohort = sampling_p(
       tps.stratum,
-      TwophasesampInd == 1  & SubcohortInd == 1,
+      TwophasesampIndD57 == 1  & SubcohortInd == 1,
       EarlyendpointD57==0 & Perprotocol == 1
     )
   )
@@ -245,7 +245,7 @@ if( "Day29" %in% tps){
     mutate(
       wt.2 = sampling_p(
         Wstratum,
-        TwophasesampInd.2 == 1,
+        TwophasesampIndD29 == 1,
         EarlyendpointD29 == 0 & Perprotocol == 1 & EventTimePrimaryD29 >= 7
       )
     ) %>%
@@ -261,8 +261,8 @@ covid_processed_updated_twophase <- covid_processed_wt %>%
   mutate(
     ph1.D57 = !is.na(wt),
     ph1.immuno = !is.na(wt.subcohort),
-    TwophasesampInd = case_when(
-      ph1.D57 == TRUE ~ TwophasesampInd,
+    TwophasesampIndD57 = case_when(
+      ph1.D57 == TRUE ~ TwophasesampIndD57,
       TRUE ~ 0
     )
   )
@@ -272,8 +272,8 @@ if( "Day29" %in% tps){
   covid_processed_updated_twophase <- covid_processed_updated_twophase %>%
     mutate(
       ph1.D29 = !is.na(wt.2),
-      TwophasesampInd.2 = case_when(
-        ph1.D29 == TRUE ~ TwophasesampInd.2,
+      TwophasesampIndD29 = case_when(
+        ph1.D29 == TRUE ~ TwophasesampIndD29,
         TRUE ~ 0
       )
     ) %>%
@@ -284,8 +284,8 @@ if( "Day29" %in% tps){
 
 ## Imputation ----
 
-covid_processed_imputed_assay_TwophasesampInd <- covid_processed_updated_twophase %>%
-  filter(TwophasesampInd == 1) %>%
+covid_processed_imputed_assay_TwophasesampIndD57 <- covid_processed_updated_twophase %>%
+  filter(TwophasesampIndD57 == 1) %>%
   select(
     Ptid,
     Trt,
@@ -309,23 +309,23 @@ covid_processed_imputed_assay_TwophasesampInd <- covid_processed_updated_twophas
   })
 
 covid_processed_imputed <- covid_processed_updated_twophase %>%
-  filter(TwophasesampInd == 1) %>%
-  select(-setdiff(colnames(covid_processed_imputed_assay_TwophasesampInd), "Ptid")) %>%
+  filter(TwophasesampIndD57 == 1) %>%
+  select(-setdiff(colnames(covid_processed_imputed_assay_TwophasesampIndD57), "Ptid")) %>%
   left_join(
-    covid_processed_imputed_assay_TwophasesampInd
+    covid_processed_imputed_assay_TwophasesampIndD57
   ) %>%
   select(
     colnames(covid_processed_updated_twophase)
   ) %>%
   bind_rows(
     covid_processed_updated_twophase %>%
-      filter(TwophasesampInd != 1)
+      filter(TwophasesampIndD57 != 1)
   )
 
 if( "Day29" %in% tps ){
 
-  covid_processed_imputed_assay_TwophasesampInd_2 <- covid_processed_imputed %>%
-    filter(TwophasesampInd.2 == 1) %>%
+  covid_processed_imputed_assay_TwophasesampIndD29 <- covid_processed_imputed %>%
+    filter(TwophasesampIndD29 == 1) %>%
     select(
       Ptid,
       Trt,
@@ -350,17 +350,17 @@ if( "Day29" %in% tps ){
     })
 
   covid_processed_imputed <- covid_processed_imputed %>%
-    filter(TwophasesampInd.2 == 1) %>%
-    select(-setdiff(colnames(covid_processed_imputed_assay_TwophasesampInd_2), "Ptid")) %>%
+    filter(TwophasesampIndD29 == 1) %>%
+    select(-setdiff(colnames(covid_processed_imputed_assay_TwophasesampIndD29), "Ptid")) %>%
     left_join(
-      covid_processed_imputed_assay_TwophasesampInd_2
+      covid_processed_imputed_assay_TwophasesampIndD29
     ) %>%
     select(
       colnames(covid_processed_imputed)
     ) %>%
     bind_rows(
       covid_processed_imputed %>%
-        filter(TwophasesampInd.2 != 1)
+        filter(TwophasesampIndD29 != 1)
     )
 
 }

@@ -207,13 +207,13 @@ ds_s <- dat %>%
     AgeRisk1 = ifelse(Age65C=="Age $<$ 65", AgeRiskC, NA),
     AgeRisk2 = ifelse(Age65C=="Age $\\geq$ 65", AgeRiskC, NA),
     All = "All participants",
-    randomset = (SubcohortInd == 1 & TwophasesampInd == 1 & EarlyendpointD57==0),
-    cohort1 = (TwophasesampInd==1),
+    randomset = (SubcohortInd == 1 & TwophasesampIndD57 == 1 & EarlyendpointD57==0),
+    cohort1 = (TwophasesampIndD57==1),
     corrset1 = !is.na(wt))
 
 if(has29) {
   ds_s <- ds_s %>% 
-    mutate(cohort2 = (TwophasesampInd.2==1),
+    mutate(cohort2 = (TwophasesampIndD29==1),
            corrset2 = !is.na(wt.2))
 }
 

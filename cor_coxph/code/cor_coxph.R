@@ -71,10 +71,10 @@ print(paste0("save.results.to equals ", save.results.to))
 
 if (pop=="57") {
     dat.mock$wt.0=dat.mock$wt
-    dat.mock$TwophasesampInd.0 = dat.mock$TwophasesampInd    
+    dat.mock$TwophasesampInd.0 = dat.mock$TwophasesampIndD57   
 } else if (pop=="29") {
     dat.mock$wt.0=dat.mock$wt.2
-    dat.mock$TwophasesampInd.0 = dat.mock$TwophasesampInd.2    
+    dat.mock$TwophasesampInd.0 = dat.mock$TwophasesampIndD29 
 } else stop("wrong pop")
 # the following data frame define the phase 1 ptids
 dat.vacc.pop=subset(dat.mock, Trt==1 & Bserostatus==0 & !is.na(wt.0))

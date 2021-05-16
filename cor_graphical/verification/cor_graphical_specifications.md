@@ -10,10 +10,10 @@
 4. Subset `dat` with only non-NA `cohort_event` values.
 
 5. Create a new data frame `dat.long`. In `dat.long` there is a new field `assay` that takes the string values "bindSpike", "bindRBD", "pseudoneutid50" and "pseudoneutid80", corresponding to four types of assays. Additionally, there are new fields `B`, `Day29`, `Day57`, `Delta29overB`, `Delta57overB` and `Delta57over29`, with values equal to the assay readouts at time points indicated by the field name. Each row of `dat.long` corresponds to the assay readouts of one type of assays, indicated by `assay`, at different time points or for different fold-rise comparisons. Therefore, each individual has four rows for four different types of assay readouts. Additionally, there are fields in the original data frame `dat` with the individual-level information, including `Ptid`, `Trt`, `MinorityInd`, `EthnicityHispanic`, `EthnicityNotreported`, `EthnicityUnknown`, `HighRiskInd`, `Age`, `BMI`, `Sex`, `Bserostatus`, `Fullvaccine`, `Perprotocol`, `EventIndPrimaryD29`,
-  `EventIndPrimaryD57`, `SubcohortInd`, `age.geq.65`, `TwophasesampInd`,
+  `EventIndPrimaryD57`, `SubcohortInd`, `age.geq.65`, `TwophasesampIndD57`,
   `Bstratum`, `wt`, `wt.2`, `race`, `WhiteNonHispanic`, and `cohort_event`.
 
-6. Take the subset of `dat` and `dat.long` with `TwophasesampInd` == 1, and rename the datasets as `dat.cor.subset` and `dat.long.cor.subset`, correspondingly.
+6. Take the subset of `dat` and `dat.long` with `TwophasesampIndD57` == 1, and rename the datasets as `dat.cor.subset` and `dat.long.cor.subset`, correspondingly.
 
 7. In `dat.long.cor.subset`, create a new field `Dich_RaceEthnic`, which is defined as the string "Hispanic or Latino" if `EthnicityHispanic` == 1, "Not Hispanic or Latino" if `EthnicityHispanic` == 0, `EthnicityNotreported` == 0, and `EthnicityUnknown` == 0, and NA otherwise.
 

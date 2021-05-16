@@ -134,7 +134,7 @@ dat.long <- rbind(dat1_bindSpike,dat1_bindRBD,dat1_pseudoneutid50,dat1_pseudoneu
          EventIndPrimaryD57, 
          SubcohortInd, 
          age.geq.65, 
-         TwophasesampInd, 
+         TwophasesampIndD57, 
          Bstratum, 
          wt,  
          wt.2, 
@@ -150,10 +150,10 @@ dat.long <- rbind(dat1_bindSpike,dat1_bindRBD,dat1_pseudoneutid50,dat1_pseudoneu
 
 
 dat.cor.subset <- dat %>% 
-  filter(TwophasesampInd == 1)
+  filter(TwophasesampIndD57 == 1)
 
 dat.long.cor.subset <- dat.long %>% 
-  filter(TwophasesampInd == 1)
+  filter(TwophasesampIndD57 == 1)
 
 dat.long.cor.subset <- dat.long.cor.subset %>% 
   mutate(Dich_RaceEthnic = ifelse(EthnicityHispanic == 1, "Hispanic or Latino",

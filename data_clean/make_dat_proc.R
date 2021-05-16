@@ -182,7 +182,7 @@ dat_proc$Wstratum[with(dat_proc, EventIndPrimaryD29==1 & Trt==1 & Bserostatus==1
 # after defining ph1.xx, we will update TwophasesampInd to be 0 outside ph1.xx
 dat_proc <- dat_proc %>%
   mutate(
-    TwophasesampInd = 
+    TwophasesampIndD57 =
       (SubcohortInd | EventIndPrimaryD29 == 1) &
       complete.cases(cbind(
         if("bindSpike" %in% must_have_assays) BbindSpike, 
@@ -204,7 +204,7 @@ dat_proc <- dat_proc %>%
 
 if(has29) dat_proc <- dat_proc %>%
   mutate(
-    TwophasesampInd.2 = 
+    TwophasesampIndD29 =
       (SubcohortInd | EventIndPrimaryD29 == 1) &
       complete.cases(cbind(
         if("bindSpike" %in% must_have_assays) BbindSpike, 
@@ -225,7 +225,7 @@ if(has29) dat_proc <- dat_proc %>%
 # wt, for D57 correlates analyses
 wts_table <- dat_proc %>%
   dplyr::filter(EarlyendpointD57==0 & Perprotocol == 1 & EventTimePrimaryD57 >= 7) %>%
-  with(table(Wstratum, TwophasesampInd))
+  with(table(Wstratum, TwophasesampIndD57))
 wts_norm <- rowSums(wts_table) / wts_table[, 2]
 dat_proc$wt <- wts_norm[dat_proc$Wstratum %.% ""]
 dat_proc$wt[!with(dat_proc, EarlyendpointD57==0 & Perprotocol == 1 & EventTimePrimaryD57>=7)] <- NA
@@ -237,7 +237,7 @@ dat_proc$ph1.D57=!is.na(dat_proc$wt)
 if(has29) {
     wts_table2 <- dat_proc %>%
       dplyr::filter(EarlyendpointD29==0 & Perprotocol == 1 & EventTimePrimaryD29 >= 7) %>%
-      with(table(Wstratum, TwophasesampInd.2))
+      with(table(Wstratum, TwophasesampIndD29))
     wts_norm2 <- rowSums(wts_table2) / wts_table2[, 2]
     dat_proc$wt.2 <- wts_norm2[dat_proc$Wstratum %.% ""]
     dat_proc$wt.2[!with(dat_proc, EarlyendpointD29==0 & Perprotocol == 1 & EventTimePrimaryD29 >= 7)] <- NA
@@ -248,7 +248,7 @@ if(has29) {
 # wt.subcohort, for immunogenicity analyses that use subcohort only and are not enriched by cases outside subcohort
 wts_table <- dat_proc %>%
   dplyr::filter(EarlyendpointD57==0 & Perprotocol == 1) %>%
-  with(table(tps.stratum, TwophasesampInd & SubcohortInd))
+  with(table(tps.stratum, TwophasesampIndD57 & SubcohortInd))
 wts_norm <- rowSums(wts_table) / wts_table[, 2]
 dat_proc$wt.subcohort <- wts_norm[dat_proc$tps.stratum %.% ""]
 dat_proc$wt.subcohort[!with(dat_proc, EarlyendpointD57==0 & Perprotocol == 1)] <- NA
@@ -256,9 +256,9 @@ dat_proc$ph1.immuno=!is.na(dat_proc$wt.subcohort)
 
 
 
-dat_proc$TwophasesampInd  [!dat_proc$ph1.D57] <- 0
-if(has29) {
-dat_proc$TwophasesampInd.2[!dat_proc$ph1.D29] <- 0    
+dat_proc$TwophasesampIndD57[!dat_proc$ph1.D57] <- 0
+if (has29) {
+dat_proc$TwophasesampIndD29[!dat_proc$ph1.D29] <- 0
 }
 
 
@@ -288,7 +288,7 @@ assertthat::assert_that(
 ###############################################################################
 
 n.imp <- 1
-dat.tmp.impute <- subset(dat_proc, TwophasesampInd == 1)
+dat.tmp.impute <- subset(dat_proc, TwophasesampIndD57 == 1)
 
 imp.markers=c(outer(c("B", if(has29) "Day29", "Day57"), assays, "%.%"))
 
@@ -325,22 +325,22 @@ for(w in unique(dat.tmp.impute$Wstratum)){
 }
 
 # populate dat_proc imp.markers with the imputed values
-dat_proc[dat_proc$TwophasesampInd==1, imp.markers] <-
-  dat.tmp.impute[imp.markers][match(dat_proc[dat_proc$TwophasesampInd==1, "Ptid"], dat.tmp.impute$Ptid), ]
+dat_proc[dat_proc$TwophasesampIndD57==1, imp.markers] <-
+  dat.tmp.impute[imp.markers][match(dat_proc[dat_proc$TwophasesampIndD57==1, "Ptid"], dat.tmp.impute$Ptid), ]
 
 # imputed values of missing markers merged properly for all individuals in the two phase sample?
 assertthat::assert_that(
-  all(complete.cases(dat_proc[dat_proc$TwophasesampInd == 1, imp.markers])),
+  all(complete.cases(dat_proc[dat_proc$TwophasesampIndD57 == 1, imp.markers])),
   msg = "imputed values of missing markers merged properly for all individuals in the two phase sample?"
 )
 
 ###############################################################################
-# impute again for TwophasesampInd.2
+# impute again for TwophasesampIndD29
 #     use baseline and D29
 
 if(has29) {
     n.imp <- 1
-    dat.tmp.impute <- subset(dat_proc, TwophasesampInd.2 == 1)
+    dat.tmp.impute <- subset(dat_proc, TwophasesampIndD29 == 1)
     
     imp.markers=c(outer(c("B", "Day29"), assays, "%.%"))
     
@@ -377,8 +377,8 @@ if(has29) {
     }
     
     # populate dat_proc imp.markers with the imputed values
-    dat_proc[dat_proc$TwophasesampInd.2==1, imp.markers] <-
-      dat.tmp.impute[imp.markers][match(dat_proc[dat_proc$TwophasesampInd.2==1, "Ptid"], dat.tmp.impute$Ptid), ]    
+    dat_proc[dat_proc$TwophasesampIndD29==1, imp.markers] <-
+      dat.tmp.impute[imp.markers][match(dat_proc[dat_proc$TwophasesampIndD29==1, "Ptid"], dat.tmp.impute$Ptid), ]    
 }
 
 

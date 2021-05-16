@@ -64,7 +64,7 @@ p.cov=length(terms(form.0))
 time.start=Sys.time()
 
 
-dat.vacc.pop.ph2 = subset(dat.vacc.pop, TwophasesampInd==1)
+dat.vacc.pop.ph2 = subset(dat.vacc.pop, TwophasesampIndD57==1)
 
 
 

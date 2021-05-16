@@ -1,16 +1,16 @@
 #----------------------------------------------- 
 # obligatory to append to the top of each script
 renv::activate(project = here::here(".."))
-
+    
 # There is a bug on Windows that prevents renv from working properly. The following code provides a workaround:
 if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
-    
+        
 #if (.Platform$OS.type == "windows") {
 #    options(renv.config.install.transactional = FALSE)
 #    renv::restore(library=saved.system.libPaths, prompt=FALSE) # for a quick test, add: packages="backports"
 #    .libPaths(c(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
 #} else renv::restore(prompt=FALSE)
-
+    
 # after updating a package, run renv::snapshot() to override the global library record with your changes
 source(here::here("..", "_common.R"))
 #-----------------------------------------------
@@ -92,7 +92,7 @@ for (a in assays) {
         if (mean(dat.vacc.pop[[ind.t %.% a]]>uppercut, na.rm=T)>1/3 & startsWith(ind.t, "Day")) {
             # if more than 1/3 of vaccine recipients have value > ULOQ
             # let q.a be median among those < ULOQ and ULOQ
-            myprint("more than 1/3 of vaccine recipients have value > ULOQ")
+            print("more than 1/3 of vaccine recipients have value > ULOQ")
             q.a=c(  wtd.quantile(dat.vacc.pop[[ind.t %.% a]][dat.vacc.pop[[ind.t %.% a]]<=uppercut], weights = dat.vacc.pop$wt.0[dat.vacc.pop[[ind.t %.% a]]<=uppercut], probs = c(1/2)), 
                     uppercut)
         } else {
@@ -556,8 +556,12 @@ marginalized.risk.svycoxph.boot=function(formula, marker.name, type, data, t, we
     
     # for use in bootstrap
     strat=sort(unique(data$tps.stratum))
-    # tps.stratum does include a separate stratum for cases
-    ptids.by.stratum=lapply(strat, function (i) list(subcohort=subset(data, tps.stratum==i & SubcohortInd==1, Ptid, drop=TRUE), nonsubcohort=subset(data, tps.stratum==i & SubcohortInd==0, Ptid, drop=TRUE)))
+    ptids.by.stratum=lapply(strat, function (i) 
+        list(subcohort=subset(data, tps.stratum==i & SubcohortInd==1, Ptid, drop=TRUE), nonsubcohort=subset(data, tps.stratum==i & SubcohortInd==0, Ptid, drop=TRUE)))
+    # add a substratum for cases with NA in tps.stratum
+    tmp=list(subcohort=subset(data, is.na(tps.stratum), Ptid, drop=TRUE), # they are in ph1 b/c they are cases
+          nonsubcohort=NULL)
+    ptids.by.stratum=append(ptids.by.stratum, list(tmp))
     
     # bootstrap
     out=mclapply(1:B, mc.cores = numCores, FUN=function(seed) {   
@@ -639,7 +643,7 @@ if(!file.exists(paste0(save.results.to, "marginalized.risk.2.",study_name,".Rdat
         risks = 1 - exp(-predict(fit.risk, newdata=dat, type="expected"))
         mean(risks)
     }
-    
+     
     for (.trt in 0:1) {
         dat.tmp=if(.trt==1) dat.vacc.pop else dat.plac.pop
         prob=get.marginalized.risk(dat.tmp)
@@ -648,12 +652,20 @@ if(!file.exists(paste0(save.results.to, "marginalized.risk.2.",study_name,".Rdat
         # store the current rng state 
         save.seed <- try(get(".Random.seed", .GlobalEnv), silent=TRUE) 
         if (class(save.seed)=="try-error") {set.seed(1); save.seed <- get(".Random.seed", .GlobalEnv) }   
-        # bootstrap use
-        ptids.by.stratum=lapply(sort(unique(dat.tmp$tps.stratum)), function (i) list(subcohort=subset(dat.tmp, tps.stratum==i & SubcohortInd==1, Ptid, drop=TRUE), nonsubcohort=subset(dat.tmp, tps.stratum==i & SubcohortInd==0, Ptid, drop=TRUE)))
+        
+        ptids.by.stratum=lapply(sort(unique(dat.tmp$tps.stratum)), function (i) 
+            list(subcohort=subset(dat.tmp, tps.stratum==i & SubcohortInd==1, Ptid, drop=TRUE), 
+              nonsubcohort=subset(dat.tmp, tps.stratum==i & SubcohortInd==0, Ptid, drop=TRUE)))
+        # add a substratum for cases with NA in tps.stratum
+        tmp=list(subcohort=subset(dat.tmp, is.na(tps.stratum), Ptid, drop=TRUE), # they are in ph1 b/c they are cases
+              nonsubcohort=NULL)
+        ptids.by.stratum=append(ptids.by.stratum, list(tmp))
         # if mc.cores is >1 here, the process will be stuck in coxph for some unknown reason
         out=mclapply(1:B, mc.cores = 1, FUN=function(seed) {   
             set.seed(seed)         
-            dat.b=dat.tmp[match(unlist(lapply(ptids.by.stratum, function(x) c(sample(x$subcohort, r=TRUE), sample(x$nonsubcohort, r=TRUE)))), dat.tmp$Ptid),]        
+            dat.b=dat.tmp[match(unlist(lapply(ptids.by.stratum, function(x) 
+                c(sample(x$subcohort, r=TRUE), sample(x$nonsubcohort, r=TRUE))
+            )), dat.tmp$Ptid),]        
             get.marginalized.risk(dat.b)    
         })
         boot=do.call(cbind, out)

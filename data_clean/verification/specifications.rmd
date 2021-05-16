@@ -5,7 +5,7 @@
 
   \item Rename the first column to Ptid
   
-  \item Subset to !is.na(Bserostatus). The code will assume this variable will not have NA's
+  \item Subset to rows not missing in EventTimePrimaryD1, not missing in EventTimePrimaryD29, and not missing in EventTimePrimaryD57
   
   \item Define EarlyendpointD57 (and similarly EarlyendpointD29, always included whether or not has29 is T or F) as: EarlyinfectionD57==1 | (EventIndPrimaryD1==1 & EventTimePrimaryD1 < NumberdaysD1toD57 + 7),1,0))
 
@@ -48,9 +48,9 @@
   
   \item Define ph1.D57 as having non-NA wt.D57. Define ph1.D29 as having non-NA wt.D29. Define ph1.immuno as having non-NA wt.subcohort.
   
-  \item Update TwophasesampIndD57 to 0 for subjects outside ph1.57. Update TwophasesampIndD29 to 0 for subjects outside ph1.29. 
-  
-  \item Carry out single imputation using the R package mice for the subjects satisfying TwophasesampIndD57==1. Imputation is done separately for vaccine arm baseline seronegative, vaccine arm baseline seropositive, placebo arm baseline seronegative, and placebo arm baseline seropositive. Since baseline, D29 and D57 binding to Spike and RBD are required in this subset of people, the imputation is intended to fill in missing marker values for neutralization assays at these three time points. The imputation is done with the package mice with default parameters and seed 1. Notes: 1. The order of variables matters in imputation: c(outer(c("B", "Day29", "Day57"), c("bindSpike", "bindRBD", "pseudoneutid50", "pseudoneutid80"), "%.%")). 2. If there is no missing data in the dataset, this piece cannot be verified. 3. Be careful not to change subjects outside TwophasesampIndD57==1. 4.   diagnostics = FALSE and remove_collinear=F are needed in call to mice to avoid errors due to collinearity. 5. Before imputation, check to see if any columns are constant columns with missing values. If yes, set the whole column to the constant, including the missing values, otherwise mice will throw an error.
+  \item Define ph2.D57 as ph1.D57 & TwophasesampIndD57; ph2.D29 as ph2.D29 & TwophasesampIndD29; ph2.immuno as ph1.immuno & SubcohortInd & TwophasesampIndD57.
+
+  \item Carry out single imputation using the `R` package `mice` for the subjects satisfying TwophasesampIndD57==1. Imputation is done separately for vaccine arm baseline seronegative, vaccine arm baseline seropositive, placebo arm baseline seronegative, and placebo arm baseline seropositive. Since baseline, D29 and D57 binding to Spike and RBD are required in this subset of people, the imputation is intended to fill in missing marker values for neutralization assays at these three time points. The imputation is done with the package mice with default parameters and seed 1. Notes: 1. The order of variables matters in imputation: c(outer(c("B", "Day29", "Day57"), c("bindSpike", "bindRBD", "pseudoneutid50", "pseudoneutid80"), "%.%")). 2. If there is no missing data in the dataset, this piece cannot be verified. 3. Be careful not to change subjects outside TwophasesampIndD57==1. 4.   diagnostics = FALSE and remove_collinear=F are needed in call to mice to avoid errors due to collinearity. 5. Before imputation, check to see if any columns are constant columns with missing values. If yes, set the whole column to the constant, including the missing values, otherwise mice will throw an error.
 
   \item Repeat single imputation for the subjects satisfying TwophasesampIndD29==1 and only impute these variables: c(outer(c("B", "Day29"), c("bindSpike", "bindRBD", "pseudoneutid50", "pseudoneutid80"), "%.%")).  
 

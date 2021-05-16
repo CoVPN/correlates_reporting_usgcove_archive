@@ -74,7 +74,7 @@ dat.vacc.pop.ph2 = subset(dat.vacc.pop, TwophasesampIndD57==1)
 mypdf(oma=c(1,0,0,0), onefile=F, file=paste0(save.results.to, "gam", "_"%.%study.name), mfrow=.mfrow)
 for (a in assays) {
 #a=assays[1]
-    fit <- mgcv::gam(update(form.0.logistic, as.formula("~.+s(Day"%.%pop%.%a%.%")")), data=dat.vacc.pop.ph2, family=binomial, weights=if(pop=="57") dat.vacc.pop.ph2$wt else dat.vacc.pop.ph2$wt.2)
+    fit <- mgcv::gam(update(form.0.logistic, as.formula("~.+s(Day"%.%pop%.%a%.%")")), data=dat.vacc.pop.ph2, family=binomial, weights=if(pop=="57") dat.vacc.pop.ph2$wt.D57 else dat.vacc.pop.ph2$wt.D29)
     
     xlim=quantile(dat.vacc.pop[["Day"%.%pop%.%a]], c(.025,.975), na.rm=T) 
     
@@ -98,7 +98,7 @@ dev.off()
 # step
 step.fits.logistic=list()
 for (a in assays) {
-    step.fits.logistic[[a]]=chngptm(form.0.logistic, as.formula("~Day"%.%pop%.%a), dat.vacc.pop.ph2, type="step", family="binomial", var.type="none", weights=if(pop=="57") dat.vacc.pop.ph2$wt else dat.vacc.pop.ph2$wt.2)    
+    step.fits.logistic[[a]]=chngptm(form.0.logistic, as.formula("~Day"%.%pop%.%a), dat.vacc.pop.ph2, type="step", family="binomial", var.type="none", weights=if(pop=="57") dat.vacc.pop.ph2$wt.D57 else dat.vacc.pop.ph2$wt.D29)    
 }
 
 mypdf(oma=c(1,0,0,0), onefile=F, file=paste0(save.results.to, "step", "_"%.%study.name), mfrow=.mfrow)
@@ -129,8 +129,8 @@ dev.off()
 ## segmented
 #segmented.fits.logistic=list()
 #for (a in assays) {
-#    fit.aux = glm(update(form.0.logistic, as.formula("~.+ns(Day"%.%pop%.%a%.%",3)")), dat.vacc.pop.ph2, family="binomial", weights=if(pop=="57") dat.vacc.pop.ph2$wt else dat.vacc.pop.ph2$wt.2)
-#    segmented.fits.logistic[[a]]=chngptm(form.0.logistic, as.formula("~Day"%.%pop%.%a), dat.vacc.pop.ph2, type="segmented", family="binomial", var.type="robust", aux.fit=fit.aux, weights=if(pop=="57") dat.vacc.pop.ph2$wt else dat.vacc.pop.ph2$wt.2)    
+#    fit.aux = glm(update(form.0.logistic, as.formula("~.+ns(Day"%.%pop%.%a%.%",3)")), dat.vacc.pop.ph2, family="binomial", weights=if(pop=="57") dat.vacc.pop.ph2$wt.D57 else dat.vacc.pop.ph2$wt.D29)
+#    segmented.fits.logistic[[a]]=chngptm(form.0.logistic, as.formula("~Day"%.%pop%.%a), dat.vacc.pop.ph2, type="segmented", family="binomial", var.type="robust", aux.fit=fit.aux, weights=if(pop=="57") dat.vacc.pop.ph2$wt.D57 else dat.vacc.pop.ph2$wt.D29)    
 #}
 #
 #mypdf(oma=c(1,0,0,0), onefile=F, file=paste0(save.results.to, "segmented", "_"%.%study.name), mfrow=.mfrow)
@@ -165,7 +165,7 @@ dev.off()
 #hinge.fit.coxph=list()
 #for (a in assays) {
 #    # lots of errors probably due to bootstrap scheme
-#    hinge.fit.coxph[[a]]=   chngptm(form.0, as.formula("~Day"%.%pop%.%a),          dat.mock.vacc.seroneg.ph2, type="hinge", family="coxph",    var.type="bootstrap", weights=if(pop=="57") dat.vacc.pop.ph2$wt else dat.vacc.pop.ph2$wt.2, verbose=0, ci.bootstrap.size=B, ncpu=numCores)
+#    hinge.fit.coxph[[a]]=   chngptm(form.0, as.formula("~Day"%.%pop%.%a),          dat.mock.vacc.seroneg.ph2, type="hinge", family="coxph",    var.type="bootstrap", weights=if(pop=="57") dat.vacc.pop.ph2$wt.D57 else dat.vacc.pop.ph2$wt.D29, verbose=0, ci.bootstrap.size=B, ncpu=numCores)
 #}
 #save(hinge.fit.logistic, hinge.fit.coxph, file=paste0(save.results.to, "hinge.fits.Rdata"), save2input.only=TRUE)
 #load(file=paste0(save.results.to, "hinge.fits.Rdata"))

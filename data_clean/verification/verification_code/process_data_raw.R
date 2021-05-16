@@ -226,7 +226,7 @@ if( "Day29" %in% tps){
 
 covid_processed_wt <- covid_processed %>%
   mutate(
-    wt =  sampling_p(
+    wt.D57 =  sampling_p(
       Wstratum,
       TwophasesampIndD57 == 1,
       EarlyendpointD57==0 & Perprotocol == 1 & EventTimePrimaryD57>=7
@@ -243,14 +243,14 @@ if( "Day29" %in% tps){
 
   covid_processed_wt <- covid_processed_wt %>%
     mutate(
-      wt.2 = sampling_p(
+      wt.D29 = sampling_p(
         Wstratum,
         TwophasesampIndD29 == 1,
         EarlyendpointD29 == 0 & Perprotocol == 1 & EventTimePrimaryD29 >= 7
       )
     ) %>%
     relocate(
-      wt.2, .after = wt
+      wt.D29, .after = wt.D57
     )
 
 }
@@ -259,7 +259,7 @@ if( "Day29" %in% tps){
 
 covid_processed_updated_twophase <- covid_processed_wt %>%
   mutate(
-    ph1.D57 = !is.na(wt),
+    ph1.D57 = !is.na(wt.D57),
     ph1.immuno = !is.na(wt.subcohort),
     TwophasesampIndD57 = case_when(
       ph1.D57 == TRUE ~ TwophasesampIndD57,
@@ -271,7 +271,7 @@ if( "Day29" %in% tps){
 
   covid_processed_updated_twophase <- covid_processed_updated_twophase %>%
     mutate(
-      ph1.D29 = !is.na(wt.2),
+      ph1.D29 = !is.na(wt.D29),
       TwophasesampIndD29 = case_when(
         ph1.D29 == TRUE ~ TwophasesampIndD29,
         TRUE ~ 0

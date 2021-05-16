@@ -270,7 +270,7 @@ for (mk in c("Anti N IgG (IU/ml)","Anti RBD IgG (IU/ml)","Anti Spike IgG (IU/ml)
   rr3 <- dat.long %>%
     filter(Marker == mk & Visit == tp)  
   
-  wt_var = ifelse(tp==two_timepoints[1], "wt.2", "wt")
+  wt_var = ifelse(tp==two_timepoints[1], "wt.D29", "wt.D57")
   
   # indicator for cor cohort at day 29 (cohort_1_ind=1) and day 57(cohort_2_ind=2)
   rr3 <- rr3 %>% 
@@ -315,7 +315,7 @@ for (mk in c("Anti N IgG (IU/ml)","Anti RBD IgG (IU/ml)","Anti Spike IgG (IU/ml)
   rr3 <- dat.long %>%
     filter(Marker == mk & Visit == tp)
   
-  wt_var = ifelse(tp==two_timepoints[1], "wt.2", "wt")
+  wt_var = ifelse(tp==two_timepoints[1], "wt.D29", "wt.D57")
   
   # indicator for cor cohort at day 29 (cohort_1_ind=1) and day 57(cohort_2_ind=2)
   rr3 <- rr3 %>% 
@@ -360,7 +360,7 @@ for (mk in c("Anti N IgG (IU/ml)","Anti RBD IgG (IU/ml)","Anti Spike IgG (IU/ml)
   rr3 <- dat.long %>%
     filter(Marker == mk & Visit == tp)
   
-  wt_var = ifelse(tp==two_timepoints[1], "wt.2", "wt")
+  wt_var = ifelse(tp==two_timepoints[1], "wt.D29", "wt.D57")
   
   # indicator for cor cohort at day 29 (cohort_1_ind=1) and day 57(cohort_2_ind=2)
   rr3 <- rr3 %>% 
@@ -402,7 +402,7 @@ for (mk in c("Anti N IgG (IU/ml)","Anti RBD IgG (IU/ml)","Anti Spike IgG (IU/ml)
   rr3 <- dat.long %>%
     filter(Marker == mk & Visit == tp)
   
-  wt_var = ifelse(tp==two_timepoints[1], "wt.2", "wt")
+  wt_var = ifelse(tp==two_timepoints[1], "wt.D29", "wt.D57")
   
   # indicator for cor cohort at day 29 (cohort_1_ind=1) and day 57(cohort_2_ind=2)
   rr3 <- rr3 %>% 

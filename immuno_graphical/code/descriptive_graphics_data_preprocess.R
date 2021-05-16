@@ -31,7 +31,7 @@ dat.long.subject_level <- dat[, c(
   "Ptid", "Trt", "MinorityInd", "HighRiskInd", "Age", "Sex",
   "Bserostatus", "Fullvaccine", "Perprotocol", "EventIndPrimaryD29",
   "EventIndPrimaryD57", "SubcohortInd", "age.geq.65", "TwophasesampIndD57",
-  "Bstratum", "wt", "wt.2", "wt.subcohort", "race",
+  "Bstratum", "wt.D57", "wt.D29", "wt.subcohort", "race",
   "EthnicityHispanic","EthnicityNotreported", "EthnicityUnknown",
   "WhiteNonHispanic"
 )] %>%

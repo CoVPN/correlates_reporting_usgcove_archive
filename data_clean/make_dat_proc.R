@@ -222,26 +222,26 @@ if(has29) dat_proc <- dat_proc %>%
 # note this logic of defining ph1 is problematic if any of EarlyendpointD57, Perprotocol, EventTimePrimaryD57 is NA. 
 # better to define it positively, i.e. ph1.D57 is 1 if conditions are satisfied
 
-# wt, for D57 correlates analyses
+# wt.D57, for D57 correlates analyses
 wts_table <- dat_proc %>%
   dplyr::filter(EarlyendpointD57==0 & Perprotocol == 1 & EventTimePrimaryD57 >= 7) %>%
   with(table(Wstratum, TwophasesampIndD57))
 wts_norm <- rowSums(wts_table) / wts_table[, 2]
-dat_proc$wt <- wts_norm[dat_proc$Wstratum %.% ""]
-dat_proc$wt[!with(dat_proc, EarlyendpointD57==0 & Perprotocol == 1 & EventTimePrimaryD57>=7)] <- NA
-dat_proc$ph1.D57=!is.na(dat_proc$wt)
+dat_proc$wt.D57 <- wts_norm[dat_proc$Wstratum %.% ""]
+dat_proc$wt.D57[!with(dat_proc, EarlyendpointD57==0 & Perprotocol == 1 & EventTimePrimaryD57>=7)] <- NA
+dat_proc$ph1.D57=!is.na(dat_proc$wt.D57)
 
 
 
-# wt.2, for D29 correlates analyses
+# wt.2D9, for D29 correlates analyses
 if(has29) {
     wts_table2 <- dat_proc %>%
       dplyr::filter(EarlyendpointD29==0 & Perprotocol == 1 & EventTimePrimaryD29 >= 7) %>%
       with(table(Wstratum, TwophasesampIndD29))
     wts_norm2 <- rowSums(wts_table2) / wts_table2[, 2]
-    dat_proc$wt.2 <- wts_norm2[dat_proc$Wstratum %.% ""]
-    dat_proc$wt.2[!with(dat_proc, EarlyendpointD29==0 & Perprotocol == 1 & EventTimePrimaryD29 >= 7)] <- NA
-    dat_proc$ph1.D29=!is.na(dat_proc$wt.2)
+    dat_proc$wt.D29 <- wts_norm2[dat_proc$Wstratum %.% ""]
+    dat_proc$wt.D29[!with(dat_proc, EarlyendpointD29==0 & Perprotocol == 1 & EventTimePrimaryD29 >= 7)] <- NA
+    dat_proc$ph1.D29=!is.na(dat_proc$wt.D29)
 }
 
 
@@ -258,18 +258,18 @@ dat_proc$ph1.immuno=!is.na(dat_proc$wt.subcohort)
 
 dat_proc$TwophasesampIndD57[!dat_proc$ph1.D57] <- 0
 if (has29) {
-dat_proc$TwophasesampIndD29[!dat_proc$ph1.D29] <- 0
+  dat_proc$TwophasesampIndD29[!dat_proc$ph1.D29] <- 0
 }
 
 
 assertthat::assert_that(
-    sum(with(dat_proc, is.na(wt)           & EarlyendpointD57==0 & Perprotocol == 1 & EventTimePrimaryD57>=7 & !is.na(Wstratum)), na.rm=T)==0,
+    sum(with(dat_proc, is.na(wt.D57)           & EarlyendpointD57==0 & Perprotocol == 1 & EventTimePrimaryD57>=7 & !is.na(Wstratum)), na.rm=T)==0,
     msg = "missing wt for D57 analyses ph1 subjects"
 )    
 
 
 assertthat::assert_that(
-    sum(with(dat_proc, is.na(wt.2)         & EarlyendpointD29==0 & Perprotocol == 1 & EventTimePrimaryD29>=7 & !is.na(Wstratum)), na.rm=T)==0,
+    sum(with(dat_proc, is.na(wt.D29)         & EarlyendpointD29==0 & Perprotocol == 1 & EventTimePrimaryD29>=7 & !is.na(Wstratum)), na.rm=T)==0,
     msg = "missing wt for D29 analyses ph1 subjects"
 )    
 

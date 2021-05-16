@@ -28,8 +28,8 @@ source(here::here("..", "_common.R"))
 ##### Compute reference times for analysis -semi hard coded
 
 data <- read.csv(here::here("..", "data_clean", data_name))
-tf_Day29 <- max(data[data$EventIndPrimaryD29==1 & data$Trt == 1 & data$Bserostatus == 0 & !is.na(data$wt.2), "EventTimePrimaryD29" ])
-tf_Day57 <- max(data[data$EventIndPrimaryD57==1 & data$Trt == 1 & data$Bserostatus == 0 & !is.na(data$wt), "EventTimePrimaryD57" ])
+tf_Day29 <- max(data[data$EventIndPrimaryD29==1 & data$Trt == 1 & data$Bserostatus == 0 & !is.na(data$wt.D29), "EventTimePrimaryD29" ])
+tf_Day57 <- max(data[data$EventIndPrimaryD57==1 & data$Trt == 1 & data$Bserostatus == 0 & !is.na(data$wt.D57), "EventTimePrimaryD57" ])
 
 print(colnames(data))
 tf <- list("Day57" = tf_Day57, "Day29" = tf_Day29) # Reference time to perform analysis. Y = 1(T <= tf) where T is event time of Covid.
@@ -88,7 +88,7 @@ Event_Ind_variable <- list("Day57" = "EventIndPrimaryD57", "Day29" = "EventIndPr
 # Time until event (censoring, end of study, or COVID infection)
 Event_Time_variable <- list("Day57" = "EventTimePrimaryD57", "Day29" = "EventTimePrimaryD29")
 # Variable containing the two stage sampling weights
-weight_variable <- list("Day57" = "wt", "Day29" = "wt.2")
+weight_variable <- list("Day57" = "wt.D57", "Day29" = "wt.D29")
 # Indicator variable that is 1 if selected for second stage
 twophaseind_variable <- list("Day57" = "TwophasesampIndD57", "Day29" = "TwophasesampIndD29")
 # The stratum over which stratified two stage sampling is performed

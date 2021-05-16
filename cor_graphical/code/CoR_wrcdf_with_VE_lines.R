@@ -43,7 +43,7 @@ for (bstatus in 0:1) {
     for (aa in 1:length(assays)) {
       subdat <- subset(dat.long.cor.subset, assay == assays[aa] & Trt == "Vaccine" & Bserostatus == bstatus.labels[bstatus + 1])
       covid_corr_rcdf_ve_lines(x = subdat$Day57,
-                               weights = subdat$wt,
+                               weights = subdat$wt.D57,
                                VE = VE,
                                VE_lb = VE_lb,
                                VE_ub = VE_ub,

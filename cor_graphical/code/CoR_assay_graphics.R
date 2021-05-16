@@ -25,7 +25,7 @@ dat.cor.subset <- readRDS(here(
 # stratified by treatment group and event status, in baseline negative or positive subjects
 # We made four ggplot objects, each for one assay, and combine them with ggarrange
 #=========================================================================================================================
-wts <- c("wt", "wt.2", "wt", "wt.2", "wt")
+wts <- c("wt.D57", "wt.D29", "wt.D57", "wt.D29", "wt.D57")
 for (bstatus in 1:2) {
   for (tt in 2:5){
     subdat <- subset(dat.long.cor.subset, Bserostatus == bstatus.labels[bstatus])

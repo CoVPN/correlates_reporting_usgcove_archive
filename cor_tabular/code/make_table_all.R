@@ -209,12 +209,13 @@ ds_s <- dat %>%
     All = "All participants",
     randomset = (SubcohortInd == 1 & TwophasesampIndD57 == 1 & EarlyendpointD57==0),
     cohort1 = (TwophasesampIndD57==1),
-    corrset1 = !is.na(wt))
+    corrset1 = !is.na(wt.D57)
+  )
 
 if(has29) {
   ds_s <- ds_s %>% 
     mutate(cohort2 = (TwophasesampIndD29==1),
-           corrset2 = !is.na(wt.2))
+           corrset2 = !is.na(wt.D29))
 }
 
 # Step2: Responders
@@ -378,16 +379,16 @@ subs=c("Case")
 comp_i <- c("Cases", "Non-Cases")
 
 rpcnt_case <- get_rr(ds1, resp.v.57, subs, sub.by, strata="Wstratum", 
-                     weights="wt", subset="corrset1") 
-rgm_case <- get_gm(ds1, gm.v.57, subs, sub.by, strata="Wstratum", weights="wt", "corrset1") 
-rgmt_case <- get_rgmt(ds1, gm.v.57, subs, comp_lev=comp_i, sub.by, "Wstratum", "wt", "corrset1") 
+                     weights="wt.D57", subset="corrset1") 
+rgm_case <- get_gm(ds1, gm.v.57, subs, sub.by, strata="Wstratum", weights="wt.D57", "corrset1") 
+rgmt_case <- get_rgmt(ds1, gm.v.57, subs, comp_lev=comp_i, sub.by, "Wstratum", "wt.D57", "corrset1") 
 
 print("Done with table 2 & 3") 
 
 if(has29){
-  rpcnt_case2 <- get_rr(ds2, resp.v.29, subs, sub.by, "Wstratum", "wt.2", "corrset2")
-  rgm_case2 <- get_gm(ds2, gm.v.29, subs, sub.by, "Wstratum", "wt.2", "corrset2")
-  rgmt_case2 <- get_rgmt(ds2, gm.v.29, subs, comp_lev=comp_i, sub.by, "Wstratum", "wt.2", "corrset2")
+  rpcnt_case2 <- get_rr(ds2, resp.v.29, subs, sub.by, "Wstratum", "wt.D29", "corrset2")
+  rgm_case2 <- get_gm(ds2, gm.v.29, subs, sub.by, "Wstratum", "wt.D29", "corrset2")
+  rgmt_case2 <- get_rgmt(ds2, gm.v.29, subs, comp_lev=comp_i, sub.by, "Wstratum", "wt.D29", "corrset2")
 
   rpcnt_case <- bind_rows(rpcnt_case, rpcnt_case2)
   rgm_case <- bind_rows(rgm_case, rgm_case2)

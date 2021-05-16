@@ -211,14 +211,14 @@ CoR/CoP analyses of Day 57 markers only, and of both Day 29 and Day 57 markers t
 Phase 1 ptids: Bserostatus==0 & EarlyendpointD57==0 & Perprotocol==1 & EventTimePrimaryD57 >= 7 
 Phase 1 indicator: ph1.D57
 Phase 2 ptids: TwophasesampIndprimary==1
-Weights: wt
+Weights: wt.D57
 Failure time variables: (EventTimePrimaryD57, EventIndPrimaryD57) and ignore (EventTimePrimaryD29, EventIndPrimaryD29)
 
 CoR/CoP analyses of Day 29 markers only:                             
 Phase 1 ptids: Bserostatus==0 & EarlyendpointD29==0 & Perprotocol==1 & EventTimePrimaryD29 >= 7  
 Phase 1 indicator: ph1.D29
 Phase 2 ptids: TwophasesampIndprimary.2==1
-Weights: wt.2
+Weights: wt.D29
 Failure time variables: (EventTimePrimaryD29, EventIndPrimaryD29) and ignore (EventTimePrimaryD57, EventIndPrimaryD57)
 
 Immunogenicity report analyses:

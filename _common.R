@@ -326,7 +326,8 @@ get.range.cor=function(dat, assay=c("bindSpike", "bindRBD", "pseudoneutid50", "p
     a <- assay # Fixes bug
     time<-match.arg(time)        
     if(assay %in% c("bindSpike", "bindRBD")) {
-        ret=quantile(c(dat[["Day"%.%time%.%"bindSpike"]], dat[["Day"%.%time%.%"bindRBD"]]), c(0, 1), na.rm=T)
+        ret=range(dat[["Day"%.%time%.%"bindSpike"]], dat[["Day"%.%time%.%"bindRBD"]], log10(llods[c("bindSpike","bindRBD")]/2), na.rm=T)
+        ret[2]=ceiling(ret[2]) # round up
     } else if(assay %in% c("pseudoneutid50", "pseudoneutid80")) {
         ret=range(dat[["Day"%.%time%.%a]], log10(llods[c("pseudoneutid50","pseudoneutid80")]/2), log10(uloqs[c("pseudoneutid50","pseudoneutid80")]), na.rm=T)
         ret[2]=ceiling(ret[2]) # round up
@@ -344,11 +345,12 @@ draw.x.axis.cor=function(xlim, llod){
 #        for (x in xx) axis(1, at=log10(x), labels=if (llod==x) "lod" else if (x %in% c(1000,10000)) bquote(10^.(log10(x))) else if (x==5000) bquote(.(x/1000)%*%10^3) else  x ) 
 #    } else {
         xx=seq(floor(xlim[1]), ceiling(xlim[2]))
-        for (x in xx) axis(1, at=x, labels=if (log10(llod)==x) "lod" else if (x>=3) bquote(10^.(x)) else 10^x )
+        for (x in xx) if (x>log10(llod*2)) axis(1, at=x, labels=if (log10(llod)==x) "lod" else if (x>=3) bquote(10^.(x)) else 10^x )
 #    }
     
     # plot llod if llod is not already plotted
-    if(!any(log10(llod)==xx)) axis(1, at=log10(llod), labels="lod")
+    #if(!any(log10(llod)==xx)) 
+    axis(1, at=log10(llod), labels="lod")
     
 }
 
@@ -378,13 +380,14 @@ get.labels.x.axis.cor=function(xlim, llod){
   # }
   #
   xx=seq(floor(xlim[1]), ceiling(xlim[2]))
+  xx=xx[xx>log10(llod*2)]
   x_ticks <- xx
   labels <- sapply(xx, function(x) {
     if (log10(llod)==x) "lod" else if (x>=3) bquote(10^.(x)) else 10^x
   })
-  if(!any(log10(llod)==x_ticks)){
+  #if(!any(log10(llod)==x_ticks)){
     x_ticks <- c(log10(llod), x_ticks)
     labels <- c("lod", labels)
-  }
+  #}
   return(list(ticks = x_ticks, labels = labels))
 }

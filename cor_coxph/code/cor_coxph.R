@@ -732,7 +732,7 @@ myprint(prev.vacc)
 # marginalized risk curves for continuous s
 for (ii in 1:2) {  # 1 conditional on s,   2 is conditional on S>=s
 for (idx in 1:2) { # 1 with placebo lines, 2 without placebo lines. Implementation-wise, only difference is in ylim
-# ii=2; idx=1; a=assays[4]
+# ii=1; idx=1; a=assays[3]
     risks.all=get("risks.all."%.%ii)
     
     if (ii==2 & idx==2) {

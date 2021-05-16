@@ -2,9 +2,12 @@
 output:
   pdf_document: default
   html_document: default
+header-includes:
+   - \usepackage{eso-pic,graphicx,transparent,caption,pdflscape,float}
+   - \usepackage[margin=1in]{geometry}
 ---
 
-# Stochastic Interventional Risk and Vaccine Efficacy Effects {#cop-stochastic}
+# Stochastic Interventional Vaccine Efficacy {#cop-stochastic}
 
 ```{r cop-stochastic-setup, echo = FALSE, message = FALSE, warning=FALSE}
 here::i_am("cop_stochastic/report.Rmd")
@@ -17,7 +20,9 @@ source(here("cop_stochastic", "code", "params.R"))
 
 # make figures bigger
 knitr::opts_chunk$set(
-  out.width = "95%"
+  out.width = "95%",
+  fig.width = 8,
+  results = "asis"
 )
 ```
 
@@ -30,17 +35,18 @@ to which vaccines that modulate mCoP biomarker activity to these levels could
 mitigate symptomatic COVID-19 infection in terms of counterfactual stochastic
 interventional risk and vaccine efficacy (VE).
 
-## Figures with estimates and confidence intervals for Day 57 {#sve-day57}
+## Figures for Stochastic Interventional CoPs for Day 57 {#sve-day57}
 
 ```{r cop-stochastic-day57-setup, echo=FALSE, message=FALSE}
 # munging marker names
 this_time <- "Day57"
+this_time_print <- gsub("^(.{3})(.*)$", "\\1 \\2", this_time)
 markers_name_short <- str_remove(markers[, this_time], this_time)
 ```
 
-### Stochastic interventional risk: `r marker_to_name[[markers_name_short[1]]]`
+### Stoch interv. risk: `r marker_to_name[[markers_name_short[1]]]`
 
-```{r marker1-risk-day57}
+```{r marker1-risk-day57, fig.cap = paste("Stochastic interventional risk estimates, with confidence intervals, for", marker_to_name[[markers_name_short[1]]], "at", this_time_print)}
 include_graphics(
   here(
     "cop_stochastic", "figs",
@@ -51,9 +57,9 @@ include_graphics(
 
 \clearpage
 
-### Stochastic interventional VE: `r marker_to_name[[markers_name_short[1]]]`
+### Stoch. interv. VE: `r marker_to_name[[markers_name_short[1]]]`
 
-```{r marker1-sve-day57}
+```{r marker1-sve-day57, fig.cap = paste("Stochastic interventional VE estimates, with confidence intervals, for", marker_to_name[[markers_name_short[1]]], "at", this_time_print)}
 include_graphics(
   here(
     "cop_stochastic", "figs",
@@ -64,9 +70,9 @@ include_graphics(
 
 \clearpage
 
-### Stochastic interventional risk: `r marker_to_name[[markers_name_short[2]]]`
+### Stoch. interv. risk: `r marker_to_name[[markers_name_short[2]]]`
 
-```{r marker2-risk-day57}
+```{r marker2-risk-day57, fig.cap = paste("Stochastic interventional risk estimates, with confidence intervals, for", marker_to_name[[markers_name_short[2]]], "at", this_time_print)}
 include_graphics(
   here(
     "cop_stochastic", "figs",
@@ -77,9 +83,9 @@ include_graphics(
 
 \clearpage
 
-### Stochastic interventional VE: `r marker_to_name[[markers_name_short[2]]]`
+### Stoch. interv. VE: `r marker_to_name[[markers_name_short[2]]]`
 
-```{r marker2-sve-day57}
+```{r marker2-sve-day57, fig.cap = paste("Stochastic interventional VE estimates, with confidence intervals, for", marker_to_name[[markers_name_short[2]]], "at", this_time_print)}
 include_graphics(
   here(
     "cop_stochastic", "figs",
@@ -90,9 +96,9 @@ include_graphics(
 
 \clearpage
 
-### Stochastic interventional risk: `r marker_to_name[[markers_name_short[3]]]`
+### Stoch. interv. risk: `r marker_to_name[[markers_name_short[3]]]`
 
-```{r marker3-risk-day57}
+```{r marker3-risk-day57, fig.cap = paste("Stochastic interventional risk estimates, with confidence intervals, for", marker_to_name[[markers_name_short[3]]], "at", this_time_print)}
 include_graphics(
   here(
     "cop_stochastic", "figs",
@@ -103,9 +109,9 @@ include_graphics(
 
 \clearpage
 
-### Stochastic interventional VE: `r marker_to_name[[markers_name_short[3]]]`
+### Stoch. interv. VE: `r marker_to_name[[markers_name_short[3]]]`
 
-```{r marker3-sve-day57}
+```{r marker3-sve-day57, fig.cap = paste("Stochastic interventional VE estimates, with confidence intervals, for", marker_to_name[[markers_name_short[3]]], "at", this_time_print)}
 include_graphics(
   here(
     "cop_stochastic", "figs",
@@ -116,9 +122,9 @@ include_graphics(
 
 \clearpage
 
-### Stochastic interventional risk: `r marker_to_name[[markers_name_short[4]]]`
+### Stoch. interv. risk: `r marker_to_name[[markers_name_short[4]]]`
 
-```{r marker4-risk-day57}
+```{r marker4-risk-day57, fig.cap = paste("Stochastic interventional risk estimates, with confidence intervals, for", marker_to_name[[markers_name_short[4]]], "at", this_time_print)}
 include_graphics(
   here(
     "cop_stochastic", "figs",
@@ -129,9 +135,9 @@ include_graphics(
 
 \clearpage
 
-### Stochastic interventional VE: `r marker_to_name[[markers_name_short[4]]]`
+### Stoch. interv. VE: `r marker_to_name[[markers_name_short[4]]]`
 
-```{r marker4-sve-day57}
+```{r marker4-sve-day57, fig.cap = paste("Stochastic interventional VE estimates, with confidence intervals, for", marker_to_name[[markers_name_short[4]]], "at", this_time_print)}
 include_graphics(
   here(
     "cop_stochastic", "figs",
@@ -142,17 +148,18 @@ include_graphics(
 
 \clearpage
 
-## Figures with estimates and confidence intervals for Day 29 {#sve-day29}
+## Figures for Stochastic Interventional CoPs for Day 29 {#sve-day29}
 
 ```{r cop-stochastic-day29-setup, echo=FALSE, message=FALSE}
 # munging marker names
 this_time <- "Day29"
+this_time_print <- gsub("^(.{3})(.*)$", "\\1 \\2", this_time)
 markers_name_short <- str_remove(markers[, this_time], this_time)
 ```
 
-### Stochastic interventional risk: `r marker_to_name[[markers_name_short[1]]]`
+### Stoch. interv. risk: `r marker_to_name[[markers_name_short[1]]]`
 
-```{r marker1-risk-day29}
+```{r marker1-risk-day29, fig.cap = paste("Stochastic interventional risk estimates, with confidence intervals, for", marker_to_name[[markers_name_short[1]]], "at", this_time_print)}
 include_graphics(
   here(
     "cop_stochastic", "figs",
@@ -163,9 +170,9 @@ include_graphics(
 
 \clearpage
 
-### Stochastic interventional VE: `r marker_to_name[[markers_name_short[1]]]`
+### Stoch. interv. VE: `r marker_to_name[[markers_name_short[1]]]`
 
-```{r marker1-sve-day29}
+```{r marker1-sve-day29, fig.cap = paste("Stochastic interventional VE estimates, with confidence intervals, for", marker_to_name[[markers_name_short[1]]], "at", this_time_print)}
 include_graphics(
   here(
     "cop_stochastic", "figs",
@@ -176,9 +183,9 @@ include_graphics(
 
 \clearpage
 
-### Stochastic interventional risk: `r marker_to_name[[markers_name_short[2]]]`
+### Stoch. interv. risk: `r marker_to_name[[markers_name_short[2]]]`
 
-```{r marker2-risk-day29}
+```{r marker2-risk-day29, fig.cap = paste("Stochastic interventional risk estimates, with confidence intervals, for", marker_to_name[[markers_name_short[2]]], "at", this_time_print)}
 include_graphics(
   here(
     "cop_stochastic", "figs",
@@ -189,9 +196,9 @@ include_graphics(
 
 \clearpage
 
-### Stochastic interventional VE: `r marker_to_name[[markers_name_short[2]]]`
+### Stoch. interv. VE: `r marker_to_name[[markers_name_short[2]]]`
 
-```{r marker2-sve-day29}
+```{r marker2-sve-day29, fig.cap = paste("Stochastic interventional VE estimates, with confidence intervals, for", marker_to_name[[markers_name_short[2]]], "at", this_time_print)}
 include_graphics(
   here(
     "cop_stochastic", "figs",
@@ -202,9 +209,9 @@ include_graphics(
 
 \clearpage
 
-### Stochastic interventional risk: `r marker_to_name[[markers_name_short[3]]]`
+### Stoch. interv. risk: `r marker_to_name[[markers_name_short[3]]]`
 
-```{r marker3-risk-day29}
+```{r marker3-risk-day29, fig.cap = paste("Stochastic interventional risk estimates, with confidence intervals, for", marker_to_name[[markers_name_short[3]]], "at", this_time_print)}
 include_graphics(
   here(
     "cop_stochastic", "figs",
@@ -215,9 +222,9 @@ include_graphics(
 
 \clearpage
 
-### Stochastic interventional VE: `r marker_to_name[[markers_name_short[3]]]`
+### Stoch. interv. VE: `r marker_to_name[[markers_name_short[3]]]`
 
-```{r marker3-sve-day29}
+```{r marker3-sve-day29, fig.cap = paste("Stochastic interventional VE estimates, with confidence intervals, for", marker_to_name[[markers_name_short[3]]], "at", this_time_print)}
 include_graphics(
   here(
     "cop_stochastic", "figs",
@@ -228,9 +235,9 @@ include_graphics(
 
 \clearpage
 
-### Stochastic interventional risk: `r marker_to_name[[markers_name_short[4]]]`
+### Stoch. interv. risk: `r marker_to_name[[markers_name_short[4]]]`
 
-```{r marker4-risk-day29}
+```{r marker4-risk-day29, fig.cap = paste("Stochastic interventional risk estimates, with confidence intervals, for", marker_to_name[[markers_name_short[4]]], "at", this_time_print)}
 include_graphics(
   here(
     "cop_stochastic", "figs",
@@ -241,9 +248,9 @@ include_graphics(
 
 \clearpage
 
-### Stochastic interventional VE: `r marker_to_name[[markers_name_short[4]]]`
+### Stoch. interv. VE: `r marker_to_name[[markers_name_short[4]]]`
 
-```{r marker4-sve-day29}
+```{r marker4-sve-day29, fig.cap = paste("Stochastic interventional VE estimates, with confidence intervals, for", marker_to_name[[markers_name_short[4]]], "at", this_time_print)}
 include_graphics(
   here(
     "cop_stochastic", "figs",

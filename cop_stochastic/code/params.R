@@ -54,8 +54,8 @@ adjust_censoring <- FALSE
 # use a smaller grid of shifts when testing
 if (run_fast) {
   # smaller grid of shift values
-  delta_grid <- seq(-2, 2, 1)
+  delta_grid <- seq(-1, 1, 0.5)
 } else {
   # grid for shifting (from SAP)
-  delta_grid <- seq(-2, 2, 0.2)
+  delta_grid <- seq(-1.4, 1.4, 0.2)
 }

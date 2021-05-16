@@ -33,15 +33,15 @@ lapply(markers, function(marker) {
     geom_hline(yintercept = risk_results_msm$param_est[delta == 0, psi],
                linetype = "dotted", colour = "red") +
     geom_vline(xintercept = 0, linetype = "dotted", colour = "red") +
-    geom_errorbar(aes(ymin = ci_lwr, ymax = ci_upr), width = 0.1, size = 1,
+    geom_errorbar(aes(ymin = ci_lwr, ymax = ci_upr), width = 0.2, size = 1,
                   linetype = "dashed") +
-    geom_point(size = 13, alpha = 0.75) +
+    geom_point(size = 14, alpha = 0.75) +
     coord_cartesian(ylim = c(0, NA)) +
     labs(
-      x = paste("Posited change in standardized", marker_name_long),
-      y = "Risk of symptomatic COVID-19 infection in vaccinees",
-      title = paste("Estimated counterfactual risk of symptomatic",
-                    "COVID-19 infection at Day", parse_number(this_time)),
+      x = paste("Shift in standardized", marker_name_long),
+      y = "Stoch. Interv. Risk in Vaccinees",
+      title = paste("Stoch. Interv. Risk of Symptomatic", "COVID-19 at Day",
+                    parse_number(this_time)),
       subtitle = TeX(paste("working MSM summary:",
                            paste0("($\\hat{\\beta}_{TMLE}$ = ",
                            round(risk_results_msm$msm_est$param_est[2], 4),
@@ -55,13 +55,13 @@ lapply(markers, function(marker) {
     ) +
     theme(
       legend.position = "none",
-      text = element_text(size = 40),
-      axis.text.x = element_text(colour = "black", size = 40, hjust = 1),
-      axis.text.y = element_text(colour = "black", size = 40)
+      text = element_text(size = 44),
+      axis.text.x = element_text(colour = "black", size = 44, hjust = 1),
+      axis.text.y = element_text(colour = "black", size = 44)
     )
   ggsave(
     filename = here("figs", paste0("mcop_risk_", marker, ".pdf")),
-    plot = p_risk_msm, height = 22, width = 25
+    plot = p_risk_msm, height = 25, width = 28
   )
 
   # plot for counterfactual stochastic interventional vaccine efficacy
@@ -69,16 +69,14 @@ lapply(markers, function(marker) {
     geom_hline(yintercept = sve_results_msm$param_est[delta == 0, psi],
                linetype = "dotted", colour = "red") +
     geom_vline(xintercept = 0, linetype = "dotted", colour = "red") +
-    geom_errorbar(aes(ymin = ci_lwr, ymax = ci_upr), width = 0.1, size = 1,
+    geom_errorbar(aes(ymin = ci_lwr, ymax = ci_upr), width = 0.2, size = 1,
                   linetype = "dashed") +
-    geom_point(size = 13, alpha = 0.75) +
+    geom_point(size = 14, alpha = 0.75) +
     coord_cartesian(ylim = c(NA, 1)) +
     labs(
-      x = paste("Posited change in standardized", marker_name_long),
-      y = paste("Stochastic interventional VE against",
-                "symptomatic COVID-19 infection"),
-      title = paste("Estimated vaccine efficacy v.",
-                    "symptomatic COVID-19 infection at Day",
+      x = paste("Shift in standardized", marker_name_long),
+      y = paste("Stoch. Interv. VE"),
+      title = paste("Stoch. Interv. VE v.", "Symptomatic COVID-19 at Day",
                     parse_number(this_time)),
       subtitle = TeX(paste("working MSM summary:",
                            paste0("($\\hat{\\beta}_{TMLE}$ = ",
@@ -93,12 +91,12 @@ lapply(markers, function(marker) {
     ) +
     theme(
       legend.position = "none",
-      text = element_text(size = 40),
-      axis.text.x = element_text(colour = "black", size = 40, hjust = 1),
-      axis.text.y = element_text(colour = "black", size = 40)
+      text = element_text(size = 44),
+      axis.text.x = element_text(colour = "black", size = 44, hjust = 1),
+      axis.text.y = element_text(colour = "black", size = 44)
     )
   ggsave(
     filename = here("figs", paste0("mcop_sve_", marker, ".pdf")),
-    plot = p_sve_msm, height = 22, width = 25
+    plot = p_sve_msm, height = 25, width = 28
   )
 })

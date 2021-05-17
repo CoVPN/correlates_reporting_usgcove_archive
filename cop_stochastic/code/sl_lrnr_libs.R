@@ -1,4 +1,8 @@
 # SL regression learners for outcome mechanism
+
+## naive mean of the outcome
+mean_y <- Lrnr_mean$new()
+
 ## 1) LightGBM
 ## LightGBM grid
 # lgb_tune_grid <- list(
@@ -16,7 +20,7 @@ lightgbm_goss <- Lrnr_lightgbm$new(
   max_depth = 50, num_leaves = 2500, num_iterations = 1000,
   min_data_in_leaf = 5000, min_data_in_bin = 5000,
   early_stopping_rounds = 50, scale_pos_weight = 7,
-  verbose = 1, boosting = "goss"
+  boosting = "goss", verbose = 1
 )
 lightgbm_gbdt <- Lrnr_lightgbm$new(
   max_depth = 50, num_leaves = 2500, num_iterations = 1000,
@@ -81,6 +85,9 @@ dbarts <- Lrnr_dbarts$new(
 fglm <- Lrnr_glm_fast$new()
 bayesglm <- Lrnr_bayesglm$new()
 
+## 7) HAL?
+## NOTE: should we add one?
+
 # just stack all them learners
 stack_reg <- c(lightgbm_goss, lightgbm_gbdt, xgboost_hist, xgboost_approx,
                ranger_100, ranger_70, ranger_40, dbarts, enets, fglm, bayesglm)
@@ -120,9 +127,16 @@ hese_xgb <- Lrnr_density_semiparametric$new(
   mean_learner = xgboost_approx,
   var_learner = xgboost_approx
 )
+hose_lgb <- Lrnr_density_semiparametric$new(
+  mean_learner = lightgbm_goss
+)
+hese_lgb <- Lrnr_density_semiparametric$new(
+  mean_learner = lightgbm_goss,
+  var_learner = lightgbm_goss
+)
 
 # gotta stack them all
-dens_reg <- c(hose_glm, hose_rf, hose_xgb, hese_glm, hese_rf, hese_xgb)
+dens_reg <- c(hose_glm, hose_rf, hose_lgb, hese_glm, hese_rf, hese_lgb)
 
 # setup SL library for conditional density estimation for propensity score
 sl_dens <- Lrnr_sl$new(

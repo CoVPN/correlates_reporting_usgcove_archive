@@ -9,13 +9,13 @@ get_plot <- function(marker, simultaneous_CI = F, monotone = F) {
   #dat.mock <- read.csv(here::here( "data_clean", data_name))
   tmp <- dat.mock[dat.mock$Perprotocol==1 & dat.mock$Bserostatus == 0,]
   time <- "Day57"
-   tmp$time <-  tmp[[Event_Time_variable[[time]]]] 
-  tmp$Delta <-  tmp[[Event_Ind_variable[[time]]]]  
+   tmp$time <-  tmp[[Event_Time_variable[[time]]]]
+  tmp$Delta <-  tmp[[Event_Ind_variable[[time]]]]
   fit <- summary(survival::survfit(survival::Surv(time, Delta) ~ 1, data = tmp[tmp$Trt==1,]), times = tf[[time]] )
   risk_vac <- round(mean(1-fit$surv),4)
   fit <- summary(survival::survfit(survival::Surv(time, Delta) ~ 1, data = tmp[tmp$Trt==0,]), times = tf[[time]] )
   risk_plac <-  round(mean(1-fit$surv),3)
-  
+
   if(monotone) {
     load(file = here::here("output", paste0("tmleThresh_monotone_", marker, ".RData")))
   } else {
@@ -28,7 +28,7 @@ get_plot <- function(marker, simultaneous_CI = F, monotone = F) {
   # subtitle_main <- "Nonparametric estimate of Threshold-response function"
   data <- read.csv(here::here("data_clean", paste0("data_secondstage_", time, ".csv")))
   main <- plotting_assay_title_generator(marker)
-    #paste0("Cumulative Risk of COVID by Day ", tf[time]) 
+    #paste0("Cumulative Risk of COVID by Day ", tf[time])
 
   ident <- function(x) x
   col <- c(col2rgb("olivedrab3")) # orange, darkgoldenrod2
@@ -52,26 +52,33 @@ get_plot <- function(marker, simultaneous_CI = F, monotone = F) {
     #main <- paste0(main, " with simultaneous confidence bands")
   }
   a <- marker_to_assay[[marker]]
-  xx=seq(floor(min(esttmle[, 1])), ceiling(max(esttmle[, 1])))
-  xx <- as.numeric(sort(union(xx, log10(llods[a]))))
-  labels <- sapply(xx, function(x) {
-    if (log10(llods[a])==x) {
-      labels <- "lod"
-      } 
-    else if (x>=3) {
-        labels <- (bquote(10^.(x)))
-      }
-    else {
-      labels <- as.character(10^x )
-    }
-    return(labels)
-  })
-  labels <- unlist(labels, use.names = F, recursive = F)
-  
+
+  xlim <- get.range.cor(data, a, sub('...', '', time))
+  llod <- llods[a]
+  labels_info <- get.labels.x.axis.cor(xlim, llods[a])
+  xx <- labels_info$ticks
+  labels <- labels_info$labels
+
+  # xx=seq(floor(min(esttmle[, 1])), ceiling(max(esttmle[, 1])))
+  # xx <- as.numeric(sort(union(xx, log10(llods[a]))))
+  # labels <- sapply(xx, function(x) {
+  #   if (log10(llods[a])==x) {
+  #     labels <- "lod"
+  #     }
+  #   else if (x>=3) {
+  #       labels <- (bquote(10^.(x)))
+  #     }
+  #   else {
+  #     labels <- as.character(10^x )
+  #   }
+  #   return(labels)
+  # })
+  # labels <- unlist(labels, use.names = F, recursive = F)
+  #
 
   plot <- v + scale_x_continuous(
    breaks = xx,#union(floor(esttmle[, 1]), ceiling(esttmle[, 1])),
-    labels = do.call(expression,labels) #trans_format("ident", math_format(10^.x)), 
+    labels = do.call(expression,labels) #trans_format("ident", math_format(10^.x)),
    #limits = c(min(esttmle[, 1]) - 0.1, max(esttmle[, 1]) + 0.1)
   ) + xlab(paste0(marker, " threshold")) + ylab(laby)  + xlab(labx) + ggtitle(main) +
     stat_function(fun = RCDF, color = col, geom = "area", fill = col, alpha = 0.2) +

@@ -1518,6 +1518,13 @@
       "Repository": "CRAN",
       "Hash": "14dc9f7a3c91ebb14ec5bb9208a07061"
     },
+    "progressr": {
+      "Package": "progressr",
+      "Version": "0.7.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "679b0700adc3be59606d703ccbdab1a8"
+    },
     "promises": {
       "Package": "promises",
       "Version": "1.2.0.1",

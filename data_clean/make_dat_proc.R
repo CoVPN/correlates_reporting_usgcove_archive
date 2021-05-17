@@ -30,6 +30,7 @@ colnames(dat_proc)[1] <- "Ptid"
 
 
 #dat_proc=subset(dat_proc, !is.na(Bserostatus))
+dat_proc=subset(dat_proc, !is.na(EventTimePrimaryD1) & !is.na(EventTimePrimaryD57) & !is.na(EventTimePrimaryD29))
 
 
 #hist(dat_proc$Day57bindSpike[dat_proc$Trt==1])
@@ -157,12 +158,14 @@ dat_proc <- dat_proc %>%
     tps.stratum = demo.stratum + strtoi(paste0(Trt, Bserostatus), base = 2) * length(demo.stratum.labels)
   )
 
-# Wstratum, 1 ~ 4*max(demo.stratum), 4*max(demo.stratum)+1, 4*max(demo.stratum)+4. 
-# Differs from tps stratum in that case is a separate stratum within each of the four groups defined by Trt and Bserostatus
+# Wstratum, 1 ~ max(tps.stratum), max(tps.stratum)+1, ..., max(tps.stratum)+4. 
 # Used to compute sampling weights. 
-# NOTE: The case is defined using D29 status
-dat_proc$Wstratum = dat_proc$tps.stratum
+# Differs from tps stratum in that case is a separate stratum within each of the four groups defined by Trt and Bserostatus
+# A case will have a Wstratum even if its tps.stratum is NA
+# The case is defined using EventIndPrimaryD29
+
 max.tps=max(dat_proc$tps.stratum,na.rm=T)
+dat_proc$Wstratum = dat_proc$tps.stratum
 dat_proc$Wstratum[with(dat_proc, EventIndPrimaryD29==1 & Trt==0 & Bserostatus==0)]=max.tps+1
 dat_proc$Wstratum[with(dat_proc, EventIndPrimaryD29==1 & Trt==0 & Bserostatus==1)]=max.tps+2
 dat_proc$Wstratum[with(dat_proc, EventIndPrimaryD29==1 & Trt==1 & Bserostatus==0)]=max.tps+3
@@ -221,60 +224,53 @@ if(has29) dat_proc <- dat_proc %>%
   
 
 # wt, for D57 correlates analyses
-wts_table <- dat_proc %>%
-  dplyr::filter(EarlyendpointD57==0 & Perprotocol == 1 & EventTimePrimaryD57 >= 7) %>%
+wts_table <- dat_proc %>% dplyr::filter(EarlyendpointD57==0 & Perprotocol == 1 & EventTimePrimaryD57 >= 7) %>%
   with(table(Wstratum, TwophasesampInd))
 wts_norm <- rowSums(wts_table) / wts_table[, 2]
 dat_proc$wt <- wts_norm[dat_proc$Wstratum %.% ""]
-dat_proc$wt[!with(dat_proc, EarlyendpointD57==0 & Perprotocol == 1 & EventTimePrimaryD57>=7)] <- NA
+dat_proc$wt = ifelse(with(dat_proc, EarlyendpointD57==0 & Perprotocol == 1 & EventTimePrimaryD57>=7), dat_proc$wt, NA)
 dat_proc$ph1.D57=!is.na(dat_proc$wt)
-
-
+dat_proc$ph2.D57=with(dat_proc, ph1.D57 & TwophasesampInd)
 
 # wt.2, for D29 correlates analyses
 if(has29) {
-    wts_table2 <- dat_proc %>%
-      dplyr::filter(EarlyendpointD29==0 & Perprotocol == 1 & EventTimePrimaryD29 >= 7) %>%
+    wts_table2 <- dat_proc %>% dplyr::filter(EarlyendpointD29==0 & Perprotocol == 1 & EventTimePrimaryD29 >= 7) %>%
       with(table(Wstratum, TwophasesampInd.2))
     wts_norm2 <- rowSums(wts_table2) / wts_table2[, 2]
     dat_proc$wt.2 <- wts_norm2[dat_proc$Wstratum %.% ""]
-    dat_proc$wt.2[!with(dat_proc, EarlyendpointD29==0 & Perprotocol == 1 & EventTimePrimaryD29 >= 7)] <- NA
+    dat_proc$wt.2 = ifelse(with(dat_proc, EarlyendpointD29==0 & Perprotocol == 1 & EventTimePrimaryD29 >= 7), dat_proc$wt.2, NA)
     dat_proc$ph1.D29=!is.na(dat_proc$wt.2)
+    dat_proc$ph2.D29=with(dat_proc, ph1.D29 & TwophasesampInd.2)
+
+    assertthat::assert_that(
+        all(!is.na(subset(dat_proc, EarlyendpointD29==0 & Perprotocol == 1 & EventTimePrimaryD29>=7 & !is.na(Wstratum), select=wt.2, drop=T))), 
+        msg = "missing wt.2 for D29 analyses ph1 subjects")    
 }
 
-
 # wt.subcohort, for immunogenicity analyses that use subcohort only and are not enriched by cases outside subcohort
-wts_table <- dat_proc %>%
-  dplyr::filter(EarlyendpointD57==0 & Perprotocol == 1) %>%
+wts_table <- dat_proc %>% dplyr::filter(EarlyendpointD57==0 & Perprotocol == 1) %>%
   with(table(tps.stratum, TwophasesampInd & SubcohortInd))
 wts_norm <- rowSums(wts_table) / wts_table[, 2]
 dat_proc$wt.subcohort <- wts_norm[dat_proc$tps.stratum %.% ""]
-dat_proc$wt.subcohort[!with(dat_proc, EarlyendpointD57==0 & Perprotocol == 1)] <- NA
+dat_proc$wt.subcohort = ifelse(with(dat_proc, EarlyendpointD57==0 & Perprotocol == 1), dat_proc$wt.subcohort, NA)
 dat_proc$ph1.immuno=!is.na(dat_proc$wt.subcohort)
+dat_proc$ph2.immuno=with(dat_proc, ph1.immuno & SubcohortInd & TwophasesampInd)
 
 
+# the following should not be defined because TwophasesampIndD57 and TwophasesampIndD29 are not ph2
+#dat_proc$TwophasesampInd  [!dat_proc$ph1.D57] <- 0
+#if(has29) {
+#dat_proc$TwophasesampInd.2[!dat_proc$ph1.D29] <- 0    
+#}
 
-dat_proc$TwophasesampInd  [!dat_proc$ph1.D57] <- 0
-if(has29) {
-dat_proc$TwophasesampInd.2[!dat_proc$ph1.D29] <- 0    
-}
+assertthat::assert_that(
+    all(!is.na(subset(dat_proc, EarlyendpointD57==0 & Perprotocol == 1 & EventTimePrimaryD57>=7 & !is.na(Wstratum), select=wt, drop=T))),
+    msg = "missing wt for D57 analyses ph1 subjects")    
 
 
 assertthat::assert_that(
-    sum(with(dat_proc, is.na(wt) & EarlyendpointD57==0 & Perprotocol == 1 & EventTimePrimaryD57>=7 & !is.na(Wstratum)), na.rm=T)==0,
-    msg = "missing wt for D57 analyses ph1 subjects"
-)    
-
-
-assertthat::assert_that(
-    sum(with(dat_proc, is.na(wt.2) & EarlyendpointD29==0 & Perprotocol == 1 & EventTimePrimaryD29>=7 & !is.na(Wstratum)), na.rm=T)==0,
-    msg = "missing wt for D29 analyses ph1 subjects"
-)    
-
-assertthat::assert_that(
-    sum(with(dat_proc, is.na(wt.subcohort) & EarlyendpointD57==0 & Perprotocol == 1 & !is.na(tps.stratum)), na.rm=T)==0,
-    msg = "missing wt for immuno analyses ph1 subjects"
-)    
+    all(!is.na(subset(dat_proc, EarlyendpointD57==0 & Perprotocol == 1                          & !is.na(tps.stratum), select=wt.subcohort, drop=T))), 
+    msg = "missing wt.subcohort for immuno analyses ph1 subjects")    
 
 
 
@@ -314,13 +310,11 @@ for (sero in unique(dat_proc$Bserostatus)) {
 }
 }
 
-# missing markers imputed properly in each stratum?
-for(w in unique(dat.tmp.impute$Wstratum)){
-  assertthat::assert_that(
-    all(complete.cases(dat.tmp.impute[dat.tmp.impute$Wstratum == w, imp.markers])),
-    msg = "missing markers imputed properly in each stratum?"
-  )    
-}
+# missing markers imputed properly?
+assertthat::assert_that(
+    all(complete.cases(dat.tmp.impute[, imp.markers])),
+    msg = "missing markers imputed properly?"
+)    
 
 # populate dat_proc imp.markers with the imputed values
 dat_proc[dat_proc$TwophasesampInd==1, imp.markers] <-
@@ -366,13 +360,11 @@ if(has29) {
     }
     }
     
-    # missing markers imputed properly in each stratum?
-    for(w in unique(dat.tmp.impute$Wstratum)){
-      assertthat::assert_that(
-        all(complete.cases(dat.tmp.impute[dat.tmp.impute$Wstratum == w, imp.markers])),
-        msg = "missing markers imputed properly in each stratum for day 29?"
-      ) 
-    }
+    # missing markers imputed properly?
+    assertthat::assert_that(
+        all(complete.cases(dat.tmp.impute[, imp.markers])),
+        msg = "missing markers imputed properly for day 29?"
+    ) 
     
     # populate dat_proc imp.markers with the imputed values
     dat_proc[dat_proc$TwophasesampInd.2==1, imp.markers] <-

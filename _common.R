@@ -357,28 +357,6 @@ draw.x.axis.cor=function(xlim, llod){
 ##### Copy of draw.x.axis.cor but returns the x-axis ticks and labels
 # This is necessary if one works with ggplot as the "axis" function does not work.
 get.labels.x.axis.cor=function(xlim, llod){
-  # if(xlim[2]<3) {
-  #   xx = (c(10,25,50,100,250,500,1000))
-  #   x_ticks <- log10(xx)
-  #   labels <- sapply(xx, function(x) {
-  #     if (llod==x) "lod" else if (x==1000) bquote(10^3) else x
-  #   })
-  # } else if(xlim[2]<4) {
-  #
-  #   xx = (c(10,50,250,1000,5000,10000))
-  #   x_ticks <- log10(xx)
-  #   labels <- sapply(xx, function(x) {
-  #     if (llod==x) "lod" else if (x %in% c(1000,10000)) bquote(10^.(log10(x))) else if (x==5000) bquote(.(x/1000)%*%10^3) else  x
-  #   })
-  #
-  #   } else {
-  #   xx=seq(floor(xlim[1]), ceiling(xlim[2]))
-  #   x_ticks <- xx
-  #   labels <- sapply(xx, function(x) {
-  #     if (log10(llod)==x) "lod" else if (x>=3) bquote(10^.(x)) else 10^x
-  #   })
-  # }
-  #
   xx=seq(floor(xlim[1]), ceiling(xlim[2]))
   xx=xx[xx>log10(llod*2)]
   x_ticks <- xx

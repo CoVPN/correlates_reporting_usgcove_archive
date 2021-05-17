@@ -11,13 +11,14 @@
 # 2021-04-23: Updated to reflect addition of IU conversion and moving calculating
 #             delta to post censoring
 # 2021-05-12: Update code to reflect changes specs
+# 2021-05-17: Update code to reflect changes specs, add new vars
 
 renv::activate()
 
 
 tps <- c(
   "B",
-  # "Day29",
+  "Day29",
   "Day57"
 )
 
@@ -125,6 +126,7 @@ covid_processed <- covid_raw %>%
   rename(
     Ptid = 1
   ) %>%
+  filter(!any_missing(EventTimePrimaryD1, EventTimePrimaryD29, EventTimePrimaryD57)) %>%
   mutate(
 
     EarlyendpointD57 = case_when(

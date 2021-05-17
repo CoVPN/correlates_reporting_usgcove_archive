@@ -11,13 +11,14 @@
 # 2021-04-23: Updated to reflect addition of IU conversion and moving calculating
 #             delta to post censoring
 # 2021-05-12: Update code to reflect changes specs
+# 2021-05-17: Update code to reflect changes specs, add new vars
 
 renv::activate()
 
 
 tps <- c(
   "B",
-  # "Day29",
+  "Day29",
   "Day57"
 )
 
@@ -125,6 +126,7 @@ covid_processed <- covid_raw %>%
   rename(
     Ptid = 1
   ) %>%
+  filter(!any_missing(EventTimePrimaryD1, EventTimePrimaryD29, EventTimePrimaryD57)) %>%
   mutate(
 
     EarlyendpointD57 = case_when(
@@ -260,11 +262,9 @@ if( "Day29" %in% tps){
 covid_processed_updated_twophase <- covid_processed_wt %>%
   mutate(
     ph1.D57 = !is.na(wt),
+    ph2.D57  = ph1.D57 & TwophasesampInd,
     ph1.immuno = !is.na(wt.subcohort),
-    TwophasesampInd = case_when(
-      ph1.D57 == TRUE ~ TwophasesampInd,
-      TRUE ~ 0
-    )
+    ph2.immuno = ph1.immuno & SubcohortInd & TwophasesampInd
   )
 
 if( "Day29" %in% tps){
@@ -272,10 +272,7 @@ if( "Day29" %in% tps){
   covid_processed_updated_twophase <- covid_processed_updated_twophase %>%
     mutate(
       ph1.D29 = !is.na(wt.2),
-      TwophasesampInd.2 = case_when(
-        ph1.D29 == TRUE ~ TwophasesampInd.2,
-        TRUE ~ 0
-      )
+      ph2.D29  = ph1.D29 & TwophasesampInd.2
     ) %>%
     relocate(
       ph1.D29, .after = ph1.D57

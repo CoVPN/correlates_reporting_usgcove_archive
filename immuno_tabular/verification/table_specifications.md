@@ -5,23 +5,20 @@
 
 2. Filter the data to the "**phase 1 ptids** of the immunogenicity cohort (`!is.na(wt.subcohort)`).
 
-3. Derive the indicator for the immunogenicity cohort (`SubcohortInd == 1 & TwophasesampInd == 1 & !is.na(wt.subcohort)`).
+3. Derive the indicator for the immunogenicity cohort (`Perprotocol==1 & SubcohortInd == 1 & TwophasesampInd == 1 & EarlyendpointD57==0`).
 
-4. For all marker response magnitudes, set magnitudes < LLOD to LLOD/2, and magnitudes > ULOQ to ULOQ. All the analyses will be based on the truncated magntiudes from this step. Please notice the endpoint values from the data is on log scale while the LLOD and ULOQ are on the linear scale.
+4. Derive indicators of 2 fold-rise (FR2) and 4 fold-rise (FR4) based on the truncated magnitudes for neutralizing antibody ID50 titers (Pseudovirus-nAb ID50, Live virus-nAb MN50) at each post-enrollment visit. FR2 = 1 if the ratio of post/pre $geq$ 2 and FR4 = 1 if the ratio $geq$ 
+5. Derive indicators of $geq$ 2 x LLOQ (2lloq) and $geq$ 4 x LLOQ (4lloq) based on the truncated magnitudes for binding antibody markers (Anti N IgG (IU/ml), Anti Spike IgG (IU/ml), Anti RBD IgG (IU/ml)). 2lloq = 1 if the magnitude $geq$ 2 x LLOQ and 4lloq = 1 if the magnitude $geq$ 4 x LLOQ.
 
-5. Derive indicators of 2 fold-rise (FR2) and 4 fold-rise (FR4) based on the truncated magnitudes for neutralizing antibody ID50 titers (Pseudovirus-nAb ID50, Live virus-nAb MN50) at each post-enrollment visit. FR2 = 1 if the ratio of post/pre $geq$ 2 and FR4 = 1 if the ratio $geq$ 4. 
+6. Derive the log10-ratios of post vs. pre enrollment of each marker based on the truncated magnitudes: Calculate the differences of the log magnitudes between the post- and pre-enrollment. 
 
-6. Derive indicators of $geq$ 2 x LLOD (2llod) and $geq$ 4 x LLOD (4llod) based on the truncated magnitudes for binding antibody markers (Anti N IgG (IU/ml), Anti Spike IgG (IU/ml), Anti RBD IgG (IU/ml)). 2llod = 1 if the magnitude $geq$ 2 x LLOD and 4llod = 1 if the magnitude $geq$ 4 x LLOD.
+7. Derive the indicators of positive responders: responders aredefined as participants who had baseline values < LLOQ with post-enrollment endpoint values above the LLOQ; or participants who had baseline values $geq$ LLOQ with a 4-fold increase (FR4 = 1).
 
-7. Derive the log10-ratios of post vs. pre enrollment of each marker based on the truncated magnitudes: Calculate the differences of the log magnitudes between the post- and pre-enrollment. 
+8. Define the covariate "Hispanic or Latino Ethnicity" as: Hispanic or Latino(`EthnicityHispanic==1`); Not Hispanic or Latino(`EthnicityHispanic==0 & EthnicityNotreported==0 & EthnicityUnknown==0`); Not reported and unknown (`(EthnicityNotreported==1 | EthnicityUnknown==1)`)
 
-8. Derive the indicators of positive responders: responders aredefined as participants who had baseline values < LLOD with post-enrollment endpoint values above the LLOD; or participants who had baseline values $geq$ LLOD with a 4-fold increase (FR4 = 1).
+9. Define the covariate "Underrepresented Minority Status in the U.S." as White Non-Hispanic(`WhiteNonHispanic==1`); Communities of Color(`WhiteNonHispanic==0`)
 
-9. Define the covariate "Hispanic or Latino Ethnicity" as: Hispanic or Latino(`EthnicityHispanic==1`); Not Hispanic or Latino(`EthnicityHispanic==0 & EthnicityNotreported==0 & EthnicityUnknown==0`); Not reported and unknown (`(EthnicityNotreported==1 | EthnicityUnknown==1)`)
-
-10. Define the covariate "Underrepresented Minority Status in the U.S." as White Non-Hispanic(`WhiteNonHispanic==1`); Communities of Color(`WhiteNonHispanic==0`)
-
-11. Set `options(survey.lonely.psu="adjust")` to avoid error message for strata that contain only one participant.
+10. Set `options(survey.lonely.psu="adjust")` to avoid error message for strata that contain only one participant.
 
 ## Table 1-2. Demographics 
 Title: Demographic
@@ -52,17 +49,17 @@ The first element in each list of the arguments represents parameters of "phase 
 
 ## Table 3-5. Responder Proportion Table
 ### Table 3.
-Title: Percentage of responders, and participants with concentrations $geq$ 2 x LLOD or $geq$ 4 x LLOD for binding antibody markers
-Column names: Group, Visit, Arm, Baseline, Marker, N, Responder, % Greater than 2xLLOD, % Greater than 4xLLOD
+Title: Percentage of responders, and participants with concentrations $geq$ 2 x LLOQ or $geq$ 4 x LLOQ for binding antibody markers
+Column names: Group, Visit, Arm, Baseline, Marker, N, Responder, % Greater than 2xLLOQ, % Greater than 4xLLOQ
 Footers:
-- Binding Antibody Responders are defined as participants who had baseline values below the LLOD with detectable antibody concentration above the assay LLOD, or as participants with baseline values above the LLOD with a 4-fold increase in antibody concentration.
+- Binding Antibody Responders are defined as participants who had baseline values below the LLOQ with detectable antibody concentration above the assay LLOQ, or as participants with baseline values above the LLOQ with a 4-fold increase in antibody concentration.
 
 Tables 3-5 include post-enrollment visits only as enrollment is used as baseline for deriving response calls by the definition of responders.
 
-1. Table 3a: Calculate the weighted (`wt.subcohort`) proportion and 95% CI of responders, participants with concentrations $geq$ 2 x LLOD or $geq$ 4 x LLOD for binding antibody markers (Anti N IgG (IU/ml), Anti Spike IgG (IU/ml), Anti RBD IgG (IU/ml)) by visit, arm, baseline COVID status and marker. The estimation used `prop.est <- survey::svyciprop(~ response, design = immuno_design)`, where `response` represents the binary endpoints (responder, 2llod, 4llod). 
+1. Table 3a: Calculate the weighted (`wt.subcohort`) proportion and 95% CI of responders, participants with concentrations $geq$ 2 x LLOQ or $geq$ 4 x LLOQ for binding antibody markers (Anti N IgG (IU/ml), Anti Spike IgG (IU/ml), Anti RBD IgG (IU/ml)) by visit, arm, baseline COVID status and marker. The estimation used `prop.est <- survey::svyciprop(~ response, design = immuno_design)`, where `response` represents the binary endpoints (responder, 2lloq, 4lloq). 
 2. The 95% CI could be extracted from the attributes of the result from last step `attributes(prop.est)$ci` or `svyby(..., vartype="ci")`.
 
-3. For each binary endpoint (responder, 2llod, 4llod), show the counts of participants with indicator = 1 (n) and the counts of the subgroup (N, each subgroup is a combination of visit, arm, baseline COVID status and marker) in the format of "n/N=pct%". Here n & N are weighted: n=sum(response * `wt.subcohort`); N=sum(`wt.subcohort`).
+3. For each binary endpoint (responder, 2lloq, 4lloq), show the counts of participants with indicator = 1 (n) and the counts of the subgroup (N, each subgroup is a combination of visit, arm, baseline COVID status and marker) in the format of "n/N=pct%". Here n & N are weighted: n=sum(response * `wt.subcohort`); N=sum(`wt.subcohort`).
 
 4. Repeat Step 1 - 3 by assigned arms, baseline COVID status and subgroups for Table 3b-3j with `svyby(..., design = immuno_design, by = ~ subgroups, vartype="ci")`. Please note this is different from `svyciprop()` using data of only the sub-population, or `svyby()` using stacked data of all subgroups below and adding another subgroup indicator variable in `svyby(..., by=)`, i.e. a long format data of repeated "Phase 1" participants with Age, Sex, etc. covariates combined into one variable.     
   b. Age (<65, $geq$65)
@@ -79,7 +76,7 @@ Tables 3-5 include post-enrollment visits only as enrollment is used as baseline
 Title: Percentage of responders, and participants participants with 2-fold rise, and participants with 4-fold rise for ID50 pseudo-virus neutralization antibody markers
 Column names: Group, Visit, Arm, Baseline, Marker, N, Responder, % 2-Fold Rise, % 4-Fold Rise
 Footers:
-- Neutralization Responders are defined as participants who had baseline values below the lower limit of detection (LLOD) with detectable ID50 neutralization titer above the assay LLOD, or as participants with baseline values above the LLOD with a 4-fold increase in ID50.
+- Neutralization Responders are defined as participants who had baseline values below the lower limit of detection (LLOQ) with detectable ID50 neutralization titer above the assay LLOQ, or as participants with baseline values above the LLOQ with a 4-fold increase in ID50.
 
 1. Table 4a: Calculate the weighted (`wt.subcohort`) proportion and 95% CI of responders, participants with ID50 $geq$ 2 Fold-rise or $geq$ 4 Fold-rise for ID50 pseudo-virus neutralization antibody markers (Pseudovirus-nAb ID50) by visit, arm, baseline COVID status and marker. The estimation used `prop.est <- survey::svyciprop(~ response, design = immuno_design)`, where `response` represents the binary endpoints (responder, FR2, FR4).
 
@@ -93,7 +90,7 @@ Footers:
 Title: Percentage of responders, and participants participants with 2-fold rise, and participants with 4-fold rise for MN50 WT live virus neutralization antibody markers
 Column names: Group, Visit, Arm, Baseline, Marker, N, Responder, % 2-Fold Rise, % 4-Fold Rise
 Footers:
-- Neutralization Responders are defined as participants who had baseline values below the lower limit of detection (LLOD) with detectable ID50 neutralization titer above the assay LLOD, or as participants with baseline values above the LLOD with a 4-fold increase in ID50.
+- Neutralization Responders are defined as participants who had baseline values below the lower limit of detection (LLOQ) with detectable ID50 neutralization titer above the assay LLOQ, or as participants with baseline values above the LLOQ with a 4-fold increase in ID50.
 
 1. Table 5a: Calculate the weighted (`wt.subcohort`) proportion and 95% CI of responders, participants with ID50 $geq$ 2 Fold-rise or $geq$ 4 Fold-rise for MN50 WT live virus neutralization antibody markers (Live virus-nAb MN50) by visit, arm, baseline COVID status and marker. The calculation used `prop.est <- survey::svyciprop(~ response, design = immuno_design)`, where `response` represents the binary endpoints (responder, FR2, FR4), `data` contains **all and only Phase 1** participants, `subcohort` is the indicator of the immunogenicity cohort defined in Initial data processing step 3.
 
@@ -183,5 +180,5 @@ Column names: Visit,	Marker,	Baseline SARS-CoV-2 Negative(N,	Resp rate,	GMT/GMC)
 6. Subset the table into vaccine recipients (Table 11), and placebo recipients (Table 12).
 
 # Table. Random Subcohort for Measuring Antibody Markers
-1. Derive the counts of participants by treatment arm, baseline COVID status, and the demographic strata (`demo.stratum`)used for the immunogenicity subcohort randomization.
+1. Derive the observed and estimated (weighted) counts of participants by treatment arm, baseline COVID status, and the demographic strata (`demo.stratum`)used for the immunogenicity subcohort randomization.
 2. Format the table from step 1 into a wide format by baseline COVID status and demographic strata.

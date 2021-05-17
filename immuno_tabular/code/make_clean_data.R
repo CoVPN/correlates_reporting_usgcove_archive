@@ -50,7 +50,7 @@ ds_s <- dat %>%
     AgeRisk1 = ifelse(Age65C=="Age $<$ 65", AgeRiskC, NA),
     AgeRisk2 = ifelse(Age65C=="Age $\\geq$ 65", AgeRiskC, NA),
     All = "All participants",
-    randomset = (SubcohortInd == 1 & TwophasesampInd == 1 & EarlyendpointD57==0)
+    randomset = (Perprotocol==1 & SubcohortInd == 1 & TwophasesampInd == 1 & EarlyendpointD57==0)
   ) 
 
 # Step2: Responders

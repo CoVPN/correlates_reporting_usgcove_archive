@@ -54,6 +54,7 @@ get_plot <- function(marker, simultaneous_CI = F, monotone = F) {
   a <- marker_to_assay[[marker]]
 
   xlim <- get.range.cor(data, a, sub('...', '', time))
+  print(xlim)
   llod <- llods[a]
   labels_info <- get.labels.x.axis.cor(xlim, llods[a])
   xx <- labels_info$ticks
@@ -75,14 +76,8 @@ get_plot <- function(marker, simultaneous_CI = F, monotone = F) {
   # })
   # labels <- unlist(labels, use.names = F, recursive = F)
   #
-
-  plot <- v + scale_x_continuous(
-   breaks = xx,#union(floor(esttmle[, 1]), ceiling(esttmle[, 1])),
-    labels = do.call(expression,labels),
-   name =labx
-     #trans_format("ident", math_format(10^.x)),
-   #limits = c(min(esttmle[, 1]) - 0.1, max(esttmle[, 1]) + 0.1)
-  )     + ggtitle(main) +
+   
+  plot <- v + ggtitle(main) +
     stat_function(fun = RCDF, color = col, geom = "area", fill = col, alpha = 0.2) +
     scale_y_continuous(
       name = laby,
@@ -90,7 +85,14 @@ get_plot <- function(marker, simultaneous_CI = F, monotone = F) {
     ) + geom_vline(xintercept = max_thresh, colour = "red", linetype = "longdash") +
     theme(plot.title = element_text(size = 25), axis.text.x = element_text(angle = 0, hjust = 1, size = 18), axis.text.y = element_text(angle = 0, hjust = 1, size = 18)) +
    # geom_hline(aes(yintercept=risk_vac), alpha = 0.4) + geom_text(alpha = 0.75,aes(median(v$data$cutoffs),risk_vac,label = "vaccine overall risk"), vjust = -0.5, size = 5) +
- geom_text(alpha = 0.75, aes(quantile(v$data$cutoffs, 0.1),max(v$data$upper),label = paste0("placebo overall risk: ", risk_plac)), vjust = 0, size = 5)
+ geom_text(alpha = 0.75, aes(quantile(v$data$cutoffs, 0.1),max(v$data$upper),label = paste0("placebo overall risk: ", risk_plac)), vjust = 0, size = 5) + scale_x_continuous(
+  breaks = xx,#union(floor(esttmle[, 1]), ceiling(esttmle[, 1])),
+   labels = do.call(expression,labels),
+  name =labx,
+  limits = c(floor(min(v$data$cutoffs)), ceiling(max(v$data$cutoffs)))
+    #trans_format("ident", math_format(10^.x)),
+  #limits = c(min(esttmle[, 1]) - 0.1, max(esttmle[, 1]) + 0.1)
+ )
   plot
     #+  geom_text(aes(x=max_thresh *(1.01), label="No observed events", y=0.002), colour="black", angle=90, text=element_text(size=11))
   append_end <- ""

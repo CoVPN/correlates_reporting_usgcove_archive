@@ -21,14 +21,14 @@ assays <- c(
   #"liveneutmn50"
 )
 
-# if this flag is true, then the N IgG binding antibody is reported 
+# if this flag is true, then the N IgG binding antibody is reported
 # in the immuno report (but is not analyzed in the cor or cop reports).
 include_bindN <- TRUE
 
 # times of measurements of the markers
 # B, Day29, Day57 are quantitative levels of markers measured at different times
 # DeltaXoverY is fold change in marker from time X to time Y
-times <- c("B", "Day29", "Day57", 
+times <- c("B", "Day29", "Day57",
            "Delta29overB", "Delta57overB", "Delta57over29")
 
 
@@ -42,30 +42,30 @@ tmp=list(
         ULOQ = 10155.95)
     ,
     bindRBD=c(
-        LLOD = 0.9297,
-        ULOD = 520506.0,
-        LLOQ = 5.4302,
-        ULOQ = 30693.537)
+        LLOD = 1.593648,
+        ULOD = 223074,
+        LLOQ = 3.4263,
+        ULOQ = 16269.23)
     ,
-    bindN=c( 
-        LLOD = 0.0820,
-        ULOD = 45927.0,
-        LLOQ = 0.4791,
-        ULOQ = 2708.253)
+    bindN=c(
+        LLOD = 0.093744,
+        ULOD = 52488,
+        LLOQ = 1.43085,
+        ULOQ = 588.2500)
     ,
-    pseudoneutid50=c( 
+    pseudoneutid50=c(
         LLOD = 10,
         ULOD = NA,
         LLOQ = 18.5,
         ULOQ = 4404)
     ,
-    pseudoneutid80=c( 
+    pseudoneutid80=c(
         LLOD = 10,
         ULOD = NA,
         LLOQ = 14.3,
         ULOQ = 1295)
     ,
-    liveneutmn50=c( 
+    liveneutmn50=c(
         LLOD = 62.16,
         ULOD = NA,
         LLOQ = 117.35,
@@ -77,28 +77,28 @@ lloqs=sapply(tmp, function(x) unname(x["LLOQ"]))
 uloqs=sapply(tmp, function(x) unname(x["ULOQ"]))
 
 #llods <-c(
-#          bindSpike = 0.180, 
-#          bindRBD = 0.544, 
-#          bindN = 0.048, 
-#          pseudoneutid50 = 10, 
-#          pseudoneutid80 = 10, 
+#          bindSpike = 0.180,
+#          bindRBD = 0.544,
+#          bindN = 0.048,
+#          pseudoneutid50 = 10,
+#          pseudoneutid80 = 10,
 #          liveneutmn50 = 62.16)
 #
 #lloqs <-c(
-#          bindSpike = 0.3060, 
-#          bindRBD = 0.9248, 
-#          bindN = 0.0816, 
-#          pseudoneutid50 = 18.5, 
-#          pseudoneutid80 = 14.3, 
-#          liveneutmn50 = 117.35) 
+#          bindSpike = 0.3060,
+#          bindRBD = 0.9248,
+#          bindN = 0.0816,
+#          pseudoneutid50 = 18.5,
+#          pseudoneutid80 = 14.3,
+#          liveneutmn50 = 117.35)
 #
 #uloqs <-c(
-#          bindSpike = 172226.2, 
-#          bindRBD = 520506.0, 
-#          bindN = 45927.0, 
-#          pseudoneutid50 = 4404, 
-#          pseudoneutid80 = 1295, 
-#          liveneutmn50 = 18976.19) 
+#          bindSpike = 172226.2,
+#          bindRBD = 520506.0,
+#          bindN = 45927.0,
+#          pseudoneutid50 = 4404,
+#          pseudoneutid80 = 1295,
+#          liveneutmn50 = 18976.19)
 
 
 convf=c(bindSpike=0.0090, bindN=0.0024, bindRBD=0.0272)
@@ -121,7 +121,7 @@ assays_to_be_censored_at_uloq_cor <- c(
 ###############################################################################
 has29 = "Day29" %in% times
 
-markers <- c(outer(times[which(times %in% c("B", "Day29", "Day57"))], 
+markers <- c(outer(times[which(times %in% c("B", "Day29", "Day57"))],
                    assays, "%.%"))
 
 # race labeling
@@ -138,11 +138,11 @@ labels.ethnicity <- c(
   "Not reported and unknown"
 )
 
-labels.assays.short <- c("Anti N IgG (IU/ml)", 
-                         "Anti Spike IgG (IU/ml)", 
-                         "Anti RBD IgG (IU/ml)", 
-                         "Pseudovirus-nAb ID50", 
-                         "Pseudovirus-nAb ID80", 
+labels.assays.short <- c("Anti N IgG (IU/ml)",
+                         "Anti Spike IgG (IU/ml)",
+                         "Anti RBD IgG (IU/ml)",
+                         "Pseudovirus-nAb ID50",
+                         "Pseudovirus-nAb ID80",
                          "Live virus-nAb MN50")
 names(labels.assays.short) <- c("bindN",
   "bindSpike",
@@ -155,12 +155,12 @@ names(labels.assays.short) <- c("bindN",
 # the truncated labels.assays.short later
 labels.assays.short.tabular <- labels.assays.short
 
-labels.time <- c("Day 1", "Day 29", "Day 57", 
-                 "D29 fold-rise over D1", 
-                 "D57 fold-rise over D1", 
+labels.time <- c("Day 1", "Day 29", "Day 57",
+                 "D29 fold-rise over D1",
+                 "D57 fold-rise over D1",
                  "D57 fold-rise over D29")
 
-names(labels.time) <- c("B", "Day29", "Day57", "Delta29overB", 
+names(labels.time) <- c("B", "Day29", "Day57", "Delta29overB",
                         "Delta57overB", "Delta57over29")
 
 # axis labeling
@@ -172,14 +172,14 @@ labels.axis <- outer(
 labels.axis <- as.data.frame(labels.axis)
 rownames(labels.axis) <- times
 
-labels.assays <- c("Binding Antibody to Spike", 
+labels.assays <- c("Binding Antibody to Spike",
                    "Binding Antibody to RBD",
                    "PsV Neutralization 50% Titer",
                    "PsV Neutralization 80% Titer",
                    "WT LV Neutralization 50% Titer")
 
-names(labels.assays) <- c("bindSpike", 
-                          "bindRBD", 
+names(labels.assays) <- c("bindSpike",
+                          "bindRBD",
                           "pseudoneutid50",
                           "pseudoneutid80",
                           "liveneutmn50")
@@ -246,7 +246,7 @@ knitr::opts_chunk$set(
   fig.width = 6,
   fig.asp = 0.618,
   fig.retina = 0.8,
-  dpi = 300,
+  dpi = 600,
   echo = FALSE,
   message = FALSE,
   warning = FALSE
@@ -324,68 +324,48 @@ ggsave_custom <- function(filename = default_name(plot),
 get.range.cor=function(dat, assay=c("bindSpike", "bindRBD", "pseudoneutid50", "pseudoneutid80"), time=c("57","29")) {
     assay<-match.arg(assay)
     a <- assay # Fixes bug
-    time<-match.arg(time)        
+    time<-match.arg(time)
     if(assay %in% c("bindSpike", "bindRBD")) {
-        ret=quantile(c(dat[["Day"%.%time%.%"bindSpike"]], dat[["Day"%.%time%.%"bindRBD"]]), c(0, 1), na.rm=T)
+        ret=range(dat[["Day"%.%time%.%"bindSpike"]], dat[["Day"%.%time%.%"bindRBD"]], log10(llods[c("bindSpike","bindRBD")]/2), na.rm=T)
+        ret[2]=ceiling(ret[2]) # round up
     } else if(assay %in% c("pseudoneutid50", "pseudoneutid80")) {
         ret=range(dat[["Day"%.%time%.%a]], log10(llods[c("pseudoneutid50","pseudoneutid80")]/2), log10(uloqs[c("pseudoneutid50","pseudoneutid80")]), na.rm=T)
         ret[2]=ceiling(ret[2]) # round up
-    }  
-    delta=(ret[2]-ret[1])/20     
+    }
+    delta=(ret[2]-ret[1])/20
     c(ret[1]-delta, ret[2]+delta)
 }
 
 draw.x.axis.cor=function(xlim, llod){
 #    if(xlim[2]<3) {
 #        xx = (c(10,25,50,100,250,500,1000))
-#        for (x in xx) axis(1, at=log10(x), labels=if (llod==x) "lod" else if (x==1000) bquote(10^3) else x  ) 
+#        for (x in xx) axis(1, at=log10(x), labels=if (llod==x) "lod" else if (x==1000) bquote(10^3) else x  )
 #    } else if(xlim[2]<4) {
 #        xx = (c(10,50,250,1000,5000,10000))
-#        for (x in xx) axis(1, at=log10(x), labels=if (llod==x) "lod" else if (x %in% c(1000,10000)) bquote(10^.(log10(x))) else if (x==5000) bquote(.(x/1000)%*%10^3) else  x ) 
+#        for (x in xx) axis(1, at=log10(x), labels=if (llod==x) "lod" else if (x %in% c(1000,10000)) bquote(10^.(log10(x))) else if (x==5000) bquote(.(x/1000)%*%10^3) else  x )
 #    } else {
         xx=seq(floor(xlim[1]), ceiling(xlim[2]))
-        for (x in xx) axis(1, at=x, labels=if (log10(llod)==x) "lod" else if (x>=3) bquote(10^.(x)) else 10^x )
+        for (x in xx) if (x>log10(llod*2)) axis(1, at=x, labels=if (log10(llod)==x) "lod" else if (x>=3) bquote(10^.(x)) else 10^x )
 #    }
     
     # plot llod if llod is not already plotted
-    if(!any(log10(llod)==xx)) axis(1, at=log10(llod), labels="lod")
+    #if(!any(log10(llod)==xx))
+    axis(1, at=log10(llod), labels="lod")
     
 }
 
 ##### Copy of draw.x.axis.cor but returns the x-axis ticks and labels
 # This is necessary if one works with ggplot as the "axis" function does not work.
 get.labels.x.axis.cor=function(xlim, llod){
-  # if(xlim[2]<3) {
-  #   xx = (c(10,25,50,100,250,500,1000))
-  #   x_ticks <- log10(xx)
-  #   labels <- sapply(xx, function(x) {
-  #     if (llod==x) "lod" else if (x==1000) bquote(10^3) else x
-  #   })
-  # } else if(xlim[2]<4) {
-  #
-  #   xx = (c(10,50,250,1000,5000,10000))
-  #   x_ticks <- log10(xx)
-  #   labels <- sapply(xx, function(x) {
-  #     if (llod==x) "lod" else if (x %in% c(1000,10000)) bquote(10^.(log10(x))) else if (x==5000) bquote(.(x/1000)%*%10^3) else  x
-  #   })
-  #
-  #   } else {
-  #   xx=seq(floor(xlim[1]), ceiling(xlim[2]))
-  #   x_ticks <- xx
-  #   labels <- sapply(xx, function(x) {
-  #     if (log10(llod)==x) "lod" else if (x>=3) bquote(10^.(x)) else 10^x
-  #   })
-  # }
-  #
   xx=seq(floor(xlim[1]), ceiling(xlim[2]))
+  xx=xx[xx>log10(llod*2)]
   x_ticks <- xx
   labels <- sapply(xx, function(x) {
     if (log10(llod)==x) "lod" else if (x>=3) bquote(10^.(x)) else 10^x
   })
-  if(!any(log10(llod)==x_ticks)){
+  #if(!any(log10(llod)==x_ticks)){
     x_ticks <- c(log10(llod), x_ticks)
     labels <- c("lod", labels)
-  }
+  #}
   return(list(ticks = x_ticks, labels = labels))
 }
-

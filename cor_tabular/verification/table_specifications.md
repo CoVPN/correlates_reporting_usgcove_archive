@@ -8,12 +8,12 @@
    2). For analysis at **Day 29**:
 Subset the full data to "phase 1 ptids" for the correlates at Day 29 cohort (`!is.na(wt.2)`). Derive the indicator for the correlates of risk at Day 29(`TwophasesampInd.2==1`). 
 
-3. Derive indicators of 2 fold-rise (FR2) and 4 fold-rise (FR4) based on the truncated magnitudes for neutralizing antibody ID50 titers (Pseudovirus-nAb ID50, Live virus-nAb MN50) at each post-enrollment visit. FR2 = 1 if the ratio of post/pre $geq$2 and FR4 = 1 if the ratio $geq$4. 
-4. Derive indicators of $geq$ 2 x LLOQ (2lloq) and $geq$ 4 x LLOQ (4lloq) based on the truncated magnitudes for binding antibody markers (Anti N IgG (IU/ml), Anti Spike IgG (IU/ml), Anti RBD IgG (IU/ml)). 2lloq = 1 if the magnitude $geq$ 2 x LLOQ and 4lloq = 1 if the magnitude $geq$ 4 x LLOQ.
+3. Derive indicators of 2 fold-rise (FR2) and 4 fold-rise (FR4) based on the truncated magnitudes for neutralizing antibody ID50 titers (Pseudovirus-nAb ID50, Live virus-nAb MN50) at each post-enrollment visit. FR2 = 1 if the ratio of post/pre >=2 and FR4 = 1 if the ratio >=4. 
+4. Derive indicators of >= 2 x LLOQ (2lloq) and >= 4 x LLOQ (4lloq) based on the truncated magnitudes for binding antibody markers (Anti N IgG (IU/ml), Anti Spike IgG (IU/ml), Anti RBD IgG (IU/ml)). 2lloq = 1 if the magnitude >= 2 x LLOQ and 4lloq = 1 if the magnitude >= 4 x LLOQ.
 
 5. Derive the log10-ratios of post vs. pre enrollment of each marker based on the truncated magnitudes: Calculate the differences of the log magnitudes between the post- and pre-enrollment. 
 
-6. Derive the indicators of positive responders: responders aredefined as participants who had baseline values < LLOQ with post-enrollment endpoint values above the LLOQ; or participants who had baseline values $geq$ LLOQ with a 4-fold increase (FR4 = 1).
+6. Derive the indicators of positive responders: responders aredefined as participants who had baseline values < LLOQ with post-enrollment endpoint values above the LLOQ; or participants who had baseline values >= LLOQ with a 4-fold increase (FR4 = 1).
 
 7. Derive the indicators of cases and non-cases: Cases are defined as per-protocol participants with the symptomatic infection COVID-19 primary endpoint diagnosed starting 7 days after the Day 57 study visit. (`Perprotocol==1 & Bserostatus==0 & EarlyendpointD57==0 & TwophasesampInd==1 & EventIndPrimaryD57==1`);
 
@@ -29,12 +29,12 @@ Title: Demographic
 Column names: Characteristics, Placebo (N = ),	Vaccine (N = ),	Total (N = )
 
 1. List the categories, frequencies (n), and proportions (%) by baseline COVID status and assigned arms for: 
-Age (<65, $geq$65), 
+Age (<65, >=65), 
 Sex (Female, Male), 
 Hispanic or Latino ethnicity (Hispanic or Latino, Not Hispanic or Latino, Not reported and unknown), 
 Race (Asian, American Indian or Alaska Native, Black or African American, Multiracial, Native Hawaiian or Other Pacific Islander, White Non-Hispanic, Other, Not reported and unknown, Communities of Color), 
 Risk for Severe Covid-19 (At-risk, Not at-risk), 
-Age x Risk for Severe Covid-19 (<65 At risk, <65 Not at risk, $geq$65).
+Age x Risk for Severe Covid-19 (<65 At risk, <65 Not at risk, >=65).
 
 2. List the mean and range for: Age
 

@@ -5,6 +5,7 @@ library(here)
 library(knitr)
 library(latex2exp)
 here::i_am("cor_graphical/report.Rmd")
+plot_ve_curves <- readRDS(here::here("cor_graphical", "data_clean", "plot_ve_curves.rds"))
 ```
 
 ## Boxplots
@@ -103,22 +104,22 @@ include_graphics(here("cor_graphical", "figs", paste0("Marker_RCDF_Delta29overB_
 
 ### Baseline seronegative
 
-```{r, fig.cap = "Marker RCDF of D57 anti-Spike binding Ab: baseline negative vaccine arm"}
+```{r, fig.cap = "Marker RCDF of D57 anti-Spike binding Ab: baseline negative vaccine arm",eval = (plot_ve_curves[1] == 1)}
 include_graphics(here("cor_graphical", "figs", paste0("RCDF_VE_Day57_trt_Vaccine_BaselineNeg_bindSpike_", study_name, ".png")))
 ```
 
 \clearpage
-```{r, fig.cap = "Marker RCDF of D57 anti-RBD binding Ab: baseline negative vaccine arm"}
+```{r, fig.cap = "Marker RCDF of D57 anti-RBD binding Ab: baseline negative vaccine arm", eval = (plot_ve_curves[1] == 1)}
 include_graphics(here("cor_graphical", "figs", paste0("RCDF_VE_Day57_trt_Vaccine_BaselineNeg_bindRBD_", study_name, ".png")))
 ```
 
 \clearpage
-```{r, fig.cap = "Marker RCDF of D57 PsV-nAb ID50: baseline negative vaccine arm"}
+```{r, fig.cap = "Marker RCDF of D57 PsV-nAb ID50: baseline negative vaccine arm", eval = (plot_ve_curves[1] == 1)}
 include_graphics(here("cor_graphical", "figs", paste0("RCDF_VE_Day57_trt_Vaccine_BaselineNeg_pseudoneutid50_", study_name, ".png")))
 ```
 
 \clearpage
-```{r, fig.cap = "Marker RCDF of D57 PsV-nAb ID80: baseline negative vaccine arm"}
+```{r, fig.cap = "Marker RCDF of D57 PsV-nAb ID80: baseline negative vaccine arm", eval = (plot_ve_curves[1] == 1)}
 include_graphics(here("cor_graphical", "figs", paste0("RCDF_VE_Day57_trt_Vaccine_BaselineNeg_pseudoneutid80_", study_name, ".png")))
 ```
 

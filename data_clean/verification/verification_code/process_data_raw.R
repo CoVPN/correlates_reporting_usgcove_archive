@@ -10,7 +10,8 @@
 # 2021-03-29: Adding capability for missing timepoints
 # 2021-04-23: Updated to reflect addition of IU conversion and moving calculating
 #             delta to post censoring
-#
+# 2021-05-12: Update code to reflect changes specs
+# 2021-05-17: Update code to reflect changes specs, add new vars
 
 renv::activate()
 
@@ -48,7 +49,7 @@ sampling_p <- function(strata, cohort, where){
   samp_prob <- vector(mode = "numeric", length = length(strata))
   samp_prob[!where] <- NA
 
-  u_strata <- unique(strata)
+  u_strata <- unique(na.exclude(strata))
 
   #population (s)
   Nh <- table(factor(strata[where], levels = u_strata))
@@ -66,6 +67,12 @@ sampling_p <- function(strata, cohort, where){
 
   samp_prob
 
+}
+
+censor_lloq <- function(x, lloq){
+  repl_idx <- which(x<log10(lloq) & !is.na(x))
+  x[repl_idx] <- log10(lloq[repl_idx]/2)
+  x
 }
 
 log10_fold <- function(x, y){
@@ -119,18 +126,25 @@ covid_processed <- covid_raw %>%
   rename(
     Ptid = 1
   ) %>%
+  filter(!any_missing(EventTimePrimaryD1, EventTimePrimaryD29, EventTimePrimaryD57)) %>%
   mutate(
+
+    EarlyendpointD57 = case_when(
+      EarlyinfectionD57 == 1 | (EventIndPrimaryD1 == 1 & EventTimePrimaryD1 < NumberdaysD1toD57 + 7) ~ 1,
+      TRUE ~ 0),
+
+    EarlyendpointD29 = case_when(
+      EarlyinfectionD29 == 1 | (EventIndPrimaryD1 == 1 & EventTimePrimaryD1 < NumberdaysD1toD29 + 7) ~ 1,
+      TRUE ~ 0),
 
     age.geq.65 = case_when(
       Age >=65 ~  1 ,
       TRUE ~ 0),
 
     TwophasesampInd = case_when(
-      Perprotocol == 1 & EventTimePrimaryD57>=7 &
         (SubcohortInd == 1 | EventIndPrimaryD29 == 1 ) &
         !any_missing(BbindSpike, BbindRBD, Day29bindSpike, Day29bindRBD, Day57bindSpike, Day57bindRBD) ~ 1,
       TRUE ~ 0),
-
 
     ethnicity = case_when(
       EthnicityNotreported == 1 |
@@ -170,12 +184,12 @@ covid_processed <- covid_raw %>%
     ),
 
     demo.stratum = case_when(
-      MinorityInd == 1 & Bstratum == 1 ~ 1,
-      MinorityInd == 1 & Bstratum == 2 ~ 2,
-      MinorityInd == 1 & Bstratum == 3 ~ 3,
-      MinorityInd == 0 & Bstratum == 1 ~ 4,
-      MinorityInd == 0 & Bstratum == 2 ~ 5,
-      MinorityInd == 0 & Bstratum == 3 ~ 6
+      URMforsubcohortsampling == 1 & Bstratum == 1 ~ 1,
+      URMforsubcohortsampling == 1 & Bstratum == 2 ~ 2,
+      URMforsubcohortsampling == 1 & Bstratum == 3 ~ 3,
+      URMforsubcohortsampling == 0 & Bstratum == 1 ~ 4,
+      URMforsubcohortsampling == 0 & Bstratum == 2 ~ 5,
+      URMforsubcohortsampling == 0 & Bstratum == 3 ~ 6
     ),
 
     tps.stratum = case_when(
@@ -197,11 +211,12 @@ if( "Day29" %in% tps){
 
   covid_processed <- covid_processed %>%
     mutate(
+
       TwophasesampInd.2 = case_when(
-        (EventTimePrimaryD29 >= 14 & Perprotocol == 1 | EventTimePrimaryD29 >= 7 & EventTimePrimaryD29 <= 13 & Fullvaccine == 1) &
           (SubcohortInd == 1 | EventIndPrimaryD29 == 1 ) &
           !any_missing(BbindSpike, BbindRBD, Day29bindSpike, Day29bindRBD) ~ 1,
-        TRUE ~ 0),
+        TRUE ~ 0)
+
     ) %>%
     relocate(
       TwophasesampInd.2, .after = TwophasesampInd
@@ -215,14 +230,14 @@ covid_processed_wt <- covid_processed %>%
   mutate(
     wt =  sampling_p(
       Wstratum,
-      TwophasesampInd==1,
-      Perprotocol == 1 & EventTimePrimaryD57 >=7
+      TwophasesampInd == 1,
+      EarlyendpointD57==0 & Perprotocol == 1 & EventTimePrimaryD57>=7
       ),
 
     wt.subcohort = sampling_p(
       tps.stratum,
-      TwophasesampInd==1 & SubcohortInd==1,
-      Perprotocol == 1 & EventTimePrimaryD57 >=7
+      TwophasesampInd == 1  & SubcohortInd == 1,
+      EarlyendpointD57==0 & Perprotocol == 1
     )
   )
 
@@ -232,8 +247,8 @@ if( "Day29" %in% tps){
     mutate(
       wt.2 = sampling_p(
         Wstratum,
-        TwophasesampInd.2==1,
-        EventTimePrimaryD29 >= 7 & Perprotocol == 1
+        TwophasesampInd.2 == 1,
+        EarlyendpointD29 == 0 & Perprotocol == 1 & EventTimePrimaryD29 >= 7
       )
     ) %>%
     relocate(
@@ -242,9 +257,31 @@ if( "Day29" %in% tps){
 
 }
 
+## Update TwophasesampInd
+
+covid_processed_updated_twophase <- covid_processed_wt %>%
+  mutate(
+    ph1.D57 = !is.na(wt),
+    ph2.D57  = ph1.D57 & TwophasesampInd,
+    ph1.immuno = !is.na(wt.subcohort),
+    ph2.immuno = ph1.immuno & SubcohortInd & TwophasesampInd
+  )
+
+if( "Day29" %in% tps){
+
+  covid_processed_updated_twophase <- covid_processed_updated_twophase %>%
+    mutate(
+      ph1.D29 = !is.na(wt.2),
+      ph2.D29  = ph1.D29 & TwophasesampInd.2
+    ) %>%
+    relocate(
+      ph1.D29, .after = ph1.D57
+    )
+}
+
 ## Imputation ----
 
-covid_processed_imputed_assay_TwophasesampInd <- covid_processed_wt %>%
+covid_processed_imputed_assay_TwophasesampInd <- covid_processed_updated_twophase %>%
   filter(TwophasesampInd == 1) %>%
   select(
     Ptid,
@@ -268,17 +305,17 @@ covid_processed_imputed_assay_TwophasesampInd <- covid_processed_wt %>%
     })
   })
 
-covid_processed_imputed <- covid_processed_wt %>%
+covid_processed_imputed <- covid_processed_updated_twophase %>%
   filter(TwophasesampInd == 1) %>%
   select(-setdiff(colnames(covid_processed_imputed_assay_TwophasesampInd), "Ptid")) %>%
   left_join(
     covid_processed_imputed_assay_TwophasesampInd
   ) %>%
   select(
-    colnames(covid_processed_wt)
+    colnames(covid_processed_updated_twophase)
   ) %>%
   bind_rows(
-    covid_processed_wt %>%
+    covid_processed_updated_twophase %>%
       filter(TwophasesampInd != 1)
   )
 
@@ -334,19 +371,27 @@ assays <- c("bindSpike",
                  "pseudoneutid80")
 
 LLOD <- c(
-   "bindSpike" = .180,
-   "bindRBD" = .544,
-   "bindN" = .048,
+   "bindSpike" = 0.3076,
+   "bindRBD" = 0.9297,
+   "bindN" = 0.0820,
    "pseudoneutid50" = 10,
    "pseudoneutid80" = 10,
    "liveneutmn50" = 62.16
    )
 
+LLOQ <- c(
+  "bindSpike" = 1.7968,
+  "bindRBD" = 5.4302,
+  "bindN" = 0.4791,
+  "pseudoneutid50" = 18.5,
+  "pseudoneutid80" = 14.3,
+  "liveneutmn50" = 117.35
+)
 
 ULOQ <-c(
-  "bindSpike" = 172226.2,
-  "bindRBD" = 520506.0,
-  "bindN" = 45927.0,
+  "bindSpike" = 10155.95,
+  "bindRBD" = 30693.537,
+  "bindN" = 2708.253,
   "pseudoneutid50" = 4404,
   "pseudoneutid80" = 1295,
   "liveneutmn50" = 18976.19
@@ -368,17 +413,19 @@ for(assay_typ in assays){
       ## only run this for non-delta fields
       across(tidyselect::matches(paste0("^(",paste(tps,collapse = "|"),")",assay_typ,"$")), function(x, llod, uloq, cf){
 
-        x <- log10((10^x) * cf)
+        if(cf != 1){
+          x <- log10((10^x) * cf)
+        }
 
         # cases where x < log10(LLOD) replace with log10(LLOD/2)
         x[x < log10( llod)] <- log10( llod / 2 )
 
-        # cases where x > log10(ULOQ), replace with log10(ULOQ)
-        x[x > log10( uloq )] <- log10( uloq )
+        # # cases where x > log10(ULOQ), replace with log10(ULOQ)
+        # x[x > log10( uloq )] <- log10( uloq )
 
         return(x)
 
-      }, llod = LLOD[[assay_typ]], uloq = ULOQ[[assay_typ]],cf =  conversion_factor_IU[[assay_typ]])
+      }, llod = LLOD[[assay_typ]], uloq = ULOQ[[assay_typ]], cf =  conversion_factor_IU[[assay_typ]])
     )
 }
 
@@ -401,6 +448,16 @@ covid_processed_delta_interim <- covid_processed_censored %>%
       grepl("^Day57", assay_variable) ~ "Day57"
     ),
     assay_variable = gsub("^(B|Day29|Day57)","",assay_variable)
+  ) %>%
+  left_join(
+    data.frame(
+      assay_variable = names(LLOQ),
+      LLOQ = LLOQ
+    ),
+    by = "assay_variable"
+  ) %>%
+  mutate(
+    value = censor_lloq(value,LLOQ)
   ) %>%
   pivot_wider(
     names_from = visit,

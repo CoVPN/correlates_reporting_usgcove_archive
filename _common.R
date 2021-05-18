@@ -246,7 +246,7 @@ knitr::opts_chunk$set(
   fig.width = 6,
   fig.asp = 0.618,
   fig.retina = 0.8,
-  dpi = 300,
+  dpi = 600,
   echo = FALSE,
   message = FALSE,
   warning = FALSE
@@ -322,7 +322,8 @@ ggsave_custom <- function(filename = default_name(plot),
 
 
 get.range.cor=function(dat, assay=c("bindSpike", "bindRBD", "pseudoneutid50", "pseudoneutid80"), time=c("57","29")) {
-    assay<-match.arg(assay)    
+    assay<-match.arg(assay)
+    a <- assay # Fixes bug
     time<-match.arg(time)        
     if(assay %in% c("bindSpike", "bindRBD")) {
         ret=quantile(c(dat[["Day"%.%time%.%"bindSpike"]], dat[["Day"%.%time%.%"bindRBD"]]), c(0, 1), na.rm=T)
@@ -349,4 +350,41 @@ draw.x.axis.cor=function(xlim, llod){
     # plot llod if llod is not already plotted
     if(!any(log10(llod)==xx)) axis(1, at=log10(llod), labels="lod")
     
+}
+
+##### Copy of draw.x.axis.cor but returns the x-axis ticks and labels
+# This is necessary if one works with ggplot as the "axis" function does not work.
+get.labels.x.axis.cor=function(xlim, llod){
+  # if(xlim[2]<3) {
+  #   xx = (c(10,25,50,100,250,500,1000))
+  #   x_ticks <- log10(xx)
+  #   labels <- sapply(xx, function(x) {
+  #     if (llod==x) "lod" else if (x==1000) bquote(10^3) else x
+  #   })
+  # } else if(xlim[2]<4) {
+  #
+  #   xx = (c(10,50,250,1000,5000,10000))
+  #   x_ticks <- log10(xx)
+  #   labels <- sapply(xx, function(x) {
+  #     if (llod==x) "lod" else if (x %in% c(1000,10000)) bquote(10^.(log10(x))) else if (x==5000) bquote(.(x/1000)%*%10^3) else  x
+  #   })
+  #
+  #   } else {
+  #   xx=seq(floor(xlim[1]), ceiling(xlim[2]))
+  #   x_ticks <- xx
+  #   labels <- sapply(xx, function(x) {
+  #     if (log10(llod)==x) "lod" else if (x>=3) bquote(10^.(x)) else 10^x
+  #   })
+  # }
+  #
+  xx=seq(floor(xlim[1]), ceiling(xlim[2]))
+  x_ticks <- xx
+  labels <- sapply(xx, function(x) {
+    if (log10(llod)==x) "lod" else if (x>=3) bquote(10^.(x)) else 10^x
+  })
+  if(!any(log10(llod)==x_ticks)){
+    x_ticks <- c(log10(llod), x_ticks)
+    labels <- c("lod", labels)
+  }
+  return(list(ticks = x_ticks, labels = labels))
 }

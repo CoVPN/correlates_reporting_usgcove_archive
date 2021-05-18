@@ -28,10 +28,13 @@ Due to the two-phase sampling design, the survey package svycoxph function (usin
 
 Markers to be studied: Day57bindSpike, Day57bindRBD, Day57pseudoneutid50, Day57pseudoneutid8. 
 
+The assays included in assays_to_be_censored_at_uloq_cor need to be censored by ULOQs.
+
 Define the trichotomized versions of these variables as follows:
 \begin{itemize}
-    \item If more than the top 1/3 of vaccine recipients have value > ULOQ, use the cut function to cut at the weighted median (Hmisc:wtd.quantile) among those <= ULOQ and ULOQ; else use the cut function to cut at the 1/3 and 2/3 quantiles (wtd.quantile). (add -Inf and Inf to the beginning and end of the vector of cut points). Convert the results into a factor 
-    \item If the previous step fails or if it succeeds but it produces only two categories, use cut() with breaks=3 to trichotomize
+    \item Let x=log10(ULOQ)*.9999
+    \item If more than the top 1/3 of vaccine recipients have value > x, use the cut function to cut at x and the weighted median (Hmisc:wtd.quantile) among those <= x; else use the cut function to cut at the 1/3 and 2/3 quantiles (wtd.quantile). (add -Inf and Inf to the beginning and end of the vector of cut points). Convert the results into a factor 
+    \item If the previous cut step fails or if it succeeds but it produces only two categories, use cut() with breaks=3 to trichotomize
     \item Name the variables with a 'cat' at the end, e.g. Day57bindSpikecat
 \end{itemize}
 

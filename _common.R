@@ -42,16 +42,16 @@ tmp=list(
         ULOQ = 10155.95)
     ,
     bindRBD=c(
-        LLOD = 0.9297,
-        ULOD = 520506.0,
-        LLOQ = 5.4302,
-        ULOQ = 30693.537)
+        LLOD = 1.593648,
+        ULOD = 223074,
+        LLOQ = 3.4263,
+        ULOQ = 16269.23)
     ,
     bindN=c( 
-        LLOD = 0.0820,
-        ULOD = 45927.0,
-        LLOQ = 0.4791,
-        ULOQ = 2708.253)
+        LLOD = 0.093744,
+        ULOD = 52488,
+        LLOQ = 1.43085,
+        ULOQ = 588.2500)
     ,
     pseudoneutid50=c( 
         LLOD = 10,

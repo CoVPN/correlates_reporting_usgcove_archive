@@ -148,7 +148,7 @@ p.cov=length(terms(form.0))
 time.start=Sys.time()
 rv=list() # results for verification
     
-    
+rv$marker.cutpoints=marker.cutpoints    
     
     
     

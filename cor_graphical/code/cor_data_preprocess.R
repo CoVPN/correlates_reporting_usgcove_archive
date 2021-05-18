@@ -9,8 +9,8 @@ library(dplyr)
 library(tidyverse)
 library(stringr)
 dat.mock <- read.csv(here("..", "data_clean", data_name))
-dat.mock$wt[is.na(dat.mock$wt)] <- 0
-dat.mock$wt.2[is.na(dat.mock$wt.2)] <- 0
+dat.mock$wt.D57[is.na(dat.mock$wt.D57)] <- 0
+dat.mock$wt.D29[is.na(dat.mock$wt.D29)] <- 0
 
 # load parameters
 source(here("code", "params.R"))
@@ -36,8 +36,8 @@ dat.long.subject_level <- dat[, c(
   "Ptid", "Trt", "MinorityInd", "EthnicityHispanic", "EthnicityNotreported",
   "EthnicityUnknown", "HighRiskInd", "Age", "BMI", "Sex",
   "Bserostatus", "Fullvaccine", "Perprotocol", "EventIndPrimaryD29",
-  "EventIndPrimaryD57", "SubcohortInd", "age.geq.65", "TwophasesampInd",
-  "Bstratum", "wt", "wt.2", "race",
+  "EventIndPrimaryD57", "SubcohortInd", "age.geq.65", "TwophasesampIndD57",
+  "Bstratum", "wt.D57", "wt.D29", "race",
   "WhiteNonHispanic", "cohort_event"
 )] %>%
   replicate(length(assays),., simplify = FALSE) %>%
@@ -91,7 +91,7 @@ dat.long$assay <- factor(dat.long$assay, levels = assays, labels = assays)
 # subcohort, which is a stratified sample of enrolled participants. So,
 # immunogenicity analysis is always done in ppts that meet all of the criteria.
 dat.cor.subset <- dat %>%
-  dplyr::filter(TwophasesampInd == 1)
+  dplyr::filter(TwophasesampIndD57 == 1)
 cor.subset.id <- dat.cor.subset$Ptid
 
 
@@ -237,9 +237,9 @@ dat.longer.cor.subset <- dat.long.cor.subset %>% select(Ptid, Trt, Bserostatus, 
                                                         EventIndPrimaryD57, Perprotocol, cohort_event,
                                                         Age, age_geq_65_label, highrisk_label, age_risk_label,
                                                         sex_label, minority_label, Dich_RaceEthnic,
-                                                        assay, LLoD, wt, wt.2,
+                                                        assay, LLoD, wt.D57, wt.D29,
                                                         B, Day29, Day57, Delta29overB, Delta57overB) %>%
-  pivot_longer(!Ptid:wt.2, names_to = "time", values_to = "value")
+  pivot_longer(!Ptid:wt.D29, names_to = "time", values_to = "value")
 
 # define response rates
 # for binding antibody, positive responses are defined as participants who had baseline concentration values below the LLOQ with detectable concentration above the assay LLOQ (34 IU/ml), or as participants with baseline values above the LLOQ with a 4-fold increase in concentration.
@@ -271,8 +271,8 @@ groupby_vars1=c("Trt", "Bserostatus", "cohort_event", "time", "assay")
 
 dat.longer.cor.subset.plot1 <-
   dat.longer.cor.subset %>% group_by_at(groupby_vars1) %>%
-  mutate(num = round(sum(response*wt.2), 1),
-         denom = round(sum(wt.2), 1),
+  mutate(num = round(sum(response * wt.D29), 1),
+         denom = round(sum(wt.D29), 1),
          RespRate = paste0(num,"/",denom,"=",round(num/denom*100, 1),"%"),
          min = min(value),
          q1 = quantile(value, 0.25),
@@ -284,8 +284,8 @@ write.csv(dat.longer.cor.subset.plot1, file = here("data_clean", "longer_cor_dat
 
 dat.longer.cor.subset.plot1 <-
   dat.longer.cor.subset %>% group_by_at(groupby_vars1) %>%
-  mutate(num = round(sum(response*wt.2), 1),
-         denom = round(sum(wt.2), 1),
+  mutate(num = round(sum(response * wt.D29), 1),
+         denom = round(sum(wt.D29), 1),
          RespRate = paste0(num,"/",denom,"=\n",round(num/denom*100, 1),"%"),
   )
 saveRDS(dat.longer.cor.subset.plot1, file = here("data_clean", "longer_cor_data_plot1.rds"))
@@ -305,8 +305,8 @@ groupby_vars3 <- c("Trt", "Bserostatus", "cohort_event", "time", "assay", "age_g
 
 dat.longer.cor.subset.plot3 <-
   dat.longer.cor.subset %>% group_by_at(groupby_vars3) %>%
-  mutate(num = round(sum(response*wt.2), 1),
-         denom = round(sum(wt.2) ,1),
+  mutate(num = round(sum(response * wt.D29), 1),
+         denom = round(sum(wt.D29), 1),
          RespRate = paste0(num,"/",denom,"=\n",round(num/denom*100, 1),"%"))
 saveRDS(dat.longer.cor.subset.plot3, file = here("data_clean", "longer_cor_data_plot3.rds"))
 

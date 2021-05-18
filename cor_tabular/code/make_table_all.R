@@ -207,8 +207,8 @@ ds_s <- dat %>%
     AgeRisk1 = ifelse(Age65C=="Age $<$ 65", AgeRiskC, NA),
     AgeRisk2 = ifelse(Age65C=="Age $\\geq$ 65", AgeRiskC, NA),
     All = "All participants",
-    randomset = (Perprotocol==1 & SubcohortInd == 1 & TwophasesampInd == 1 & EarlyendpointD57==0),
-    ph2.D57 = (TwophasesampInd==1))
+    randomset = (Perprotocol==1 & SubcohortInd == 1 & TwophasesampIndD57 == 1 & EarlyendpointD57==0),
+    ph2.D57 = (TwophasesampIndD57==1))
 
 # Step2: Responders
 # Post baseline visits
@@ -366,24 +366,24 @@ gm.v.57 <- intersect(assays_col, grep("57", names(ds), value = T))
 subs=c("Case")
 comp_i <- c("Cases", "Non-Cases")
 
-rpcnt_case <- get_rr(ds.D57, resp.v.57, subs, sub.by, strata="Wstratum", weights="wt", subset="ph2.D57") 
-rgm_case <- get_gm(ds.D57, gm.v.57, subs, sub.by, strata="Wstratum", weights="wt", "ph2.D57") 
-rgmt_case <- get_rgmt(ds.D57, gm.v.57, subs, comp_lev=comp_i, sub.by, "Wstratum", "wt", "ph2.D57") 
+rpcnt_case <- get_rr(ds.D57, resp.v.57, subs, sub.by, strata="Wstratum", weights="wt.D57", subset="ph2.D57") 
+rgm_case <- get_gm(ds.D57, gm.v.57, subs, sub.by, strata="Wstratum", weights="wt.D57", "ph2.D57") 
+rgmt_case <- get_rgmt(ds.D57, gm.v.57, subs, comp_lev=comp_i, sub.by, "Wstratum", "wt.D57", "ph2.D57") 
 
 print("Done with table 2 & 3") 
 
 if(has29){
   ds.D29 <- ds %>% 
     filter(ph1.D29) %>% 
-    mutate(ph2.D29 = (TwophasesampInd.2==1))
+    mutate(ph2.D29 = (TwophasesampIndD29==1))
   
   resp.v.29 <- intersect(grep("Resp", names(ds), value = T),
                          grep("29", names(ds), value = T))
   gm.v.29 <- intersect(assays_col, grep("29", names(ds), value = T))
   
-  rpcnt_case2 <- get_rr(ds.D29, resp.v.29, subs, sub.by, "Wstratum", "wt.2", "ph2.D29")
-  rgm_case2 <- get_gm(ds.D29, gm.v.29, subs, sub.by, "Wstratum", "wt.2", "ph2.D29")
-  rgmt_case2 <- get_rgmt(ds.D29, gm.v.29, subs, comp_lev=comp_i, sub.by, "Wstratum", "wt.2", "ph2.D29")
+  rpcnt_case2 <- get_rr(ds.D29, resp.v.29, subs, sub.by, "Wstratum", "wt.D29", "ph2.D29")
+  rgm_case2 <- get_gm(ds.D29, gm.v.29, subs, sub.by, "Wstratum", "wt.D29", "ph2.D29")
+  rgmt_case2 <- get_rgmt(ds.D29, gm.v.29, subs, comp_lev=comp_i, sub.by, "Wstratum", "wt.D29", "ph2.D29")
 
   rpcnt_case <- bind_rows(rpcnt_case, rpcnt_case2)
   rgm_case <- bind_rows(rgm_case, rgm_case2)

@@ -147,8 +147,8 @@ for (typ in c("line","violin")) {
             
             longer_cor_data_plot2 <- 
               longer_cor_data %>% group_by_at(groupby_vars2) %>%
-              mutate(num = round(sum(response*wt.2), 1), 
-                     denom = round(sum(wt.2), 1), 
+              mutate(num = round(sum(response * wt.D29), 1), 
+                     denom = round(sum(wt.D29), 1), 
                      RespRate = paste0(num,"/",denom,"\n",round(num/denom*100, 1),"%"))
             
             # make subset for strata RaceEthnic and Dich_RaceEthnic, only present non-NA categories

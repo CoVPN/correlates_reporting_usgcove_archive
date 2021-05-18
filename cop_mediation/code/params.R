@@ -26,9 +26,9 @@ Event_Ind_variable <- list("Day57" = "EventIndPrimaryD57", "Day29" = "EventIndPr
 # Time until event (censoring, end of study, or COVID infection)
 Event_Time_variable <- list("Day57" = "EventTimePrimaryD57", "Day29" = "EventTimePrimaryD29")
 # Variable containing the two stage sampling weights
-weight_variable <- list("Day57" = "wt", "Day29" = "wt.2")
+weight_variable <- list("Day57" = "wt.D57", "Day29" = "wt.D29")
 # Indicator variable that is 1 if selected for second stage
-twophaseind_variable <- list("Day57" = "TwophasesampInd", "Day29" = "TwophasesampInd.2")
+twophaseind_variable <- list("Day57" = "TwophasesampIndD57", "Day29" = "TwophasesampIndD29")
 # The stratum over which stratified two stage sampling is performed
 twophasegroup_variable <- "Wstratum"
 adjust_for_censoring <- FALSE # For now, set to FALSE. If set to TRUE, make sure you set tf well before we lose too many people to "end of study"

@@ -70,11 +70,11 @@ print(paste0("save.results.to equals ", save.results.to))
 
 
 if (pop=="57") {
-    dat.mock$wt.0=dat.mock$wt
-    dat.mock$TwophasesampInd.0 = dat.mock$TwophasesampInd    
+    dat.mock$wt.0=dat.mock$wt.D57
+    dat.mock$TwophasesampInd.0 = dat.mock$TwophasesampIndD57   
 } else if (pop=="29") {
-    dat.mock$wt.0=dat.mock$wt.2
-    dat.mock$TwophasesampInd.0 = dat.mock$TwophasesampInd.2    
+    dat.mock$wt.0=dat.mock$wt.D29
+    dat.mock$TwophasesampInd.0 = dat.mock$TwophasesampIndD29 
 } else stop("wrong pop")
 # the following data frame define the phase 1 ptids
 dat.vacc.pop=subset(dat.mock, Trt==1 & Bserostatus==0 & !is.na(wt.0))
@@ -533,7 +533,7 @@ for (a in assays) {
 # data is ph1 data
 # t is a time point near to the time of the last observed outcome will be defined
 marginalized.risk.svycoxph.boot=function(formula, marker.name, type, data, t, weights, B, ci.type="quantile", numCores=1) {  
-# formula=form.0; marker.name="Day"%.%pop%.%"bindSpike"; data=dat.vacc.pop; t=t0; weights=dat.vacc.pop$wt; B=2; ci.type="quantile"; numCores=1; type=2
+# formula=form.0; marker.name="Day"%.%pop%.%"bindSpike"; data=dat.vacc.pop; t=t0; weights=dat.vacc.pop$wt.D57; B=2; ci.type="quantile"; numCores=1; type=2
     
     # store the current rng state 
     save.seed <- try(get(".Random.seed", .GlobalEnv), silent=TRUE) 

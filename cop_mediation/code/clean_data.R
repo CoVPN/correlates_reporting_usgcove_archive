@@ -15,10 +15,11 @@ for (a in assays) {
     marker.cutpoints[[a]] <- list()    
     for (ind.t in c("Day57", "Day29")) {
         if(ind.t == "Day57"){
-          dat.vacc.pop=subset(full_data, Trt==1 & Bserostatus==0 & !is.na(wt))
+          dat.vacc.pop=subset(full_data, Trt==1 & Bserostatus==0 & !is.na(wt.D57))
+          wt <- dat.vacc.pop$wt.D57
         }else{
-          dat.vacc.pop=subset(full_data, Trt==1 & Bserostatus==0 & !is.na(wt.2))
-          wt <- dat.vacc.pop$wt.2
+          dat.vacc.pop=subset(full_data, Trt==1 & Bserostatus==0 & !is.na(wt.D29))
+          wt <- dat.vacc.pop$wt.D29
         }
         q.a <- Hmisc::wtd.quantile(dat.vacc.pop[[ind.t %.% a]], weights = dat.vacc.pop$wt, probs = c(1/3, 2/3))
         q.a[1]=q.a[1]+1e-6

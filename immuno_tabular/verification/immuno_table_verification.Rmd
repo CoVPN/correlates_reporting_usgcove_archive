@@ -32,7 +32,7 @@ dat.mock <- read.csv(here("verification","verification_input","practice_data.csv
 
 # indicator for immunogenicity reporting
 dat <- subset(dat.mock, Perprotocol == 1 & EventTimePrimaryD57 >= 7)
-dat$immuno_ind <- with(dat, ifelse(Perprotocol==1 & SubcohortInd==1 & TwophasesampInd==1 & !is.na(wt.subcohort), 1, 0))
+dat$immuno_ind <- with(dat, ifelse(Perprotocol==1 & SubcohortInd==1 & TwophasesampIndD57==1 & !is.na(wt.subcohort), 1, 0))
 
 # LLoQ truncation for readout (bindN, live)
 dat$BbindN[dat$BbindN<log10(20)] <- log10(10)

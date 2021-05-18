@@ -3,10 +3,10 @@
 ## Initial data processing
 1. Read in the practice data correlates_reporting/data_clean/practice_data.csv.
 
-2. 1). For analysis at **Day 57**: Subset the data to "phase 1 ptids" for the correlates at Day 57 cohort (`!is.na(wt)`). Derive the indicator for the correlates of risk at Day 57(`TwophasesampInd==1`).
+2. 1). For analysis at **Day 57**: Subset the data to "phase 1 ptids" for the correlates at Day 57 cohort (`!is.na(wt)`). Derive the indicator for the correlates of risk at Day 57(`TwophasesampIndD57==1`).
 
    2). For analysis at **Day 29**:
-Subset the full data to "phase 1 ptids" for the correlates at Day 29 cohort (`!is.na(wt.2)`). Derive the indicator for the correlates of risk at Day 29(`TwophasesampInd.2==1`). 
+Subset the full data to "phase 1 ptids" for the correlates at Day 29 cohort (`!is.na(wt.D29)`). Derive the indicator for the correlates of risk at Day 29(`TwophasesampIndD29==1`). 
 
 3. Derive indicators of 2 fold-rise (FR2) and 4 fold-rise (FR4) based on the truncated magnitudes for neutralizing antibody ID50 titers (Pseudovirus-nAb ID50, Live virus-nAb MN50) at each post-enrollment visit. FR2 = 1 if the ratio of post/pre >=2 and FR4 = 1 if the ratio >=4. 
 4. Derive indicators of >= 2 x LLOQ (2lloq) and >= 4 x LLOQ (4lloq) based on the truncated magnitudes for binding antibody markers (Anti N IgG (IU/ml), Anti Spike IgG (IU/ml), Anti RBD IgG (IU/ml)). 2lloq = 1 if the magnitude >= 2 x LLOQ and 4lloq = 1 if the magnitude >= 4 x LLOQ.
@@ -54,21 +54,21 @@ All the analyses below are generated using the survey package. This is a two-pha
 The first element in each list of the arguments represents parameters of "phase 1" and the second element represents parameters of "phase 2". `wt.subcohort` and `tps.stratum` is the the inverse sampling probability weight and the strata used for stratified sampling used for phase 2. `I_immunoset` is the indicator of phase 2 participants (the immunogenicity cohort) as defined in Initial data processing step 3. `ph1data` includes all and only phase 1 participants and does not include duplicate (e.g., long format of covariates). Method "simple" uses standard error calculation from survey v3.14 and earlier, which uses much less memory and is exact for designs with simple random sampling at phase 1 and stratified random sampling at phase 2. We decided to use method "simple" though here phase 1 is not a simple random sampling as a trade-off of less processing time.
 
 # Table 3-5. Antibody level comparison of Cases vs Non-Cases by baseline COVID status and assigned arms at Day 57
-The weights and strata variable in the mock data used for Table 3-5: `wt` and `Wstratum`.
+The weights and strata variable in the mock data used for Table 3-5: `wt.D57` and `Wstratum`.
 Title: Antibody level comparison of Cases vs Non-Cases by baseline COVID status and assigned arms (Table 3: Baseline SARS-CoV-2 Negative Vaccine Recipients; Table 4: Baseline SARS-CoV-2 Positive Vaccine Recipients; Table 5: Baseline SARS-CoV-2 Positive Placebo Recipients)
 Column names: Visit,	Marker,	Cases(N,	Resp rate,	GMT/GMC),	Non-cases(N, Resp rate,	GMT/GMC),	Comparison(Resp Rate Difference,	GMTR/GMCR)
 
 1. The indicator of Cases and Non-cases is defined in Initial data processing Step 8.
 
-2. Calculate the weighted (`wt`) proportion and 95% CI of responder at **Day 57**, for all markers by visit, case/non-case status, arm, baseline COVID status and marker. The estimation used `prop.est <- survey::svyciprop(~ response, twophase(ids = list(~Ptid, ~ Ptid), strata = list(NULL, ~ Wstratum), method="simple", subset=~corrset, data = data))`, where `data` contains **all and only Phase 1** participants at Day 57, `corrset` is the indicator of the correlates of risk cohort at Day 57 defined in Initial data processing step 2.
+2. Calculate the weighted (`wt.D57`) proportion and 95% CI of responder at **Day 57**, for all markers by visit, case/non-case status, arm, baseline COVID status and marker. The estimation used `prop.est <- survey::svyciprop(~ response, twophase(ids = list(~Ptid, ~ Ptid), strata = list(NULL, ~ Wstratum), method="simple", subset=~corrset, data = data))`, where `data` contains **all and only Phase 1** participants at Day 57, `corrset` is the indicator of the correlates of risk cohort at Day 57 defined in Initial data processing step 2.
 
-3. The 95% CI is extracted from the attributes `attributes(prop.est)$ci`. The responder rates are shown with the counts of responders (n) and the counts of the subgroup (N, each subgroup is a combination of visit, case/non-case status, arm, baseline COVID status, and marker) in the format of "n/N=pct%". Here n & N are weighted: n=sum(response * `wt`); N=sum(`wt`).
+3. The 95% CI is extracted from the attributes `attributes(prop.est)$ci`. The responder rates are shown with the counts of responders (n) and the counts of the subgroup (N, each subgroup is a combination of visit, case/non-case status, arm, baseline COVID status, and marker) in the format of "n/N=pct%". Here n & N are weighted: n=sum(response * `wt.D57`); N=sum(`wt`).
 
-4. Calculate the weighted (`wt`) GMTs/GMCs and 95% CI for all markers by visit, case/non-case status, arm, baseline COVID status and marker: calculate the mean and 95% CI of the log10-magnitudes of the markers, then 10 power the results to the linear scale. The estimation of the mean of the log10-magnitudes used `survey::svymean(~ magnitude, twophase(id = list(~Ptid, ~ Ptid), strata = list(NULL, ~ Wstratum), subset=~corrset, method="simple", data = data))`, `data` contains **all and only Phase 1** participants, `corrset` is the indicator of the correlates of risk cohort at Day 57 defined in Initial data processing step 2. The 95% log10-scaled CI used `base::confint()`.
+4. Calculate the weighted (`wt.D57`) GMTs/GMCs and 95% CI for all markers by visit, case/non-case status, arm, baseline COVID status and marker: calculate the mean and 95% CI of the log10-magnitudes of the markers, then 10 power the results to the linear scale. The estimation of the mean of the log10-magnitudes used `survey::svymean(~ magnitude, twophase(id = list(~Ptid, ~ Ptid), strata = list(NULL, ~ Wstratum), subset=~corrset, method="simple", data = data))`, `data` contains **all and only Phase 1** participants, `corrset` is the indicator of the correlates of risk cohort at Day 57 defined in Initial data processing step 2. The 95% log10-scaled CI used `base::confint()`.
 
 5. Calculate the differences and 95% CI of response rates between Cases vs Non-cases participants, for all markers by visit, case/non-case status, arm, baseline COVID status, and marker: Format the table from step 2 into wide format by case/non-case status, calculate the response rate difference and 95% CI limits using the equation in Table 8 step 1, where $p_{1}$ is the weighted reponse rate of Case participants, $p_{2}$ is the weighted response rate of baseline COVID Non-Cases participants, $L_{1}, U_{1}$ are the 95% CI limits $p_{1}$, and $L_{2}, U_{2}$ are the 95% CI limits of $p_{2}$.
 
-6. Calculate the weighted (`wt`) ratios of GMTs/GMCs and 95% CI between Cases vs Non-cases participants at **Day 57**, for all markers by visit, case/non-case status, arm, baseline COVID status, and marker: run the model `survey::svyglm(magnitude ~ case, twophase(id = list(~Ptid, ~ Ptid), strata = list(NULL, ~ Wstratum), method="simple", subset=~corrset, data = data))`, where `magnitude` represents the log10-magnitude endpoints, `case` is the indicator defined in step 1, and `data` contains **all and only Phase 1** participants, `corrset` is the indicator of the correlates of risk cohort at Day 57 defined in Initial data processing step 2. Pull the estimate and 95% CI of the coefficient of `case`, then 10 power the results to the linear scale. 
+6. Calculate the weighted (`wt.D57`) ratios of GMTs/GMCs and 95% CI between Cases vs Non-cases participants at **Day 57**, for all markers by visit, case/non-case status, arm, baseline COVID status, and marker: run the model `survey::svyglm(magnitude ~ case, twophase(id = list(~Ptid, ~ Ptid), strata = list(NULL, ~ Wstratum), method="simple", subset=~corrset, data = data))`, where `magnitude` represents the log10-magnitude endpoints, `case` is the indicator defined in step 1, and `data` contains **all and only Phase 1** participants, `corrset` is the indicator of the correlates of risk cohort at Day 57 defined in Initial data processing step 2. Pull the estimate and 95% CI of the coefficient of `case`, then 10 power the results to the linear scale. 
 
 8. Merge the tables from step 2 & 3 by visit, case/non-case status, arm, baseline COVID status, and marker. Format the columns N, Response rate, GMT/GMC into wide format by case/non-case status. 
 
@@ -76,5 +76,10 @@ Column names: Visit,	Marker,	Cases(N,	Resp rate,	GMT/GMC),	Non-cases(N, Resp rat
 
 10. Subset the table into Baseline SARS-CoV-2 Negative Vaccine Recipients (Table 3), Baseline SARS-CoV-2 Positive Vaccine Recipients (Table 4), and Baseline SARS-CoV-2 Positive Placebo Recipients (Table 5).
 
+<<<<<<< HEAD
 11. Subset the full data to "Phase 1 ptids" for the correlates cohort at **Day 29** (`!is.na(wt.2)`). Derive the indicator for the correlates of risk at Day 29(`TwophasesampInd.2==1`). Repeat the steps of Table 3-5 for correlates cohort at Day 29 with weights `wt.2` and stratum `Wstratum`.
 Repeat the steps of Table 3-5 for correlates cohort at Day 29 with weights `wt.2` and stratum `Wstratum`.
+=======
+11. Subset the full data to "Phase 1 ptids" for the correlates cohort at **Day 29** (`(EventTimePrimaryD29 >= 14 & Perprotocol == 1)|(EventTimePrimaryD29 >= 7 & EventTimePrimaryD29 <= 13 & Fullvaccine == 1)`). Derive the indicator for the correlates of risk at Day 29(`!is.na(wt.D29)`). Repeat the steps of Table 3-5 for correlates cohort at Day 29 with weights `wt.D29` and stratum `Wstratum`.
+Repeat the steps of Table 3-5 for correlates cohort at Day 29 with weights `wt.D29` and stratum `Wstratum`.
+>>>>>>> 23046d82eb3c3ae6718fb331339a3688a9c7bbdf

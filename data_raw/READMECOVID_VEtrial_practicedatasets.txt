@@ -370,17 +370,17 @@ All variables are phase one variables except the 18 antibody marker variables ar
 Day29bindSpike, Day29bindRBD, Day29bindN, Day29pseudoneutid50, Day29pseudoneutid80, Day29liveneutmn50, 
 Day57bindSpike, Day57bindRBD, Day57N, Day57pseudoneutid50, Day57pseudoneutid80, Day57liveneutmn50).
 
-A variable TwophasesampInd is derived from the data set, which is the indicator that a ppt has
+A variable TwophasesampIndD57 is derived from the data set, which is the indicator that a ppt has
 Day 1, 29, 57 marker data and hence is included in inverse probability weighting (IPW) complete case data analysis.
 The two-phase sampling probabilities of trial participants, 
 
-P(TwophasesampInd=1|Trt,WhiteNonHispanic Indicator,HighRiskInd,Age Category,Bserostatus,EventIndPrimaryD29), 
+P(TwophasesampIndD57=1|Trt,WhiteNonHispanic Indicator,HighRiskInd,Age Category,Bserostatus,EventIndPrimaryD29), 
 
 can be consistently estimated based on empirical sampling frequencies.  Note that the weights depend
 on case/non-case COVID outcome status.  Note that the URMforsubcohortsampling Indicator is derived from the
 other ethnicity and race variables.
 
-A second variable TwophasesampInd.2 is also derived, which is only used as an inclusion indicator for
+A second variable TwophasesampIndD29 is also derived, which is only used as an inclusion indicator for
 CoR/CoP analyses that only include Day 29 markers.
 
 For the longer term follow-up data set, another variable TwophaseLongtermsampInd is derived from the 

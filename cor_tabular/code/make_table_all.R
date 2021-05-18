@@ -202,7 +202,7 @@ ds_s <- dat %>%
                  levels = c("Vaccine", "Placebo")),
     
     Case = case_when(Perprotocol==1 & Bserostatus==0 & EarlyendpointD57==0 & 
-                     TwophasesampInd==1 & EventIndPrimaryD57==1 ~ "Cases",
+                     TwophasesampIndD57==1 & EventIndPrimaryD57==1 ~ "Cases",
                      TRUE ~ "Non-Cases"),
     AgeRisk1 = ifelse(Age65C=="Age $<$ 65", AgeRiskC, NA),
     AgeRisk2 = ifelse(Age65C=="Age $\\geq$ 65", AgeRiskC, NA),

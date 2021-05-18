@@ -78,9 +78,11 @@ get_plot <- function(marker, simultaneous_CI = F, monotone = F) {
 
   plot <- v + scale_x_continuous(
    breaks = xx,#union(floor(esttmle[, 1]), ceiling(esttmle[, 1])),
-    labels = do.call(expression,labels) #trans_format("ident", math_format(10^.x)),
+    labels = do.call(expression,labels),
+   name =labx
+     #trans_format("ident", math_format(10^.x)),
    #limits = c(min(esttmle[, 1]) - 0.1, max(esttmle[, 1]) + 0.1)
-  ) + xlab(paste0(marker, " threshold")) + ylab(laby)  + xlab(labx) + ggtitle(main) +
+  )     + ggtitle(main) +
     stat_function(fun = RCDF, color = col, geom = "area", fill = col, alpha = 0.2) +
     scale_y_continuous(
       name = laby,

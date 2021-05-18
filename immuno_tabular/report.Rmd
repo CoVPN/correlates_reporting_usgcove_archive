@@ -51,16 +51,16 @@ for (i in 1:length(tlf)){
   rownames(tab) <- NULL
   colnames(tab) <- gsub("%", "\\\\%", colnames(tab))
   colnames(tab) <- gsub("Baseline SARS-CoV-2", "Baseline\nSARS\\-CoV\\-2", colnames(tab))
-  colnames(tab) <- gsub("% Greater than 2xLLOD", "% Greater than\n2 $\\\\times$ LLOD", colnames(tab))
-  colnames(tab) <- gsub("% Greater than 4xLLOD", "% Greater than\n4 $\\\\times$ LLOD", colnames(tab))
+  colnames(tab) <- gsub("% Greater than 2xLLOQ", "% Greater than\n2 $\\\\times$ LLOQ", colnames(tab))
+  colnames(tab) <- gsub("% Greater than 4xLLOQ", "% Greater than\n4 $\\\\times$ LLOQ", colnames(tab))
   
 
   col_name <- if ("col_name" %in% tlf_args) {
     tlf_labels[["col_name"]] 
-  } else setdiff(names(tab), deselect) 
-
+  } else setdiff(names(tab), deselect)
+  
+  cat(sprintf("\\subsection{%s}", title_i))
   jloop <- if (!is.na(loop)) pull(tab, !!as.name(loop)) %>% unique() else 1
-    
   for (j in jloop) {
       subnum <- subnum + 1
       

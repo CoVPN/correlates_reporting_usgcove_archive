@@ -42,7 +42,7 @@ variables_with_no_missing <-
       "EarlyinfectionD29", "EventIndPrimaryD29", "EventTimePrimaryD29",
       "NumberdaysD1toD57",
       "age.geq.65", "MinorityInd",
-      "TwophasesampInd","TwophasesampInd.2",
+      "TwophasesampIndD57", "TwophasesampIndD29",
       "EarlyendpointD57", "EarlyendpointD29",
       "ph1.D57", "ph1.D29", "ph1.immuno",
       "ph2.D57", "ph2.D29", "ph2.immuno"
@@ -70,8 +70,8 @@ if(length(failed_variables_missing) > 1){
 
 ## at least some cases included in two phase sample
 # could fail either due to e.g., no per-protocol cases measured immune responses
-pass57 <- sum(dat_clean$TwophasesampInd) > sum(dat_clean$SubcohortInd)
-pass29 <- sum(dat_clean$TwophasesampInd.2) > sum(dat_clean$SubcohortInd)
+pass57 <- sum(dat_clean$TwophasesampIndD57) > sum(dat_clean$SubcohortInd)
+pass29 <- sum(dat_clean$TwophasesampIndD29) > sum(dat_clean$SubcohortInd)
 if(!pass57){
     stop("More people in subcohort than in final two-phase sample for Day 57 analysis.")
 }

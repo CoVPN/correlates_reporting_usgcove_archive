@@ -201,21 +201,14 @@ ds_s <- dat %>%
     Arm = factor(ifelse(Trt == 1, "Vaccine", "Placebo"), 
                  levels = c("Vaccine", "Placebo")),
     
-    Case = case_when(Perprotocol == 1 & EventIndPrimaryD29 == 1 & 
-                       EventIndPrimaryD57 == 1 ~ "Cases",
+    Case = case_when(Perprotocol==1 & Bserostatus==0 & EarlyendpointD57==0 & 
+                     TwophasesampIndD57==1 & EventIndPrimaryD57==1 ~ "Cases",
                      TRUE ~ "Non-Cases"),
     AgeRisk1 = ifelse(Age65C=="Age $<$ 65", AgeRiskC, NA),
     AgeRisk2 = ifelse(Age65C=="Age $\\geq$ 65", AgeRiskC, NA),
     All = "All participants",
-    randomset = (SubcohortInd == 1 & TwophasesampInd == 1 & EarlyendpointD57==0),
-    cohort1 = (TwophasesampInd==1),
-    corrset1 = !is.na(wt))
-
-if(has29) {
-  ds_s <- ds_s %>% 
-    mutate(cohort2 = (TwophasesampInd.2==1),
-           corrset2 = !is.na(wt.2))
-}
+    randomset = (Perprotocol==1 & SubcohortInd == 1 & TwophasesampIndD57 == 1 & EarlyendpointD57==0),
+    ph2.D57 = (TwophasesampIndD57==1))
 
 # Step2: Responders
 # Post baseline visits
@@ -260,6 +253,7 @@ subgrp <- c(
   AgeMinorC = "Age, Underrepresented minority status"
 
 )
+
 
 ###################################################
 #             Generating the Tables               #
@@ -362,32 +356,34 @@ print("Done with table 1")
 # (Per Peter's email Feb 5, 2021)
 # Cases vs Non-cases
 
-ds1 <- subset(ds, corrset1)
-ds2 <- subset(ds, corrset2)
+ds.D57 <- subset(ds, ph1.D57)
 
 sub.by <- c("Arm", "`Baseline SARS-CoV-2`")
 resp.v.57 <- intersect(grep("Resp", names(ds), value = T),
                        grep("57", names(ds), value = T))
 gm.v.57 <- intersect(assays_col, grep("57", names(ds), value = T))
 
-resp.v.29 <- intersect(grep("Resp", names(ds), value = T),
-                       grep("29", names(ds), value = T))
-gm.v.29 <- intersect(assays_col, grep("29", names(ds), value = T))
-
 subs=c("Case")
 comp_i <- c("Cases", "Non-Cases")
 
-rpcnt_case <- get_rr(ds1, resp.v.57, subs, sub.by, strata="Wstratum", 
-                     weights="wt", subset="corrset1") 
-rgm_case <- get_gm(ds1, gm.v.57, subs, sub.by, strata="Wstratum", weights="wt", "corrset1") 
-rgmt_case <- get_rgmt(ds1, gm.v.57, subs, comp_lev=comp_i, sub.by, "Wstratum", "wt", "corrset1") 
+rpcnt_case <- get_rr(ds.D57, resp.v.57, subs, sub.by, strata="Wstratum", weights="wt.D57", subset="ph2.D57") 
+rgm_case <- get_gm(ds.D57, gm.v.57, subs, sub.by, strata="Wstratum", weights="wt.D57", "ph2.D57") 
+rgmt_case <- get_rgmt(ds.D57, gm.v.57, subs, comp_lev=comp_i, sub.by, "Wstratum", "wt.D57", "ph2.D57") 
 
 print("Done with table 2 & 3") 
 
 if(has29){
-  rpcnt_case2 <- get_rr(ds2, resp.v.29, subs, sub.by, "Wstratum", "wt.2", "corrset2")
-  rgm_case2 <- get_gm(ds2, gm.v.29, subs, sub.by, "Wstratum", "wt.2", "corrset2")
-  rgmt_case2 <- get_rgmt(ds2, gm.v.29, subs, comp_lev=comp_i, sub.by, "Wstratum", "wt.2", "corrset2")
+  ds.D29 <- ds %>% 
+    filter(ph1.D29) %>% 
+    mutate(ph2.D29 = (TwophasesampIndD29==1))
+  
+  resp.v.29 <- intersect(grep("Resp", names(ds), value = T),
+                         grep("29", names(ds), value = T))
+  gm.v.29 <- intersect(assays_col, grep("29", names(ds), value = T))
+  
+  rpcnt_case2 <- get_rr(ds.D29, resp.v.29, subs, sub.by, "Wstratum", "wt.D29", "ph2.D29")
+  rgm_case2 <- get_gm(ds.D29, gm.v.29, subs, sub.by, "Wstratum", "wt.D29", "ph2.D29")
+  rgmt_case2 <- get_rgmt(ds.D29, gm.v.29, subs, comp_lev=comp_i, sub.by, "Wstratum", "wt.D29", "ph2.D29")
 
   rpcnt_case <- bind_rows(rpcnt_case, rpcnt_case2)
   rgm_case <- bind_rows(rgm_case, rgm_case2)
@@ -402,39 +398,40 @@ rrdiff_case <- rpcnt_case %>%
   pivot_wider(id_cols = c(subgroup, `Baseline SARS-CoV-2`, Arm, Visit, Marker, Ind),
               names_from = groupn, values_from = c(response, ci_l, ci_u), names_sep = "") # %>% 
 
-if("response1" %in% names(rrdiff_case) & "response2" %in% names(rrdiff_case)){
+  responseNA <- setdiff(levels(interaction(c("response", "ci_l", "ci_u"), 1:2, sep="")), names(rrdiff_case))
+  rrdiff_case[, responseNA] <- NA
+  
   rrdiff_case <- rrdiff_case %>% 
     mutate(Estimate = response1-response2,
            ci_l = Estimate-sqrt((response1-ci_l1)^2+(response2-ci_u2)^2),
            ci_u = Estimate+sqrt((response1-ci_u1)^2+(response2-ci_l2)^2),
-           rrdiff = sprintf("%s\n(%s, %s)", round(Estimate, 2), 
-                            round(ci_l, 2), round(ci_u, 2))) 
-}else{
-  responseNA <- setdiff(c("response1", "response2"), names(rrdiff_case))
-  rrdiff_case <- rrdiff_case %>% 
-    mutate(!!responseNA := 0, 
-           Estimate = response1-response2,
-           ci_l = NA,
-           ci_u = NA,
-           rrdiff = sprintf("%s\n", round(Estimate, 2))) 
-}
-
+           rrdiff = ifelse(!is.na(Estimate), 
+                           sprintf("%s\n(%s, %s)", round(Estimate, 2), round(ci_l, 2), round(ci_u, 2)),
+                           "-")) 
+  
 print("Done with table6")
 
-tab_case <- inner_join(rpcnt_case, rgm_case,
-                       by = c("Group", "Arm", "Baseline SARS-CoV-2", 
-                              "N", "Marker", "Visit")) %>% 
+tab_case <- full_join(rpcnt_case, rgm_case,
+                      by = c("Group", "Arm", "Baseline SARS-CoV-2", 
+                             "N", "Marker", "Visit")) %>% 
   pivot_wider(id_cols = c(Arm, `Baseline SARS-CoV-2`, Marker, Visit),
               names_from = Group, 
               values_from = c(N, rslt, `GMT/GMC`)) %>% 
-  inner_join(rrdiff_case, by = c("Arm", "Baseline SARS-CoV-2", "Marker", "Visit")) %>% 
-  inner_join(rgmt_case, by = c("Arm", "Baseline SARS-CoV-2", "Marker", "Visit")) 
+  full_join(rrdiff_case, by = c("Arm", "Baseline SARS-CoV-2", "Marker", "Visit")) %>% 
+  full_join(rgmt_case, by = c("Arm", "Baseline SARS-CoV-2", "Marker", "Visit"))
 
 if(length(comp_NA <- setdiff(comp_i, rpcnt_case$Group))!=0){
   tab_case <- tab_case %>% 
     mutate(!!paste0("N_", comp_NA) := 0, 
            !!paste0("rslt_", comp_NA) := "-",
-           !!paste0("GMT/GMC_", comp_NA) :="-")
+           !!paste0("GMT/GMC_", comp_NA) :="-",
+           `Ratios of GMT/GMC`=replace_na(`Ratios of GMT/GMC`, "-"))
+}else{
+    tab_case <- tab_case %>% 
+      mutate_at(vars(starts_with("N_")), replace_na, replace=0) %>% 
+      mutate_at(vars(starts_with("rslt_")), replace_na, replace="-") %>% 
+      mutate_at(vars(starts_with("GMT/GMC_")), replace_na, replace="-") %>% 
+      mutate(`Ratios of GMT/GMC`=replace_na(`Ratios of GMT/GMC`, "-"))
   }
 
 tab_case <- tab_case %>% 

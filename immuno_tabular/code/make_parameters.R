@@ -52,7 +52,9 @@ tlf <-
         above the assay LLOQ, or as participants with baseline values above
         the LLOQ with a 4-fold increase in antibody concentration.",
         "Percentages are calculated for the whole per-protocol group/subgroup, 
-        using inverse probability weighting."),
+        using inverse probability weighting.",
+        sprintf("LLOQ = %.2f, %.2f, %.2f IU/ml for N, RBD, Spike, respectively.", 
+                lloqs["bindN"], lloqs["bindRBD"], lloqs["bindSpike"])),
       loop = "subgroup",
       group_table_col = c("Rx", "Group", "Baseline", "Visit", "N", "Marker"),
       deselect = "subgroup",
@@ -69,7 +71,9 @@ tlf <-
         above the assay LLOQ, or as participants with baseline values above
         the LLOQ with a 4-fold increase in antibody concentration.",
         "Percentages are calculated for the whole per-protocol group/subgroup, 
-        using inverse probability weighting."),
+        using inverse probability weighting.",
+        sprintf("LLOQ = %.2f, %.2f, %.2f IU/ml for N, RBD, Spike, respectively.", 
+                lloqs["bindN"], lloqs["bindRBD"], lloqs["bindSpike"])),
       loop = "subgroup",
       group_table_col = c("Rx", "Group", "Baseline", "Visit", "N", "Marker"),
       deselect = "subgroup",
@@ -87,8 +91,9 @@ tlf <-
         ID50 neutralization titer above the assay LLOQ, or as participants with
         baseline values above the LLOQ with a 4-fold increase in ID50.",
         "Percentages are calculated for the whole per-protocol group/subgroup, 
-        using inverse probability weighting."
-      ),
+        using inverse probability weighting.",
+        sprintf("LLOQ = %.2f, %.2f for pseudovirus-nAb ID50, ID80, respectively.", 
+                lloqs["pseudoneutid50"], lloqs["pseudoneutid80"])),
       loop = "subgroup",
       group_table_col = c("Rx", "Group", "Baseline", "Visit", "N", "Marker"),
       deselect = "subgroup",

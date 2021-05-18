@@ -40,10 +40,10 @@ event_time <- list(Day57 = "EventTimePrimaryD57",
                    Day29 = "EventTimePrimaryD29")
 
 # variable containing the two stage sampling weights
-twophase_wts <- list(Day57 = "wt", Day29 = "wt.2")
+twophase_wts <- list(Day57 = "wt.D57", Day29 = "wt.D29")
 
 # indicator variable that is 1 if selected for second stage
-twophase_ind <- list(Day57 = "TwophasesampInd", Day29 = "TwophasesampInd.2")
+twophase_ind <- list(Day57 = "TwophasesampIndD57", Day29 = "TwophasesampIndD29")
 
 # the stratum over which stratified two-stage sampling is performed
 twophase_group <- list(Day57 = "Wstratum", Day29 = "Wstratum")

@@ -185,29 +185,29 @@ dat_proc$Wstratum[with(dat_proc, EventIndPrimaryD29==1 & Trt==1 & Bserostatus==1
 # after defining ph1.xx, we will update TwophasesampInd to be 0 outside ph1.xx
 dat_proc <- dat_proc %>%
   mutate(
-    TwophasesampInd = 
+    TwophasesampIndD57 =
       (SubcohortInd | EventIndPrimaryD29 == 1) &
       complete.cases(cbind(
-        if("bindSpike" %in% must_have_assays) BbindSpike, 
-        if("bindRBD" %in% must_have_assays) BbindRBD, 
-        if("pseudoneutid50" %in% must_have_assays) Bpseudoneutid50, 
-        if("pseudoneutid80" %in% must_have_assays) Bpseudoneutid80, 
-        
+        if("bindSpike" %in% must_have_assays) BbindSpike,
+        if("bindRBD" %in% must_have_assays) BbindRBD,
+        if("pseudoneutid50" %in% must_have_assays) Bpseudoneutid50,
+        if("pseudoneutid80" %in% must_have_assays) Bpseudoneutid80,
+
         if("bindSpike" %in% must_have_assays) Day57bindSpike,
         if("bindRBD" %in% must_have_assays) Day57bindRBD,
         if("pseudoneutid50" %in% must_have_assays) Day57pseudoneutid50,
         if("pseudoneutid80" %in% must_have_assays) Day57pseudoneutid80,
-        
-        if("bindSpike" %in% must_have_assays & has29) Day29bindSpike, 
-        if("bindRBD" %in% must_have_assays & has29) Day29bindRBD, 
-        if("pseudoneutid50" %in% must_have_assays & has29) Day29pseudoneutid50, 
+
+        if("bindSpike" %in% must_have_assays & has29) Day29bindSpike,
+        if("bindRBD" %in% must_have_assays & has29) Day29bindRBD,
+        if("pseudoneutid50" %in% must_have_assays & has29) Day29pseudoneutid50,
         if("pseudoneutid80" %in% must_have_assays & has29) Day29pseudoneutid80
       ))
   )
 
 if(has29) dat_proc <- dat_proc %>%
   mutate(
-    TwophasesampInd.2 = 
+    TwophasesampIndD29 =
       (SubcohortInd | EventIndPrimaryD29 == 1) &
       complete.cases(cbind(
         if("bindSpike" %in% must_have_assays) BbindSpike, 
@@ -225,52 +225,52 @@ if(has29) dat_proc <- dat_proc %>%
 
 # wt, for D57 correlates analyses
 wts_table <- dat_proc %>% dplyr::filter(EarlyendpointD57==0 & Perprotocol == 1 & EventTimePrimaryD57 >= 7) %>%
-  with(table(Wstratum, TwophasesampInd))
+  with(table(Wstratum, TwophasesampIndD57))
 wts_norm <- rowSums(wts_table) / wts_table[, 2]
-dat_proc$wt <- wts_norm[dat_proc$Wstratum %.% ""]
-dat_proc$wt = ifelse(with(dat_proc, EarlyendpointD57==0 & Perprotocol == 1 & EventTimePrimaryD57>=7), dat_proc$wt, NA)
-dat_proc$ph1.D57=!is.na(dat_proc$wt)
-dat_proc$ph2.D57=with(dat_proc, ph1.D57 & TwophasesampInd)
+dat_proc$wt.D57 <- wts_norm[dat_proc$Wstratum %.% ""]
+dat_proc$wt.D57 = ifelse(with(dat_proc, EarlyendpointD57==0 & Perprotocol == 1 & EventTimePrimaryD57>=7), dat_proc$wt.D57, NA)
+dat_proc$ph1.D57=!is.na(dat_proc$wt.D57)
+dat_proc$ph2.D57=with(dat_proc, ph1.D57 & TwophasesampIndD57)
 
-# wt.2, for D29 correlates analyses
+# wt.2D9, for D29 correlates analyses
 if(has29) {
     wts_table2 <- dat_proc %>% dplyr::filter(EarlyendpointD29==0 & Perprotocol == 1 & EventTimePrimaryD29 >= 7) %>%
-      with(table(Wstratum, TwophasesampInd.2))
+      with(table(Wstratum, TwophasesampIndD29))
     wts_norm2 <- rowSums(wts_table2) / wts_table2[, 2]
-    dat_proc$wt.2 <- wts_norm2[dat_proc$Wstratum %.% ""]
-    dat_proc$wt.2 = ifelse(with(dat_proc, EarlyendpointD29==0 & Perprotocol == 1 & EventTimePrimaryD29 >= 7), dat_proc$wt.2, NA)
-    dat_proc$ph1.D29=!is.na(dat_proc$wt.2)
-    dat_proc$ph2.D29=with(dat_proc, ph1.D29 & TwophasesampInd.2)
+    dat_proc$wt.D29 <- wts_norm2[dat_proc$Wstratum %.% ""]
+    dat_proc$wt.D29 = ifelse(with(dat_proc, EarlyendpointD29==0 & Perprotocol == 1 & EventTimePrimaryD29 >= 7), dat_proc$wt.D29, NA)
+    dat_proc$ph1.D29=!is.na(dat_proc$wt.D29)
+    dat_proc$ph2.D29=with(dat_proc, ph1.D29 & TwophasesampIndD29)
 
     assertthat::assert_that(
-        all(!is.na(subset(dat_proc, EarlyendpointD29==0 & Perprotocol == 1 & EventTimePrimaryD29>=7 & !is.na(Wstratum), select=wt.2, drop=T))), 
-        msg = "missing wt.2 for D29 analyses ph1 subjects")    
+        all(!is.na(subset(dat_proc, EarlyendpointD29==0 & Perprotocol == 1 & EventTimePrimaryD29>=7 & !is.na(Wstratum), select=wt.D29, drop=T))),
+        msg = "missing wt.D29 for D29 analyses ph1 subjects")
 }
 
 # wt.subcohort, for immunogenicity analyses that use subcohort only and are not enriched by cases outside subcohort
 wts_table <- dat_proc %>% dplyr::filter(EarlyendpointD57==0 & Perprotocol == 1) %>%
-  with(table(tps.stratum, TwophasesampInd & SubcohortInd))
+  with(table(tps.stratum, TwophasesampIndD57 & SubcohortInd))
 wts_norm <- rowSums(wts_table) / wts_table[, 2]
 dat_proc$wt.subcohort <- wts_norm[dat_proc$tps.stratum %.% ""]
 dat_proc$wt.subcohort = ifelse(with(dat_proc, EarlyendpointD57==0 & Perprotocol == 1), dat_proc$wt.subcohort, NA)
 dat_proc$ph1.immuno=!is.na(dat_proc$wt.subcohort)
-dat_proc$ph2.immuno=with(dat_proc, ph1.immuno & SubcohortInd & TwophasesampInd)
+dat_proc$ph2.immuno=with(dat_proc, ph1.immuno & SubcohortInd & TwophasesampIndD57)
 
 
 # the following should not be defined because TwophasesampIndD57 and TwophasesampIndD29 are not ph2
-#dat_proc$TwophasesampInd  [!dat_proc$ph1.D57] <- 0
+#dat_proc$TwophasesampIndD57[!dat_proc$ph1.D57] <- 0
 #if(has29) {
-#dat_proc$TwophasesampInd.2[!dat_proc$ph1.D29] <- 0    
+#dat_proc$TwophasesampIndD29[!dat_proc$ph1.D29] <- 0
 #}
 
 assertthat::assert_that(
-    all(!is.na(subset(dat_proc, EarlyendpointD57==0 & Perprotocol == 1 & EventTimePrimaryD57>=7 & !is.na(Wstratum), select=wt, drop=T))),
-    msg = "missing wt for D57 analyses ph1 subjects")    
+    all(!is.na(subset(dat_proc, EarlyendpointD57==0 & Perprotocol == 1 & EventTimePrimaryD57>=7 & !is.na(Wstratum), select=wt.D57, drop=T))),
+    msg = "missing wt.D57 for D57 analyses ph1 subjects")
 
 
 assertthat::assert_that(
-    all(!is.na(subset(dat_proc, EarlyendpointD57==0 & Perprotocol == 1                          & !is.na(tps.stratum), select=wt.subcohort, drop=T))), 
-    msg = "missing wt.subcohort for immuno analyses ph1 subjects")    
+    all(!is.na(subset(dat_proc, EarlyendpointD57==0 & Perprotocol == 1 & !is.na(tps.stratum), select=wt.subcohort, drop=T))), 
+    msg = "missing wt.subcohort for immuno analyses ph1 subjects")
 
 
 
@@ -282,7 +282,7 @@ assertthat::assert_that(
 ###############################################################################
 
 n.imp <- 1
-dat.tmp.impute <- subset(dat_proc, TwophasesampInd == 1)
+dat.tmp.impute <- subset(dat_proc, TwophasesampIndD57 == 1)
 
 imp.markers=c(outer(c("B", if(has29) "Day29", "Day57"), assays, "%.%"))
 
@@ -317,22 +317,22 @@ assertthat::assert_that(
 )    
 
 # populate dat_proc imp.markers with the imputed values
-dat_proc[dat_proc$TwophasesampInd==1, imp.markers] <-
-  dat.tmp.impute[imp.markers][match(dat_proc[dat_proc$TwophasesampInd==1, "Ptid"], dat.tmp.impute$Ptid), ]
+dat_proc[dat_proc$TwophasesampIndD57==1, imp.markers] <-
+  dat.tmp.impute[imp.markers][match(dat_proc[dat_proc$TwophasesampIndD57==1, "Ptid"], dat.tmp.impute$Ptid), ]
 
 # imputed values of missing markers merged properly for all individuals in the two phase sample?
 assertthat::assert_that(
-  all(complete.cases(dat_proc[dat_proc$TwophasesampInd == 1, imp.markers])),
+  all(complete.cases(dat_proc[dat_proc$TwophasesampIndD57 == 1, imp.markers])),
   msg = "imputed values of missing markers merged properly for all individuals in the two phase sample?"
 )
 
 ###############################################################################
-# impute again for TwophasesampInd.2
+# impute again for TwophasesampIndD29
 #     use baseline and D29
 
 if(has29) {
     n.imp <- 1
-    dat.tmp.impute <- subset(dat_proc, TwophasesampInd.2 == 1)
+    dat.tmp.impute <- subset(dat_proc, TwophasesampIndD29 == 1)
     
     imp.markers=c(outer(c("B", "Day29"), assays, "%.%"))
     
@@ -367,8 +367,8 @@ if(has29) {
     ) 
     
     # populate dat_proc imp.markers with the imputed values
-    dat_proc[dat_proc$TwophasesampInd.2==1, imp.markers] <-
-      dat.tmp.impute[imp.markers][match(dat_proc[dat_proc$TwophasesampInd.2==1, "Ptid"], dat.tmp.impute$Ptid), ]    
+    dat_proc[dat_proc$TwophasesampIndD29==1, imp.markers] <-
+      dat.tmp.impute[imp.markers][match(dat_proc[dat_proc$TwophasesampIndD29==1, "Ptid"], dat.tmp.impute$Ptid), ]    
 }
 
 
@@ -442,7 +442,7 @@ write_csv(dat_proc, file = here("data_clean", data_name))
 ###############################################################################
 
 # maxed over all 3 of Spike, RBD, N, restricting to Day 29 or 57
-if(has29) MaxbAbDay29 = max(dat_proc[,paste0("Day29", c("bindSpike", "bindRBD", "bindN"))], na.rm=T)
+if (has29) MaxbAbDay29 = max(dat_proc[,paste0("Day29", c("bindSpike", "bindRBD", "bindN"))], na.rm=T)
 MaxbAbDay57 = max(dat_proc[,paste0("Day57", c("bindSpike", "bindRBD", "bindN"))], na.rm=T)
 
 # maxed over ID50 and ID80, restricting to Day 29 or 57
@@ -454,20 +454,25 @@ if(has29) MaxbAbDelta29overB = max(dat_proc[,paste0("Delta29overB", c("bindSpike
 MaxbAbDelta57overB = max(dat_proc[,paste0("Delta57overB", c("bindSpike", "bindRBD", "bindN"))], na.rm=T)
 
 # for fold change, maxed over ID50 and ID80, restricting to Day 29 or 57
-if(has29) MaxID50ID80Delta29overB = max(dat_proc[,paste0("Delta29overB", c("pseudoneutid50", "pseudoneutid80"))], na.rm=T)
-MaxID50ID80Delta57overB = max(dat_proc[,paste0("Delta57overB", c("pseudoneutid50", "pseudoneutid80"))], na.rm=T)
+if (has29) {
+  MaxID50ID80Delta29overB =
+    max(dat_proc[,paste0("Delta29overB", c("pseudoneutid50",
+                                           "pseudoneutid80"))],
+        na.rm=TRUE)
+  MaxID50ID80Delta57overB =
+    max(dat_proc[,paste0("Delta57overB", c("pseudoneutid50",
+                                           "pseudoneutid80"))],
+        na.rm=TRUE)
+}
 
 
 if(has29){
-    save(MaxbAbDay57, MaxID50ID80Day57, MaxbAbDelta57overB, MaxID50ID80Delta57overB, 
-        MaxbAbDelta29overB, MaxID50ID80Delta29overB, MaxbAbDay29, MaxID50ID80Day29, 
+    save(MaxbAbDay57, MaxID50ID80Day57, MaxbAbDelta57overB,
+         MaxID50ID80Delta57overB, MaxbAbDelta29overB, MaxID50ID80Delta29overB,
+         MaxbAbDay29, MaxID50ID80Day29,
     file=here("data_clean", "_params.Rdata"))
 } else {
-    save(MaxbAbDay57, MaxID50ID80Day57, MaxbAbDelta57overB, MaxID50ID80Delta57overB, 
+    save(MaxbAbDay57, MaxID50ID80Day57, MaxbAbDelta57overB,
+         MaxID50ID80Delta57overB,
     file=here("data_clean", "_params.Rdata"))
 }
- 
-
-
- 
- 

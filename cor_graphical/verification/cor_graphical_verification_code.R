@@ -31,8 +31,8 @@ dat <- read.csv(
   here("cor_graphical/verification/practice_data_test.csv")
 )
 
-dat$wt[is.na(dat$wt)] <- 0
-dat$wt.2[is.na(dat$wt.2)] <- 0
+dat$wt.D57[is.na(dat$wt.D57)] <- 0
+dat$wt.D29[is.na(dat$wt.D29)] <- 0
 
 dat <- dat %>% 
   mutate(cohort_event = ifelse(EventIndPrimaryD29 == 1 & EventIndPrimaryD57 == 0, "Intercurrent Cases",
@@ -134,10 +134,10 @@ dat.long <- rbind(dat1_bindSpike,dat1_bindRBD,dat1_pseudoneutid50,dat1_pseudoneu
          EventIndPrimaryD57, 
          SubcohortInd, 
          age.geq.65, 
-         TwophasesampInd, 
+         TwophasesampIndD57, 
          Bstratum, 
-         wt,  
-         wt.2, 
+         wt.D57,  
+         wt.D29, 
          race, 
          WhiteNonHispanic,
          cohort_event,
@@ -150,10 +150,10 @@ dat.long <- rbind(dat1_bindSpike,dat1_bindRBD,dat1_pseudoneutid50,dat1_pseudoneu
 
 
 dat.cor.subset <- dat %>% 
-  filter(TwophasesampInd == 1)
+  filter(TwophasesampIndD57 == 1)
 
 dat.long.cor.subset <- dat.long %>% 
-  filter(TwophasesampInd == 1)
+  filter(TwophasesampIndD57 == 1)
 
 dat.long.cor.subset <- dat.long.cor.subset %>% 
   mutate(Dich_RaceEthnic = ifelse(EthnicityHispanic == 1, "Hispanic or Latino",
@@ -212,7 +212,7 @@ dat.long.cor.subset <- dat.long.cor.subset %>%
 dat.longer.cor.subset <- dat.long.cor.subset %>% select(
   Ptid, Trt, Bserostatus, EventIndPrimaryD29, EventIndPrimaryD57, Perprotocol,
   cohort_event, Age, age_geq_65_label, highrisk_label, age_risk_label, sex_label,
-  minority_label, Dich_RaceEthnic, assay, LLoD, wt, wt.2, B, Day29, Day57, Delta29overB, Delta57overB
+  minority_label, Dich_RaceEthnic, assay, LLoD, wt.D57, wt.D29, B, Day29, Day57, Delta29overB, Delta57overB
 )
 
 
@@ -255,8 +255,8 @@ dat.longer.cor.subset <- dat.longer.cor.subset %>%
 dat.longer.cor.subset.plot1_verification <- dat.longer.cor.subset %>% 
   
   group_by(Trt, Bserostatus, cohort_event, time, assay) %>%
-  mutate(num = round(sum(response*wt.2),1),
-         denom = round(sum(wt.2),1),
+  mutate(num = round(sum(response * wt.D29),1),
+         denom = round(sum(wt.D29),1),
          RespRate = paste(num,"/",denom,"=",round(num/denom*100,1),"%",sep = ""),
          min = min(value),
          q1 = quantile(value, 0.25),

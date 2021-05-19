@@ -57,7 +57,7 @@ for (i in 1:length(tlf)) {
     tlf_labels[["col_name"]]
   } else setdiff(names(tab), deselect)
 
-  cat(sprintf("\\subsection{%s}", title_i))
+  cat(sprintf("\\section{%s}", title_i))
   jloop <- if (!is.na(loop)) pull(tab, !!as.name(loop)) %>% unique() else 1
   for (j in jloop) {
       subnum <- subnum + 1

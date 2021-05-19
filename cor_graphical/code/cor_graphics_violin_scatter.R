@@ -13,8 +13,6 @@ library(tidyverse)
 library(here)
 library(cowplot)
 
-study.name <- "mock"
-
 ### variables for looping
 plots <- assays
 bstatus <- c("Baseline Neg")
@@ -124,7 +122,7 @@ for (typ in c("line","violin")) {
                       inpanel.cex=4.7,
                       rate.y.pos=max(y.breaks)
                       )
-          file_name <- paste0(typ, "box_", gsub("bind","",gsub("pseudoneut","pnAb_",plots[i])), "_", trt[k], "_", gsub(" ","",bstatus[j]), "_","v",t,"_", study.name, ".pdf")
+          file_name <- paste0(typ, "box_", gsub("bind","",gsub("pseudoneut","pnAb_",plots[i])), "_", trt[k], "_", gsub(" ","",bstatus[j]), "_","v",t,"_", study_name, ".pdf")
           ggsave2(plot = p, filename = here("figs", file_name), width = 16, height = 11)
         }
       }
@@ -183,7 +181,7 @@ for (typ in c("line","violin")) {
                         )
             
             s1 <- ifelse(s=="age_geq_65_label", "Age", ifelse(s=="highrisk_label", "Risk", ifelse(s=="sex_label","Sex", ifelse(s=="minority_label","RaceEthnic", ifelse(s=="Dich_RaceEthnic","Dich_RaceEthnic",NA)))))
-            file_name <- paste0(typ, "box_", gsub("bind","",gsub("pseudoneut","pnAb_",plots[i])), "_", trt[k], "_", gsub(" ","",bstatus[j]), "_", s1, "_","v", t,"_", study.name, ".pdf")
+            file_name <- paste0(typ, "box_", gsub("bind","",gsub("pseudoneut","pnAb_",plots[i])), "_", trt[k], "_", gsub(" ","",bstatus[j]), "_", s1, "_","v", t,"_", study_name, ".pdf")
             ggsave2(plot = p, filename = here("figs", file_name), width = 16, height = 11)
             
           }
@@ -215,7 +213,7 @@ for (typ in c("line","violin")) {
                       inpanel.cex=5.2,
                       rate.y.pos=max(y.lim)-0.6
           )
-          file_name <- paste0(typ, "box_", gsub("bind","",gsub("pseudoneut","pnAb_",plots[i])), "_", trt[k], "_", gsub(" ","",bstatus[j]), "_Age_Risk_", "v", t,"_", study.name, ".pdf")
+          file_name <- paste0(typ, "box_", gsub("bind","",gsub("pseudoneut","pnAb_",plots[i])), "_", trt[k], "_", gsub(" ","",bstatus[j]), "_Age_Risk_", "v", t,"_", study_name, ".pdf")
           suppressWarnings(ggsave2(plot = p, filename = here("figs", file_name), width = 16, height = 13.5))
         }
       }
@@ -256,7 +254,7 @@ for (i in 1:length(plots)) {
               plot.title = element_text(hjust = 0.5),
               axis.text.x = element_text(size=ifelse(c=="Vaccine_BaselineNeg", 27, 19)))
       
-      file_name <- paste0("scatter_",gsub("bind","",gsub("pseudoneut","pnAb_",plots[i])),"_",c,"_",gsub(" ","",times[[2]][d]),"_", study.name, ".pdf")
+      file_name <- paste0("scatter_",gsub("bind","",gsub("pseudoneut","pnAb_",plots[i])),"_",c,"_",gsub(" ","",times[[2]][d]),"_", study_name, ".pdf")
       ggsave2(plot = p, filename = here("figs", file_name), width = 12.5, height = 11)
       
     }

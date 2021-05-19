@@ -1,0 +1,70 @@
+# Specifications for DAT_CLEAN
+
+
+\begin{itemize}
+
+  \item Rename the first column to Ptid
+  
+  \item Subset to rows not missing in EventTimePrimaryD1, not missing in EventTimePrimaryD29, and not missing in EventTimePrimaryD57
+  
+  \item Define EarlyendpointD57 (and similarly EarlyendpointD29, always included whether or not has29 is T or F) as: EarlyinfectionD57==1 | (EventIndPrimaryD1==1 & EventTimePrimaryD1 < NumberdaysD1toD57 + 7),1,0))
+
+  \item Define age.geq.65, a binary variable indicating Age >= 65
+
+  \item Define ethnicity, a factor variable that has three levels:   "Hispanic or Latino", "Not Hispanic or Latino", "Not reported and unknown"
+
+  \item Define race, a factor variable that has the following levels:   "White", "Black or African American",
+  "Asian", "American Indian or Alaska Native",
+  "Native Hawaiian or Other Pacific Islander", "Multiracial",
+  "Other", "Not reported and unknown"
+
+  \item Define WhiteNonHispanic, a binary variable that takes value 1 if race is White and ethnicity is not Hispanic, 0 if race is not "white or unknown" OR ethnicity is Hispanic, and NA otherwise
+  
+  \item Define MinorityInd, a binary variable that takes value 1 if WhiteNonHispanic is 0, and 0 otherwise including when WhiteNonHispanic is NA
+  
+  \item Define Bstratum, an integer variable to index randomization strata. For Moderna, there are three strata: age >= 65, age < 65 and HighRiskInd==1, age < 65 and HighRiskInd==0
+  
+  \item Define demo.stratum, an integer variable to index the demographics strata. For Moderna, there are six strata: URMforsubcohortsampling [1, 0] x Bstratum. Note that there are NA's in URMforsubcohortsampling, so demo.stratum and variables that depend on it would have NA's as well.
+  
+  \item Define tps.stratum, an integer variable to index correlates sampling strata. For Moderna, there are 24 strata: [placebo/baseline negative, placebo/baseline positive, vaccine/baseline negative, vaccine/baseline positive] x demo.stratum
+
+  \item Define Wstratum, an integer variable to index strata for computing weights. For Moderna, there can be 28 strata: if not case (EventIndPrimaryD29==0): tps.stratum, else: [25 - placebo/baseline negative, 26 - placebo/baseline positive, 27 - vaccine/baseline negative, 28 - vaccine/baseline positive]. Notes: a) Some strata may be empty. b) A case will be assigned a stratum from 25 to 28 even if its demo.stratum is NA. c) For trials other than Moderna, add 1-4 to the maximum tps.stratum.
+  
+  \item Define TwophasesampIndD57, a 0/1 variable. It is defined as as the intersection of
+  \begin{itemize}
+    \item either in the subchort or EventIndPrimaryD29 == 1
+    \item no missing values in baseline, Day 29, or Day 57 binding to Spike or RBD
+  \end{itemize}  
+
+  \item Define TwophasesampIndD29, a 0/1 variable. It is defined as as the intersection of
+  \begin{itemize}
+    \item either in the subchort or EventIndPrimaryD29 == 1
+    \item no missing values in baseline or Day 29 binding to Spike or RBD
+  \end{itemize}  
+
+  \item Define wt.D57 (and similarly wt.D29), a double variable. The weights equal the sampling probabilities of TwophasesampIndD57==1 within each Wstratum. This variable is only defined for subjects satisfying EarlyendpointD57==0 & Perprotocol == 1 & EventTimePrimaryD57>=7 and set to NA otherwise. 
+  
+  \item Define wt.subcohort, a double variable. The weights equal the sampling probabilities of TwophasesampIndD57==1 & SubcohortInd within each tps.stratum. This variable is only defined for subjects satisfying EarlyendpointD57==0 & Perprotocol == 1 and set to NA otherwise
+  
+  \item Define ph1.D57 as having non-NA wt.D57. Define ph1.D29 as having non-NA wt.D29. Define ph1.immuno as having non-NA wt.subcohort.
+  
+  \item Define ph2.D57 as ph1.D57 & TwophasesampIndD57; ph2.D29 as ph2.D29 & TwophasesampIndD29; ph2.immuno as ph1.immuno & SubcohortInd & TwophasesampIndD57.
+
+  \item Carry out single imputation using the `R` package `mice` for the subjects satisfying TwophasesampIndD57==1. Imputation is done separately for vaccine arm baseline seronegative, vaccine arm baseline seropositive, placebo arm baseline seronegative, and placebo arm baseline seropositive. Since baseline, D29 and D57 binding to Spike and RBD are required in this subset of people, the imputation is intended to fill in missing marker values for neutralization assays at these three time points. The imputation is done with the package mice with default parameters and seed 1. Notes: 1. The order of variables matters in imputation: c(outer(c("B", "Day29", "Day57"), c("bindSpike", "bindRBD", "pseudoneutid50", "pseudoneutid80"), "%.%")). 2. If there is no missing data in the dataset, this piece cannot be verified. 3. Be careful not to change subjects outside TwophasesampIndD57==1. 4.   diagnostics = FALSE and remove_collinear=F are needed in call to mice to avoid errors due to collinearity. 5. Before imputation, check to see if any columns are constant columns with missing values. If yes, set the whole column to the constant, including the missing values, otherwise mice will throw an error.
+
+  \item Repeat single imputation for the subjects satisfying TwophasesampIndD29==1 and only impute these variables: c(outer(c("B", "Day29"), c("bindSpike", "bindRBD", "pseudoneutid50", "pseudoneutid80"), "%.%")).  
+
+
+  \item Apply conversion factors (defined in _common.R) to all the binding variables at baseline, Day29 and Day57. No need to apply conversion factors to deltas because they are fold changes and the conversion factors cancel out. Note that conversion factor is on antilog scale.
+  
+  \item Censor each of the markers in all markers (including bindN but not liveneutmn50 yet) measured by baseline, Day29 and Day57. Censoring means setting values < lower limits of detection (llods, defined in _common.R) to half of the llods. (Note that llods are on the antilog scale and need to be transformed.) However, we will not set values > uloqs to uloqs for either binding variables or nAb markers. ULOQ censoring may happen in sub-analyses.
+  
+  \item Define Delta57overBxxx, Delta29overBxxx, and Delta57over29xxx for each xxx in the variable assays+bindN. This step needs to happen after censoring. Deltas are computed by taking the difference between two markers. Since the markers are on the log scale, the deltas represent the log10 fold rise. No transformation is needed. Negative values are left as they are. One complication here is that we want to censor by lloqs (set values less than lloqs to half of lloqs) before computing the delta, but we want the individual time points markers to remain censored by lloq.
+  
+  \item Finally, if a dataset does not have the Day29 markers, the previous steps are adjusted accordingly. For example, TwophasesampIndD29 and wt.D29 will not be defined. 
+  
+
+\end{itemize}
+
+
+

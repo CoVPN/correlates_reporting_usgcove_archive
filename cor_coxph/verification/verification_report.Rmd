@@ -15,131 +15,7 @@ library(here)
 ```
 
 ```{r helper-functions, include=FALSE}
-quiet<-function(x,func,...){
-  x2<-try(suppressWarnings(func(x,...)),silent = TRUE)
-  if(inherits(x2,'try-error')){
-    return(x)
-  }else{
-    return(x2)
-  }
-}
 
-naturalize <- function(x, round_digits = NA){
-  NAs <- sum(is.na(x)| x=="NaN")
-  date_formats<-c("%Y/%m/%d","%Y-%m-%d","%d-%b-%Y")
-  if(sum(is.na(quiet(x,as.numeric))) == NAs){
-    x <- quiet(x,as.numeric)
-    if(!is.na(round_digits)){
-      x <- round(x,round_digits)
-    }
-    return(x)
-  }else if(sum(is.na(quiet(x,as.Date,tryFormats = date_formats))) == NAs){
-    return(quiet(x,as.Date,tryFormats = date_formats))
-  }else{
-    return(x)
-  }
-}
-
-# Equal test to include NA comparisons as T/F
-equal <- function(x1,x2, threshold){
-  
-  if (is.numeric(x1) & threshold != 0) {
-    x1 <- abs(x1 - x2) <= (threshold * (abs(x1 + x2)/2))
-    x2 <- rep(TRUE,length(x1))
-  }
-  
-  c <- as.character(x1) == as.character(x2)
-  c[ is.na(x1) | is.na(x2) ] <- (is.na(x1) == is.na(x2) )[ is.na(x1) | is.na(x2) ]
-  c
-  
-}
-
-compare_datasets <- function(cols,ds1,ds2,index, verbose = TRUE, round_digits = NA, thresholds = 0){
-  res <- lapply(cols,function(column_name){
-    
-    if(is.list(round_digits)){
-      if(column_name %in% names(round_digits)){
-        round_digit <- round_digits[[column_name]]
-      }else{
-        round_digit <- round_digits[[".default"]]
-      }
-    }else{
-      round_digit <- round_digits
-    }
-    
-    if(is.list(thresholds)){
-      if(column_name %in% names(thresholds)){
-        threshold <- thresholds[[column_name]]
-      }else{
-        threshold <- thresholds[[".default"]]
-      }
-    }else{
-      threshold <- thresholds
-    }
-    
-    
-    
-    v1 <- naturalize( ds1[ order( ds1[[index]] ), column_name, drop = TRUE], round_digits = round_digit)
-    v2 <- naturalize( ds2[ order( ds2[[index]] ), column_name, drop = TRUE], round_digits = round_digit)
-    is_equal <- equal( v1, v2 , threshold = threshold)
-    if ( !all( is_equal ) & verbose)
-      print( paste0("`", column_name, "` is not equal. ", sum(!is_equal),"/", max(length(v1),length(v2)), " mismatches." ) )
-    
-    
-    
-    return( list(
-      equal = all( is_equal ),
-      diffs = data.frame(
-        key = sort(ds1[[index]])[!is_equal],
-        ds1 = v1[!is_equal],
-        ds2 = v2[!is_equal],
-        stringsAsFactors = FALSE
-        ))
-      )
-  })
-  
-  names(res) <- cols
-  
-  resmatched <- do.call( 'c', lapply(res,`[[`,1))
-  if( verbose ){
-    message( "There are ", sum(!resmatched), " mismatched fields of ", length(resmatched),'.')
-  }
-  
-  attr(res,"index") <- index
-  
-  class(res) <- "comparison"
-  return( res )
-}
-
-print.comparison <- function(x,...){
-  n_mismatch <- do.call('c',lapply(x,function(y){
-    z <- nrow(y$diffs)
-    if(z>0){
-      z
-    }else{
-      NULL
-    }
-  }))
-  
-  for(comp in names(n_mismatch)){
-      message( paste0("`", comp, "` is not equal. ", n_mismatch[[comp]], " mismatches." ) )
-  }
-}
-
-rerun_failed_comparisons <- function( x, ds1, ds2){
-  mismatched <- names(do.call('c',lapply(x,function(y){
-    if(nrow(y$diffs)>0){
-      1
-    }else{
-      NULL
-    }
-  })))
-  compare_datasets(mismatched, ds1, ds2, index = attr(x,"index"))
-}
-
-reformat <- function(x, digits = 1){
-  format(round(as.numeric(x),digits = digits), nsmall = digits)
-}
 
 ```
 
@@ -168,26 +44,225 @@ Its md5 hash is `r digest::digest(file = here("data_clean/verification/verificat
 ### Load Data
 
 ```{r Load-Data, message=FALSE}
-original_data <- read_csv(
-  here("data_clean/verification/verification_input","practice_data.csv"),
-  guess_max = 30000
+original_data <- load(
+  here("verification", "dev_results", "D57.rv.mock.Rdata")
   )
 
-original_data_no_d29 <- read_csv(
-  here("data_clean/verification/verification_input","practice_data_no_d29.csv"),
-  guess_max = 30000
+verification_data <- read.csv(
+  here("verification", "test_results", "D57.mock.csv")
   )
 
-verification_data <- read_csv(
-  here("data_clean/verification/verification_output/data_clean_verification_output.csv"),
-  guess_max = 30000
-  )
-
-verification_data_no_d29 <- read_csv(
-  here("data_clean/verification/verification_output/data_clean_verification_output_no_D29.csv"),
-  guess_max = 30000
-  )
 ```
+
+
+
+```{r data-munging-D57}
+
+devdat <- rv$tab.1 %>%
+  data.frame()
+
+testdat <- verification_data %>% slice(1:4) %>%
+  mutate(X1 = paste0(cases, "/", formatC(atRisk, format="d", big.mark=",")),
+         X2 = format(round(estimate, 2), nsmall=2),
+         X3 = paste0("(", format(round(conf.low, 2), nsmall=2), "-", format(round(conf.high, 2), nsmall=2), ")"),
+         X4 = ifelse(p.value < 0.001, "<0.001", format(round(p.value, 3), nsmall=3))) %>%
+  select(marker, X1, X2, X3, X4) %>%
+  column_to_rownames(var = "marker") 
+
+all.equal(devdat, testdat)
+###################################
+devdat <- rv$tab.2 %>%
+  data.frame() %>%
+  remove_rownames() %>%
+  select(-overall.p.0)
+  
+testdat <- verification_data %>% slice(5:16) %>%
+  mutate(V1 = rep(c("Lower", "Middle", "Upper"), 4),
+         V2 = paste0(cases, "/", formatC(round(atRisk, 0), format="d", big.mark=",")),
+         V3 = format(round(Attack.rate, 4), nsmall=4),
+         est = format(round(estimate, 2), nsmall=2),
+         est = ifelse(est=="1.00", "1", est),
+         ci = paste0("(", format(round(conf.low, 2), nsmall=2), "-", format(round(conf.high, 2), nsmall=2), ")"),
+         ci = ifelse(est=="1", "N/A", ci),
+         p = ifelse(p.value < 0.001, "<0.001", format(round(p.value, 3), nsmall=3)),
+         p = ifelse(est=="1", "N/A", p)) %>%
+  select(V1, V2, V3, est, ci, p)
+
+all.equal(devdat, testdat)
+###################################
+markers <- c("bindSpike", "bindRBD", "pseudoneutid50", "pseudoneutid80")
+for(i in 1:4){
+  devdat <- unname(rv$fr.1[i+1])[[1]] %>% 
+    as.data.frame() %>% 
+    t() %>%
+    as.data.frame() %>% 
+    mutate(marker = markers[i]) %>%
+    rownames_to_column(var = "group") %>%
+    mutate(group = str_trim(group, side = "left")) %>%
+    select(marker, everything()) %>%
+    rename(estimate = HR,
+           conf.low = `(lower`,
+           conf.high = `upper)`) %>%
+    select(-marker)
+  
+  testdat <- verification_data %>% 
+    filter(marker == paste0("Day57", markers[i])) %>%
+    filter(group %in% c("All baseline negative, vaccine", "Age >= 65", "Age < 65, At risk", "Age < 65, Not at risk")) %>%
+    select(marker, group, estimate, conf.low, conf.high, p.value) %>%
+    select(-marker)
+  
+  nevents_verification <- verification_data %>% 
+    filter(marker == paste0("Day57", markers[i])) %>%
+    filter(group %in% c("All baseline negative, vaccine", "Age >= 65", "Age < 65, At risk", "Age < 65, Not at risk")) %>%
+    .$cases
+  
+  print(all.equal(devdat, testdat))
+  print(all.equal(rv$fr.1$nevents, nevents_verification))
+}
+###################################
+for(i in 1:4){
+  devdat <- unname(rv$fr.2[i+1])[[1]] %>% 
+    as.data.frame() %>% 
+    t() %>%
+    as.data.frame() %>% 
+    mutate(marker = markers[i]) %>%
+    rownames_to_column(var = "group") %>%
+    mutate(group = str_trim(group, side = "left")) %>%
+    select(marker, everything()) %>%
+    rename(estimate = HR,
+           conf.low = `(lower`,
+           conf.high = `upper)`) %>%
+    select(-marker)
+  
+  testdat <- verification_data %>% 
+    filter(marker == paste0("Day57", markers[i])) %>%
+    filter(group %in% c("All baseline negative, vaccine", "Age >= 65", "Age < 65", "At risk", "Not at risk", "Comm. of color", "WhiteNonHispanic", "Men", "Women")) %>%
+    mutate(group = case_when(group == "All baseline negative, vaccine" ~ "All Vaccine",
+                             group == "WhiteNonHispanic" ~ "White Non-Hispanic",
+                             TRUE ~ group)) %>%
+    select(marker, group, estimate, conf.low, conf.high, p.value) %>%
+    select(-marker)
+  
+  nevents_verification <- verification_data %>% 
+    filter(marker == paste0("Day57", markers[i])) %>%
+    filter(group %in% c("All baseline negative, vaccine", "Age >= 65", "Age < 65", "At risk", "Not at risk", "Comm. of color", "WhiteNonHispanic", "Men", "Women")) %>%
+    .$cases
+  
+  print(all.equal(devdat, testdat))
+  print(all.equal(rv$fr.2$nevents, nevents_verification))
+}
+
+```
+
+
+
+
+
+```{r data-munging-D29}
+
+load(here("verification", "dev_results", "D29.rv.mock.Rdata"))
+
+verification_data_d29 <- read.csv(
+  here("verification", "test_results", "D29.mock.csv")
+  )
+
+devdat <- rv$tab.1 %>%
+  data.frame()
+
+testdat <- verification_data_d29 %>% slice(1:4) %>%
+  mutate(X1 = paste0(cases, "/", formatC(atRisk, format="d", big.mark=",")),
+         X2 = format(round(estimate, 2), nsmall=2),
+         X3 = paste0("(", format(round(conf.low, 2), nsmall=2), "-", format(round(conf.high, 2), nsmall=2), ")"),
+         X4 = ifelse(p.value < 0.001, "<0.001", format(round(p.value, 3), nsmall=3))) %>%
+  select(marker, X1, X2, X3, X4) %>%
+  column_to_rownames(var = "marker") 
+
+all.equal(devdat, testdat)
+###################################
+devdat <- rv$tab.2 %>%
+  data.frame() %>%
+  remove_rownames() %>%
+  select(-overall.p.0)
+  
+testdat <- verification_data %>% slice(5:16) %>%
+  mutate(V1 = rep(c("Lower", "Middle", "Upper"), 4),
+         V2 = paste0(cases, "/", formatC(round(atRisk, 0), format="d", big.mark=",")),
+         V3 = format(round(Attack.rate, 4), nsmall=4),
+         est = format(round(estimate, 2), nsmall=2),
+         est = ifelse(est=="1.00", "1", est),
+         ci = paste0("(", format(round(conf.low, 2), nsmall=2), "-", format(round(conf.high, 2), nsmall=2), ")"),
+         ci = ifelse(est=="1", "N/A", ci),
+         p = ifelse(p.value < 0.001, "<0.001", format(round(p.value, 3), nsmall=3)),
+         p = ifelse(est=="1", "N/A", p)) %>%
+  select(V1, V2, V3, est, ci, p)
+
+all.equal(devdat, testdat)
+###################################
+markers <- c("bindSpike", "bindRBD", "pseudoneutid50", "pseudoneutid80")
+for(i in 1:4){
+  devdat <- unname(rv$fr.1[i+1])[[1]] %>% 
+    as.data.frame() %>% 
+    t() %>%
+    as.data.frame() %>% 
+    mutate(marker = markers[i]) %>%
+    rownames_to_column(var = "group") %>%
+    mutate(group = str_trim(group, side = "left")) %>%
+    select(marker, everything()) %>%
+    rename(estimate = HR,
+           conf.low = `(lower`,
+           conf.high = `upper)`) %>%
+    select(-marker)
+  
+  testdat <- verification_data %>% 
+    filter(marker == paste0("Day57", markers[i])) %>%
+    filter(group %in% c("All baseline negative, vaccine", "Age >= 65", "Age < 65, At risk", "Age < 65, Not at risk")) %>%
+    select(marker, group, estimate, conf.low, conf.high, p.value) %>%
+    select(-marker)
+  
+  nevents_verification <- verification_data %>% 
+    filter(marker == paste0("Day57", markers[i])) %>%
+    filter(group %in% c("All baseline negative, vaccine", "Age >= 65", "Age < 65, At risk", "Age < 65, Not at risk")) %>%
+    .$cases
+  
+  print(all.equal(devdat, testdat))
+  print(all.equal(rv$fr.1$nevents, nevents_verification))
+}
+###################################
+for(i in 1:4){
+  devdat <- unname(rv$fr.2[i+1])[[1]] %>% 
+    as.data.frame() %>% 
+    t() %>%
+    as.data.frame() %>% 
+    mutate(marker = markers[i]) %>%
+    rownames_to_column(var = "group") %>%
+    mutate(group = str_trim(group, side = "left")) %>%
+    select(marker, everything()) %>%
+    rename(estimate = HR,
+           conf.low = `(lower`,
+           conf.high = `upper)`) %>%
+    select(-marker)
+  
+  testdat <- verification_data %>% 
+    filter(marker == paste0("Day57", markers[i])) %>%
+    filter(group %in% c("All baseline negative, vaccine", "Age >= 65", "Age < 65", "At risk", "Not at risk", "Comm. of color", "WhiteNonHispanic", "Men", "Women")) %>%
+    mutate(group = case_when(group == "All baseline negative, vaccine" ~ "All Vaccine",
+                             group == "WhiteNonHispanic" ~ "White Non-Hispanic",
+                             TRUE ~ group)) %>%
+    select(marker, group, estimate, conf.low, conf.high, p.value) %>%
+    select(-marker)
+  
+  nevents_verification <- verification_data %>% 
+    filter(marker == paste0("Day57", markers[i])) %>%
+    filter(group %in% c("All baseline negative, vaccine", "Age >= 65", "Age < 65", "At risk", "Not at risk", "Comm. of color", "WhiteNonHispanic", "Men", "Women")) %>%
+    .$cases
+  
+  print(all.equal(devdat, testdat))
+  print(all.equal(rv$fr.2$nevents, nevents_verification))
+}
+
+```
+
+
 
 ## Verification
 

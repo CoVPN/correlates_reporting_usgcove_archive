@@ -10,7 +10,7 @@ output:
 
 2. Filter the data to the "**phase 1 ptids** of the immunogenicity cohort (`!is.na(wt.subcohort)`).
 
-3. Derive the indicator for the immunogenicity cohort (`SubcohortInd == 1 & TwophasesampIndD57 == 1 & !is.na(wt.subcohort)`).
+3. Derive the indicator for the immunogenicity cohort (`Perprotcol==1 & SubcohortInd == 1 & TwophasesampIndD57 == 1 & !is.na(wt.subcohort)`).
 
 4. Derive indicators of 2 fold-rise (FR2) and 4 fold-rise (FR4) based on the truncated magnitudes for neutralizing antibody ID50 titers (Pseudovirus-nAb ID50, Live virus-nAb MN50) at each post-enrollment visit. FR2 = 1 if the ratio of post/pre >= 2 and FR4 = 1 if the ratio >= 
 5. Derive indicators of >= 2 x LLOQ (2lloq) and >= 4 x LLOQ (4lloq) based on the truncated magnitudes for binding antibody markers (Anti N IgG (IU/ml), Anti Spike IgG (IU/ml), Anti RBD IgG (IU/ml)). 2lloq = 1 if the magnitude >= 2 x LLOQ and 4lloq = 1 if the magnitude >= 4 x LLOQ.

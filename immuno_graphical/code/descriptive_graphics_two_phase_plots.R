@@ -374,6 +374,8 @@ for (bstatus in 1:2) {
       LLOD = log10(llods[assay_immuno]),
       LLOQ = log10(lloqs[assay_immuno]),
       ULOQ = log10(uloqs[assay_immuno]),
+      arrange_ncol = 3,
+      arrange_nrow = 2,
       legend = c("Placebo", "Vaccine"),
       axis_titles_y = labels.axis[tt, ] %>% unlist(),
       panel_titles = labels.title2[tt, ] %>% unlist(),

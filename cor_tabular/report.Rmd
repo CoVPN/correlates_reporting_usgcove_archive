@@ -14,7 +14,7 @@ opts <- options(knitr.kable.NA = "")
 numi <- 1
 for (i in 1:length(tlf)) {
   if (i == 3) {
-    cat("\n\n\\newgeometry{top=0.1in, bottom=0.1in}")
+    cat("\n\n\\newgeometry{top=0.1in, bottom=0.1in, left=1in, right=1in}")
     cat("\n\n\\begin{landscape}\n")
   }
   subnum <- 0

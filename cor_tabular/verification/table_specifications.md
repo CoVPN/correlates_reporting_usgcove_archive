@@ -3,7 +3,7 @@
 ## Initial data processing
 1. Read in the practice data correlates_reporting/data_clean/practice_data.csv.
 
-2. 1). For analysis at **Day 57**: Subset the data to "phase 1 ptids" for the correlates at Day 57 cohort (`!is.na(wt)`). Derive the indicator for the correlates of risk at Day 57(`TwophasesampIndD57==1`).
+2. 1). For analysis at **Day 57**: Subset the data to "phase 1 ptids" for the correlates at Day 57 cohort (`!is.na(wt.D57)`). Derive the indicator for the correlates of risk at Day 57(`TwophasesampIndD57==1`).
 
    2). For analysis at **Day 29**:
 Subset the full data to "phase 1 ptids" for the correlates at Day 29 cohort (`!is.na(wt.D29)`). Derive the indicator for the correlates of risk at Day 29(`TwophasesampIndD29==1`). 
@@ -15,7 +15,7 @@ Subset the full data to "phase 1 ptids" for the correlates at Day 29 cohort (`!i
 
 6. Derive the indicators of positive responders: responders aredefined as participants who had baseline values < LLOQ with post-enrollment endpoint values above the LLOQ; or participants who had baseline values >= LLOQ with a 4-fold increase (FR4 = 1).
 
-7. Derive the indicators of cases and non-cases: Cases are defined as per-protocol participants with the symptomatic infection COVID-19 primary endpoint diagnosed starting 7 days after the Day 57 study visit. (`Perprotocol==1 & Bserostatus==0 & EarlyendpointD57==0 & TwophasesampInd==1 & EventIndPrimaryD57==1`);
+7. Derive the indicators of cases and non-cases: Cases are defined as per-protocol participants with the symptomatic infection COVID-19 primary endpoint diagnosed starting 7 days after the Day 57 study visit. (`Perprotocol==1 & Bserostatus==0 & EarlyendpointD57==0 & TwophasesampIndD57==1 & EventIndPrimaryD57==1`);
 
 8. Define the covariate "Hispanic or Latino Ethnicity" as: Hispanic or Latino(`EthnicityHispanic==1`); Not Hispanic or Latino(`EthnicityHispanic==0 & EthnicityNotreported==0 & EthnicityUnknown==0`); Not reported and unknown (`(EthnicityNotreported==1 | EthnicityUnknown==1)`)
 
@@ -27,7 +27,7 @@ Subset the full data to "phase 1 ptids" for the correlates at Day 29 cohort (`!i
 ## Table 1-2. Demographics 
 Title: Demographic
 Column names: Characteristics, Placebo (N = ),	Vaccine (N = ),	Total (N = )
-
+Demographic table is based on the immunogenicity cohort (`Perprotcol==1 & SubcohortInd == 1 & TwophasesampIndD57 == 1 & !is.na(wt.subcohort)`)
 1. List the categories, frequencies (n), and proportions (%) by baseline COVID status and assigned arms for: 
 Age (<65, >=65), 
 Sex (Female, Male), 
@@ -62,7 +62,7 @@ Column names: Visit,	Marker,	Cases(N,	Resp rate,	GMT/GMC),	Non-cases(N, Resp rat
 
 2. Calculate the weighted (`wt.D57`) proportion and 95% CI of responder at **Day 57**, for all markers by visit, case/non-case status, arm, baseline COVID status and marker. The estimation used `prop.est <- survey::svyciprop(~ response, twophase(ids = list(~Ptid, ~ Ptid), strata = list(NULL, ~ Wstratum), method="simple", subset=~corrset, data = data))`, where `data` contains **all and only Phase 1** participants at Day 57, `corrset` is the indicator of the correlates of risk cohort at Day 57 defined in Initial data processing step 2.
 
-3. The 95% CI is extracted from the attributes `attributes(prop.est)$ci`. The responder rates are shown with the counts of responders (n) and the counts of the subgroup (N, each subgroup is a combination of visit, case/non-case status, arm, baseline COVID status, and marker) in the format of "n/N=pct%". Here n & N are weighted: n=sum(response * `wt.D57`); N=sum(`wt`).
+3. The 95% CI is extracted from the attributes `attributes(prop.est)$ci`. The responder rates are shown with the counts of responders (n) and the counts of the subgroup (N, each subgroup is a combination of visit, case/non-case status, arm, baseline COVID status, and marker) in the format of "n/N=pct%". Here n & N are weighted: n=sum(response * `wt.D57`); N=sum(`wt.D57`).
 
 4. Calculate the weighted (`wt.D57`) GMTs/GMCs and 95% CI for all markers by visit, case/non-case status, arm, baseline COVID status and marker: calculate the mean and 95% CI of the log10-magnitudes of the markers, then 10 power the results to the linear scale. The estimation of the mean of the log10-magnitudes used `survey::svymean(~ magnitude, twophase(id = list(~Ptid, ~ Ptid), strata = list(NULL, ~ Wstratum), subset=~corrset, method="simple", data = data))`, `data` contains **all and only Phase 1** participants, `corrset` is the indicator of the correlates of risk cohort at Day 57 defined in Initial data processing step 2. The 95% log10-scaled CI used `base::confint()`.
 
@@ -76,10 +76,5 @@ Column names: Visit,	Marker,	Cases(N,	Resp rate,	GMT/GMC),	Non-cases(N, Resp rat
 
 10. Subset the table into Baseline SARS-CoV-2 Negative Vaccine Recipients (Table 3), Baseline SARS-CoV-2 Positive Vaccine Recipients (Table 4), and Baseline SARS-CoV-2 Positive Placebo Recipients (Table 5).
 
-<<<<<<< HEAD
-11. Subset the full data to "Phase 1 ptids" for the correlates cohort at **Day 29** (`!is.na(wt.2)`). Derive the indicator for the correlates of risk at Day 29(`TwophasesampInd.2==1`). Repeat the steps of Table 3-5 for correlates cohort at Day 29 with weights `wt.2` and stratum `Wstratum`.
-Repeat the steps of Table 3-5 for correlates cohort at Day 29 with weights `wt.2` and stratum `Wstratum`.
-=======
-11. Subset the full data to "Phase 1 ptids" for the correlates cohort at **Day 29** (`(EventTimePrimaryD29 >= 14 & Perprotocol == 1)|(EventTimePrimaryD29 >= 7 & EventTimePrimaryD29 <= 13 & Fullvaccine == 1)`). Derive the indicator for the correlates of risk at Day 29(`!is.na(wt.D29)`). Repeat the steps of Table 3-5 for correlates cohort at Day 29 with weights `wt.D29` and stratum `Wstratum`.
+11. Subset the full data to "Phase 1 ptids" for the correlates cohort at **Day 29** (`!is.na(wt.D29)`). Derive the indicator for the correlates of risk at Day 29(`TwophasesampIndD29==1`). Repeat the steps of Table 3-5 for correlates cohort at Day 29 with weights `wt.D29` and stratum `Wstratum`.
 Repeat the steps of Table 3-5 for correlates cohort at Day 29 with weights `wt.D29` and stratum `Wstratum`.
->>>>>>> 23046d82eb3c3ae6718fb331339a3688a9c7bbdf

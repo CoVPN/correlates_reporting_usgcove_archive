@@ -42,16 +42,16 @@ tmp=list(
         ULOQ = 10155.95)
     ,
     bindRBD=c(
-        LLOD = 0.9297,
-        ULOD = 520506.0,
-        LLOQ = 5.4302,
-        ULOQ = 30693.537)
+        LLOD = 1.593648,
+        ULOD = 223074,
+        LLOQ = 3.4263,
+        ULOQ = 16269.23)
     ,
     bindN=c( 
-        LLOD = 0.0820,
-        ULOD = 45927.0,
-        LLOQ = 0.4791,
-        ULOQ = 2708.253)
+        LLOD = 0.093744,
+        ULOD = 52488,
+        LLOQ = 1.43085,
+        ULOQ = 588.2500)
     ,
     pseudoneutid50=c( 
         LLOD = 10,
@@ -246,7 +246,7 @@ knitr::opts_chunk$set(
   fig.width = 6,
   fig.asp = 0.618,
   fig.retina = 0.8,
-  dpi = 300,
+  dpi = 600,
   echo = FALSE,
   message = FALSE,
   warning = FALSE
@@ -326,7 +326,8 @@ get.range.cor=function(dat, assay=c("bindSpike", "bindRBD", "pseudoneutid50", "p
     a <- assay # Fixes bug
     time<-match.arg(time)        
     if(assay %in% c("bindSpike", "bindRBD")) {
-        ret=quantile(c(dat[["Day"%.%time%.%"bindSpike"]], dat[["Day"%.%time%.%"bindRBD"]]), c(0, 1), na.rm=T)
+        ret=range(dat[["Day"%.%time%.%"bindSpike"]], dat[["Day"%.%time%.%"bindRBD"]], log10(llods[c("bindSpike","bindRBD")]/2), na.rm=T)
+        ret[2]=ceiling(ret[2]) # round up
     } else if(assay %in% c("pseudoneutid50", "pseudoneutid80")) {
         ret=range(dat[["Day"%.%time%.%a]], log10(llods[c("pseudoneutid50","pseudoneutid80")]/2), log10(uloqs[c("pseudoneutid50","pseudoneutid80")]), na.rm=T)
         ret[2]=ceiling(ret[2]) # round up
@@ -344,48 +345,27 @@ draw.x.axis.cor=function(xlim, llod){
 #        for (x in xx) axis(1, at=log10(x), labels=if (llod==x) "lod" else if (x %in% c(1000,10000)) bquote(10^.(log10(x))) else if (x==5000) bquote(.(x/1000)%*%10^3) else  x ) 
 #    } else {
         xx=seq(floor(xlim[1]), ceiling(xlim[2]))
-        for (x in xx) axis(1, at=x, labels=if (log10(llod)==x) "lod" else if (x>=3) bquote(10^.(x)) else 10^x )
+        for (x in xx) if (x>log10(llod*2)) axis(1, at=x, labels=if (log10(llod)==x) "lod" else if (x>=3) bquote(10^.(x)) else 10^x )
 #    }
     
     # plot llod if llod is not already plotted
-    if(!any(log10(llod)==xx)) axis(1, at=log10(llod), labels="lod")
+    #if(!any(log10(llod)==xx)) 
+    axis(1, at=log10(llod), labels="lod")
     
 }
 
 ##### Copy of draw.x.axis.cor but returns the x-axis ticks and labels
 # This is necessary if one works with ggplot as the "axis" function does not work.
 get.labels.x.axis.cor=function(xlim, llod){
-  # if(xlim[2]<3) {
-  #   xx = (c(10,25,50,100,250,500,1000))
-  #   x_ticks <- log10(xx)
-  #   labels <- sapply(xx, function(x) {
-  #     if (llod==x) "lod" else if (x==1000) bquote(10^3) else x
-  #   })
-  # } else if(xlim[2]<4) {
-  #
-  #   xx = (c(10,50,250,1000,5000,10000))
-  #   x_ticks <- log10(xx)
-  #   labels <- sapply(xx, function(x) {
-  #     if (llod==x) "lod" else if (x %in% c(1000,10000)) bquote(10^.(log10(x))) else if (x==5000) bquote(.(x/1000)%*%10^3) else  x
-  #   })
-  #
-  #   } else {
-  #   xx=seq(floor(xlim[1]), ceiling(xlim[2]))
-  #   x_ticks <- xx
-  #   labels <- sapply(xx, function(x) {
-  #     if (log10(llod)==x) "lod" else if (x>=3) bquote(10^.(x)) else 10^x
-  #   })
-  # }
-  #
   xx=seq(floor(xlim[1]), ceiling(xlim[2]))
+  xx=xx[xx>log10(llod*2)]
   x_ticks <- xx
   labels <- sapply(xx, function(x) {
     if (log10(llod)==x) "lod" else if (x>=3) bquote(10^.(x)) else 10^x
   })
-  if(!any(log10(llod)==x_ticks)){
+  #if(!any(log10(llod)==x_ticks)){
     x_ticks <- c(log10(llod), x_ticks)
     labels <- c("lod", labels)
-  }
+  #}
   return(list(ticks = x_ticks, labels = labels))
 }
-

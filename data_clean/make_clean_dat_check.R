@@ -36,16 +36,16 @@ if(length(failed_llod_check) > 1){
 ## missing values in variables that should have no missing values
 ## binary variables only take values 0/1
 variables_with_no_missing <- 
-    c("Trt", "EthnicityHispanic", "EthnicityNotreported", "EthnicityUnknown",
-      "Black", "Asian", "NatAmer", "PacIsl", "Multiracial",
-      "Other", "Notreported", "Unknown", "Perprotocol",
-      "EventIndPrimaryD29",
-      "EventIndPrimaryD57",
-      "SubcohortInd",
-      "age.geq.65",
-      "TwophasesampInd","TwophasesampInd.2",
-      "MinorityInd",
-      "EarlyendpointD57", "EarlyendpointD29"
+    c(
+                           "EventIndPrimaryD1",  "EventTimePrimaryD1", 
+      "EarlyinfectionD57", "EventIndPrimaryD57", "EventTimePrimaryD57",
+      "EarlyinfectionD29", "EventIndPrimaryD29", "EventTimePrimaryD29",
+      "NumberdaysD1toD57",
+      "age.geq.65", "MinorityInd",
+      "TwophasesampIndD57", "TwophasesampIndD29",
+      "EarlyendpointD57", "EarlyendpointD29",
+      "ph1.D57", "ph1.D29", "ph1.immuno",
+      "ph2.D57", "ph2.D29", "ph2.immuno"
       )
 
 failed_variables_missing <- failed_variables_01 <- NULL
@@ -70,8 +70,8 @@ if(length(failed_variables_missing) > 1){
 
 ## at least some cases included in two phase sample
 # could fail either due to e.g., no per-protocol cases measured immune responses
-pass57 <- sum(dat_clean$TwophasesampInd) > sum(dat_clean$SubcohortInd)
-pass29 <- sum(dat_clean$TwophasesampInd.2) > sum(dat_clean$SubcohortInd)
+pass57 <- sum(dat_clean$TwophasesampIndD57) > sum(dat_clean$SubcohortInd)
+pass29 <- sum(dat_clean$TwophasesampIndD29) > sum(dat_clean$SubcohortInd)
 if(!pass57){
     stop("More people in subcohort than in final two-phase sample for Day 57 analysis.")
 }

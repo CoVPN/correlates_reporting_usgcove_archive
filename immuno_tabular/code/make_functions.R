@@ -181,36 +181,40 @@ get_gm <- function(dat, v, subs, sub.by, strata, weights, subset){
 get_rgmt <- function(dat, v, groups, comp_lev, sub.by, strata, weights, subset){
   rgmt <- NULL
   for (j in groups){
-    j.n <- match(j, groups)
     comp_i <- comp_lev[comp_lev %in% dat[, gsub("`","",j)]]
-    if (length(comp_i)!=2) {
-      warning(paste(j, "has more/less than 2 levels"))
+    comp_vs <- paste(comp_i, collapse=" vs ")
+    dat[, gsub("`","",j)] <- factor(dat[, gsub("`","",j)], levels = comp_i)
+    n.j <- dat %>%
+      filter(!is.na(!!as.name(gsub("`","",j)))) %>% 
+      group_by_at(gsub("`", "", sub.by), .drop=F) %>%
+      summarise(n=n_distinct(!!as.name(gsub("`","",j))))
+    if (all(n.j$n!=2)) {
+      warning(paste(j, "has more/less than 2 levels:", paste(unique(dat[,gsub("`","",j)]), collapse = ", ")))
       next
     }
-    dat[, gsub("`","",j)] <- factor(dat[, gsub("`","",j)], levels = comp_i)
     contrasts(dat[, gsub("`","",j)]) <- contr.treatment(2, base = 2)
     for (i in v){
-      dat <- dat %>% 
-        group_by_at(gsub("`", "", c(j, sub.by))) %>% 
-        mutate(nagrp=cur_group_id())
-      tab.sub <- table(!is.na(dat[as.vector(dat[,subset]==1),i]), dat[as.vector(dat[,subset]==1),]$nagrp)["TRUE",]==0
-      na.sub <- names(tab.sub[tab.sub])  
-      dat[,paste0(i,j.n)] <- !(as.character(dat$nagrp) %in% na.sub)
-    }
-  }
-  design.full <- twophase(list(~Ptid, ~Ptid), 
-                          strata=list(NULL, as.formula(sprintf("~%s", strata))),
-                          weights=list(NULL, as.formula(sprintf("~%s", weights))), 
-                          subset=as.formula(sprintf("~%s", subset)),
-                          method="simple",
-                          data=dat)
-  for (j in groups){
-    j.n <- match(j, groups)
-    comp_vs <- paste(comp_lev[comp_lev %in% dat[, gsub("`","",j)]], collapse=" vs ")
-    for (i in v){
       cat(i,"--",j, comp_vs, "\n")
-      if (length(comp_i)==2) {
-        design.ij <- subset(design.full, eval(parse(text=sprintf("%s%s & !is.na(%s)",i,j.n,j))))
+      n.ij <- subset(dat, dat[, subset] & !is.na(dat[, gsub("`","",j)]) & !is.na(dat[, i])) %>% 
+        group_by_at(gsub("`", "", sub.by), .drop=F) %>% 
+        summarise(n.j=n_distinct(!!as.name(gsub("`","",j)))) %>% 
+        filter(n.j==2) %>% 
+        unite("all.sub.by", 1:length(sub.by), remove=F)
+      
+      if (nrow(n.j)!=0){
+        dat.ij <- dat %>% 
+          unite("all.sub.by", match(gsub("`", "", sub.by), names(dat)), remove=F) %>% 
+          select_at(gsub("`", "",c("Ptid", strata, weights, subset, sub.by, i, j, "all.sub.by")))
+        
+        design.ij <- twophase(list(~Ptid, ~Ptid), 
+                              strata=list(NULL, as.formula(sprintf("~%s", strata))),
+                              weights=list(NULL, as.formula(sprintf("~%s", weights))), 
+                              subset=as.formula(sprintf("~%s", subset)),
+                              method="simple",
+                              data=dat.ij)
+        
+        design.ij <- subset(design.ij, all.sub.by %in% n.ij$all.sub.by & eval(parse(text=sprintf("!is.na(%s) & !is.na(%s)", i, j))))
+        
         ret <- svyby(as.formula(sprintf("%s~%s", i, j)),
                      by=as.formula(sprintf("~%s", paste(sub.by, collapse="+"))),
                      design=design.ij,
@@ -219,7 +223,9 @@ get_rgmt <- function(dat, v, groups, comp_lev, sub.by, strata, weights, subset){
         rgmt <- bind_rows(
           ret %>% 
             rename_all(gsub, pattern=paste0(j, 1), replacement="Estimate", fixed=T) %>%
-            mutate(subgroup=gsub("`","",!!j), mag_cat=!!i, comp=!!comp_vs,  
+            mutate(subgroup=gsub("`","",!!j), 
+                   mag_cat=!!i, 
+                   comp=!!comp_vs,  
                    `Ratios of GMT/GMC` = sprintf("%.2f\n(%.2f, %.2f)", 
                                                  10^Estimate, 10^ci_l.Estimate, 10^ci_u.Estimate)),
           rgmt)
@@ -227,14 +233,21 @@ get_rgmt <- function(dat, v, groups, comp_lev, sub.by, strata, weights, subset){
         rgmt <- bind_rows(
           dat %>% 
             distinct_at(gsub("`","",sub.by)) %>% 
-            mutate(subgroup=gsub("`","", j), 
+            mutate(subgroup=gsub("`","", !!j), 
                    mag_cat=!!i, 
                    comp=!!comp_vs, 
                    `Ratios of GMT/GMC` = "-"),
-          rgmt
-        )
+          rgmt)
       }
-    }
+    } # end of i loop
+  } # end of j loop
+  
+  if (is.null(rgmt)){
+    rgmt <- merge(distinct_at(dat, gsub("`","",sub.by)), 
+                  expand.grid(subgroup=gsub("`","", j), 
+                              mag_cat=v, 
+                              comp=comp_vs, 
+                              `Ratios of GMT/GMC` = "-"))
   }
   rgmt <- inner_join(rgmt, distinct(labels_all, mag_cat, Visit, Marker), by="mag_cat")
   return(rgmt)

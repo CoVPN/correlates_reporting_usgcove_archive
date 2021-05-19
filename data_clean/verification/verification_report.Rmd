@@ -167,7 +167,7 @@ The file `data_clean/verification/verification_output/data_clean_verification_ou
 Its md5 hash is `r digest::digest(file = here("data_clean/verification/verification_output/data_clean_verification_output.csv"))`.
 
 
-The file `data_clean/verification/verification_output/data_clean_verification_output.csv` was created by the tester for verification using the `process_data_Raw.R` script and using only the time points Baseline and Day 57.
+The file `data_clean/verification/verification_output/data_clean_verification_output_no_d29.csv` was created by the tester for verification using the `process_data_Raw.R` script and using only the time points Baseline and Day 57.
 Its md5 hash is `r digest::digest(file = here("data_clean/verification/verification_output/data_clean_verification_output_no_d29.csv"))`.
 
 ### Load Data

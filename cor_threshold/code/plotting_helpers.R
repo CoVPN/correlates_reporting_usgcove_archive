@@ -137,7 +137,7 @@ generate_tables <- function(marker, num_show = 10, monotone = F) {
   esttmle_table[, 6] <- round(esttmle_table[, 6], 5)
   esttmle_table[, 7] <- round(esttmle_table[, 7], 5)
   esttmle_table <- esttmle_table[,c(1:7)]
-  esttmle_table <- data.frame(esttmle_table, paste0(gsub("e\\+0", " * 10$^", format(10^esttmle_table[, 1], scientific = T, digits = 3)), "$"))
+  esttmle_table <- data.frame(esttmle_table, paste0(gsub("e\\+0|e\\-0", " * 10$^{", format(10^esttmle_table[, 1], scientific = T, digits = 3)), "}$"))
   esttmle_table <- esttmle_table[, c(1, 8, 2, 4, 5, 6, 7)]
   esttmle_table[esttmle_table[, 3] < 0, 3] <- 0
   colnames(esttmle_table) <- c("log$_{10}$-Threshold", "Threshold", "Risk estimate", "CI left", "CI right", "CI left", "CI right")

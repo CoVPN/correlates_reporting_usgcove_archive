@@ -60,7 +60,7 @@ for (bstatus in 1:2) {
                      align = "h"),
            filename = paste0(save.results.to, "/Marker_RCDF_", times[tt], 
                              "_trt_by_event_status_bstatus_", bstatus.labels.2[bstatus], "_", 
-                             study.name,".png"),
+                             study_name,".png"),
            height = 7, width = 6.5)
     
     
@@ -144,7 +144,7 @@ for (bstatus in 1:2) {
              theme(plot.title = element_text(hjust = 0.5, size = 10)),
            filename = paste0(save.results.to, "/boxplots_", times[tt], "_trt_vaccine_x_cc_",
                              bstatus.labels.2[bstatus], "_",
-                             study.name, ".png"),
+                             study_name, ".png"),
            height = 9, width = 8)
     
   }
@@ -216,7 +216,7 @@ for (bstatus in 1:2) {
       ggsave(boxplots,
              filename = paste0(save.results.to, "/boxplots_", times[tt],"_trt_vaccine_x_cc_",
                                bstatus.labels.2[bstatus], "_", 
-                               assays[aa], "_", study.name, ".png"),
+                               assays[aa], "_", study_name, ".png"),
              height = 9,
              width = 8)
     }
@@ -276,7 +276,7 @@ for (bstatus in 1:2) {
                               filename = paste0(
                                 save.results.to, "/spaghetti_plot_trt_",
                                 bstatus.labels.2[bstatus], "_",
-                                study.name, ".png"
+                                study_name, ".png"
                               ),
                               height = 6, width = 5)
 }

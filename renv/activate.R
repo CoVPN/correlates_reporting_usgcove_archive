@@ -36,7 +36,7 @@ local({
 
   }
 
-  # load bootstrap tools
+  # load bootstrap tools   
   bootstrap <- function(version, library) {
   
     # attempt to download renv

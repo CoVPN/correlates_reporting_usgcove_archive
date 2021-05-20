@@ -28,24 +28,36 @@ source(here::here("..", "_common.R"))
 ##### Compute reference times for analysis -semi hard coded
 
 data <- read.csv(here::here("..", "data_clean", data_name))
-tf_Day29 <- max(data[data$EventIndPrimaryD29==1 & data$Trt == 1 & data$Bserostatus == 0 & !is.na(data$wt.2), "EventTimePrimaryD29" ])
-tf_Day57 <- max(data[data$EventIndPrimaryD57==1 & data$Trt == 1 & data$Bserostatus == 0 & !is.na(data$wt), "EventTimePrimaryD57" ])
+
 
 print(colnames(data))
-tf <- list("Day57" = tf_Day57, "Day29" = tf_Day29) # Reference time to perform analysis. Y = 1(T <= tf) where T is event time of Covid.
+if(has29){
+    tf_Day29 <- max(data[data$EventIndPrimaryD29==1 & data$Trt == 1 & data$Bserostatus == 0 & !is.na(data$wt.2), "EventTimePrimaryD29" ])
+    tf_Day57 <- max(data[data$EventIndPrimaryD57==1 & data$Trt == 1 & data$Bserostatus == 0 & !is.na(data$wt), "EventTimePrimaryD57" ])
+tf <- list("Day57" = tf_Day57, "Day29" = tf_Day29)
+} else {
+    tf_Day57 <- max(data[data$EventIndPrimaryD57==1 & data$Trt == 1 & data$Bserostatus == 0 & !is.na(data$wt), "EventTimePrimaryD57" ])
+    tf <- list("Day57" = tf_Day57)
+
+}# Reference time to perform analysis. Y = 1(T <= tf) where T is event time of Covid.
 # tf should be large enough that most events are observed but small enough so that not many people are right censored. For the practice dataset, tf = 170 works.
 # Right-censoring is taken into account for  this analysis.
-covariate_adjusted <- TRUE #### Estimate threshold-response function with covariate adjustment
+covariate_adjusted <- FALSE #### Estimate threshold-response function with covariate adjustment
 fast_analysis <- TRUE ### Perform a fast analysis using glmnet
 include_interactions <- FALSE #### Include algorithms that model interactions between covariates
 threshold_grid_size <- 30 ### Number of thresholds to estimate (equally spaced in quantiles). Should be 15 at least for the plots of the threshold-response and its inverse to be representative of the true functions.
 adjust_for_censoring <- FALSE # For now, set to FALSE. If set to TRUE, make sure you set tf well before we lose too many people to "end of study"
-plotting_assay_label_generator <- function(marker) {
+plotting_assay_label_generator <- function(marker, above = T) {
+    if(above) {
+        add <- " (>=s)"
+    } else {
+        add <- " (<=s)"
+    }
   day <- ""
   time <- marker_to_time[marker]
   assay <- marker_to_assay[marker]
   labx <- labels.axis[time, assay]
-  labx <- paste0(labx, " (>=s)")
+  labx <- paste0(labx, add)
   return(labx)
 
 }
@@ -101,7 +113,7 @@ twophasegroup_variable <- "Wstratum"
 # Threshold grid is generated equally spaced (on the quantile level)
 # between the threshold at lower_quantile and threshold at upper_quantile
 # Best to have these be away from 0 and 1.
-lower_quantile <- 0
+lower_quantile <- 0.01
 upper_quantile <- 0.99
 risks_to_estimate_thresh_of_protection <- NULL ### Risk values at which to estimate threshold of protection...
 ###                Leaving at NULL (default) is recommended to ensure risks fall in range of estimate. Example: c(0, 0.0005, 0.001, 0.002, 0.003)

@@ -20,7 +20,7 @@ library(mvtnorm)
 #' In the case where both thresholds_above and thresholds_below are supplied, it is a list with two elements "above_estimates" and "lower_estimates" which contains the same information as above for the upper and lower thresholds parameters.
 #'
 #'
-thresholdTMLE <- function(data_full, node_list, thresholds = NULL, biased_sampling_strata = NULL, biased_sampling_indicator = NULL, lrnr_A = Lrnr_glmnet$new(), lrnr_Y = Lrnr_glmnet$new(), lrnr_Delta = Lrnr_glmnet$new()) {
+thresholdTMLE <- function(data_full, node_list, thresholds = NULL, biased_sampling_strata = NULL, biased_sampling_indicator = NULL, lrnr_A = Lrnr_glmnet$new(), lrnr_Y = Lrnr_glmnet$new(), lrnr_Delta = Lrnr_glmnet$new(), monotone_decreasing = TRUE) {
   upper_list <- list()
   lower_list <- list()
   thresholds_above <- sort(thresholds)
@@ -110,8 +110,15 @@ thresholdTMLE <- function(data_full, node_list, thresholds = NULL, biased_sampli
       se <- sqrt(diag(var_D) / n)
       level <- 0.95
       rho_D <- as.matrix(var_D / sqrt(tcrossprod(diag(var_D))))
-      psi_mono <- isoreg(thresholds, -psi)
-      psi_mono <- -psi_mono$yf
+      if(monotone_decreasing){
+          factor <- -1
+      } else {
+          factor <- 1
+      }
+       
+      psi_mono <- isoreg(thresholds, factor*psi)
+      psi_mono <- factor*psi_mono$yf
+      
       q <- mvtnorm::qmvnorm(level, tail = "both", corr = rho_D)$quantile
       ci <- as.matrix(wald_ci(psi, se, q = q))
       ci_mono <- as.matrix(wald_ci(psi_mono, se, q = q))

@@ -17,9 +17,9 @@ risk_report: risk_analysis
 
 ## cor_analysis           : builds Correlates of Risk analyses
 cor_analysis: data_processed
-	$(MAKE) -k -C cor_tabular all
-	$(MAKE) -k -C cor_graphical all
-	$(MAKE) -k -C cor_coxph all
+	# $(MAKE) -k -C cor_tabular all
+	# $(MAKE) -k -C cor_graphical all
+	# $(MAKE) -k -C cor_coxph all
 	$(MAKE) -k -C cor_threshold all
 # will be added to the CoR report eventually
 #	$(MAKE) -k -C cor_surrogates all

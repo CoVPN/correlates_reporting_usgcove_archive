@@ -11,7 +11,7 @@ lrnr <- get_learner(fast_analysis = fast_analysis, include_interactions = includ
 
 # Runs threshold analysis and saves raw results.
 #' @param marker Marker to run threshold analysis for
-run_threshold_analysis <- function(marker) {
+run_threshold_analysis <- function(marker, direction = "above") {
   thresholds <- read.csv(here::here("data_clean", "Thresholds_by_marker", paste0("thresholds_", marker, ".csv")))
   thresholds <- as.vector(unlist(thresholds[, 1]))
   time <- marker_to_time[[marker]]
@@ -31,29 +31,44 @@ run_threshold_analysis <- function(marker) {
   ####################################################
   # Run thresholdTMLE
   ####################################################
+  if(direction=="above") {
   esttmle_full <- suppressWarnings(thresholdTMLE(data_full, node_list, thresholds = thresholds, biased_sampling_strata = NULL, biased_sampling_indicator = "TwophasesampInd", lrnr_A = lrnr, lrnr_Y = lrnr, lrnr_Delta = lrnr_Delta))
+  } else if(direction=="below") {
+      data_full[[node_list[["A"]]]] <- -data_full[[node_list[["A"]]]]
+      esttmle_full <- suppressWarnings(thresholdTMLE(data_full, node_list, thresholds = sort(-thresholds), biased_sampling_strata = NULL, biased_sampling_indicator = "TwophasesampInd", lrnr_A = lrnr, lrnr_Y = lrnr, lrnr_Delta = lrnr_Delta, monotone_decreasing = F))
+      esttmle_full[[1]][,1] <- - esttmle_full[[1]][,1]
+      esttmle_full[[1]] <- esttmle_full[[1]][order(esttmle_full[[1]][,1]),]
+      esttmle_full[[2]][,1] <- - esttmle_full[[2]][,1]
+      esttmle_full[[2]] <- esttmle_full[[2]][order(esttmle_full[[2]][,1]),]
+
+      
+  }
 
   esttmle <- esttmle_full[[1]]
   
-  
+  direction_append <- ""
+  if(direction=="below") {
+      direction_append <- "_below"
+  }
+  print(direction_append)
   # Save estimates and CI of threshold-response function
   save("esttmle", file = here::here(
     "output",
-    paste0("tmleThresh_", marker, ".RData")
+    paste0("tmleThresh_", marker, direction_append,".RData")
   ))
   write.csv(esttmle, file = here::here(
     "output",
-    paste0("tmleThresh_", marker, ".csv")
+    paste0("tmleThresh_", marker,direction_append, ".csv")
   ), row.names = F)
   
   esttmle <- esttmle_full[[2]]
   save("esttmle", file = here::here(
     "output",
-    paste0("tmleThresh_monotone_", marker, ".RData")
+    paste0("tmleThresh_monotone_", marker,direction_append, ".RData")
   ))
   write.csv(esttmle, file = here::here(
     "output",
-    paste0("tmleThresh_monotone_", marker, ".csv")
+    paste0("tmleThresh_monotone_", marker,direction_append, ".csv")
   ), row.names = F)
 
   return(esttmle)
@@ -61,5 +76,11 @@ run_threshold_analysis <- function(marker) {
 
 for (marker in markers) {
   print(marker)
-  v <- run_threshold_analysis(marker)
+  v <- run_threshold_analysis(marker, "below")
+}
+
+
+for (marker in markers) {
+  print(marker)
+  v <- run_threshold_analysis(marker, "above")
 }

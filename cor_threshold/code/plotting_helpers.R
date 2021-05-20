@@ -4,7 +4,7 @@
 #' @param simultaneous_CI True if simultaneous CI should be plotted. Otherwise if False pointwise CI are plotted.
 #' @param monotone True if monotone correction should be done on estimates. Otherwise no monotone correction. This should be done if one expects monotonicity.
 #' Assume monotone nonincreasing
-get_plot <- function(marker, simultaneous_CI = F, monotone = F) {
+get_plot <- function(marker, simultaneous_CI = F, monotone = F, above = TRUE) {
   dat.mock <- read.csv(here::here("..", "data_clean", data_name))
   #dat.mock <- read.csv(here::here( "data_clean", data_name))
   tmp <- dat.mock[dat.mock$Perprotocol==1 & dat.mock$Bserostatus == 0,]
@@ -16,15 +16,20 @@ get_plot <- function(marker, simultaneous_CI = F, monotone = F) {
   fit <- summary(survival::survfit(survival::Surv(time, Delta) ~ 1, data = tmp[tmp$Trt==0,]), times = tf[[time]] )
   risk_plac <-  round(mean(1-fit$surv),3)
 
-  if(monotone) {
-    load(file = here::here("output", paste0("tmleThresh_monotone_", marker, ".RData")))
+  if(above){
+      append <- ""
   } else {
-    load(file = here::here("output", paste0("tmleThresh_", marker, ".RData")))
+      append <- "_below"
+  }
+  if(monotone) {
+    load(file = here::here("output", paste0("tmleThresh_monotone_", marker,append, ".RData")))
+  } else {
+    load(file = here::here("output", paste0("tmleThresh_", marker,append, ".RData")))
   }
   time <- marker_to_time[[marker]]
   day <- ""
   laby <- paste0("Probability of COVID by Day ",tf[time])
-  labx <- plotting_assay_label_generator(marker)
+  labx <- plotting_assay_label_generator(marker, above)
   # subtitle_main <- "Nonparametric estimate of Threshold-response function"
   data <- read.csv(here::here("data_clean", paste0("data_secondstage_", time, ".csv")))
   main <- plotting_assay_title_generator(marker)
@@ -39,7 +44,7 @@ get_plot <- function(marker, simultaneous_CI = F, monotone = F) {
   data_tmp <- na.omit(data[, c(marker, "outcome", "wt"), drop = F])
   max_thresh <- max(data_tmp[data_tmp[["outcome"]] == 1, marker])
   # out <- hist(na.omit(data_tmp[[marker]]), col=col,axes=F,labels=F,main="",xlab="",ylab="",breaks=10,border=0,freq=F)
-  scale_coef <- max(v$data$upper) * 1
+  scale_coef <- max(v$data$upper, na.rm = T) * 1
 
   # coef <- max(out$density)/scale_coef
   RCDF <- function(a) {
@@ -54,6 +59,7 @@ get_plot <- function(marker, simultaneous_CI = F, monotone = F) {
   a <- marker_to_assay[[marker]]
 
   xlim <- get.range.cor(data, a, sub('...', '', time))
+  print(xlim)
   llod <- llods[a]
   labels_info <- get.labels.x.axis.cor(xlim, llods[a])
   xx <- labels_info$ticks
@@ -75,20 +81,47 @@ get_plot <- function(marker, simultaneous_CI = F, monotone = F) {
   # })
   # labels <- unlist(labels, use.names = F, recursive = F)
   #
+  xlimits <- xlim
 
-  plot <- v + scale_x_continuous(
-   breaks = xx,#union(floor(esttmle[, 1]), ceiling(esttmle[, 1])),
-    labels = do.call(expression,labels) #trans_format("ident", math_format(10^.x)),
-   #limits = c(min(esttmle[, 1]) - 0.1, max(esttmle[, 1]) + 0.1)
-  ) + xlab(paste0(marker, " threshold")) + ylab(laby)  + xlab(labx) + ggtitle(main) +
+   if(F & abs(xlimits[1] - ceiling(xlimits[1])) < 0.07 && abs(xlimits[1] - xlimits[2] )>= 1.2) {
+     xlimits[1] <- (xlimits[1]) - 0.075
+
+   } else {
+     xlimits[1] <- floor(xlimits[1])
+   }
+  if(F & abs(xlimits[2] - floor(xlimits[2])) < 0.07 && abs(xlimits[1] - xlimits[2] )>= 1.2) {
+    xlimits[2] <- (xlimits[2]) + 0.075
+  } else {
+    xlimits[2] <- ceiling(xlimits[2])
+  }
+
+  plot <- v + ggtitle(main) +
     stat_function(fun = RCDF, color = col, geom = "area", fill = col, alpha = 0.2) +
     scale_y_continuous(
       name = laby,
       sec.axis = sec_axis(~ . / scale_coef, name = "Reverse CDF"), n.breaks = 10
-    ) + geom_vline(xintercept = max_thresh, colour = "red", linetype = "longdash") +
+    )  +
     theme(plot.title = element_text(size = 25), axis.text.x = element_text(angle = 0, hjust = 1, size = 18), axis.text.y = element_text(angle = 0, hjust = 1, size = 18)) +
    # geom_hline(aes(yintercept=risk_vac), alpha = 0.4) + geom_text(alpha = 0.75,aes(median(v$data$cutoffs),risk_vac,label = "vaccine overall risk"), vjust = -0.5, size = 5) +
- geom_text(alpha = 0.75, aes(quantile(v$data$cutoffs, 0.1),max(v$data$upper),label = paste0("placebo overall risk: ", risk_plac)), vjust = 0, size = 5)
+ geom_text(alpha = 0.75, aes(quantile(v$data$cutoffs, 0.1),min(max(v$data$upper),risk_plac),label = paste0("placebo overall risk: ", risk_plac)), vjust = 0, size = 5) + scale_x_continuous(
+  breaks = xx,#union(floor(esttmle[, 1]), ceiling(esttmle[, 1])),
+   labels = do.call(expression,labels),
+  name =labx,
+  limits = xlimits
+    #trans_format("ident", math_format(10^.x)),
+  #limits = c(min(esttmle[, 1]) - 0.1, max(esttmle[, 1]) + 0.1)
+ )
+ print(above)
+ print(uloqs)
+ print(uloqs[a])
+ print(a)
+ print(v$data$upper)
+ print(risk_plac)
+ if(above  && max_thresh < log10(uloqs[a]) - 0.05) {
+     plot <- plot + geom_vline(xintercept = max_thresh, colour = "red", linetype = "longdash")
+ } else if(!above && risk_plac<= max(v$data$upper, na.rm = T)) {
+     plot <- plot + geom_hline(aes(yintercept=risk_plac), alpha = 0.4, linetype = "longdash", colour = "red")
+ }
   plot
     #+  geom_text(aes(x=max_thresh *(1.01), label="No observed events", y=0.002), colour="black", angle=90, text=element_text(size=11))
   append_end <- ""
@@ -100,10 +133,10 @@ get_plot <- function(marker, simultaneous_CI = F, monotone = F) {
     append_start <- paste0(append_start, "_")
   }
   if (simultaneous_CI) {
-    append_end <- paste0(append_end, "_", "simultCI")
+    append_end <- paste0(append_end, "_", "simultCI",append)
     folder <- "simultaneous_CI"
   } else {
-    append_end <- paste0(append_end, "_", "pointwiseCI")
+    append_end <- paste0(append_end, "_", "pointwiseCI",append)
     folder <- "pointwise_CI"
   }
 
@@ -122,11 +155,16 @@ get_plot <- function(marker, simultaneous_CI = F, monotone = F) {
 # Generates tables (both pointwise CI and simultaneous CI) for Threshold-response function estimates
 #' @param marker The marker variable to generate plots for.
 #' @param num_show The number of thresholds to include in table.
-generate_tables <- function(marker, num_show = 10, monotone = F) {
+generate_tables <- function(marker, num_show = 10, monotone = F, above = T) {
+    if(above){
+        append <- ""
+    } else {
+        append <- "_below"
+    }
   if(monotone) {
-    load(file = here::here("output", paste0("tmleThresh_monotone_", marker, ".RData")))
+    load(file = here::here("output", paste0("tmleThresh_monotone_", marker,append, ".RData")))
   } else {
-    load(file = here::here("output", paste0("tmleThresh_", marker, ".RData")))
+    load(file = here::here("output", paste0("tmleThresh_", marker,append, ".RData")))
   }
   esttmle_table <- esttmle
   esttmle_table[, 1] <- round(esttmle_table[, 1], 3)
@@ -144,10 +182,11 @@ generate_tables <- function(marker, num_show = 10, monotone = F) {
   # Save nice latex table
   index_to_show <- unique(round(seq.int(1, nrow(esttmle_table), length.out = num_show)))
   ptwise_tab_guts <- esttmle_table[index_to_show, c(1, 2, 3, 4, 5)]
+
   if(monotone) {
-    key <- "monotone_"
+    key <- paste0(append,"monotone_")
   } else {
-    key <- ""
+    key <- append
   }
   saveRDS(ptwise_tab_guts, file = here::here(
       "figs", "pointwise_CI",

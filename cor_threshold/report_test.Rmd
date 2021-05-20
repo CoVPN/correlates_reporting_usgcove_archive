@@ -1,0 +1,20 @@
+---
+header-includes:
+   - \usepackage{float}
+output:
+  pdf_document: default
+  html_document: default
+  citation_package: natbib
+  number_sections: true
+  extra_dependencies: ["caption", "subcaption", "graphicx"]
+  toc: true
+---
+
+```{r}
+
+library(rmarkdown)
+library(knitr); opts_knit$set(root.dir="~/correlates_reporting_forks/correlates_reporting-1"); render("~/correlates_reporting_forks/correlates_reporting-1/cor_threshold/report.Rmd", output_dir = "~/correlates_reporting_forks/correlates_reporting-1/cor_threshold",   knit_root_dir ="~/correlates_reporting_forks/correlates_reporting-1" )
+ 
+```
+
+```

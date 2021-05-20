@@ -1,0 +1,2 @@
+load("/Users/larsvanderlaan/correlates_reporting_forks/correlates_reporting-1/cor_threshold/figs/pointwise_CI/TABLE__belowDay29bindRBD_pointwiseCI.rds")
+load("/Users/larsvanderlaan/correlates_reporting_forks/correlates_reporting-1/cor_threshold/figs/pointwise_CI/TABLE_monotone_Day57pseudoneutid80_pointwiseCI.rds")

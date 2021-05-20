@@ -274,11 +274,7 @@ covid_corr_spaghetti_facets(plot_dat = subdat,
                             id = "Ptid",
                             color = "cohort_event",
                             facet_by = "assay_label",
-                            plot_title = paste0(
-                              "Baseline ",
-                              c("Negative", "Positive")[bstatus],
-                              " PP Vaccine group"
-                            ),
+                            plot_title = "Vaccine group",
                             ylim = c(-2, 6),
                             ybreaks = seq(-2, 6, by = 2),
                             filename = paste0(

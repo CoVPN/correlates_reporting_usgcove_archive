@@ -26,46 +26,46 @@ dat.cor.subset <- readRDS(here(
 # We made four ggplot objects, each for one assay, and combine them with ggarrange
 #=========================================================================================================================
 wts <- c("wt.D57", "wt.D29", "wt.D57", "wt.D29", "wt.D57")
-for (bstatus in 1:2) {
-  for (tt in 2:5){
-    subdat <- subset(dat.long.cor.subset, Bserostatus == bstatus.labels[bstatus])
-    subdat$TrtEvent <- paste(as.character(subdat$Trt), as.character(subdat$cohort_event), ", ")
-    if (tt %in% c(3, 5)) {  ## day 57 analysis don't include intercurrent cases
-      subdat <- subdat %>% filter(cohort_event != "Intercurrent Cases")
-    }
-    rcdf_list <- vector("list", 4)
-    for (aa in 1:4) {
-      rcdf_list[[aa]] <- ggplot(subset(subdat, assay == assays[aa]), 
-                                aes_string(x = times[tt], colour = "TrtEvent", 
-                                           linetype = "TrtEvent", weight = wts[tt])) +
-        geom_step(aes(y = 1 - ..y..), stat = "ecdf", lwd = 1) +
-        theme_pubr(legend = "none") +
-        ylab("Reverse ECDF") + xlab(labels.axis[tt, aa]) +
-        scale_x_continuous(labels = label_math(10^.x), limits = c(-2, 10), breaks = seq(-2, 10, 2)) +
-        scale_color_manual(values = c("#1749FF", "#D92321", "#0AB7C9", "#FF6F1B", "#810094", "#378252", "#FF5EBF", "#3700A5", "#8F8F8F", "#787873")) +
-        guides(linetype = "none",
-               color = guide_legend(nrow = 3, byrow = TRUE)) +
-        ggtitle(labels.title2[tt, aa]) +
-        theme(plot.title = element_text(hjust = 0.5, size = 10),
-              legend.title = element_blank(),
-              legend.text = element_text(size = 10, face = "bold"),
-              panel.grid.minor.y = element_line(),
-              panel.grid.major.y = element_line(),
-              axis.title = element_text(size = 9),
-              axis.text = element_text(size = 10))
-    }
-    
-    ggsave(ggarrange(plotlist = rcdf_list, ncol = 2, nrow = 2, 
-                     common.legend = TRUE, legend = "bottom",
-                     align = "h"),
-           filename = paste0(save.results.to, "/Marker_RCDF_", times[tt], 
-                             "_trt_by_event_status_bstatus_", bstatus.labels.2[bstatus], "_", 
-                             study_name,".png"),
-           height = 7, width = 6.5)
-    
-    
+
+for (tt in 2:5){
+  dat.long.cor.subset$TrtEvent <- paste(as.character(dat.long.cor.subset$Trt), as.character(dat.long.cor.subset$cohort_event),sep = ", ")
+  if (tt %in% c(3, 5)) {  ## day 57 analysis don't include intercurrent cases
+    dat.long.cor.subset <- dat.long.cor.subset %>% filter(cohort_event != "Intercurrent Cases")
   }
+  rcdf_list <- vector("list", 4)
+  for (aa in 1:4) {
+    rcdf_list[[aa]] <- ggplot(subset(dat.long.cor.subset, assay == assays[aa]), 
+                              aes_string(x = times[tt], colour = "TrtEvent", 
+                                         linetype = "cohort_event",
+                                         weight = wts[tt])) +
+      geom_step(aes(y = 1 - ..y..), stat = "ecdf", lwd = 1) +
+      theme_pubr(legend = "none") +
+      ylab("Reverse ECDF") + xlab(labels.axis[tt, aa]) +
+      scale_x_continuous(labels = label_math(10^.x), limits = c(-2, 6), breaks = seq(-2, 6, 2)) +
+      scale_color_manual(values = c("#1749FF", "#D92321", "#0AB7C9", "#FF6F1B", "#810094", "#378252", "#FF5EBF", "#3700A5", "#8F8F8F", "#787873")) +
+      guides(linetype = "none",
+             color = guide_legend(nrow = 3, byrow = TRUE)) +
+      ggtitle(labels.title2[tt, aa]) +
+      theme(plot.title = element_text(hjust = 0.5, size = 14),
+            legend.title = element_blank(),
+            legend.text = element_text(size = 14),
+            panel.grid.minor.y = element_line(),
+            panel.grid.major.y = element_line(),
+            axis.title = element_text(size = 14),
+            axis.text = element_text(size = 14))
+  }
+  
+  ggsave(ggarrange(plotlist = rcdf_list, ncol = 2, nrow = 2, 
+                   common.legend = TRUE, legend = "bottom",
+                   align = "h"),
+         filename = paste0(save.results.to, "/Marker_RCDF_", times[tt], 
+                           "_trt_by_event_status_bstatus_", 
+                           study_name,".png"),
+         height = 7, width = 6.5)
+  
+  
 }
+
 
 
 ##===========================================================================
@@ -75,9 +75,9 @@ for (bstatus in 1:2) {
 ## make another subsample datasets such that the jitter plot for each subgroup in each panel contains no more
 ## than 50 data points
 set.seed(12345)
-dat.sample3 <-  dat.long.cor.subset[, c("Trt", times, "assay", "cohort_event", "Bserostatus")] %>%
+dat.sample3 <- dat.long.cor.subset[, c("Trt", times, "assay", "cohort_event")] %>%
   filter(., .$Trt == "Vaccine") %>% 
-  split(., list(.$assay, .$cohort_event, .$Bserostatus)) %>%
+  split(., list(.$assay, .$cohort_event)) %>%
   lapply(., function(x) {
     if(nrow(x) <= 30) {
       return(x)
@@ -86,9 +86,9 @@ dat.sample3 <-  dat.long.cor.subset[, c("Trt", times, "assay", "cohort_event", "
     }}) %>% bind_rows
 
 set.seed(12345)
-dat.sample4 <-  dat.long.cor.subset[, c("Trt", times, "assay", "cohort_event", "Bserostatus")] %>%
+dat.sample4 <-  dat.long.cor.subset[, c("Trt", times, "assay", "cohort_event")] %>%
   filter(., .$Trt == "Vaccine") %>% 
-  split(., list(.$assay, .$cohort_event, .$Bserostatus)) %>%
+  split(., list(.$assay, .$cohort_event)) %>%
   lapply(., function(x) {
     if(nrow(x) <= 30) {
       return(x)
@@ -101,54 +101,58 @@ dat.sample4 <-  dat.long.cor.subset[, c("Trt", times, "assay", "cohort_event", "
 ##===============================================================================================================
 
 
-for (bstatus in 1:2) {
-  for (tt in 2:5){
-    subdat <- subset(dat.long.cor.subset, Bserostatus == bstatus.labels[bstatus])
-    subdat_jitter <- subset(dat.sample4, Bserostatus == bstatus.labels[bstatus])
-    if (tt %in% c(3, 5)) {
-      subdat <- subdat %>% filter(cohort_event != "Intercurrent Cases")
-      subdat_jitter <- subdat_jitter %>% filter(cohort_event != "Intercurrent Cases")
-    }
-    boxplot_list <- vector("list", 4)
-    for (aa in 1:4) {
-      boxplot_list[[aa]] <-  ggplot(subset(subdat, assay == assays[aa] & Trt == "Vaccine"), 
-                                    aes_string(x = "cohort_event", y = times[tt])) +
-        geom_boxplot(aes(colour = cohort_event), width = 0.6, lwd = 1) + 
-        stat_boxplot(geom = "errorbar", aes(colour = cohort_event), width = 0.45, lwd = 1) +
-        geom_jitter(data = filter(subdat_jitter, assay == assays[aa] & Trt == "Vaccine"), mapping = aes(colour = cohort_event), width = 0.1, 
-                    size = 1.4, show.legend = FALSE) +
-        theme_pubr(legend = "none") + 
-        guides(alpha = "none") +
-        ylab(labels.axis[tt, aa]) + xlab("") + ggtitle(labels.title2[tt, aa]) +
-        scale_color_manual(values = c("#1749FF", "#D92321", "#0AB7C9", "#FF6F1B", "#810094", "#378252", "#FF5EBF", "#3700A5", "#8F8F8F", "#787873")) +
-        scale_y_continuous(limits = c(-2, 10), labels = label_math(10^.x), breaks = seq(-2, 10, 2)) +
-        theme(plot.title = element_text(hjust = 0.5, size = 10),
-              panel.border = element_rect(fill = NA),
-              panel.grid.minor.y = element_line(),
-              panel.grid.major.y = element_line(),
-              axis.title = element_text(size = 9),
-              axis.text.x = element_text(size = 10),
-              axis.text.y = element_text(size = 10),
-              strip.text = element_text(size = 10, face = "bold"),
-              legend.title = element_blank())
-      if (tt <= 3) {
-        boxplot_list[[aa]] <- boxplot_list[[aa]] + geom_hline(yintercept = log10(llods[aa]), linetype = 2, color = "black", lwd = 1) +
-          geom_text(x = 0.7, vjust = "right", y = log10(llods[aa]) - 0.5 , label = "LLOD", size = 5) 
-      }
-    }
-    
-    ggsave(ggarrange(plotlist = boxplot_list, 
-                     ncol = 2, nrow = 2, 
-                     common.legend = TRUE, legend = "bottom",
-                     align = "h") + 
-             theme(plot.title = element_text(hjust = 0.5, size = 10)),
-           filename = paste0(save.results.to, "/boxplots_", times[tt], "_trt_vaccine_x_cc_",
-                             bstatus.labels.2[bstatus], "_",
-                             study_name, ".png"),
-           height = 9, width = 8)
-    
+
+for (tt in 2:5){
+  subdat <- dat.long.cor.subset
+  subdat_jitter <- dat.sample4
+  if (tt %in% c(3, 5)) {
+    subdat <- dat.long.cor.subset %>% filter(cohort_event != "Intercurrent Cases")
+    subdat_jitter <- subdat_jitter %>% filter(cohort_event != "Intercurrent Cases")
   }
+  boxplot_list <- vector("list", 4)
+  for (aa in 1:4) {
+    boxplot_list[[aa]] <-  ggplot(subset(subdat, assay == assays[aa] & Trt == "Vaccine"), 
+                                  aes_string(x = "cohort_event", y = times[tt])) +
+      geom_boxplot(aes(colour = cohort_event), width = 0.6, lwd = 1) + 
+      stat_boxplot(geom = "errorbar", aes(colour = cohort_event), width = 0.45, lwd = 1) +
+      geom_jitter(data = filter(subdat_jitter, assay == assays[aa] & Trt == "Vaccine"), 
+                  mapping = aes(colour = cohort_event), width = 0.1, 
+                  size = 1.4, show.legend = FALSE) +
+      theme_pubr(legend = "none") + 
+      guides(alpha = "none") +
+      ylab(labels.axis[tt, aa]) + xlab("") + ggtitle(labels.title2[tt, aa]) +
+      scale_color_manual(values = c("#1749FF", "#D92321", "#0AB7C9", "#FF6F1B", "#810094", "#378252", 
+                                    "#FF5EBF", "#3700A5", "#8F8F8F", "#787873")) +
+      scale_y_continuous(limits = c(-2, 6), labels = label_math(10^.x), breaks = seq(-2, 6, 2)) +
+      theme(plot.title = element_text(hjust = 0.5, size = 14),
+            panel.border = element_rect(fill = NA),
+            panel.grid.minor.y = element_line(),
+            panel.grid.major.y = element_line(),
+            axis.title = element_text(size = 14),
+            axis.text.x = element_text(size = 14),
+            axis.text.y = element_text(size = 14),
+            strip.text = element_text(size = 14, face = "bold"),
+            legend.title = element_blank(),
+            legend.text = element_text(size = 14),)
+    if (tt <= 3) {
+      boxplot_list[[aa]] <- boxplot_list[[aa]] + 
+        geom_hline(yintercept = log10(llods[aa]), linetype = 2, color = "black", lwd = 1) +
+        geom_hline(yintercept = log10(lloqs[aa]), linetype = 2, color = "black", lwd = 1) +
+        geom_hline(yintercept = log10(uloqs[aa]), linetype = 2, color = "black", lwd = 1)
+    }
+  }
+  
+  ggsave(ggarrange(plotlist = boxplot_list, 
+                   ncol = 2, nrow = 2, 
+                   common.legend = TRUE, legend = "bottom",
+                   align = "h") + 
+           theme(plot.title = element_text(hjust = 0.5, size = 10)),
+         filename = paste0(save.results.to, "/boxplots_", times[tt], "_trt_vaccine_x_cc_",
+                           study_name, ".png"),
+         height = 9, width = 8)
+  
 }
+
 
 
 
@@ -164,9 +168,9 @@ for (bstatus in 1:2) {
 ## stratified by the baseline serostatus, age group and risk group
 ##===============================================================================================================
 set.seed(12345)
-dat.sample5 <-  dat.long.cor.subset[, c("Trt", times, "assay", "cohort_event", "demo_lab", "Bserostatus")] %>%
-  filter(., .$Trt == "Vaccine") %>% 
-  split(., list(.$assay, .$cohort_event, .$demo_lab, .$Bserostatus)) %>%
+dat.sample5 <-  dat.long.cor.subset[, c("Trt", times, "assay", "cohort_event", "demo_lab")] %>%
+  filter(., .$Trt == "Vaccine") %>%
+  split(., list(.$assay, .$cohort_event, .$demo_lab)) %>%
   lapply(., function(x) {
     if(nrow(x) <= 30) {
       return(x)
@@ -175,53 +179,56 @@ dat.sample5 <-  dat.long.cor.subset[, c("Trt", times, "assay", "cohort_event", "
     }}) %>% bind_rows
 
 
-for (bstatus in 1:2) {
-  for (tt in 2:5){
-    subdat <- subset(dat.long.cor.subset, Bserostatus == bstatus.labels[bstatus])
-    subdat_jitter <- subset(dat.sample4, Bserostatus == bstatus.labels[bstatus])
-    if (tt %in% c(3, 5)) {
-      subdat <- subdat %>% filter(cohort_event != "Intercurrent Cases")
-      subdat_jitter <- subdat_jitter %>% filter(cohort_event != "Intercurrent Cases")
+
+for (tt in 2:5){
+  subdat <-dat.long.cor.subset
+  subdat_jitter <- dat.sample5
+  if (tt %in% c(3, 5)) {
+    subdat <- subdat %>% filter(cohort_event != "Intercurrent Cases")
+    subdat_jitter <- subdat_jitter %>% filter(cohort_event != "Intercurrent Cases")
+  }
+  for (aa in 1:4) {
+    boxplots <-  ggplot(subset(subdat, assay == assays[aa] & Trt == "Vaccine"), aes_string(x = "cohort_event", y = times[tt])) +
+      geom_boxplot(aes(colour = cohort_event), width = 0.6, lwd = 1) + 
+      stat_boxplot(geom = "errorbar", aes(colour = cohort_event), width = 0.45, lwd = 1) +
+      geom_jitter(data = filter(subdat_jitter, assay == assays[aa] & Trt == "Vaccine"),
+                  mapping = aes(colour = cohort_event), width = 0.1, 
+                  size = 1.4, show.legend = FALSE) +
+      theme_pubr() + 
+      guides(alpha = "none", color = guide_legend(nrow = 1, byrow = TRUE)) +
+      facet_wrap(~ demo_lab) +
+      ylab(labels.axis[tt, aa]) + xlab("") + ggtitle(labels.title2[tt, aa]) +
+      scale_color_manual(values = c("#1749FF", "#D92321", "#0AB7C9", "#FF6F1B", "#810094", "#378252", 
+                                    "#FF5EBF", "#3700A5", "#8F8F8F", "#787873")) +
+      scale_y_continuous(limits = c(-2, 6), labels = label_math(10^.x), breaks = seq(-2, 6, 2)) +
+      theme(plot.title = element_text(hjust = 0.5, size = 14),
+            panel.border = element_rect(fill = NA),
+            panel.grid.minor.y = element_line(),
+            panel.grid.major.y = element_line(),
+            axis.title = element_text(size = 14),
+            axis.text.x = element_text(size = 14),
+            axis.text.y = element_text(size = 14),
+            strip.text = element_text(size = 14, face = "bold"),
+            legend.position = "bottom",
+            legend.title = element_blank(),
+            legend.text = element_text(size = 14))
+    
+    if (tt <= 3) {
+      boxplots <- boxplots + geom_hline(yintercept = log10(llods[aa]), linetype = 2, color = "black", lwd = 1) + 
+        geom_hline(yintercept = log10(llods[aa]), linetype = 2, color = "black", lwd = 1) +
+        geom_hline(yintercept = log10(lloqs[aa]), linetype = 2, color = "black", lwd = 1) +
+        geom_hline(yintercept = log10(uloqs[aa]), linetype = 2, color = "black", lwd = 1)
     }
-    for (aa in 1:4) {
-      boxplots <-  ggplot(subset(subdat, assay == assays[aa] & Trt == "Vaccine"), aes_string(x = "cohort_event", y = times[tt])) +
-        geom_boxplot(aes(colour = cohort_event), width = 0.6, lwd = 1) + 
-        stat_boxplot(geom = "errorbar", aes(colour = cohort_event), width = 0.45, lwd = 1) +
-        geom_jitter(data = filter(subdat_jitter, assay == assays[aa] & Trt == "Vaccine"), mapping = aes(colour = cohort_event), width = 0.1, 
-                    size = 1.4, show.legend = FALSE) +
-        theme_pubr() + 
-        guides(alpha = "none", color = guide_legend(nrow = 2, byrow = TRUE)) +
-        facet_wrap(~ demo_lab) +
-        ylab(labels.axis[tt, aa]) + xlab("") + ggtitle(labels.title2[tt, aa]) +
-        scale_color_manual(values = c("#1749FF", "#D92321", "#0AB7C9", "#FF6F1B", "#810094", "#378252", "#FF5EBF", "#3700A5", "#8F8F8F", "#787873")) +
-        scale_y_continuous(limits = c(-2, 10), labels = label_math(10^.x), breaks = seq(-2, 10, 2)) +
-        theme(plot.title = element_text(hjust = 0.5, size = 10),
-              panel.border = element_rect(fill = NA),
-              panel.grid.minor.y = element_line(),
-              panel.grid.major.y = element_line(),
-              axis.title = element_text(size = 9),
-              axis.text.x = element_text(size = 10),
-              axis.text.y = element_text(size = 10),
-              strip.text = element_text(size = 10, face = "bold"),
-              legend.position = "bottom",
-              legend.title = element_blank(),
-              legend.text = element_text(size = 10))
-      
-      if (tt <= 3) {
-        boxplots <- boxplots + geom_hline(yintercept = log10(llods[aa]), linetype = 2, color = "black", lwd = 1) +
-          geom_text(x = 0.7, vjust = "right", y = log10(llods[aa]) - 0.5 , label = "LLOD", size = 5) 
-      }
-      
-      
-      ggsave(boxplots,
-             filename = paste0(save.results.to, "/boxplots_", times[tt],"_trt_vaccine_x_cc_",
-                               bstatus.labels.2[bstatus], "_", 
-                               assays[aa], "_", study_name, ".png"),
-             height = 9,
-             width = 8)
-    }
+    
+    
+    ggsave(boxplots,
+           filename = paste0(save.results.to, "/boxplots_", times[tt],"_trt_vaccine_x_cc_",
+                             assays[aa], "_", study_name, ".png"),
+           height = 9,
+           width = 8)
   }
 }
+
 
 #-----------------------------------------------
 # Spaghetti PLOTS
@@ -236,12 +243,11 @@ var_names <- expand.grid(times = c("B", "Day29", "Day57"),
   mutate(var_names = paste0(times, assays)) %>%
   .[, "var_names"]
 
-spaghetti_ptid <- dat.cor.subset[, c("Ptid", "Bserostatus", "Trt", var_names, "cohort_event")] %>%
+spaghetti_ptid <- dat.cor.subset[, c("Ptid", "Trt", var_names, "cohort_event")] %>%
   filter(., complete.cases(.), Trt == 1) %>%
-  transmute(Bserostatus = Bserostatus,
-            cohort_event = cohort_event,
+  transmute(cohort_event = cohort_event,
             Ptid = Ptid) %>%
-  split(., list(.$Bserostatus, .$cohort_event)) %>%
+  split(., list(.$cohort_event)) %>%
   lapply(function(xx) {
     if (nrow(xx) <= 15) {
       return(xx$Ptid)
@@ -250,7 +256,7 @@ spaghetti_ptid <- dat.cor.subset[, c("Ptid", "Bserostatus", "Trt", var_names, "c
     }
   }) %>% unlist %>% as.character
 
-spaghetti_dat <- dat.long.cor.subset[, c("Ptid", "Bserostatus", "cohort_event", 
+spaghetti_dat <- dat.long.cor.subset[, c("Ptid", "cohort_event", 
                                          "B", "Day29", "Day57", "assay")] %>%
   filter(Ptid %in% spaghetti_ptid) %>%
   pivot_longer(cols = c("B", "Day29", "Day57"),
@@ -260,23 +266,24 @@ spaghetti_dat <- dat.long.cor.subset[, c("Ptid", "Bserostatus", "cohort_event",
                              labels = c("D1", "D29", "D57"))) %>%
   as.data.frame
 
-for (bstatus in 1:2) {
-  subdat <- subset(spaghetti_dat, Bserostatus == bstatus.labels[bstatus])
-  covid_corr_spaghetti_facets(plot_dat = subdat,
-                              x = "time_label",
-                              y = "value",
-                              id = "Ptid",
-                              color = "cohort_event",
-                              facet_by = "assay_label",
-                              plot_title = paste0(
-                                "Baseline ",
-                                c("Negative", "Positive")[bstatus],
-                                " PP Vaccine group"
-                              ),
-                              filename = paste0(
-                                save.results.to, "/spaghetti_plot_trt_",
-                                bstatus.labels.2[bstatus], "_",
-                                study_name, ".png"
-                              ),
-                              height = 6, width = 5)
-}
+
+subdat <- spaghetti_dat
+covid_corr_spaghetti_facets(plot_dat = subdat,
+                            x = "time_label",
+                            y = "value",
+                            id = "Ptid",
+                            color = "cohort_event",
+                            facet_by = "assay_label",
+                            plot_title = paste0(
+                              "Baseline ",
+                              c("Negative", "Positive")[bstatus],
+                              " PP Vaccine group"
+                            ),
+                            ylim = c(-2, 6),
+                            ybreaks = seq(-2, 6, by = 2),
+                            filename = paste0(
+                              save.results.to, "/spaghetti_plot_trt_",
+                              study_name, ".png"
+                            ),
+                            height = 6, width = 5)
+

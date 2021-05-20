@@ -1,8 +1,11 @@
 ---
 title: 'Verification Report: Correlates of Risk Graphs'
 author: "Di Lu"
-date: "2021/04/14"
-output: pdf_document
+date: "2021/05/20"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
 ---
 
 ```{r setup, include=FALSE}

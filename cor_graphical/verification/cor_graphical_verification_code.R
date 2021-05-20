@@ -2,7 +2,7 @@
 # File: cor_graphical_verification_code.R
 # Author: Di Lu
 # Creation Date: 2021/03/22
-# Last Edit Date: 2021/04/14
+# Last Edit Date: 2021/05/20
 # Description: Verification of the plots targeted for
 # independent double programming
 # NEWS:
@@ -10,7 +10,7 @@
 #
 #
 #
-
+renv::restore()
 renv::activate()
 
 # Libraries
@@ -28,16 +28,18 @@ library(here)
 
 
 dat <- read.csv(
-  here("cor_graphical/verification/practice_data_test.csv")
+  here("cor_graphical/verification/practice_data.csv")
 )
 
-dat$wt[is.na(dat$wt)] <- 0
-dat$wt.2[is.na(dat$wt.2)] <- 0
+
+dat$wt.D57[is.na(dat$wt.D57)] <- 0
+dat$wt.D29[is.na(dat$wt.D29)] <- 0
+
 
 dat <- dat %>% 
-  mutate(cohort_event = ifelse(EventIndPrimaryD29 == 1 & EventIndPrimaryD57 == 0, "Intercurrent Cases",
-                               ifelse(Perprotocol == 1 & EventIndPrimaryD29 == 1 & EventIndPrimaryD57 == 1, "PP Cases",
-                                      ifelse(Perprotocol == 1 & EventIndPrimaryD29 == 0 & EventIndPrimaryD57 == 0, "PP Non-cases", NA)
+  mutate(cohort_event = ifelse(Perprotocol==1 & Bserostatus==0 &  EarlyendpointD29==0 & TwophasesampIndD29==1 & EventIndPrimaryD29==1 & EventTimePrimaryD29 >=7 &  EventTimePrimaryD29 <= (6 + NumberdaysD1toD57 - NumberdaysD1toD29), "Intercurrent Cases",
+                               ifelse(Perprotocol==1 & Bserostatus==0 & EarlyendpointD57==0 & TwophasesampIndD57==1 & EventIndPrimaryD57==1, "Primary Cases",
+                                      ifelse(Perprotocol==1 &  Bserostatus==0 & EarlyendpointD57==0 & TwophasesampIndD57==1 & EventIndPrimaryD1==0, "Non-Cases", NA)
                                )
   ))
 
@@ -134,10 +136,10 @@ dat.long <- rbind(dat1_bindSpike,dat1_bindRBD,dat1_pseudoneutid50,dat1_pseudoneu
          EventIndPrimaryD57, 
          SubcohortInd, 
          age.geq.65, 
-         TwophasesampInd, 
+         TwophasesampIndD57, 
          Bstratum, 
-         wt,  
-         wt.2, 
+         wt.D57,  
+         wt.D29, 
          race, 
          WhiteNonHispanic,
          cohort_event,
@@ -150,10 +152,10 @@ dat.long <- rbind(dat1_bindSpike,dat1_bindRBD,dat1_pseudoneutid50,dat1_pseudoneu
 
 
 dat.cor.subset <- dat %>% 
-  filter(TwophasesampInd == 1)
+  filter(TwophasesampIndD57 == 1)
 
 dat.long.cor.subset <- dat.long %>% 
-  filter(TwophasesampInd == 1)
+  filter(TwophasesampIndD57 == 1)
 
 dat.long.cor.subset <- dat.long.cor.subset %>% 
   mutate(Dich_RaceEthnic = ifelse(EthnicityHispanic == 1, "Hispanic or Latino",
@@ -163,19 +165,23 @@ dat.long.cor.subset <- dat.long.cor.subset %>%
 
 dat.long.cor.subset <- dat.long.cor.subset %>% mutate(LLoD = ifelse(assay == "pseudoneutid50", log10(10),
                                                                     ifelse(assay == "pseudoneutid80", log10(10),
-                                                                           ifelse(assay == "bindSpike", log10(20),
-                                                                                  ifelse(assay == "bindRBD", log10(20), NA)
-                                                                           )
-                                                                    )
-))
+                                                                           ifelse(assay == "bindSpike", log10(0.3076),
+                                                                                  ifelse(assay == "bindRBD", log10(1.593648), NA)
+                                                                           ))))%>% 
+                                                mutate(LLoQ = ifelse(assay == "pseudoneutid50", log10(18.5),
+                                                                     ifelse(assay == "pseudoneutid80", log10(14.3),
+                                                                            ifelse(assay == "bindSpike", log10(1.7968),
+                                                                                   ifelse(assay == "bindRBD", log10(3.4263), NA)
+                                                                            ))))%>%
+                                                mutate(ULoQ = ifelse(assay == "pseudoneutid50", log10(4404),
+                                                                     ifelse(assay == "pseudoneutid80", log10(1295),
+                                                                            ifelse(assay == "bindSpike", log10(10155.95),
+                                                                                   ifelse(assay == "bindRBD", log10(16269.23), NA)
+                                                                            ))))
 
-
-
-dat.long.cor.subset <- dat.long.cor.subset %>%
-  mutate(ULoQ = ifelse(assay %in% c("bindSpike", "bindRBD"),log10(19136250),
-                       ifelse(assay %in% c("pseudoneutid50", "pseudoneutid80"),Inf,NA)))
-
-
+dat.long.cor.subset$B[dat.long.cor.subset$B>dat.long.cor.subset$ULoQ] <- dat.long.cor.subset$ULoQ[dat.long.cor.subset$B>dat.long.cor.subset$ULoQ]
+dat.long.cor.subset$Day29[dat.long.cor.subset$Day29>dat.long.cor.subset$ULoQ] <- dat.long.cor.subset$ULoQ[dat.long.cor.subset$Day29>dat.long.cor.subset$ULoQ]
+dat.long.cor.subset$Day57[dat.long.cor.subset$Day57>dat.long.cor.subset$ULoQ] <- dat.long.cor.subset$ULoQ[dat.long.cor.subset$Day57>dat.long.cor.subset$ULoQ]
 
 dat.long.cor.subset <- dat.long.cor.subset %>% mutate(Delta29overB = Day29 - B, Delta57overB = Day57 - B)
 
@@ -212,7 +218,7 @@ dat.long.cor.subset <- dat.long.cor.subset %>%
 dat.longer.cor.subset <- dat.long.cor.subset %>% select(
   Ptid, Trt, Bserostatus, EventIndPrimaryD29, EventIndPrimaryD57, Perprotocol,
   cohort_event, Age, age_geq_65_label, highrisk_label, age_risk_label, sex_label,
-  minority_label, Dich_RaceEthnic, assay, LLoD, wt, wt.2, B, Day29, Day57, Delta29overB, Delta57overB
+  minority_label, Dich_RaceEthnic, assay, LLoD,LLoQ, wt.D57, wt.D29, B, Day29, Day57, Delta29overB, Delta57overB
 )
 
 
@@ -226,7 +232,7 @@ dat.longer.cor.subset <- gather(dat.longer.cor.subset, time, value, B:Delta57ove
   ))
 
 dat.longer.cor.subset <- dat.longer.cor.subset %>%
-  mutate(baseline_lt_thres = ifelse(time == "Day 1" & value >= LLoD, 1, 0)) %>%
+  mutate(baseline_lt_thres = ifelse(time == "Day 1" & value >= LLoQ, 1, 0)) %>%
   mutate(increase_4F_D29 = ifelse(time == "Delta29overB" & value > log10(4), 1, 0)) %>%
   mutate(increase_4F_D57 = ifelse(time == "Delta57overB" & value > log10(4), 1, 0))
 
@@ -242,11 +248,11 @@ dat.longer.cor.subset <- dat.longer.cor.subset %>%
 dat.longer.cor.subset <- dat.longer.cor.subset %>% filter(time == "Day 1" | time == "Day 29" | time == "Day 57")
 
 
-dat.longer.cor.subset <- dat.longer.cor.subset %>% filter(time == "Day 1" | time == "Day 29" | time == "Day 57")
+
 
 dat.longer.cor.subset <- dat.longer.cor.subset %>% 
   mutate(
-    response = ifelse((baseline_lt_thres_ptid == 0 & value >= LLoD) |
+    response = ifelse((baseline_lt_thres_ptid == 0 & value >= LLoQ) |
                         (baseline_lt_thres_ptid == 1 & time == "Day 1") |
                         (baseline_lt_thres_ptid == 1 & time == "Day 29" & increase_4F_D29_ptid == 1) |
                         (baseline_lt_thres_ptid == 1 & time == "Day 57" & increase_4F_D57_ptid == 1), 1, 0))
@@ -255,8 +261,8 @@ dat.longer.cor.subset <- dat.longer.cor.subset %>%
 dat.longer.cor.subset.plot1_verification <- dat.longer.cor.subset %>% 
   
   group_by(Trt, Bserostatus, cohort_event, time, assay) %>%
-  mutate(num = round(sum(response*wt.2),1),
-         denom = round(sum(wt.2),1),
+  mutate(num = round(sum(response*wt.D29),1),
+         denom = round(sum(wt.D29),1),
          RespRate = paste(num,"/",denom,"=",round(num/denom*100,1),"%",sep = ""),
          min = min(value),
          q1 = quantile(value, 0.25),
@@ -286,7 +292,8 @@ plot.25sample1_verification <- dat.longer.cor.subset.plot1_verification[paste(da
   filter(time %in% c("Day 1","Day 29","Day 57"))
 
 #add "/n" to the response rate to match the print out format shown in the plot.
-plot.25sample1_verification$RespRate <- gsub("=", "=\n", plot.25sample1_verification$RespRate )
+plot.25sample1_verification$RespRate <- gsub("=", "\n", plot.25sample1_verification$RespRate )
+
 
 write.csv(plot.25sample1_verification,
           here("cor_graphical/verification/output/plot.25sample1_verification.csv"),
@@ -380,7 +387,7 @@ lineplots_neg_vaccine_bindSpike_plot.25sample1_3 <- lineplots_neg_vaccine_bindSp
 p <- ggplot(lineplots_neg_vaccine_bindSpike_3, aes(x = time, y = value)) +
   geom_violin(scale = "width") +
   geom_boxplot(width = 0.1) +
-  scale_y_continuous(breaks = c(0, 1, 2, 3, 4, 5, 6, 7), limits = c(0, 10)) +
+  scale_y_continuous(breaks = c(0, 1, 2, 3, 4, 5, 6, 7), limits = c(-1, 10)) +
   facet_wrap(~cohort_event) +
   geom_line(data=lineplots_neg_vaccine_bindSpike_plot.25sample1_3,aes(x = time, y = value, group=Ptid))
 

@@ -15,5 +15,6 @@ language:
 rmd_files: [
   "index_riskscore.Rmd",
   "base_riskscore/report.Rmd",
-  "references.Rmd"
+  "references.Rmd",
+  "appendix.Rmd"
 ]

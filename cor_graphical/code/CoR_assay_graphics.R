@@ -4,17 +4,28 @@ renv::activate(project = here::here(".."))
 source(here::here("..", "_common.R"))
 #-----------------------------------------------
 source(here::here("code", "params.R"))
-source(here::here("code", "cor_data_preprocess.R"))
 source(here::here("code", "covid_corr_plot_functions.R"))
 library(ggpubr)
 library(scales)
 library(ggplot2)
+library(tidyr)
+
+dat.long.cor.subset <- readRDS(here(
+  "data_clean",
+  "long_cor_data.rds"
+))
+
+dat.cor.subset <- readRDS(here(
+  "data_clean",
+  "cor_data.rds"
+))
+
 #=========================================================================================================================
 # Reverse empirical cdf (rcdf) plots for the Baseline/Day 57/Baseline-subtracted Day 57assay readouts, 
 # stratified by treatment group and event status, in baseline negative or positive subjects
 # We made four ggplot objects, each for one assay, and combine them with ggarrange
 #=========================================================================================================================
-wts <- c("wt", "wt.2", "wt", "wt.2", "wt")
+wts <- c("wt.D57", "wt.D29", "wt.D57", "wt.D29", "wt.D57")
 for (bstatus in 1:2) {
   for (tt in 2:5){
     subdat <- subset(dat.long.cor.subset, Bserostatus == bstatus.labels[bstatus])
@@ -49,7 +60,7 @@ for (bstatus in 1:2) {
                      align = "h"),
            filename = paste0(save.results.to, "/Marker_RCDF_", times[tt], 
                              "_trt_by_event_status_bstatus_", bstatus.labels.2[bstatus], "_", 
-                             study.name,".png"),
+                             study_name,".png"),
            height = 7, width = 6.5)
     
     
@@ -133,7 +144,7 @@ for (bstatus in 1:2) {
              theme(plot.title = element_text(hjust = 0.5, size = 10)),
            filename = paste0(save.results.to, "/boxplots_", times[tt], "_trt_vaccine_x_cc_",
                              bstatus.labels.2[bstatus], "_",
-                             study.name, ".png"),
+                             study_name, ".png"),
            height = 9, width = 8)
     
   }
@@ -205,7 +216,7 @@ for (bstatus in 1:2) {
       ggsave(boxplots,
              filename = paste0(save.results.to, "/boxplots_", times[tt],"_trt_vaccine_x_cc_",
                                bstatus.labels.2[bstatus], "_", 
-                               assays[aa], "_", study.name, ".png"),
+                               assays[aa], "_", study_name, ".png"),
              height = 9,
              width = 8)
     }
@@ -237,7 +248,7 @@ spaghetti_ptid <- dat.cor.subset[, c("Ptid", "Bserostatus", "Trt", var_names, "c
     } else {
       return(sample(xx$Ptid, 15))
     }
-  }) %>% unlist %>% as.numeric
+  }) %>% unlist %>% as.character
 
 spaghetti_dat <- dat.long.cor.subset[, c("Ptid", "Bserostatus", "cohort_event", 
                                          "B", "Day29", "Day57", "assay")] %>%
@@ -265,7 +276,7 @@ for (bstatus in 1:2) {
                               filename = paste0(
                                 save.results.to, "/spaghetti_plot_trt_",
                                 bstatus.labels.2[bstatus], "_",
-                                study.name, ".png"
+                                study_name, ".png"
                               ),
                               height = 6, width = 5)
 }

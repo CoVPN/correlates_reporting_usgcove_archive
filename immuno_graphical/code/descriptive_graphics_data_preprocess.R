@@ -13,12 +13,14 @@ dat.mock <- read.csv(here("..", "data_clean", data_name), header = TRUE)
 source(here("code", "params.R"))
 dat <- dat.mock
 
+print("Data preprocess")
+
 # For immunogenicity characterization, complete ignore any information on cases
 # vs. non-cases.  The goal is to characterize immunogenicity in the random
 # subcohort, which is a stratified sample of enrolled participants. So,
 # immunogenicity analysis is always done in ppts that meet all of the criteria.
 dat.twophase.sample <- dat %>%
-  dplyr::filter(TwophasesampInd == 1 & SubcohortInd == 1 & Perprotocol == 1)
+  dplyr::filter(TwophasesampIndD57 == 1 & SubcohortInd == 1 & Perprotocol == 1)
 twophase_sample_id <- dat.twophase.sample$Ptid
 
 
@@ -28,29 +30,25 @@ twophase_sample_id <- dat.twophase.sample$Ptid
 dat.long.subject_level <- dat[, c(
   "Ptid", "Trt", "MinorityInd", "HighRiskInd", "Age", "Sex",
   "Bserostatus", "Fullvaccine", "Perprotocol", "EventIndPrimaryD29",
-  "EventIndPrimaryD57", "SubcohortInd", "age.geq.65", "TwophasesampInd",
-  "Bstratum", "wt", "wt.2", "wt.subcohort", "race",
+  "EventIndPrimaryD57", "SubcohortInd", "age.geq.65", "TwophasesampIndD57",
+  "Bstratum", "wt.D57", "wt.D29", "wt.subcohort", "race",
   "EthnicityHispanic","EthnicityNotreported", "EthnicityUnknown",
   "WhiteNonHispanic"
 )] %>%
-  replicate(length(assays), ., simplify = FALSE) %>%
+  replicate(length(assay_immuno), ., simplify = FALSE) %>%
   bind_rows()
 
-name_grid <- expand.grid(
-  aa = times,
-  cc = c("", "CPV", paste(".imp", 1:10, sep = ""))
-)
 
-dat.long.assay_value.names <- paste(name_grid$aa, name_grid$cc, sep = "")
+dat.long.assay_value.names <- times
 dat.long.assay_value <- as.data.frame(matrix(
-  nrow = nrow(dat) * length(assays),
+  nrow = nrow(dat) * length(assay_immuno),
   ncol = length(dat.long.assay_value.names)
 ))
 colnames(dat.long.assay_value) <- dat.long.assay_value.names
 
-for (ii in 1:nrow(name_grid)) {
-  dat_mock_col_names <- paste(name_grid$aa[ii], assays, name_grid$cc[ii], sep = "")
-  dat.long.assay_value[, dat.long.assay_value.names[ii]] <- unlist(lapply(
+for (tt in seq_along(times)) {
+  dat_mock_col_names <- paste(times[tt], assay_immuno, sep = "")
+  dat.long.assay_value[, dat.long.assay_value.names[tt]] <- unlist(lapply(
     dat_mock_col_names,
     function(nn) {
       if (nn %in% colnames(dat)) {
@@ -62,7 +60,7 @@ for (ii in 1:nrow(name_grid)) {
   ))
 }
 
-dat.long.assay_value$assay <- rep(assays, each = nrow(dat))
+dat.long.assay_value$assay <- rep(assay_immuno, each = nrow(dat))
 
 dat.long <- cbind(dat.long.subject_level, dat.long.assay_value)
 
@@ -73,7 +71,7 @@ dat.long$Bserostatus <- factor(dat.long$Bserostatus,
   levels = c(0, 1),
   labels = bstatus.labels
 )
-dat.long$assay <- factor(dat.long$assay, levels = assays, labels = assays)
+dat.long$assay <- factor(dat.long$assay, levels = assay_immuno, labels = assay_immuno)
 
 dat.long.twophase.sample <- dat.long[dat.long$Ptid %in% twophase_sample_id, ]
 dat.twophase.sample <- subset(dat, Ptid %in% twophase_sample_id)
@@ -99,7 +97,7 @@ dat.long.twophase.sample$age_geq_65_label <-
     dat.long.twophase.sample,
     factor(age.geq.65,
       levels = c(0, 1),
-      labels = c("Age >= 65", "Age < 65")
+      labels = c("Age < 65", "Age >= 65")
     )
   )
 
@@ -130,7 +128,7 @@ dat.long.twophase.sample$sex_label <-
   with(
     dat.long.twophase.sample,
     factor(Sex,
-      levels = c(0, 1),
+      levels = c(1, 0),
       labels = c("Female", "Male")
     )
   )
@@ -194,6 +192,8 @@ dat.long.twophase.sample$age_minority_label <-
 dat.long.twophase.sample$race <- as.factor(dat.long.twophase.sample$race)
 dat.twophase.sample$race <- as.factor(dat.twophase.sample$race)
 
+dat.long.twophase.sample$Ptid <- as.character(dat.long.twophase.sample$Ptid) 
+dat.twophase.sample$Ptid <- as.character(dat.twophase.sample$Ptid) 
 
 saveRDS(as.data.frame(dat.long.twophase.sample),
   file = here("data_clean", "long_twophase_data.rds")
@@ -202,5 +202,4 @@ saveRDS(as.data.frame(dat.twophase.sample),
   file = here("data_clean", "twophase_data.rds")
 )
 
-## "longer" dataset
 

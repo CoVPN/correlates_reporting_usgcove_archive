@@ -31,27 +31,90 @@ include_bindN <- TRUE
 times <- c("B", "Day29", "Day57", 
            "Delta29overB", "Delta57overB", "Delta57over29")
 
-# limits for each assay
-llods <-c(bindN = 20, 
-          bindSpike = 20, 
-          bindRBD = 20, 
-          pseudoneutid50 = 10, 
-          pseudoneutid80 = 10, 
-          liveneutmn50 = 62.16)
 
-lloqs <-c(bindN = 34, 
-          bindSpike = 34, 
-          bindRBD = 34, 
-          pseudoneutid50 = 49, 
-          pseudoneutid80 = 43, 
-          liveneutmn50 = 117.35) 
+# limits for each assay (IU for bAb, no need to convert again)
+# the following are copied from SAP to avoid any mistake (get rid of commas)
+tmp=list(
+    bindSpike=c(
+        LLOD = 0.3076,
+        ULOD = 172226.2,
+        LLOQ = 1.7968,
+        ULOQ = 10155.95)
+    ,
+    bindRBD=c(
+        LLOD = 1.593648,
+        ULOD = 223074,
+        LLOQ = 3.4263,
+        ULOQ = 16269.23)
+    ,
+    bindN=c( 
+        LLOD = 0.093744,
+        ULOD = 52488,
+        LLOQ = 1.43085,
+        ULOQ = 588.2500)
+    ,
+    pseudoneutid50=c( 
+        LLOD = 10,
+        ULOD = NA,
+        LLOQ = 18.5,
+        ULOQ = 4404)
+    ,
+    pseudoneutid80=c( 
+        LLOD = 10,
+        ULOD = NA,
+        LLOQ = 14.3,
+        ULOQ = 1295)
+    ,
+    liveneutmn50=c( 
+        LLOD = 62.16,
+        ULOD = NA,
+        LLOQ = 117.35,
+        ULOQ = 18976.19)
+)
 
-uloqs <-c(bindN = 19136250, 
-          bindSpike = 19136250, 
-          bindRBD = 19136250, 
-          pseudoneutid50 = Inf, 
-          pseudoneutid80 = Inf, 
-          liveneutmn50 = 18976.19) 
+llods=sapply(tmp, function(x) unname(x["LLOD"]))
+lloqs=sapply(tmp, function(x) unname(x["LLOQ"]))
+uloqs=sapply(tmp, function(x) unname(x["ULOQ"]))
+
+#llods <-c(
+#          bindSpike = 0.180, 
+#          bindRBD = 0.544, 
+#          bindN = 0.048, 
+#          pseudoneutid50 = 10, 
+#          pseudoneutid80 = 10, 
+#          liveneutmn50 = 62.16)
+#
+#lloqs <-c(
+#          bindSpike = 0.3060, 
+#          bindRBD = 0.9248, 
+#          bindN = 0.0816, 
+#          pseudoneutid50 = 18.5, 
+#          pseudoneutid80 = 14.3, 
+#          liveneutmn50 = 117.35) 
+#
+#uloqs <-c(
+#          bindSpike = 172226.2, 
+#          bindRBD = 520506.0, 
+#          bindN = 45927.0, 
+#          pseudoneutid50 = 4404, 
+#          pseudoneutid80 = 1295, 
+#          liveneutmn50 = 18976.19) 
+
+
+convf=c(bindSpike=0.0090, bindN=0.0024, bindRBD=0.0272)
+
+must_have_assays <- c(
+  "bindSpike", "bindRBD"
+  # NOTE: the live neutralization marker will eventually be available
+  #"liveneutmn50"
+)
+
+
+assays_to_be_censored_at_uloq_cor <- c(
+  "bindSpike", "bindRBD", "pseudoneutid50", "pseudoneutid80"
+  # NOTE: the live neutralization marker will eventually be available
+  #"liveneutmn50"
+)
 
 ###############################################################################
 # figure labels and titles for markers
@@ -107,7 +170,7 @@ labels.axis <- outer(
   "%.%"
 )
 labels.axis <- as.data.frame(labels.axis)
-  rownames(labels.axis) <- times
+rownames(labels.axis) <- times
 
 labels.assays <- c("Binding Antibody to Spike", 
                    "Binding Antibody to RBD",
@@ -115,7 +178,9 @@ labels.assays <- c("Binding Antibody to Spike",
                    "PsV Neutralization 80% Titer",
                    "WT LV Neutralization 50% Titer")
 
-names(labels.assays) <- c("bindSpike", "bindRBD", "pseudoneutid50",
+names(labels.assays) <- c("bindSpike", 
+                          "bindRBD", 
+                          "pseudoneutid50",
                           "pseudoneutid80",
                           "liveneutmn50")
 
@@ -157,6 +222,15 @@ demo.stratum.labels <- c(
 )
 
 ###############################################################################
+# reproduciblity options
+###############################################################################
+
+# NOTE: used in appendix.Rmd to store digests of input raw/processed data files
+# hash algorithm picked based on https://csrc.nist.gov/projects/hash-functions
+hash_algorithm <- "sha256"
+
+
+###############################################################################
 # theme options
 ###############################################################################
 
@@ -172,7 +246,7 @@ knitr::opts_chunk$set(
   fig.width = 6,
   fig.asp = 0.618,
   fig.retina = 0.8,
-  dpi = 300,
+  dpi = 600,
   echo = FALSE,
   message = FALSE,
   warning = FALSE
@@ -243,4 +317,55 @@ theme_update(
 ggsave_custom <- function(filename = default_name(plot),
                           height= 15, width = 21, ...) {
   ggsave(filename = filename, height = height, width = width, ...)
+}
+
+
+
+get.range.cor=function(dat, assay=c("bindSpike", "bindRBD", "pseudoneutid50", "pseudoneutid80"), time=c("57","29")) {
+    assay<-match.arg(assay)
+    a <- assay # Fixes bug
+    time<-match.arg(time)        
+    if(assay %in% c("bindSpike", "bindRBD")) {
+        ret=range(dat[["Day"%.%time%.%"bindSpike"]], dat[["Day"%.%time%.%"bindRBD"]], log10(llods[c("bindSpike","bindRBD")]/2), na.rm=T)
+        ret[2]=ceiling(ret[2]) # round up
+    } else if(assay %in% c("pseudoneutid50", "pseudoneutid80")) {
+        ret=range(dat[["Day"%.%time%.%a]], log10(llods[c("pseudoneutid50","pseudoneutid80")]/2), log10(uloqs[c("pseudoneutid50","pseudoneutid80")]), na.rm=T)
+        ret[2]=ceiling(ret[2]) # round up
+    }  
+    delta=(ret[2]-ret[1])/20     
+    c(ret[1]-delta, ret[2]+delta)
+}
+
+draw.x.axis.cor=function(xlim, llod){
+#    if(xlim[2]<3) {
+#        xx = (c(10,25,50,100,250,500,1000))
+#        for (x in xx) axis(1, at=log10(x), labels=if (llod==x) "lod" else if (x==1000) bquote(10^3) else x  ) 
+#    } else if(xlim[2]<4) {
+#        xx = (c(10,50,250,1000,5000,10000))
+#        for (x in xx) axis(1, at=log10(x), labels=if (llod==x) "lod" else if (x %in% c(1000,10000)) bquote(10^.(log10(x))) else if (x==5000) bquote(.(x/1000)%*%10^3) else  x ) 
+#    } else {
+        xx=seq(floor(xlim[1]), ceiling(xlim[2]))
+        for (x in xx) if (x>log10(llod*2)) axis(1, at=x, labels=if (log10(llod)==x) "lod" else if (x>=3) bquote(10^.(x)) else 10^x )
+#    }
+    
+    # plot llod if llod is not already plotted
+    #if(!any(log10(llod)==xx)) 
+    axis(1, at=log10(llod), labels="lod")
+    
+}
+
+##### Copy of draw.x.axis.cor but returns the x-axis ticks and labels
+# This is necessary if one works with ggplot as the "axis" function does not work.
+get.labels.x.axis.cor=function(xlim, llod){
+  xx=seq(floor(xlim[1]), ceiling(xlim[2]))
+  xx=xx[xx>log10(llod*2)]
+  x_ticks <- xx
+  labels <- sapply(xx, function(x) {
+    if (log10(llod)==x) "lod" else if (x>=3) bquote(10^.(x)) else 10^x
+  })
+  #if(!any(log10(llod)==x_ticks)){
+    x_ticks <- c(log10(llod), x_ticks)
+    labels <- c("lod", labels)
+  #}
+  return(list(ticks = x_ticks, labels = labels))
 }

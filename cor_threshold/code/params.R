@@ -6,6 +6,7 @@ source(here::here("..", "_common.R"))
 #-----------------------------------------------
 
 
+
 ### #####
 #### NOTE Currently only supports Day29 and Day57 markers
 #########
@@ -24,9 +25,14 @@ source(here::here("..", "_common.R"))
 # 7. Make sure you have at least two covariates to adjust for.
 ################################
 
+##### Compute reference times for analysis -semi hard coded
 
+data <- read.csv(here::here("..", "data_clean", data_name))
+tf_Day29 <- max(data[data$EventIndPrimaryD29==1 & data$Trt == 1 & data$Bserostatus == 0 & !is.na(data$wt.D29), "EventTimePrimaryD29" ])
+tf_Day57 <- max(data[data$EventIndPrimaryD57==1 & data$Trt == 1 & data$Bserostatus == 0 & !is.na(data$wt.D57), "EventTimePrimaryD57" ])
 
-tf <- list("Day57" = 172, "Day29" = 200) # Reference time to perform analysis. Y = 1(T <= tf) where T is event time of Covid.
+print(colnames(data))
+tf <- list("Day57" = tf_Day57, "Day29" = tf_Day29) # Reference time to perform analysis. Y = 1(T <= tf) where T is event time of Covid.
 # tf should be large enough that most events are observed but small enough so that not many people are right censored. For the practice dataset, tf = 170 works.
 # Right-censoring is taken into account for  this analysis.
 covariate_adjusted <- TRUE #### Estimate threshold-response function with covariate adjustment
@@ -49,9 +55,9 @@ plotting_assay_title_generator <- function(marker) {
   time <- marker_to_time[marker]
   assay <- marker_to_assay[marker]
   title <- labels.title[time, assay]
-  
+
   return(title)
-  
+
 }
 
 times <- intersect(c("Day57", "Day29"), times)
@@ -70,15 +76,21 @@ marker_to_assay <- sapply(markers, function(v) {
 
 # Covariates to adjust for. SHOULD BE AT LEAST TWO VARIABLES OR GLMNET WILL ERROR
 
-covariates <- c("MinorityInd", "HighRiskInd") # , "BRiskScore") # Add "age"?
+covariates <- c("MinorityInd", "HighRiskInd", "risk_score") # , "BRiskScore") # Add "age"?
+if("risk_score" %in% covariates) {
+  append_data <- "_with_riskscore"
+} else {
+  append_data <- ""
+}
+
 # Indicator variable for whether an event was observed (0 is censored or end of study, 1 is COVID endpoint)
 Event_Ind_variable <- list("Day57" = "EventIndPrimaryD57", "Day29" = "EventIndPrimaryD29") # "B" = "EventIndPrimaryD57")
 # Time until event (censoring, end of study, or COVID infection)
 Event_Time_variable <- list("Day57" = "EventTimePrimaryD57", "Day29" = "EventTimePrimaryD29")
 # Variable containing the two stage sampling weights
-weight_variable <- list("Day57" = "wt", "Day29" = "wt.2")
+weight_variable <- list("Day57" = "wt.D57", "Day29" = "wt.D29")
 # Indicator variable that is 1 if selected for second stage
-twophaseind_variable <- list("Day57" = "TwophasesampInd", "Day29" = "TwophasesampInd.2")
+twophaseind_variable <- list("Day57" = "TwophasesampIndD57", "Day29" = "TwophasesampIndD29")
 # The stratum over which stratified two stage sampling is performed
 twophasegroup_variable <- "Wstratum"
 
@@ -89,7 +101,7 @@ twophasegroup_variable <- "Wstratum"
 # Threshold grid is generated equally spaced (on the quantile level)
 # between the threshold at lower_quantile and threshold at upper_quantile
 # Best to have these be away from 0 and 1.
-lower_quantile <- 0.01
+lower_quantile <- 0
 upper_quantile <- 0.99
 risks_to_estimate_thresh_of_protection <- NULL ### Risk values at which to estimate threshold of protection...
 ###                Leaving at NULL (default) is recommended to ensure risks fall in range of estimate. Example: c(0, 0.0005, 0.001, 0.002, 0.003)

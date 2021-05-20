@@ -18,11 +18,38 @@ cache:
 
 # which versions of R should we build on
 r:
-  #- oldrel
   #- release
-  #- devel
   # NOTE: can we grab this from the renv.lockfile?
   - 4.0.4
+
+# public key to allow Travis to push to gh-pages
+env:
+  global:
+    secure: qi7eIEkOEJsuuUj3WwkAGe+kWr3zeDrDz8GYnPQhVOzYAtEWTbImylZYEHhkhBruIipHjzPTIpOM3xfm9SKKnJEQzpCbSLSbKZwMtwHTn3f2Dfd9KZ8dLgVdXG34+8CChksH4zWQkn/7Sgx7rCB3VJvxquOiQA05TsroLnZiJKxxVsBYjww7m4iuYjFc6HsWSLoT/XicZi7GUqN9m+C0eoSJ5kUWfXopSZLCiusTT1+Lc/wdKI9g3QckOINznmZ2ZptaBbdkBeOzzSQhGFuOufnyZD6qJ7RpfCg8nxnQ9ksNOi6SohCBWyRp4TmvPLPsmszZhYkRhmB0K0hoTsYXkEgsSHVMzInRfHk3VHbYz1SFbksHzVM+ZEEDhIFJEoCbwd5n31y9RotzePVKEVIajS3pgxWWAyjiQiRC/dwe7clO5Ser0URPulPuWjURZId8fhOkZK8gJAKVBEmr5Qr3VTKFUSntSa+0rDulHL/TmM2MZnAnVKkeJl9qB5qYB/Q7DjkESAUmNo8IwHnBkFW/6eXB0IleV4gfTej0WeMgR/64XWKCRcLCX5vGtF/dgG8eCAThSgpJmHzzO2iw0gkuJ0sgpRecqUYK+aNRarRw5DSYFgd51WkEaMx8bAHYuhb8lMytmBWI+rilYwXTZC82klNZvzQC/Xj2+NMzmeU/UPo=
+
+# build reports via included Make recipes, in independent simultaneous jobs
+jobs:
+  include:
+    - name: Immuno Report
+      env: REPORT_TYPE=IMMUNO
+      script:
+        - echo "Building immunogenicity report"
+        - make data_processed
+        - make immuno_report
+    - name: CoR Report
+      env: REPORT_TYPE=COR
+      script:
+        - echo "Building correlates of risk report"
+        - make data_processed
+        - make risk_report
+        - make cor_report
+    - name: CoP Report
+      env: REPORT_TYPE=COP
+      script:
+        - echo "Building correlates of protection report"
+        - make data_processed
+        - make risk_report
+        - make cop_report
 
 apt_packages:
   - libxml2-dev
@@ -39,7 +66,6 @@ install:
   - cd .. && Rscript -e "install.packages(c('here', 'renv', 'tinytex'))"
   - Rscript -e "tinytex::install_tinytex()"
   - export PATH=$HOME/bin:${PATH}
-  - tlmgr install threeparttablex
   - cd $TRAVIS_BUILD_DIR && Rscript -e "renv::restore()"
 
 # turn down number of bootstraps and permutations in CoR for faster builds
@@ -47,22 +73,9 @@ before_script:
   - echo "B <- 5" >> $TRAVIS_BUILD_DIR/cor_coxph/code/params.R
   - echo "numPerm <- 5" >> $TRAVIS_BUILD_DIR/cor_coxph/code/params.R
 
-# build reports via included Make recipes
-script:
-  - make data_processed
-  - make risk_report
-  - make immuno_report
-  - make cor_report
-  # - make cop_report
-
 # push reports to gh-pages branch
 after_script:
   - chmod +x _deploy_reports.sh && ./_deploy_reports.sh
-
-# public key to allow Travis to push to gh-pages
-env:
-  global:
-    secure: qi7eIEkOEJsuuUj3WwkAGe+kWr3zeDrDz8GYnPQhVOzYAtEWTbImylZYEHhkhBruIipHjzPTIpOM3xfm9SKKnJEQzpCbSLSbKZwMtwHTn3f2Dfd9KZ8dLgVdXG34+8CChksH4zWQkn/7Sgx7rCB3VJvxquOiQA05TsroLnZiJKxxVsBYjww7m4iuYjFc6HsWSLoT/XicZi7GUqN9m+C0eoSJ5kUWfXopSZLCiusTT1+Lc/wdKI9g3QckOINznmZ2ZptaBbdkBeOzzSQhGFuOufnyZD6qJ7RpfCg8nxnQ9ksNOi6SohCBWyRp4TmvPLPsmszZhYkRhmB0K0hoTsYXkEgsSHVMzInRfHk3VHbYz1SFbksHzVM+ZEEDhIFJEoCbwd5n31y9RotzePVKEVIajS3pgxWWAyjiQiRC/dwe7clO5Ser0URPulPuWjURZId8fhOkZK8gJAKVBEmr5Qr3VTKFUSntSa+0rDulHL/TmM2MZnAnVKkeJl9qB5qYB/Q7DjkESAUmNo8IwHnBkFW/6eXB0IleV4gfTej0WeMgR/64XWKCRcLCX5vGtF/dgG8eCAThSgpJmHzzO2iw0gkuJ0sgpRecqUYK+aNRarRw5DSYFgd51WkEaMx8bAHYuhb8lMytmBWI+rilYwXTZC82klNZvzQC/Xj2+NMzmeU/UPo=
 
 notifications:
   email:

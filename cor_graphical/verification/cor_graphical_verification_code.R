@@ -35,7 +35,6 @@ dat <- read.csv(
 dat$wt.D57[is.na(dat$wt.D57)] <- 0
 dat$wt.D29[is.na(dat$wt.D29)] <- 0
 
-
 dat <- dat %>% 
   mutate(cohort_event = ifelse(Perprotocol==1 & Bserostatus==0 &  EarlyendpointD29==0 & TwophasesampIndD29==1 & EventIndPrimaryD29==1 & EventTimePrimaryD29 >=7 &  EventTimePrimaryD29 <= (6 + NumberdaysD1toD57 - NumberdaysD1toD29), "Intercurrent Cases",
                                ifelse(Perprotocol==1 & Bserostatus==0 & EarlyendpointD57==0 & TwophasesampIndD57==1 & EventIndPrimaryD57==1, "Primary Cases",
@@ -261,7 +260,7 @@ dat.longer.cor.subset <- dat.longer.cor.subset %>%
 dat.longer.cor.subset.plot1_verification <- dat.longer.cor.subset %>% 
   
   group_by(Trt, Bserostatus, cohort_event, time, assay) %>%
-  mutate(num = round(sum(response*wt.D29),1),
+  mutate(num = round(sum(response * wt.D29),1),
          denom = round(sum(wt.D29),1),
          RespRate = paste(num,"/",denom,"=",round(num/denom*100,1),"%",sep = ""),
          min = min(value),

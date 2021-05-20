@@ -1,0 +1,3 @@
+data_clean/*.rds
+output/*.rds
+*.pdf

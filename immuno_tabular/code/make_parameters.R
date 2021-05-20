@@ -5,7 +5,6 @@ source(here::here("..", "_common.R")) #
 ##################################################
 
 library(tidyverse)
-source(here::here("code", "make_functions.R"))
 
 # To select which tables are included in the report.
 # Also to modify the headers, footers, etc. for each table
@@ -15,8 +14,7 @@ tlf <-
       table_header = "Demographic and Clinical Characteristics at Baseline in 
       the Baseline SARS-CoV-2 Negative Per-Protocol Cohort",
       table_footer = "This table summarizes the random subcohort, which was 
-      randomly sampled from the per-protocol cohort, and excludes individuals 
-      with a COVID failure event < 7 days post Day 57. The sampling was 
+      randomly sampled from the per-protocol cohort. The sampling was 
       stratified by 24 strata defined by enrollment characteristics: Assigned 
       treatment arm $\\\\times$ Baseline SARS-CoV-2 naïve vs. non-naïve status 
       (defined by serostatus and NAAT testing) $\\\\times$ Randomization strata 
@@ -32,8 +30,7 @@ tlf <-
       table_header = "Demographic and Clinical Characteristics at Baseline in 
       the Baseline SARS-CoV-2 Positive Per-Protocol Cohort",
       table_footer ="This table summarizes the random subcohort, which was 
-      randomly sampled from the per-protocol cohort, and excludes individuals 
-      with a COVID failure event < 7 days post Day 57. The sampling was 
+      randomly sampled from the per-protocol cohort. The sampling was 
       stratified by 24 strata defined by enrollment characteristics: Assigned 
       treatment arm $\\\\times$ Baseline SARS-CoV-2 naïve vs. non-naïve status 
       (defined by serostatus and NAAT testing) $\\\\times$ Randomization strata 
@@ -45,22 +42,44 @@ tlf <-
       col1="7cm"
     ),
     
-    tab_bind = list(
+    tab_bind1 = list(
       table_header = "Percentage of responders, and participants
-      with concentrations $\\geq 2\\times LLODor\\geq 4\\times$ LLOD for binding antibody
+      with concentrations $\\geq 2\\times$ LLOQ or $\\geq 4\\times$ LLOQ for binding antibody
       markers",
       table_footer = c(
         "Binding Antibody Responders are defined as participants who had
-        baseline values below the LLOD with detectable antibody concentration
-        above the assay LLOD, or as participants with baseline values above
-        the LLOD with a 4-fold increase in antibody concentration.",
+        baseline values below the LLOQ with detectable antibody concentration
+        above the assay LLOQ, or as participants with baseline values above
+        the LLOQ with a 4-fold increase in antibody concentration.",
         "Percentages are calculated for the whole per-protocol group/subgroup, 
-        using inverse probability weighting."),
+        using inverse probability weighting.",
+        sprintf("LLOQ = %.2f, %.2f, %.2f IU/ml for N, RBD, Spike, respectively.", 
+                lloqs["bindN"], lloqs["bindRBD"], lloqs["bindSpike"])),
       loop = "subgroup",
       group_table_col = c("Rx", "Group", "Baseline", "Visit", "N", "Marker"),
       deselect = "subgroup",
       pack_row = "subgroup"
     ),
+    
+    tab_bind2 = list(
+      table_header = "Percentage of responders, and participants
+      with 2-fold rise, and participants with 4-fold rise for binding antibody
+      markers",
+      table_footer = c(
+        "Binding Antibody Responders are defined as participants who had
+        baseline values below the LLOQ with detectable antibody concentration
+        above the assay LLOQ, or as participants with baseline values above
+        the LLOQ with a 4-fold increase in antibody concentration.",
+        "Percentages are calculated for the whole per-protocol group/subgroup, 
+        using inverse probability weighting.",
+        sprintf("LLOQ = %.2f, %.2f, %.2f IU/ml for N, RBD, Spike, respectively.", 
+                lloqs["bindN"], lloqs["bindRBD"], lloqs["bindSpike"])),
+      loop = "subgroup",
+      group_table_col = c("Rx", "Group", "Baseline", "Visit", "N", "Marker"),
+      deselect = "subgroup",
+      pack_row = "subgroup"
+    ),
+    
     
     tab_pseudo = list(
       table_header = "Percentage of responders, and participants
@@ -68,12 +87,13 @@ tlf <-
       ID50 pseudo-virus neutralization antibody markers",
       table_footer = c(
         "Neutralization Responders are defined as participants who had baseline
-        values below the lower limit of detection (LLOD) with detectable
-        ID50 neutralization titer above the assay LLOD, or as participants with
-        baseline values above the LLOD with a 4-fold increase in ID50.",
+        values below the lower limit of detection (LLOQ) with detectable
+        ID50 neutralization titer above the assay LLOQ, or as participants with
+        baseline values above the LLOQ with a 4-fold increase in ID50.",
         "Percentages are calculated for the whole per-protocol group/subgroup, 
-        using inverse probability weighting."
-      ),
+        using inverse probability weighting.",
+        sprintf("LLOQ = %.2f, %.2f for pseudovirus-nAb ID50, ID80, respectively.", 
+                lloqs["pseudoneutid50"], lloqs["pseudoneutid80"])),
       loop = "subgroup",
       group_table_col = c("Rx", "Group", "Baseline", "Visit", "N", "Marker"),
       deselect = "subgroup",
@@ -86,9 +106,9 @@ tlf <-
       for MN50 WT live virus neutralization antibody markers",
       table_footer = c(
         "Neutralization Responders are defined as participants who had baseline
-        values below the lower limit of detection (LLOD) with detectable
-        ID50 neutralization titer above the assay LLOD, or as participants with
-        baseline values above the LLOD with a 4-fold increase in ID50.",
+        values below the lower limit of detection (LLOQ) with detectable
+        ID50 neutralization titer above the assay LLOQ, or as participants with
+        baseline values above the LLOQ with a 4-fold increase in ID50.",
         "Percentages are calculated for the whole per-protocol group/subgroup, 
         using inverse probability weighting."
       ),
@@ -98,7 +118,7 @@ tlf <-
       pack_row = "subgroup"
     ),
     
-    tab_gmt = list(
+    tab_gm = list(
       table_header = "Geometric mean titers (GMTs) and geometric mean
       concentrations (GMCs)",
       table_footer = "",
@@ -116,24 +136,30 @@ tlf <-
       loop = "subgroup",
       group_table_col = c("Rx", "Group", "Baseline", "Visit", "N", "Marker"),
       deselect = "subgroup",
-      pack_row = "subgroup"
+      pack_row = "subgroup",
+      col1="4cm"
     ),
     
     tab_rgmt = list(
       table_header = "The ratios of GMTs/GMCs between groups",
       table_footer = " ",
+      loop = "subgroup",
+      pack_row = "subgroup",
       deselect = "subgroup",
-      group_table_col = c("subgroup","Rx", "Baseline", "Visit")
+      group_table_col = c("subgroup","Rx", "Baseline", "Visit"),
+      col1="4cm"
     ),
     
     tab_rrdiff = list(
       table_header = "Differences in the responder rates, 2FRs, 4FRs between 
-      the vaccine arm and the placebo arm",
+      the groups",
       table_footer = "Percentages are calculated for the whole per-protocol 
       group/subgroup, using inverse probability weighting.",
       loop = "subgroup",
+      pack_row = "subgroup",
       group_table_col = c( "Group", "Baseline","Visit", "Marker"),
-      deselect = "subgroup"
+      deselect = "subgroup",
+      col1="4cm"
     ),
     
     
@@ -219,14 +245,14 @@ labels.assays <- expand.grid(
 
 resp.lb <- expand.grid(
   time = visits, marker = assays,
-  ind = c("Resp", "FR2", "FR4", "2llod", "4llod"), stringsAsFactors = F
+  ind = c("Resp", "FR2", "FR4", "2lloq", "4lloq"), stringsAsFactors = F
 ) %>%
   mutate(Ind = case_when(
     ind == "FR2" ~ "% 2-Fold Rise",
     ind == "FR4" ~ "% 4-Fold Rise",
     ind == "Resp" ~ "Responder",
-    ind == "2llod" ~ "% Greater than 2xLLOD",
-    ind == "4llod" ~ "% Greater than 4xLLOD"
+    ind == "2lloq" ~ "% Greater than 2xLLOQ",
+    ind == "4lloq" ~ "% Greater than 4xLLOQ"
   )) 
 
 labels_all <- full_join(labels.assays, resp.lb, by = c("time", "marker")) %>% 

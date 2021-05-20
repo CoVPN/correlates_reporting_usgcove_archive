@@ -35,7 +35,7 @@ dat <- read.csv(
 dat.twophase.sample <- dat %>% 
   filter(
     SubcohortInd == 1, 
-    TwophasesampInd == 1, 
+    TwophasesampIndD57 == 1, 
     Perprotocol == 1)
 
 write.csv(dat.twophase.sample,
@@ -47,7 +47,7 @@ write.csv(dat.twophase.sample,
 dat1 <- dat %>% 
   filter(
     SubcohortInd == 1, 
-    TwophasesampInd == 1, 
+    TwophasesampIndD57 == 1, 
     Perprotocol == 1)
 
 
@@ -214,7 +214,7 @@ RCDF_plots_data_vaccine <- dat %>%
   filter(Trt == 1,
          Bserostatus == 0) %>%
   filter(SubcohortInd == 1, 
-         TwophasesampInd == 1, 
+         TwophasesampIndD57 == 1, 
          Perprotocol == 1)
 
 RCDF_plots_data_placebo <- dat %>%
@@ -222,7 +222,7 @@ RCDF_plots_data_placebo <- dat %>%
   filter(Trt == 1,
          Bserostatus == 1)%>%
   filter(SubcohortInd == 1, 
-         TwophasesampInd == 1, 
+         TwophasesampIndD57 == 1, 
          Perprotocol == 1)
 
   

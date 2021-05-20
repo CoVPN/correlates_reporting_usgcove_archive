@@ -29,7 +29,12 @@ inputFile <- read.csv(here::here("verification", "dev_results", "practice_data.c
   mutate(Day57bindSpike = ifelse(Day57bindSpike > log10(uloqs[["bindSpike"]]), log10(uloqs[["bindSpike"]]), Day57bindSpike), 
          Day57bindRBD = ifelse(Day57bindRBD > log10(uloqs[["bindRBD"]]), log10(uloqs[["bindRBD"]]), Day57bindRBD),
          Day57pseudoneutid50 = ifelse(Day57pseudoneutid50 > log10(uloqs[["pseudoneutid50"]]), log10(uloqs[["pseudoneutid50"]]), Day57pseudoneutid50),
-         Day57pseudoneutid80 = ifelse(Day57pseudoneutid80 > log10(uloqs[["pseudoneutid80"]]), log10(uloqs[["pseudoneutid80"]]), Day57pseudoneutid80))
+         Day57pseudoneutid80 = ifelse(Day57pseudoneutid80 > log10(uloqs[["pseudoneutid80"]]), log10(uloqs[["pseudoneutid80"]]), Day57pseudoneutid80),
+         
+         Day29bindSpike = ifelse(Day29bindSpike > log10(uloqs[["bindSpike"]]), log10(uloqs[["bindSpike"]]), Day29bindSpike), 
+         Day29bindRBD = ifelse(Day29bindRBD > log10(uloqs[["bindRBD"]]), log10(uloqs[["bindRBD"]]), Day29bindRBD),
+         Day29pseudoneutid50 = ifelse(Day29pseudoneutid50 > log10(uloqs[["pseudoneutid50"]]), log10(uloqs[["pseudoneutid50"]]), Day29pseudoneutid50),
+         Day29pseudoneutid80 = ifelse(Day29pseudoneutid80 > log10(uloqs[["pseudoneutid80"]]), log10(uloqs[["pseudoneutid80"]]), Day29pseudoneutid80))
 
 # This function takes marker name as string, and the design.
 # It returns the HR for the marker, CI and p.value
@@ -214,11 +219,12 @@ tab <- get_results_in_df_D57(dat = inputFile %>% filter(Trt == 1 & Bserostatus =
             get_results_in_df_D57(dat = inputFile %>% filter(Trt == 1 & Bserostatus == 0 & Sex == 0), group = "Women"))
 
 tab %>% 
-  write.csv(here("verification", "test_results", "D57.mock.csv"))
+  write.csv(here("verification", "verification_output", "D57.mock.csv"))
 
 ###############################################################################
 ###############################################################################
 ###############################################################################
+
 # This function takes marker name as string, and the design.
 # It returns the HR for the marker, CI and p.value
 getHR_D29_continuous_marker <- function(marker, design, data, group){
@@ -393,6 +399,7 @@ tab <- get_results_in_df_D29(dat = inputFile %>% filter(Trt == 1 & Bserostatus =
   bind_rows(get_results_in_df_D29(dat = inputFile %>% filter(Trt == 1 & Bserostatus == 0 & Age >= 65), group = "Age >= 65"),
             get_results_in_df_D29(dat = inputFile %>% filter(Trt == 1 & Bserostatus == 0 & Age < 65 & HighRiskInd == 1), group = "Age < 65, At risk"),
             get_results_in_df_D29(dat = inputFile %>% filter(Trt == 1 & Bserostatus == 0 & Age < 65 & HighRiskInd == 0), group = "Age < 65, Not at risk"),
+            get_results_in_df_D29(dat = inputFile %>% filter(Trt == 1 & Bserostatus == 0 & Age < 65), group = "Age < 65"),
             get_results_in_df_D29(dat = inputFile %>% filter(Trt == 1 & Bserostatus == 0 & HighRiskInd == 1), group = "At risk"),
             get_results_in_df_D29(dat = inputFile %>% filter(Trt == 1 & Bserostatus == 0 & HighRiskInd == 0), group = "Not at risk"),
             get_results_in_df_D29(dat = inputFile %>% filter(Trt == 1 & Bserostatus == 0 & MinorityInd==1), group = "Comm. of color"),
@@ -401,7 +408,7 @@ tab <- get_results_in_df_D29(dat = inputFile %>% filter(Trt == 1 & Bserostatus =
             get_results_in_df_D29(dat = inputFile %>% filter(Trt == 1 & Bserostatus == 0 & Sex == 0), group = "Women"))
 
 tab %>% 
-  write.csv(here("verification", "test_results", "D29.mock.csv"))
+  write.csv(here("verification", "verification_output", "D29.mock.csv"))
 ################################################## 
 ################################################## 
 ################################################## 

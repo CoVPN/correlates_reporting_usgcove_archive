@@ -83,17 +83,17 @@ get_plot <- function(marker, simultaneous_CI = F, monotone = F, above = TRUE) {
   #
   xlimits <- xlim
 
-   if(F & abs(xlimits[1] - ceiling(xlimits[1])) < 0.07 && abs(xlimits[1] - xlimits[2] )>= 1.2) {
-     xlimits[1] <- (xlimits[1]) - 0.075
+  # if(F & abs(xlimits[1] - ceiling(xlimits[1])) < 0.07 && abs(xlimits[1] - xlimits[2] )>= 1.2) {
+  #   xlimits[1] <- (xlimits[1]) - 0.075
 
-   } else {
-     xlimits[1] <- floor(xlimits[1])
-   }
-  if(F & abs(xlimits[2] - floor(xlimits[2])) < 0.07 && abs(xlimits[1] - xlimits[2] )>= 1.2) {
-    xlimits[2] <- (xlimits[2]) + 0.075
-  } else {
-    xlimits[2] <- ceiling(xlimits[2])
-  }
+  #} else {
+  #  xlimits[1] <- floor(xlimits[1])
+  #}
+  #if(F & abs(xlimits[2] - floor(xlimits[2])) < 0.07 && abs(xlimits[1] - xlimits[2] )>= 1.2) {
+  # xlimits[2] <- (xlimits[2]) + 0.075
+  #} else {
+  # xlimits[2] <- ceiling(xlimits[2])
+  #}
 
   plot <- v + ggtitle(main) +
     stat_function(fun = RCDF, color = col, geom = "area", fill = col, alpha = 0.2) +

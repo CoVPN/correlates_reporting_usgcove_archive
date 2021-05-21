@@ -45,7 +45,8 @@ plot.25sample3 <- readRDS(here("data_clean", "plot.25sample3.rds"))
 #' @param facetby Faceting variables to form a matrix of panels
 #' @param facetopt Faceting style: "wrap" or "grid"
 #' @param col Colors options for the colby param
-#' @param inpanel.cex Font size for text within panels, response rate and "LLoQ"
+#' @param prop.cex Font size for text within panels, response rate
+#' @param ll.cex Font size for text within panels, llod
 #' @param rate.y.pos Y coordinate for showing response rate
 #' @param axis.text.cex font size for x & y axis text
 #' @return A ggplot object for violin or line plots
@@ -65,7 +66,8 @@ myplot <- function(dat,
                    facetby=vars(cohort_event),
                    facetopt="wrap",
                    col=c("#0AB7C9","#FF6F1B","#810094"),
-                   inpanel.cex=5.4,
+                   prop.cex=5.4,
+                   ll.cex=prop.cex,
                    rate.y.pos=7.7,
                    axis.text.cex=25){
   
@@ -85,9 +87,9 @@ myplot <- function(dat,
   } else if (facetopt=="grid") {p <- p + facet_grid(facetby, drop=FALSE)}
   
   p <- p + 
-    geom_text(aes(label=RespRate, x=time, y=rate.y.pos), color="black", size=inpanel.cex, check_overlap = TRUE) +
+    geom_text(aes(label=RespRate, x=time, y=rate.y.pos), color="black", size=prop.cex, check_overlap = TRUE) +
     geom_hline(aes(yintercept=LLoD), linetype="dashed", color="gray") +
-    geom_text(aes(label="LLoD", x=0.75, y=LLoD), color="black", size=inpanel.cex, check_overlap = TRUE) + 
+    geom_text(aes(label="LLoD", x=0.75, y=LLoD), color="black", size=ll.cex, check_overlap = TRUE) + 
     scale_y_continuous(limits=ylim, breaks=ybreaks, labels=math_format(10^.x)) +
     labs(x=xtitle, y=ytitle, title=toptitle, color="Category", shape="Category") +
     scale_color_manual(values=col) +
@@ -109,8 +111,8 @@ for (typ in c("line","violin")) {
       for (k in 1:length(trt)) {
         for (t in 1:length(times)) {
           
-          y.breaks <- seq(ifelse(plots[i] %in% c("bindSpike","bindRBD"), -1, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 6, 4), 1)
-          y.lim=c(ifelse(plots[i] %in% c("bindSpike","bindRBD"), -1.5, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 6, 4))
+          y.breaks <- seq(ifelse(plots[i] %in% c("bindSpike","bindRBD"), -1, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 5, 4), 1)
+          y.lim=c(ifelse(plots[i] %in% c("bindSpike","bindRBD"), -1.5, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 5, 4))
           
           p <- myplot(dat=subset(longer_cor_data_plot1, assay==plots[i] & Bserostatus==bstatus[j] & Trt==trt[k] & !is.na(value) & time %in% unlist(times[t])), 
                       dat.sample=subset(plot.25sample1, assay==plots[i] & Bserostatus==bstatus[j] & Trt==trt[k] & !is.na(value) & time %in% unlist(times[t])), 
@@ -119,7 +121,8 @@ for (typ in c("line","violin")) {
                       facetby=vars(cohort_event),
                       ylim=y.lim,
                       ybreaks=y.breaks,
-                      inpanel.cex=4.7,
+                      prop.cex=4.8,
+                      ll.cex=8.16,
                       rate.y.pos=max(y.breaks)
                       )
           file_name <- paste0(typ, "box_", gsub("bind","",gsub("pseudoneut","pnAb_",plots[i])), "_", trt[k], "_", gsub(" ","",bstatus[j]), "_","v",t,"_", study_name, ".pdf")
@@ -166,8 +169,8 @@ for (typ in c("line","violin")) {
               select(c("Ptid", groupby_vars2[!groupby_vars2 %in% "time"])) %>%
               inner_join(longer_cor_data_sub2, by=c("Ptid", groupby_vars2[!groupby_vars2 %in% "time"]))
             
-            y.breaks <- seq(ifelse(plots[i] %in% c("bindSpike","bindRBD"), -1, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 6, 4), 1)
-            y.lim=c(ifelse(plots[i] %in% c("bindSpike","bindRBD"), -1.5, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 7.4, 5.2))
+            y.breaks <- seq(ifelse(plots[i] %in% c("bindSpike","bindRBD"), -1, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 5, 4), 1)
+            y.lim=c(ifelse(plots[i] %in% c("bindSpike","bindRBD"), -1.5, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 6.2, 5.2))
             
             p <- myplot(dat=subset(longer_cor_data_sub2, assay==plots[i] & Bserostatus==bstatus[j] & Trt==trt[k] & !is.na(value) & time %in% unlist(times[t])), 
                         dat.sample=subset(plot.25sample2, assay==plots[i] & Bserostatus==bstatus[j] & Trt==trt[k] & !is.na(value) & time %in% unlist(times[t])), 
@@ -176,7 +179,8 @@ for (typ in c("line","violin")) {
                         facetby=as.formula(paste("~",s,"+cohort_event")),
                         ylim=y.lim,
                         ybreaks=y.breaks,
-                        inpanel.cex=5,
+                        prop.cex=5.7,
+                        ll.cex=8,
                         rate.y.pos=max(y.lim)-0.3
                         )
             
@@ -199,8 +203,8 @@ for (typ in c("line","violin")) {
       for (k in 1:length(trt)) {
         for (t in 1:length(times)) {
           
-          y.breaks <- seq(ifelse(plots[i] %in% c("bindSpike","bindRBD"), -1, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 6, 4), 2)
-          y.lim=c(ifelse(plots[i] %in% c("bindSpike","bindRBD"), -1.5, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 8, 6))
+          y.breaks <- seq(ifelse(plots[i] %in% c("bindSpike","bindRBD"), -1, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 5, 4), 2)
+          y.lim=c(ifelse(plots[i] %in% c("bindSpike","bindRBD"), -1.5, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 6.7, 6))
           
           p <- myplot(dat=subset(longer_cor_data_plot3, assay==plots[i] & Bserostatus==bstatus[j] & Trt==trt[k] & !is.na(value) & time %in% unlist(times[t])), 
                       dat.sample=subset(plot.25sample3, assay==plots[i] & Bserostatus==bstatus[j] & Trt==trt[k] & !is.na(value) & time %in% unlist(times[t])), 
@@ -210,8 +214,9 @@ for (typ in c("line","violin")) {
                       ylim=y.lim,
                       ybreaks=y.breaks,
                       facetopt = "grid",
-                      inpanel.cex=5.2,
-                      rate.y.pos=max(y.lim)-0.6
+                      prop.cex=5.5,
+                      ll.cex=8,
+                      rate.y.pos=max(y.lim)-0.45
           )
           file_name <- paste0(typ, "box_", gsub("bind","",gsub("pseudoneut","pnAb_",plots[i])), "_", trt[k], "_", gsub(" ","",bstatus[j]), "_Age_Risk_", "v", t,"_", study_name, ".pdf")
           suppressWarnings(ggsave2(plot = p, filename = here("figs", file_name), width = 16, height = 13.5))
@@ -232,8 +237,8 @@ for (i in 1:length(plots)) {
       # subset for vaccine baseline neg arm
       if (c=="Vaccine_BaselineNeg"){ds.tmp <- subset(ds.tmp, Bserostatus=="Baseline Neg" & Trt=="Vaccine")}
       
-      y.breaks <- seq(ifelse(plots[i] %in% c("bindSpike","bindRBD"), -1, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 6, 4))
-      y.lim=c(ifelse(plots[i] %in% c("bindSpike","bindRBD"), -1.5, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 6, 4))
+      y.breaks <- seq(ifelse(plots[i] %in% c("bindSpike","bindRBD"), -1, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 5, 4))
+      y.lim=c(ifelse(plots[i] %in% c("bindSpike","bindRBD"), -1.5, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 5, 4))
       
       p <- ggplot(ds.tmp, aes(x = Age, y = value))
       

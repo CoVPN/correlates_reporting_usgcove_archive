@@ -460,20 +460,18 @@ if (has29) {
     max(dat_proc[,paste0("Delta29overB", c("pseudoneutid50",
                                            "pseudoneutid80"))],
         na.rm=TRUE)
-  MaxID50ID80Delta57overB =
+}
+MaxID50ID80Delta57overB =
     max(dat_proc[,paste0("Delta57overB", c("pseudoneutid50",
                                            "pseudoneutid80"))],
         na.rm=TRUE)
-}
 
 
 if(has29){
-    save(MaxbAbDay57, MaxID50ID80Day57, MaxbAbDelta57overB,
-         MaxID50ID80Delta57overB, MaxbAbDelta29overB, MaxID50ID80Delta29overB,
-         MaxbAbDay29, MaxID50ID80Day29,
+    save(MaxbAbDay57, MaxID50ID80Day57, MaxbAbDelta57overB, MaxID50ID80Delta57overB, 
+         MaxbAbDelta29overB, MaxID50ID80Delta29overB, MaxbAbDay29, MaxID50ID80Day29,
     file=here("data_clean", "_params.Rdata"))
 } else {
-    save(MaxbAbDay57, MaxID50ID80Day57, MaxbAbDelta57overB,
-         MaxID50ID80Delta57overB,
+    save(MaxbAbDay57, MaxID50ID80Day57, MaxbAbDelta57overB, MaxID50ID80Delta57overB,
     file=here("data_clean", "_params.Rdata"))
 }

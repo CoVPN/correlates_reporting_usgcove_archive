@@ -5,7 +5,7 @@
 
 2. In `dat`, set the NA's in variables `wt.D57` and `wt.D29` to be zero
 
-3. Create a new field `cohort_event`, which is defined as a string "Intercurrent Cases" if `EventIndPrimaryD29` == 1 and `EventIndPrimaryD57` == 0; "PP Cases" if `Perprotocol` == 1, `EventIndPrimaryD29` == 1 and `EventIndPrimaryD57` == 1; and "PP Non-cases" if `Perprotocol` == 1, `EventIndPrimaryD29` == 0 and `EventIndPrimaryD57` == 0.  
+3. Create a new field `cohort_event`, which is defined as a string "Intercurrent Cases" if `Perprotocol`==1 & `Bserostatus`==0 & `EarlyendpointD29`==0 & `TwophasesampIndD29`==1 & `EventIndPrimaryD29`==1 & `EventTimePrimaryD29` >=7 & `EventTimePrimaryD29` <= (6 + `NumberdaysD1toD57` - `NumberdaysD1toD29`); "Primary Cases" if `Perprotocol`==1 & `Bserostatus`==0 & `EarlyendpointD57`==0 & `TwophasesampIndD57`==1 & `EventIndPrimaryD57`==1; and "Non-Cases" if `Perprotocol`==1 & `Bserostatus`==0 & `EarlyendpointD57`==0 & `TwophasesampIndD57`==1 & `EventIndPrimaryD1`==0.  
 
 4. Subset `dat` with only non-NA `cohort_event` values.
 
@@ -17,9 +17,9 @@
 
 7. In `dat.long.cor.subset`, create a new field `Dich_RaceEthnic`, which is defined as the string "Hispanic or Latino" if `EthnicityHispanic` == 1, "Not Hispanic or Latino" if `EthnicityHispanic` == 0, `EthnicityNotreported` == 0, and `EthnicityUnknown` == 0, and NA otherwise.
 
-8. In `dat.long.cor.subset`, create a new field `LLoD`, which is defined as the log10 of the Lower Limit of Detection of the assays.
+8. In `dat.long.cor.subset`, create a new field `LLoD`, `LLoQ` and `ULoQ`, which is defined as the log10 of the Lower Limit of Detection of the assays, the log10 of the Lower Limit of Quantification of the assays, the Upper Limit of Quantitation of the assays, respectively.
 
-9. In `dat.long.cor.subset`, create a new field `ULoQ`, which is defined as the log10 of the Upper Limit of Quantitation of the assays.
+9. In `dat.long.cor.subset`, censor values of `B`, `Day29`, `Day 57` to the `ULoQ` if above `ULoQ`.
 
 10. In `dat.long.cor.subset`, set maximum values of `Day29` and `Day57` to be `ULoQ`, then reset `Delta29overB` = (`Day29` - `B`) and `Delta57overB` = (`Day57` - `B`) in order to make the differences between post- and pre-timepoints based on censored values.
 
@@ -43,17 +43,17 @@
 
 20. In `dat.long.cor.subset`, create a new field `age_minority_label`, which is defined as the cross product of `age.geq.65` and `WhiteNonHispanic` fields converted to a factor.  
 
-21. Select fields (`Ptid`, `Trt`, `Bserostatus`, `EventIndPrimaryD29`, `EventIndPrimaryD57`, `Perprotocol`, `cohort_event`, `Age`, `age_geq_65_label`, `highrisk_label`, `age_risk_label`, `sex_label`, `minority_label`, `Dich_RaceEthnic`, `assay`, `LLoD`, `wt.D57`, `wt.D29`, `B`, `Day29`, `Day57`, `Delta29overB`, `Delta57overB`) from `dat.long.cor.subset`, and then transpose `dat.long.cor.subset` from wide to a new long data frame `dat.longer.cor.subset` by saving the string values "B", "Day29", "Day57", "Delta29overB", "Delta57overB" to a new field `time`, and the values of fields `B`, `Day29`, `Day57`, `Delta29overB`, `Delta57overB` to a new field `value`.
+21. Select fields (`Ptid`, `Trt`, `Bserostatus`, `EventIndPrimaryD29`, `EventIndPrimaryD57`, `Perprotocol`, `cohort_event`, `Age`, `age_geq_65_label`, `highrisk_label`, `age_risk_label`, `sex_label`, `minority_label`, `Dich_RaceEthnic`, `assay`, `LLoD`, `LLoQ`, `wt.D57`, `wt.D29`, `B`, `Day29`, `Day57`, `Delta29overB`, `Delta57overB`) from `dat.long.cor.subset`, and then transpose `dat.long.cor.subset` from wide to a new long data frame `dat.longer.cor.subset` by saving the string values "B", "Day29", "Day57", "Delta29overB", "Delta57overB" to a new field `time`, and the values of fields `B`, `Day29`, `Day57`, `Delta29overB`, `Delta57overB` to a new field `value`.
 
 22. In `dat.longer.cor.subset`, set the values ("B", "Day29", "Day57", "Delta29overB", "Delta57overB") in `time` to ("Day 1", "Day 29", "Day 57", "Delta29overB", "Delta57overB"), respectively. 
 
-23. In `dat.longer.cor.subset`, create a new field `baseline_lt_thres`, which when `time` == "Day 1" and `value` >= `LLoD` the value is 1, otherwise 0; create a new field `increase_4F_D29`, which when `time` == "Delta29overB" and `value` > log10(4) the value is 1, otherwise 0; create a new field `increase_4F_D57`, which when `time` == "Delta57overB" and `value` > log10(4) the value is 1, otherwise 0.  
+23. In `dat.longer.cor.subset`, create a new field `baseline_lt_thres`, which when `time` == "Day 1" and `value` >= `LLoQ` the value is 1, otherwise 0; create a new field `increase_4F_D29`, which when `time` == "Delta29overB" and `value` > log10(4) the value is 1, otherwise 0; create a new field `increase_4F_D57`, which when `time` == "Delta57overB" and `value` > log10(4) the value is 1, otherwise 0.  
 
 24. In `dat.longer.cor.subset`, group by (`Ptid`, `assay`), calculate the maximum of `baseline_lt_thres`, `increase_4F_D29`, `increase_4F_D57` and save to new fields `baseline_lt_thres_ptid`, `increase_4F_D29_ptid`, and `increase_4F_D57_ptid`, respectively, then ungroup the data frame.  
 
 25. Subset `dat.longer.cor.subset` with values of `time` in ("Day 1","Day 29","Day 57").
 
-26. In `dat.longer.cor.subset`, create a new field `response`, which when (`baseline_lt_thres_ptid` == 0 and `value` >= `LLoD`) or (`baseline_lt_thres_ptid` == 1 and `time` == "Day 1") or (`baseline_lt_thres_ptid` == 1 and `time` == "Day 29" and `increase_4F_D29_ptid` == 1) or (`baseline_lt_thres_ptid` == 1 and `time` == "Day 57" and `increase_4F_D57_ptid` == 1),  the value is 1, otherwise it is 0.
+26. In `dat.longer.cor.subset`, create a new field `response`, which when (`baseline_lt_thres_ptid` == 0 and `value` >= `LLoQ`) or (`baseline_lt_thres_ptid` == 1 and `time` == "Day 1") or (`baseline_lt_thres_ptid` == 1 and `time` == "Day 29" and `increase_4F_D29_ptid` == 1) or (`baseline_lt_thres_ptid` == 1 and `time` == "Day 57" and `increase_4F_D57_ptid` == 1),  the value is 1, otherwise it is 0.
 
 
 

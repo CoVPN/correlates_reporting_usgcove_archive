@@ -49,7 +49,7 @@ for (bstatus in 0:1) {
                                VE_ub = VE_ub,
                                xlab = labels.axis["Day57", aa],
                                filename = paste0(save.results.to, "/RCDF_VE_Day57_trt_Vaccine_", 
-                                                 bstatus.labels.2[bstatus + 1], "_", assays[aa], "_", study.name, ".png"))
+                                                 bstatus.labels.2[bstatus + 1], "_", assays[aa], "_", study_name, ".png"))
     }
   }
 }

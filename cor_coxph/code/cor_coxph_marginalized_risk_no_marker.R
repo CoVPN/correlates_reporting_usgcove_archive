@@ -8,49 +8,53 @@ get.marginalized.risk.no.marker=function(dat){
     mean(risks)
 }
 
-
-for (.trt in 0:1) {
-    dat.tmp=if(.trt==1) dat.vacc.pop else dat.plac.pop
-    prob=get.marginalized.risk.no.marker(dat.tmp)
-    
-    # bootstrapping
-    # store the current rng state 
-    save.seed <- try(get(".Random.seed", .GlobalEnv), silent=TRUE) 
-    if (class(save.seed)=="try-error") {set.seed(1); save.seed <- get(".Random.seed", .GlobalEnv) }   
-    
-    ptids.by.stratum=lapply(sort(unique(dat.tmp$tps.stratum)), function (i) 
-        list(subcohort=subset(dat.tmp, tps.stratum==i & SubcohortInd==1, Ptid, drop=TRUE), 
-          nonsubcohort=subset(dat.tmp, tps.stratum==i & SubcohortInd==0, Ptid, drop=TRUE)))
-    # add a substratum for cases with NA in tps.stratum
-    tmp=list(subcohort=subset(dat.tmp, is.na(tps.stratum), Ptid, drop=TRUE), # they are in ph1 b/c they are cases
-          nonsubcohort=NULL)
-    ptids.by.stratum=append(ptids.by.stratum, list(tmp))
-    # if mc.cores is >1 here, the process will be stuck in coxph for some unknown reason
-    out=mclapply(1:B, mc.cores = 1, FUN=function(seed) {   
-        set.seed(seed)         
-        dat.b=dat.tmp[match(unlist(lapply(ptids.by.stratum, function(x) 
-            c(sample(x$subcohort, r=TRUE), sample(x$nonsubcohort, r=TRUE))
-        )), dat.tmp$Ptid),]        
+if(!file.exists(paste0(save.results.to, "marginalized.risk.no.marker.",study_name,".Rdata"))) {    
+    for (.trt in 0:1) {
+        dat.tmp=if(.trt==1) dat.vacc.pop else dat.plac.pop
+        prob=get.marginalized.risk.no.marker(dat.tmp)
         
-        get.marginalized.risk.no.marker(dat.b)    
+        # bootstrapping
+        # store the current rng state 
+        save.seed <- try(get(".Random.seed", .GlobalEnv), silent=TRUE) 
+        if (class(save.seed)=="try-error") {set.seed(1); save.seed <- get(".Random.seed", .GlobalEnv) }   
         
-    })
-    boot=do.call(cbind, out)
-    # restore rng state 
-    assign(".Random.seed", save.seed, .GlobalEnv)    
+        ptids.by.stratum=lapply(sort(unique(dat.tmp$tps.stratum)), function (i) 
+            list(subcohort=subset(dat.tmp, tps.stratum==i & SubcohortInd==1, Ptid, drop=TRUE), 
+              nonsubcohort=subset(dat.tmp, tps.stratum==i & SubcohortInd==0, Ptid, drop=TRUE)))
+        # add a substratum for cases with NA in tps.stratum
+        tmp=list(subcohort=subset(dat.tmp, is.na(tps.stratum), Ptid, drop=TRUE), # they are in ph1 b/c they are cases
+              nonsubcohort=NULL)
+        ptids.by.stratum=append(ptids.by.stratum, list(tmp))
+        # if mc.cores is >1 here, the process will be stuck in coxph for some unknown reason
+        out=mclapply(1:B, mc.cores = 1, FUN=function(seed) {   
+            set.seed(seed)         
+            dat.b=dat.tmp[match(unlist(lapply(ptids.by.stratum, function(x) 
+                c(sample(x$subcohort, r=TRUE), sample(x$nonsubcohort, r=TRUE))
+            )), dat.tmp$Ptid),]        
+            
+            get.marginalized.risk.no.marker(dat.b)    
+            
+        })
+        boot=do.call(cbind, out)
+        # restore rng state 
+        assign(".Random.seed", save.seed, .GlobalEnv)    
+        
+        if (.trt==0) {
+            res.plac.cont=c(est=prob, boot)
+        } else {
+            res.vacc.cont=c(est=prob, boot)
+        }
+    }    
     
-    if (.trt==0) {
-        res.plac.cont=c(est=prob, boot)
-    } else {
-        res.vacc.cont=c(est=prob, boot)
-    }
-}    
-
-prev.plac=c(res.plac.cont[1], quantile(res.plac.cont[-1], c(.025,.975)))
-prev.vacc=c(res.vacc.cont[1], quantile(res.vacc.cont[-1], c(.025,.975)))
-print(cbind(prev.plac, prev.vacc))
-
-save(res.plac.cont, res.vacc.cont, prev.plac, prev.vacc, file=paste0(save.results.to, "marginalized.risk.no.marker."%.%study_name%.%".Rdata"))
+    prev.plac=c(res.plac.cont[1], quantile(res.plac.cont[-1], c(.025,.975)))
+    prev.vacc=c(res.vacc.cont[1], quantile(res.vacc.cont[-1], c(.025,.975)))
+    print(cbind(prev.plac, prev.vacc))
+    
+    save(res.plac.cont, res.vacc.cont, prev.plac, prev.vacc, file=paste0(save.results.to, "marginalized.risk.no.marker."%.%study_name%.%".Rdata"))
+    
+} else {
+    load(paste0(save.results.to, "marginalized.risk.no.marker."%.%study_name%.%".Rdata"))
+}
 
 
 ## these results are close to bootstrap results. they are not used later and only for sanity check
@@ -71,4 +75,4 @@ save(res.plac.cont, res.vacc.cont, prev.plac, prev.vacc, file=paste0(save.result
 #prevs
 
 
-print(Sys.time()-time.start.1) 
+print(Sys.time()-time.start.1)

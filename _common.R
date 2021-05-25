@@ -14,6 +14,7 @@ study_name <- "mock"
 # for defining a variable to subset the whole analysis on
 subset_variable <- "None" # set to Region for ENSEMBLE analysis, otherwise warning
 subset_value <- "All" # set to "Northern America" | "Southern Africa" | "Latin America"
+# note that subset_variable is ignored if subset_value == "All"
 
 ###############################################################################
 # define immune markers to be included in the analysis

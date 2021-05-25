@@ -1,7 +1,7 @@
 ---
 title: "Verification Report: immuno_tabular"
 author: "Yiwen Lu"
-date: "2021/04/17"
+date: "`r Sys.Date()`"
 output: pdf_document
 ---
 

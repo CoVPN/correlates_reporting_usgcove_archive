@@ -11,6 +11,10 @@ data_in_file <- "COVID_VEtrial_practicedata_primarystage1.csv"
 data_name <- "practice_data.csv"
 study_name <- "mock"
 
+# for defining a variable to subset the whole analysis on
+subset_variable <- "None" # set to Region for ENSEMBLE analysis, otherwise warning
+subset_value <- "All" # set to "Northern America" | "Southern Africa" | "Latin America"
+
 ###############################################################################
 # define immune markers to be included in the analysis
 ###############################################################################

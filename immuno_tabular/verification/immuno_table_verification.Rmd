@@ -34,51 +34,7 @@ dat <- subset(dat.mock, !is.na(wt.subcohort))
 
 dat$immuno_ind <- with(dat, ifelse(Perprotocol==1 & SubcohortInd==1 & TwophasesampIndD57==1 & EarlyendpointD57==0 & !is.na(wt.subcohort), 1, 0))
 
-# LLoQ truncation for readout (bindN, live) - LLOQ truncation being taken care of upstream
-#dat$BbindN[dat$BbindN<log10(20)] <- log10(10)
-#dat$Day29bindN[dat$Day29bindN<log10(20)] <- log10(10)
-#dat$Day57bindN[dat$Day57bindN<log10(20)] <- log10(10)
-#dat$Bliveneutmn50[dat$Bliveneutmn50<log10(62.16)] <- log10(31)
-#dat$Day29liveneutmn50[dat$Day29liveneutmn50<log10(62.16)] <- log10(31)
-#dat$Day57liveneutmn50[dat$Day57liveneutmn50<log10(62.16)] <- log10(31)
-
-# ULoQ truncation for readout (bindSpike, bindRBD, bindN, live) - no ULOQ truncation for immuno report
-#dat$BbindSpike[dat$BbindSpike>log10(19136250)] <- log10(19136250)
-#dat$BbindRBD[dat$BbindRBD>log10(19136250)] <- log10(19136250)
-#dat$BbindN[dat$BbindN>log10(19136250)] <- log10(19136250)
-#dat$Bliveneutmn50[dat$Bliveneutmn50>log10(18976.19)] <- log10(18976.19)
-
-#dat$Day29bindSpike[dat$Day29bindSpike>log10(19136250)] <- log10(19136250)
-#dat$Day29bindRBD[dat$Day29bindRBD>log10(19136250)] <- log10(19136250)
-#dat$Day29bindN[dat$Day29bindN>log10(19136250)] <- log10(19136250)
-#dat$Day29liveneutmn50[dat$Day29liveneutmn50>log10(18976.19)] <- log10(18976.19)
-
-#dat$Day57bindSpike[dat$Day57bindSpike>log10(19136250)] <- log10(19136250)
-#dat$Day57bindRBD[dat$Day57bindRBD>log10(19136250)] <- log10(19136250)
-#dat$Day57bindN[dat$Day57bindN>log10(19136250)] <- log10(19136250)
-#dat$Day57liveneutmn50[dat$Day57liveneutmn50>log10(18976.19)] <- log10(18976.19)
-
-# reset all delta values - delta values have been taken care of by Youyi upstream (delta calculated lloq censoring at single timepoint)
-#dat$Delta57overBbindSpike = dat$Day57bindSpike - dat$BbindSpike
-#dat$Delta57overBbindRBD = dat$Day57bindRBD - dat$BbindRBD
-#dat$Delta57overBbindN = dat$Day57bindN - dat$BbindN
-#dat$Delta57overBpseudoneutid50 = dat$Day57pseudoneutid50 - dat$Bpseudoneutid50
-#dat$Delta57overBpseudoneutid80 = dat$Day57pseudoneutid80 - dat$Bpseudoneutid80
-#dat$Delta57overBliveneutmn50 = dat$Day57liveneutmn50 - dat$Bliveneutmn50
-
-#dat$Delta29overBbindSpike = dat$Day29bindSpike - dat$BbindSpike
-#dat$Delta29overBbindRBD = dat$Day29bindRBD - dat$BbindRBD
-#dat$Delta29overBbindN = dat$Day29bindN - dat$BbindN
-#dat$Delta29overBpseudoneutid50 = dat$Day29pseudoneutid50 - dat$Bpseudoneutid50
-#dat$Delta29overBpseudoneutid80 = dat$Day29pseudoneutid80 - dat$Bpseudoneutid80
-#dat$Delta29overBliveneutmn50 = dat$Day29liveneutmn50 - dat$Bliveneutmn50
-
-#dat$Delta57over29bindSpike = dat$Day57bindSpike - dat$Day29bindSpike
-#dat$Delta57over29bindRBD = dat$Day57bindRBD - dat$Day29bindRBD
-#dat$Delta57over29bindN = dat$Day57bindN - dat$Day29bindN
-#dat$Delta57over29pseudoneutid50 = dat$Day57pseudoneutid50 - dat$Day29pseudoneutid50
-#dat$Delta57over29pseudoneutid80 = dat$Day57pseudoneutid80 - dat$Day29pseudoneutid80
-#dat$Delta57over29liveneutmn50 = dat$Day57liveneutmn50 - dat$Day29liveneutmn50
+# LLOQ truncation being taken care of upstream
 
 # wide to long by marker and timepoint
 dat.long <- dat %>%
@@ -153,22 +109,22 @@ dat.long <- dat.long %>%
                                          ifelse(marker=="pseudoneutid50","Pseudovirus-nAb ID50",
                                                 ifelse(marker=="pseudoneutid80","Pseudovirus-nAb ID80",
                                                        ifelse(marker=="liveneutmn50","Live virus-nAb MN50", NA)))))))
-
-# stack dat.long for looping by subgroups in some tables
-dat.long.stack <- dat.long %>% mutate(Group="All participants",VarName="All participants") %>% 
-  bind_rows(dat.long %>% mutate(Group=Age65C,VarName="Age")) %>% 
-  bind_rows(dat.long %>% mutate(Group=HighRiskC,VarName="Risk for Severe Covid-19")) %>%
-  bind_rows(dat.long %>% mutate(Group=AgeRiskC,VarName="Age, Risk for Severe Covid-19")) %>%
-  bind_rows(dat.long %>% mutate(Group=SexC,VarName="Sex")) %>%
-  bind_rows(dat.long %>% mutate(Group=EthHisC,VarName="Hispanic or Latino ethnicity")) %>%
-  bind_rows(dat.long %>% mutate(Group=RaceEthC,VarName="Race")) %>% 
-  bind_rows(dat.long %>% mutate(Group=MinorityC,VarName="Communities of color")) %>% 
-  bind_rows(dat.long %>% mutate(Group=AgeMinorC,VarName="Age, Communities of color")) %>% 
-  bind_rows(dat.long %>% mutate(Group=AgeSexC,VarName="Age, sex")) %>%
-  bind_rows(dat.long %>% mutate(Group=Trt_lb,VarName="Arm")) %>%
-  bind_rows(dat.long %>% mutate(Group=Baseline,VarName="Baseline SARS-CoV-2"))
-
-VarName_levels <- c("All participants","Age","Risk for Severe Covid-19","Age, Risk for Severe Covid-19","Sex","Age, sex", "Hispanic or Latino ethnicity","Race","Communities of color","Age, Communities of color")
+# looping list for tables
+# variable with groups and label name
+dat.long$Allparticipants=""
+VarName_levels <- list(
+  `Allparticipants`="All participants",
+  `Age65C`="Age",
+  `HighRiskC`="Risk for Severe Covid-19",
+  `AgeRiskC`="Age, Risk for Severe Covid-19",
+  `SexC`="Sex",
+  `EthHisC`="Hispanic or Latino ethnicity",
+  `RaceEthC`="Race",
+  `MinorityC`="Communities of color",
+  `AgeMinorC`="Age, Communities of color",
+  `AgeSexC`="Age, sex",
+  `Trt_lb`="Arm",
+  `Baseline`="Baseline SARS-CoV-2")
 
 # parameters set-up
 tbl_num <- 1
@@ -195,7 +151,7 @@ load(here("verification","verification_input","Tables_immuno.Rdata"), verbose=T)
 ```{r tab_dm, results = "asis", echo=FALSE, message=FALSE}
 fig_footer <- c("This table summarises the case-cohort, which measures antibody markers at (Day 1, Day 29, and Day 57)")
  
-for (i in c("Negative", "Positive")){
+for (i in c("Positive", "Negative")){
   
   demo <- subset(dat.long, Baseline==i) %>% filter(immuno_ind==1) %>%
     select(Trt_lb, Ptid, Age65C, HighRiskC, SexC, EthHisC, RaceEthC2, MinorityC, AgeRiskC) %>% 
@@ -265,23 +221,26 @@ for (i in c("Negative", "Positive")){
   
   tab_dm <- tab_dm %>% select(1,2,4,3,5)
 
-  if (i=="Negative"){
+   if (i=="Positive"){
+    # comparison
+    tab_dm_pos[] <- lapply(tab_dm_pos, as.character)
+    tab_dm_pos_v = tab_dm_pos[, c("subgroup","Characteristics")] %>% left_join(tab_dm, by=c("subgroup","Characteristics"))
+    testthat::expect_equal(tab_dm_pos_v, tab_dm_pos)
+    
+    save(tab_dm_pos_v, file = here::here("verification", "verification_output", "immuno_tab_dm_pos_v.Rdata"))
+  } else if (i=="Negative"){
     # comparison
     tab_dm_neg[] <- lapply(tab_dm_neg, as.character)
     tab_dm_neg_v = tab_dm_neg[, c("subgroup","Characteristics")] %>% left_join(tab_dm, by=c("subgroup","Characteristics"))
     testthat::expect_equal(tab_dm_neg_v, tab_dm_neg)
     
-  } else if (i=="Positive"){
-    # comparison
-    tab_dm_pos[] <- lapply(tab_dm_pos, as.character)
-    tab_dm_pos_v = tab_dm_pos[, c("subgroup","Characteristics")] %>% left_join(tab_dm, by=c("subgroup","Characteristics"))
-    testthat::expect_equal(tab_dm_pos_v, tab_dm_pos)
+    save(tab_dm_neg_v, file = here::here("verification", "verification_output", "immuno_tab_dm_neg_v.Rdata"))
   }
 
 }
 
-save(tab_dm_neg_v, file = here::here("verification", "verification_output", "immuno_tab_dm_neg_v.Rdata"))
-save(tab_dm_pos_v, file = here::here("verification", "verification_output", "immuno_tab_dm_pos_v.Rdata"))
+
+
 ```
 
 \clearpage
@@ -299,17 +258,17 @@ wt <- unique(strata_dat[,c("demo.stratum","Trt_lb","Baseline","wt.subcohort")])
 three_way2 <- merge(three_way, wt, by=c("demo.stratum","Trt_lb","Baseline")) 
 
 three_way2$count_wt=three_way2$count * three_way2$wt
-  
-three_way_fmt <- rbind(
-  rbind(subset(three_way2, Baseline=="Negative" & Trt_lb=="Vaccine")[,c("demo.stratum", "count")],
-        subset(three_way2, Baseline=="Positive" & Trt_lb=="Vaccine")[,c("demo.stratum", "count")]),
-  
-                       subset(three_way2, Trt_lb=="Vaccine")[,"count_wt"],
-                       subset(three_way2, Trt_lb=="Placebo")[,"count"],
-                       subset(three_way2, Trt_lb=="Placebo")[,"count_wt"])
 
+tab_strtm_v <- three_way2 %>% select(3,2,1,6,4)
+colnames(tab_strtm_v) <- c("Baseline SARS-CoV-2","Arm","strata","Estimated","Observed")
+tab_strtm_v <- tab_strtm_v %>%
+  mutate_at(c("Baseline SARS-CoV-2","Arm","Estimated","Observed"), as.character) %>%
+  mutate_at(c("strata"), as.numeric)
+  
+tab_strtm_v <- tab_strtm[, c("Baseline SARS-CoV-2","Arm","strata")] %>%
+  left_join(tab_strtm_v, by=c("Baseline SARS-CoV-2","Arm","strata"))
 
-tab_strtm_v
+testthat::expect_equal(tab_strtm_v, tab_strtm)
 
 save(tab_strtm_v, file = here::here("verification", "verification_output", "immuno_tab_strtm_v.Rdata"))
 ```
@@ -319,17 +278,19 @@ save(tab_strtm_v, file = here::here("verification", "verification_output", "immu
 ## Table. Percentage of responders, and participants with concentrations >= 2 x LLOQ or >= 4 x LLOQ for binding antibody markers by All participants
 
 ```{r tab_bind1, results = "asis", echo=FALSE, message=FALSE, warning=FALSE}
-fig_footer <- c("Binding Antibody Responders are defined as participants who had baseline values below the LLOQ with detectable antibody concentration above the assay LLOQ, or as participants with baseline values above the LLOQ with a 4-fold increase in antibody concentration.")
 
 ind=1
 tab_list=list()
-for (v in VarName_levels){
+for (v in seq_along(VarName_levels)){
   for (mk in c("Anti N IgG (IU/ml)","Anti RBD IgG (IU/ml)","Anti Spike IgG (IU/ml)")){
     for (tp in two_timepoints){
       
       letter=letters[ind]
       
-       immuno_design <- subset(dat.long.stack, VarName==v) %>% filter(Visit == tp & Marker == mk)
+       immuno_design <- dat.long %>%
+         mutate(Group=(!!sym(names(VarName_levels[v]))),
+                VarName=VarName_levels[[v]]) %>%
+         filter(Visit == tp & Marker == mk)
        
        design <- twophase(id = list(~Ptid, ~ Ptid), strata = list(NULL, ~ tps.stratum), weights = list(NULL, ~ wt.subcohort), subset=~immuno_ind, method="simple", data = immuno_design)
        
@@ -344,7 +305,7 @@ for (v in VarName_levels){
        
        tab <-  immuno_design %>% filter(immuno_ind==1 & !is.na(Group)) %>%
         group_by_at(groupby_vars) %>%
-        summarise(N=n(),
+        summarise(N=as.character(n()),
                   `Responder_1`=paste0(round(sum(response * wt.subcohort),1),"/",round(sum(wt.subcohort),1)),
                   `% Greater than 2xLLOQ_1`=paste0(round(sum(bind_response_2LQ * wt.subcohort),1),"/",round(sum(wt.subcohort),1)),
                   `% Greater than 4xLLOQ_1`=paste0(round(sum(bind_response_4LQ * wt.subcohort),1),"/",round(sum(wt.subcohort),1))) %>%
@@ -359,12 +320,7 @@ for (v in VarName_levels){
                 `% Greater than 2xLLOQ` = paste0(`% Greater than 2xLLOQ_1`, " = ", `% Greater than 2xLLOQ_2`),
                 `% Greater than 4xLLOQ` = paste0(`% Greater than 4xLLOQ_1`, " = ", `% Greater than 4xLLOQ_2`)) %>%
          select(VarName, Group, Visit, Trt_lb, Baseline, Marker, N, `Responder`:`% Greater than 4xLLOQ`)
-
-      colnames(tab) <- c("subgroup","Group","Visit","Arm","Baseline SARS-CoV-2","Marker","N","Responder", "% Greater than 2xLLOQ", "% Greater than 4xLLOQ")
       
-      # comparison
-      tab$Group=ifelse(tab$subgroup=="All participants", "", tab$Group)
-     
       tab_list[[ind]] <- tab
       
       ind=ind+1
@@ -372,20 +328,13 @@ for (v in VarName_levels){
   }
 }
 
+# comparison
 tab_bind1_v <- do.call("rbind", tab_list)
-dim(tab_bind1_v)==dim(tab_bind1)
-
-tab_bind1[] <- lapply(tab_bind1, as.character)
-tab_bind1_v[] <- lapply(tab_bind1_v, as.character)
+colnames(tab_bind1_v) <- c("subgroup","Group","Visit","Arm","Baseline SARS-CoV-2","Marker","N","Responder", "% Greater than 2xLLOQ", "% Greater than 4xLLOQ")
 
 tab_bind1_v = tab_bind1[,c("subgroup","Group","Visit","Arm","Baseline SARS-CoV-2","Marker")] %>% left_join(tab_bind1_v, by=c("subgroup","Group","Visit","Arm","Baseline SARS-CoV-2","Marker"))
 
 testthat::expect_equal(tab_bind1_v, tab_bind1)
-
-tt_4=cbind(tab_bind1_v[which(tab_bind1_v$`% Greater than 2xLLOQ`!=tab_bind1$`% Greater than 2xLLOQ`),],
-         tab_bind1[which(tab_bind1_v$`% Greater than 2xLLOQ`!=tab_bind1$`% Greater than 2xLLOQ`),"% Greater than 2xLLOQ", drop=F])
-tt_4=cbind(tab_bind1_v[which(tab_bind1_v$`% Greater than 4xLLOQ`!=tab_bind1$`% Greater than 4xLLOQ`),],
-         tab_bind1[which(tab_bind1_v$`% Greater than 4xLLOQ`!=tab_bind1$`% Greater than 4xLLOQ`),"% Greater than 4xLLOQ", drop=F])
 
 save(tab_bind1_v, file = here::here("verification", "verification_output", "immuno_tab_bind1_v.Rdata"))
 ```
@@ -393,26 +342,31 @@ save(tab_bind1_v, file = here::here("verification", "verification_output", "immu
 \clearpage
 
 ## Table. Binding antibody markers with % 2-fold rise and % 4-fold rise
+## Table. Percentage of responders, and participants participants with 2-fold rise, and participants with 4-fold rise for ID50 pseudo-virus neutralization antibody markers
+## Table. Percentage of responders, and participants participants with 2-fold rise, and participants with 4-fold rise for MN50 WT live virus neutralization antibody markers
 
-```{r tab_bind2, results = "asis", echo=FALSE, message=FALSE, warning=FALSE}
-
+```{r tab_bind2_tab_pseudo_tab_wt, results = "asis", echo=FALSE, message=FALSE, warning=FALSE}
 ind=1
 tab_list=list()
-for (v in VarName_levels){
-  for (mk in c("Anti N IgG (IU/ml)","Anti RBD IgG (IU/ml)","Anti Spike IgG (IU/ml)")){
+for (v in seq_along(VarName_levels)){
+  for (mk in c("Anti N IgG (IU/ml)","Anti RBD IgG (IU/ml)","Anti Spike IgG (IU/ml)","Pseudovirus-nAb ID50","Pseudovirus-nAb ID80")){
     for (tp in two_timepoints){
   
     letter=letters[ind]
     
-    immuno_design <- subset(dat.long.stack, VarName==v) %>%
+    immuno_design <- dat.long %>%
+      mutate(Group=(!!sym(names(VarName_levels[v]))),
+                VarName=VarName_levels[[v]]) %>%
       filter(Marker == mk & Visit == tp) %>%
       select(Ptid, VarName, Group, Visit, Trt_lb, Baseline, Marker, wt.subcohort, tps.stratum, response, immuno_ind) %>%
       left_join(
-        subset(dat.long.stack, VarName==v) %>%
+        dat.long %>%
+          mutate(Group=(!!sym(names(VarName_levels[v]))),
+                 VarName=VarName_levels[[v]]) %>%
         filter(Marker == mk & grepl("D29 fold-rise over D1|D57 fold-rise over D1", Visit)) %>%
         mutate(Visit=ifelse(Visit=="D29 fold-rise over D1","Day 29",
                             ifelse(Visit=="D57 fold-rise over D1","Day 57", NA))) %>%
-        select(Ptid, VarName, Group, Visit, Trt_lb, Baseline, Marker, wt.subcohort, tps.stratum,        response_2FR, response_4FR),
+        select(Ptid, VarName, Group, Visit, Trt_lb, Baseline, Marker, wt.subcohort, tps.stratum, response_2FR, response_4FR),
         by=c("Ptid",groupby_vars, "wt.subcohort", "tps.stratum")
       )
     
@@ -429,7 +383,7 @@ for (v in VarName_levels){
      
      tab <-  immuno_design %>% filter(immuno_ind==1 & !is.na(Group)) %>%
       group_by_at(groupby_vars) %>%
-      summarise(N=n(),
+      summarise(N=as.character(n()),
                 `Responder_1`=paste0(round(sum(response * wt.subcohort),1),"/",round(sum(wt.subcohort),1)),
                 `% 2-Fold Rise_1`=paste0(round(sum(response_2FR * wt.subcohort),1),"/",round(sum(wt.subcohort),1)),
                 `% 4-Fold Rise_1`=paste0(round(sum(response_4FR * wt.subcohort),1),"/",round(sum(wt.subcohort),1))) %>%
@@ -445,9 +399,6 @@ for (v in VarName_levels){
               `% 4-Fold Rise` = paste0(`% 4-Fold Rise_1`, " = ", `% 4-Fold Rise_2`)) %>%
        select(VarName, Group, Visit, Trt_lb, Baseline, Marker, N, `Responder`:`% 4-Fold Rise`)
     
-    colnames(tab) <- c("subgroup","Group","Visit","Arm", "Baseline SARS-CoV-2","Marker","N","Responder", "% 2-Fold Rise", "% 4-Fold Rise")
-  
-    tab$Group=ifelse(tab$subgroup=="All participants", "", tab$Group)
     tab_list[[ind]] <- tab
     
     ind=ind+1
@@ -456,190 +407,27 @@ for (v in VarName_levels){
 }
 
 # comparison
-tab_bind2_v <- do.call("rbind", tab_list)
-tab_bind2_v[] <- lapply(tab_bind2_v, as.character)
-
-tab_bind2[] <- lapply(tab_bind2, as.character)
-dim(tab_bind2_v)==dim(tab_bind2)
+tab_bind2_v <- do.call("rbind", tab_list) %>% filter(Marker %in% c("Anti N IgG (IU/ml)","Anti RBD IgG (IU/ml)","Anti Spike IgG (IU/ml)"))
+colnames(tab_bind2_v) <- c("subgroup","Group","Visit","Arm", "Baseline SARS-CoV-2","Marker","N","Responder", "% 2-Fold Rise", "% 4-Fold Rise")
 
 tab_bind2_v <- tab_bind2[, c("subgroup","Group","Visit","Arm","Baseline SARS-CoV-2","Marker")] %>%
   left_join(tab_bind2_v, by=c("subgroup","Group","Visit","Arm","Baseline SARS-CoV-2","Marker"))
 
 testthat::expect_equal(tab_bind2_v, tab_bind2)
 
-tt_3=cbind(tab_bind2_v[which(tab_bind2_v$`% 2-Fold Rise`!=tab_bind2$`% 2-Fold Rise`),],
-         tab_bind2[which(tab_bind2_v$`% 2-Fold Rise`!=tab_bind2$`% 2-Fold Rise`),"% 2-Fold Rise", drop=F])
-tt_3=cbind(tab_bind2_v[which(tab_bind2_v$`% 4-Fold Rise`!=tab_bind2$`% 4-Fold Rise`),],
-         tab_bind2[which(tab_bind2_v$`% 4-Fold Rise`!=tab_bind2$`% 4-Fold Rise`),"% 4-Fold Rise", drop=F])
-
 save(tab_bind2_v, file = here::here("verification", "verification_output", "immuno_tab_bind2_v.Rdata"))
-```
-
-\clearpage
-
-## Table. Percentage of responders, and participants participants with 2-fold rise, and participants with 4-fold rise for ID50 pseudo-virus neutralization antibody markers
-
-```{r tab_pseudo, results = "asis", echo=FALSE, message=FALSE, warning=FALSE}
-fig_footer <- c("Neutralization Responders are defined as participants who had baseline values below the lower limit of detection (LLOQ) with detectable ID50 neutralization titer above the assay LLOQ, or as participants with baseline values above the LLOQ with a 4-fold increase in ID50.")
-
-ind=1
-tab_list=list()
-for (v in VarName_levels){
-  for (mk in c("Pseudovirus-nAb ID50","Pseudovirus-nAb ID80")){
-    for (tp in two_timepoints){
-  
-    letter=letters[ind]
-    
-    immuno_design <- subset(dat.long.stack, VarName==v) %>%
-      filter(Marker == mk & Visit == tp) %>%
-      select(Ptid, VarName, Group, Visit, Trt_lb, Baseline, Marker, wt.subcohort, tps.stratum, response, immuno_ind) %>%
-      left_join(
-        subset(dat.long.stack, VarName==v) %>%
-        filter(Marker == mk & grepl("D29 fold-rise over D1|D57 fold-rise over D1", Visit)) %>%
-        mutate(Visit=ifelse(Visit=="D29 fold-rise over D1","Day 29",
-                            ifelse(Visit=="D57 fold-rise over D1","Day 57", NA))) %>%
-        select(Ptid, VarName, Group, Visit, Trt_lb, Baseline, Marker, wt.subcohort, tps.stratum,        response_2FR, response_4FR),
-        by=c("Ptid",groupby_vars, "wt.subcohort", "tps.stratum")
-      )
-    
-     design <- twophase(id = list(~Ptid, ~ Ptid), strata = list(NULL, ~ tps.stratum), weights = list(NULL, ~ wt.subcohort), subset=~immuno_ind, method="simple", data = immuno_design)
-  
-     mod1 <- svyby(~response, ~VarName+Group+Visit+Trt_lb+Baseline+Marker, design, survey::svyciprop, ci=TRUE, vartype="ci", na.rm=T)
-     colnames(mod1) <- c(colnames(mod1)[1:7], "mod1 2.5 %", "mod1 97.5 %")
-     
-     mod2 <- svyby(~response_2FR, ~VarName+Group+Visit+Trt_lb+Baseline+Marker, design, survey::svyciprop, ci=TRUE, vartype="ci", na.rm=T)
-     colnames(mod2) <- c(colnames(mod2)[1:7], "mod2 2.5 %", "mod2 97.5 %")
-     
-     mod3 <- svyby(~response_4FR, ~VarName+Group+Visit+Trt_lb+Baseline+Marker, design, survey::svyciprop,ci=TRUE, vartype="ci", na.rm=T)
-     colnames(mod3) <- c(colnames(mod3)[1:7], "mod3 2.5 %", "mod3 97.5 %")
-     
-     tab <-  immuno_design %>% filter(immuno_ind==1 & !is.na(Group)) %>%
-      group_by_at(groupby_vars) %>%
-      summarise(N=n(),
-                `Responder_1`=paste0(round(sum(response * wt.subcohort),1),"/",round(sum(wt.subcohort),1)),
-                `% 2-Fold Rise_1`=paste0(round(sum(response_2FR * wt.subcohort),1),"/",round(sum(wt.subcohort),1)),
-                `% 4-Fold Rise_1`=paste0(round(sum(response_4FR * wt.subcohort),1),"/",round(sum(wt.subcohort),1))) %>%
-       left_join(mod1, by=groupby_vars) %>%
-       left_join(mod2, by=groupby_vars) %>%
-       left_join(mod3, by=groupby_vars) %>%
-       mutate(`Responder_2` = ifelse(!is.nan(`mod1 97.5 %`), paste0(decimal_f(response*100,1),"%\n(", decimal_f(`mod1 2.5 %`*100,1),"%, ", decimal_f(`mod1 97.5 %`*100,1),"%)"),paste0(decimal_f(response*100,1),"%")),
-              `% 2-Fold Rise_2` = ifelse(!is.nan(`mod2 97.5 %`), paste0(decimal_f(response_2FR*100,1),"%\n(", decimal_f(`mod2 2.5 %`*100,1),"%, ", decimal_f(`mod2 97.5 %`*100,1),"%)"),paste0(decimal_f(response_2FR*100,1),"%")),
-              `% 4-Fold Rise_2` = ifelse(!is.nan(`mod3 97.5 %`), paste0(decimal_f(response_4FR*100,1),"%\n(", decimal_f(`mod3 2.5 %`*100,1),"%, ", decimal_f(`mod3 97.5 %`*100,1),"%)"),paste0(decimal_f(response_4FR*100,1),"%"))
-              ) %>%
-       mutate(`Responder` = paste0(`Responder_1`, " = ", `Responder_2`),
-              `% 2-Fold Rise` = paste0(`% 2-Fold Rise_1`, " = ", `% 2-Fold Rise_2`),
-              `% 4-Fold Rise` = paste0(`% 4-Fold Rise_1`, " = ", `% 4-Fold Rise_2`)) %>%
-       select(VarName, Group, Visit, Trt_lb, Baseline, Marker, N, `Responder`:`% 4-Fold Rise`)
-    
-    colnames(tab) <- c("subgroup","Group","Visit","Arm", "Baseline SARS-CoV-2","Marker","N","Responder", "% 2-Fold Rise", "% 4-Fold Rise")
-  
-    tab$Group=ifelse(tab$subgroup=="All participants", "", tab$Group)
-    tab_list[[ind]] <- tab
-    
-    ind=ind+1
-    }
-  }
-}
 
 # comparison
-tab_pseudo_v <- do.call("rbind", tab_list) %>% filter(Marker=="Pseudovirus-nAb ID50")
-tab_pseudo_v[] <- lapply(tab_pseudo_v, as.character)
+tab_pseudo_v <- do.call("rbind", tab_list) %>% filter(Marker %in% c("Pseudovirus-nAb ID50","Pseudovirus-nAb ID80"))
+colnames(tab_pseudo_v) <- c("subgroup","Group","Visit","Arm", "Baseline SARS-CoV-2","Marker","N","Responder", "% 2-Fold Rise", "% 4-Fold Rise")
 
-tab_pseudo[] <- lapply(tab_pseudo, as.character)
-dim(tab_pseudo_v)==dim(tab_pseudo)
-
-tab_pseudo_v <- tab_pseudo[, c("subgroup","Group","Visit","Arm","Baseline SARS-CoV-2","Marker")] %>%
+tab_pseudo_sub_v <- tab_pseudo[, c("subgroup","Group","Visit","Arm","Baseline SARS-CoV-2","Marker")] %>%
   left_join(tab_pseudo_v, by=c("subgroup","Group","Visit","Arm","Baseline SARS-CoV-2","Marker"))
 
-testthat::expect_equal(tab_pseudo_v, tab_pseudo)
+testthat::expect_equal(tab_pseudo_sub_v, tab_pseudo)
 
-tt=cbind(tab_pseudo_v[which(tab_pseudo_v$`% 2-Fold Rise`!=tab_pseudo$`% 2-Fold Rise`),],
-         tab_pseudo[which(tab_pseudo_v$`% 2-Fold Rise`!=tab_pseudo$`% 2-Fold Rise`),"% 2-Fold Rise", drop=F])
-tt=cbind(tab_pseudo_v[which(tab_pseudo_v$`% 4-Fold Rise`!=tab_pseudo$`% 4-Fold Rise`),],
-         tab_pseudo[which(tab_pseudo_v$`% 4-Fold Rise`!=tab_pseudo$`% 4-Fold Rise`),"% 4-Fold Rise", drop=F])
+save(tab_pseudo_sub_v, file = here::here("verification", "verification_output", "immuno_tab_pseudo_v.Rdata"))
 
-save(tab_pseudo_v, file = here::here("verification", "verification_output", "immuno_tab_pseudo_v.Rdata"))
-```
-
-\clearpage
-
-## Table. Percentage of responders, and participants participants with 2-fold rise, and participants with 4-fold rise for MN50 WT live virus neutralization antibody markers
-
-```{r tab_wt, results = "asis", echo=FALSE, message=FALSE, warning=FALSE, eval=FALSE}
-fig_footer <- c("Neutralization Responders are defined as participants who had baseline values below the lower limit of detection (LLOQ) with detectable ID50 neutralization titer above the assay LLOQ, or as participants with baseline values above the LLOQ with a 4-fold increase in ID50.")
-
-ind=1
-tab_list=list()
-for (v in VarName_levels){
-  for (mk in c("Live virus-nAb MN50")){
-    for (tp in two_timepoints){
-  
-    letter=letters[ind]
-    
-    immuno_design <- subset(dat.long.stack, VarName==v) %>%
-      filter(Marker== mk & Visit == tp) %>%
-      select(Ptid, VarName, Group, Visit, Trt_lb, Baseline, Marker, wt.subcohort, tps.stratum, response, immuno_ind) %>%
-      left_join(
-        subset(dat.long.stack, VarName==v) %>%
-        filter(Marker== mk & grepl("D29 fold-rise over D1|D57 fold-rise over D1", Visit)) %>%
-        mutate(Visit=ifelse(Visit=="D29 fold-rise over D1","Day 29",
-                            ifelse(Visit=="D57 fold-rise over D1","Day 57", NA))) %>%
-        select(Ptid, VarName, Group, Visit, Trt_lb, Baseline, Marker, wt.subcohort, tps.stratum,        response_2FR, response_4FR),
-        by=c("Ptid",groupby_vars, "wt.subcohort", "tps.stratum")
-      )
-    
-     design <- twophase(id = list(~Ptid, ~ Ptid), strata = list(NULL, ~ tps.stratum), weights = list(NULL, ~ wt.subcohort), subset=~immuno_ind, method="simple", data = immuno_design)
-  
-     mod1 <- svyby(~response, ~VarName+Group+Visit+Trt_lb+Baseline+Marker, design, survey::svyciprop, ci=TRUE, vartype="ci", na.rm=T)
-     colnames(mod1) <- c(colnames(mod1)[1:7], "mod1 2.5 %", "mod1 97.5 %")
-     
-     mod2 <- svyby(~response_2FR, ~VarName+Group+Visit+Trt_lb+Baseline+Marker, design, survey::svyciprop, ci=TRUE, vartype="ci", na.rm=T)
-     colnames(mod2) <- c(colnames(mod2)[1:7], "mod2 2.5 %", "mod2 97.5 %")
-     
-     mod3 <- svyby(~response_4FR, ~VarName+Group+Visit+Trt_lb+Baseline+Marker, design, survey::svyciprop, ci=TRUE, vartype="ci", na.rm=T)
-     colnames(mod3) <- c(colnames(mod3)[1:7], "mod3 2.5 %", "mod3 97.5 %")
-     
-     tab <-  immuno_design %>% filter(immuno_ind==1 & !is.na(Group)) %>%
-      group_by_at(groupby_vars) %>%
-      summarise(N=n(),
-                `Responder_1`=paste0(round(sum(response * wt.subcohort),1),"/",round(sum(wt.subcohort),1)),
-                `% 2-Fold Rise_1`=paste0(round(sum(response_2FR * wt.subcohort),1),"/",round(sum(wt.subcohort),1)),
-                `% 4-Fold Rise_1`=paste0(round(sum(response_4FR * wt.subcohort),1),"/",round(sum(wt.subcohort),1))) %>%
-       left_join(mod1, by=groupby_vars) %>%
-       left_join(mod2, by=groupby_vars) %>%
-       left_join(mod3, by=groupby_vars) %>%
-       mutate(`Responder_2` = ifelse(!is.nan(`mod1 97.5 %`), paste0(decimal_f(response*100,1),"%\n(", decimal_f(`mod1 2.5 %`*100,1),"%, ", decimal_f(`mod1 97.5 %`*100,1),"%)"),paste0(decimal_f(response*100,1),"%")),
-              `% 2-Fold Rise_2` = ifelse(!is.nan(`mod2 97.5 %`), paste0(decimal_f(response_2FR*100,1),"%\n(", decimal_f(`mod2 2.5 %`*100,1),"%, ", decimal_f(`mod2 97.5 %`*100,1),"%)"),paste0(decimal_f(response_2FR*100,1),"%")),
-              `% 4-Fold Rise_2` = ifelse(!is.nan(`mod3 97.5 %`), paste0(decimal_f(response_4FR*100,1),"%\n(", decimal_f(`mod3 2.5 %`*100,1),"%, ", decimal_f(`mod3 97.5 %`*100,1),"%)"),paste0(decimal_f(response_4FR*100,1),"%"))
-              ) %>%
-       mutate(`Responder` = paste0(`Responder_1`, " = ", `Responder_2`),
-              `% 2-Fold Rise` = paste0(`% 2-Fold Rise_1`, " = ", `% 2-Fold Rise_2`),
-              `% 4-Fold Rise` = paste0(`% 4-Fold Rise_1`, " = ", `% 4-Fold Rise_2`)) %>%
-       select(VarName, Group, Visit, Trt_lb, Baseline, Marker, N, `Responder`:`% 4-Fold Rise`)
-    
-    colnames(tab) <- c("subgroup","Group","Visit","Arm", "Baseline SARS-CoV-2","Marker","N","Responder", "% 2-Fold Rise", "% 4-Fold Rise")
-    
-    tab$Group=ifelse(tab$subgroup=="All participants", "", tab$Group)
-  
-    tab_list[[ind]] <- tab
-    
-    ind=ind+1
-    }
-  }
-}
-
-# comparison
-tab_wt_v <- do.call("rbind", tab_list)
-dim(tab_wt_v)==dim(tab_wt)
-
-tab_wt[] <- lapply(tab_wt, as.character)
-tab_wt_v[] <- lapply(tab_wt_v, as.character)
-tab_wt_v <- tab_wt[, c("subgroup","Group","Visit","Arm","Baseline SARS-CoV-2","Marker")] %>%
-  left_join(tab_wt_v, by=c("subgroup","Group","Visit","Arm","Baseline SARS-CoV-2","Marker"))
-
-testthat::expect_equal(tab_wt_v, tab_wt)
-
-save(tab_wt_v, file = here::here("verification", "verification_output", "immuno_tab_wt_v.Rdata"))
 ```
 
 \clearpage
@@ -647,17 +435,18 @@ save(tab_wt_v, file = here::here("verification", "verification_output", "immuno_
 ## Table. Geometric mean titers (GMTs) and geometric mean concentrations (GMCs)    
 
 ```{r tab_gm, results = "asis", echo=FALSE, message=FALSE}
-fig_footer <- c("")
 
 ind=1
 tab_list=list()
-for (v in VarName_levels){
+for (v in seq_along(VarName_levels)){
   for (mk in c("Anti N IgG (IU/ml)","Anti RBD IgG (IU/ml)","Anti Spike IgG (IU/ml)","Pseudovirus-nAb ID50","Pseudovirus-nAb ID80")){
     for (tp in three_timepoints){
   
     letter=letters[ind]
     
-    immuno_design <- subset(dat.long.stack, VarName==v) %>%
+    immuno_design <- dat.long %>%
+      mutate(Group=(!!sym(names(VarName_levels[v]))),
+             VarName=VarName_levels[[v]]) %>%
       filter(Marker==mk & Visit == tp)
     
     design <- twophase(id = list(~Ptid, ~ Ptid), strata = list(NULL, ~ tps.stratum), weights = list(NULL, ~ wt.subcohort), subset=~immuno_ind, method="simple", data = immuno_design)
@@ -666,14 +455,10 @@ for (v in VarName_levels){
     
     tab <- immuno_design %>% filter(immuno_ind==1 & !is.na(Group)) %>%
       group_by_at(groupby_vars) %>%
-      summarise(N=n()) %>%
+      summarise(N=as.character(n())) %>%
       left_join(mod, by=groupby_vars) %>%
       mutate(GMT = paste0(decimal_f(10^readout_trunc, 2),"\n(", decimal_f(10^ci_l, 2),", ", decimal_f(10^ci_u,2),")")) %>%
       select(VarName, Group, Visit, Trt_lb, Baseline, Marker, N, GMT)
-      
-    colnames(tab) <- c("subgroup","Group","Visit","Arm","Baseline SARS-CoV-2","Marker","N","GMT/GMC")
-  
-    tab$Group=ifelse(tab$subgroup=="All participants", "", tab$Group)
     
     tab_list[[ind]] <- tab
   
@@ -683,11 +468,8 @@ for (v in VarName_levels){
 }
 
 # comparison
-tab_gm_v <- do.call("rbind", tab_list)  
-dim(tab_gm_v)==dim(tab_gm)
-
-tab_gm[] <- lapply(tab_gm, as.character)
-tab_gm_v[] <- lapply(tab_gm_v, as.character)
+tab_gm_v <- do.call("rbind", tab_list)
+colnames(tab_gm_v) <- c("subgroup","Group","Visit","Arm","Baseline SARS-CoV-2","Marker","N","GMT/GMC")
 
 tab_gm_v <- tab_gm[, c("subgroup","Group","Visit","Arm","Baseline SARS-CoV-2","Marker")] %>% left_join(tab_gm_v, by=c("subgroup","Group","Visit","Arm","Baseline SARS-CoV-2","Marker"))
 
@@ -701,17 +483,18 @@ save(tab_gm_v, file = here::here("verification", "verification_output", "immuno_
 ## Table. Geometric mean titer ratios (GMTRs) or geometric mean concentration ratios (GMCRs) between post-vaccinations/pre-vaccination
 
 ```{r tab_gmr, results = "asis", echo=FALSE, warning=FALSE, message=F}
-fig_footer <- c("")
 
 ind=1
 tab_list=list()
-for (v in VarName_levels){
+for (v in seq_along(VarName_levels)){
   for (mk in c("Anti N IgG (IU/ml)","Anti RBD IgG (IU/ml)","Anti Spike IgG (IU/ml)","Pseudovirus-nAb ID50","Pseudovirus-nAb ID80")){
     for (tp in c("D29 fold-rise over D1","D57 fold-rise over D1")){
   
     letter=letters[ind]
     
-    immuno_design <- subset(dat.long.stack, VarName==v) %>%
+    immuno_design <- dat.long %>%
+      mutate(Group=(!!sym(names(VarName_levels[v]))),
+             VarName=VarName_levels[[v]]) %>%
       filter(Marker == mk & Visit == tp)
       
     design <- twophase(id = list(~Ptid, ~ Ptid), strata = list(NULL, ~ tps.stratum), weights = list(NULL, ~ wt.subcohort), subset=~immuno_ind, method="simple", data = immuno_design)
@@ -721,10 +504,6 @@ for (v in VarName_levels){
     tab <-  mod %>%
         mutate(`GMTR/GMCR`= paste0(decimal_f(10^readout_trunc,2), "\n(", decimal_f(10^ci_l,2), ", ", decimal_f(10^ci_u,2),")")) %>%
         select(VarName, Group, Baseline, Trt_lb, Marker, `GMTR/GMCR`, Visit)
-      
-    colnames(tab) <- c("subgroup", "Group", "Baseline SARS-CoV-2", "Arm", "Marker", "GMTR/GMCR","Visit")
-    
-    tab$Group=ifelse(tab$subgroup=="All participants", "", tab$Group)
     
     tab_list[[ind]] <- tab
   
@@ -735,17 +514,17 @@ for (v in VarName_levels){
 
 # comparison
 tab_gmr_v <- do.call("rbind", tab_list)
+colnames(tab_gmr_v) <- c("subgroup", "Group", "Baseline SARS-CoV-2", "Arm", "Marker", "GMTR/GMCR","Visit")
+
+# merge with gm
 tab_gmr_v <- merge(tab_gmr_v, (tab_gm_v %>% pivot_wider(names_from=Visit, values_from=`GMT/GMC`)), by=c("subgroup","Group","Arm","Baseline SARS-CoV-2","Marker"))
+
+# format
 tab_gmr_v$`Baseline\nGMT/GMC`=tab_gmr_v$`Day 1`
 tab_gmr_v$`Post Baseline\nGMT/GMC`=with(tab_gmr_v, ifelse(tab_gmr_v$Visit=="D29 fold-rise over D1", `Day 29`, `Day 57`))
 tab_gmr_v <- tab_gmr_v %>% select(1:2, 7, 3:5, 8, 12, 13, 6)
 
-tab_gmr[] <- lapply(tab_gmr, as.character)
-tab_gmr_v[] <- lapply(tab_gmr_v, as.character)
-
 tab_gmr_v <- tab_gmr[, c("subgroup","Group","Visit","Arm", "Baseline SARS-CoV-2","Marker")] %>% left_join(tab_gmr_v, by=c("subgroup","Group","Visit","Arm", "Baseline SARS-CoV-2","Marker"))
-
-dim(tab_gmr_v)==dim(tab_gmr)
 
 testthat::expect_equal(tab_gmr_v, tab_gmr)
 
@@ -757,30 +536,30 @@ save(tab_gmr_v, file = here::here("verification", "verification_output", "immuno
 ## Table. The ratios of GMTs/GMCs between groups
 
 ```{r tab_rgmt, results = "asis", echo=FALSE, message=FALSE}
-fig_footer <- c("")
 
 ind=1
 ind_for_age_risk=1
 tab_list=list()
-VarName_levels_Comp=c("Age","Age, Risk for Severe Covid-19","Age, Risk for Severe Covid-19","Sex","Hispanic or Latino ethnicity","Communities of color","Risk for Severe Covid-19")
-for (v in VarName_levels_Comp){
+for (cp in c("Age","Age, Risk for Severe Covid-19","Age, Risk for Severe Covid-19","Sex","Hispanic or Latino ethnicity","Communities of color","Risk for Severe Covid-19")){ 
   for (mk in c("Anti N IgG (IU/ml)","Anti RBD IgG (IU/ml)","Anti Spike IgG (IU/ml)","Pseudovirus-nAb ID50","Pseudovirus-nAb ID80")){
     for (tp in three_timepoints){
   
     letter=letters[ind]
     
-    immuno_design <- subset(dat.long.stack, VarName == v) %>% 
+    immuno_design <- dat.long %>%
+      mutate(Group=(!!sym(names(VarName_levels)[unlist(VarName_levels)==cp])),
+             VarName=cp) %>%
       filter(Marker == mk & Visit == tp)
     
-     if(v=="Hispanic or Latino ethnicity") {
+     if(cp=="Hispanic or Latino ethnicity") {
        
        design <- subset(twophase(id = list(~Ptid, ~ Ptid), strata = list(NULL, ~ tps.stratum), weights = list(NULL, ~ wt.subcohort), subset=~immuno_ind, method="simple", data = immuno_design), Group %in% c("Hispanic or Latino", "Not Hispanic or Latino"))
                             
-     } else if (v=="Age, Risk for Severe Covid-19" & ind_for_age_risk==2){
+     } else if (cp=="Age, Risk for Severe Covid-19" & ind_for_age_risk==2){
       
       design <- subset(twophase(id = list(~Ptid, ~ Ptid), strata = list(NULL, ~ tps.stratum), weights = list(NULL, ~ wt.subcohort), subset=~immuno_ind, method="simple", data = immuno_design), Group %in% c("Age < 65 At-risk","Age < 65 Not at-risk"))
       
-    } else if (v=="Age, Risk for Severe Covid-19" & ind_for_age_risk==3) {
+    } else if (cp=="Age, Risk for Severe Covid-19" & ind_for_age_risk==3) {
       
       design <- subset(twophase(id = list(~Ptid, ~ Ptid), strata = list(NULL, ~ tps.stratum), weights = list(NULL, ~ wt.subcohort), subset=~immuno_ind, method="simple", data = immuno_design), Group %in% c("Age >= 65 At-risk","Age >= 65 Not at-risk"))
 
@@ -794,23 +573,21 @@ for (v in VarName_levels_Comp){
     
     tab <- mod %>% 
       rowwise() %>%
-      mutate(Ratio=ifelse(v=="Age", paste0(decimal_f(10^`GroupAge >= 65`,2),"\n(",decimal_f(10^`ci_l.GroupAge >= 65`,2),", ",decimal_f(10^`ci_u.GroupAge >= 65`,2),")"),
-                          ifelse(v=="Age, Risk for Severe Covid-19" & ind_for_age_risk==2,    paste0(decimal_f(10^-`GroupAge < 65 Not at-risk`,2),"\n(",decimal_f(10^-`ci_u.GroupAge < 65 Not at-risk`,2),", ",decimal_f(10^-`ci_l.GroupAge < 65 Not at-risk`,2),")"),
-                                  ifelse(v=="Age, Risk for Severe Covid-19" & ind_for_age_risk==3, paste0(decimal_f(10^-`GroupAge >= 65 Not at-risk`,2),"\n(",decimal_f(10^-`ci_u.GroupAge >= 65 Not at-risk`,2),", ",decimal_f(10^-`ci_l.GroupAge >= 65 Not at-risk`,2),")"),
-                                          ifelse(v=="Sex", paste0(decimal_f(10^`GroupMale`,2),"\n(",decimal_f(10^ci_l.GroupMale,2),", ",decimal_f(10^ci_u.GroupMale,2),")"),
-                                                ifelse(v=="Hispanic or Latino ethnicity", paste0(decimal_f(10^-`GroupNot Hispanic or Latino`,2),"\n(",decimal_f(10^-`ci_u.GroupNot Hispanic or Latino`,2),", ",decimal_f(10^-`ci_l.GroupNot Hispanic or Latino`,2),")"),
-                                                        ifelse(v=="Communities of color", paste0(decimal_f(10^-`GroupWhite Non-Hispanic`,2),"\n(",decimal_f(10^-`ci_u.GroupWhite Non-Hispanic`,2),", ",decimal_f(10^-`ci_l.GroupWhite Non-Hispanic`,2),")"), 
-                                                               ifelse(v=="Risk for Severe Covid-19", paste0(decimal_f(10^-`GroupNot at-risk`,2),"\n(",decimal_f(10^-`ci_u.GroupNot at-risk`,2),", ",decimal_f(10^-`ci_l.GroupNot at-risk`,2),")"),NA)))))))) %>%
-      mutate(`Group 1 vs 2`=ifelse(v=="Age", "Age >= 65 vs Age < 65",
-                          ifelse(v=="Age, Risk for Severe Covid-19" & ind_for_age_risk==2, "Age < 65 At-risk vs Age < 65 Not at-risk",
-                                 ifelse(v=="Age, Risk for Severe Covid-19" & ind_for_age_risk==3, "Age >= 65 At-risk vs Age >= 65 Not at-risk",
-                                        ifelse(v=="Sex", "Male vs Female",
-                                               ifelse(v=="Hispanic or Latino ethnicity", "Hispanic or Latino vs Not Hispanic or Latino",
-                                                      ifelse(v=="Communities of color", "Communities of Color vs White Non-Hispanic",
-                                                             ifelse(v=="Risk for Severe Covid-19", "At-risk vs Not at-risk", NA)))))))) %>%
+      mutate(Ratio=ifelse(cp=="Age", paste0(decimal_f(10^`GroupAge >= 65`,2),"\n(",decimal_f(10^`ci_l.GroupAge >= 65`,2),", ",decimal_f(10^`ci_u.GroupAge >= 65`,2),")"),
+                          ifelse(cp=="Age, Risk for Severe Covid-19" & ind_for_age_risk==2,    paste0(decimal_f(10^-`GroupAge < 65 Not at-risk`,2),"\n(",decimal_f(10^-`ci_u.GroupAge < 65 Not at-risk`,2),", ",decimal_f(10^-`ci_l.GroupAge < 65 Not at-risk`,2),")"),
+                                  ifelse(cp=="Age, Risk for Severe Covid-19" & ind_for_age_risk==3, paste0(decimal_f(10^-`GroupAge >= 65 Not at-risk`,2),"\n(",decimal_f(10^-`ci_u.GroupAge >= 65 Not at-risk`,2),", ",decimal_f(10^-`ci_l.GroupAge >= 65 Not at-risk`,2),")"),
+                                          ifelse(cp=="Sex", paste0(decimal_f(10^`GroupMale`,2),"\n(",decimal_f(10^ci_l.GroupMale,2),", ",decimal_f(10^ci_u.GroupMale,2),")"),
+                                                ifelse(cp=="Hispanic or Latino ethnicity", paste0(decimal_f(10^-`GroupNot Hispanic or Latino`,2),"\n(",decimal_f(10^-`ci_u.GroupNot Hispanic or Latino`,2),", ",decimal_f(10^-`ci_l.GroupNot Hispanic or Latino`,2),")"),
+                                                        ifelse(cp=="Communities of color", paste0(decimal_f(10^-`GroupWhite Non-Hispanic`,2),"\n(",decimal_f(10^-`ci_u.GroupWhite Non-Hispanic`,2),", ",decimal_f(10^-`ci_l.GroupWhite Non-Hispanic`,2),")"), 
+                                                               ifelse(cp=="Risk for Severe Covid-19", paste0(decimal_f(10^-`GroupNot at-risk`,2),"\n(",decimal_f(10^-`ci_u.GroupNot at-risk`,2),", ",decimal_f(10^-`ci_l.GroupNot at-risk`,2),")"),NA)))))))) %>%
+      mutate(`Group 1 vs 2`=ifelse(cp=="Age", "Age >= 65 vs Age < 65",
+                          ifelse(cp=="Age, Risk for Severe Covid-19" & ind_for_age_risk==2, "Age < 65 At-risk vs Age < 65 Not at-risk",
+                                 ifelse(cp=="Age, Risk for Severe Covid-19" & ind_for_age_risk==3, "Age >= 65 At-risk vs Age >= 65 Not at-risk",
+                                        ifelse(cp=="Sex", "Male vs Female",
+                                               ifelse(cp=="Hispanic or Latino ethnicity", "Hispanic or Latino vs Not Hispanic or Latino",
+                                                      ifelse(cp=="Communities of color", "Communities of Color vs White Non-Hispanic",
+                                                             ifelse(cp=="Risk for Severe Covid-19", "At-risk vs Not at-risk", NA)))))))) %>%
       select(VarName, Visit, Trt_lb, Baseline, Marker, `Group 1 vs 2`, Ratio)
-  
-    colnames(tab) <- c("subgroup", "Visit","Arm", "Baseline SARS-CoV-2", "Marker", "Group 1 vs 2", "Ratios of GMT/GMC")
     
     tab_list[[ind]] <- tab
     
@@ -822,6 +599,7 @@ for (v in VarName_levels_Comp){
 
 # comparison
 tab_rgmt_v <- do.call("rbind", tab_list)
+colnames(tab_rgmt_v) <- c("subgroup", "Visit","Arm", "Baseline SARS-CoV-2", "Marker", "Group 1 vs 2", "Ratios of GMT/GMC")
 
 tab_rgmt_v <- tab_gm_v %>% filter(subgroup %in% c("Age")) %>%
   mutate(`Group 1 vs 2`="Age >= 65 vs Age < 65") %>%
@@ -850,10 +628,6 @@ tab_rgmt_v <- tab_gm_v %>% filter(subgroup %in% c("Age")) %>%
 
 tab_rgmt_v <- tab_rgmt_v %>% mutate(subgroup= ifelse(`Group 1 vs 2`=="Age < 65 At-risk vs Age < 65 Not at-risk", "Age < 65, Risk for Severe Covid-19", ifelse(`Group 1 vs 2`=="Age >= 65 At-risk vs Age >= 65 Not at-risk", "Age >= 65, Risk for Severe Covid-19", subgroup)))
 
-tab_rgmt[] <- lapply(tab_rgmt, as.character)
-
-dim(tab_rgmt_v)==dim(tab_rgmt)
-
 tab_rgmt_v <- tab_rgmt[, c("Group 1 vs 2", "subgroup", "Visit","Arm", "Baseline SARS-CoV-2", "Marker")] %>% left_join(tab_rgmt_v, c("Group 1 vs 2", "subgroup", "Visit","Arm", "Baseline SARS-CoV-2", "Marker"))
 
 testthat::expect_equal(tab_rgmt_v, tab_rgmt)
@@ -866,61 +640,63 @@ save(tab_rgmt_v, file = here::here("verification", "verification_output", "immun
 ## Table. Differences in the responder rates, 2FRs, 4FRs between between the vaccine arm and the placebo arm
 
 ```{r tab_rrdiff, results = "asis", echo=FALSE, message=FALSE, warning=FALSE}
-fig_footer <- c("")
 
 ind=1
 ind_for_age_risk=1
 tab_list=list()
-VarName_levels_Comp=c("Arm","Baseline SARS-CoV-2", "Age","Age, Risk for Severe Covid-19","Age, Risk for Severe Covid-19","Sex","Hispanic or Latino ethnicity","Communities of color","Risk for Severe Covid-19")
-for (v in VarName_levels_Comp){
+for (cp in c("Arm","Baseline SARS-CoV-2", "Age","Age, Risk for Severe Covid-19","Age, Risk for Severe Covid-19","Sex","Hispanic or Latino ethnicity","Communities of color","Risk for Severe Covid-19")){
   for (mk in c("Anti N IgG (IU/ml)","Anti RBD IgG (IU/ml)","Anti Spike IgG (IU/ml)","Pseudovirus-nAb ID50","Pseudovirus-nAb ID80")){
     for (tp in two_timepoints){
       
-    comp1 <- ifelse(v=="Arm", "Vaccine", 
-                    ifelse(v=="Baseline SARS-CoV-2", "Positive",
-                           ifelse(v=="Age", "Age >= 65", 
-                                  ifelse(v=="Risk for Severe Covid-19", "At-risk",
-                                         ifelse(v=="Age, Risk for Severe Covid-19" & ind_for_age_risk==4, "Age < 65 At-risk",
-                                                ifelse(v=="Age, Risk for Severe Covid-19" & ind_for_age_risk==5, "Age >= 65 At-risk",
-                                                       ifelse(v=="Sex","Male",
-                                                              ifelse(v=="Hispanic or Latino ethnicity","Hispanic or Latino",ifelse(v=="Communities of color","Communities of Color", NA)))))))))
+    comp1 <- ifelse(cp=="Arm", "Vaccine", 
+                    ifelse(cp=="Baseline SARS-CoV-2", "Positive",
+                           ifelse(cp=="Age", "Age >= 65", 
+                                  ifelse(cp=="Risk for Severe Covid-19", "At-risk",
+                                         ifelse(cp=="Age, Risk for Severe Covid-19" & ind_for_age_risk==4, "Age < 65 At-risk",
+                                                ifelse(cp=="Age, Risk for Severe Covid-19" & ind_for_age_risk==5, "Age >= 65 At-risk",
+                                                       ifelse(cp=="Sex","Male",
+                                                              ifelse(cp=="Hispanic or Latino ethnicity","Hispanic or Latino",ifelse(cp=="Communities of color","Communities of Color", NA)))))))))
     
-    comp2 <- ifelse(v=="Arm", "Placebo", 
-                    ifelse(v=="Baseline SARS-CoV-2", "Negative",
-                           ifelse(v=="Age", "Age < 65", 
-                                  ifelse(v=="Risk for Severe Covid-19", "Not at-risk",
-                                         ifelse(v=="Age, Risk for Severe Covid-19" & ind_for_age_risk==4, "Age < 65 Not at-risk",
-                                                ifelse(v=="Age, Risk for Severe Covid-19" & ind_for_age_risk==5, "Age >= 65 Not at-risk",
-                                                       ifelse(v=="Sex","Female",
-                                                              ifelse(v=="Hispanic or Latino ethnicity","Not Hispanic or Latino",ifelse(v=="Communities of color","White Non-Hispanic", NA)))))))))
+    comp2 <- ifelse(cp=="Arm", "Placebo", 
+                    ifelse(cp=="Baseline SARS-CoV-2", "Negative",
+                           ifelse(cp=="Age", "Age < 65", 
+                                  ifelse(cp=="Risk for Severe Covid-19", "Not at-risk",
+                                         ifelse(cp=="Age, Risk for Severe Covid-19" & ind_for_age_risk==4, "Age < 65 Not at-risk",
+                                                ifelse(cp=="Age, Risk for Severe Covid-19" & ind_for_age_risk==5, "Age >= 65 Not at-risk",
+                                                       ifelse(cp=="Sex","Female",
+                                                              ifelse(cp=="Hispanic or Latino ethnicity","Not Hispanic or Latino",ifelse(cp=="Communities of color","White Non-Hispanic", NA)))))))))
   
     letter=letters[ind]
     
     # for response
-    immuno_design_1 <- subset(dat.long.stack, VarName == v) %>% 
+    immuno_design_1 <- dat.long %>%
+      mutate(Group=(!!sym(names(VarName_levels)[unlist(VarName_levels)==cp])),
+             VarName=cp) %>%
       mutate(Visit=gsub("D57","Day 57", gsub("D29","Day 29", Visit))) %>%
       filter(Marker == mk & Visit == tp)
     
     # for response_2FR, response_4FR
-    immuno_design_2 <- subset(dat.long.stack, VarName == v) %>% 
+    immuno_design_2 <- dat.long %>%
+      mutate(Group=(!!sym(names(VarName_levels)[unlist(VarName_levels)==cp])),
+             VarName=cp) %>%
       mutate(Visit=gsub("D57","Day 57", gsub("D29","Day 29", Visit))) %>%
       filter(Visit == paste(tp, "fold-rise over D1")) %>%
       mutate(Visit=gsub(" fold-rise over D1","",Visit)) %>%
       filter(Marker == mk & Visit == tp)
   
-    if(v=="Hispanic or Latino ethnicity") {
+    if(cp=="Hispanic or Latino ethnicity") {
        
        design1 <- subset(twophase(id = list(~Ptid, ~ Ptid), strata = list(NULL, ~ tps.stratum), weights = list(NULL, ~ wt.subcohort), subset=~immuno_ind, method="simple", data = immuno_design_1), Group %in% c("Hispanic or Latino", "Not Hispanic or Latino"))
        
        design2 <- subset(twophase(id = list(~Ptid, ~ Ptid), strata = list(NULL, ~ tps.stratum), weights = list(NULL, ~ wt.subcohort), subset=~immuno_ind, method="simple", data = immuno_design_2), Group %in% c("Hispanic or Latino", "Not Hispanic or Latino"))
                             
-     } else if (v=="Age, Risk for Severe Covid-19" & ind_for_age_risk==2){
+     } else if (cp=="Age, Risk for Severe Covid-19" & ind_for_age_risk==2){
       
       design1 <- subset(twophase(id = list(~Ptid, ~ Ptid), strata = list(NULL, ~ tps.stratum), weights = list(NULL, ~ wt.subcohort), subset=~immuno_ind, method="simple", data = immuno_design_1), Group %in% c("Age < 65 At-risk","Age < 65 Not at-risk"))
       
       design2 <- subset(twophase(id = list(~Ptid, ~ Ptid), strata = list(NULL, ~ tps.stratum), weights = list(NULL, ~ wt.subcohort), subset=~immuno_ind, method="simple", data = immuno_design_2), Group %in% c("Age < 65 At-risk","Age < 65 Not at-risk"))
       
-    } else if (v=="Age, Risk for Severe Covid-19" & ind_for_age_risk==3) {
+    } else if (cp=="Age, Risk for Severe Covid-19" & ind_for_age_risk==3) {
       
       design1 <- subset(twophase(id = list(~Ptid, ~ Ptid), strata = list(NULL, ~ tps.stratum), weights = list(NULL, ~ wt.subcohort), subset=~immuno_ind, method="simple", data = immuno_design_1), Group %in% c("Age >= 65 At-risk","Age >= 65 Not at-risk"))
       
@@ -962,8 +738,6 @@ for (v in VarName_levels_Comp){
       mutate(Comparison=paste(comp1, "vs", comp2)) %>%
       select(VarName, Visit, Baseline, Trt_lb, Marker, Comparison, Responder, Responder_2FR, Responder_4FR)
   
-      colnames(tab) <- c("subgroup","Visit","Baseline SARS-CoV-2","Arm","Marker","Comparison", "Responder","% 2-Fold Rise","% 4-Fold Rise")
-  
       tab_list[[ind]] <- tab   
      
      ind=ind+1
@@ -973,26 +747,16 @@ for (v in VarName_levels_Comp){
 }
 
 # comparison
-tab_rrdiff_v <- do.call("rbind", tab_list)  
+tab_rrdiff_v <- do.call("rbind", tab_list)
+colnames(tab_rrdiff_v) <- c("subgroup","Visit","Baseline SARS-CoV-2","Arm","Marker","Comparison", "Responder","% 2-Fold Rise","% 4-Fold Rise")
 
+# format
 tab_rrdiff_v$subgroup <- with(tab_rrdiff_v, ifelse(Comparison=="Age < 65 At-risk vs Age < 65 Not at-risk", "Age < 65, Risk for Severe Covid-19", ifelse(Comparison=="Age >= 65 At-risk vs Age >= 65 Not at-risk", "Age >= 65, Risk for Severe Covid-19", subgroup)))
-
-tab_rrdiff[] <- lapply(tab_rrdiff, as.character)
-tab_rrdiff_v[] <- lapply(tab_rrdiff_v, as.character)
-
-dim(tab_rrdiff_v)==dim(tab_rrdiff)
 
 tab_rrdiff_v <- tab_rrdiff[, c("Comparison", "subgroup", "Baseline SARS-CoV-2", "Arm", "Visit", "Marker")] %>% left_join(tab_rrdiff_v, by=c("Comparison", "subgroup", "Baseline SARS-CoV-2", "Arm", "Visit", "Marker")
 )
 
-tab_rrdiff_v <- tab_rrdiff_v[, c("Comparison", "subgroup","Baseline SARS-CoV-2","Arm","Visit","Marker","% 4-Fold Rise", "% 2-Fold Rise","Responder")]
-
 testthat::expect_equal(tab_rrdiff_v, tab_rrdiff)
-
-tt_2=cbind(tab_rrdiff_v[which(tab_rrdiff_v$`% 2-Fold Rise`!=tab_rrdiff$`% 2-Fold Rise`),],
-           tab_rrdiff[which(tab_rrdiff_v$`% 2-Fold Rise`!=tab_rrdiff$`% 2-Fold Rise`),"% 2-Fold Rise", drop=F])
-tt_2=cbind(tab_rrdiff_v[which(tab_rrdiff_v$`% 4-Fold Rise`!=tab_rrdiff$`% 4-Fold Rise`),],
-           tab_rrdiff[which(tab_rrdiff_v$`% 4-Fold Rise`!=tab_rrdiff$`% 4-Fold Rise`),"% 4-Fold Rise", drop=F])
 
 save(tab_rrdiff_v, file = here::here("verification", "verification_output", "immuno_tab_rrdiff_v.Rdata"))
 ```
@@ -1001,324 +765,207 @@ save(tab_rrdiff_v, file = here::here("verification", "verification_output", "imm
 
 
 ## Table. Antibody levels in the baseline SARS-CoV-2 negative per-protocol cohort (vaccine vs. placebo)
-
-```{r tab_neg, results = "asis", echo=FALSE, message=FALSE, warning=FALSE}
-fig_footer <- c("")
-
-tab_neg_combine_v <- tab_bind1_v %>% ungroup() %>% filter(`Baseline SARS-CoV-2`=="Negative" & subgroup=="All participants") %>% select(-1,-2,-9,-10) %>%
-  bind_rows(tab_pseudo_v %>% ungroup() %>% filter(`Baseline SARS-CoV-2`=="Negative" & subgroup=="All participants") %>% select(-1,-2,-9,-10)) %>%
-  #bind_rows(tab_table4_all %>% ungroup() %>% filter(`Baseline SARS-CoV-2`=="Negative" & subgroup=="All participants") %>% select(-1,-2,-9,-10)) %>%
-  left_join(
-    tab_gm_v %>% ungroup() %>% filter(`Baseline SARS-CoV-2`=="Negative" & subgroup=="All participants") %>% select(-1,-2) %>% rename_with(~ gsub("GMT/GMC","GMT",.x)),
-            by=c("Visit","Arm","Baseline SARS-CoV-2","Marker","N")
-    ) %>%
-  pivot_wider(names_from=Arm, values_from=c(N,Responder, GMT)) %>%
-  left_join(
-    tab_rrdiff_v %>% ungroup() %>% filter(`Baseline SARS-CoV-2`=="Negative" & subgroup=="Arm") %>% select(-1,-2,-4,-7,-8) %>% rename_with(~ gsub("Responder","tabdiff",.x)),
-            by=c("Visit","Baseline SARS-CoV-2","Marker")
-    ) %>%
-  rename_with(~ gsub("GMT","GMT/GMC",.x)) %>%
-  select(1,2,3,4,6,8,5,7,9,10) 
-
-
-ind=1
-tab_list=list()
-for (mk in c("Anti N IgG (IU/ml)","Anti RBD IgG (IU/ml)","Anti Spike IgG (IU/ml)","Pseudovirus-nAb ID50","Pseudovirus-nAb ID80")){
-  for (tp in two_timepoints){
-
-  immuno_design <- subset(dat.long.stack, VarName == "All participants") %>%
-    filter(Marker == mk & Visit == tp)
-      
-  design <- subset(twophase(id = list(~Ptid, ~ Ptid), strata = list(NULL, ~ tps.stratum), weights = list(NULL, ~ wt.subcohort), subset=~immuno_ind, method="simple", data = immuno_design), Baseline %in% c("Negative"))
-  
-  mod <- svyby(readout_trunc ~ Trt_lb, ~VarName+Visit+Baseline+Marker, design, svyglm, vartype="ci")
-  
-  tab <- mod %>% 
-    rowwise() %>%
-    mutate(`Ratios of GMT`=paste0(decimal_f(10^`Trt_lbVaccine`,2),"\n(",decimal_f(10^ci_l.Trt_lbVaccine,2),", ",decimal_f(10^ci_u.Trt_lbVaccine,2),")")) %>%
-    select(2,3,4,11) %>%
-    rename_with(~ gsub("GMT","GMT/GMC",.x)) %>%
-    rename_with(~ gsub("Baseline","Baseline SARS-CoV-2",.x))
-  
-  tab_list[[ind]] <- tab
-
-  ind=ind+1
-  }
-}
-
-# comparison
-tab_neg_v <- do.call("rbind", tab_list)
-
-tab_neg_v <- tab_neg_combine_v %>%
-  left_join(tab_neg_v,
-            by=c("Visit", "Baseline SARS-CoV-2", "Marker")) %>%
-  select(-2)
-
-dim(tab_neg_v)==dim(tab_neg)
-
-tab_neg[] <- lapply(tab_neg, as.character)
-tab_neg_v[] <- lapply(tab_neg_v, as.character)
-
-tab_neg_v <- tab_neg[, c("Visit","Marker")] %>%
-  left_join(tab_neg_v, by=c("Visit","Marker"))
-
-testthat::expect_equal(tab_table9_all, tab_neg)
-
-save(tab_neg_v, file = here::here("verification", "verification_output", "immuno_tab_neg_v.Rdata"))
-```
-
-\clearpage
-
-
 ## Table. Antibody levels in the baseline SARS-CoV-2 positive per-protocol cohort (vaccine vs. placebo)
 
-```{r tab_pos, results = "asis",  echo=FALSE, message=FALSE, warning=FALSE}
-fig_footer <- c("")
+```{r tab_neg_tbl_pos, results = "asis", echo=FALSE, message=FALSE, warning=FALSE}
 
-tab_pos_combine_v <- tab_bind1_v %>% ungroup() %>% filter(`Baseline SARS-CoV-2`=="Positive" & subgroup=="All participants") %>% select(-1,-2,-9,-10) %>%
-  bind_rows(tab_pseudo_v %>% ungroup() %>% filter(`Baseline SARS-CoV-2`=="Positive" & subgroup=="All participants") %>% select(-1,-2,-9,-10)) %>%
-  #bind_rows(tab_table4_all %>% ungroup() %>% filter(`Baseline SARS-CoV-2`=="Positive" & subgroup=="All participants") %>% select(-1,-2,-9,-10)) %>%
-  left_join(
-    tab_gm_v %>% ungroup() %>% filter(`Baseline SARS-CoV-2`=="Positive" & subgroup=="All participants") %>% select(-1,-2) %>% rename_with(~ gsub("GMT/GMC","GMT",.x)),
-            by=c("Visit","Arm","Baseline SARS-CoV-2","Marker","N")
-    ) %>%
-  pivot_wider(names_from=Arm, values_from=c(N,Responder, GMT)) %>%
-  left_join(
-    tab_rrdiff_v %>% ungroup() %>% filter(`Baseline SARS-CoV-2`=="Positive" & subgroup=="Arm") %>% select(-1,-2,-4,-7,-8) %>% rename_with(~ gsub("Responder","tabdiff",.x)),
-            by=c("Visit","Baseline SARS-CoV-2","Marker")
-    ) %>%
-  rename_with(~ gsub("GMT","GMT/GMC",.x)) %>%
-  select(1,2,3,4,6,8,5,7,9,10) 
+for (i in c("Negative", "Positive")){
 
-
-ind=1
-tab_list=list()
-for (mk in c("Anti N IgG (IU/ml)","Anti RBD IgG (IU/ml)","Anti Spike IgG (IU/ml)","Pseudovirus-nAb ID50","Pseudovirus-nAb ID80")){
-  for (tp in two_timepoints){
-
-  immuno_design <- subset(dat.long.stack, VarName == "All participants") %>%
-    filter(Marker == mk & Visit == tp)
-      
-  design <- subset(twophase(id = list(~Ptid, ~ Ptid), strata = list(NULL, ~ tps.stratum), weights = list(NULL, ~ wt.subcohort), subset=~immuno_ind, method="simple", data = immuno_design), Baseline %in% c("Positive"))
-  
-  mod <- svyby(readout_trunc ~ Trt_lb, ~VarName+Visit+Baseline+Marker, design, svyglm, vartype="ci")
-  
-  tab <- mod %>% 
-    rowwise() %>%
-    mutate(`Ratios of GMT`=paste0(decimal_f(10^`Trt_lbVaccine`,2),"\n(",decimal_f(10^ci_l.Trt_lbVaccine,2),", ",decimal_f(10^ci_u.Trt_lbVaccine,2),")")) %>%
-    select(2,3,4,11) %>%
+  tab_combine_v <- tab_bind1_v %>% ungroup() %>% filter(`Baseline SARS-CoV-2`==i & subgroup=="All participants") %>% select(-1,-2,-9,-10) %>%
+    bind_rows(tab_pseudo_v %>% ungroup() %>% filter(`Baseline SARS-CoV-2`==i & subgroup=="All participants") %>% select(-1,-2,-9,-10)) %>%
+    left_join(
+      tab_gm_v %>% ungroup() %>% filter(`Baseline SARS-CoV-2`==i & subgroup=="All participants") %>% select(-1,-2) %>% rename_with(~ gsub("GMT/GMC","GMT",.x)),
+              by=c("Visit","Arm","Baseline SARS-CoV-2","Marker","N")
+      ) %>%
+    pivot_wider(names_from=Arm, values_from=c(N,Responder, GMT)) %>%
+    left_join(
+      tab_rrdiff_v %>% ungroup() %>% filter(`Baseline SARS-CoV-2`==i & subgroup=="Arm") %>% select(-1,-2,-4,-8,-9) %>% rename_with(~ gsub("Responder","rrdiff",.x)),
+              by=c("Visit","Baseline SARS-CoV-2","Marker")
+      ) %>%
     rename_with(~ gsub("GMT","GMT/GMC",.x)) %>%
-    rename_with(~ gsub("Baseline","Baseline SARS-CoV-2",.x))
+    select(1,2,3,4,6,8,5,7,9,10) 
   
-  tab_list[[ind]] <- tab
+  
+  ind=1
+  tab_list=list()
+  for (mk in c("Anti N IgG (IU/ml)","Anti RBD IgG (IU/ml)","Anti Spike IgG (IU/ml)","Pseudovirus-nAb ID50","Pseudovirus-nAb ID80")){
+    for (tp in two_timepoints){
+  
+    immuno_design <- dat.long %>%
+      mutate(Group=(!!sym(names(VarName_levels)[unlist(VarName_levels)=="All participants"])),
+             VarName="All participants") %>%
+      filter(Marker == mk & Visit == tp)
+        
+    design <- subset(twophase(id = list(~Ptid, ~ Ptid), strata = list(NULL, ~ tps.stratum), weights = list(NULL, ~ wt.subcohort), subset=~immuno_ind, method="simple", data = immuno_design), Baseline == i)
+    
+    mod <- svyby(readout_trunc ~ Trt_lb, ~VarName+Visit+Baseline+Marker, design, svyglm, vartype="ci")
+    
+    tab <- mod %>% 
+      rowwise() %>%
+      mutate(`Ratios of GMT`=paste0(decimal_f(10^`Trt_lbVaccine`,2),"\n(",decimal_f(10^ci_l.Trt_lbVaccine,2),", ",decimal_f(10^ci_u.Trt_lbVaccine,2),")")) %>%
+      select(2,3,4,11) %>%
+      rename_with(~ gsub("GMT","GMT/GMC",.x)) %>%
+      rename_with(~ gsub("Baseline","Baseline SARS-CoV-2",.x))
+    
+    tab_list[[ind]] <- tab
+  
+    ind=ind+1
+    }
+  }
+  
+  if (i=="Negative") {
+  # comparison
+  tab_neg_v <- do.call("rbind", tab_list)
+  
+  tab_neg_v <- tab_combine_v %>%
+    left_join(tab_neg_v,
+              by=c("Visit", "Baseline SARS-CoV-2", "Marker")) %>%
+    select(-2)
 
-  ind=ind+1
+  tab_neg_v <- tab_neg[, c("Visit","Marker")] %>%
+    left_join(tab_neg_v, by=c("Visit","Marker"))
+  
+  testthat::expect_equal(tab_neg_v, tab_neg)
+  
+  save(tab_neg_v, file = here::here("verification", "verification_output", "immuno_tab_neg_v.Rdata"))
+  } else if (i=="Positive"){
+    
+  # comparison
+  tab_pos_v <- do.call("rbind", tab_list)
+  
+  tab_pos_v <- tab_combine_v %>%
+    left_join(tab_pos_v,
+              by=c("Visit", "Baseline SARS-CoV-2", "Marker")) %>%
+    select(-2)
+
+  tab_pos_v <- tab_pos[, c("Visit","Marker")] %>%
+    left_join(tab_pos_v, by=c("Visit","Marker"))
+  
+  testthat::expect_equal(tab_pos_v, tab_pos)
+  
+  save(tab_pos_v, file = here::here("verification", "verification_output", "immuno_tab_pos_v.Rdata"))
+    
   }
 }
 
-# comparison
-tab_pos_v <- do.call("rbind", tab_list)
 
-tab_pos_v <- tab_pos_combine_v %>%
-  left_join(tab_pos_v,
-            by=c("Visit", "Baseline SARS-CoV-2", "Marker")) %>%
-  select(-2)
-
-dim(tab_pos_v)==dim(tab_pos)
-
-tab_pos[] <- lapply(tab_pos, as.character)
-tab_pos_v[] <- lapply(tab_pos_v, as.character)
-
-tab_pos_v <- tab_pos[, c("Visit","Marker")] %>%
-  left_join(tab_pos_v, by=c("Visit","Marker"))
-
-testthat::expect_equal(tab_pos_v, tab_pos)
-
-save(tab_pos_v,
-    file = here::here("verification", "verification_output", "immuno_tab_pos_v.Rdata"))
 ```
 
 \clearpage
+
 
 ## Table. Antibody levels in the per-protocol cohort (vaccine recipients)
+## Table. Antibody levels in the per-protocol cohort (placebo recipients)
 
-```{r tab_vacc, results = "asis",  echo=FALSE, message=FALSE, warning=FALSE}
-fig_footer <- c("")
+```{r tab_vacc_tab_plcb, results = "asis",  echo=FALSE, message=FALSE, warning=FALSE}
 
-tab_vacc_combine_v <- tab_bind1_v %>% ungroup() %>% filter(Arm=="Vaccine" & subgroup=="All participants") %>% select(-1,-2,-9,-10) %>%
-  bind_rows(tab_pseudo_v %>% ungroup() %>% filter(Arm=="Vaccine" & subgroup=="All participants") %>% select(-1,-2,-9,-10)) %>%
-  #bind_rows(tab_table4_all %>% ungroup() %>% filter(Arm=="Vaccine" & subgroup=="All participants") %>% select(-1,-2,-9,-10)) %>%
-  left_join(
-    tab_gm_v %>% ungroup() %>% filter(Arm=="Vaccine" & subgroup=="All participants") %>% select(-1,-2) %>% rename_with(~ gsub("GMT/GMC","GMT",.x)),
-            by=c("Visit","Arm","Baseline SARS-CoV-2","Marker","N")
-    ) %>%
-  rename_with(~ gsub(" SARS-CoV-2","",.x)) %>%
-  pivot_wider(names_from=Baseline, values_from=c(N, Responder, GMT)) %>%
-  rename_with(~ gsub("GMT","GMT/GMC",.x))
+for (i in c("Vaccine", "Placebo")){
+  
+  tab_combine_v <- tab_bind1_v %>% ungroup() %>% filter(Arm==i & subgroup=="All participants") %>% select(-1,-2,-9,-10) %>%
+    bind_rows(tab_pseudo_v %>% ungroup() %>% filter(Arm==i & subgroup=="All participants") %>% select(-1,-2,-9,-10)) %>%
+    left_join(
+      tab_gm_v %>% ungroup() %>% filter(Arm==i & subgroup=="All participants") %>% select(-1,-2) %>% rename_with(~ gsub("GMT/GMC","GMT",.x)),
+              by=c("Visit","Arm","Baseline SARS-CoV-2","Marker","N")
+      ) %>%
+    rename_with(~ gsub(" SARS-CoV-2","",.x)) %>%
+    pivot_wider(names_from=Baseline, values_from=c(N, Responder, GMT)) %>%
+    rename_with(~ gsub("GMT","GMT/GMC",.x))
   
 
-# for response rate diff between positive and negative
-ind=1
-ratediff_list=list()
-for (mk in c("Anti N IgG (IU/ml)","Anti RBD IgG (IU/ml)","Anti Spike IgG (IU/ml)","Pseudovirus-nAb ID50","Pseudovirus-nAb ID80")){
-  for (tp in two_timepoints){
-
-  immuno_design <- subset(dat.long.stack, VarName == "All participants") %>%
-    filter(Marker == mk & Visit == tp)
-      
-  design <- subset(twophase(id = list(~Ptid, ~ Ptid), strata = list(NULL, ~ tps.stratum), weights = list(NULL, ~ wt.subcohort), subset=~immuno_ind, method="simple", data = immuno_design), Trt_lb=="Vaccine")
+  # for response rate diff between positive and negative
+  ind=1
+  ratediff_list=list()
+  for (mk in c("Anti N IgG (IU/ml)","Anti RBD IgG (IU/ml)","Anti Spike IgG (IU/ml)","Pseudovirus-nAb ID50","Pseudovirus-nAb ID80")){
+    for (tp in two_timepoints){
   
-  mod <- svyby(~response, ~Visit+Baseline+Marker, design, survey::svyciprop, ci=TRUE, vartype="ci", na.rm=T)
-
-  ratediff <- mod %>% 
-    pivot_wider(names_from = Baseline, values_from = c(response:ci_u)) %>%
-    rowwise() %>% 
-    mutate(tabdiff=paste0(round((response_Positive-response_Negative)*100,1),
-                               "%\n(", round((response_Positive-response_Negative-sqrt((response_Positive-ci_l_Positive)^2+(ci_u_Negative-response_Negative)^2))*100,1),"%, ", round((response_Positive-response_Negative+sqrt((response_Negative-ci_l_Negative)^2+(ci_u_Positive-response_Positive)^2))*100,1),"%)")) %>%
-    rename_with(~ gsub("GMT","GMT/GMC",.x)) %>%
-    select(Visit, Marker, tabdiff)
+    immuno_design <- dat.long %>%
+      mutate(Group=(!!sym(names(VarName_levels)[unlist(VarName_levels)=="All participants"])),
+             VarName="All participants") %>%
+      filter(Marker == mk & Visit == tp)
+        
+    design <- subset(twophase(id = list(~Ptid, ~ Ptid), strata = list(NULL, ~ tps.stratum), weights = list(NULL, ~ wt.subcohort), subset=~immuno_ind, method="simple", data = immuno_design), Trt_lb==i)
+    
+    mod <- svyby(~response, ~Visit+Baseline+Marker, design, survey::svyciprop, ci=TRUE, vartype="ci", na.rm=T)
   
-  ratediff_list[[ind]] <- ratediff 
-
-  ind=ind+1
+    ratediff <- mod %>% 
+      pivot_wider(names_from = Baseline, values_from = c(response:ci_u)) %>%
+      rowwise() %>% 
+      mutate(rrdiff=paste0(round((response_Positive-response_Negative),2),
+                                 "\n(", round((response_Positive-response_Negative-sqrt((response_Positive-ci_l_Positive)^2+(ci_u_Negative-response_Negative)^2)),2),", ", round((response_Positive-response_Negative+sqrt((response_Negative-ci_l_Negative)^2+(ci_u_Positive-response_Positive)^2)),2),")")) %>%
+      rename_with(~ gsub("GMT","GMT/GMC",.x)) %>%
+      select(Visit, Marker, rrdiff)
+    
+    ratediff_list[[ind]] <- ratediff 
+  
+    ind=ind+1
+    }
   }
-}
-ratediff_all <- do.call("rbind", ratediff_list)
-
-# for magnitude ratio between positive and negative
-ind=1
-magdiff_list=list()
-for (mk in c("Anti N IgG (IU/ml)","Anti RBD IgG (IU/ml)","Anti Spike IgG (IU/ml)","Pseudovirus-nAb ID50","Pseudovirus-nAb ID80")){
-  for (tp in two_timepoints){
-
-  immuno_design <- subset(dat.long.stack, VarName == "All participants") %>%
-    filter(Marker == mk & Visit == tp)
-      
-  design <- subset(twophase(id = list(~Ptid, ~ Ptid), strata = list(NULL, ~ tps.stratum), weights = list(NULL, ~ wt.subcohort), subset=~immuno_ind, method="simple", data = immuno_design), Trt_lb=="Vaccine")
+  ratediff_all <- do.call("rbind", ratediff_list)
   
-  mod <- svyby(readout_trunc~Baseline, ~Visit+Marker, design, survey::svyglm, vartype="ci")
-
-  magdiff <- mod %>% 
-    rowwise() %>% 
-    mutate(`Ratios of GMT`=paste0(decimal_f(10^BaselinePositive,2),"\n(",decimal_f(10^ci_l.BaselinePositive,2),", ",decimal_f(10^ci_u.BaselinePositive,2),")")) %>%
-    rename_with(~ gsub("GMT","GMT/GMC",.x)) %>%
-    select(1,2,9)
+  # for magnitude ratio between positive and negative
+  ind=1
+  magdiff_list=list()
+  for (mk in c("Anti N IgG (IU/ml)","Anti RBD IgG (IU/ml)","Anti Spike IgG (IU/ml)","Pseudovirus-nAb ID50","Pseudovirus-nAb ID80")){
+    for (tp in two_timepoints){
   
-  magdiff_list[[ind]] <- magdiff 
-
-  ind=ind+1
+    immuno_design <- dat.long %>%
+      mutate(Group=(!!sym(names(VarName_levels)[unlist(VarName_levels)=="All participants"])),
+             VarName="All participants") %>%
+      filter(Marker == mk & Visit == tp)
+        
+    design <- subset(twophase(id = list(~Ptid, ~ Ptid), strata = list(NULL, ~ tps.stratum), weights = list(NULL, ~ wt.subcohort), subset=~immuno_ind, method="simple", data = immuno_design), Trt_lb==i)
+    
+    mod <- svyby(readout_trunc~Baseline, ~Visit+Marker, design, survey::svyglm, vartype="ci")
+  
+    magdiff <- mod %>% 
+      rowwise() %>% 
+      mutate(`Ratios of GMT`=paste0(decimal_f(10^BaselinePositive,2),"\n(",decimal_f(10^ci_l.BaselinePositive,2),", ",decimal_f(10^ci_u.BaselinePositive,2),")")) %>%
+      rename_with(~ gsub("GMT","GMT/GMC",.x)) %>%
+      select(1,2,9)
+    
+    magdiff_list[[ind]] <- magdiff 
+  
+    ind=ind+1
+    }
   }
-}
-magdiff_all <- do.call("rbind", magdiff_list)
+  magdiff_all <- do.call("rbind", magdiff_list)
+  
+  if (i=="Vaccine") {
 
-tab_vacc_v <- tab_vacc_combine_v %>%
+  # comparison
+  tab_vacc_v <- tab_combine_v %>%
+    left_join(ratediff_all, by=c("Visit","Marker")) %>%
+    left_join(magdiff_all, by=c("Visit","Marker")) %>%
+    select(1,3,5,7,9,4,6,8,10,11)    
+  
+  tab_vacc_v <- tab_vacc[, c("Visit","Marker")] %>%
+    left_join(tab_vacc_v, by=c("Visit","Marker"))
+  
+  testthat::expect_equal(tab_vacc_v, tab_vacc)
+  
+  save(tab_vacc_v, file = here::here("verification", "verification_output", "immuno_tab_vacc_v.Rdata"))
+  } else if (i=="Placebo"){
+    
+  # comparison
+  tab_plcb_v <- tab_combine_v %>%
   left_join(ratediff_all, by=c("Visit","Marker")) %>%
   left_join(magdiff_all, by=c("Visit","Marker")) %>%
   select(1,3,5,7,9,4,6,8,10,11)
 
-# comparison
-dim(tab_vacc_v)==dim(tab_vacc)
-
-tab_vacc[] <- lapply(tab_vacc, as.character)
-tab_vacc_v[] <- lapply(tab_vacc_v, as.character)
-
-tab_vacc_v <- tab_vacc[, c("Visit","Marker")] %>%
-  left_join(tab_vacc_v, by=c("Visit","Marker"))
-
-testthat::expect_equal(tab_vacc_v, tab_vacc)
-
-save(tab_vacc_v,
-    file = here::here("verification", "verification_output", "immuno_tab_vacc_v.Rdata"))
+  dim(tab_plcb_v)==dim(tab_plcb)
+  
+  tab_plcb[] <- lapply(tab_plcb, as.character)
+  tab_plcb_v[] <- lapply(tab_plcb_v, as.character)
+  
+  tab_plcb_v <- tab_plcb[, c("Visit","Marker")] %>%
+    left_join(tab_plcb_v, by=c("Visit","Marker"))
+  
+  testthat::expect_equal(tab_plcb_v, tab_plcb)
+  
+  save(tab_plcb_v, file = here::here("verification", "verification_output", "immuno_tab_plcb_v.Rdata"))
+  }
+}
+  
 ```
 
 \clearpage
-
-## Table. Antibody levels in the per-protocol cohort (placebo recipients)
-
-```{r tab_plcb, results = "asis", echo=FALSE, message=FALSE}
-fig_footer <- c("")
-
-tab_plcb_combine_v <- tab_bind1_v %>% ungroup() %>% filter(Arm=="Placebo" & subgroup=="All participants") %>% select(-1,-2,-9,-10) %>%
-  bind_rows(tab_pseudo_v %>% ungroup() %>% filter(Arm=="Placebo" & subgroup=="All participants") %>% select(-1,-2,-9,-10)) %>%
-  #bind_rows(tab_table4_all %>% ungroup() %>% filter(Arm=="Vaccine" & subgroup=="All participants") %>% select(-1,-2,-9,-10)) %>%
-  left_join(
-    tab_gm_r %>% ungroup() %>% filter(Arm=="Placebo" & subgroup=="All participants") %>% select(-1,-2) %>% rename_with(~ gsub("GMT/GMC","GMT",.x)),
-            by=c("Visit","Arm","Baseline SARS-CoV-2","Marker","N")
-    ) %>%
-  rename_with(~ gsub(" SARS-CoV-2","",.x)) %>%
-  pivot_wider(names_from=Baseline, values_from=c(N, Responder, GMT)) %>%
-  rename_with(~ gsub("GMT","GMT/GMC",.x))
-  
-
-# for response rate diff between positive and negative
-ind=1
-ratediff_list=list()
-for (mk in c("Anti N IgG (IU/ml)","Anti RBD IgG (IU/ml)","Anti Spike IgG (IU/ml)","Pseudovirus-nAb ID50","Pseudovirus-nAb ID80")){
-  for (tp in two_timepoints){
-
-  immuno_design <- subset(dat.long.stack, VarName == "All participants") %>%
-    filter(Marker == mk & Visit == tp)
-      
-  design <- subset(twophase(id = list(~Ptid, ~ Ptid), strata = list(NULL, ~ tps.stratum), weights = list(NULL, ~ wt.subcohort), subset=~immuno_ind, method="simple", data = immuno_design), Trt_lb=="Placebo")
-  
-  mod <- svyby(~response, ~Visit+Baseline+Marker, design, survey::svyciprop, ci=TRUE, vartype="ci", na.rm=T)
-
-  ratediff <- mod %>% 
-    pivot_wider(names_from = Baseline, values_from = c(response:ci_u)) %>%
-    rowwise() %>% 
-    mutate(tabdiff=paste0(round((response_Positive-response_Negative)*100,1),
-                               "%\n(", round((response_Positive-response_Negative-sqrt((response_Positive-ci_l_Positive)^2+(ci_u_Negative-response_Negative)^2))*100,1),"%, ", round((response_Positive-response_Negative+sqrt((response_Negative-ci_l_Negative)^2+(ci_u_Positive-response_Positive)^2))*100,1),"%)")) %>%
-    rename_with(~ gsub("GMT","GMT/GMC",.x)) %>%
-    select(Visit, Marker, tabdiff)
-  
-  ratediff_list[[ind]] <- ratediff 
-
-  ind=ind+1
-  }
-}
-ratediff_all <- do.call("rbind", ratediff_list)
-
-# for magnitude ratio between positive and negative
-ind=1
-magdiff_list=list()
-for (mk in c("Anti N IgG (IU/ml)","Anti RBD IgG (IU/ml)","Anti Spike IgG (IU/ml)","Pseudovirus-nAb ID50","Pseudovirus-nAb ID80")){
-  for (tp in two_timepoints){
-
-  immuno_design <- subset(dat.long.stack, VarName == "All participants") %>%
-    filter(Marker == mk & Visit == tp)
-      
-  design <- subset(twophase(id = list(~Ptid, ~ Ptid), strata = list(NULL, ~ tps.stratum), weights = list(NULL, ~ wt.subcohort), subset=~immuno_ind, method="simple", data = immuno_design), Trt_lb=="Placebo")
-  
-  mod <- svyby(readout_trunc~Baseline, ~Visit+Marker, design, survey::svyglm, vartype="ci")
-
-  magdiff <- mod %>% 
-    rowwise() %>% 
-    mutate(`Ratios of GMT`=paste0(decimal_f(10^BaselinePositive,2),"\n(",decimal_f(10^ci_l.BaselinePositive,2),", ",decimal_f(10^ci_u.BaselinePositive,2),")")) %>%
-    rename_with(~ gsub("GMT","GMT/GMC",.x)) %>%
-    select(1,2,9)
-  
-  magdiff_list[[ind]] <- magdiff 
-
-  ind=ind+1
-  }
-}
-magdiff_all <- do.call("rbind", magdiff_list)
-
-tab_plcb_v <- tab_plcb_combine_v %>%
-  left_join(ratediff_all, by=c("Visit","Marker")) %>%
-  left_join(magdiff_all, by=c("Visit","Marker")) %>%
-  select(1,3,5,7,9,4,6,8,10,11)
-
-# comparison
-dim(tab_plcb_v)==dim(tab_plcb)
-
-tab_plcb[] <- lapply(tab_plcb, as.character)
-tab_plcb_v[] <- lapply(tab_plcb_v, as.character)
-
-tab_plcb_v <- tab_plcb[, c("Visit","Marker")] %>%
-  left_join(tab_plcb_v, by=c("Visit","Marker"))
-
-testthat::expect_equal(tab_plcb_v, tab_plcb)
-
-save(tab_plcb_v, ssfile = here::here("verification", "verification_output", "immuno_tab_plcb_v.Rdata"))
-```

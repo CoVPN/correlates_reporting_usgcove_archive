@@ -53,32 +53,9 @@ ds_s <- dat %>%
     randomset = (Perprotocol==1 & SubcohortInd == 1 & TwophasesampIndD57 == 1 & EarlyendpointD57==0)
   ) 
 
-# Step2: Responders
+# Step2: Responders, % >=2FR, % >=4FR, % >=2lloq, % >=4lloq
 # Post baseline visits
-post <- names(labels.time)[!grepl("B|Delta", names(labels.time), fixed = F)]
-post_n <- length(post)
-
-ds <- bind_cols(
-  # Original ds
-  ds_s,
-  # Responses post baseline
-  pmap(list(
-    data = replicate(length(assays)*post_n, ds_s, simplify = FALSE),
-    bl = as.vector(outer(rep("B", post_n), assays, paste0)),
-    post = as.vector(outer(post, assays, paste0)),
-    cutoff = lloqs[rep(assays, each = post_n)]),
-    .f = setResponder, folds = c(2, 4), responderFR = 4) %>%
-    bind_cols(),
-  
-  # % > 2lloq and 4lloq
-  pmap(list(
-    data = replicate(length(assays_col), ds_s, simplify = FALSE),
-    x = assays_col,
-    cutoff.name="lloq",
-    cutoff = lloqs[rep(assays, each = (post_n + 1))]),
-    .f = grtLL) %>%
-    bind_cols()
-)
+ds <- getResponder(ds_s, cutoff.name="lloq", times=grep("Day", times, value=T), assays=assays)
 
 subgrp <- c(
   All = "All participants", 

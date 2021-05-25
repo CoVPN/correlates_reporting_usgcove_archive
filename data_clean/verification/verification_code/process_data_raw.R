@@ -12,15 +12,9 @@
 #             delta to post censoring
 # 2021-05-12: Update code to reflect changes specs
 # 2021-05-17: Update code to reflect changes specs, add new vars
+# 2021-05-24: Update code to reflect variable name changes
 
 renv::activate()
-
-
-tps <- c(
-  "B",
-  "Day29",
-  "Day57"
-)
 
 # Libraries
 library(here)
@@ -29,6 +23,14 @@ library(dplyr)
 library(readr)
 library(mice)
 library(purrr)
+
+
+tps <- c(
+  "B",
+  "Day29",
+  "Day57"
+)
+
 
 # Helper functions
 any_missing <- function(...){
@@ -121,8 +123,10 @@ covid_raw <- read.csv(
 
 
 ## Processing ----
-### variable derivation ----
-covid_processed <- covid_raw %>%
+
+### Demographic and strata derivation ----
+
+covid_demog <- covid_raw %>%
   rename(
     Ptid = 1
   ) %>%
@@ -139,11 +143,6 @@ covid_processed <- covid_raw %>%
 
     age.geq.65 = case_when(
       Age >=65 ~  1 ,
-      TRUE ~ 0),
-
-    TwophasesampIndD57 = case_when(
-        (SubcohortInd == 1 | EventIndPrimaryD29 == 1 ) &
-        !any_missing(BbindSpike, BbindRBD, Day29bindSpike, Day29bindRBD, Day57bindSpike, Day57bindRBD) ~ 1,
       TRUE ~ 0),
 
     ethnicity = case_when(
@@ -207,13 +206,23 @@ covid_processed <- covid_raw %>%
       Trt == 1 & Bserostatus == 1 ~ 28
     ))
 
+
+### Two Phase Samp Ind Derivation ----
+
+covid_twophase <- covid_demog %>%
+  mutate(
+    TwophasesampIndD57 = case_when(
+      (SubcohortInd == 1 | EventIndPrimaryD29 == 1 ) &
+        !any_missing(BbindSpike, BbindRBD, Day29bindSpike, Day29bindRBD, Day57bindSpike, Day57bindRBD) ~ 1,
+      TRUE ~ 0),
+  )
+
 if( "Day29" %in% tps){
 
-  covid_processed <- covid_processed %>%
+  covid_twophase <- covid_twophase %>%
     mutate(
-
       TwophasesampIndD29 = case_when(
-          (SubcohortInd == 1 | EventIndPrimaryD29 == 1 ) &
+        (SubcohortInd == 1 | EventIndPrimaryD29 == 1 ) &
           !any_missing(BbindSpike, BbindRBD, Day29bindSpike, Day29bindRBD) ~ 1,
         TRUE ~ 0)
 
@@ -226,7 +235,7 @@ if( "Day29" %in% tps){
 
 ### weight derivation ----
 
-covid_processed_wt <- covid_processed %>%
+covid_processed_wt <- covid_twophase %>%
   mutate(
     wt.D57 =  sampling_p(
       Wstratum,
@@ -262,11 +271,9 @@ if( "Day29" %in% tps){
 covid_processed_updated_twophase <- covid_processed_wt %>%
   mutate(
     ph1.D57 = !is.na(wt.D57),
+    ph2.D57  = ph1.D57 & TwophasesampIndD57,
     ph1.immuno = !is.na(wt.subcohort),
-    TwophasesampIndD57 = case_when(
-      ph1.D57 == TRUE ~ TwophasesampIndD57,
-      TRUE ~ 0
-    )
+    ph2.immuno = ph1.immuno & SubcohortInd & TwophasesampIndD57
   )
 
 if( "Day29" %in% tps){
@@ -274,10 +281,7 @@ if( "Day29" %in% tps){
   covid_processed_updated_twophase <- covid_processed_updated_twophase %>%
     mutate(
       ph1.D29 = !is.na(wt.D29),
-      TwophasesampIndD29 = case_when(
-        ph1.D29 == TRUE ~ TwophasesampIndD29,
-        TRUE ~ 0
-      )
+      ph2.D29  = ph1.D29 & TwophasesampIndD29
     ) %>%
     relocate(
       ph1.D29, .after = ph1.D57
@@ -377,8 +381,8 @@ assays <- c("bindSpike",
 
 LLOD <- c(
    "bindSpike" = 0.3076,
-   "bindRBD" = 0.9297,
-   "bindN" = 0.0820,
+   "bindRBD" = 1.593648,
+   "bindN" = 0.093744,
    "pseudoneutid50" = 10,
    "pseudoneutid80" = 10,
    "liveneutmn50" = 62.16
@@ -386,8 +390,8 @@ LLOD <- c(
 
 LLOQ <- c(
   "bindSpike" = 1.7968,
-  "bindRBD" = 5.4302,
-  "bindN" = 0.4791,
+  "bindRBD" = 3.4263,
+  "bindN" = 1.43085,
   "pseudoneutid50" = 18.5,
   "pseudoneutid80" = 14.3,
   "liveneutmn50" = 117.35
@@ -395,8 +399,8 @@ LLOQ <- c(
 
 ULOQ <-c(
   "bindSpike" = 10155.95,
-  "bindRBD" = 30693.537,
-  "bindN" = 2708.253,
+  "bindRBD" = 16269.23,
+  "bindN" = 588.2500,
   "pseudoneutid50" = 4404,
   "pseudoneutid80" = 1295,
   "liveneutmn50" = 18976.19

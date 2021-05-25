@@ -42,7 +42,7 @@ tf <- list("Day57" = tf_Day57, "Day29" = tf_Day29)
 }# Reference time to perform analysis. Y = 1(T <= tf) where T is event time of Covid.
 # tf should be large enough that most events are observed but small enough so that not many people are right censored. For the practice dataset, tf = 170 works.
 # Right-censoring is taken into account for  this analysis.
-covariate_adjusted <- FALSE #### Estimate threshold-response function with covariate adjustment
+covariate_adjusted <- TRUE #### Estimate threshold-response function with covariate adjustment
 fast_analysis <- TRUE ### Perform a fast analysis using glmnet
 include_interactions <- FALSE #### Include algorithms that model interactions between covariates
 threshold_grid_size <- 30 ### Number of thresholds to estimate (equally spaced in quantiles). Should be 15 at least for the plots of the threshold-response and its inverse to be representative of the true functions.

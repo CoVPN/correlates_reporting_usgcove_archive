@@ -11,6 +11,7 @@ get.marginalized.risk.no.marker=function(dat){
 if(!file.exists(paste0(save.results.to, "marginalized.risk.no.marker.",study_name,".Rdata"))) {    
     for (.trt in 0:1) {
         dat.tmp=if(.trt==1) dat.vacc.pop else dat.plac.pop
+        
         prob=get.marginalized.risk.no.marker(dat.tmp)
         
         # bootstrapping

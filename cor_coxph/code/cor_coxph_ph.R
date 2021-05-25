@@ -121,10 +121,11 @@ if(any(is.na(p.unadj))) {
 } else {
     pvals.adj = p.adj.perm (p.unadj, pvals.perm)[names(p.unadj),]
 }
+print(pvals.adj)
 
 ## alternatively we will not use Westfall and Young
-#pvals.adj=cbind(p.unadj, p.FWER=pvals.adj.hol, p.FDR=pvals.adj.fdr)
-
+pvals.adj.not.westfall=cbind(p.unadj, p.FWER=pvals.adj.hol, p.FDR=pvals.adj.fdr)
+myprint(pvals.adj.not.westfall)
 
 ###################################################################################################
 # make continuous markers table

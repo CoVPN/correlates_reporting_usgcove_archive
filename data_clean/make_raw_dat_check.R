@@ -11,7 +11,9 @@ library(here)
 
 # load data and rename first column (ID)
 dat_proc <- read.csv(here(
-  "data_raw", data_in_file
+  "data_raw", 
+  ifelse(study_name == "ENSEMBLE", "janssen", "moderna"), # moderna placeholder for all other trials
+  data_in_file
 ))
 colnames(dat_proc)[1] <- "Ptid"
 

@@ -63,3 +63,16 @@ if(!pass){
     stop(paste0("Amongst individuals who have events that qualify for both Day 29 and Day 57 ",
                 "some follow up times are *longer* for Day 57 than for Day 29."))
 }
+
+
+## check that Day57 not included in times for ENSEMBLE analysis
+pass <- if(study_name != "ENSEMBLE"){
+  TRUE
+}else{
+  !any(grepl("57", times))
+}
+if(!pass){
+  stop("Day 57 markers are not included in the ENSEMBLE study. Please adjust the definition of 'times' in _common.R")
+}
+
+

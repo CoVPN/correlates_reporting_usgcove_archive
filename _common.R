@@ -20,6 +20,7 @@ assays <- c(
   # NOTE: the live neutralization marker will eventually be available
   #"liveneutmn50"
 )
+names(assays)=assays # add names so that lapply results will have names
 
 # if this flag is true, then the N IgG binding antibody is reported 
 # in the immuno report (but is not analyzed in the cor or cop reports).

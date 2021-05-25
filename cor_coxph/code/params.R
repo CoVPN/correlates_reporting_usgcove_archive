@@ -4,12 +4,20 @@ numPerm <- 1e4 # number permutation replicates 1e4
 numCores <- unname(ifelse(Sys.info()["sysname"] == "Windows",
                           1, future::availableCores()))
 
+
 if (length(assays) %in% c(3,4)) {
   .mfrow <- c(2, 2)
 } else if (length(assays) == 5) {
   .mfrow <- c(3, 2)
 } else {
   stop("Please re-define variable .mfrows")
+}
+
+
+# need this function b/c svycoxh may error due to singularity if, e.g. all cases have the same marker value
+run.svycoxph=function(f, design) {
+    fit=try(svycoxph(f, design=design), silent=T)
+    if (class(fit)[1]=="try-error") NA else fit
 }
 
 

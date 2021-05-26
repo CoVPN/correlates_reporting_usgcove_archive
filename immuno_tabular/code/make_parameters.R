@@ -216,7 +216,7 @@ tlf <-
 
 # Depends on the Incoming data
 if(include_bindN){
-  assays <- c("bindN", assays)
+  assays <- sort(c("bindN", assays))
 }
 labels.time <- labels.time[times]
 # hacky fix

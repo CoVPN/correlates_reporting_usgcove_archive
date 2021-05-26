@@ -6,14 +6,15 @@ renv::activate(here::here())
 if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
 
 source(here::here("_common.R"))
+config::get()
 #-----------------------------------------------
 library(here)
 
 # load data and rename first column (ID)
 dat_proc <- read.csv(here(
   "data_raw", 
-  ifelse(study_name == "ENSEMBLE", "janssen", "moderna"), # moderna placeholder for all other trials
-  data_in_file
+  config$data_raw_dir,
+  config$data_in_file
 ))
 colnames(dat_proc)[1] <- "Ptid"
 
@@ -65,16 +66,3 @@ if(!pass){
     stop(paste0("Amongst individuals who have events that qualify for both Day 29 and Day 57 ",
                 "some follow up times are *longer* for Day 57 than for Day 29."))
 }
-
-
-## check that Day57 not included in times for ENSEMBLE analysis
-pass <- if(study_name != "ENSEMBLE"){
-  TRUE
-}else{
-  !any(grepl("57", times))
-}
-if(!pass){
-  stop("Day 57 markers are not included in the ENSEMBLE study. Please adjust the definition of 'times' in _common.R")
-}
-
-

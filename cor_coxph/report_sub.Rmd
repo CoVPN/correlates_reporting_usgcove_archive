@@ -10,7 +10,8 @@ The main regression model is the Cox proportional hazards model. All plots are m
     \input{`r pathCoRoutput`/CoR_univariable_svycoxph_pretty_`r study_name`}\\
 \end{center}
 *Baseline covariates adjusted for: baseline risk score, at risk or not, community of color or not. Maximum failure event time \input{`r pathCoRoutput`/timepoints_cum_risk_`r study_name`} days.\\
-**No. at-risk = number of per-protocol baseline negative vaccine recipients at-risk for COVID; no. cases = number of this cohort with an observed COVID endpoints starting 7 days post Day `r Day` visit.
+**No. at-risk = number of per-protocol baseline negative vaccine recipients at-risk for COVID; no. cases = number of this cohort with an observed COVID endpoints starting 7 days post Day `r Day` visit.\\
+***q-value and FWER (family-wide error rate) are computed over the set of p-values both for quantitative markers and categorical markers using the Westfall and Young permutation method. 
 
     %\label{tab:CoR_univariable_svycoxph_pretty_`r study_name`}
 \end{table}
@@ -37,9 +38,15 @@ Cutpoints:
 %\input{`r pathCoRoutput`/cutpoints_Delta`r Day`overBpseudoneutid80_`r study_name`}.  
 \\
 **No. at-risk = number of per-protocol baseline negative vaccine recipients at-risk for COVID at 7 days post Day `r Day` visit; no. cases = number of this cohort with an observed COVID endpoints.\\
-***Generalized Wald-test p-value of the null hypothesis that the hazard rate is constant across the Lower, Middle, and Upper tertile groups.
+***Generalized Wald-test p-value of the null hypothesis that the hazard rate is constant across the Lower, Middle, and Upper tertile groups.\\
+$\dagger$ q-value and FWER (family-wide error rate) are computed over the set of p-values both for quantitative markers and categorical markers using the Westfall and Young permutation method. 
+
     %\label{tab:CoR_univariable_svycoxph_cat_pretty_`r study_name`}
 \end{table}
+
+
+
+
 \begin{figure}[H]
     \includegraphics[width=1\textwidth]{`r pathCoRoutput`/hr_forest_bindSpike_`r study_name`}
     \includegraphics[width=1\textwidth]{`r pathCoRoutput`/hr_forest_bindRBD_`r study_name`}

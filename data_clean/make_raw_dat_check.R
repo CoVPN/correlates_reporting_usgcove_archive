@@ -6,15 +6,12 @@ renv::activate(here::here())
 if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
 
 source(here::here("_common.R"))
-config::get()
 #-----------------------------------------------
 library(here)
 
 # load data and rename first column (ID)
 dat_proc <- read.csv(here(
-  "data_raw", 
-  config$data_raw_dir,
-  config$data_in_file
+  "data_raw", data_raw_dir, data_in_file
 ))
 colnames(dat_proc)[1] <- "Ptid"
 

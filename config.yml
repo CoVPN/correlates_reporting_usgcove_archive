@@ -1,0 +1,38 @@
+# the default analysis is moderna-like analysis
+default:
+  data_raw_dir: moderna
+  data_in_file: COVID_VEtrial_practicedata_primarystage1.csv
+  data_name: practice_data.csv
+  study_name: Mock Moderna
+  subset_variable: None
+  subset_value: All
+  assays: [bindSpike, bindRBD, pseudoneutid50, pseudoneutid80]
+  times: [B, Day29, Day57, Delta29overB, Delta57overB, Delta57over29]
+
+janssen_default: &janssen_default
+  data_raw_dir: janssen
+  data_in_file: COVID_ENSEMBLE_practicedata.csv
+  data_name: practice_data.csv
+  study_name: Mock ENSEMBLE
+  assays: [bindSpike, bindRBD]
+  times: [B, Day29, Delta29overB]
+
+janssen_pooled:
+  <<: *janssen_default
+  subset_variable: None
+  subset_value: All
+
+janssen_na:
+  <<: *janssen_default
+  subset_variable: Region
+  subset_value: Northern America
+
+janssen_la:
+  <<: *janssen_default
+  subset_variable: Region
+  subset_value: Latin America
+
+janssen_sa: 
+  <<: *janssen_default
+  subset_variable: Region
+  subset_value: Southern Africa

@@ -2,6 +2,10 @@ library(methods)
 library(dplyr)
 library(kyotil)
 set.seed(98109)
+config <- config::get()
+for(opt in names(config)){
+  eval(parse(text = paste0(names(config[opt])," <- config[[opt]]")))
+}
 
 # if this flag is true, then the N IgG binding antibody is reported 
 # in the immuno report (but is not analyzed in the cor or cop reports).

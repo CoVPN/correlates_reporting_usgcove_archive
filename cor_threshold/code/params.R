@@ -83,7 +83,7 @@ marker_to_time <- sapply(markers, function(v) {
   times[stringr::str_detect(v, times)]
 })
 marker_to_assay <- sapply(markers, function(v) {
-  assays[stringr::str_detect(v, assays)]
+  unname(assays[stringr::str_detect(v, assays)])
 })
 
 # Covariates to adjust for. SHOULD BE AT LEAST TWO VARIABLES OR GLMNET WILL ERROR

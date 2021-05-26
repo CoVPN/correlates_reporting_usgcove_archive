@@ -1,4 +1,4 @@
-# CoVPN Guide to working with Git and {renv}
+# CoVPN Guide to working with the repository
 
 This set of instructions describes a suggested workflow and best practices for
 working smoothly across the CoVPN Correlates Report GitHub repository. The goal
@@ -168,6 +168,41 @@ highlight steps to follow. Things to note include
 
 Also take note of [the {renv} collaboration
 guide](https://rstudio.github.io/renv/articles/collaborating.html).
+
+## Configuring the analysis
+
+To accommodate code developed to span multiple analyses (e.g., for Moderna and
+for Janssen), we make use of the [`config`]
+(https://cran.r-project.org/web/packages/config/vignettes/introduction.html)
+package. The file `config.yml` in the base repository directory contains
+specifications pertaining to each analysis. This includes a `default`
+specification, which mimics a Moderna data analysis, as well as several
+specifications for Janssen's pooled and region-specific analyses. More
+configurations may be added in the future.
+
+To load an analysis configuration, all the user must do is set an environment
+variable in a shell session. This can be achieved via the command line as
+follows.
+
+```bash
+export R_CONFIG_ACTIVE=default
+```
+
+This can also be achieved in an interactive `R` session as follows.
+
+```r
+Sys.setenv(R_CONFIG_ACTIVE = "default")
+```
+
+Once `R_CONFIG_ACTIVE` has been set, configurations can be loaded into an R
+session using `config::get()`. However, in general a user will not need to
+explicitly call `config::get()` in their code, __so long as `_common.R` is
+`source`'d into the code__. 
+
+Examining `_common.R`, we see that `config::get()` is called in that script and
+arguments in the `config` list are read into the global environment of that `R`
+session (so users do not need to refer to e.g., `config$study_name` and instead
+can simply write `study_name`).
 
 ## Automated Testing and Continuous Integration
 

@@ -19,8 +19,9 @@ library(dplyr)
 
 # load data and rename first column (ID)
 dat_proc <- read.csv(here(
-  "data_raw", data_in_file
+  "data_raw", data_raw_dir, data_in_file
 ))
+
 colnames(dat_proc)[1] <- "Ptid"
 
 #tmp=read.csv("D:/gdrive/Covid19/correlates_reporting/data_raw/COVID_VEtrial_practicedata_primarystage1.csv")
@@ -427,8 +428,13 @@ if(has29) {
   dat_proc["Delta57over29" %.% assays.includeN] <- tmp["Day57" %.% assays.includeN] - tmp["Day29" %.% assays.includeN]
 }
 
-
-
+###############################################################################
+# subset on subset_variable
+###############################################################################
+if(subset_value != "All"){
+  include_in_subset <- dat_proc[[subset_variable]] == subset_value
+  dat_proc <- dat_proc[include_in_subset, , drop = FALSE]
+}
 
 ###############################################################################
 # bundle data sets and save as CSV

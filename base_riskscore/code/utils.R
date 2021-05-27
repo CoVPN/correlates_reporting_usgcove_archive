@@ -37,7 +37,7 @@ one_auc <- function(preds, Y, full_y = NULL, scale = "identity",
     ipc_weights = weights,
     ipc_fit_type = "SL", ...
   )
-  data.frame(auc = auc_lst$point_est, eif = auc_lst$eif)
+  list(auc = auc_lst$point_est, eif = auc_lst$eif)
 }
 
 # get the cross-fitted CV-AUC for a single learner's predicted values

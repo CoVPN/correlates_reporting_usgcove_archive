@@ -2,7 +2,7 @@ library(methods)
 library(dplyr)
 library(kyotil)
 set.seed(98109)
-config <- config::get()
+config <- config::get(config = Sys.getenv("TRIAL"))
 for(opt in names(config)){
   eval(parse(text = paste0(names(config[opt])," <- config[[opt]]")))
 }

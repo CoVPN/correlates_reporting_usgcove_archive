@@ -73,7 +73,7 @@ cv_auc <- function(preds, Y, folds, scale = "identity",
   ests_eifs <- lapply(as.list(seq_len(V)), function(v) {
     one_auc(
       preds = preds[folds_numeric == v], Y[folds_numeric == v],
-      full_y = Y[folds_numeric == v], scale = scale,
+      full_y = Y, scale = scale,
       weights = weights[folds_z == v], C = C[folds_z == v],
       Z = Z[folds_z == v, , drop = FALSE], ...
     )

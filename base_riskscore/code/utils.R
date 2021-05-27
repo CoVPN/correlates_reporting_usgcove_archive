@@ -73,13 +73,13 @@ cv_auc <- function(preds, Y, folds, scale = "identity",
   ests_eifs <- lapply(as.list(seq_len(V)), function(v) {
     one_auc(
       preds = preds[folds_numeric == v], Y[folds_numeric == v],
-      full_y = Y, scale = scale,
+      full_y = Y[folds_numeric == v], scale = scale,
       weights = weights[folds_z == v], C = C[folds_z == v],
       Z = Z[folds_z == v, , drop = FALSE], ...
     )
   })
   est <- mean(unlist(lapply(ests_eifs, function(l) l$auc)))
-  var <- mean(unlist(lapply(ests_eifs, function(l) mean((l$eif - mean(l$eif)) ^ 2))))
+  var <- mean(unlist(lapply(ests_eifs, function(l) mean(l$eif ^ 2))))
   se <- sqrt(var / length(Y))
   ci <- vimp::vimp_ci(est, se, scale = scale, level = 0.95)
   return(list(auc = est, se = se, ci = ci))

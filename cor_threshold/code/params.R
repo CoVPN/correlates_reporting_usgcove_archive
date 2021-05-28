@@ -88,7 +88,7 @@ marker_to_assay <- sapply(markers, function(v) {
 
 # Covariates to adjust for. SHOULD BE AT LEAST TWO VARIABLES OR GLMNET WILL ERROR
 
-covariates <- c("MinorityInd", "HighRiskInd", "risk_score") # , "BRiskScore") # Add "age"?
+covariates <- c("MinorityInd", "HighRiskInd")#, "risk_score") # , "BRiskScore") # Add "age"?
 if("risk_score" %in% covariates) {
   append_data <- "_with_riskscore"
 } else {

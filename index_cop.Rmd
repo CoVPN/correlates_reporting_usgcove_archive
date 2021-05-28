@@ -20,11 +20,11 @@ header-includes:
    - \usepackage[margin=1in]{geometry}
 ---
 
-```{r, include = knitr::is_latex_output() & !is.null(config$study_label)}
-knitr::asis_output(paste0("\\AddToShipoutPictureFG{
+```{r, include = knitr::is_latex_output() & grepl("Mock", study_label, ignore.case = TRUE)}
+knitr::asis_output("\\AddToShipoutPictureFG{
   \\AtPageCenter{
     \\makebox[0pt]{\\rotatebox[origin=c]{45}{
-      \\scalebox{10}{\\texttransparent{0.3}{", study_label, "}}}}}}"))
+      \\scalebox{10}{\\texttransparent{0.3}{MOCK}}}}}}")
 ```
 
 `r if (knitr::is_latex_output()) '<!--'`

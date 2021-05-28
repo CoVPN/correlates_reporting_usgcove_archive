@@ -30,14 +30,16 @@ env:
 # build reports via included Make recipes, in independent simultaneous jobs
 jobs:
   include:
-    - name: Immuno Report
+    - name: Moderna Immuno Report
       env: REPORT_TYPE=IMMUNO
+      env: TRIAL=moderna_mock
       script:
         - echo "Building immunogenicity report"
         - make data_processed
         - make immuno_report
-    - name: CoR Report
+    - name: Moderna CoR Report
       env: REPORT_TYPE=COR
+      env: TRIAL=moderna_mock
       script:
         - echo "Building correlates of risk report"
         - make data_processed
@@ -45,6 +47,7 @@ jobs:
         - make cor_report
     - name: CoP Report
       env: REPORT_TYPE=COP
+      env: TRIAL=moderna_mock
       script:
         - echo "Building correlates of protection report"
         - make data_processed

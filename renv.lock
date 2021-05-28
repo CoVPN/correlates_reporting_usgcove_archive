@@ -1,6 +1,6 @@
 {
   "R": {
-    "Version": "4.0.5",
+    "Version": "4.0.3",
     "Repositories": [
       {
         "Name": "CRAN",
@@ -474,6 +474,13 @@
       "Repository": "CRAN",
       "Hash": "0f22be39ec1d141fd03683c06f3a6e67"
     },
+    "config": {
+      "Package": "config",
+      "Version": "0.3.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "31d77b09f63550cee9ecb5a08bf76e8f"
+    },
     "conflicted": {
       "Package": "conflicted",
       "Version": "1.0.4",
@@ -915,8 +922,8 @@
       "Package": "haldensify",
       "Version": "0.1.5",
       "Source": "GitHub",
-      "Remotes": "github::tlverse/hal9001@devel",
       "RemoteType": "github",
+      "Remotes": "github::tlverse/hal9001@devel",
       "RemoteHost": "api.github.com",
       "RemoteRepo": "haldensify",
       "RemoteUsername": "nhejazi",
@@ -2056,8 +2063,8 @@
       "Package": "txshift",
       "Version": "0.3.6",
       "Source": "GitHub",
-      "Remotes": "tlverse/hal9001@devel, tlverse/sl3@devel, nhejazi/haldensify",
       "RemoteType": "github",
+      "Remotes": "tlverse/hal9001@devel, tlverse/sl3@devel, nhejazi/haldensify",
       "RemoteHost": "api.github.com",
       "RemoteRepo": "txshift",
       "RemoteUsername": "nhejazi",

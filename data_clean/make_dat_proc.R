@@ -1,3 +1,4 @@
+if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
 #-----------------------------------------------
 renv::activate(here::here())
 # There is a bug on Windows that prevents renv from working properly. The following code provides a workaround:
@@ -18,8 +19,9 @@ library(dplyr)
 
 # load data and rename first column (ID)
 dat_proc <- read.csv(here(
-  "data_raw", data_in_file
+  "data_raw", data_raw_dir, data_in_file
 ))
+
 colnames(dat_proc)[1] <- "Ptid"
 
 #tmp=read.csv("D:/gdrive/Covid19/correlates_reporting/data_raw/COVID_VEtrial_practicedata_primarystage1.csv")
@@ -426,8 +428,13 @@ if(has29) {
   dat_proc["Delta57over29" %.% assays.includeN] <- tmp["Day57" %.% assays.includeN] - tmp["Day29" %.% assays.includeN]
 }
 
-
-
+###############################################################################
+# subset on subset_variable
+###############################################################################
+if(subset_value != "All"){
+  include_in_subset <- dat_proc[[subset_variable]] == subset_value
+  dat_proc <- dat_proc[include_in_subset, , drop = FALSE]
+}
 
 ###############################################################################
 # bundle data sets and save as CSV
@@ -459,20 +466,18 @@ if (has29) {
     max(dat_proc[,paste0("Delta29overB", c("pseudoneutid50",
                                            "pseudoneutid80"))],
         na.rm=TRUE)
-  MaxID50ID80Delta57overB =
+}
+MaxID50ID80Delta57overB =
     max(dat_proc[,paste0("Delta57overB", c("pseudoneutid50",
                                            "pseudoneutid80"))],
         na.rm=TRUE)
-}
 
 
 if(has29){
-    save(MaxbAbDay57, MaxID50ID80Day57, MaxbAbDelta57overB,
-         MaxID50ID80Delta57overB, MaxbAbDelta29overB, MaxID50ID80Delta29overB,
-         MaxbAbDay29, MaxID50ID80Day29,
+    save(MaxbAbDay57, MaxID50ID80Day57, MaxbAbDelta57overB, MaxID50ID80Delta57overB, 
+         MaxbAbDelta29overB, MaxID50ID80Delta29overB, MaxbAbDay29, MaxID50ID80Day29,
     file=here("data_clean", "_params.Rdata"))
 } else {
-    save(MaxbAbDay57, MaxID50ID80Day57, MaxbAbDelta57overB,
-         MaxID50ID80Delta57overB,
+    save(MaxbAbDay57, MaxID50ID80Day57, MaxbAbDelta57overB, MaxID50ID80Delta57overB,
     file=here("data_clean", "_params.Rdata"))
 }

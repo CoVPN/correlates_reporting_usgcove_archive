@@ -30,9 +30,16 @@ source(here::here("..", "_common.R"))
 
 # read in practice data
 dat.mock <- read.csv(here("verification","verification_input","practice_data.csv"), stringsAsFactors = F)
-dat <- dat.mock %>% mutate(cohort_2_ind=ifelse((Perprotocol == 1 & EventTimePrimaryD57 >= 7), 1,0),
-           cohort_1_ind=ifelse(((EventTimePrimaryD29 >= 14 & Perprotocol == 1)|(EventTimePrimaryD29 >= 7 & EventTimePrimaryD29 <= 13 & Fullvaccine == 1)), 1, 0))
+dat <- dat.mock
 
+dat$immuno_ind <- with(dat, ifelse(Perprotocol==1 & SubcohortInd==1 & TwophasesampIndD57==1 & EarlyendpointD57==0 & !is.na(wt.subcohort), 1, 0))
+
+# assign values above the uloq to the uloq
+for (a in c("bindN","bindSpike","bindRBD","pseudoneutid50","pseudoneutid80")) {
+  for (t in c("B", "Day29", "Day57") ) {
+    dat[[t %.% a]] <- ifelse(dat[[t %.% a]] > log10(uloqs[a]), log10(uloqs[a]), dat[[t %.% a]])
+  }
+}
 
 # reset all delta values
 dat$Delta57overBbindSpike = dat$Day57bindSpike - dat$BbindSpike
@@ -41,21 +48,18 @@ dat$Delta57overBbindN = dat$Day57bindN - dat$BbindN
 dat$Delta57overBpseudoneutid50 = dat$Day57pseudoneutid50 - dat$Bpseudoneutid50
 dat$Delta57overBpseudoneutid80 = dat$Day57pseudoneutid80 - dat$Bpseudoneutid80
 dat$Delta57overBliveneutmn50 = dat$Day57liveneutmn50 - dat$Bliveneutmn50
-
 dat$Delta29overBbindSpike = dat$Day29bindSpike - dat$BbindSpike
 dat$Delta29overBbindRBD = dat$Day29bindRBD - dat$BbindRBD
 dat$Delta29overBbindN = dat$Day29bindN - dat$BbindN
 dat$Delta29overBpseudoneutid50 = dat$Day29pseudoneutid50 - dat$Bpseudoneutid50
 dat$Delta29overBpseudoneutid80 = dat$Day29pseudoneutid80 - dat$Bpseudoneutid80
 dat$Delta29overBliveneutmn50 = dat$Day29liveneutmn50 - dat$Bliveneutmn50
-
 dat$Delta57over29bindSpike = dat$Day57bindSpike - dat$Day29bindSpike
 dat$Delta57over29bindRBD = dat$Day57bindRBD - dat$Day29bindRBD
 dat$Delta57over29bindN = dat$Day57bindN - dat$Day29bindN
 dat$Delta57over29pseudoneutid50 = dat$Day57pseudoneutid50 - dat$Day29pseudoneutid50
 dat$Delta57over29pseudoneutid80 = dat$Day57pseudoneutid80 - dat$Day29pseudoneutid80
 dat$Delta57over29liveneutmn50 = dat$Day57liveneutmn50 - dat$Day29liveneutmn50
-
 # wide to long by marker and timepoint
 dat.long <- dat %>%
   pivot_longer(colnames(dat)[grepl("bindN|bindRBD|bindSpike|pseudoneut|liveneutmn", colnames(dat))], names_to = "time_marker", values_to = "readout_trunc") %>% filter(!grepl("CPV", time_marker)) %>%
@@ -86,16 +90,13 @@ dat.long$RaceEthC2[which(dat.long$RaceEthC2 == 'White' & dat.long$WhiteNonHispan
 dat.long$RaceEthC[which(dat.long$RaceEthC == 'White' & dat.long$WhiteNonHispanic == 1)] <- 'White Non-Hispanic '
 dat.long$RaceEthC[which(dat.long$RaceEthC == 'White')] <- NA
 
-# define LLoD, response variables
+# define response variables
 dat.long <- dat.long %>% 
-  mutate(LLoD = ifelse(grepl("bind", marker), 20, 
-                       ifelse(grepl("pseudo", marker), 10, 
-                              ifelse(grepl("live", marker), 62.16, NA))),
+  mutate(LLoQ = lloqs[as.character(marker)],
+         bind_response_2LQ = ifelse(grepl("bind", marker) & readout_trunc>=log10(2*LLoQ) & !grepl("Delta",time), 1, ifelse(grepl("bind", marker) & readout_trunc<log10(2*LLoQ) & !grepl("Delta",time), 0, NA)),
+         bind_response_4LQ = ifelse(grepl("bind", marker) & readout_trunc>=log10(4*LLoQ) & !grepl("Delta",time), 1, ifelse(grepl("bind", marker) & readout_trunc<log10(4*LLoQ) & !grepl("Delta",time), 0, NA)),
          
-         bind_response_2LD = ifelse(grepl("bind", marker) & readout_trunc>=log10(2*LLoD) & !grepl("Delta",time), 1, ifelse(grepl("bind", marker) & readout_trunc<log10(2*LLoD) & !grepl("Delta",time), 0, NA)),
-         bind_response_4LD = ifelse(grepl("bind", marker) & readout_trunc>=log10(4*LLoD) & !grepl("Delta",time), 1, ifelse(grepl("bind", marker) & readout_trunc<log10(4*LLoD) & !grepl("Delta",time), 0, NA)),
-         
-         baseline_lt_thres = ifelse(time=="B" & readout_trunc >= log10(LLoD), 1, 0),
+         baseline_lt_thres = ifelse(time=="B" & readout_trunc >= log10(LLoQ), 1, 0),
          increase_4F_D29 = ifelse(time=="Delta29overB" & readout_trunc>log10(4), 1, 0),
          increase_4F_D57 = ifelse(time=="Delta57overB" & readout_trunc>log10(4), 1, 0),
          
@@ -109,7 +110,7 @@ dat.long <- dat.long %>%
          increase_4F_D29_ptid=max(increase_4F_D29),
          increase_4F_D57_ptid=max(increase_4F_D57)) %>%
   ungroup() %>%
-  mutate(response = ifelse(time %in% c("B","Day29","Day57") & baseline_lt_thres_ptid == 0 & readout_trunc > log10(LLoD), 1,
+  mutate(response = ifelse(time %in% c("B","Day29","Day57") & baseline_lt_thres_ptid == 0 & readout_trunc > log10(LLoQ), 1,
                            ifelse(baseline_lt_thres_ptid == 1 & time == "B", 1, 
                                   ifelse(baseline_lt_thres_ptid == 1 & time == "Day29" & increase_4F_D29_ptid==1, 1, 
                                          ifelse(baseline_lt_thres_ptid == 1 & time == "Day57" & increase_4F_D57_ptid==1, 1,
@@ -135,9 +136,8 @@ dat.long <- dat.long %>%
 
 # define cases, controls
 dat.long <- dat.long %>% 
-  mutate(case_flag = ifelse(Perprotocol == 1 & EventIndPrimaryD57 == 0, "Non_cases_Control",
-                            ifelse(Perprotocol==1 & EventIndPrimaryD57==1, "Cases", NA)
-  ))
+  mutate(case_flag = ifelse(Perprotocol==1 & Bserostatus==0 & EarlyendpointD57==0 & TwophasesampIndD57==1 & EventIndPrimaryD57==1, "Cases", "Non_cases_Control")
+  )
 
 # parameters set-up
 tbl_num <- 1
@@ -150,21 +150,19 @@ decimal_f <- function(x, d) { # rounding values
   trimws(format(round(x, d), nsmall=d))
 }
 
-load(here("verification","verification_input","Tables_verificatiton_cor.Rdata"))
+# load all immuno tabs from Chenchen
+load(here("verification","verification_input","Tables_cor.Rdata"), verbose=T)
 ```
 
 \captionsetup[table]{labelformat=empty}
 
 \clearpage
 
-## Table 1. Demographic 
-```{r table1, results = "asis", echo=FALSE, message=FALSE}
-
-fig_footer <- c("")
-
+## Table. Demographic 
+```{r tab_dm, results = "asis", echo=FALSE, message=FALSE}
 for (i in c("Negative", "Positive")){
   
-  demo <- subset(dat.long, Baseline==i) %>% filter(cohort_2_ind==1) %>%
+  demo <- subset(dat.long, Baseline==i) %>% filter(immuno_ind==1) %>%
     select(Trt_lb, Ptid, Age65C, HighRiskC, SexC, EthHisC, RaceEthC2, MinorityC, AgeRiskC) %>% 
     mutate(MinorityC = ifelse(is.na(MinorityC), "NA", MinorityC)) %>%
     unique() %>% 
@@ -174,7 +172,7 @@ for (i in c("Negative", "Positive")){
   demo.long <- demo %>%
     pivot_longer(!c(Trt_lb, Ptid), names_to = "VarName", values_to="Group")
   
-  rr_table1_by_trt <- demo.long %>% 
+  tab_dm_by_trt <- demo.long %>% 
     group_by(Trt_lb, VarName, Group) %>% 
     filter(!is.na(Group)) %>%
     summarise(N=n()) %>% 
@@ -182,7 +180,7 @@ for (i in c("Negative", "Positive")){
     select(-N) %>%
     pivot_wider(names_from = "Trt_lb", values_from = "n_freq") %>% 
     bind_rows(
-      subset(dat, Bserostatus==ifelse(i=="Negative",0, 1) & cohort_2_ind==1) %>% mutate(Trt_lb = ifelse(Trt==0, "Placebo", "Vaccine")) %>%
+      subset(dat, Bserostatus==ifelse(i=="Negative",0, 1) & immuno_ind==1) %>% mutate(Trt_lb = ifelse(Trt==0, "Placebo", "Vaccine")) %>%
         group_by(Trt_lb) %>% 
         summarise(age=paste0(decimal_f(mean(Age),1), " (", decimal_f(min(Age),1),", ",decimal_f(max(Age),1),")")) %>%
         pivot_wider(names_from = "Trt_lb", values_from="age") %>%
@@ -190,7 +188,7 @@ for (i in c("Negative", "Positive")){
                Group="Mean (Range)")
     ) %>%
     bind_rows(
-      subset(dat, Bserostatus==ifelse(i=="Negative",0, 1) & cohort_2_ind==1) %>% mutate(Trt_lb = ifelse(Trt==0, "Placebo", "Vaccine")) %>%
+      subset(dat, Bserostatus==ifelse(i=="Negative",0, 1) & immuno_ind==1) %>% mutate(Trt_lb = ifelse(Trt==0, "Placebo", "Vaccine")) %>%
         group_by(Trt_lb) %>% 
         summarise(BMI=paste0(decimal_f(mean(BMI),1), " +/- ", decimal_f(sd(BMI),1))) %>%
         pivot_wider(names_from = "Trt_lb", values_from="BMI") %>%
@@ -198,28 +196,28 @@ for (i in c("Negative", "Positive")){
                Group="Mean +/- SD")
     )
   
-  rr_table1_tot<- demo.long %>% 
+  tab_dm_tot<- demo.long %>% 
     group_by(VarName, Group) %>% 
     filter(!is.na(Group)) %>%
     summarise(N=n()) %>% 
     mutate(Total = paste0(N, " (", decimal_f( N / sum(N) * 100, 1),"%)")) %>% 
     select(-N) %>%
     bind_rows(
-      subset(dat, Bserostatus==ifelse(i=="Negative",0, 1) & cohort_2_ind==1) %>% 
+      subset(dat, Bserostatus==ifelse(i=="Negative",0, 1) & immuno_ind==1) %>% 
         summarise(Total=paste0(decimal_f(mean(Age),1), " (", decimal_f(min(Age),1),", ",decimal_f(max(Age),1),")")) %>%
         mutate(VarName="Age65C",
                Group="Mean (Range)")
     ) %>%
     bind_rows(
-      subset(dat, Bserostatus==ifelse(i=="Negative",0, 1) & cohort_2_ind==1) %>% 
+      subset(dat, Bserostatus==ifelse(i=="Negative",0, 1) & immuno_ind==1) %>% 
         summarise(Total=paste0(decimal_f(mean(BMI),1), " +/- ", decimal_f(sd(BMI),1))) %>%
         mutate(VarName="BMI",
                Group="Mean +/- SD")
     )
   
   
-  rr_table1 <- rr_table1_by_trt %>%
-    left_join(rr_table1_tot,  by=c("VarName","Group")) %>%
+  tab_dm <- tab_dm_by_trt %>%
+    left_join(tab_dm_tot,  by=c("VarName","Group")) %>%
     filter(!is.na(Group)) %>%
     mutate(VarName=gsub("AgeRisk","Age, Risk for Severe Covid-19", gsub("HighRisk","Risk for Severe Covid-19", gsub("His","Hispanic or Latino ethnicity", gsub("EthC2|Eth|65|C", "", VarName))))) %>%
     mutate(VarName=ifelse(VarName=="Minority", "Race", VarName)) %>%
@@ -228,36 +226,34 @@ for (i in c("Negative", "Positive")){
   
   count <- demo %>% group_by(Trt_lb) %>%  summarise(N=n())
   
-  colnames(rr_table1) = c("subgroup", "Characteristics", paste0(count$Trt_lb,"\n(N = ",count$N,")"), paste0("Total\n(N = ", sum(count$N),")"))
+  colnames(tab_dm) = c("subgroup", "Characteristics", paste0(count$Trt_lb,"\n(N = ",count$N,")"), paste0("Total\n(N = ", sum(count$N),")"))
   
-  rr_table1 <- rr_table1 %>% select(1,2,4,3,5)
-  
+  tab_dm <- tab_dm %>% select(1,2,4,3,5)
+
   if (i=="Negative"){
     # comparison
     tab_dm_neg[] <- lapply(tab_dm_neg, as.character)
-    rr_table1.1 = tab_dm_neg[, c("subgroup","Characteristics")] %>% left_join(rr_table1, by=c("subgroup","Characteristics"))
-    testthat::expect_equal(rr_table1.1, tab_dm_neg)
-
+    tab_dm_neg_v = tab_dm_neg[, c("subgroup","Characteristics")] %>% left_join(tab_dm, by=c("subgroup","Characteristics"))
+    testthat::expect_equal(tab_dm_neg_v, tab_dm_neg)
+    
   } else if (i=="Positive"){
     # comparison
     tab_dm_pos[] <- lapply(tab_dm_pos, as.character)
-    rr_table1.2 = tab_dm_pos[, c("subgroup","Characteristics")] %>% left_join(rr_table1, by=c("subgroup","Characteristics"))
-    testthat::expect_equal(rr_table1.2, tab_dm_pos)
-    
+    tab_dm_pos_v = tab_dm_pos[, c("subgroup","Characteristics")] %>% left_join(tab_dm, by=c("subgroup","Characteristics"))
+    testthat::expect_equal(tab_dm_pos_v, tab_dm_pos)
   }
-  
+
 }
 
-save(rr_table1.1, rr_table1.2,
-    file = here::here("verification", "verification_output", "cor_tabular_verification_output_tables1.Rdata")) 
-
+save(tab_dm_neg_v, file = here::here("verification", "verification_output", "cor_tab_dm_neg_v.Rdata"))
+save(tab_dm_pos_v, file = here::here("verification", "verification_output", "cor_tab_dm_pos_v.Rdata"))
 ```
 
 \clearpage
 
-## Tables 3-5. Antibody level comparison of Cases vs Non-Cases by baseline COVID status and assigned arms at Day 57
+## Table. Antibody level comparison of Cases vs Non-Cases by baseline COVID status and assigned arms at Day 57
 
-```{r table2, results = "asis", echo=FALSE, message=FALSE}
+```{r case_vaccplcb_posneg, results = "asis", echo=FALSE, message=FALSE}
 fig_footer <- c("")
 options(survey.lonely.psu="adjust") 
 
@@ -272,10 +268,10 @@ for (mk in c("Anti N IgG (IU/ml)","Anti RBD IgG (IU/ml)","Anti Spike IgG (IU/ml)
   
   wt_var = ifelse(tp==two_timepoints[1], "wt.D29", "wt.D57")
   
-  # indicator for cor cohort at day 29 (cohort_1_ind=1) and day 57(cohort_2_ind=2)
+  # indicator for cor cohort at day 29 (cohort_1_ind=1) and day 57(cohort_2_ind=1)
   rr3 <- rr3 %>% 
-    mutate(cohort_2_ind=ifelse((Perprotocol == 1 & EventTimePrimaryD57 >= 7), 1,0),
-           cohort_1_ind=ifelse(((EventTimePrimaryD29 >= 14 & Perprotocol == 1)|(EventTimePrimaryD29 >= 7 & EventTimePrimaryD29 <= 13 & Fullvaccine == 1)), 1, 0))
+    mutate(cohort_2_ind=ifelse(TwophasesampIndD57==1, 1, 0),
+           cohort_1_ind=ifelse(TwophasesampIndD29==1, 1, 0))
 
   cohort_var = ifelse(tp==two_timepoints[1], "cohort_1_ind", "cohort_2_ind")
     
@@ -485,12 +481,9 @@ testthat::expect_equal(case_vacc_neg, rr3_table_all)
 testthat::expect_equal(case_vacc_pos, rr4_table_all)
 testthat::expect_equal(case_plcb_pos, rr5_table_all)
 
-save(rr3_table_all,
-    file = here::here("verification", "verification_output", "cor_tabular_verification_output_table3.Rdata"))
+save(rr3_table_all, file = here::here("verification", "verification_output", "cor_case_vacc_neg_v.Rdata"))
 
-save(rr4_table_all, 
-    file = here::here("verification", "verification_output", "cor_tabular_verification_output_table4.Rdata"))
+save(rr4_table_all, file = here::here("verification", "verification_output", "cor_case_vacc_pos_v.Rdata"))
 
-save(rr5_table_all,
-    file = here::here("verification", "verification_output", "cor_tabular_verification_output_table5.Rdata"))
+save(rr5_table_all, file = here::here("verification", "verification_output", "cor_case_vacc_plcb_v.Rdata"))
 ```

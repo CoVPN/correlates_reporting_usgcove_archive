@@ -2,35 +2,15 @@ library(methods)
 library(dplyr)
 library(kyotil)
 set.seed(98109)
-
-###############################################################################
-# reading in data set
-###############################################################################
-# NOTE: `data_in_file` must exist in the top-level data_raw subdirectory
-data_in_file <- "COVID_VEtrial_practicedata_primarystage1.csv"
-data_name <- "practice_data.csv"
-study_name <- "mock"
-
-###############################################################################
-# define immune markers to be included in the analysis
-###############################################################################
-
-assays <- c(
-  "bindSpike", "bindRBD", "pseudoneutid50", "pseudoneutid80"
-  # NOTE: the live neutralization marker will eventually be available
-  #"liveneutmn50"
-)
+config <- config::get(config = Sys.getenv("TRIAL"))
+for(opt in names(config)){
+  eval(parse(text = paste0(names(config[opt])," <- config[[opt]]")))
+}
+names(assays)=assays # add names so that lapply results will have names
 
 # if this flag is true, then the N IgG binding antibody is reported 
 # in the immuno report (but is not analyzed in the cor or cop reports).
 include_bindN <- TRUE
-
-# times of measurements of the markers
-# B, Day29, Day57 are quantitative levels of markers measured at different times
-# DeltaXoverY is fold change in marker from time X to time Y
-times <- c("B", "Day29", "Day57", 
-           "Delta29overB", "Delta57overB", "Delta57over29")
-
 
 # limits for each assay (IU for bAb, no need to convert again)
 # the following are copied from SAP to avoid any mistake (get rid of commas)
@@ -44,14 +24,14 @@ tmp=list(
     bindRBD=c(
         LLOD = 1.593648,
         ULOD = 223074,
-        LLOQ = 3.4263,
-        ULOQ = 16269.23)
+        LLOQ = 5.7727,
+        ULOQ = 369.4486)
     ,
     bindN=c( 
         LLOD = 0.093744,
         ULOD = 52488,
-        LLOQ = 1.43085,
-        ULOQ = 588.2500)
+        LLOQ = 4.4897,
+        ULOQ = 574.6783)
     ,
     pseudoneutid50=c( 
         LLOD = 10,

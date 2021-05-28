@@ -12,7 +12,7 @@ library(digest)
 commit_hash <- system("git rev-parse HEAD", intern = TRUE)
 
 # get hash of input raw data file based on chosen hashing algorithm
-raw_file <- here("data_raw", data_in_file)
+raw_file <- here("data_raw", data_raw_dir, data_in_file)
 raw_file_digest <- digest(file = raw_file, algo = hash_algorithm)
 
 # get hash of input processed data file based on chosen hashing algorithm

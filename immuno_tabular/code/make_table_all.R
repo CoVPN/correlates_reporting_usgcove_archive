@@ -355,12 +355,13 @@ tab_rrdiff <- bind_rows(rpcnt %>%
          Estimate = response1-response2,
          ci_l = Estimate-sqrt((response1-ci_l1)^2+(response2-ci_u2)^2),
          ci_u = Estimate+sqrt((response1-ci_u1)^2+(response2-ci_l2)^2),
-         rslt = sprintf("%s\n(%s, %s)", 
-                        round(Estimate,2), round(ci_l,2), round(ci_u,2))) %>%
+         rslt = ifelse(is.na(Estimate), "-", 
+                       sprintf("%s\n(%s, %s)", round(Estimate,2), round(ci_l,2), round(ci_u,2)))) %>%
   dplyr::filter(!is.na(Comparison)) %>%
-  select(Comparison, subgroup, `Baseline SARS-CoV-2`, Arm, Visit, Marker, Ind, rslt) %>%
-  unique() %>% 
-  pivot_wider(names_from = Ind, values_from = rslt) %>%
+  pivot_wider(id_cols=c(Comparison, subgroup, `Baseline SARS-CoV-2`, Arm, Visit, Marker), 
+              names_from = Ind, values_from = rslt) %>%
+  select(Comparison, subgroup, `Baseline SARS-CoV-2`, Arm, Visit, Marker, 
+         Responder, `% 2-Fold Rise`, `% 4-Fold Rise`) %>% 
   arrange(subgroup, Visit, `Baseline SARS-CoV-2`, Marker, Comparison) 
 
 print("Done with table8") 

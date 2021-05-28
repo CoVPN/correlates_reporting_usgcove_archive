@@ -411,7 +411,7 @@ ggally_cor_resample_for_verification <- function(
       resamp_mat <- sapply(1:B, function(ii) sample.int(n = nn, replace = TRUE, prob = wt))
       # write.csv(data.frame(x = x, y = y, strata = st), "input_columns.csv", row.names = FALSE)
       
-      # write.csv(resamp_mat, "output_row_number.csv", row.names = FALSE)
+      write.csv(resamp_mat, "output_row_number.csv", row.names = FALSE)
       for (bb in seq_len(B)) {
         resamp_vec <- resamp_mat[, bb]
         x_resamp <- x[resamp_vec]
@@ -450,7 +450,7 @@ ggally_cor_resample_for_verification <- function(
                              corObj
         )
       }
-      # saveRDS(corvec, file = "corvec.RDS")
+      saveRDS(corvec, file = "corvec.RDS")
       cor_est <- mean(corvec, na.rm = TRUE)
       
       cor_res <- readRDS(file_name)

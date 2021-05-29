@@ -499,3 +499,4 @@ if("pseudoneutid50" %in% assays & "pseudoneutid80" %in% assays) {
 save(list=c(if(has57) c("MaxbAbDay57", "MaxID50ID80Day57", "MaxbAbDelta57overB", "MaxID50ID80Delta57overB"), 
             if(has29) c("MaxbAbDay29", "MaxID50ID80Day29", "MaxbAbDelta29overB", "MaxID50ID80Delta29overB")),
 file=here("data_clean", "_params.Rdata"))
+# if need to, we can add attr(config, "config") to the params file name, but then we need to add the params file name to _common.R and change all references to this file name in the code.

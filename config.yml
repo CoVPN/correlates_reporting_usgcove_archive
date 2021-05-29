@@ -20,8 +20,6 @@ moderna_mock:
   study_name: MockCOVE
   study_name_code: COVE
 
-
-
 janssen_default_real: &janssen_default_real
   data_raw_dir: janssen
   times: [B, Day29, Delta29overB]

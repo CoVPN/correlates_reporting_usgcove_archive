@@ -1,5 +1,3 @@
-time.start.1=Sys.time()
-
 # marginalized risk without marker
 get.marginalized.risk.no.marker=function(dat){
     fit.risk = coxph(form.0, dat, model=T) # model=T is required because the type of prediction requires it, see Note on ?predict.coxph
@@ -74,6 +72,3 @@ if(!file.exists(paste0(save.results.to, "marginalized.risk.no.marker.",study_nam
 #    prev        
 #})
 #prevs
-
-
-print(Sys.time()-time.start.1) # about 2 min with 1000 bootstrap replicates

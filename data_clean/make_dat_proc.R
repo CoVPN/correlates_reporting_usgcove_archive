@@ -1,4 +1,4 @@
-#Sys.setenv(TRIAL = "janssen_pooled_mock")
+#Sys.setenv(TRIAL = "moderna_mock")
 if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
 #-----------------------------------------------
 renv::activate(here::here())
@@ -21,7 +21,7 @@ dat_proc <- read.csv(here(
   "data_raw", data_raw_dir, data_in_file
 ))
 
-colnames(dat_proc)[2] <- "Ptid" # will change 2 to 1 if the first column, X, is removed from the raw data
+colnames(dat_proc)[1] <- "Ptid" 
 
 dat_proc=subset(dat_proc, !is.na(Bserostatus))
 
@@ -496,7 +496,6 @@ if("pseudoneutid50" %in% assays & "pseudoneutid80" %in% assays) {
     if(has57) MaxID50ID80Delta57overB = max(dat_proc[,paste0("Delta57overB", c("pseudoneutid50", "pseudoneutid80"))], na.rm=TRUE)
 }
 
-
-save(if(has57) MaxbAbDay57, if(has57) MaxID50ID80Day57, if(has57) MaxbAbDelta57overB, if(has57) MaxID50ID80Delta57overB, 
-     if(has29) MaxbAbDay29, if(has29) MaxID50ID80Day29, if(has29) MaxbAbDelta29overB, if(has29) MaxID50ID80Delta29overB,
+save(list=c(if(has57) c("MaxbAbDay57", "MaxID50ID80Day57", "MaxbAbDelta57overB", "MaxID50ID80Delta57overB"), 
+            if(has29) c("MaxbAbDay29", "MaxID50ID80Day29", "MaxbAbDelta29overB", "MaxID50ID80Delta29overB")),
 file=here("data_clean", "_params.Rdata"))

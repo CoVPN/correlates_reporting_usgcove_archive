@@ -100,6 +100,7 @@ assays_to_be_censored_at_uloq_cor <- c(
 # figure labels and titles for markers
 ###############################################################################
 has29 = "Day29" %in% times
+has57 = study_name_code=="COVE"
 
 markers <- c(outer(times[which(times %in% c("B", "Day29", "Day57"))], 
                    assays, "%.%"))
@@ -192,14 +193,39 @@ Bstratum.labels <- c(
 )
 
 # baseline stratum labeling
-demo.stratum.labels <- c(
-  "Age >= 65, URM",
-  "Age < 65, At risk, URM",
-  "Age < 65, Not at risk, URM",
-  "Age >= 65, White non-Hisp",
-  "Age < 65, At risk, White non-Hisp",
-  "Age < 65, Not at risk, White non-Hisp"
-)
+if (study_name_code=="COVE") {
+    demo.stratum.labels <- c(
+      "Age >= 65, URM",
+      "Age < 65, At risk, URM",
+      "Age < 65, Not at risk, URM",
+      "Age >= 65, White non-Hisp",
+      "Age < 65, At risk, White non-Hisp",
+      "Age < 65, Not at risk, White non-Hisp"
+    )
+} else if (study_name_code=="ENSEMBLE") {
+    demo.stratum.labels <- c(
+      "US URM, Age 18-59, Not at risk",
+      "US URM, Age 18-59, At risk",
+      "US URM, Age >= 60, Not at risk",
+      "US URM, Age >= 60, At risk",
+      "US White non-Hisp, Age 18-59, Not at risk",
+      "US White non-Hisp, Age 18-59, At risk",
+      "US White non-Hisp, Age >= 60, Not at risk",
+      "US White non-Hisp, Age >= 60, At risk",
+      "Latin America, Age 18-59, Not at risk",
+      "Latin America, Age 18-59, At risk",
+      "Latin America, Age >= 60, Not at risk",
+      "Latin America, Age >= 60, At risk",
+      "South Africa, Age 18-59, Not at risk",
+      "South Africa, Age 18-59, At risk",
+      "South Africa, Age >= 60, Not at risk",
+      "South Africa, Age >= 60, At risk"
+    )
+}
+
+
+
+
 
 ###############################################################################
 # reproduciblity options

@@ -181,3 +181,46 @@ cor_coxph/Rplots.pdf
 data_raw/READMECOVID_VEtrial_practicedatasets_v3.txt
 cor_coxph/cor_coxph_report_censored.pdf
 cor_coxph/cor_coxph_report_uncensored.pdf
+cor_coxph/cor_coxph_report - Copy.pdf
+cor_coxph/output/D29/CoR_univariable_svycoxph_pretty_Mock COVE.tex
+cor_coxph/output/D29/cutpoints_Day29bindRBD_COVE
+cor_coxph/output/D29/cutpoints_Day29bindRBD_Mock COVE
+cor_coxph/output/D29/cutpoints_Day29bindSpike_COVE
+cor_coxph/output/D29/cutpoints_Day29bindSpike_Mock COVE
+cor_coxph/output/D29/cutpoints_Day29pseudoneutid50_COVE
+cor_coxph/output/D29/cutpoints_Day29pseudoneutid50_Mock COVE
+cor_coxph/output/D29/cutpoints_Day29pseudoneutid80_COVE
+cor_coxph/output/D29/cutpoints_Day29pseudoneutid80_Mock COVE
+cor_coxph/output/D29/cutpoints_Delta29overBbindRBD_COVE
+cor_coxph/output/D29/cutpoints_Delta29overBbindRBD_Mock COVE
+cor_coxph/output/D29/cutpoints_Delta29overBbindSpike_COVE
+cor_coxph/output/D29/cutpoints_Delta29overBbindSpike_Mock COVE
+cor_coxph/output/D29/cutpoints_Delta29overBpseudoneutid50_COVE
+cor_coxph/output/D29/cutpoints_Delta29overBpseudoneutid50_Mock COVE
+cor_coxph/output/D29/cutpoints_Delta29overBpseudoneutid80_COVE
+cor_coxph/output/D29/cutpoints_Delta29overBpseudoneutid80_Mock COVE
+cor_coxph/output/D29/pvals.perm.Mock COVE.Rdata
+cor_coxph/output/D29/timepoints_cum_risk_COVE
+cor_coxph/output/D29/timepoints_cum_risk_Mock COVE
+cor_coxph/output/D57/CoR_univariable_svycoxph_cat_pretty_COVE.tex
+cor_coxph/output/D57/CoR_univariable_svycoxph_pretty_COVE.tex
+cor_coxph/output/D57/cutpoints_Day57bindRBD_COVE
+cor_coxph/output/D57/cutpoints_Day57bindRBD_Mock COVE
+cor_coxph/output/D57/cutpoints_Day57bindSpike_COVE
+cor_coxph/output/D57/cutpoints_Day57bindSpike_Mock COVE
+cor_coxph/output/D57/cutpoints_Day57pseudoneutid50_COVE
+cor_coxph/output/D57/cutpoints_Day57pseudoneutid50_Mock COVE
+cor_coxph/output/D57/cutpoints_Day57pseudoneutid80_COVE
+cor_coxph/output/D57/cutpoints_Day57pseudoneutid80_Mock COVE
+cor_coxph/output/D57/cutpoints_Delta57overBbindRBD_COVE
+cor_coxph/output/D57/cutpoints_Delta57overBbindRBD_Mock COVE
+cor_coxph/output/D57/cutpoints_Delta57overBbindSpike_COVE
+cor_coxph/output/D57/cutpoints_Delta57overBbindSpike_Mock COVE
+cor_coxph/output/D57/cutpoints_Delta57overBpseudoneutid50_COVE
+cor_coxph/output/D57/cutpoints_Delta57overBpseudoneutid50_Mock COVE
+cor_coxph/output/D57/cutpoints_Delta57overBpseudoneutid80_COVE
+cor_coxph/output/D57/cutpoints_Delta57overBpseudoneutid80_Mock COVE
+cor_coxph/output/D57/pvals.perm.COVE.Rdata
+cor_coxph/output/D57/pvals.perm.Mock COVE.Rdata
+cor_coxph/output/D57/timepoints_cum_risk_COVE
+cor_coxph/output/D57/timepoints_cum_risk_Mock COVE

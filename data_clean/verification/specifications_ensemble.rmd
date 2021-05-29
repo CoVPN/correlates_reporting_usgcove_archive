@@ -1,11 +1,13 @@
-# Specifications for DAT_CLEAN
+# Specifications for DAT_CLEAN for ENSEMBLE
 
 
 \begin{itemize}
 
   \item Rename the first column to Ptid
   
-  \item Subset to rows not missing in EventTimePrimaryD1, not missing in EventTimePrimaryD29, and not missing in EventTimePrimaryD57
+  \item Subset to not missing in Bserostatus
+  
+  \item Subset to rows not missing in EventTimePrimaryD1 and not missing in EventTimePrimaryD29
   
   \item Define EarlyendpointD57 (and similarly EarlyendpointD29, always included whether or not has29 is T or F) as: EarlyinfectionD57==1 | (EventIndPrimaryD1==1 & EventTimePrimaryD1 < NumberdaysD1toD57 + 7),1,0))
 

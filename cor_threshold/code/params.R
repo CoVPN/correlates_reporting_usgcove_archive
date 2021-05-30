@@ -94,7 +94,7 @@ if (file.exists(here::here("..", "data_clean", data_name_updated))) {
 
 } else {
     add_risk_score <- F
-    covariates <- c("MinorityInd", "HighRiskInd"") # , "BRiskScore") # Add "age"?
+    covariates <- c("MinorityInd", "HighRiskInd") # , "BRiskScore") # Add "age"?
 
 }
 

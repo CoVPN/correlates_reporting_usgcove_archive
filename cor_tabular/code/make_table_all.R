@@ -53,15 +53,39 @@ tlf <-
       col1="7cm"
     ),
     
+    tab_strtm = list(
+      table_header = "Sample Sizes of Baseline Strata for Correlates of Risk Analysis",
+      table_footer = c("Demographic covariate strata:",
+                       "1. Age $\\\\geq$ 65 Minority\\\\hspace{81pt}6. Age < 65 At-risk Unknown", 
+                       "2. Age $\\\\geq$ 65 Non-Minority\\\\hspace{60pt}7. Age < 65 Not At-risk Minority",
+                       "3. Age $\\\\geq$ 65 Unknown\\\\hspace{78pt}8. Age < 65 Not At-risk Non-Minority",
+                       "4. Age < 65 At-risk Minority\\\\hspace{48pt}9. Age < 65 Not At-risk Unknown",
+                       "5. Age < 65 At-risk Non-Minority",
+                       " ",
+                       "Minority includes Blacks or African Americans, Hispanics or Latinos, American Indians or
+                   Alaska Natives, Native Hawaiians, and other Pacific Islanders.",
+                       "Non-Minority includes all other races with observed race (Asian, Multiracial, White, Other) and observed ethnicity Not Hispanic or Latino.",
+                       "Unknown includes unknown, unreported race or ethnicity.",
+                       " ",
+                       "Cases for Day 29 marker correlates analyses are per-protocol vaccine recipients with the symptomatic 
+                   infection COVID-19 primary endpoint diagnosed starting 7 days after the Day 29 study visit. Cases for Day 57 marker 
+                   correlates analyses are per-protocol vaccine recipients with the symptomatic infection COVID-19 
+                   primary endpoint diagnosed starting 7 days after the Day 57 study visit. "
+      ),
+      header_above1 = c(" "=1, "Baseline SARS-CoV-2 Negative" = 9, "Baseline SARS-CoV-2 Positive" = 9),
+      deselect = "Arm",
+      pack_row = "Arm"
+    ),
+    
     case_vacc_neg = list(
       table_header = "Antibody levels in the baseline SARS-CoV-2 negative
       per-protocol cohort (vaccine recipients)",
       table_footer =
-        "*Cases are baseline negative per-protocol vaccine recipients with the
-        symptomatic infection COVID-19 primary endpoint diagnosed starting 7 days
-        after the Day 57 study visit. Non-cases/Controls are baseline negative
-        per-protocol vaccine recipients sampled into the random subcohort with
-        no evidence of SARS-CoV-2 infection up to the time of data cut.",
+      "Cases for Day 29 marker correlates analyses are baseline negative per-protocol 
+      vaccine recipients with the symptomatic infection COVID-19 primary endpoint diagnosed 
+      starting 7 days after the Day 29 study visit. Cases for Day 57 marker correlates 
+      analyses are baseline negative per-protocol vaccine recipients with the symptomatic 
+      infection COVID-19 primary endpoint diagnosed starting 7 days after the Day 57 study visit. ",
 
       col_name = c("Visit", "Marker", "N", "Resp rate", "GMT/GMC", "N",
                    "Resp rate", "GMT/GMC", "Resp Rate\nDifference", "GMTR/GMCR"),
@@ -76,12 +100,6 @@ tlf <-
       table_header = "Antibody levels in the baseline SARS-CoV-2 positive
       per-protocol cohort (vaccine recipients)",
       table_footer = c(
-        # "*Cases are baseline positive per-protocol vaccine recipients with the
-        # symptomatic infection COVID-19 primary endpoint diagnosed starting 7
-        # days after the Day 57 study visit.  Non-cases/Controls are baseline
-        # negative per-protocol vaccine recipients sampled into the random
-        # subcohort with no evidence of SARS-CoV-2 infection up to the time
-        # of data cut."
       "The SAP does not specify correlates analyses in baseline positive vaccine recipients. 
       This table summarizes descriptively the same information for baseline positive vaccine 
       recipients that was summarized for baseline negative vaccine recipients. 
@@ -105,12 +123,6 @@ tlf <-
       table_header = "Antibody levels in the baseline SARS-CoV-2 positive
       per-protocol cohort (placebo recipients)",
       table_footer = c(
-        # "*Cases are baseline negative per-protocol vaccine recipients with the
-        # symptomatic infection COVID-19 primary endpoint diagnosed starting 7
-        # days after the Day 57 study visit.  Non-cases/Controls are baseline
-        # negative per-protocol vaccine recipients sampled into the random
-        # subcohort with no evidence of SARS-CoV-2 infection up to the time of
-        # data cut."
         "The SAP does not specify correlates analyses in baseline positive placebo recipients.
         This table summarizes descriptively the same information for baseline positive placebo 
         recipients that was summarized for baseline negative and positive vaccine recipients. 
@@ -389,34 +401,35 @@ colnames(tab_strtm)=c("Arm", "  ", 1:9, paste0(" ", 1:9))
 
 tab_strtm_header2 <- ncol(tab_strtm)-1
 names(tab_strtm_header2) <- sprintf("Per-protocol Cases and Non-Cases (Moderna Trial)")
+tlf$tab_strtm$header_above2 <- tab_strtm_header2
 
-add_tab_strtm <- list(
-  table_header = "Sample Sizes of Random Subcohort Strata for Measuring Antibody Markers",
-  table_footer = c("Demographic covariate strata:",
-                   "1. Age $\\\\geq$ 65 Minority\\\\hspace{81pt}6. Age < 65 At-risk Unknown", 
-                   "2. Age $\\\\geq$ 65 Non-Minority\\\\hspace{60pt}7. Age < 65 Not At-risk Minority",
-                   "3. Age $\\\\geq$ 65 Unknown\\\\hspace{78pt}8. Age < 65 Not At-risk Non-Minority",
-                   "4. Age < 65 At-risk Minority\\\\hspace{48pt}9. Age < 65 Not At-risk Unknown",
-                   "5. Age < 65 At-risk Non-Minority",
-                   " ",
-                   "Minority includes Blacks or African Americans, Hispanics or Latinos, American Indians or
-                   Alaska Natives, Native Hawaiians, and other Pacific Islanders.",
-                   "Non-Minority includes all other races with observed race (Asian, Multiracial, White, Other) and observed ethnicity Not Hispanic or Latino.
-                   Participants not classifiable as Minority or Non-Minority because of unknown, unreported or missing were not included.",
-                   " ",
-                   "Cases for Day 29 marker correlates analyses are per-protocol vaccine recipients with the symptomatic 
-                   infection COVID-19 primary endpoint diagnosed starting 7 days after the Day 29 study visit. Cases for Day 57 marker 
-                   correlates analyses are per-protocol vaccine recipients with the symptomatic infection COVID-19 
-                   primary endpoint diagnosed starting 7 days after the Day 57 study visit. "
-  ),
-  header_above2 = tab_strtm_header2,
-  header_above1 = c(" "=1, "Baseline SARS-CoV-2 Negative" = 9, "Baseline SARS-CoV-2 Positive" = 9),
-  deselect = "Arm",
-  pack_row = "Arm"
-)
-
-tlf <- append(tlf, list(add_tab_strtm), after=2)
-names(tlf)[3] <- "tab_strtm"
+# add_tab_strtm <- list(
+#   table_header = "Sample Sizes of Baseline Strata for Correlates of Risk Analysis",
+#   table_footer = c("Demographic covariate strata:",
+#                    "1. Age $\\\\geq$ 65 Minority\\\\hspace{81pt}6. Age < 65 At-risk Unknown", 
+#                    "2. Age $\\\\geq$ 65 Non-Minority\\\\hspace{60pt}7. Age < 65 Not At-risk Minority",
+#                    "3. Age $\\\\geq$ 65 Unknown\\\\hspace{78pt}8. Age < 65 Not At-risk Non-Minority",
+#                    "4. Age < 65 At-risk Minority\\\\hspace{48pt}9. Age < 65 Not At-risk Unknown",
+#                    "5. Age < 65 At-risk Non-Minority",
+#                    " ",
+#                    "Minority includes Blacks or African Americans, Hispanics or Latinos, American Indians or
+#                    Alaska Natives, Native Hawaiians, and other Pacific Islanders.",
+#                    "Non-Minority includes all other races with observed race (Asian, Multiracial, White, Other) and observed ethnicity Not Hispanic or Latino.",
+#                    "Unknown includes unknown, unreported race or ethnicity.",
+#                    " ",
+#                    "Cases for Day 29 marker correlates analyses are per-protocol vaccine recipients with the symptomatic 
+#                    infection COVID-19 primary endpoint diagnosed starting 7 days after the Day 29 study visit. Cases for Day 57 marker 
+#                    correlates analyses are per-protocol vaccine recipients with the symptomatic infection COVID-19 
+#                    primary endpoint diagnosed starting 7 days after the Day 57 study visit. "
+#   ),
+#   header_above2 = tab_strtm_header2,
+#   header_above1 = c(" "=1, "Baseline SARS-CoV-2 Negative" = 9, "Baseline SARS-CoV-2 Positive" = 9),
+#   deselect = "Arm",
+#   pack_row = "Arm"
+# )
+# 
+# tlf <- append(tlf, list(add_tab_strtm), after=2)
+# names(tlf)[3] <- "tab_strtm"
 
 
 

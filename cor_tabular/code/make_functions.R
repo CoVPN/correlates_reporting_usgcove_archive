@@ -21,6 +21,7 @@ getResponder <- function(data,
                          folds=c(2, 4),
                          grtns=c(2, 4),
                          responderFR = 4) {
+  
   cutoff <- get(paste0(cutoff.name, "s"))
   for (i in times){
     for (j in assays){
@@ -28,8 +29,8 @@ getResponder <- function(data,
       bl <- paste0("B", j)
       delta <- paste0("Delta", gsub("Day", "", i), "overB", j)
       
-      data[, bl] <- pmin(10^data[, bl], log10(uloqs[j]))
-      data[, post] <- pmin(10^data[, post], log10(uloqs[j]))
+      data[, bl] <- pmin(data[, bl], log10(uloqs[j]))
+      data[, post] <- pmin(data[, post], log10(uloqs[j]))
       data[, delta] <- ifelse(10^data[, post] < lloqs[j], log10(lloqs[j]/2), data[, post])-ifelse(10^data[, bl] < lloqs[j], log10(lloqs[j]/2), data[, bl])
       
       for (k in folds){
@@ -44,7 +45,6 @@ getResponder <- function(data,
           (data[, bl] >= log10(cutoff[j]) & data[, paste0(post, "FR", responderFR)] == 1))
     }
   }
-  
   return(data)
 }
 

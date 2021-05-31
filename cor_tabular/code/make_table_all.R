@@ -195,7 +195,6 @@ dat <- read.csv(here::here("../data_clean", data_name))
 
 # The stratified random cohort for immunogenicity
 ds_s <- dat %>%
-  # dplyr::filter(Perprotocol == 1 & EventTimePrimaryD57 >= 7) %>%
   mutate(
     raceC = as.character(race),
     ethnicityC = case_when(EthnicityHispanic==1 ~ "Hispanic or Latino",
@@ -224,10 +223,25 @@ ds_s <- dat %>%
                  levels = c("Vaccine", "Placebo")),
     
     Case.D57 = case_when(
-      Perprotocol==1 & Bserostatus==0 & EarlyendpointD57==0 & 
+      Perprotocol==1 & EarlyendpointD57==0 & 
         TwophasesampIndD57==1 & EventIndPrimaryD57==1 ~ "Cases", 
-      Perprotocol==1 & Bserostatus==0 & EarlyendpointD57==0 & 
+      Perprotocol==1 & EarlyendpointD57==0 & 
         TwophasesampIndD57==1 & EventIndPrimaryD1==0 ~ "Non-Cases"),
+    
+    Case.D29 = case_when(
+      Perprotocol==1 & EarlyendpointD29==0 & 
+        TwophasesampIndD29==1 & EventIndPrimaryD29==1~"Cases", 
+      Perprotocol==1 & EarlyendpointD57==0 & 
+        TwophasesampIndD57==1 & EventIndPrimaryD1==0 ~"Non-Cases"),
+    
+    demo.stratum.ordered=case_when(!is.na(demo.stratum) ~ 
+                                   as.numeric(match(demo.stratum.labels[demo.stratum], 
+                                         c("Age >= 65, URM", "Age >= 65, White non-Hisp", "Age >= 65, Unknown", 
+                                           "Age < 65, At risk, URM", "Age < 65, At risk, White non-Hisp", "Age < 65, At risk, Unknown", 
+                                           "Age < 65, Not at risk, URM", "Age < 65, Not at risk, White non-Hisp", "Age < 65, Not at risk, Unknown"))), 
+                                   age.geq.65 == 1 ~ 3, 
+                                   age.geq.65 == 0 & HighRiskInd==1 ~ 6,
+                                   age.geq.65 == 0 & HighRiskInd==0 ~ 9), 
     
     AgeRisk1 = ifelse(Age65C=="Age $<$ 65", AgeRiskC, NA),
     AgeRisk2 = ifelse(Age65C=="Age $\\geq$ 65", AgeRiskC, NA),
@@ -238,16 +252,6 @@ ds_s <- dat %>%
 # Step2: Responders
 # Post baseline visits
 ds <- getResponder(ds_s, cutoff.name="lloq", times=grep("Day", times, value=T), assays=assays)
-
-if (has29){
-  ds.D29 <- ds %>% 
-    filter(ph1.D29) %>% 
-    mutate(Case.D29 = case_when(
-      Perprotocol==1 & Bserostatus==0 & EarlyendpointD29==0 & 
-        TwophasesampIndD29==1 & EventIndPrimaryD29==1~"Cases", 
-      Perprotocol==1 & Bserostatus==0 & EarlyendpointD29==0 & 
-        TwophasesampIndD29==1 & EventIndPrimaryD1==0 ~"Non-Cases"))
-}
 
 subgrp <- c(
   All = "All participants", 
@@ -365,46 +369,48 @@ tab_dm_neg <- tab_dm %>%
 print("Done with table 1") 
 
 
-
 # Added table: 
-demo.ordered <- c("Age >= 65, URM", "Age >= 65, White non-Hisp", "Age < 65, At risk, URM",
-                  "Age < 65, At risk, White non-Hisp", "Age < 65, Not at risk, URM", 
-                  "Age < 65, Not at risk, White non-Hisp")
+demo.ordered <- c("Age >= 65, URM", "Age >= 65, White non-Hisp", "Age >= 65, Unknown", 
+                  "Age < 65, At risk, URM", "Age < 65, At risk, White non-Hisp", "Age < 65, At risk, Unknown", 
+                  "Age < 65, Not at risk, URM", "Age < 65, Not at risk, White non-Hisp", "Age < 65, Not at risk, Unknown")
 
 tab_strtm <- ds %>% 
-  filter() %>% 
-  mutate(demo.stratum.ordered=match(demo.stratum.labels[demo.stratum], demo.ordered)) %>% 
-  group_by(demo.stratum.ordered, wt.subcohort, Arm, `Baseline SARS-CoV-2`) %>% 
-  summarise(Observed=n(), Estimated=round(sum(wt.subcohort), 0)) %>% 
-  pivot_longer(cols=c(Observed, Estimated)) %>% 
+  group_by(demo.stratum.ordered, Arm, `Baseline SARS-CoV-2`) %>%
+  summarise(`Day 29 Cases`=sum(Case.D29=="Cases", na.rm=T), 
+            `Day 57 Cases`=sum(Case.D57=="Cases", na.rm=T), 
+            `Non-Cases`=sum(Case.D57=="Non-Cases", na.rm=T)) %>% 
+  pivot_longer(cols=c(`Day 29 Cases`,`Day 57 Cases`, `Non-Cases`)) %>% 
   arrange(`Baseline SARS-CoV-2`, demo.stratum.ordered) %>% 
   pivot_wider(id_cols=c(Arm, name), 
               names_from = c(`Baseline SARS-CoV-2`, demo.stratum.ordered), 
               values_from=value)
 
-colnames(tab_strtm)=c("Arm", "  ", paste0(1:6,""), paste0(" ", 1:6))
+colnames(tab_strtm)=c("Arm", "  ", 1:9, paste0(" ", 1:9))
 
 tab_strtm_header2 <- ncol(tab_strtm)-1
-names(tab_strtm_header2) <- sprintf("Random Subcohort Sample Sizes (N=%s Participants) (Moderna Trial)", sum(ds$randomset))
+names(tab_strtm_header2) <- sprintf("Per-protocol Cases and Non-Cases (Moderna Trial)")
 
 add_tab_strtm <- list(
   table_header = "Sample Sizes of Random Subcohort Strata for Measuring Antibody Markers",
   table_footer = c("Demographic covariate strata:",
-                   "1. Age $\\\\geq$ 65 Minority\\\\hspace{81pt}4. Age < 65 At-risk Non-Minority", 
-                   "2. Age $\\\\geq$ 65 Non-Minority\\\\hspace{60pt}5. Age < 65 Not At-risk Minority",
-                   "3. Age < 65 At-risk Minority\\\\hspace{48pt}6. Age < 65 Not At-risk Non-Minority",
+                   "1. Age $\\\\geq$ 65 Minority\\\\hspace{81pt}6. Age < 65 At-risk Unknown", 
+                   "2. Age $\\\\geq$ 65 Non-Minority\\\\hspace{60pt}7. Age < 65 Not At-risk Minority",
+                   "3. Age $\\\\geq$ 65 Unknown\\\\hspace{78pt}8. Age < 65 Not At-risk Non-Minority",
+                   "4. Age < 65 At-risk Minority\\\\hspace{48pt}9. Age < 65 Not At-risk Unknown",
+                   "5. Age < 65 At-risk Non-Minority",
                    " ",
                    "Minority includes Blacks or African Americans, Hispanics or Latinos, American Indians or
                    Alaska Natives, Native Hawaiians, and other Pacific Islanders.",
                    "Non-Minority includes all other races with observed race (Asian, Multiracial, White, Other) and observed ethnicity Not Hispanic or Latino.
                    Participants not classifiable as Minority or Non-Minority because of unknown, unreported or missing were not included.",
                    " ",
-                   "Observed = Numbers of participants sampled into the subcohort within baseline covariate strata.",
-                   "Estimated = Estimated numbers of participants in the whole per-protocol cohort within baseline 
-  covariate strata, calculated using inverse probability weighting."
+                   "Cases for Day 29 marker correlates analyses are per-protocol vaccine recipients with the symptomatic 
+                   infection COVID-19 primary endpoint diagnosed starting 7 days after the Day 29 study visit. Cases for Day 57 marker 
+                   correlates analyses are per-protocol vaccine recipients with the symptomatic infection COVID-19 
+                   primary endpoint diagnosed starting 7 days after the Day 57 study visit. "
   ),
   header_above2 = tab_strtm_header2,
-  header_above1 = c(" "=1, "Baseline SARS-CoV-2 Negative" = 6, "Baseline SARS-CoV-2 Positive" = 6),
+  header_above1 = c(" "=1, "Baseline SARS-CoV-2 Negative" = 9, "Baseline SARS-CoV-2 Positive" = 9),
   deselect = "Arm",
   pack_row = "Arm"
 )
@@ -418,8 +424,7 @@ names(tlf)[3] <- "tab_strtm"
 # (Per Peter's email Feb 5, 2021)
 # Cases vs Non-cases
 
-ds.D57 <- subset(ds, ph1.D57)
-
+ds.D57 <- filter(ds, ph1.D57)
 sub.by <- c("Arm", "`Baseline SARS-CoV-2`")
 resp.v.57 <- intersect(grep("Resp", names(ds), value = T),
                        grep("57", names(ds), value = T))
@@ -435,7 +440,7 @@ rgmt_case <- get_rgmt(ds.D57, gm.v.57, subs, comp_lev=comp_i, sub.by, "Wstratum"
 print("Done with table 2 & 3") 
 
 if(has29){
-  
+  ds.D29 <- filter(ds, ph1.D29)
   subs <- "Case.D29"
   comp_i <- c("Cases", "Non-Cases")
   
@@ -455,7 +460,7 @@ if(has29){
 }
 
 rrdiff_case <- rpcnt_case %>% 
-  dplyr::filter(subgroup %in% subs & grepl("Resp",resp_cat)) %>% 
+  # dplyr::filter(subgroup %in% subs & grepl("Resp",resp_cat)) %>% 
   mutate(groupn = 2-match(Group, comp_i)%%2) %>%
   pivot_wider(id_cols = c(subgroup, `Baseline SARS-CoV-2`, Arm, Visit, Marker, Ind),
               names_from = groupn, values_from = c(response, ci_l, ci_u), names_sep = "") # %>% 
@@ -516,7 +521,7 @@ case_plcb_pos <- tab_case %>%
 
 print("Done with all tables") 
 
-save(tlf, tab_dm_neg, tab_dm_pos, 
+save(tlf, tab_dm_neg, tab_dm_pos, tab_strtm, 
      case_vacc_neg, case_vacc_pos, case_plcb_pos,
      file = here::here("output", "Tables.Rdata"))
 

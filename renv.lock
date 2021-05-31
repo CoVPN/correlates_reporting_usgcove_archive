@@ -408,15 +408,15 @@
     },
     "chngpt": {
       "Package": "chngpt",
-      "Version": "2021.3-17",
+      "Version": "2021.5-12",
       "Source": "GitHub",
       "RemoteType": "github",
-      "RemoteUsername": "youyifong",
-      "RemoteRepo": "chngpt",
-      "RemoteRef": "HEAD",
-      "RemoteSha": "e0cf386ed51012a21550f49ed39fa46c531bc62f",
       "RemoteHost": "api.github.com",
-      "Hash": "f6724e9c2c82fe8cda4b7357087deec0"
+      "RemoteRepo": "chngpt",
+      "RemoteUsername": "youyifong",
+      "RemoteRef": "HEAD",
+      "RemoteSha": "dd7abb76258671f7d7cc450b8bd0e54eae0ccb10",
+      "Hash": "15a28ea5ac2d8b7a06318628f227746c"
     },
     "class": {
       "Package": "class",
@@ -912,8 +912,8 @@
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
-      "RemoteRepo": "hal9001",
       "RemoteUsername": "tlverse",
+      "RemoteRepo": "hal9001",
       "RemoteRef": "devel",
       "RemoteSha": "14b16305ca29cc758fdde5f40603b5a674d76afa",
       "Hash": "ba7be3ec26629d5cf3f64e742863fe8f"
@@ -923,12 +923,12 @@
       "Version": "0.1.5",
       "Source": "GitHub",
       "RemoteType": "github",
-      "Remotes": "github::tlverse/hal9001@devel",
       "RemoteHost": "api.github.com",
-      "RemoteRepo": "haldensify",
       "RemoteUsername": "nhejazi",
+      "RemoteRepo": "haldensify",
       "RemoteRef": "master",
       "RemoteSha": "16350cc39b68e61566f03a11f633e08073405355",
+      "Remotes": "github::tlverse/hal9001@devel",
       "Hash": "47c34f41535fb9c16bd44e760d61cb67"
     },
     "haven": {
@@ -1071,15 +1071,15 @@
     },
     "kyotil": {
       "Package": "kyotil",
-      "Version": "2021.3-15",
+      "Version": "2021.5-14",
       "Source": "GitHub",
       "RemoteType": "github",
-      "RemoteUsername": "youyifong",
-      "RemoteRepo": "kyotil",
-      "RemoteRef": "HEAD",
-      "RemoteSha": "0f95a5a7a1eb5c43737583f9ec9d00fb37ec626f",
       "RemoteHost": "api.github.com",
-      "Hash": "f340f0404e718174f23de5445d8f2090"
+      "RemoteRepo": "kyotil",
+      "RemoteUsername": "youyifong",
+      "RemoteRef": "HEAD",
+      "RemoteSha": "2bfb20aaf7e0555fca386a981f1db8cc14e200c7",
+      "Hash": "9879e8fad666f66f00b928948260c4ee"
     },
     "labeling": {
       "Package": "labeling",
@@ -1174,10 +1174,10 @@
     },
     "lme4": {
       "Package": "lme4",
-      "Version": "1.1-26",
+      "Version": "1.1-27",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "5f2466f5127e0ce67e44bb381387eeca"
+      "Hash": "e055d75b424a33fdc8904e5f81263789"
     },
     "lspline": {
       "Package": "lspline",
@@ -1918,13 +1918,6 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "5955a9bd4ed0275ad45596a49d75946f"
-    },
-    "statmod": {
-      "Package": "statmod",
-      "Version": "1.4.35",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "53c27113461e8abbe2dc7125e22b2a39"
     },
     "stringi": {
       "Package": "stringi",

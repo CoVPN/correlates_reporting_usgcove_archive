@@ -1,2 +1,7 @@
-study.name="mock" # study.name is used in figure/table file names and printed in tables/figures as well
-.mfrow=if(length(assays)==4) c(2,2) else if(length(assays)==5) c(3,2) else stop("pls redefine .mfrows")
+if (length(assays) %in% c(3,4)) {
+  .mfrow <- c(2, 2)
+} else if (length(assays) == 5) {
+  .mfrow <- c(3, 2)
+} else {
+  stop("Please re-define variable .mfrows")
+}

@@ -33,6 +33,7 @@ source(here::here("code", "params.R"))
 Args <- commandArgs(trailingOnly=TRUE)
 if (length(Args)==0) Args=c(pop="57")
 pop=Args[1]; myprint(pop)
+
 if(!has29 & pop=="29") {
     print("Quitting because there are no Day 29 markers")
     quit()
@@ -67,7 +68,7 @@ for (a in assays_to_be_censored_at_uloq_cor) {
 
 
 ###################################################################################################
-# pick wt and TwophasesampInd
+# set up based on whether to perform D29 or D57 analyses
 
 if (pop=="57") {
     dat.mock$wt.0=dat.mock$wt.D57
@@ -105,7 +106,9 @@ if (endsWith(data_name, "riskscore.csv")) {
 p.cov=length(terms(form.0))
 
 
-# define trichotomized markers
+###################################################################################################
+# define trichotomized markers and create design object
+
 marker.cutpoints <- list()    
 for (a in assays) {
     marker.cutpoints[[a]] <- list()    
@@ -190,4 +193,5 @@ source(here::here("code", "cor_coxph_marginalized_risk.R"))
 ###################################################################################################
 # save rv
 save(rv, file=paste0(here::here("verification"), "/D", pop, ".rv."%.%study_name%.%".Rdata"))
+
 print(Sys.time()-time.start)

@@ -286,3 +286,4 @@ cor_coxph/output/D57/timepoints_cum_risk_MockCOVE
 cor_nonlinear/output/D57/marginalized.risk.gam.MockCOVE.Rdata
 cor_nonlinear/output/D57/step.pdf
 cor_nonlinear/output/D57/step_MockCOVE.pdf
+*.pdf

@@ -21,15 +21,15 @@ cd correlates_reporting
 # replace with reports and note R version
 if [ "$REPORT_TYPE" == "IMMUNO" ]
 then
-  cp -r $TRAVIS_BUILD_DIR/_report_immuno/* ./
+  cp -rf $TRAVIS_BUILD_DIR/_report_immuno/* ./
 elif [ "$REPORT_TYPE" == "COR" ]
 then
-  cp -r $TRAVIS_BUILD_DIR/_report_riskscore/* ./
-  cp -r $TRAVIS_BUILD_DIR/_report_cor/* ./
+  cp -rf $TRAVIS_BUILD_DIR/_report_riskscore/* ./
+  cp -rf $TRAVIS_BUILD_DIR/_report_cor/* ./
 elif [ "$REPORT_TYPE" == "COP" ]
 then
-  cp -r $TRAVIS_BUILD_DIR/_report_riskscore/* ./
-  cp -r $TRAVIS_BUILD_DIR/_report_cop/* ./
+  cp -rf $TRAVIS_BUILD_DIR/_report_riskscore/* ./
+  cp -rf $TRAVIS_BUILD_DIR/_report_cop/* ./
 fi
 echo "Reports built with R version $TRAVIS_R_VERSION"
 

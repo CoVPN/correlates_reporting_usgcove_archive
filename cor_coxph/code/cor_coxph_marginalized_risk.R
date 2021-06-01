@@ -92,6 +92,11 @@ if(!file.exists(paste0(save.results.to, "marginalized.risk.",study_name,".Rdata"
 #rv$marginalized.risk.S.geq.s=list()
 #for (a in assays) rv$marginalized.risk.S.geq.s[[a]] = risks.all.2[[a]][c("marker","prob")]
 
+write(ncol(risks.all.1[[1]]$boot), file=paste0(save.results.to, "bootstrap_replicates_"%.%study_name))
+
+ylims.cor=list()
+ylims.cor[[1]]=list(2)
+ylims.cor[[2]]=list(2)
 
 # draw marginalized risk curves for continuous s
 for (ii in 1:2) {  # 1 conditional on s,   2 is conditional on S>=s
@@ -110,6 +115,7 @@ for (idx in 1:2) { # 1 with placebo lines, 2 without placebo lines. Implementati
         ylim=range(sapply(risks.all, function(x) x$prob), if(idx==1) prev.plac, prev.vacc, 0)
     }
     myprint(ylim)
+    ylims.cor[[ii]][[idx]]=ylim
     lwd=2
      
     mypdf(oma=c(0,0,0,0), onefile=F, file=paste0(save.results.to, "marginalized_risks", ii, ifelse(idx==1,"","_woplacebo"), "_"%.%study_name), mfrow=.mfrow)
@@ -173,6 +179,7 @@ for (idx in 1:2) { # 1 with placebo lines, 2 without placebo lines. Implementati
     dev.off()    
 }
 }
+save(ylims.cor, file=paste0(save.results.to, "ylims.cor"%.%study_name%.%".Rdata"))
 
 
 

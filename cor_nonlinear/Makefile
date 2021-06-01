@@ -7,7 +7,7 @@ clean:
 
 ## cor_nonlinear : create output figures
 cor_nonlinear: 
-	cd code; Rscript cor_nonlinear.R 57
+	Rscript code/cor_nonlinear.R 57 && Rscript code/cor_nonlinear.R 29
 
 ## report        : create a standalone report
 report:  

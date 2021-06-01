@@ -78,17 +78,30 @@ if(!file.exists(paste0(save.results.to, "marginalized.risk.gam.",study_name,".Rd
 }
 
 
+write(ncol(risks.all.vacc.gam[[1]]$boot), file=paste0(save.results.to, "bootstrap_replicates_"%.%study_name))
 
-ii=1
+
+
+
+ii=1 # S=s
+
+# get dfs
+dfs=sapply (assays, function(a) {        
+    fit=mgcv::gam(update(form.0.logistic, as.formula(paste0("~.+s(","Day"%.%pop%.%a,")"))), data=dat.vacc.pop.ph2, family=binomial, weights=wt.0)
+    sum(influence(fit))-p.cov-1 # 1 for intercept
+})
+
+
 for (idx in 1:2) { # 1 with placebo lines, 2 without placebo lines. Implementation-wise, only difference is in ylim
 # ii=1; idx=1; a=assays[3]
     
     risks.all=get("risks.all.vacc.gam")
     
-    if (ii==2 & idx==2) {
-    } else {
-        ylim=range(sapply(risks.all, function(x) x$prob), if(idx==1) prev.plac, prev.vacc, 0)
-    }
+#    if (ii==2 & idx==2) {
+#    } else {
+#        ylim=range(sapply(risks.all, function(x) x$prob), if(idx==1) prev.plac, prev.vacc, 0)
+#    }
+    ylim=ylims.cor[[1]][[idx]]
     myprint(ylim)
     lwd=2
      
@@ -134,6 +147,9 @@ for (idx in 1:2) { # 1 with placebo lines, 2 without placebo lines. Implementati
         col <- rgb(col[1], col[2], col[3], alpha=255*0.4, maxColorValue=255)
         tmp=hist(dat.vacc.pop[["Day"%.%pop%.%a]], breaks=15, plot=F)
         plot(tmp,col=col,axes=F,labels=F,main="",xlab="",ylab="",border=0,freq=F, xlim=xlim, ylim=c(0,max(tmp$density*1.25)))
+        
+        # add df
+        title(sub=paste0("estimated df: ", formatDouble(dfs[a],1)))
     }
     dev.off()    
 }

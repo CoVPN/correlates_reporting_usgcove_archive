@@ -12,3 +12,14 @@ pathCorcoxphOutput <- "cor_coxph/output/D57"
 ```{r, child=c(here::here('cor_nonlinear', 'report_sub.Rmd'))}
 ```
 
+\clearpage
+
+```{r, echo=FALSE}
+Day <- 57
+pathCoRoutput <- "cor_nonlinear/output/D29"
+pathCorcoxphOutput <- "cor_coxph/output/D29"
+```
+
+```{r, child=c(here::here('cor_nonlinear', 'report_sub.Rmd'))}
+```
+

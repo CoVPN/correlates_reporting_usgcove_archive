@@ -112,8 +112,9 @@ print(paste0("save.results.to equals ", save.results.to))
 
 dat.vacc.pop.ph2 = subset(dat.vacc.pop, ph2)
 
-# for plotting prevalence
-load(paste0(here::here(".."), "/cor_coxph/output/D", pop,"/", "marginalized.risk.no.marker."%.%study_name%.%".Rdata")) #res.plac.cont, res.vacc.cont, prev.plac, prev.vacc
+# for plotting
+load(paste0(here::here(".."), "/cor_coxph/output/D", pop,"/", "marginalized.risk.no.marker."%.%study_name%.%".Rdata")) #prev.plac, prev.vacc
+load(paste0(here::here(".."), "/cor_coxph/output/D", pop,"/", "ylims.cor"%.%study_name%.%".Rdata")) #ylims.cor[[1]] is a list of two: 1 with placebo lines, 2 without placebo lines.
 
 
 ####################################################################################################

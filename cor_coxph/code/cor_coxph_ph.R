@@ -117,6 +117,8 @@ if(!file.exists(paste0(save.results.to, "pvals.perm.",study_name,".Rdata"))) {
     load(file=paste0(save.results.to, "pvals.perm."%.%study_name%.%".Rdata"))
 }
 
+write(nrow(pvals.perm), file=paste0(save.results.to, "permutation_replicates_"%.%study_name))
+
 
 if(any(is.na(p.unadj))) {
     pvals.adj = cbind(p.unadj=p.unadj, p.FWER=NA, p.FDR=NA)

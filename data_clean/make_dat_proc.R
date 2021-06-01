@@ -239,7 +239,8 @@ if (has57) {
       with(table(Wstratum, TwophasesampIndD57))
     wts_norm <- rowSums(wts_table) / wts_table[, 2]
     dat_proc$wt.D57 <- wts_norm[dat_proc$Wstratum %.% ""]
-    dat_proc$wt.D57 = ifelse(with(dat_proc, EarlyendpointD57==0 & Perprotocol == 1 & EventTimePrimaryD57>=7), dat_proc$wt.D57, NA)
+    # the step above assigns weights for some subjects outside ph1. the next step makes them NA
+    dat_proc$wt.D57 = ifelse(with(dat_proc, EarlyendpointD57==0 & Perprotocol == 1 & EventTimePrimaryD57>=7), dat_proc$wt.D57, NA) 
     dat_proc$ph1.D57=!is.na(dat_proc$wt.D57)
     dat_proc$ph2.D57=with(dat_proc, ph1.D57 & TwophasesampIndD57)
     

@@ -17,24 +17,16 @@ if(!file.exists(paste0(save.results.to, "marginalized.risk.no.marker.",study_nam
         save.seed <- try(get(".Random.seed", .GlobalEnv), silent=TRUE) 
         if (class(save.seed)=="try-error") {set.seed(1); save.seed <- get(".Random.seed", .GlobalEnv) }   
         
-        ptids.by.stratum=lapply(sort(unique(dat.tmp$tps.stratum)), function (i) 
-            list(subcohort=subset(dat.tmp, tps.stratum==i & SubcohortInd==1, Ptid, drop=TRUE), 
-              nonsubcohort=subset(dat.tmp, tps.stratum==i & SubcohortInd==0, Ptid, drop=TRUE)))
-        # add a substratum for cases with NA in tps.stratum
-        tmp=list(subcohort=subset(dat.tmp, is.na(tps.stratum), Ptid, drop=TRUE), # they are in ph1 b/c they are cases
-              nonsubcohort=NULL)
-        ptids.by.stratum=append(ptids.by.stratum, list(tmp))
+        ptids.by.stratum=get.ptids.by.stratum.for.bootstrap (dat.tmp) 
+
         # if mc.cores is >1 here, the process will be stuck in coxph for some unknown reason
         out=mclapply(1:B, mc.cores = 1, FUN=function(seed) {   
-            set.seed(seed)         
-            dat.b=dat.tmp[match(unlist(lapply(ptids.by.stratum, function(x) 
-                c(sample(x$subcohort, r=TRUE), sample(x$nonsubcohort, r=TRUE))
-            )), dat.tmp$Ptid),]        
-            
+            dat.b = get.bootstrap.data.cor (dat.tmp, ptids.by.stratum, seed) 
             get.marginalized.risk.no.marker(dat.b)    
             
         })
         boot=do.call(cbind, out)
+        
         # restore rng state 
         assign(".Random.seed", save.seed, .GlobalEnv)    
         

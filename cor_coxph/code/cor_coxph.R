@@ -74,10 +74,12 @@ if (pop=="57") {
     dat.mock$wt.0=dat.mock$wt.D57
     dat.mock$TwophasesampInd.0 = dat.mock$TwophasesampIndD57
     dat.mock$ph1=dat.mock$ph1.D57   
+    dat.mock$ph2=dat.mock$ph2.D57   
 } else if (pop=="29") {
     dat.mock$wt.0=dat.mock$wt.D29
     dat.mock$TwophasesampInd.0 = dat.mock$TwophasesampIndD29 
     dat.mock$ph1=dat.mock$ph1.D29
+    dat.mock$ph2=dat.mock$ph2.D29
 } else stop("wrong pop")
 
 # the following data frame define the phase 1 ptids
@@ -195,3 +197,7 @@ source(here::here("code", "cor_coxph_marginalized_risk.R"))
 save(rv, file=paste0(here::here("verification"), "/D", pop, ".rv."%.%study_name%.%".Rdata"))
 
 print(Sys.time()-time.start)
+
+
+
+with(dat.vacc.pop, table(URMforsubcohortsampling, SubcohortInd, useNA="ifany"))

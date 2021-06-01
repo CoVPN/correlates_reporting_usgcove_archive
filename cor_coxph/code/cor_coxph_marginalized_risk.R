@@ -7,12 +7,14 @@
 #### type =1: S=s; type=2: S>=s
 # data is ph1 data
 # t is a time point near to the time of the last observed outcome will be defined
-marginalized.risk.svycoxph.boot=function(formula, marker.name, type, data, t, weights, B, ci.type="quantile", numCores=1) {  
+marginalized.risk.svycoxph.boot=function(formula, marker.name, type, data, t, B, ci.type="quantile", numCores=1) {  
 # formula=form.0; marker.name="Day"%.%pop%.%"bindSpike"; data=dat.vacc.pop; t=t0; weights=dat.vacc.pop$wt.D57; B=2; ci.type="quantile"; numCores=1; type=2
     
     # store the current rng state 
     save.seed <- try(get(".Random.seed", .GlobalEnv), silent=TRUE) 
-    if (class(save.seed)=="try-error") {set.seed(1); save.seed <- get(".Random.seed", .GlobalEnv) }      
+    if (class(save.seed)=="try-error") {set.seed(1); save.seed <- get(".Random.seed", .GlobalEnv) } 
+    
+    data.ph2=subset(data, ph2)     
     
     if (type==1) {
     # conditional on s    
@@ -20,47 +22,34 @@ marginalized.risk.svycoxph.boot=function(formula, marker.name, type, data, t, we
         f1=update(formula, as.formula(paste0("~.+",marker.name)))        
         tmp.design=twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=data)
         fit.risk=svycoxph(f1, design=tmp.design) # since we don't need se, we could use coxph, but the weights computed by svycoxph are a little different from the coxph due to fpc
-        prob=marginalized.risk(fit.risk, marker.name, data=subset(data, TwophasesampInd.0==1), ss=ss, weights=weights[data$TwophasesampInd.0==1], t=t, categorical.s=F)        
+        prob=marginalized.risk(fit.risk, marker.name, data=data.ph2, ss=ss, weights=data.ph2$wt.0, t=t, categorical.s=F)        
     
     } else if (type==2) {
     # conditional on S>=s
         ss=quantile(data[[marker.name]], seq(0,.9,by=0.05), na.rm=TRUE); myprint(ss)
-        prob=marginalized.risk.threshold (formula, marker.name, data=subset(data, TwophasesampInd.0==1), weights=weights[data$TwophasesampInd.0==1], t=t, ss=ss)
+        prob=marginalized.risk.threshold (formula, marker.name, data=data.ph2, weights=data.ph2$wt.0, t=t, ss=ss)
        
     } else stop("wrong type")
     
     # for use in bootstrap
-    strat=sort(unique(data$tps.stratum))
-    ptids.by.stratum=lapply(strat, function (i) 
-        list(subcohort=subset(data, tps.stratum==i & SubcohortInd==1, Ptid, drop=TRUE), nonsubcohort=subset(data, tps.stratum==i & SubcohortInd==0, Ptid, drop=TRUE)))
-    # add a substratum for cases with NA in tps.stratum
-    tmp=list(subcohort=subset(data, is.na(tps.stratum), Ptid, drop=TRUE), # they are in ph1 b/c they are cases
-          nonsubcohort=NULL)
-    ptids.by.stratum=append(ptids.by.stratum, list(tmp))
+    ptids.by.stratum=get.ptids.by.stratum.for.bootstrap (data)     
     
     # bootstrap
     out=mclapply(1:B, mc.cores = numCores, FUN=function(seed) {   
-        set.seed(seed)    
-        
-        # For each sampling stratum, bootstrap samples in subcohort and not in subchort separately
-        tmp=lapply(ptids.by.stratum, function(x) c(sample(x$subcohort, r=TRUE), sample(x$nonsubcohort, r=TRUE)))
-        dat.b=data[match(unlist(tmp), data$Ptid),]
-    
-        # compute weights
-        tmp=with(dat.b, table(Wstratum, TwophasesampInd.0))
-        weights=rowSums(tmp)/tmp[,2]
-        dat.b$wt=weights[""%.%dat.b$Wstratum]
-        
+
+        dat.b = get.bootstrap.data.cor (data, ptids.by.stratum, seed) 
+        dat.b.ph2=subset(dat.b, ph2)     
+
         if(type==1) {
         # conditional on s
             tmp.design=twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=dat.b)
             fit.risk=svycoxph(f1, design=tmp.design)
             #fit.s=svyglm(f2, tmp.design)      
-            marginalized.risk(fit.risk, marker.name, subset(dat.b,TwophasesampInd.0==1), t=t, ss=ss, weights=dat.b$wt[dat.b$TwophasesampInd.0==1], categorical.s=F)
+            marginalized.risk(fit.risk, marker.name, dat.b.ph2, t=t, ss=ss, weights=dat.b.ph2$wt, categorical.s=F)
             
         } else if (type==2) {
         # conditional on S>=s
-            tmp=try(marginalized.risk.threshold (formula, marker.name, data=subset(dat.b, TwophasesampInd.0==1), weights=dat.b$wt[dat.b$TwophasesampInd.0==1], t=t, ss=ss))
+            tmp=try(marginalized.risk.threshold (formula, marker.name, data=dat.b.ph2, weights=dat.b.ph2$wt, t=t, ss=ss))
             if (class(tmp) != "try-error" ) tmp else rep(NA,length(ss))
             
         } else stop("wrong type")
@@ -85,12 +74,12 @@ if(!file.exists(paste0(save.results.to, "marginalized.risk.",study_name,".Rdata"
     
     # vaccine arm, conditional on S=s
     risks.all.1=lapply(assays, function (a) 
-        marginalized.risk.svycoxph.boot(formula=form.0, marker.name="Day"%.%pop%.%a, type=1, data=dat.vacc.pop, t0, weights=dat.vacc.pop$wt.0, B=B, ci.type="quantile", numCores=numCores)                
+        marginalized.risk.svycoxph.boot(formula=form.0, marker.name="Day"%.%pop%.%a, type=1, data=dat.vacc.pop, t0, B=B, ci.type="quantile", numCores=numCores)                
     )    
     
     # vaccine arm, conditional on S>=s
     risks.all.2=lapply(assays, function (a) 
-        marginalized.risk.svycoxph.boot(formula=form.0, marker.name="Day"%.%pop%.%a, type=2, data=dat.vacc.pop, t0, weights=dat.vacc.pop$wt.0, B=B, ci.type="quantile", numCores=numCores)        
+        marginalized.risk.svycoxph.boot(formula=form.0, marker.name="Day"%.%pop%.%a, type=2, data=dat.vacc.pop, t0, B=B, ci.type="quantile", numCores=numCores)        
     ) 
     
     save(risks.all.1, risks.all.2, file=paste0(save.results.to, "marginalized.risk."%.%study_name%.%".Rdata"))
@@ -147,7 +136,8 @@ for (idx in 1:2) { # 1 with placebo lines, 2 without placebo lines. Implementati
         
         # prevelance lines
         abline(h=prev.plac, col="gray", lty=c(1,3,3), lwd=lwd)
-        #
+        
+        # risks
         if (ii==1) {
             abline(h=prev.vacc, col="gray", lty=c(1,3,3), lwd=lwd)
             lines(risks$marker, risks$prob, lwd=lwd)
@@ -159,6 +149,8 @@ for (idx in 1:2) { # 1 with placebo lines, 2 without placebo lines. Implementati
             lines(risks$marker[ncases>=5], risks$lb[ncases>=5],   lwd=lwd, lty=3)
             lines(risks$marker[ncases>=5], risks$ub[ncases>=5],   lwd=lwd, lty=3)    
         }
+        
+        # text overall risks
         if (idx==1) {
             text(x=par("usr")[2]-diff(par("usr")[1:2])/4, y=prev.plac[1]+(prev.plac[1]-prev.plac[2])/2, "placebo overall risk")        
             text(x=par("usr")[2]-diff(par("usr")[1:2])/4, y=prev.vacc[1]+(prev.plac[1]-prev.plac[2])/2, "vaccine overall risk")
@@ -278,7 +270,7 @@ for (a in assays) {
 #    f2=update(form.0, as.formula(paste0(marker.name,"~.")))
 #    fit.s=nnet::multinom(f2, dat.vacc.pop, weights=dat.vacc.pop$wt) 
         
-    risks.all.ter[[a]]=if(length(fit.risk)==1) NA else marginalized.risk(fit.risk, marker.name, subset(dat.vacc.pop,TwophasesampInd.0==1), weights=dat.vacc.pop[dat.vacc.pop$TwophasesampInd.0==1, "wt.0"], categorical.s=T)
+    risks.all.ter[[a]]=if(length(fit.risk)==1) NA else marginalized.risk(fit.risk, marker.name, subset(dat.vacc.pop,TwophasesampInd.0==1), categorical.s=T)
 }
 
 #rv$marginalized.risk.over.time=list()

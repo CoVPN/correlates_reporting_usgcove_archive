@@ -375,3 +375,38 @@ get.labels.x.axis.cor=function(xlim, llod){
   #}
   return(list(ticks = x_ticks, labels = labels))
 }
+
+
+
+# for bootstrap use
+get.ptids.by.stratum.for.bootstrap = function(data) {
+    strat=sort(unique(data$tps.stratum))
+    ptids.by.stratum=lapply(strat, function (i) 
+        list(subcohort=subset(data, tps.stratum==i & SubcohortInd==1, Ptid, drop=TRUE), nonsubcohort=subset(data, tps.stratum==i & SubcohortInd==0, Ptid, drop=TRUE))
+    )    
+    # add a pseudo-stratum for subjects with NA in tps.stratum (not part of Subcohort). 
+    # we need this group because it contains some cases with missing tps.stratum
+    # if data is ph1 only, then this group is only cases because ph1 = subcohort + cases
+    tmp=list(subcohort=subset(data, is.na(tps.stratum), Ptid, drop=TRUE),               nonsubcohort=NULL)
+    ptids.by.stratum=append(ptids.by.stratum, list(tmp))    
+    ptids.by.stratum
+}
+
+
+# data is assumed to contain only ph1 ptids
+get.bootstrap.data.cor = function(data, ptids.by.stratum, seed) {
+    set.seed(seed)    
+    
+    # For each sampling stratum, bootstrap samples in subcohort and not in subchort separately
+    tmp=lapply(ptids.by.stratum, function(x) c(sample(x$subcohort, r=TRUE), sample(x$nonsubcohort, r=TRUE)))
+    
+    dat.b=data[match(unlist(tmp), data$Ptid),]
+    
+    # compute weights
+    tmp=with(dat.b, table(Wstratum, TwophasesampInd.0))
+    weights=rowSums(tmp)/tmp[,2]
+    dat.b$wt=weights[""%.%dat.b$Wstratum]
+    # we assume data only contains ph1 ptids, thus weights is defined for every bootstrapped ptids
+    
+    dat.b
+}

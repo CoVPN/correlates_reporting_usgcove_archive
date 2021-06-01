@@ -141,31 +141,7 @@ colnames(tab_strtm)=c("Arm", "  ", paste0(1:6,""), paste0(" ", 1:6))
 
 tab_strtm_header2 <- ncol(tab_strtm)-1
 names(tab_strtm_header2) <- sprintf("Random Subcohort Sample Sizes (N=%s Participants) (Moderna Trial)", sum(ds$randomset))
-
-add_tab_strtm <- list(
-  table_header = "Sample Sizes of Random Subcohort Strata for Measuring Antibody Markers",
-  table_footer = c("Demographic covariate strata:",
-  "1. Age $\\\\geq$ 65 Minority\\\\hspace{81pt}4. Age < 65 At-risk Non-Minority", 
-  "2. Age $\\\\geq$ 65 Non-Minority\\\\hspace{60pt}5. Age < 65 Not At-risk Minority",
-  "3. Age < 65 At-risk Minority\\\\hspace{48pt}6. Age < 65 Not At-risk Non-Minority",
-  " ",
-  "Minority includes Blacks or African Americans, Hispanics or Latinos, American Indians or
-                   Alaska Natives, Native Hawaiians, and other Pacific Islanders.",
-  "Non-Minority includes all other races with observed race (Asian, Multiracial, White, Other) and observed ethnicity Not Hispanic or Latino.
-                   Participants not classifiable as Minority or Non-Minority because of unknown, unreported or missing were not included.",
-  " ",
-  "Observed = Numbers of participants sampled into the subcohort within baseline covariate strata.",
-  "Estimated = Estimated numbers of participants in the whole per-protocol cohort within baseline 
-  covariate strata, calculated using inverse probability weighting."
-  ),
-  header_above2 = tab_strtm_header2,
-  header_above1 = c(" "=1, "Baseline SARS-CoV-2 Negative" = 6, "Baseline SARS-CoV-2 Positive" = 6),
-  deselect = "Arm",
-  pack_row = "Arm"
-)
-
-tlf <- append(tlf, list(add_tab_strtm), after=2)
-names(tlf)[3] <- "tab_strtm"
+tlf$tab_strtm$header_above2 <- tab_strtm_header2
 
 ### Table 2. Responder Rates & Proportions of Magnitudes >= 2FR, 4FR
 # For each binding antibody marker, the estimated percentage of participants

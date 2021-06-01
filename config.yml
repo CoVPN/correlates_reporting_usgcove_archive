@@ -9,14 +9,12 @@ default: &default
 moderna_real:
   <<: *default
   data_in_file: real_moderna_data.csv # Weiping can set
-  data_name: real_moderna_data_processed.csv
   study_name: COVE
   study_name_code: COVE
 
 moderna_mock:
   <<: *default
   data_in_file: COVID_VEtrial_practicedata_primarystage1.csv
-  data_name: mock_moderna_data_processed.csv
   study_name: MockCOVE
   study_name_code: COVE
 
@@ -24,7 +22,6 @@ janssen_default_real: &janssen_default_real
   data_raw_dir: janssen
   times: [B, Day29, Delta29overB]
   data_in_file: TBD.csv
-  data_name: real_janssen_data.csv
   study_name: ENSEMBLE
   study_name_code: ENSEMBLE
   
@@ -54,7 +51,6 @@ janssen_default_mock: &janssen_default_mock
   data_raw_dir: janssen
   times: [B, Day29, Delta29overB]
   data_in_file: COVID_ENSEMBLE_practicedata.csv
-  data_name: mock_janssen_data_processed.csv
   study_name: MockENSEMBLE
   study_name_code: ENSEMBLE
   

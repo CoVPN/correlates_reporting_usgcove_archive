@@ -410,3 +410,6 @@ get.bootstrap.data.cor = function(data, ptids.by.stratum, seed) {
     
     dat.b
 }
+
+
+data_name = paste0(attr(config, "config"), "_data_processed.csv")

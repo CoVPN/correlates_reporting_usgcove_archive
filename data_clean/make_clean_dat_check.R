@@ -68,15 +68,3 @@ if(length(failed_variables_missing) > 1){
 if(length(failed_variables_missing) > 1){
     stop(paste0("Unexpected values in: ", paste(failed_variables_01, collapse = ", "))) 
 }
-
-## YF: the inequality may or may not hold because there are many additional inclusion/exclusion criteria
-### at least some cases included in two phase sample
-## could fail either due to e.g., no per-protocol cases measured immune responses
-#pass57 <- sum(dat_clean$TwophasesampIndD57) > sum(dat_clean$SubcohortInd)
-#pass29 <- sum(dat_clean$TwophasesampIndD29) > sum(dat_clean$SubcohortInd)
-#if(!pass57){
-#    stop("More people in subcohort than in final two-phase sample for Day 57 analysis.")
-#}
-#if(!pass29){
-#    stop("More people in subcohort than in final two-phase sample for Day 29 analysis.")
-#}

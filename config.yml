@@ -1,0 +1,79 @@
+# the default analysis is moderna-like analysis
+default: &default
+  data_raw_dir: moderna
+  subset_variable: None
+  subset_value: All
+  assays: [bindSpike, bindRBD, pseudoneutid50, pseudoneutid80]
+  times: [B, Day29, Day57, Delta29overB, Delta57overB, Delta57over29]
+
+moderna_real:
+  <<: *default
+  data_in_file: real_moderna_data.csv # Weiping can set
+  data_name: real_moderna_data_processed.csv
+  study_name: COVE
+  study_label: COVE
+
+moderna_mock:
+  <<: *default
+  data_in_file: COVID_VEtrial_practicedata_primarystage1.csv
+  data_name: mock_moderna_data_processed.csv
+  study_name: COVE
+  study_label: Mock COVE 
+
+janssen_default_real: &janssen_default_real
+  data_raw_dir: janssen
+  assays: [bindSpike, bindRBD]
+  times: [B, Day29, Delta29overB]
+  data_in_file: TBD.csv
+  data_name: real_janssen_data.csv
+  study_name: ENSEMBLE
+  study_label: ENSEMBLE
+  
+janssen_pooled_real: &janssen_default_real
+  <<: *janssen_default_real
+  subset_variable: None
+  subset_value: All
+
+janssen_na_real: &janssen_default_real
+  <<: *janssen_default_real
+  subset_variable: Region
+  subset_value: Northern America
+
+janssen_sa_real: &janssen_default_real
+  <<: *janssen_default_real
+  subset_variable: Region
+  subset_value: Southern Africa
+
+janssen_la_real: &janssen_default_real
+  <<: *janssen_default_real
+  subset_variable: Region
+  subset_value: Latin America
+
+janssen_default_mock: &janssen_default_mock
+  data_raw_dir: janssen
+  assays: [bindSpike, bindRBD]
+  times: [B, Day29, Delta29overB]
+  data_in_file: COVID_ENSEMBLE_practicedata.csv
+  data_name: mock_janssen_data.csv
+  study_name: ENSEMBLE
+  study_label: Mock ENSEMBLE
+  
+janssen_pooled_mock: &janssen_default_mock
+  <<: *janssen_default_mock
+  subset_variable: None
+  subset_value: All
+
+janssen_na_mock: &janssen_default_mock
+  <<: *janssen_default_mock
+  subset_variable: Region
+  subset_value: Northern America
+
+janssen_sa_mock: &janssen_default_mock
+  <<: *janssen_default_mock
+  subset_variable: Region
+  subset_value: Southern Africa
+
+janssen_la_mock: &janssen_default_mock
+  <<: *janssen_default_real
+  subset_variable: Region
+  subset_value: Latin America

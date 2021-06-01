@@ -195,6 +195,12 @@ dat.twophase.sample$race <- as.factor(dat.twophase.sample$race)
 dat.long.twophase.sample$Ptid <- as.character(dat.long.twophase.sample$Ptid) 
 dat.twophase.sample$Ptid <- as.character(dat.twophase.sample$Ptid) 
 
+
+
+## exclude subjects with missing weights
+dat.long.twophase.sample <- dat.long.twophase.sample %>% filter(!is.na(wt.subcohort))
+dat.twophase.sample <- dat.twophase.sample %>% filter(!is.na(wt.subcohort))
+
 saveRDS(as.data.frame(dat.long.twophase.sample),
   file = here("data_clean", "long_twophase_data.rds")
 )

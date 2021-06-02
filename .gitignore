@@ -287,3 +287,4 @@ cor_nonlinear/output/D57/marginalized.risk.gam.MockCOVE.Rdata
 cor_nonlinear/output/D57/step.pdf
 cor_nonlinear/output/D57/step_MockCOVE.pdf
 *.pdf
+optimal_surrogate/*

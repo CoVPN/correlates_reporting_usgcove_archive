@@ -41,25 +41,12 @@ for (a in c("bindN","bindSpike","bindRBD","pseudoneutid50","pseudoneutid80")) {
   }
 }
 
-# reset all delta values
-dat$Delta57overBbindSpike = dat$Day57bindSpike - dat$BbindSpike
-dat$Delta57overBbindRBD = dat$Day57bindRBD - dat$BbindRBD
-dat$Delta57overBbindN = dat$Day57bindN - dat$BbindN
-dat$Delta57overBpseudoneutid50 = dat$Day57pseudoneutid50 - dat$Bpseudoneutid50
-dat$Delta57overBpseudoneutid80 = dat$Day57pseudoneutid80 - dat$Bpseudoneutid80
-dat$Delta57overBliveneutmn50 = dat$Day57liveneutmn50 - dat$Bliveneutmn50
-dat$Delta29overBbindSpike = dat$Day29bindSpike - dat$BbindSpike
-dat$Delta29overBbindRBD = dat$Day29bindRBD - dat$BbindRBD
-dat$Delta29overBbindN = dat$Day29bindN - dat$BbindN
-dat$Delta29overBpseudoneutid50 = dat$Day29pseudoneutid50 - dat$Bpseudoneutid50
-dat$Delta29overBpseudoneutid80 = dat$Day29pseudoneutid80 - dat$Bpseudoneutid80
-dat$Delta29overBliveneutmn50 = dat$Day29liveneutmn50 - dat$Bliveneutmn50
-dat$Delta57over29bindSpike = dat$Day57bindSpike - dat$Day29bindSpike
-dat$Delta57over29bindRBD = dat$Day57bindRBD - dat$Day29bindRBD
-dat$Delta57over29bindN = dat$Day57bindN - dat$Day29bindN
-dat$Delta57over29pseudoneutid50 = dat$Day57pseudoneutid50 - dat$Day29pseudoneutid50
-dat$Delta57over29pseudoneutid80 = dat$Day57pseudoneutid80 - dat$Day29pseudoneutid80
-dat$Delta57over29liveneutmn50 = dat$Day57liveneutmn50 - dat$Day29liveneutmn50
+# reset Delta over Baseline: Delta are based on values < LLOQ set to LLOQ/2 and > ULOQ set to ULOQ
+for (a in c("bindN","bindSpike","bindRBD","pseudoneutid50","pseudoneutid80")) {
+  dat[["Delta57overB" %.% a]] <- dat[["Day57" %.% a]] - dat[["B" %.% a]]
+  dat[["Delta29overB" %.% a]] <- dat[["Day29" %.% a]] - dat[["B" %.% a]]
+}
+
 # wide to long by marker and timepoint
 dat.long <- dat %>%
   pivot_longer(colnames(dat)[grepl("bindN|bindRBD|bindSpike|pseudoneut|liveneutmn", colnames(dat))], names_to = "time_marker", values_to = "readout_trunc") %>% filter(!grepl("CPV", time_marker)) %>%
@@ -134,10 +121,6 @@ dat.long <- dat.long %>%
                                               ifelse(marker=="pseudoneutid80","Pseudovirus-nAb ID80",
                                                      ifelse(marker=="liveneutmn50","Live virus-nAb MN50", NA)))))))
 
-# define cases, controls
-dat.long <- dat.long %>% 
-  mutate(case_flag = ifelse(Perprotocol==1 & Bserostatus==0 & EarlyendpointD57==0 & TwophasesampIndD57==1 & EventIndPrimaryD57==1, "Cases", "Non_cases_Control")
-  )
 
 # parameters set-up
 tbl_num <- 1
@@ -251,10 +234,36 @@ save(tab_dm_pos_v, file = here::here("verification", "verification_output", "cor
 
 \clearpage
 
-## Table. Antibody level comparison of Cases vs Non-Cases by baseline COVID status and assigned arms at Day 57
+## Table. Per-protocol Cases and Non-Cases
+```{r pp_cases_noncases, results = "asis", echo=FALSE}
 
+tab_strtm_v <- dat %>%
+  select(Ptid, demo.stratum, age.geq.65, HighRiskInd, Perprotocol, EarlyendpointD29, EarlyendpointD57, TwophasesampIndD29, TwophasesampIndD57, EventIndPrimaryD1, EventIndPrimaryD29, EventIndPrimaryD57, Bserostatus, Trt) %>%
+  mutate(
+    new_strata = case_when(!is.na(demo.stratum)~ demo.stratum, age.geq.65 == 1 ~ 7L, age.geq.65 == 0 & HighRiskInd == 1 ~ 8L, age.geq.65 == 0 & HighRiskInd == 0 ~ 9L),
+    baseline = ifelse(Bserostatus == 1, "Positive", "Negative"),
+    arm = ifelse(Trt == 1, "Vaccine", "Placebo")
+  ) %>%
+  mutate(
+    case_flag_D29 = ifelse(Perprotocol==1 & EarlyendpointD29==0 & TwophasesampIndD29==1 & EventIndPrimaryD29==1, 1, 0),
+    case_flag_D57 = ifelse(Perprotocol==1 & EarlyendpointD57==0 & TwophasesampIndD57==1 & EventIndPrimaryD57==1, 1, 0),
+    control_flag = ifelse(Perprotocol==1 & EarlyendpointD57==0 & TwophasesampIndD57==1 & EventIndPrimaryD1==0, 1, 0)) %>%
+  group_by(baseline, arm, new_strata) %>%
+  summarise(case29 = as.character(sum(case_flag_D29)),
+            case57 = as.character(sum(case_flag_D57)),
+            control = as.character(sum(control_flag))) %>%
+  ungroup()
+
+colnames(tab_strtm_v) <- colnames(tab_strtm)
+  
+testthat::expect_equal(tab_strtm_v, tab_strtm)
+
+save(tab_strtm_v, file = here::here("verification", "verification_output", "cor_tab_strtm_v.Rdata"))
+
+```
+
+## Table. Antibody level comparison of Cases vs Non-Cases by baseline COVID status and assigned arms at Day 57
 ```{r case_vaccplcb_posneg, results = "asis", echo=FALSE, message=FALSE}
-fig_footer <- c("")
 options(survey.lonely.psu="adjust") 
 
 # response rate
@@ -263,28 +272,30 @@ rr3_rate_list=list()
 for (mk in c("Anti N IgG (IU/ml)","Anti RBD IgG (IU/ml)","Anti Spike IgG (IU/ml)","Pseudovirus-nAb ID50","Pseudovirus-nAb ID80")){
   for (tp in two_timepoints){
     
-  rr3 <- dat.long %>%
-    filter(Marker == mk & Visit == tp)  
+  rr3 <- dat.long %>% filter(Marker == mk & Visit == tp)  
   
+  ph1_var = ifelse(tp==two_timepoints[1], "ph1.D29", "ph1.D57")
+  ph2_var = ifelse(tp==two_timepoints[1], "ph2.D29", "ph2.D57")
   wt_var = ifelse(tp==two_timepoints[1], "wt.D29", "wt.D57")
   
-  # indicator for cor cohort at day 29 (cohort_1_ind=1) and day 57(cohort_2_ind=1)
-  rr3 <- rr3 %>% 
-    mutate(cohort_2_ind=ifelse(TwophasesampIndD57==1, 1, 0),
-           cohort_1_ind=ifelse(TwophasesampIndD29==1, 1, 0))
+  # Subset the data to “phase 1 ptids” for the correlates
+  rr3 <- rr3 %>% filter((!!sym(ph1_var))==1)
 
-  cohort_var = ifelse(tp==two_timepoints[1], "cohort_1_ind", "cohort_2_ind")
-    
-  rr3 <- rr3 %>% filter((!!sym(cohort_var))==1)
-  
-  rr3 <- rr3 %>%
-    mutate(cor_ind=ifelse(is.na((!!sym(wt_var))), F, T))
-  
-  design <- twophase(id = list(~Ptid, ~ Ptid), strata = list(NULL, ~ Wstratum), weights = list(NULL, ~ eval(as.name(wt_var))), subset=~cor_ind, method="simple", data = rr3)
+  # define case/non case flag based on the time point in the loop
+  if (tp==two_timepoints[1]) {
+    rr3 <- rr3 %>%
+      mutate(case_flag = ifelse(Perprotocol==1 & EarlyendpointD29==0 & TwophasesampIndD29==1 & EventIndPrimaryD29==1, "Cases", ifelse(Perprotocol==1 & EarlyendpointD57==0 & TwophasesampIndD57==1 & EventIndPrimaryD1==0, "Non_cases_Control", NA)))
+               
+    } else if (tp==two_timepoints[2]){
+      rr3 <- rr3 %>%
+        mutate(case_flag = ifelse(Perprotocol==1 & EarlyendpointD57==0 & TwophasesampIndD57==1 & EventIndPrimaryD57==1, "Cases", ifelse(Perprotocol==1 & EarlyendpointD57==0 & TwophasesampIndD57==1 & EventIndPrimaryD1==0, "Non_cases_Control", NA)))
+  }
+         
+  design <- twophase(id = list(~Ptid, ~ Ptid), strata = list(NULL, ~ Wstratum), weights = list(NULL, ~eval(as.name(wt_var))), method="simple", subset=~eval(as.name(ph2_var)), data = rr3)
 
   mod <- svyby(~response, ~Visit+case_flag+Marker+Baseline+Trt_lb, design, survey::svyciprop, ci=TRUE, vartype="ci", na.rm=T)
   
-  rr3_rate <- rr3 %>% filter(cor_ind==T & !is.na(response)) %>%
+  rr3_rate <- rr3 %>% filter((!!sym(ph2_var))==1 & !is.na(response) & !is.na(case_flag)) %>%
     group_by_at(c("Visit", "Baseline","Trt_lb","case_flag","Marker")) %>%
     summarise(N=n(),
               `Responder_1`=paste0(round(sum(response * (!!sym(wt_var)), na.rm=T),1),"/",round(sum((!!sym(wt_var))),1))) %>%
@@ -308,35 +319,37 @@ rr3_mag_list=list()
 for (mk in c("Anti N IgG (IU/ml)","Anti RBD IgG (IU/ml)","Anti Spike IgG (IU/ml)","Pseudovirus-nAb ID50","Pseudovirus-nAb ID80")){
   for (tp in two_timepoints){
   
-  rr3 <- dat.long %>%
-    filter(Marker == mk & Visit == tp)
+  rr3 <- dat.long %>% filter(Marker == mk & Visit == tp)
   
+  ph1_var = ifelse(tp==two_timepoints[1], "ph1.D29", "ph1.D57")
+  ph2_var = ifelse(tp==two_timepoints[1], "ph2.D29", "ph2.D57")
   wt_var = ifelse(tp==two_timepoints[1], "wt.D29", "wt.D57")
   
-  # indicator for cor cohort at day 29 (cohort_1_ind=1) and day 57(cohort_2_ind=2)
-  rr3 <- rr3 %>% 
-    mutate(cohort_2_ind=ifelse((Perprotocol == 1 & EventTimePrimaryD57 >= 7), 1,0),
-           cohort_1_ind=ifelse(((EventTimePrimaryD29 >= 14 & Perprotocol == 1)|(EventTimePrimaryD29 >= 7 & EventTimePrimaryD29 <= 13 & Fullvaccine == 1)), 1, 0))
+  # Subset the data to “phase 1 ptids” for the correlates
+  rr3 <- rr3 %>% filter((!!sym(ph1_var))==1)
   
-  cohort_var = ifelse(tp==two_timepoints[1], "cohort_1_ind", "cohort_2_ind")
-  
-  rr3 <- rr3 %>% filter((!!sym(cohort_var))==1)
-  
-  rr3 <- rr3 %>%
-    mutate(cor_ind=ifelse(is.na((!!sym(wt_var))), F, T))
+  # define case/non case flag based on the time point in the loop
+  if (tp==two_timepoints[1]) {
+    rr3 <- rr3 %>%
+      mutate(case_flag = ifelse(Perprotocol==1 & EarlyendpointD29==0 & TwophasesampIndD29==1 & EventIndPrimaryD29==1, "Cases", ifelse(Perprotocol==1 & EarlyendpointD57==0 & TwophasesampIndD57==1 & EventIndPrimaryD1==0, "Non_cases_Control", NA)))
+               
+    } else if (tp==two_timepoints[2]){
+      rr3 <- rr3 %>%
+        mutate(case_flag = ifelse(Perprotocol==1 & EarlyendpointD57==0 & TwophasesampIndD57==1 & EventIndPrimaryD57==1, "Cases", ifelse(Perprotocol==1 & EarlyendpointD57==0 & TwophasesampIndD57==1 & EventIndPrimaryD1==0, "Non_cases_Control", NA)))
+  }
    
-  design <- twophase(id = list(~Ptid, ~ Ptid), strata = list(NULL, ~ Wstratum), weights = list(NULL, ~ eval(as.name(wt_var))), subset=~cor_ind, method="simple", data = rr3)
+  design <- twophase(id = list(~Ptid, ~ Ptid), strata = list(NULL, ~ Wstratum), weights = list(NULL, ~eval(as.name(wt_var))), method="simple", subset=~eval(as.name(ph2_var)), data = rr3)
   
   mod = svyby(~readout_trunc, ~Visit+case_flag+Marker+Baseline+Trt_lb, design, svymean, na.rm=T)
   conf = confint(mod)
   colnames(conf) = c("ci_l", "ci_u")
   mod = cbind(mod, conf)
   
-  rr3_mag <- rr3 %>% filter(cor_ind==T & !is.na(readout_trunc)) %>%
+  rr3_mag <- rr3 %>% filter((!!sym(ph2_var))==1 & !is.na(readout_trunc) & !is.na(case_flag)) %>%
     group_by_at(c("Visit","Baseline","Trt_lb", "case_flag","Marker")) %>%
     summarise(N=n()) %>%
     left_join(mod, by=c("Visit","Baseline","Trt_lb","case_flag","Marker")) %>%
-    mutate(GMT = paste0(decimal_f(10^readout_trunc, 0),"\n(", decimal_f(10^ci_l, 0),", ", decimal_f(10^ci_u,0),")")) %>%
+    mutate(GMT = paste0(decimal_f(10^readout_trunc, 2),"\n(", decimal_f(10^ci_l, 2),", ", decimal_f(10^ci_u,2),")")) %>%
     select(Visit, Baseline, Trt_lb, case_flag, Marker, N, GMT) %>%
     pivot_wider(names_from=case_flag,values_from=c(N,GMT))
   
@@ -353,32 +366,34 @@ rr3_ratediff_list=list()
 for (mk in c("Anti N IgG (IU/ml)","Anti RBD IgG (IU/ml)","Anti Spike IgG (IU/ml)","Pseudovirus-nAb ID50","Pseudovirus-nAb ID80")){
   for (tp in two_timepoints){
 
-  rr3 <- dat.long %>%
-    filter(Marker == mk & Visit == tp)
+  rr3 <- dat.long %>% filter(Marker == mk & Visit == tp)
   
+  ph1_var = ifelse(tp==two_timepoints[1], "ph1.D29", "ph1.D57")
+  ph2_var = ifelse(tp==two_timepoints[1], "ph2.D29", "ph2.D57")
   wt_var = ifelse(tp==two_timepoints[1], "wt.D29", "wt.D57")
   
-  # indicator for cor cohort at day 29 (cohort_1_ind=1) and day 57(cohort_2_ind=2)
-  rr3 <- rr3 %>% 
-    mutate(cohort_2_ind=ifelse((Perprotocol == 1 & EventTimePrimaryD57 >= 7), 1,0),
-           cohort_1_ind=ifelse(((EventTimePrimaryD29 >= 14 & Perprotocol == 1)|(EventTimePrimaryD29 >= 7 & EventTimePrimaryD29 <= 13 & Fullvaccine == 1)), 1, 0))
+  # Subset the data to “phase 1 ptids” for the correlates
+  rr3 <- rr3 %>% filter((!!sym(ph1_var))==1)
   
-  cohort_var = ifelse(tp==two_timepoints[1], "cohort_1_ind", "cohort_2_ind")
-  
-  rr3 <- rr3 %>% filter((!!sym(cohort_var))==1)
-  
-  rr3 <- rr3 %>%
-    mutate(cor_ind=ifelse(is.na((!!sym(wt_var))), F, T))
+  # define case/non case flag based on the time point in the loop
+  if (tp==two_timepoints[1]) {
+    rr3 <- rr3 %>%
+      mutate(case_flag = ifelse(Perprotocol==1 & EarlyendpointD29==0 & TwophasesampIndD29==1 & EventIndPrimaryD29==1, "Cases", ifelse(Perprotocol==1 & EarlyendpointD57==0 & TwophasesampIndD57==1 & EventIndPrimaryD1==0, "Non_cases_Control", NA)))
+               
+    } else if (tp==two_timepoints[2]){
+      rr3 <- rr3 %>%
+        mutate(case_flag = ifelse(Perprotocol==1 & EarlyendpointD57==0 & TwophasesampIndD57==1 & EventIndPrimaryD57==1, "Cases", ifelse(Perprotocol==1 & EarlyendpointD57==0 & TwophasesampIndD57==1 & EventIndPrimaryD1==0, "Non_cases_Control", NA)))
+  }
 
-  design <- twophase(id = list(~Ptid, ~ Ptid), strata = list(NULL, ~ Wstratum), weights = list(NULL, ~ eval(as.name(wt_var))), subset=~cor_ind, method="simple", data = rr3)
+  design <- twophase(id = list(~Ptid, ~ Ptid), strata = list(NULL, ~ Wstratum), weights = list(NULL, ~eval(as.name(wt_var))), method="simple", subset=~eval(as.name(ph2_var)), data = rr3)
   
   mod <- svyby(~response, ~Visit+case_flag+Marker+Baseline+Trt_lb, design, survey::svyciprop, ci=TRUE, vartype="ci", na.rm=T)
   
   rr3_ratediff <- mod %>%
     pivot_wider(names_from = case_flag, values_from = c(response:ci_u)) %>%
     rowwise() %>% 
-    mutate(rrdiff=paste0(round((response_Cases-response_Non_cases_Control)*100,1),
-                       "%\n(", round((response_Cases-response_Non_cases_Control-sqrt((response_Cases-ci_l_Cases)^2+(ci_u_Non_cases_Control-response_Non_cases_Control)^2))*100,1),"%, ", round((response_Cases-response_Non_cases_Control+sqrt((response_Non_cases_Control-ci_l_Non_cases_Control)^2+(ci_u_Cases-response_Cases)^2))*100,1),"%)")) %>%
+    mutate(rrdiff=paste0(round((response_Cases-response_Non_cases_Control),2),
+                       "\n(", round((response_Cases-response_Non_cases_Control-sqrt((response_Cases-ci_l_Cases)^2+(ci_u_Non_cases_Control-response_Non_cases_Control)^2)),2),", ", round((response_Cases-response_Non_cases_Control+sqrt((response_Non_cases_Control-ci_l_Non_cases_Control)^2+(ci_u_Cases-response_Cases)^2)),2),")")) %>%
     select(Visit, Marker, Baseline, Trt_lb, rrdiff)
   
   rr3_ratediff_list[[ind]] <- rr3_ratediff
@@ -395,24 +410,26 @@ rr3_magdiff_list=list()
 for (mk in c("Anti N IgG (IU/ml)","Anti RBD IgG (IU/ml)","Anti Spike IgG (IU/ml)","Pseudovirus-nAb ID50","Pseudovirus-nAb ID80")){
   for (tp in two_timepoints){
     
-  rr3 <- dat.long %>%
-    filter(Marker == mk & Visit == tp)
+  rr3 <- dat.long %>% filter(Marker == mk & Visit == tp)
   
+  ph1_var = ifelse(tp==two_timepoints[1], "ph1.D29", "ph1.D57")
+  ph2_var = ifelse(tp==two_timepoints[1], "ph2.D29", "ph2.D57")
   wt_var = ifelse(tp==two_timepoints[1], "wt.D29", "wt.D57")
   
-  # indicator for cor cohort at day 29 (cohort_1_ind=1) and day 57(cohort_2_ind=2)
-  rr3 <- rr3 %>% 
-    mutate(cohort_2_ind=ifelse((Perprotocol == 1 & EventTimePrimaryD57 >= 7), 1,0),
-           cohort_1_ind=ifelse(((EventTimePrimaryD29 >= 14 & Perprotocol == 1)|(EventTimePrimaryD29 >= 7 & EventTimePrimaryD29 <= 13 & Fullvaccine == 1)), 1, 0))
+  # Subset the data to “phase 1 ptids” for the correlates
+  rr3 <- rr3 %>% filter((!!sym(ph1_var))==1)
   
-  cohort_var = ifelse(tp==two_timepoints[1], "cohort_1_ind", "cohort_2_ind")
+  # define case/non case flag based on the time point in the loop
+  if (tp==two_timepoints[1]) {
+    rr3 <- rr3 %>%
+      mutate(case_flag = ifelse(Perprotocol==1 & EarlyendpointD29==0 & TwophasesampIndD29==1 & EventIndPrimaryD29==1, "Cases", ifelse(Perprotocol==1 & EarlyendpointD57==0 & TwophasesampIndD57==1 & EventIndPrimaryD1==0, "Non_cases_Control", NA)))
+               
+    } else if (tp==two_timepoints[2]){
+      rr3 <- rr3 %>%
+        mutate(case_flag = ifelse(Perprotocol==1 & EarlyendpointD57==0 & TwophasesampIndD57==1 & EventIndPrimaryD57==1, "Cases", ifelse(Perprotocol==1 & EarlyendpointD57==0 & TwophasesampIndD57==1 & EventIndPrimaryD1==0, "Non_cases_Control", NA)))
+  }
   
-  rr3 <- rr3 %>% filter((!!sym(cohort_var))==1)
-  
-  rr3 <- rr3 %>%
-    mutate(cor_ind=ifelse(is.na((!!sym(wt_var))), F, T))
-  
-  design <- twophase(id = list(~Ptid, ~ Ptid), strata = list(NULL, ~ Wstratum), weights = list(NULL, ~ eval(as.name(wt_var))), subset=~cor_ind, method="simple", data = rr3)
+  design <- twophase(id = list(~Ptid, ~ Ptid), strata = list(NULL, ~ Wstratum), weights = list(NULL, ~eval(as.name(wt_var))), method="simple", subset=~eval(as.name(ph2_var)), data = rr3)
   
   mod <- svyby(readout_trunc ~ case_flag, ~Visit+Trt_lb+Baseline+Marker, design, svyglm, vartype="ci")
   
@@ -429,61 +446,38 @@ for (mk in c("Anti N IgG (IU/ml)","Anti RBD IgG (IU/ml)","Anti Spike IgG (IU/ml)
 rr3_magdiff_all <- do.call("rbind", rr3_magdiff_list)
 
 # comparison
-rr3_table_all <- rr3_rate_all %>%
+case_combine <- rr3_rate_all %>%
   left_join(rr3_mag_all, by=c("Visit", "Marker", "Baseline","Trt_lb","N_Non_cases_Control","N_Cases")) %>%
   left_join(rr3_ratediff_all, by=c("Visit","Baseline","Trt_lb","Marker")) %>%
   left_join(rr3_magdiff_all, by=c("Visit","Baseline","Trt_lb","Marker")) %>%
   rename_with(~ gsub("GMT","GMT/GMC",.x)) %>%
-  rename_with(~ gsub("Non_cases_Control","Non-Cases",.x)) %>%
-  filter((Baseline=="Negative" & Trt_lb=="Vaccine")) %>%
-  ungroup() %>%
-  select(1,4,5,7,9,6,8,10,11,12)
+  rename_with(~ gsub("Non_cases_Control","Non-Cases",.x))
 
-rr4_table_all <- rr3_rate_all %>%
-  left_join(rr3_mag_all, by=c("Visit", "Marker", "Baseline","Trt_lb","N_Non_cases_Control","N_Cases")) %>%
-  left_join(rr3_ratediff_all, by=c("Visit","Baseline","Trt_lb","Marker")) %>%
-  left_join(rr3_magdiff_all, by=c("Visit","Baseline","Trt_lb","Marker")) %>%
-  rename_with(~ gsub("GMT","GMT/GMC",.x)) %>%
-  rename_with(~ gsub("Non_cases_Control","Non-Cases",.x)) %>%
-  filter((Baseline=="Positive" & Trt_lb=="Vaccine")) %>%
-  ungroup() %>%
-  select(1,4,5,7,9,6,8,10,11,12)
+case_vacc_neg_v <- case_combine %>%
+  filter((Baseline=="Negative" & Trt_lb=="Vaccine")) %>% ungroup() %>% select(1,4,5,7,9,6,8,10,11,12) %>% mutate_all(as.character)
 
+case_vacc_pos_v <- case_combine %>%
+  filter((Baseline=="Positive" & Trt_lb=="Vaccine")) %>% ungroup() %>% select(1,4,5,7,9,6,8,10,11,12) %>% mutate_all(as.character)
 
-rr5_table_all <- rr3_rate_all %>%
-  left_join(rr3_mag_all, by=c("Visit", "Marker", "Baseline","Trt_lb","N_Non_cases_Control","N_Cases")) %>%
-  left_join(rr3_ratediff_all, by=c("Visit","Baseline","Trt_lb","Marker")) %>%
-  left_join(rr3_magdiff_all, by=c("Visit","Baseline","Trt_lb","Marker")) %>%
-  rename_with(~ gsub("GMT","GMT/GMC",.x)) %>%
-  rename_with(~ gsub("Non_cases_Control","Non-Cases",.x)) %>%
-  filter((Baseline=="Positive" & Trt_lb=="Placebo")) %>%
-  ungroup() %>%
-  select(1,4,5,7,9,6,8,10,11,12)
+case_plcb_pos_v <- case_combine %>%
+  filter((Baseline=="Positive" & Trt_lb=="Placebo")) %>% ungroup() %>% select(1,4,5,7,9,6,8,10,11,12) %>% mutate_all(as.character)
 
+case_vacc_neg_v <- case_vacc_neg[, c("Visit","Marker")] %>%
+  left_join(case_vacc_neg_v, by=c("Visit","Marker"))
 
-case_vacc_neg[] <- lapply(case_vacc_neg, as.character)
-case_vacc_pos[] <- lapply(case_vacc_pos, as.character)
-case_plcb_pos[] <- lapply(case_plcb_pos, as.character)
-rr3_table_all[] <- lapply(rr3_table_all, as.character)
-rr4_table_all[] <- lapply(rr4_table_all, as.character)
-rr5_table_all[] <- lapply(rr5_table_all, as.character)
+case_vacc_pos_v <- case_vacc_pos[, c("Visit","Marker")] %>%
+  left_join(case_vacc_pos_v, by=c("Visit","Marker"))
 
-rr3_table_all <- case_vacc_neg[, c("Visit","Marker")] %>%
-  left_join(rr3_table_all, by=c("Visit","Marker"))
+case_plcb_pos_v <- case_plcb_pos[, c("Visit","Marker")] %>%
+  left_join(case_plcb_pos_v, by=c("Visit","Marker"))
 
-rr4_table_all <- case_vacc_pos[, c("Visit","Marker")] %>%
-  left_join(rr4_table_all, by=c("Visit","Marker"))
+testthat::expect_equal(case_vacc_neg, case_vacc_neg_v)
+testthat::expect_equal(case_vacc_pos, case_vacc_pos_v)
+testthat::expect_equal(case_plcb_pos, case_plcb_pos_v)
 
-rr5_table_all <- case_plcb_pos[, c("Visit","Marker")] %>%
-  left_join(rr5_table_all, by=c("Visit","Marker"))
+save(case_vacc_neg_v, file = here::here("verification", "verification_output", "cor_case_vacc_neg_v.Rdata"))
 
-testthat::expect_equal(case_vacc_neg, rr3_table_all)
-testthat::expect_equal(case_vacc_pos, rr4_table_all)
-testthat::expect_equal(case_plcb_pos, rr5_table_all)
+save(case_vacc_pos_v, file = here::here("verification", "verification_output", "cor_case_vacc_pos_v.Rdata"))
 
-save(rr3_table_all, file = here::here("verification", "verification_output", "cor_case_vacc_neg_v.Rdata"))
-
-save(rr4_table_all, file = here::here("verification", "verification_output", "cor_case_vacc_pos_v.Rdata"))
-
-save(rr5_table_all, file = here::here("verification", "verification_output", "cor_case_vacc_plcb_v.Rdata"))
+save(case_plcb_pos_v, file = here::here("verification", "verification_output", "cor_case_plcb_pos_v.Rdata"))
 ```

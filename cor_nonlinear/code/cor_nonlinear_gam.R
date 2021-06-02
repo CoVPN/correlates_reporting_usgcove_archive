@@ -79,7 +79,7 @@ if(!file.exists(paste0(save.results.to, "marginalized.risk.gam.",study_name,".Rd
 
 
 write(ncol(risks.all.vacc.gam[[1]]$boot), file=paste0(save.results.to, "bootstrap_replicates_"%.%study_name))
-
+print(paste0("bootstrap replicates: ", ncol(risks.all.vacc.gam[[1]]$boot)))
 
 
 

@@ -18,12 +18,15 @@ moderna_mock:
   study_name: MockCOVE
   study_name_code: COVE
 
+
+
 janssen_default_real: &janssen_default_real
   data_raw_dir: janssen
   times: [B, Day29, Delta29overB]
   data_in_file: TBD.csv
   study_name: ENSEMBLE
   study_name_code: ENSEMBLE
+  assays: [bindSpike, bindRBD]
   
 janssen_pooled_real: &janssen_default_real
   <<: *janssen_default_real
@@ -53,6 +56,7 @@ janssen_default_mock: &janssen_default_mock
   data_in_file: COVID_ENSEMBLE_practicedata.csv
   study_name: MockENSEMBLE
   study_name_code: ENSEMBLE
+  assays: [bindSpike, bindRBD]
   
 janssen_pooled_mock: &janssen_default_mock
   <<: *janssen_default_mock

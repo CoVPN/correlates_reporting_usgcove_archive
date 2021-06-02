@@ -1,4 +1,4 @@
-#Sys.setenv(TRIAL = "moderna_mock")
+#Sys.setenv(TRIAL = "janssen_pooled_mock")
 if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
 #----------------------------------------------- 
 # obligatory to append to the top of each script
@@ -17,6 +17,7 @@ if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/
 source(here::here("..", "_common.R"))
 #-----------------------------------------------
 
+myprint(study_name_code)
     
 library(kyotil) # p.adj.perm, getFormattedSummary
 library(parallel)
@@ -28,7 +29,7 @@ source(here::here("code", "params.R"))
     
 # population is either 57 or 29
 Args <- commandArgs(trailingOnly=TRUE)
-if (length(Args)==0) Args=c(pop="57")
+if (length(Args)==0) Args=c(pop="29")
 pop=Args[1]; myprint(pop)
     
 if(!has29 & pop=="29") {
@@ -55,8 +56,8 @@ if (file.exists(here::here("..", "data_clean", data_name_updated))) {
 # uloq censoring
 # note that if delta are used, delta needs to be recomputed
     
-for (a in assays_to_be_censored_at_uloq_cor) {
-  for (t in c("B", "Day57", if(has29) "Day29") ) {
+for (a in intersect(assays_to_be_censored_at_uloq_cor, assays)) {
+  for (t in c("B", if(has57) "Day57", if(has29) "Day29") ) {
     dat.mock[[t %.% a]] <- ifelse(dat.mock[[t %.% a]] > log10(uloqs[a]), log10(uloqs[a]), dat.mock[[t %.% a]])
   }
 }
@@ -121,4 +122,5 @@ load(paste0(here::here(".."), "/cor_coxph/output/D", pop,"/", "ylims.cor"%.%stud
 # GAM
 source(here::here("code", "cor_nonlinear_gam.R"))
 
+print("cor_nonlinear run time: ")
 print(Sys.time()-time.start)

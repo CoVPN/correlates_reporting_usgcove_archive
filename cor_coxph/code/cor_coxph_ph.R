@@ -293,23 +293,31 @@ for (a in assays) {
 ###################################################################################################
 # forest plots for different subpopulations
 
+# for some subpopulations, some strata may have empty ph2 
+# this function removes those strata
+get.dat.with.no.empty=function(dat.tmp) {
+    tab=with(dat.tmp, table(Wstratum, TwophasesampInd.0))
+    subset(dat.tmp, !Wstratum %in% as.integer(rownames(tab)[which(tab[,"TRUE"]==0)]))
+}
+
 designs=list()
 for (i in 1:4) {    
     designs[[i]]=list()
     if(i==1) {
-        designs[[i]][[1]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=subset(dat.vacc.pop, age.geq.65==1))
-        designs[[i]][[2]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=subset(dat.vacc.pop, age.geq.65==0))        
+        designs[[i]][[1]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=get.dat.with.no.empty(subset(dat.vacc.pop, Senior==1)))
+        designs[[i]][[2]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=get.dat.with.no.empty(subset(dat.vacc.pop, Senior==0)))        
     } else if(i==2) {
-        designs[[i]][[1]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=subset(dat.vacc.pop, HighRiskInd==1))
-        designs[[i]][[2]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=subset(dat.vacc.pop, HighRiskInd==0))
+        designs[[i]][[1]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=get.dat.with.no.empty(subset(dat.vacc.pop, HighRiskInd==1)))
+        designs[[i]][[2]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=get.dat.with.no.empty(subset(dat.vacc.pop, HighRiskInd==0)))
     } else if(i==3) {
-        designs[[i]][[1]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=subset(dat.vacc.pop, MinorityInd==1))
-        designs[[i]][[2]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=subset(dat.vacc.pop, MinorityInd==0))
+        designs[[i]][[1]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=get.dat.with.no.empty(subset(dat.vacc.pop, MinorityInd==1)))
+        designs[[i]][[2]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=get.dat.with.no.empty(subset(dat.vacc.pop, MinorityInd==0)))
     } else if(i==4) {
-        designs[[i]][[1]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=subset(dat.vacc.pop, Sex==1))
-        designs[[i]][[2]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=subset(dat.vacc.pop, Sex==0))
+        designs[[i]][[1]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=get.dat.with.no.empty(subset(dat.vacc.pop, Sex==1)))
+        designs[[i]][[2]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=get.dat.with.no.empty(subset(dat.vacc.pop, Sex==0)))
     }
 }
+
 
 fits.all.2=vector("list", length(assays));names(fits.all.2)=assays
 for (a in assays) {
@@ -333,12 +341,12 @@ for (a in assays) {
     fits.all.2[[a]][[9]]=run.svycoxph(f, design=designs[[4]][[2]]) 
 }
 for (a in assays) {    
-    names(fits.all.2[[a]])=c("All Vaccine", "Age >= 65", "Age < 65", "At risk", "Not at risk", "Comm. of color", "White Non-Hispanic", "Men", "Women")
+    names(fits.all.2[[a]])=c("All Vaccine", "Age >= "%.%switch(study_name_code,COVE=65,ENSEMBLE=60), "Age < "%.%switch(study_name_code,COVE=65,ENSEMBLE=60), "At risk", "Not at risk", "Comm. of color", "White Non-Hispanic", "Men", "Women")
 }    
 
 nevents=c(nrow(subset(dat.vacc.pop, yy==1)),
-          nrow(subset(dat.vacc.pop, yy==1 & age.geq.65==1)), 
-          nrow(subset(dat.vacc.pop, yy==1 & age.geq.65==0)), 
+          nrow(subset(dat.vacc.pop, yy==1 & Senior==1)), 
+          nrow(subset(dat.vacc.pop, yy==1 & Senior==0)), 
           nrow(subset(dat.vacc.pop, yy==1 & HighRiskInd==1)), 
           nrow(subset(dat.vacc.pop, yy==1 & HighRiskInd==0)), 
           nrow(subset(dat.vacc.pop, yy==1 & MinorityInd==1)), 

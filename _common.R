@@ -12,7 +12,7 @@ names(assays)=assays # add names so that lapply results will have names
 # in the immuno report (but is not analyzed in the cor or cop reports).
 include_bindN <- TRUE
 
-# limits for each assay (IU for bAb, no need to convert again)
+# limits for each assay (IU for bAb and pseudoneut, no need to convert again)
 # the following are copied from SAP to avoid any mistake (get rid of commas)
 tmp=list(
     bindSpike=c(
@@ -34,16 +34,16 @@ tmp=list(
         ULOQ = 574.6783)
     ,
     pseudoneutid50=c( 
-        LLOD = 10,
+        LLOD = 3.28,
         ULOD = NA,
-        LLOQ = 18.5,
-        ULOQ = 4404)
+        LLOQ = 6.068,
+        ULOQ = 14799)
     ,
     pseudoneutid80=c( 
-        LLOD = 10,
+        LLOD = 3.28,
         ULOD = NA,
-        LLOQ = 14.3,
-        ULOQ = 1295)
+        LLOQ = 4.6904,
+        ULOQ = 18049)
     ,
     liveneutmn50=c( 
         LLOD = 62.16,
@@ -81,7 +81,7 @@ uloqs=sapply(tmp, function(x) unname(x["ULOQ"]))
 #          liveneutmn50 = 18976.19) 
 
 
-convf=c(bindSpike=0.0090, bindN=0.0024, bindRBD=0.0272)
+convf=c(bindSpike=0.0090, bindN=0.0024, bindRBD=0.0272, pseudoneutid50=0.328, pseudoneutid80=1.764)
 
 must_have_assays <- c(
   "bindSpike", "bindRBD"
@@ -107,10 +107,15 @@ markers <- c(outer(times[which(times %in% c("B", "Day29", "Day57"))],
 
 # race labeling
 labels.race <- c(
-  "White", "Black or African American",
-  "Asian", "American Indian or Alaska Native",
-  "Native Hawaiian or Other Pacific Islander", "Multiracial",
-  "Other", "Not reported and unknown"
+  "White", 
+  "Black or African American",
+  "Asian", 
+  "American Indian or Alaska Native",
+  if (study_name_code=="ENSEMBLE") "Indigenous South American",
+  "Native Hawaiian or Other Pacific Islander", 
+  "Multiracial",
+  "Other", 
+  "Not reported and unknown"
 )
 
 # ethnicity labeling

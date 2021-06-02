@@ -28,9 +28,11 @@ Maximum failure event time \protect\input{`r pathCoRoutput`/timepoints_cum_risk_
 Cutpoints:
 %Day `r Day` cutpoints:
 \input{`r pathCoRoutput`/cutpoints_Day`r Day`bindSpike_`r study_name`},  
-\input{`r pathCoRoutput`/cutpoints_Day`r Day`bindRBD_`r study_name`},  
-\input{`r pathCoRoutput`/cutpoints_Day`r Day`pseudoneutid50_`r study_name`},  
-\input{`r pathCoRoutput`/cutpoints_Day`r Day`pseudoneutid80_`r study_name`}.
+\input{`r pathCoRoutput`/cutpoints_Day`r Day`bindRBD_`r study_name`}
+`r if(study_name_code!="ENSEMBLE") paste0(",\\input{", pathCoRoutput, "/cutpoints_Day", Day, "pseudoneutid50_", study_name, "}")`
+`r if(study_name_code!="ENSEMBLE") paste0(",\\input{", pathCoRoutput, "/cutpoints_Day", Day, "pseudoneutid80_", study_name, "}")`
+"
+.
 %fold-rise cutpoints:
 %\input{`r pathCoRoutput`/cutpoints_Delta`r Day`overBbindSpike_`r study_name`},  
 %\input{`r pathCoRoutput`/cutpoints_Delta`r Day`overBbindRBD_`r study_name`},  
@@ -47,40 +49,52 @@ $\dagger$ q-value and FWER (family-wide error rate) are computed over the set of
 
 
 
-\begin{figure}[H]
-    \includegraphics[width=1\textwidth]{`r pathCoRoutput`/hr_forest_bindSpike_`r study_name`}
-    \includegraphics[width=1\textwidth]{`r pathCoRoutput`/hr_forest_bindRBD_`r study_name`}
-    \includegraphics[width=1\textwidth]{`r pathCoRoutput`/hr_forest_pseudoneutid50_`r study_name`}
-    \includegraphics[width=1\textwidth]{`r pathCoRoutput`/hr_forest_pseudoneutid80_`r study_name`}
-    \caption{Forest plots of hazard ratios per 10-fold increase in the marker among baseline seronegative vaccine recipients and subgroups with 95\% point-wise confidence intervals.}
-\end{figure}
-\clearpage
+`r if(study_name_code!="ENSEMBLE") paste0("
+\\begin{figure}[H]
+    \\includegraphics[width=1\\textwidth]{", pathCoRoutput, "/hr_forest_bindSpike_", study_name, "}
+    \\includegraphics[width=1\\textwidth]{", pathCoRoutput, "/hr_forest_bindRBD_",   study_name, "}
+    \\includegraphics[width=1\\textwidth]{", pathCoRoutput, "/hr_forest_pseudoneutid50_",  study_name, "}
+    \\includegraphics[width=1\\textwidth]{", pathCoRoutput, "/hr_forest_pseudoneutid80_",  study_name, "}
+    \\caption{Forest plots of hazard ratios per 10-fold increase in the marker among baseline seronegative vaccine recipients and subgroups with 95\\% point-wise confidence intervals.}
+\\end{figure}
+\\clearpage
+")`
+
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{`r pathCoRoutput`/hr_forest_marginal_bindSpike_`r study_name`}
     \caption{Forest plots of hazard ratios per 10-fold increase in the Day `r Day` binding Ab to spike markers among baseline seronegative vaccine recipients (top row) and eight subpopulations (row 2-9) with 95\% point-wise confidence intervals.}
 \end{figure}
+
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{`r pathCoRoutput`/hr_forest_marginal_bindRBD_`r study_name`}
     \caption{Forest plots of hazard ratios per 10-fold increase in the  Day `r Day` binding Ab to RBD markers among baseline seronegative vaccine recipients (top row) and eight subpopulations (row 2-9) with 95\% point-wise confidence intervals.}
 \end{figure}
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=1\textwidth]{`r pathCoRoutput`/hr_forest_marginal_pseudoneutid50_`r study_name`}
-    \caption{Forest plots of hazard ratios per 10-fold increase in the  Day `r Day` pseudo neut ID50 markers among baseline seronegative vaccine recipients (top row) and eight subpopulations (row 2-9) with 95\% point-wise confidence intervals.}
-\end{figure}
+
+`r if(study_name_code!="ENSEMBLE") paste0("
+\\begin{figure}[H]
+    \\centering
+    \\includegraphics[width=1\\textwidth]{", pathCoRoutput, "/hr_forest_marginal_pseudoneutid50_",  study_name, "} 
+    \\caption{Forest plots of hazard ratios per 10-fold increase in the  Day ", Day,  "pseudo neut ID50 markers among baseline seronegative vaccine recipients (top row) and eight subpopulations (row 2-9) with 95\\% point-wise confidence intervals.}
+\\end{figure}
+")`
 <!-- \begin{figure}[H] -->
 <!--     \centering -->
 <!--     \includegraphics[width=1\textwidth]{`r pathCoRoutput`/hr_forest_marginal_liveneutmn50_`r study_name`} -->
 <!--     \caption{Forest plots of hazard ratios per 10-fold increase in the  Day `r Day` live neut MN50 markers among baseline seronegative vaccine recipients (top row) and eight subpopulations (row 2-9) with 95\% point-wise confidence intervals.} -->
 <!-- \end{figure} -->
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=1\textwidth]{`r pathCoRoutput`/hr_forest_marginal_pseudoneutid80_`r study_name`}
-    \caption{Forest plots of hazard ratios per 10-fold increase in the  Day `r Day` pseudo neut ID80 markers among baseline seronegative vaccine recipients (top row) and eight subpopulations (row 2-9) with 95\% point-wise confidence intervals.}
-\end{figure}
+`r if(study_name_code!="ENSEMBLE") paste0("
+\\begin{figure}[H]
+    \\centering
+    \\includegraphics[width=1\\textwidth]{", pathCoRoutput, "/hr_forest_marginal_pseudoneutid80_",  study_name, "} 
+    \\caption{Forest plots of hazard ratios per 10-fold increase in the  Day ", Day,  "pseudo neut ID80 markers among baseline seronegative vaccine recipients (top row) and eight subpopulations (row 2-9) with 95\\% point-wise confidence intervals.}
+\\end{figure}
+")`
+
 \clearpage
+
+
 <!-- \begin{table}[H] -->
 <!--     \setlength{\tabcolsep}{.5ex} -->
 <!-- \scriptsize{ -->

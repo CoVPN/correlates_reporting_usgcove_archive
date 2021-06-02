@@ -36,10 +36,10 @@ marginalized.risk.svycoxph.boot=function(formula, marker.name, type, data, t, B,
     
     # bootstrap
     out=mclapply(1:B, mc.cores = numCores, FUN=function(seed) {   
-
+    
         dat.b = get.bootstrap.data.cor (data, ptids.by.stratum, seed) 
         dat.b.ph2=subset(dat.b, ph2)     
-
+    
         if(type==1) {
         # conditional on s
             tmp.design=twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=dat.b)

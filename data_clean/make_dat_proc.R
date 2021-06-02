@@ -1,4 +1,4 @@
-#Sys.setenv(TRIAL = "moderna_mock")
+#Sys.setenv(TRIAL = "janssen_pooled_mock")
 if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
 #-----------------------------------------------
 renv::activate(here::here())
@@ -16,21 +16,24 @@ library(Hmisc) # wtd.quantile, cut2
 library(mice)
 library(dplyr)
 
+myprint(study_name_code)
 
 dat_proc <- read.csv(here(
   "data_raw", data_raw_dir, data_in_file
 ))
 
+
+if(study_name=="MockENSEMBLE") dat_proc=dat_proc[, !contain(names(dat_proc), "pseudoneutid")]
+
 colnames(dat_proc)[1] <- "Ptid" 
 
 dat_proc=subset(dat_proc, !is.na(Bserostatus))
 
-dat_proc=subset(dat_proc, !is.na(EventTimePrimaryD1) & !is.na(EventTimePrimaryD29))
-
+          dat_proc=subset(dat_proc, !is.na(EventTimePrimaryD1) & !is.na(EventTimePrimaryD29))
 if(has57) dat_proc=subset(dat_proc, !is.na(EventTimePrimaryD57))
 
-if(has57) dat_proc$EarlyendpointD57 <- with(dat_proc, ifelse(EarlyinfectionD57==1 | (EventIndPrimaryD1==1 & EventTimePrimaryD1 < NumberdaysD1toD57 + 7),1,0))
           dat_proc$EarlyendpointD29 <- with(dat_proc, ifelse(EarlyinfectionD29==1 | (EventIndPrimaryD1==1 & EventTimePrimaryD1 < NumberdaysD1toD29 + 7),1,0))
+if(has57) dat_proc$EarlyendpointD57 <- with(dat_proc, ifelse(EarlyinfectionD57==1 | (EventIndPrimaryD1==1 & EventTimePrimaryD1 < NumberdaysD1toD57 + 7),1,0))
 
 dat_proc <- dat_proc %>%
   mutate(
@@ -48,21 +51,42 @@ dat_proc$ethnicity <- factor(dat_proc$ethnicity, levels = labels.ethnicity)
 
 
 # race labeling
-dat_proc <- dat_proc %>%
-  mutate(
-    race = labels.race[1],
-    race = case_when(
-      Black == 1 ~ labels.race[2],
-      Asian == 1 ~ labels.race[3],
-      NatAmer == 1 ~ labels.race[4],
-      PacIsl == 1 ~ labels.race[5],
-      Multiracial == 1 ~ labels.race[6],
-      Other == 1 ~ labels.race[7],
-      Notreported == 1 | Unknown == 1 ~ labels.race[8],
-      TRUE ~ labels.race[1]
-    ),
-    race = factor(race, levels = labels.race)
-  )
+if (study_name_code=="COVE") {
+    dat_proc <- dat_proc %>%
+      mutate(
+        race = labels.race[1],
+        race = case_when(
+          Black == 1 ~ labels.race[2],
+          Asian == 1 ~ labels.race[3],
+          NatAmer == 1 ~ labels.race[4],
+          PacIsl == 1 ~ labels.race[5],
+          Multiracial == 1 ~ labels.race[6],
+          Other == 1 ~ labels.race[7],
+          Notreported == 1 | Unknown == 1 ~ labels.race[8],
+          TRUE ~ labels.race[1]
+        ),
+        race = factor(race, levels = labels.race)
+      )
+      
+} else if (study_name_code=="ENSEMBLE") {
+    # only differs from COVE in IndigSouthAmer
+    dat_proc <- dat_proc %>%
+      mutate(
+        race = labels.race[1],
+        race = case_when(
+          Black == 1 ~ labels.race[2],
+          Asian == 1 ~ labels.race[3],
+          NatAmer == 1 ~ labels.race[4],
+          IndigSouthAmer == 1 ~ labels.race[5],
+          PacIsl == 1 ~ labels.race[6],
+          Multiracial == 1 ~ labels.race[7],
+          Other == 1 ~ labels.race[8],
+          Notreported == 1 | Unknown == 1 ~ labels.race[9],
+          TRUE ~ labels.race[1]
+        ),
+        race = factor(race, levels = labels.race)
+      )
+}
 
 # WhiteNonHispanic=1 IF race is White AND ethnicity is not Hispanic
 dat_proc$WhiteNonHispanic <- NA
@@ -129,11 +153,17 @@ dat_proc$MinorityInd[is.na(dat_proc$MinorityInd)] = 0
 
 # Bstratum: randomization strata
 # Moderna: 1 ~ 3, defines the 3 baseline strata within trt/serostatus
-dat_proc <- dat_proc %>%
-  mutate(
-    Bstratum = ifelse(Senior, 1, ifelse(HighRiskInd == 1, 2, 3))
-  )
+if (study_name_code=="COVE") {
+    dat_proc$Bstratum = with(dat_proc, ifelse(Senior, 1, ifelse(HighRiskInd == 1, 2, 3)))
+    
+} else if (study_name_code=="ENSEMBLE") {
+    dat_proc$Bstratum =  with(dat_proc, strtoi(paste0(Senior, HighRiskInd), base = 2)) + 1
+
+}
+
 names(Bstratum.labels) <- Bstratum.labels
+
+#with(dat_proc, table(Bstratum, Senior, HighRiskInd))
 
 
 # demo.stratum: correlates sampling strata
@@ -180,6 +210,8 @@ dat_proc$Wstratum[with(dat_proc, EventIndPrimaryD29==1 & Trt==1 & Bserostatus==0
 dat_proc$Wstratum[with(dat_proc, EventIndPrimaryD29==1 & Trt==1 & Bserostatus==1)]=max.tps+4
 
 #subset(dat_proc, Trt==1 & Bserostatus==1 & EventIndPrimaryD29 == 1)[1:3,]
+
+with(dat_proc, table(tps.stratum))
 
 
 ###############################################################################
@@ -235,50 +267,50 @@ if(has29) dat_proc <- dat_proc %>%
 
 # wt, for D57 correlates analyses
 if (has57) {
-    wts_table <- dat_proc %>% dplyr::filter(EarlyendpointD57==0 & Perprotocol == 1 & EventTimePrimaryD57 >= 7) %>%
+    wts_table <- dat_proc %>% dplyr::filter(EarlyendpointD57==0 & Perprotocol==1 & EventTimePrimaryD57>=7) %>%
       with(table(Wstratum, TwophasesampIndD57))
     wts_norm <- rowSums(wts_table) / wts_table[, 2]
     dat_proc$wt.D57 <- wts_norm[dat_proc$Wstratum %.% ""]
     # the step above assigns weights for some subjects outside ph1. the next step makes them NA
-    dat_proc$wt.D57 = ifelse(with(dat_proc, EarlyendpointD57==0 & Perprotocol == 1 & EventTimePrimaryD57>=7), dat_proc$wt.D57, NA) 
+    dat_proc$wt.D57 = ifelse(with(dat_proc, EarlyendpointD57==0 & Perprotocol==1 & EventTimePrimaryD57>=7), dat_proc$wt.D57, NA) 
     dat_proc$ph1.D57=!is.na(dat_proc$wt.D57)
     dat_proc$ph2.D57=with(dat_proc, ph1.D57 & TwophasesampIndD57)
     
     assertthat::assert_that(
-        all(!is.na(subset(dat_proc, EarlyendpointD57==0 & Perprotocol == 1 & EventTimePrimaryD57>=7 & !is.na(Wstratum), select=wt.D57, drop=T))),
+        all(!is.na(subset(dat_proc, EarlyendpointD57==0 & Perprotocol==1 & EventTimePrimaryD57>=7 & !is.na(Wstratum), select=wt.D57, drop=T))),
         msg = "missing wt.D57 for D57 analyses ph1 subjects")
 }
 
 if(has29) {
-    wts_table2 <- dat_proc %>% dplyr::filter(EarlyendpointD29==0 & Perprotocol == 1 & EventTimePrimaryD29 >= 7) %>%
+    wts_table2 <- dat_proc %>% dplyr::filter(EarlyendpointD29==0 & Perprotocol==1 & EventTimePrimaryD29>=7) %>%
       with(table(Wstratum, TwophasesampIndD29))
     wts_norm2 <- rowSums(wts_table2) / wts_table2[, 2]
     dat_proc$wt.D29 <- wts_norm2[dat_proc$Wstratum %.% ""]
-    dat_proc$wt.D29 = ifelse(with(dat_proc, EarlyendpointD29==0 & Perprotocol == 1 & EventTimePrimaryD29 >= 7), dat_proc$wt.D29, NA)
+    dat_proc$wt.D29 = ifelse(with(dat_proc, EarlyendpointD29==0 & Perprotocol==1 & EventTimePrimaryD29>=7), dat_proc$wt.D29, NA)
     dat_proc$ph1.D29=!is.na(dat_proc$wt.D29)
     dat_proc$ph2.D29=with(dat_proc, ph1.D29 & TwophasesampIndD29)
 
     assertthat::assert_that(
-        all(!is.na(subset(dat_proc, EarlyendpointD29==0 & Perprotocol == 1 & EventTimePrimaryD29>=7 & !is.na(Wstratum), select=wt.D29, drop=T))),
+        all(!is.na(subset(dat_proc, EarlyendpointD29==0 & Perprotocol==1 & EventTimePrimaryD29>=7 & !is.na(Wstratum), select=wt.D29, drop=T))),
         msg = "missing wt.D29 for D29 analyses ph1 subjects")
 }
 
 # wt.subcohort, for immunogenicity analyses that use subcohort only and are not enriched by cases outside subcohort
 if (study_name_code=="COVE") {
-    wts_table <- dat_proc %>% dplyr::filter(EarlyendpointD57==0 & Perprotocol == 1) %>%
+    wts_table <- dat_proc %>%       dplyr::filter(EarlyendpointD57==0 & Perprotocol==1) %>%
       with(table(tps.stratum, TwophasesampIndD57 & SubcohortInd))
     wts_norm <- rowSums(wts_table) / wts_table[, 2]
     dat_proc$wt.subcohort <- wts_norm[dat_proc$tps.stratum %.% ""]
-    dat_proc$wt.subcohort = ifelse(with(dat_proc, EarlyendpointD57==0 & Perprotocol == 1), dat_proc$wt.subcohort, NA)
+    dat_proc$wt.subcohort = ifelse(with(dat_proc, EarlyendpointD57==0 & Perprotocol==1), dat_proc$wt.subcohort, NA)
     dat_proc$ph1.immuno=!is.na(dat_proc$wt.subcohort)
     dat_proc$ph2.immuno=with(dat_proc, ph1.immuno & SubcohortInd & TwophasesampIndD57)
     
     assertthat::assert_that(
-        all(!is.na(subset(dat_proc, EarlyendpointD57==0 & Perprotocol == 1 & !is.na(tps.stratum), select=wt.subcohort, drop=T))), 
+        all(!is.na(subset(dat_proc, EarlyendpointD57==0 & Perprotocol==1 & !is.na(tps.stratum), select=wt.subcohort, drop=T))), 
         msg = "missing wt.subcohort for immuno analyses ph1 subjects")
         
 } else if (study_name_code=="ENSEMBLE") {
-    wts_table <- dat_proc %>% dplyr::filter(EarlyendpointD29==0 & Perprotocol == 1) %>%
+    wts_table <- dat_proc %>%       dplyr::filter(EarlyendpointD29==0 & Perprotocol==1) %>%
       with(table(tps.stratum, TwophasesampIndD29 & SubcohortInd))
     wts_norm <- rowSums(wts_table) / wts_table[, 2]
     dat_proc$wt.subcohort <- wts_norm[dat_proc$tps.stratum %.% ""]
@@ -287,7 +319,7 @@ if (study_name_code=="COVE") {
     dat_proc$ph2.immuno=with(dat_proc, ph1.immuno & SubcohortInd & TwophasesampIndD29)
     
     assertthat::assert_that(
-        all(!is.na(subset(dat_proc, EarlyendpointD29==0 & Perprotocol == 1 & !is.na(tps.stratum), select=wt.subcohort, drop=T))), 
+        all(!is.na(subset(dat_proc, EarlyendpointD29==0 & Perprotocol==1 & !is.na(tps.stratum), select=wt.subcohort, drop=T))), 
         msg = "missing wt.subcohort for immuno analyses ph1 subjects")
         
 } else stop("unknown study_name_code")
@@ -406,11 +438,12 @@ if(has29) {
 
 assays.includeN=c(assays, "bindN")
 
+
 ###############################################################################
 # converting binding variables from AU to IU for binding assays
 ###############################################################################
 
-for (a in c("bindSpike", "bindRBD", "bindN")) {
+for (a in assays.includeN) {
   for (t in c("B", if(has29) "Day29", if(has57) "Day57") ) {
       dat_proc[[t %.% a]] <- dat_proc[[t %.% a]] + log10(convf[a])
   }
@@ -479,24 +512,20 @@ write_csv(dat_proc, file = here("data_clean", data_name))
 # save some common parameters and helper functions
 ###############################################################################
 
-# maxed over all 3 of Spike, RBD, N, restricting to Day 29 or 57
+# maxed over Spike, RBD, N, restricting to Day 29 or 57
 if(has29) MaxbAbDay29 = max(dat_proc[,paste0("Day29", c("bindSpike", "bindRBD", "bindN"))], na.rm=T)
-if(has57) MaxbAbDay57 = max(dat_proc[,paste0("Day57", c("bindSpike", "bindRBD", "bindN"))], na.rm=T)
-
-# maxed over ID50 and ID80, restricting to Day 29 or 57
-if(has29) MaxID50ID80Day29 = max(dat_proc[,paste0("Day29", c("pseudoneutid50", "pseudoneutid80"))], na.rm=T)
-if(has57) MaxID50ID80Day57 = max(dat_proc[,paste0("Day57", c("pseudoneutid50", "pseudoneutid80"))], na.rm=T)
-
-# for fold change, maxed over all 3 of Spike, RBD, N, restricting to Day 29 or 57
 if(has29) MaxbAbDelta29overB = max(dat_proc[,paste0("Delta29overB", c("bindSpike", "bindRBD", "bindN"))], na.rm=T)
+if(has57) MaxbAbDay57 = max(dat_proc[,paste0("Day57", c("bindSpike", "bindRBD", "bindN"))], na.rm=T)
 if(has57) MaxbAbDelta57overB = max(dat_proc[,paste0("Delta57overB", c("bindSpike", "bindRBD", "bindN"))], na.rm=T)
 
-# for fold change, maxed over ID50 and ID80, restricting to Day 29 or 57
+# maxed over ID50 and ID80, restricting to Day 29 or 57
 if("pseudoneutid50" %in% assays & "pseudoneutid80" %in% assays) {
+    if(has29) MaxID50ID80Day29 = max(dat_proc[,paste0("Day29", c("pseudoneutid50", "pseudoneutid80"))], na.rm=T)
     if(has29) MaxID50ID80Delta29overB = max(dat_proc[,paste0("Delta29overB", c("pseudoneutid50", "pseudoneutid80"))], na.rm=TRUE)
+    if(has57) MaxID50ID80Day57 = max(dat_proc[,paste0("Day57", c("pseudoneutid50", "pseudoneutid80"))], na.rm=T)        
     if(has57) MaxID50ID80Delta57overB = max(dat_proc[,paste0("Delta57overB", c("pseudoneutid50", "pseudoneutid80"))], na.rm=TRUE)
 }
 
-save(list=c(if(has57) c("MaxbAbDay57", "MaxID50ID80Day57", "MaxbAbDelta57overB", "MaxID50ID80Delta57overB"), 
-            if(has29) c("MaxbAbDay29", "MaxID50ID80Day29", "MaxbAbDelta29overB", "MaxID50ID80Delta29overB")),
+save(list=c(if(has57) c("MaxbAbDay57", "MaxbAbDelta57overB", if("pseudoneutid50" %in% assays & "pseudoneutid80" %in% assays) c("MaxID50ID80Day57", "MaxID50ID80Delta57overB")), 
+            if(has29) c("MaxbAbDay29", "MaxbAbDelta29overB", if("pseudoneutid50" %in% assays & "pseudoneutid80" %in% assays) c("MaxID50ID80Day29", "MaxID50ID80Delta29overB"))),
 file=here("data_clean", paste0(attr(config, "config"), "_params.Rdata")))

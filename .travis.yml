@@ -75,6 +75,7 @@ install:
 before_script:
   - echo "B <- 5" >> $TRAVIS_BUILD_DIR/cor_coxph/code/params.R
   - echo "numPerm <- 5" >> $TRAVIS_BUILD_DIR/cor_coxph/code/params.R
+  - echo "B <- 5" >> $TRAVIS_BUILD_DIR/cor_nonlinear/code/params.R
 
 # push reports to gh-pages branch
 after_script:

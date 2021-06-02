@@ -62,11 +62,13 @@ overall.p.0=formatDouble(c(rbind(overall.p.tri, NA,NA)), digits=3, remove.leadin
 # multitesting adjustment for continuous and trichotomized markers together
 
 p.unadj=c(cont=pvals.cont, tri=overall.p.tri)
+p.unadj.1 = p.unadj # save a copy
+# in Moderna data ID50 and ID80 are highly correlated and ID80 is to be removed from multitesting adjustment
+if (study_name_code=="COVE") p.unadj = p.unadj[!endsWith(names(p.unadj), "pseudoneutid80")]
 
 #### Holm and FDR adjustment
 pvals.adj.fdr=p.adjust(p.unadj, method="fdr")
 pvals.adj.hol=p.adjust(p.unadj, method="holm")
-
 
 #### Westfall and Young permutation-based adjustment
 if(!file.exists(paste0(save.results.to, "pvals.perm.",study_name,".Rdata"))) {
@@ -90,13 +92,13 @@ if(!file.exists(paste0(save.results.to, "pvals.perm.",study_name,".Rdata"))) {
         design.vacc.seroneg.perm$phase1$sample$variables = tmp
         
         out=c(
-            sapply ("Day"%.%pop%.%assays, function(a) {
+            cont=sapply ("Day"%.%pop%.%assays, function(a) {
                 f= update(form.0, as.formula(paste0("~.+", a)))
                 fit=run.svycoxph(f, design=design.vacc.seroneg.perm) 
                 if (length(fit)==1) NA else last(c(getFixedEf(fit)))
             })        
             ,    
-            sapply ("Day"%.%pop%.%assays, function(a) {
+            tri=sapply ("Day"%.%pop%.%assays, function(a) {
                 f= update(form.0, as.formula(paste0("~.+", a, "cat")))
                 fit=run.svycoxph(f, design=design.vacc.seroneg.perm) 
                 if (length(fit)==1) NA else last(c(getFixedEf(fit)))
@@ -115,23 +117,34 @@ if(!file.exists(paste0(save.results.to, "pvals.perm.",study_name,".Rdata"))) {
     load(file=paste0(save.results.to, "pvals.perm."%.%study_name%.%".Rdata"))
 }
 
+write(nrow(pvals.perm), file=paste0(save.results.to, "permutation_replicates_"%.%study_name))
+
 
 if(any(is.na(p.unadj))) {
     pvals.adj = cbind(p.unadj=p.unadj, p.FWER=NA, p.FDR=NA)
 } else {
-    pvals.adj = p.adj.perm (p.unadj, pvals.perm)[names(p.unadj),]
+    pvals.adj = p.adj.perm (p.unadj, pvals.perm[,names(p.unadj)], alpha=1)  
 }
 print(pvals.adj)
 
 ## alternatively we will not use Westfall and Young
-pvals.adj.not.westfall=cbind(p.unadj, p.FWER=pvals.adj.hol, p.FDR=pvals.adj.fdr)
-myprint(pvals.adj.not.westfall)
+#pvals.adj=cbind(p.unadj, p.FWER=pvals.adj.hol, p.FDR=pvals.adj.fdr)
+
+
+# since we take ID80 out earlier, we may need to add it back for the table and we do it with the help of p.unadj.1
+pvals.adj = cbind(p.unadj=p.unadj.1, pvals.adj[match(names(p.unadj.1), rownames(pvals.adj)),2:3])
+
+
 
 ###################################################################################################
 # make continuous markers table
 
 p.1=formatDouble(pvals.adj["cont."%.%names(pvals.cont),"p.FWER"], 3); p.1=sub(".000","<0.001",p.1)
 p.2=formatDouble(pvals.adj["cont."%.%names(pvals.cont),"p.FDR" ], 3); p.2=sub(".000","<0.001",p.2)
+if (study_name_code=="COVE") {
+    p.1[endsWith(names(p.1), "pseudoneutid80")] = "N/A"
+    p.2[endsWith(names(p.2), "pseudoneutid80")] = "N/A"
+}
 
 tab.1=cbind(paste0(nevents, "/", format(natrisk, big.mark=",")), t(est), t(ci), t(p), p.1, p.2)
 rownames(tab.1)=c(labels.axis["Day"%.%pop, assays])
@@ -159,6 +172,10 @@ rv$tab.1=tab.1.nop12
 # or
 overall.p.1=formatDouble(pvals.adj["tri."%.%names(pvals.cont),"p.FWER"], 3);   overall.p.1=sub(".000","<0.001",overall.p.1)
 overall.p.2=formatDouble(pvals.adj["tri."%.%names(pvals.cont),"p.FDR" ], 3);   overall.p.2=sub(".000","<0.001",overall.p.2)
+if (study_name_code=="COVE") {
+    overall.p.1[endsWith(names(overall.p.1), "pseudoneutid80")] = "N/A"
+    overall.p.2[endsWith(names(overall.p.2), "pseudoneutid80")] = "N/A"
+}
 
 
 # add space
@@ -276,23 +293,31 @@ for (a in assays) {
 ###################################################################################################
 # forest plots for different subpopulations
 
+# for some subpopulations, some strata may have empty ph2 
+# this function removes those strata
+get.dat.with.no.empty=function(dat.tmp) {
+    tab=with(dat.tmp, table(Wstratum, TwophasesampInd.0))
+    subset(dat.tmp, !Wstratum %in% as.integer(rownames(tab)[which(tab[,"TRUE"]==0)]))
+}
+
 designs=list()
 for (i in 1:4) {    
     designs[[i]]=list()
     if(i==1) {
-        designs[[i]][[1]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=subset(dat.vacc.pop, age.geq.65==1))
-        designs[[i]][[2]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=subset(dat.vacc.pop, age.geq.65==0))        
+        designs[[i]][[1]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=get.dat.with.no.empty(subset(dat.vacc.pop, Senior==1)))
+        designs[[i]][[2]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=get.dat.with.no.empty(subset(dat.vacc.pop, Senior==0)))        
     } else if(i==2) {
-        designs[[i]][[1]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=subset(dat.vacc.pop, HighRiskInd==1))
-        designs[[i]][[2]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=subset(dat.vacc.pop, HighRiskInd==0))
+        designs[[i]][[1]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=get.dat.with.no.empty(subset(dat.vacc.pop, HighRiskInd==1)))
+        designs[[i]][[2]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=get.dat.with.no.empty(subset(dat.vacc.pop, HighRiskInd==0)))
     } else if(i==3) {
-        designs[[i]][[1]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=subset(dat.vacc.pop, MinorityInd==1))
-        designs[[i]][[2]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=subset(dat.vacc.pop, MinorityInd==0))
+        designs[[i]][[1]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=get.dat.with.no.empty(subset(dat.vacc.pop, MinorityInd==1)))
+        designs[[i]][[2]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=get.dat.with.no.empty(subset(dat.vacc.pop, MinorityInd==0)))
     } else if(i==4) {
-        designs[[i]][[1]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=subset(dat.vacc.pop, Sex==1))
-        designs[[i]][[2]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=subset(dat.vacc.pop, Sex==0))
+        designs[[i]][[1]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=get.dat.with.no.empty(subset(dat.vacc.pop, Sex==1)))
+        designs[[i]][[2]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=get.dat.with.no.empty(subset(dat.vacc.pop, Sex==0)))
     }
 }
+
 
 fits.all.2=vector("list", length(assays));names(fits.all.2)=assays
 for (a in assays) {
@@ -316,12 +341,12 @@ for (a in assays) {
     fits.all.2[[a]][[9]]=run.svycoxph(f, design=designs[[4]][[2]]) 
 }
 for (a in assays) {    
-    names(fits.all.2[[a]])=c("All Vaccine", "Age >= 65", "Age < 65", "At risk", "Not at risk", "Comm. of color", "White Non-Hispanic", "Men", "Women")
+    names(fits.all.2[[a]])=c("All Vaccine", "Age >= "%.%switch(study_name_code,COVE=65,ENSEMBLE=60), "Age < "%.%switch(study_name_code,COVE=65,ENSEMBLE=60), "At risk", "Not at risk", "Comm. of color", "White Non-Hispanic", "Men", "Women")
 }    
 
 nevents=c(nrow(subset(dat.vacc.pop, yy==1)),
-          nrow(subset(dat.vacc.pop, yy==1 & age.geq.65==1)), 
-          nrow(subset(dat.vacc.pop, yy==1 & age.geq.65==0)), 
+          nrow(subset(dat.vacc.pop, yy==1 & Senior==1)), 
+          nrow(subset(dat.vacc.pop, yy==1 & Senior==0)), 
           nrow(subset(dat.vacc.pop, yy==1 & HighRiskInd==1)), 
           nrow(subset(dat.vacc.pop, yy==1 & HighRiskInd==0)), 
           nrow(subset(dat.vacc.pop, yy==1 & MinorityInd==1)), 

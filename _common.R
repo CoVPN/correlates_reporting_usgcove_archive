@@ -12,7 +12,7 @@ names(assays)=assays # add names so that lapply results will have names
 # in the immuno report (but is not analyzed in the cor or cop reports).
 include_bindN <- TRUE
 
-# limits for each assay (IU for bAb, no need to convert again)
+# limits for each assay (IU for bAb and pseudoneut, no need to convert again)
 # the following are copied from SAP to avoid any mistake (get rid of commas)
 tmp=list(
     bindSpike=c(
@@ -34,16 +34,16 @@ tmp=list(
         ULOQ = 574.6783)
     ,
     pseudoneutid50=c( 
-        LLOD = 10,
+        LLOD = 3.28,
         ULOD = NA,
-        LLOQ = 18.5,
-        ULOQ = 4404)
+        LLOQ = 6.068,
+        ULOQ = 14799)
     ,
     pseudoneutid80=c( 
-        LLOD = 10,
+        LLOD = 3.28,
         ULOD = NA,
-        LLOQ = 14.3,
-        ULOQ = 1295)
+        LLOQ = 4.6904,
+        ULOQ = 18049)
     ,
     liveneutmn50=c( 
         LLOD = 62.16,
@@ -81,7 +81,7 @@ uloqs=sapply(tmp, function(x) unname(x["ULOQ"]))
 #          liveneutmn50 = 18976.19) 
 
 
-convf=c(bindSpike=0.0090, bindN=0.0024, bindRBD=0.0272)
+convf=c(bindSpike=0.0090, bindN=0.0024, bindRBD=0.0272, pseudoneutid50=0.328, pseudoneutid80=1.764)
 
 must_have_assays <- c(
   "bindSpike", "bindRBD"
@@ -100,16 +100,22 @@ assays_to_be_censored_at_uloq_cor <- c(
 # figure labels and titles for markers
 ###############################################################################
 has29 = "Day29" %in% times
+has57 = study_name_code=="COVE"
 
 markers <- c(outer(times[which(times %in% c("B", "Day29", "Day57"))], 
                    assays, "%.%"))
 
 # race labeling
 labels.race <- c(
-  "White", "Black or African American",
-  "Asian", "American Indian or Alaska Native",
-  "Native Hawaiian or Other Pacific Islander", "Multiracial",
-  "Other", "Not reported and unknown"
+  "White", 
+  "Black or African American",
+  "Asian", 
+  "American Indian or Alaska Native",
+  if (study_name_code=="ENSEMBLE") "Indigenous South American",
+  "Native Hawaiian or Other Pacific Islander", 
+  "Multiracial",
+  "Other", 
+  "Not reported and unknown"
 )
 
 # ethnicity labeling
@@ -192,14 +198,39 @@ Bstratum.labels <- c(
 )
 
 # baseline stratum labeling
-demo.stratum.labels <- c(
-  "Age >= 65, URM",
-  "Age < 65, At risk, URM",
-  "Age < 65, Not at risk, URM",
-  "Age >= 65, White non-Hisp",
-  "Age < 65, At risk, White non-Hisp",
-  "Age < 65, Not at risk, White non-Hisp"
-)
+if (study_name_code=="COVE") {
+    demo.stratum.labels <- c(
+      "Age >= 65, URM",
+      "Age < 65, At risk, URM",
+      "Age < 65, Not at risk, URM",
+      "Age >= 65, White non-Hisp",
+      "Age < 65, At risk, White non-Hisp",
+      "Age < 65, Not at risk, White non-Hisp"
+    )
+} else if (study_name_code=="ENSEMBLE") {
+    demo.stratum.labels <- c(
+      "US URM, Age 18-59, Not at risk",
+      "US URM, Age 18-59, At risk",
+      "US URM, Age >= 60, Not at risk",
+      "US URM, Age >= 60, At risk",
+      "US White non-Hisp, Age 18-59, Not at risk",
+      "US White non-Hisp, Age 18-59, At risk",
+      "US White non-Hisp, Age >= 60, Not at risk",
+      "US White non-Hisp, Age >= 60, At risk",
+      "Latin America, Age 18-59, Not at risk",
+      "Latin America, Age 18-59, At risk",
+      "Latin America, Age >= 60, Not at risk",
+      "Latin America, Age >= 60, At risk",
+      "South Africa, Age 18-59, Not at risk",
+      "South Africa, Age 18-59, At risk",
+      "South Africa, Age >= 60, Not at risk",
+      "South Africa, Age >= 60, At risk"
+    )
+}
+
+
+
+
 
 ###############################################################################
 # reproduciblity options
@@ -349,3 +380,41 @@ get.labels.x.axis.cor=function(xlim, llod){
   #}
   return(list(ticks = x_ticks, labels = labels))
 }
+
+
+
+# for bootstrap use
+get.ptids.by.stratum.for.bootstrap = function(data) {
+    strat=sort(unique(data$tps.stratum))
+    ptids.by.stratum=lapply(strat, function (i) 
+        list(subcohort=subset(data, tps.stratum==i & SubcohortInd==1, Ptid, drop=TRUE), nonsubcohort=subset(data, tps.stratum==i & SubcohortInd==0, Ptid, drop=TRUE))
+    )    
+    # add a pseudo-stratum for subjects with NA in tps.stratum (not part of Subcohort). 
+    # we need this group because it contains some cases with missing tps.stratum
+    # if data is ph1 only, then this group is only cases because ph1 = subcohort + cases
+    tmp=list(subcohort=subset(data, is.na(tps.stratum), Ptid, drop=TRUE),               nonsubcohort=NULL)
+    ptids.by.stratum=append(ptids.by.stratum, list(tmp))    
+    ptids.by.stratum
+}
+
+
+# data is assumed to contain only ph1 ptids
+get.bootstrap.data.cor = function(data, ptids.by.stratum, seed) {
+    set.seed(seed)    
+    
+    # For each sampling stratum, bootstrap samples in subcohort and not in subchort separately
+    tmp=lapply(ptids.by.stratum, function(x) c(sample(x$subcohort, r=TRUE), sample(x$nonsubcohort, r=TRUE)))
+    
+    dat.b=data[match(unlist(tmp), data$Ptid),]
+    
+    # compute weights
+    tmp=with(dat.b, table(Wstratum, TwophasesampInd.0))
+    weights=rowSums(tmp)/tmp[,2]
+    dat.b$wt=weights[""%.%dat.b$Wstratum]
+    # we assume data only contains ph1 ptids, thus weights is defined for every bootstrapped ptids
+    
+    dat.b
+}
+
+
+data_name = paste0(attr(config, "config"), "_data_processed.csv")

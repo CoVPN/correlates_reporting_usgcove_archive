@@ -7,7 +7,7 @@
   `EventIndPrimaryD57`, `SubcohortInd`, `age.geq.65`, `TwophasesampIndD57`,
   `Bstratum`, `wt.D57`, `wt.D29`, `wt.subcohort`,  `race`, `ethnicity`, `EthnicityHispanic`, `EthnicityNotreported`, `EthnicityUnknown`,`WhiteNonHispanic`.
   
-5. Subset `dat` to keep the cohort identified for immunogenicity (`SubcohortInd` = 1, `TwophasesampIndD57` = 1, `Perprotocol` = 1) and name the subset data.frame `dat.twophase.sample`. Subset `dat.long` similarly and name the resulted data frame `dat.long.twophase.sample`.
+5. Subset `dat` to keep the cohort identified for immunogenicity (`ph2.immuno` == 1) and name the subset data.frame `dat.twophase.sample`. Subset `dat.long` similarly and name the resulted data frame `dat.long.twophase.sample`.
 
 6. In `dat.long.twophase.sample`, create a new field `trt_bstatus_label`, which is defined as the cross product of `Trt` and `Bserostatus` fields converted to a character.
 

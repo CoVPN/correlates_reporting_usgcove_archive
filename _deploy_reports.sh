@@ -15,19 +15,30 @@ cd correlates_reporting
 # NOTE: the following is incompatible with simultaneous Travis jobs that post
 #       individual reports independently
 #git rm -rf *
-#echo "Remaining files in correlates_reporting/ after git rm:"
-#ls -l
+echo "Files in correlates_reporting/ _before_ copying"
+ls -l
+
+
+ls -s 
 
 # replace with reports and note R version
 if [ "$REPORT_TYPE" == "IMMUNO" ]
 then
+  echo "copying Immuno report"
+  ls -s $TRAVIS_BUILD_DIR/_report_immuno/*
   cp -rf $TRAVIS_BUILD_DIR/_report_immuno/* ./
 elif [ "$REPORT_TYPE" == "COR" ]
 then
+  echo "copying COR report and Risk Score"
+  ls -s $TRAVIS_BUILD_DIR/_report_riskscore
+  ls -s $TRAVIS_BUILD_DIR/_report_cor
   cp -rf $TRAVIS_BUILD_DIR/_report_riskscore/* ./
   cp -rf $TRAVIS_BUILD_DIR/_report_cor/* ./
 elif [ "$REPORT_TYPE" == "COP" ]
 then
+  echo "copying COP report and Risk Score"
+  ls -s $TRAVIS_BUILD_DIR/_report_riskscore
+  ls -s $TRAVIS_BUILD_DIR/_report_cop
   cp -rf $TRAVIS_BUILD_DIR/_report_riskscore/* ./
   cp -rf $TRAVIS_BUILD_DIR/_report_cop/* ./
 fi

@@ -1,10 +1,10 @@
 #-----------------------------------------------
 # obligatory to append to the top of each script
 renv::activate(project = here::here(".."))
-    
+
 # There is a bug on Windows that prevents renv from working properly. The following code provides a workaround:
 if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
-    
+
 source(here::here("..", "_common.R"))
 #-----------------------------------------------
 
@@ -37,7 +37,7 @@ one_auc <- function(preds, Y, full_y = NULL, scale = "identity",
     ipc_weights = weights,
     ipc_fit_type = "SL", ...
   )
-  data.frame(auc = auc_lst$point_est, eif = auc_lst$eif)
+  list(auc = auc_lst$point_est, eif = auc_lst$eif)
 }
 
 # get the cross-fitted CV-AUC for a single learner's predicted values
@@ -79,8 +79,8 @@ cv_auc <- function(preds, Y, folds, scale = "identity",
     )
   })
   est <- mean(unlist(lapply(ests_eifs, function(l) l$auc)))
-  all_eifs <- lapply(ests_eifs, function(l) l$eif)
-  se <- vimp::vimp_se(list(est = est, all_eifs = all_eifs), n = length(Y))
+  var <- mean(unlist(lapply(ests_eifs, function(l) mean(l$eif ^ 2))))
+  se <- sqrt(var / length(Y))
   ci <- vimp::vimp_ci(est, se, scale = scale, level = 0.95)
   return(list(auc = est, se = se, ci = ci))
 }
@@ -212,7 +212,7 @@ get_all_aucs <- function(sl_fit, scale = "identity",
 # @param innerCvControl a list of control parameters to pass to the
 #                       inner super learners
 # @param all_weights the IPC weights for variable importance (full data)
-# @param Z the entire (phase 1) dataset (required only if analysis 
+# @param Z the entire (phase 1) dataset (required only if analysis
 #                  involves data from phase 2)
 # @param C the outcome from the entire (phase 1) dataset
 # @param z_lib the learner/s to be used for weighted auc calculations
@@ -233,7 +233,7 @@ run_cv_sl_once <- function(seed = 1, Y = NULL, X_mat = NULL,
                            z_lib = "SL.glm",
                            scale = "identity",
                            vimp = FALSE) {
-  
+
   set.seed(seed)
   fit <- SuperLearner::CV.SuperLearner(
     Y = Y, X = X_mat, family = family,
@@ -325,16 +325,16 @@ impute_missing_values <- function(X, riskVars) {
     n.imp <- 1
 
     imp <- X %>% select(all_of(covars))
-    
+
     # deal with constant variables
     for (a in names(imp)) {
       if (all(imp[[a]]==min(imp[[a]], na.rm=TRUE), na.rm=TRUE)) imp[[a]]=min(imp[[a]], na.rm=TRUE)
     }
-    
+
     # diagnostics = FALSE , remove_collinear=F are needed to avoid errors due to collinearity
     imp <- imp %>%
       mice(m = n.imp, printFlag = FALSE, seed=1, diagnostics = FALSE, remove_collinear = FALSE)
-    
+
     X[, covars] <- mice::complete(imp, action = 1L)
   }
   return(X)
@@ -366,7 +366,7 @@ get_cv_predictions <- function(cv_fit, cvaucDAT) {
     bind_cols(cv_fit[["SL.predict"]] %>% as.data.frame() %>% `colnames<-`(c("Super Learner"))) %>%
     bind_cols(cv_fit[["Y"]] %>% as.data.frame() %>% `colnames<-`(c("Y"))) %>%
     gather("algo", "pred", -Y) %>%
-    filter(algo %in% c(top3$LearnerScreen)) 
+    filter(algo %in% c(top3$LearnerScreen))
 
   predict %>%
     left_join(top3 %>% select(Screen_fromRun, Learner, Screen, AUC, LearnerScreen), by = c("algo" = "LearnerScreen")) %>%

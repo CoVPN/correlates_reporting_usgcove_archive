@@ -181,3 +181,4 @@ cor_coxph/Rplots.pdf
 data_raw/READMECOVID_VEtrial_practicedatasets_v3.txt
 cor_coxph/cor_coxph_report_censored.pdf
 cor_coxph/cor_coxph_report_uncensored.pdf
+optimal_surrogate/*

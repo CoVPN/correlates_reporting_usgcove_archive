@@ -3,7 +3,7 @@
 ## Initial data processing
 1. Load the data from "practice_data.csv" and name the dataset as `dat`.
 
-2. Create a new data.frame `dat.long`. In `dat.long` there is a new field `assay` that takes the string values "bindSpike", "bindRBD", "pseudoneutid50" and "pseudoneutid80", corresponding to four types of assays. Additionally, there are new fields `B`, `Day29`, `Day57`, `Delta29overB`, `Delta57overB` and `Delta57over29`, with values equal to the assay readouts indicated by the field name. Each row of `dat.long` corresponds to the assay readouts of one type of assays, indicated by `assay`, at different time points for for different fold-rise comparisons. Therefore, each individual has four rows for four different types of assay readouts. Additionally, there are fields in the original data.frame `dat` with the individual-level information, including `Ptid`, `Trt`, `MinorityInd`, `HighRiskInd`, `Age`, `Sex`, `Bserostatus`, `Fullvaccine`, `Perprotocol`, `EventIndPrimaryD29`,
+2. Create a new data.frame `dat.long`. In `dat.long` there is a new field `assay` that takes the string values "bindSpike", "bindRBD", "bindN", "pseudoneutid50" and "pseudoneutid80", corresponding to four types of assays. Additionally, there are new fields `B`, `Day29`, `Day57`, `Delta29overB`, `Delta57overB` and `Delta57over29`, with values equal to the assay readouts indicated by the field name. Each row of `dat.long` corresponds to the assay readouts of one type of assays, indicated by `assay`, at different time points for for different fold-rise comparisons. Therefore, each individual has four rows for four different types of assay readouts. Additionally, there are fields in the original data.frame `dat` with the individual-level information, including `Ptid`, `Trt`, `MinorityInd`, `HighRiskInd`, `Age`, `Sex`, `Bserostatus`, `Fullvaccine`, `Perprotocol`, `EventIndPrimaryD29`,
   `EventIndPrimaryD57`, `SubcohortInd`, `age.geq.65`, `TwophasesampIndD57`,
   `Bstratum`, `wt.D57`, `wt.D29`, `wt.subcohort`,  `race`, `ethnicity`, `EthnicityHispanic`, `EthnicityNotreported`, `EthnicityUnknown`,`WhiteNonHispanic`.
   
@@ -30,7 +30,7 @@
 ## Immunogenicity Plots for the Overall Two-phase Sample
 ### Pair Plots
 Set the random seed to be `12345`.
-1. Use the subset in `dat.twophase.sample` for each treatment and baseline seroviral status group to make pairplots for Day 29 binding-Spike, binding-RBD, Pseudo-virus nAb ID50 and Pseudo-virus nAb ID80 assay readouts (the variables are `Day29bindSpike`, `Day29bindRBD`, `Day29pseudoneutid50`, `Day29pseudoneutid80`). Make the same pair plots for Day 57 assay readouts, Day 29 fold-rise over baseline and Day 57 fold-rise over baseline. The correlations are partial Spearman's rank correlation calculated as following:
+1. Use the subset in `dat.twophase.sample` for each treatment and baseline seroviral status group to make pairplots for Day 29 binding-Spike, binding-RBD, binding-N, Pseudo-virus nAb ID50 and Pseudo-virus nAb ID80 assay readouts (the variables are `Day29bindSpike`, `Day29bindRBD`, `Day29bindN`, `Day29pseudoneutid50`, `Day29pseudoneutid80`). Make the same pair plots for Day 57 assay readouts, Day 29 fold-rise over baseline and Day 57 fold-rise over baseline. The correlations are partial Spearman's rank correlation calculated as following:
 	(1) Resample 500 times the rows with replacement where the resampling probabilities given by the `wt.subcohort` field.
 	(2) For each resample, compute the partial Spearman's rank correlation between each pair of assay readouts, adjusted for the dummy variables for the field "Bstratum". When calculating the partial Spearman's rank correlation, using the linear regression as the fitting function for both x and y.
 	(3) Compute the algorithmic average of the correlations across all the resamples.
@@ -49,8 +49,28 @@ Set the random seed to be `12345`.
 ## Immunogenicity Plots for the Overall Two-phase Sample
 
 ### Box Plots
-1.  For baseline negative subjects, make box plots that consists of four panels of baseline assay readouts, each panel for one type of assay. Each panel contains two bars, representing "vaccine group" and "placebo group". Each box plot is overlaid with 30 randomly chosen sample points. Use dashline to indicate LLOQ. Make the same plots for Day 29 assay readouts, Day 57 assay readouts, Day 29 fold-rise over baseline and Day 57 fold-rise over baseline. There is no LLOQ line in the plots of Day 29 fold-rise over baseline and Day 57 fold-rise over baseline. 
-bAb LLOD = log10(20); nAb ID50 LLOD = log10(10); nAb ID80 LLOD = log10(10).
+1.  For baseline negative subjects, make box plots that consists of four panels of baseline assay readouts, each panel for one type of assay. Each panel contains two bars, representing "vaccine group" and "placebo group". Each box plot is overlaid with 30 randomly chosen sample points. Use dashline to indicate LLOD, LLOQ, ULOQ. Make the same plots for Day 29 assay readouts, Day 57 assay readouts, Day 29 fold-rise over baseline and Day 57 fold-rise over baseline. There is no LLOD, LLOQ, or ULOQ lines in the plots of Day 29 fold-rise over baseline and Day 57 fold-rise over baseline. 
+LLOD:
+- bindSpike: -0.5120137
+- bindRBD: 0.2023924
+- bindN: -1.0280565 
+- pseudoneutid50: 1.0000000 
+- pseudoneutid80: 1.0000000 
+
+LLOQ:
+- bindSpike: 0.2544997
+- bindRBD: 0.7613790
+- bindN: 0.6522173
+- pseudoneutid50: 1.2671717
+- pseudoneutid80: 1.1553360   
+
+ULOQ:
+- bindSpike: 4.006721
+- bindRBD: 2.567554
+- bindN: 2.759425
+- pseudoneutid50: 3.643847
+- pseudoneutid80: 3.112270    
+
 
 2. Repeat 1 for baseline positive subjects.
 

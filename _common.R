@@ -12,6 +12,9 @@ names(assays)=assays # add names so that lapply results will have names
 # in the immuno report (but is not analyzed in the cor or cop reports).
 include_bindN <- TRUE
 
+# conversion factors
+convf=c(bindSpike=0.0090, bindRBD=0.0272, bindN=0.0024, pseudoneutid50=0.242, pseudoneutid80=1.502)
+
 # limits for each assay (IU for bAb and pseudoneut, no need to convert again)
 # the following are copied from SAP to avoid any mistake (get rid of commas)
 tmp=list(
@@ -24,26 +27,26 @@ tmp=list(
     bindRBD=c(
         LLOD = 1.593648,
         ULOD = 223074,
-        LLOQ = 5.7727,
-        ULOQ = 369.4486)
+        LLOQ = 3.4263,
+        ULOQ = 16269.23)
     ,
     bindN=c( 
         LLOD = 0.093744,
         ULOD = 52488,
-        LLOQ = 4.4897,
-        ULOQ = 574.6783)
+        LLOQ = 1.43085,
+        ULOQ = 588.2500)
     ,
     pseudoneutid50=c( 
-        LLOD = 3.28,
+        LLOD = 2.42,
         ULOD = NA,
-        LLOQ = 6.068,
-        ULOQ = 14799)
+        LLOQ = 4.477,
+        ULOQ = 10919)
     ,
     pseudoneutid80=c( 
-        LLOD = 3.28,
+        LLOD = 15.02,
         ULOD = NA,
-        LLOQ = 4.6904,
-        ULOQ = 18049)
+        LLOQ = 21.4786,
+        ULOQ = 15368)
     ,
     liveneutmn50=c( 
         LLOD = 62.16,
@@ -56,32 +59,6 @@ llods=sapply(tmp, function(x) unname(x["LLOD"]))
 lloqs=sapply(tmp, function(x) unname(x["LLOQ"]))
 uloqs=sapply(tmp, function(x) unname(x["ULOQ"]))
 
-#llods <-c(
-#          bindSpike = 0.180, 
-#          bindRBD = 0.544, 
-#          bindN = 0.048, 
-#          pseudoneutid50 = 10, 
-#          pseudoneutid80 = 10, 
-#          liveneutmn50 = 62.16)
-#
-#lloqs <-c(
-#          bindSpike = 0.3060, 
-#          bindRBD = 0.9248, 
-#          bindN = 0.0816, 
-#          pseudoneutid50 = 18.5, 
-#          pseudoneutid80 = 14.3, 
-#          liveneutmn50 = 117.35) 
-#
-#uloqs <-c(
-#          bindSpike = 172226.2, 
-#          bindRBD = 520506.0, 
-#          bindN = 45927.0, 
-#          pseudoneutid50 = 4404, 
-#          pseudoneutid80 = 1295, 
-#          liveneutmn50 = 18976.19) 
-
-
-convf=c(bindSpike=0.0090, bindN=0.0024, bindRBD=0.0272, pseudoneutid50=0.328, pseudoneutid80=1.764)
 
 must_have_assays <- c(
   "bindSpike", "bindRBD"

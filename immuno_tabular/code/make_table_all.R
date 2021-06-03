@@ -32,7 +32,7 @@ num_v2 <- c("BMI") # Summaries - Mean & St.d
 cat_v <- c("Age65C", "SexC", "RaceEthC", "ethnicityC", "HighRiskC", "AgeRiskC", "MinorityC")
 
 ds_long_ttl <- ds %>%
-  dplyr::filter(randomset) %>% 
+  dplyr::filter(ph2.immuno) %>% 
   bind_rows(mutate(., Arm="Total")) %>% 
   mutate(AgeRiskC = ifelse(grepl("$\\geq$", AgeRiskC, fixed=T), "Age $\\geq$ 65 ", AgeRiskC)) %>% 
   mutate_all(as.character) %>% 
@@ -127,7 +127,7 @@ demo.ordered <- c("Age >= 65, URM", "Age >= 65, White non-Hisp", "Age < 65, At r
                   "Age < 65, Not at risk, White non-Hisp")
 
 tab_strtm <- ds %>% 
-  filter(randomset) %>% 
+  filter(ph2.immuno) %>% 
   mutate(demo.stratum.ordered=match(demo.stratum.labels[demo.stratum], demo.ordered)) %>% 
   group_by(demo.stratum.ordered, wt.subcohort, Arm, `Baseline SARS-CoV-2`) %>% 
   summarise(Observed=n(), Estimated=round(sum(wt.subcohort), 0)) %>% 
@@ -140,7 +140,7 @@ tab_strtm <- ds %>%
 colnames(tab_strtm)=c("Arm", "  ", paste0(1:6,""), paste0(" ", 1:6))
 
 tab_strtm_header2 <- ncol(tab_strtm)-1
-names(tab_strtm_header2) <- sprintf("Random Subcohort Sample Sizes (N=%s Participants) (Moderna Trial)", sum(ds$randomset))
+names(tab_strtm_header2) <- sprintf("Random Subcohort Sample Sizes (N=%s Participants) (Moderna Trial)", sum(ds$ph2.immuno))
 tlf$tab_strtm$header_above2 <- tab_strtm_header2
 
 ### Table 2. Responder Rates & Proportions of Magnitudes >= 2FR, 4FR
@@ -161,7 +161,7 @@ resp.v <- grep("Resp|2lloq|4lloq|FR2|FR4", names(ds), value = T)
 subs <- c("All", "Age65C", "HighRiskC", "AgeRiskC", "AgeRisk1", "AgeRisk2", "SexC",
        "AgeSexC", "ethnicityC", "RaceEthC", "MinorityC", "AgeMinorC")
 rpcnt <- get_rr(dat=ds, v=resp.v, subs=subs, sub.by=sub.by, strata="tps.stratum",
-                weights="wt.subcohort", subset="randomset")
+                weights="wt.subcohort", subset="ph2.immuno")
 tab_rr <- rpcnt %>% 
   dplyr::filter(!subgroup %in% c("AgeRisk1", "AgeRisk2") & Visit != "Day 1" & Group %in% names(grplev)) %>% 
   mutate(subgroup=factor(subgrp[subgroup], levels=subgrp), Group=factor(grplev[Group], levels=grplev)) %>% 
@@ -220,7 +220,7 @@ print("Done with table3 & 4")
 # Output: tab_gm
 gm.v <- c(assays_col, grep("Delta", names(ds), value = T))
 rgm <- get_gm(dat=ds, v=gm.v, subs=subs, sub.by=sub.by, strata="tps.stratum",
-              weights="wt.subcohort", subset="randomset")
+              weights="wt.subcohort", subset="ph2.immuno")
 
 tab_gm <- rgm %>% 
   dplyr::filter(!subgroup %in% c("AgeRisk1", "AgeRisk2") & !grepl("Delta", mag_cat) & Group %in% names(grplev)) %>% 
@@ -282,7 +282,7 @@ groups <- c("Age65C", "HighRiskC", "AgeRisk1", "AgeRisk2",
 mag_groups <- assays_col
 
 rgmt <- get_rgmt(ds, mag_groups, groups, comp_lev=comp_lev, 
-                 sub.by, "tps.stratum", "wt.subcohort", "randomset")
+                 sub.by, "tps.stratum", "wt.subcohort", "ph2.immuno")
 
 rgmt_gm <- rgm %>% 
   dplyr::filter(!grepl("Delta", mag_cat) & Group %in% names(grplev)) %>% 
@@ -350,7 +350,7 @@ comp_i <- c("Vaccine", "Placebo")
 mag_groups <- assays_col
 
 rgmt_Rx <- get_rgmt(ds, mag_groups, groups, comp_lev=comp_i, sub.by="`Baseline SARS-CoV-2`", 
-                    "tps.stratum", "wt.subcohort", "randomset") %>% 
+                    "tps.stratum", "wt.subcohort", "ph2.immuno") %>% 
   mutate(subgroup=factor(subgrp[subgroup], levels=subgrp))
 
 rrdiff_Rx <- rpcnt %>% 
@@ -409,7 +409,7 @@ rrdiff_bl <- rpcnt %>%
          subgroup=factor(subgrp[subgroup], levels=subgrp))  
 
 rgmt_bl <- get_rgmt(ds, mag_groups, groups, comp_lev = comp_i, sub.by="Arm",
-                    "tps.stratum", "wt.subcohort", "randomset") %>% 
+                    "tps.stratum", "wt.subcohort", "ph2.immuno") %>% 
   mutate(subgroup=factor(subgrp[subgroup], levels=subgrp))
 
 

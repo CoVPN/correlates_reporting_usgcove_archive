@@ -19,7 +19,7 @@ source(here::here( "_common.R"))
 times <- intersect(times, c("Day57", "Day29"))
 ```
 
-# Univariate CoR: Nonparametric Threshold Modeling {#cor-threshold} (>=s)
+# Univariate CoR: Nonparametric Threshold Modeling (>=s)
 
 An extension of the unadjusted nonparametric threshold-searching approach
 developed in @Donovan, the covariate-adjusted TMLE-based approach developed by

@@ -17,7 +17,7 @@
 
 7. In `dat.long.cor.subset`, create a new field `Dich_RaceEthnic`, which is defined as the string "Hispanic or Latino" if `EthnicityHispanic` == 1, "Not Hispanic or Latino" if `EthnicityHispanic` == 0, `EthnicityNotreported` == 0, and `EthnicityUnknown` == 0, and NA otherwise.
 
-8. In `dat.long.cor.subset`, create a new field `LLoD`, `LLoQ` and `ULoQ`, which is defined as the log10 of the Lower Limit of Detection of the assays, the log10 of the Lower Limit of Quantification of the assays, the Upper Limit of Quantitation of the assays, respectively.
+8. In `dat.long.cor.subset`, create a new field `LLoD`, `LLoQ`, `pos.cutoffs` and `ULoQ`, which is defined as the log10 of the Lower Limit of Detection of the assays, the log10 of the Lower Limit of Quantification of the assays, the log10 of the positivity cutoffs for bAb assays, the log10 of the Upper Limit of Quantitation of the assays, respectively.
 
 9. In `dat.long.cor.subset`, censor values of `B`, `Day29`, `Day 57` to the `ULoQ` if above `ULoQ`.
 
@@ -53,8 +53,11 @@
 
 25. Subset `dat.longer.cor.subset` with values of `time` in ("Day 1","Day 29","Day 57").
 
-26. In `dat.longer.cor.subset`, create a new field `response`, which when (`baseline_lt_thres_ptid` == 0 and `value` >= `LLoQ`) or (`baseline_lt_thres_ptid` == 1 and `time` == "Day 1") or (`baseline_lt_thres_ptid` == 1 and `time` == "Day 29" and `increase_4F_D29_ptid` == 1) or (`baseline_lt_thres_ptid` == 1 and `time` == "Day 57" and `increase_4F_D57_ptid` == 1),  the value is 1, otherwise it is 0.
+26. In `dat.longer.cor.subset`, create a new field `response_nab`, which when (`baseline_lt_thres_ptid` == 0 and `value` >= `LLoQ`) or (`baseline_lt_thres_ptid` == 1 and `time` == "Day 1") or (`baseline_lt_thres_ptid` == 1 and `time` == "Day 29" and `increase_4F_D29_ptid` == 1) or (`baseline_lt_thres_ptid` == 1 and `time` == "Day 57" and `increase_4F_D57_ptid` == 1),  the value is 1, otherwise it is 0.
 
+27. In `dat.longer.cor.subset`, create a new field `response_bind`, which when `value` >= `pos.cutoffs` the value is 1, otherwise 0.
+
+28. In `dat.longer.cor.subset`, create a new field `response`, which when `assay` in ("bindSpike", "bindRBD", "bindN") the value is `response_bind`, when `assay` in ("pseudoneutid50", "pseudoneutid80") the value is `response_nab`, otherwise NA.
 
 
 

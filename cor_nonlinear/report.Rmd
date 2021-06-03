@@ -15,7 +15,7 @@ pathCorcoxphOutput <- "cor_coxph/output/D57"
 \clearpage
 
 ```{r, echo=FALSE}
-Day <- 57
+Day <- 29
 pathCoRoutput <- "cor_nonlinear/output/D29"
 pathCorcoxphOutput <- "cor_coxph/output/D29"
 ```

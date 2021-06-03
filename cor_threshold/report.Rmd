@@ -497,7 +497,7 @@ monotone <- T
 
 
 
-# Univariate CoR: Nonparametric Threshold Modeling {#cor-threshold} (<=s)
+# Univariate CoR: Nonparametric Threshold Modeling (<=s)
 
 The same methodology as the previous section is apply to estimate the "below" threshold-response function $E_WE[Y=1|A=1,X,S \leq s].$
 

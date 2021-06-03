@@ -31,23 +31,26 @@ env:
 jobs:
   include:
     - name: Moderna Immuno Report
-      env: REPORT_TYPE=IMMUNO
-      env: TRIAL=moderna_mock
+      env:
+        - REPORT_TYPE=IMMUNO
+        - TRIAL=moderna_mock
       script:
         - echo "Building immunogenicity report"
         - make data_processed
         - make immuno_report
     - name: Moderna CoR Report
-      env: REPORT_TYPE=COR
-      env: TRIAL=moderna_mock
+      env:
+        - REPORT_TYPE=COR
+        - TRIAL=moderna_mock
       script:
         - echo "Building correlates of risk report"
         - make data_processed
         - make risk_report
         - make cor_report
-    - name: CoP Report
-      env: REPORT_TYPE=COP
-      env: TRIAL=moderna_mock
+    - name: Moderna CoP Report
+      env:
+        - REPORT_TYPE=COP
+        - TRIAL=moderna_mock
       script:
         - echo "Building correlates of protection report"
         - make data_processed

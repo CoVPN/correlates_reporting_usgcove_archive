@@ -257,13 +257,12 @@ ds_s <- dat %>%
     
     AgeRisk1 = ifelse(Age65C=="Age $<$ 65", AgeRiskC, NA),
     AgeRisk2 = ifelse(Age65C=="Age $\\geq$ 65", AgeRiskC, NA),
-    All = "All participants",
-    randomset = (!is.na(wt.subcohort) & Perprotocol==1 & SubcohortInd == 1 & 
-                 TwophasesampIndD57 == 1 & EarlyendpointD57==0))
+    All = "All participants")
 
 # Step2: Responders
 # Post baseline visits
-ds <- getResponder(ds_s, cutoff.name="lloq", times=grep("Day", times, value=T), assays=assays)
+ds <- getResponder(ds_s, cutoff.name="lloq", times=grep("Day", times, value=T), 
+                   assays=assays, pos.cutoffs = pos.cutoffs)
 
 subgrp <- c(
   All = "All participants", 
@@ -292,7 +291,7 @@ num_v2 <- c("BMI") # Summaries - Mean & St.d
 cat_v <- c("Age65C", "SexC", "RaceEthC", "ethnicityC", "HighRiskC", "AgeRiskC", "MinorityC")
 
 ds_long_ttl <- ds %>%
-  dplyr::filter(randomset) %>% 
+  dplyr::filter(ph2.immuno) %>% 
   bind_rows(mutate(., Arm="Total")) %>% 
   mutate(AgeRiskC = ifelse(grepl("$\\geq$", AgeRiskC, fixed=T), "Age $\\geq$ 65 ", AgeRiskC)) %>% 
   mutate_all(as.character) %>% 

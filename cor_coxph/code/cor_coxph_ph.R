@@ -44,7 +44,7 @@ for (a in c("Day"%.%pop%.%assays, "Delta"%.%pop%.%"overB"%.%assays)) {
 }
 
 fits.tri=fits.tri[1:length(assays)]
-rows=rows=1:2+p.cov
+rows=1:2+p.cov
 # get generalized Wald p values
 overall.p.tri=sapply(fits.tri, function(fit) {
     if (length(fit)==1) NA else {

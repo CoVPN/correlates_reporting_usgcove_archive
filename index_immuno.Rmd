@@ -28,7 +28,7 @@ knitr::asis_output("\\AddToShipoutPictureFG{
       \\scalebox{10}{\\texttransparent{0.3}{MOCK}}}}}}")
 ```
 
-`r if ( !( "moderna" %in% attr(config::get(config = Sys.getenv("TRIAL")), "config") ) ) '<!--'`
+`r if ( !( grepl("moderna", attr(config::get(config = Sys.getenv("TRIAL")), "config") ) ) )'<!--'`
 
 # Disclaimers
 
@@ -38,7 +38,9 @@ knitr::asis_output("\\AddToShipoutPictureFG{
  
 * These data are not to be disclosed without written permission of Moderna.
 
-` if ( !( "moderna" %in% attr(config::get(config = Sys.getenv("TRIAL")), "config") ) ) '-->'`
+
+`r if ( !( grepl("moderna", attr(config::get(config = Sys.getenv("TRIAL")), "config") ) ) ) '-->'`
+
 
 
 `r if (knitr::is_latex_output()) '<!--'`

@@ -23,29 +23,32 @@ library(dplyr)
 cv_auc_from_sl <- function(sl){
   V <- length(sl$folds)
   pt_est <- rep(NA, V)
-  se_est <- rep(NA, V)
+  var_est <- rep(NA, V)
   for(v in 1:V){
     auc_v <- vimp::measure_auc(fitted_values = sl$SL.predict[sl$folds[[v]]],
                                y = sl$Y[sl$folds[[v]]])
     pt_est[v] <- auc_v$point_est
-    se_est[v] <- as.numeric(vimp::vimp_se(auc_v))
+    var_est[v] <- mean(auc_v[[2]]^2) # confirm this is correct
   }
   cvauc_pt_est <- mean(pt_est)
-  cvauc_se <- sqrt( mean(se_est^2) )
+  cvauc_se <- sqrt(mean(var_est) / length(sl$Y)) # divide by sample size
   ci <- vimp::vimp_ci(cvauc_pt_est, cvauc_se)
 
-    	out <- cvAUC::ci.cvAUC(predictions = sl$SL.predict,
-  	                       labels = sl$Y,
-  	                       folds = sl$folds)
-  	# replace ci with CI on logit scale
-  	grad <- 1/(out$cvAUC - out$cvAUC^2)
-    ci.logit <- plogis(qlogis(out$cvAUC) + sqrt(out$se^2 * grad^2) %o% c(-1.96, 1.96))
-    out$ci <- as.numeric(ci.logit)
+  out <- list(cvauc = cvauc_pt_est,
+              se = cvauc_se,
+              ci = ci)
+ # out <- cvAUC::ci.cvAUC(predictions = sl$SL.predict,
+ #                       labels = sl$Y,
+ #                       folds = sl$folds)
+ # # replace ci with CI on logit scale
+	# grad <- 1/(out$cvAUC - out$cvAUC^2)
+ #  ci.logit <- plogis(qlogis(out$cvAUC) + sqrt(out$se^2 * grad^2) %o% c(-1.96, 1.96))
+ #  out$ci <- as.numeric(ci.logit)
     return(out)
 }
 
 num_repeated_cv_seeds <- 1
-rslt <- matrix(NA, nrow = num_repeated_cv_seeds, ncol = 5)
+rslt <- matrix(NA, nrow = num_repeated_cv_seeds, ncol = 4)
 for(i in 1:num_repeated_cv_seeds){
   sl <- readRDS(here::here("output", paste0("cv_sl_fit_", i, ".rds")))
   rslt[i,] <- sl %>% cv_auc_from_sl %>% unlist

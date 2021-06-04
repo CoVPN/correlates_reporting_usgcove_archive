@@ -14,7 +14,7 @@ opts <- options(knitr.kable.NA = "")
 numi <- 1
 for (i in 1:length(tlf)) {
   if (i == 3) {
-    cat("\n\n\\newgeometry{top=0.1in, bottom=0.1in}")
+    cat("\n\n\\newgeometry{top=0.1in, bottom=0.1in, left=1in, right=1in}")
     cat("\n\n\\begin{landscape}\n")
   }
   subnum <- 0
@@ -46,18 +46,19 @@ for (i in 1:length(tlf)) {
 
   tab <- data.frame(sapply(tab,function(x)gsub("%", "\\\\%", x)),
                     check.names = FALSE)
+  rownames(tab) <- NULL
   colnames(tab) <- gsub("%", "\\\\%", colnames(tab))
   colnames(tab) <- gsub("Baseline SARS-CoV-2", "Baseline\nSARS\\-CoV\\-2",
                         colnames(tab))
-  colnames(tab) <- gsub("% Greater than 2xLLOD", "% Greater than\n2 $\\\\times$ LLOD", colnames(tab))
-  colnames(tab) <- gsub("% Greater than 4xLLOD", "% Greater than\n4 $\\\\times$ LLOD", colnames(tab))                        
+  colnames(tab) <- gsub("% Greater than 2xLLOQ", "% Greater than\n2 $\\\\times$ LLOQ", colnames(tab))
+  colnames(tab) <- gsub("% Greater than 4xLLOQ", "% Greater than\n4 $\\\\times$ LLOQ", colnames(tab))                        
 
   col_name <- if ("col_name" %in% tlf_args) {
     tlf_labels[["col_name"]]
   } else setdiff(names(tab), deselect)
 
+  cat(sprintf("\\section{%s}", title_i))
   jloop <- if (!is.na(loop)) pull(tab, !!as.name(loop)) %>% unique() else 1
-
   for (j in jloop) {
       subnum <- subnum + 1
 

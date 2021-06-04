@@ -16,10 +16,11 @@ lot: yes
 lof: yes
 always_allow_html: yes
 header-includes:
-   - \usepackage{eso-pic,graphicx,transparent}
+   - \usepackage{eso-pic,graphicx,transparent,caption,pdflscape,float}
+   - \usepackage[margin=1in]{geometry}
 ---
 
-```{r, include = knitr::is_latex_output() & study_name == "mock"}
+```{r, include = knitr::is_latex_output() & startsWith(study_name, "Mock")}
 knitr::asis_output("\\AddToShipoutPictureFG{
   \\AtPageCenter{
     \\makebox[0pt]{\\rotatebox[origin=c]{45}{

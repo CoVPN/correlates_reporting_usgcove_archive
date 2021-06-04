@@ -28,11 +28,18 @@ source(here::here("..", "_common.R"))
 ##### Compute reference times for analysis -semi hard coded
 
 data <- read.csv(here::here("..", "data_clean", data_name))
-tf_Day29 <- max(data[data$EventIndPrimaryD29==1 & data$Trt == 1 & data$Bserostatus == 0 & !is.na(data$wt.2), "EventTimePrimaryD29" ])
-tf_Day57 <- max(data[data$EventIndPrimaryD57==1 & data$Trt == 1 & data$Bserostatus == 0 & !is.na(data$wt), "EventTimePrimaryD57" ])
+
 
 print(colnames(data))
-tf <- list("Day57" = tf_Day57, "Day29" = tf_Day29) # Reference time to perform analysis. Y = 1(T <= tf) where T is event time of Covid.
+if(has29){
+    tf_Day29 <- max(data[data$EventIndPrimaryD29==1 & data$Trt == 1 & data$Bserostatus == 0 & !is.na(data$wt.D29), "EventTimePrimaryD29" ])
+    tf_Day57 <- max(data[data$EventIndPrimaryD57==1 & data$Trt == 1 & data$Bserostatus == 0 & !is.na(data$wt.D57), "EventTimePrimaryD57" ])
+tf <- list("Day57" = tf_Day57, "Day29" = tf_Day29)
+} else {
+    tf_Day57 <- max(data[data$EventIndPrimaryD57==1 & data$Trt == 1 & data$Bserostatus == 0 & !is.na(data$wt.D57), "EventTimePrimaryD57" ])
+    tf <- list("Day57" = tf_Day57)
+
+}# Reference time to perform analysis. Y = 1(T <= tf) where T is event time of Covid.
 # tf should be large enough that most events are observed but small enough so that not many people are right censored. For the practice dataset, tf = 170 works.
 # Right-censoring is taken into account for  this analysis.
 covariate_adjusted <- TRUE #### Estimate threshold-response function with covariate adjustment
@@ -40,12 +47,17 @@ fast_analysis <- TRUE ### Perform a fast analysis using glmnet
 include_interactions <- FALSE #### Include algorithms that model interactions between covariates
 threshold_grid_size <- 30 ### Number of thresholds to estimate (equally spaced in quantiles). Should be 15 at least for the plots of the threshold-response and its inverse to be representative of the true functions.
 adjust_for_censoring <- FALSE # For now, set to FALSE. If set to TRUE, make sure you set tf well before we lose too many people to "end of study"
-plotting_assay_label_generator <- function(marker) {
+plotting_assay_label_generator <- function(marker, above = T) {
+    if(above) {
+        add <- " (>=s)"
+    } else {
+        add <- " (<=s)"
+    }
   day <- ""
   time <- marker_to_time[marker]
   assay <- marker_to_assay[marker]
   labx <- labels.axis[time, assay]
-  labx <- paste0(labx, " (>=s)")
+  labx <- paste0(labx, add)
   return(labx)
 
 }
@@ -71,13 +83,22 @@ marker_to_time <- sapply(markers, function(v) {
   times[stringr::str_detect(v, times)]
 })
 marker_to_assay <- sapply(markers, function(v) {
-  assays[stringr::str_detect(v, assays)]
+  unname(assays[stringr::str_detect(v, assays)])
 })
 
 # Covariates to adjust for. SHOULD BE AT LEAST TWO VARIABLES OR GLMNET WILL ERROR
+data_name_updated <- sub(".csv", "_with_riskscore.csv", data_name)
+if (file.exists(here::here("..", "data_clean", data_name_updated))) {
+    add_risk_score <- T
+    covariates <- c("MinorityInd", "HighRiskInd", "risk_score") # , "BRiskScore") # Add "age"?
 
-covariates <- c("MinorityInd", "HighRiskInd", "risk_score") # , "BRiskScore") # Add "age"?
-if("risk_score" %in% covariates) {
+} else {
+    add_risk_score <- F
+    covariates <- c("MinorityInd", "HighRiskInd") # , "BRiskScore") # Add "age"?
+
+}
+
+ if("risk_score" %in% covariates) {
   append_data <- "_with_riskscore"
 } else {
   append_data <- ""
@@ -88,9 +109,9 @@ Event_Ind_variable <- list("Day57" = "EventIndPrimaryD57", "Day29" = "EventIndPr
 # Time until event (censoring, end of study, or COVID infection)
 Event_Time_variable <- list("Day57" = "EventTimePrimaryD57", "Day29" = "EventTimePrimaryD29")
 # Variable containing the two stage sampling weights
-weight_variable <- list("Day57" = "wt", "Day29" = "wt.2")
+weight_variable <- list("Day57" = "wt.D57", "Day29" = "wt.D29")
 # Indicator variable that is 1 if selected for second stage
-twophaseind_variable <- list("Day57" = "TwophasesampInd", "Day29" = "TwophasesampInd.2")
+twophaseind_variable <- list("Day57" = "TwophasesampIndD57", "Day29" = "TwophasesampIndD29")
 # The stratum over which stratified two stage sampling is performed
 twophasegroup_variable <- "Wstratum"
 

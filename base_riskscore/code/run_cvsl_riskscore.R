@@ -41,9 +41,10 @@ inputFile <- dat_cleaned
 
 # Identify the risk demographic variable names that will be used to compute the risk score
 risk_vars <- c(
-  "MinorityInd", "EthnicityHispanic", "EthnicityNotreported",
-  "EthnicityUnknown", "Black", "Asian", "NatAmer", "PacIsl",
-  "WhiteNonHispanic", "Multiracial", "Other", "Notreported", "Unknown",
+  "MinorityInd", "EthnicityHispanic", "EthnicityNotreported", "EthnicityUnknown", 
+  "Black", "Asian", "NatAmer", "PacIsl", "WhiteNonHispanic", 
+  "Multiracial", "Other", 
+  "Notreported", "Unknown",
   "HighRiskInd", "Sex", "Age", "BMI"
 )
 
@@ -63,8 +64,13 @@ dat.ph1 <- inputFile %>%
 np <- sum(dat.ph1 %>% select(matches(endpoint)))
 maxVar <- max(20, floor(np / 20))
 
-# Remove any risk_vars that have fewer than 10 1s
-dat.ph1 <- drop_riskVars_with_fewer_1s(dat.ph1, risk_vars)
+# Remove any risk_vars that are indicator variables and have fewer than 10  0's or 1's
+dat.ph1 <- drop_riskVars_with_fewer_0s_or_1s(dat.ph1, risk_vars)
+
+# Update risk_vars
+risk_vars <- dat.ph1 %>%
+  select(-Ptid, -Trt, -all_of(endpoint)) %>%
+  colnames()
 
 # Remove any risk_vars with more than 5% missing values. Impute the missing
 # values for other risk variables using mice package!

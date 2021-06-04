@@ -1,4 +1,5 @@
 *.csv
 *.RData
+*.Rdata
 *.rda
 *.rds

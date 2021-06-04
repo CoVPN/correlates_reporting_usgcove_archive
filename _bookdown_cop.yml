@@ -13,9 +13,10 @@ language:
 
 rmd_files: [
   "index_cop.Rmd",
-  "cop_prinstrat/report.Rmd",
-  "cop_controlled/report.Rmd",
+  #"cop_prinstrat/report.Rmd",
+  #"cop_controlled/report.Rmd",
   "cop_stochastic/report.Rmd",
   "cop_mediation/report.Rmd",
-  "references.Rmd"
+  "references.Rmd",
+  "appendix.Rmd"
 ]

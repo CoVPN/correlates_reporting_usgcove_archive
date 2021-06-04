@@ -21,19 +21,20 @@ General considerations:
 
 Due to the two-phase sampling design, the survey package svycoxph function (using twophase function to create the design object) will be used for fitting Cox models and getting confidence intervals and P values. The differences between Day 57 and Day 29 analyses are
 \begin{itemize}
-    \item Phase 1 ptids in Day 57 analyses are defined by is.na(wt); in Day 29 analyses they are defined by is.na(wt.2)
-    \item Phase 2 ptids in Day 57 analyses are defined by TwophasesampInd; in Day 29 analyses they are defined by TwophasesampInd.2
+    \item Phase 1 ptids in Day 57 analyses are defined by ph1.D57; in Day 29 analyses they are defined by ph1.D29
+    \item Phase 2 ptids in Day 57 analyses are defined by ph2.D57; in Day 29 analyses they are defined by ph2.D29
 \end{itemize}
 
 
 Markers to be studied: Day57bindSpike, Day57bindRBD, Day57pseudoneutid50, Day57pseudoneutid8. 
 
+The assays included in assays_to_be_censored_at_uloq_cor need to be censored by ULOQs.
+
 Define the trichotomized versions of these variables as follows:
 \begin{itemize}
-    \item Use Hmisc::wtd.quantile to find cut points at 1/3 and 2/3 quantiles
-    \item Add 1e-6 to the first cut point. This helps avoid an error when the first cut point equals the minimum
-    \item Add -Inf and Inf to the beginning and end of the vector of cut points. This helps avoid another error in the next step
-    \item Use Hmisc::cut2 to trichotomize and convert the results into a factor
+    \item Let x=log10(ULOQ)*.9999
+    \item If more than the top 1/3 of vaccine recipients have value > x, use the cut function to cut at x and the weighted median (Hmisc:wtd.quantile) among those <= x; else use the cut function to cut at the 1/3 and 2/3 quantiles (wtd.quantile). (add -Inf and Inf to the beginning and end of the vector of cut points). Convert the results into a factor 
+    \item If the previous cut step fails or if it succeeds but it produces only two categories, use cut() with breaks=3 to trichotomize
     \item Name the variables with a 'cat' at the end, e.g. Day57bindSpikecat
 \end{itemize}
 
@@ -74,19 +75,19 @@ Two-phase Cox regression models are fitted to subgroups in the vaccine arm for t
 \end{center}
 
 
-The subgroups are as follows. For some subgroups we cannot adjust for all baseline demographic variables, e.g. in the at risk subgroup we cannot adjust for HighRiskInd.
+The subgroups are as follows. For some subgroups we cannot adjust for all baseline demographic variables, indicated below in parenthesis.
 
 \begin{itemize}
     \item age >= 65
     \item age < 65
-    \item at risk (HighRiskInd)
-    \item Not at risk (HighRiskInd)
-    \item Comm of color (MinorityInd)
-    \item White non-Hispanic (MinorityInd)
-    \item Men (Sex)
-    \item Women (Sex)
-    \item age<65 and at risk
-    \item age<65 and not at risk 
+    \item at risk (remove HighRiskInd)
+    \item Not at risk (remove HighRiskInd)
+    \item Comm of color (remove MinorityInd)
+    \item White non-Hispanic (remove MinorityInd)
+    \item Men 
+    \item Women
+    \item age<65 and at risk (remove HighRiskInd)
+    \item age<65 and not at risk (remove HighRiskInd)
 \end{itemize}
 
 

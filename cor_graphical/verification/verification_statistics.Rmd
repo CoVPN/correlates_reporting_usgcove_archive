@@ -1,0 +1,95 @@
+---
+title: "Key statistics for the verification of CoR plots"
+author: "Kendrick Li"
+date: "4/1/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+Load the libraries and datasets
+
+```{r load_lib_dat, warning = FALSE, message = FALSE}
+library(here)
+library(dplyr)
+library(ggplot2)
+library(ggpubr)
+library(GGally)
+library(scales)
+library(tidyverse)
+library(PResiduals)
+source(here::here("..", "_common.R"))
+source(here("code", "params.R"))
+source(here("code", "covid_corr_plot_functions.R"))
+
+dat.long.cor.subset <- readRDS(here(
+  "data_clean",
+  "long_cor_data.rds"
+))
+dat.cor.subset <- readRDS(here("data_clean", "cor_data.rds"))
+
+```
+
+## Plot 2.1; Boxplots of D57 Ab markers: baseline negative vaccine arms (boxplots_Day57_trt_vaccine_x_cc_BaselineNeg_mock.png)
+
+
+*Minimum and maximum, quartiles, and mean or assay Day 57 readouts*
+
+```{r verify_boxplots_D57}
+
+label.cases <- c("PP Cases", "PP Non-cases", "Intercurrent Cases")
+
+assay_case_mat1 <- expand.grid(assay = assays,
+                              case = label.cases[1:2])
+
+
+
+day57_sum_mat <- sapply(1:nrow(assay_case_mat1), function(aa) {
+
+  subdat <- dat.long.cor.subset %>%
+    filter(assay == as.character(assay_case_mat1$assay[aa]), Bserostatus == "Baseline Neg",
+           Trt == "Vaccine", cohort_event == as.character(assay_case_mat1$case[aa])) %>%
+    select(Day57) 
+  
+  return(summary(subdat$Day57))
+}) %>% t %>% data.frame
+
+day57_sum_df <- cbind(assay_case_mat1,
+                      day57_sum_mat)
+names(day57_sum_df) <- c("Assay", "Cohort Event", "Min", "1st. Qu.", "Median", "Mean", "3rd. Qu.", "Max")
+print(day57_sum_df)
+write_csv(day57_sum_df,
+          here("verification", "boxplots_statistics_Day57_baselineNeg_vaccine.csv"))
+```
+
+## Plot 2.3; Boxplots of D29 Ab markers: baseline negative vaccine arm (boxplots_Day29_trt_vaccine_x_cc_BaselineNeg_mock.png)
+
+*Minimum and maximum, quartiles, and mean or assay Day 29 readouts*
+
+```{r verify_boxplots_D29}
+
+label.cases <- c("PP Cases", "PP Non-cases", "Intercurrent Cases")
+
+assay_case_mat2 <- expand.grid(assay = assays,
+                              case = label.cases) %>% arrange(assay, case)
+
+
+
+day29_sum_mat <- sapply(1:nrow(assay_case_mat2), function(aa) {
+
+  subdat <- dat.long.cor.subset %>%
+    filter(assay == as.character(assay_case_mat2$assay[aa]), Bserostatus == "Baseline Neg",
+           Trt == "Vaccine", cohort_event == as.character(assay_case_mat2$case[aa])) %>%
+    select(Day29) 
+  
+  return(summary(subdat$Day29))
+}) %>% t %>% data.frame
+
+day29_sum_df <- cbind(assay_case_mat2,
+                      day29_sum_mat)
+names(day29_sum_df) <- c("Assay", "Cohort Event", "Min", "1st. Qu.", "Median", "Mean", "3rd. Qu.", "Max")
+print(day29_sum_df)
+write_csv(day29_sum_df,
+          here("verification", "boxplots_statistics_Day29_baselineNeg_vaccine.csv"))
+```

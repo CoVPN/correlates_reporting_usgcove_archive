@@ -8,6 +8,14 @@ source(here::here("code", "params.R"))
 
 # load data
 dat.mock <- read.csv(here::here("..", "data_clean", paste0(stringr::str_match(data_name,"(.+).csv")[,2],append_data,".csv")))
+
+for (a in assays_to_be_censored_at_uloq_cor) {
+  for (t in c("B", "Day57", if(has29) "Day29") ) {
+    dat.mock[[t %.% a]] <- ifelse(dat.mock[[t %.% a]] > log10(uloqs[a]), log10(uloqs[a]), dat.mock[[t %.% a]])
+  }
+}
+
+
 data <- dat.mock
 
 
@@ -15,6 +23,12 @@ data <- dat.mock
 
 # Generate the outcome and censoring indicator variables
 for (time in times) {
+  if(time == "Day57") {
+    Earlyendpoint <- "EarlyendpointD57"
+  } else if(time == "Day29") {
+    Earlyendpoint <- "EarlyendpointD29"
+    
+  }
   print(time)
   data <- dat.mock
   outcome <-
@@ -49,8 +63,9 @@ for (time in times) {
       "outcome",
       "Delta"
     )
-  keep <- data$Trt == 1 & data$Bserostatus == 0 & !is.na(data$wt)
 
+  keep <- data[[Earlyendpoint]] ==0 & data$Trt == 1 & data$Bserostatus == 0 & data$Perprotocol==1 & !is.na(data$wt) & data[[Event_Time_variable[[time]]]] >=7
+  
   data_firststage <- data[keep, variables_to_keep]
   #data_firststage <- na.omit(data_firststage)
   data_secondstage <- na.omit(data_firststage[data_firststage$TwophasesampInd == 1, ])

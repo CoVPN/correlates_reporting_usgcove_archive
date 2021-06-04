@@ -97,11 +97,13 @@ for (idx in 1:2) { # 1 with placebo lines, 2 without placebo lines. Implementati
     
     risks.all=get("risks.all.vacc.gam")
     
-#    if (ii==2 & idx==2) {
-#    } else {
-#        ylim=range(sapply(risks.all, function(x) x$prob), if(idx==1) prev.plac, prev.vacc, 0)
-#    }
-    ylim=ylims.cor[[1]][[idx]]
+    if (exists("ylims.cor")) {
+        ylim=ylims.cor[[1]][[idx]] # from cor_coxph
+    } else {
+        print("no ylims.cor found")
+        ylim=range(sapply(risks.all, function(x) x$prob), if(idx==1) prev.plac, prev.vacc, 0)
+    }
+    
     myprint(ylim)
     lwd=2
      

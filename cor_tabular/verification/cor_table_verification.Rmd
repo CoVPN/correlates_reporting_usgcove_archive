@@ -80,6 +80,7 @@ dat.long$RaceEthC[which(dat.long$RaceEthC == 'White')] <- NA
 # define response variables
 dat.long <- dat.long %>% 
   mutate(LLoQ = lloqs[as.character(marker)],
+         pos.cutoffs = pos.cutoffs[as.character(marker)],
          bind_response_2LQ = ifelse(grepl("bind", marker) & readout_trunc>=log10(2*LLoQ) & !grepl("Delta",time), 1, ifelse(grepl("bind", marker) & readout_trunc<log10(2*LLoQ) & !grepl("Delta",time), 0, NA)),
          bind_response_4LQ = ifelse(grepl("bind", marker) & readout_trunc>=log10(4*LLoQ) & !grepl("Delta",time), 1, ifelse(grepl("bind", marker) & readout_trunc<log10(4*LLoQ) & !grepl("Delta",time), 0, NA)),
          
@@ -97,11 +98,15 @@ dat.long <- dat.long %>%
          increase_4F_D29_ptid=max(increase_4F_D29),
          increase_4F_D57_ptid=max(increase_4F_D57)) %>%
   ungroup() %>%
-  mutate(response = ifelse(time %in% c("B","Day29","Day57") & baseline_lt_thres_ptid == 0 & readout_trunc > log10(LLoQ), 1,
+  mutate(response_nab = ifelse(time %in% c("B","Day29","Day57") & baseline_lt_thres_ptid == 0 & readout_trunc > log10(LLoQ), 1,
                            ifelse(baseline_lt_thres_ptid == 1 & time == "B", 1, 
                                   ifelse(baseline_lt_thres_ptid == 1 & time == "Day29" & increase_4F_D29_ptid==1, 1, 
                                          ifelse(baseline_lt_thres_ptid == 1 & time == "Day57" & increase_4F_D57_ptid==1, 1,
-                                                ifelse(time %in% c("B","Day29","Day57"), 0, NA))))))
+                                                ifelse(time %in% c("B","Day29","Day57"), 0, NA))))),
+         response_bind = ifelse(readout_trunc > log10(pos.cutoffs), 1, 0),
+         response = ifelse(marker %in% c("bindSpike","bindRBD","bindN"), response_bind, 
+                           ifelse(marker %in% c("pseudoneutid50","pseudoneutid80","liveneutmn50"), response_nab, NA))
+         )
 
 
 # label Trt, Bserostatus, time and marker

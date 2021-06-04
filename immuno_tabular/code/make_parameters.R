@@ -72,7 +72,7 @@ tlf <-
         sprintf("Binding Antibody Responders are defined as participants with concentration 
         above the specified positivity cut-off, with a separate cut-off for each 
         antigen Spike, RBD, N (%s, %s, and %s respectively, in IU/ml).", 
-                pos.cutoffs["bindSpike"]), pos.cutoffs["bindRBD"], pos.cutoffs["bindN"],
+                pos.cutoffs["bindSpike"], pos.cutoffs["bindRBD"], pos.cutoffs["bindN"]),
         "Percentages are calculated for the whole per-protocol group/subgroup, 
         using inverse probability weighting."),
       loop = "subgroup",
@@ -89,7 +89,7 @@ tlf <-
         sprintf("Binding Antibody Responders are defined as participants with concentration 
         above the specified positivity cut-off, with a separate cut-off for each 
         antigen Spike, RBD, N (%s, %s, and %s respectively, in IU/ml).", 
-                pos.cutoffs["bindSpike"]), pos.cutoffs["bindRBD"], pos.cutoffs["bindN"], 
+                pos.cutoffs["bindSpike"], pos.cutoffs["bindRBD"], pos.cutoffs["bindN"]), 
         "Percentages are calculated for the whole per-protocol group/subgroup, 
         using inverse probability weighting."),
       loop = "subgroup",

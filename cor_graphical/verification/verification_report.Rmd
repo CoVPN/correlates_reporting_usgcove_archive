@@ -1,8 +1,8 @@
 ---
 title: 'Verification Report: Correlates of Risk Graphs'
 author: "Di Lu"
-date: "2021/05/20"
-output:
+date: "2021/06/04"
+output: 
   pdf_document: default
   html_document:
     df_print: paged
@@ -148,7 +148,7 @@ The files `cor_graphical/verification/input/longer_cor_data_plot1.csv`, and \new
 
 ## Data Verification
 
-### Load `longer.cor.subset.plot1`
+### Load `longer.cor.subset.plot1` 
 
 ```{r Load-Data1, message=FALSE}
 dat.longer.cor.subset.plot1_verification <- read.csv(

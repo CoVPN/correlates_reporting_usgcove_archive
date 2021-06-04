@@ -84,11 +84,6 @@ before_script:
 after_script:
   - chmod +x _deploy_reports.sh && ./_deploy_reports.sh
 
-# public key to allow Travis to push to gh-pages
-env:
-  global:
-    secure: qi7eIEkOEJsuuUj3WwkAGe+kWr3zeDrDz8GYnPQhVOzYAtEWTbImylZYEHhkhBruIipHjzPTIpOM3xfm9SKKnJEQzpCbSLSbKZwMtwHTn3f2Dfd9KZ8dLgVdXG34+8CChksH4zWQkn/7Sgx7rCB3VJvxquOiQA05TsroLnZiJKxxVsBYjww7m4iuYjFc6HsWSLoT/XicZi7GUqN9m+C0eoSJ5kUWfXopSZLCiusTT1+Lc/wdKI9g3QckOINznmZ2ZptaBbdkBeOzzSQhGFuOufnyZD6qJ7RpfCg8nxnQ9ksNOi6SohCBWyRp4TmvPLPsmszZhYkRhmB0K0hoTsYXkEgsSHVMzInRfHk3VHbYz1SFbksHzVM+ZEEDhIFJEoCbwd5n31y9RotzePVKEVIajS3pgxWWAyjiQiRC/dwe7clO5Ser0URPulPuWjURZId8fhOkZK8gJAKVBEmr5Qr3VTKFUSntSa+0rDulHL/TmM2MZnAnVKkeJl9qB5qYB/Q7DjkESAUmNo8IwHnBkFW/6eXB0IleV4gfTej0WeMgR/64XWKCRcLCX5vGtF/dgG8eCAThSgpJmHzzO2iw0gkuJ0sgpRecqUYK+aNRarRw5DSYFgd51WkEaMx8bAHYuhb8lMytmBWI+rilYwXTZC82klNZvzQC/Xj2+NMzmeU/UPo=
-
 notifications:
   email:
     on_success: change

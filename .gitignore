@@ -166,7 +166,6 @@ cor_coxph/cor_coxph_report.utf8.md
 data_clean/.Rprofile
 data_clean/renv/activate.R
 data_clean/practice_data without 29.zip
-base_riskscore/verification/verification_report.pdf
 data_clean/practice_data with D29.zip
 cor_coxph/output/D57/controlled_ve_curves2_mock.pdf
 cor_coxph/output/D29/controlled_ve_curves1_mock.pdf

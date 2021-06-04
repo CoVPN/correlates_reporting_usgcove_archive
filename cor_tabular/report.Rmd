@@ -8,7 +8,7 @@ here::i_am("cor_tabular/report.Rmd")
 base::load(here::here( "cor_tabular", "output", "Tables.Rdata"))
 
 ```
-\captionsetup[table]{labelformat=empty}
+
 ```{r tabs, results="asis", echo=FALSE, message=FALSE, warning=FALSE}
 opts <- options(knitr.kable.NA = "")
 numi <- 1
@@ -70,8 +70,8 @@ for (i in 1:length(tlf)) {
 
       tab.j <- mutate_all(tab.j, linebreak, align = "l")
       caption.i <- ifelse(is.na(loop),
-        sprintf("Table %s. %s", numi, title_i),
-        sprintf("Table %s%s. %s by %s", numi, letters[subnum], title_i, j))
+        sprintf("%s", title_i),
+        sprintf("%s by %s", title_i, j))
 
       tabjk <- kable(if (is.na(deselect)) {tab.j} else {tab.j %>% select(-!!deselect)},
                      align = "l",

@@ -21,7 +21,7 @@ assays_plusN = c(assays, "bindN")
 
 failed_llod_check <- NULL
 for (a in assays_plusN) {
-  for (t in if(has29) c("B", "Day29", "Day57") else c("B", "Day57") ) {
+  for (t in c("B", if(has29) "Day29", if(has57) "Day57")) {
     pass <- all(dat_clean[[paste0(t,a)]] >= log10(llods[a] / 2), na.rm = TRUE)
     if(!pass){
         failed_llod_check <- c(failed_llod_check, paste0(t,a))
@@ -39,14 +39,12 @@ if(length(failed_llod_check) > 1){
 variables_with_no_missing <- 
     c(
                            "EventIndPrimaryD1",  "EventTimePrimaryD1", 
-      "EarlyinfectionD57", "EventIndPrimaryD57", "EventTimePrimaryD57",
-      "EarlyinfectionD29", "EventIndPrimaryD29", "EventTimePrimaryD29",
-      "NumberdaysD1toD57",
+      if(has57) c("ph1.D57", "ph2.D57", "EarlyendpointD57", "TwophasesampIndD57", "EarlyinfectionD57", "EventIndPrimaryD57", "EventTimePrimaryD57", "NumberdaysD1toD57"),
+      if(has29) c("ph1.D29", "ph2.D29", "EarlyendpointD29", "TwophasesampIndD29", "EarlyinfectionD29", "EventIndPrimaryD29", "EventTimePrimaryD29"),
+      
       "age.geq.65", "MinorityInd",
-      "TwophasesampIndD57", "TwophasesampIndD29",
-      "EarlyendpointD57", "EarlyendpointD29",
-      "ph1.D57", "ph1.D29", "ph1.immuno",
-      "ph2.D57", "ph2.D29", "ph2.immuno"
+      "ph1.immuno",
+      "ph2.immuno"
       )
 
 failed_variables_missing <- failed_variables_01 <- NULL

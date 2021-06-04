@@ -1,19 +1,3 @@
-#' Derive indicators of magnitudes greater than 2xLLOD and 4xLLOD
-#'
-#' @param x An endpoint vector.
-#' @param cutoff The LLOD or LLOQ for the endpoint \code{x}.
-#'
-#' @return Two indicator variables \emph{x}_2lloq(d) and \emph{x}_4lloq(d).
-grtLL <- function(data,
-                  x, 
-                  cutoff.name, 
-                  cutoff = -Inf) {
-  data[, paste0(x, "2", cutoff.name)] <- ifelse(10^data[,x] >= cutoff*2, 1, 0)
-  data[, paste0(x, "4", cutoff.name)] <- ifelse(10^data[,x] >= cutoff*4, 1, 0)
-  return(select_at(data, paste0(x, c(2, 4), cutoff.name)))
-}
-
-
 #' Generate response calls and fold-rise indicator for endpoints:
 #' Responders at each pre-defined timepoint are defined as participants who
 #' had baseline values below the LLOD with detectable ID80 neutralization titer
@@ -30,26 +14,44 @@ grtLL <- function(data,
 #'
 #' @return Response calls and fold-rise indicator for \code{bl}: \emph{bl}Resp,
 #'  \emph{bl}FR\emph{folds}
-setResponder <- function(data, 
-                         bl, 
-                         post, 
-                         folds = c(2, 4), 
-                         cutoff, 
-                         responderFR = 4) {
-  data[, paste0(post, "FR")] <- 10^(data[, post] - data[, bl])
-  foldsInd <- data.frame(sapply(folds, function(x)as.numeric(data[, paste0(post, "FR")] >= x)))
-  names(foldsInd) <- paste0(post, "FR", folds)
-  data <- cbind(data, foldsInd)
-  # Responders at each pre-defined timepoint are defined as participants who had 
-  # baseline values below the LLOQ with detectable ID50 neutralization titer 
-  # above the assay LLOQ, or as participants with baseline values above the LLOQ 
-  # with a 4-fold increase in neutralizing antibody titer.
-  data[, paste0(post, "Resp")] <- ifelse((data[, bl] < log10(cutoff) & data[, post] > log10(cutoff)) |
-                                           (data[, bl] >= log10(cutoff) & data[, paste0(post, "FR", responderFR)] == 1),
-                                         1,
-                                         0
-  )
-  return(select_at(data, c(paste0(post, "Resp"), paste0(post, "FR", folds))))
+getResponder <- function(data,
+                         cutoff.name, 
+                         times=times, 
+                         assays=assays, 
+                         folds=c(2, 4),
+                         grtns=c(2, 4),
+                         responderFR = 4,
+                         pos.cutoffs = pos.cutoffs) {
+  
+  cutoff <- get(paste0(cutoff.name, "s"))
+  for (i in times){
+    for (j in assays){
+      post <- paste0(i, j)
+      bl <- paste0("B", j)
+      delta <- paste0("Delta", gsub("Day", "", i), "overB", j)
+      
+      data[, bl] <- pmin(data[, bl], log10(uloqs[j]))
+      data[, post] <- pmin(data[, post], log10(uloqs[j]))
+      data[, delta] <- ifelse(10^data[, post] < lloqs[j], log10(lloqs[j]/2), data[, post])-ifelse(10^data[, bl] < lloqs[j], log10(lloqs[j]/2), data[, bl])
+      
+      for (k in folds){
+        data[, paste0(post, k, cutoff.name)] <- as.numeric(10^data[, post] >= k*cutoff[j])
+      }
+      
+      for (k in grtns){
+        data[, paste0(post, "FR", k)] <- as.numeric(10^data[, delta] >= k)
+      }
+      
+      if (!is.na(pos.cutoffs[j])) {
+        data[, paste0(post, "Resp")] <- as.numeric(data[, post] > log10(pos.cutoffs[j]))
+      } else {
+      data[, paste0(post, "Resp")] <- as.numeric(
+        (data[, bl] < log10(cutoff[j]) & data[, post] > log10(cutoff[j])) |
+          (data[, bl] >= log10(cutoff[j]) & data[, paste0(post, "FR", responderFR)] == 1))
+      }
+    }
+  }
+  return(data)
 }
 
 #' Wrapper function to generate response rates based on svyciprop()
@@ -63,28 +65,16 @@ setResponder <- function(data,
 #' 
 get_rr <- function(dat, v, subs, sub.by, strata, weights, subset){
   rpcnt <- NULL
-  for (i in v){
-    for (j in subs){
-      j.n <- match(j, subs)
-      dat <- dat %>% 
-        group_by_at(gsub("`", "", c(j, sub.by))) %>% 
-        mutate(nagrp=cur_group_id())
-      tab.sub <- table(!is.na(dat[as.vector(dat[,subset]==1),i]), dat[as.vector(dat[,subset]==1),]$nagrp)["TRUE",]==0
-      na.sub <- names(tab.sub[tab.sub])  
-      dat[,paste0(i,j.n)] <- !(as.character(dat$nagrp) %in% na.sub)
-    }
-  }
   design.full <- twophase(id=list(~Ptid, ~Ptid), 
                           strata=list(NULL, as.formula(sprintf("~%s", strata))),
                           weights=list(NULL, as.formula(sprintf("~%s", weights))),
                           method="simple",
                           subset=as.formula(sprintf("~%s", subset)),
-                          data=dat)
+                          data=dat %>% select_at(gsub("`", "", c("Ptid", strata, weights, subset, sub.by, v, subs))))
   for (i in v){
+    design.ij <- subset(design.full, eval(parse(text=sprintf("!is.na(%s)",i))))
     for (j in subs){
-      j.n <- match(j, subs)
       cat(i,"--",j,"\n")
-      design.ij <- subset(design.full, eval(parse(text=sprintf("%s%s & !is.na(%s)",i,j.n,j))))
       ret <- svyby(as.formula(sprintf("~%s", i)),
                    by=as.formula(sprintf("~%s", paste(c(j, sub.by), collapse="+"))),
                    design=design.ij,
@@ -122,28 +112,16 @@ get_rr <- function(dat, v, subs, sub.by, strata, weights, subset){
 #' 
 get_gm <- function(dat, v, subs, sub.by, strata, weights, subset){
   rgm <- NULL
-  for (i in v){
-    for (j in subs){
-      j.n <- match(j, subs)
-      dat <- dat %>% 
-        group_by_at(gsub("`", "", c(j, sub.by))) %>% 
-        mutate(nagrp=cur_group_id())
-      tab.sub <- table(!is.na(dat[as.vector(dat[,subset]==1),i]), dat[as.vector(dat[,subset]==1),]$nagrp)["TRUE",]==0
-      na.sub <- names(tab.sub[tab.sub])  
-      dat[,paste0(i,j.n)] <- !(as.character(dat$nagrp) %in% na.sub)
-    }
-  }
   design.full <- twophase(id=list(~Ptid, ~Ptid), 
                           strata=list(NULL, as.formula(sprintf("~%s", strata))),
                           weights=list(NULL, as.formula(sprintf("~%s", weights))),
                           method="simple",
                           subset=as.formula(sprintf("~%s", subset)),
-                          data=dat)
+                          data=dat %>% select_at(gsub("`", "", c("Ptid", strata, weights, subset, sub.by, v, subs))))
   for (i in v){
+    design.ij <- subset(design.full, eval(parse(text=sprintf("!is.na(%s)", i))))
     for (j in subs){
       cat(i,"--",j,"\n")
-      j.n <- match(j, subs)
-      design.ij <- subset(design.full, eval(parse(text=sprintf("%s%s & !is.na(%s)",i,j.n,j))))
       ret <- svyby(as.formula(sprintf("~%s", i)),
                    by=as.formula(sprintf("~%s", paste(c(j, sub.by), collapse="+"))),
                    design=design.ij,

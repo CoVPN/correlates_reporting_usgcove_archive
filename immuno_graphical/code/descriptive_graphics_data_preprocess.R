@@ -20,7 +20,7 @@ print("Data preprocess")
 # subcohort, which is a stratified sample of enrolled participants. So,
 # immunogenicity analysis is always done in ppts that meet all of the criteria.
 dat.twophase.sample <- dat %>%
-  dplyr::filter(TwophasesampIndD57 == 1 & SubcohortInd == 1 & Perprotocol == 1)
+  dplyr::filter(ph2.immuno == 1)
 twophase_sample_id <- dat.twophase.sample$Ptid
 
 
@@ -195,11 +195,13 @@ dat.twophase.sample$race <- as.factor(dat.twophase.sample$race)
 dat.long.twophase.sample$Ptid <- as.character(dat.long.twophase.sample$Ptid) 
 dat.twophase.sample$Ptid <- as.character(dat.twophase.sample$Ptid) 
 
+
+
+
+
 saveRDS(as.data.frame(dat.long.twophase.sample),
   file = here("data_clean", "long_twophase_data.rds")
 )
 saveRDS(as.data.frame(dat.twophase.sample),
   file = here("data_clean", "twophase_data.rds")
 )
-
-

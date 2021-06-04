@@ -42,19 +42,39 @@ tlf <-
       col1="7cm"
     ),
     
+    tab_strtm = list(
+      table_header = "Sample Sizes of Random Subcohort Strata for Measuring Antibody Markers",
+      table_footer = c("Demographic covariate strata:",
+                       "1. Age $\\\\geq$ 65 Minority\\\\hspace{81pt}4. Age < 65 At-risk Non-Minority", 
+                       "2. Age $\\\\geq$ 65 Non-Minority\\\\hspace{60pt}5. Age < 65 Not At-risk Minority",
+                       "3. Age < 65 At-risk Minority\\\\hspace{48pt}6. Age < 65 Not At-risk Non-Minority",
+                       " ",
+                       "Minority includes Blacks or African Americans, Hispanics or Latinos, American Indians or
+                   Alaska Natives, Native Hawaiians, and other Pacific Islanders.",
+                       "Non-Minority includes all other races with observed race (Asian, Multiracial, White, Other) and observed ethnicity Not Hispanic or Latino.
+                   Participants not classifiable as Minority or Non-Minority because of unknown, unreported or missing were not included.",
+                       " ",
+                       "Observed = Numbers of participants sampled into the subcohort within baseline covariate strata.",
+                       "Estimated = Estimated numbers of participants in the whole per-protocol cohort within baseline 
+  covariate strata, calculated using inverse probability weighting."
+      ),
+      # header_above2 = tab_strtm_header2,
+      header_above1 = c(" "=1, "Baseline SARS-CoV-2 Negative" = 6, "Baseline SARS-CoV-2 Positive" = 6),
+      deselect = "Arm",
+      pack_row = "Arm"
+    ),
+    
     tab_bind1 = list(
       table_header = "Percentage of responders, and participants
       with concentrations $\\geq 2\\times$ LLOQ or $\\geq 4\\times$ LLOQ for binding antibody
       markers",
       table_footer = c(
-        "Binding Antibody Responders are defined as participants who had
-        baseline values below the LLOQ with detectable antibody concentration
-        above the assay LLOQ, or as participants with baseline values above
-        the LLOQ with a 4-fold increase in antibody concentration.",
+        sprintf("Binding Antibody Responders are are defined as participants with concentration 
+        above the specified positivity cut-off, with a separate cut-off for each 
+        antigen Spike, RBD, N (%s, %s, and %s respectively, in IU/ml).", 
+                pos.cutoffs["bindN"], pos.cutoffs["bindRBD"], pos.cutoffs["bindSpike"]),
         "Percentages are calculated for the whole per-protocol group/subgroup, 
-        using inverse probability weighting.",
-        sprintf("LLOQ = %.2f, %.2f, %.2f IU/ml for N, RBD, Spike, respectively.", 
-                lloqs["bindN"], lloqs["bindRBD"], lloqs["bindSpike"])),
+        using inverse probability weighting."),
       loop = "subgroup",
       group_table_col = c("Rx", "Group", "Baseline", "Visit", "N", "Marker"),
       deselect = "subgroup",
@@ -66,20 +86,17 @@ tlf <-
       with 2-fold rise, and participants with 4-fold rise for binding antibody
       markers",
       table_footer = c(
-        "Binding Antibody Responders are defined as participants who had
-        baseline values below the LLOQ with detectable antibody concentration
-        above the assay LLOQ, or as participants with baseline values above
-        the LLOQ with a 4-fold increase in antibody concentration.",
+        sprintf("Binding Antibody Responders are are defined as participants with concentration 
+        above the specified positivity cut-off, with a separate cut-off for each 
+        antigen Spike, RBD, N (%s, %s, and %s respectively, in IU/ml).", 
+                pos.cutoffs["bindN"], pos.cutoffs["bindRBD"], pos.cutoffs["bindSpike"]),
         "Percentages are calculated for the whole per-protocol group/subgroup, 
-        using inverse probability weighting.",
-        sprintf("LLOQ = %.2f, %.2f, %.2f IU/ml for N, RBD, Spike, respectively.", 
-                lloqs["bindN"], lloqs["bindRBD"], lloqs["bindSpike"])),
+        using inverse probability weighting."),
       loop = "subgroup",
       group_table_col = c("Rx", "Group", "Baseline", "Visit", "N", "Marker"),
       deselect = "subgroup",
       pack_row = "subgroup"
     ),
-    
     
     tab_pseudo = list(
       table_header = "Percentage of responders, and participants

@@ -15,5 +15,33 @@ linkcolor: blue
 bibliography: ref.bib
 ---
 
-```{r, child=c('report.Rmd')}
+```{r, include=FALSE}
+source(here::here("..", "_common.R"), local = knitr::knit_global())
+```
+<!-- Note that there is no need to source _common.R in report.Rmd because it is taken care of elsewhere in yml -->
+
+
+\counterwithin{table}{section}
+\counterwithin{figure}{section}
+
+
+```{r, echo=FALSE}
+Day <- 57
+pathCoRoutput <- "output/D57"
+pathCorcoxphOutput <- "../cor_coxph/output/D57"
+```
+
+```{r, child=if(has57) c(here::here('.', 'report_sub.Rmd'))}
+```
+
+\clearpage
+
+
+```{r, echo=FALSE}
+Day <- 29
+pathCoRoutput <- "output/D29"
+pathCorcoxphOutput <- "../cor_coxph/output/D29"
+```
+
+```{r, child=if(has29) c(here::here('.', 'report_sub.Rmd'))}
 ```

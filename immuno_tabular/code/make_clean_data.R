@@ -20,7 +20,7 @@ dat <- read.csv(here::here("..", "data_clean", data_name))
 
 # The stratified random cohort for immunogenicity
 ds_s <- dat %>%
-  dplyr::filter(!is.na(wt.subcohort)) %>%
+  dplyr::filter(ph1.immuno) %>%
   mutate(
     raceC = as.character(race),
     ethnicityC = case_when(EthnicityHispanic==1 ~ "Hispanic or Latino",
@@ -49,13 +49,13 @@ ds_s <- dat %>%
                 levels = c("Vaccine", "Placebo")),
     AgeRisk1 = ifelse(Age65C=="Age $<$ 65", AgeRiskC, NA),
     AgeRisk2 = ifelse(Age65C=="Age $\\geq$ 65", AgeRiskC, NA),
-    All = "All participants",
-    randomset = (Perprotocol==1 & SubcohortInd == 1 & TwophasesampIndD57 == 1 & EarlyendpointD57==0)
+    All = "All participants"
   ) 
 
 # Step2: Responders, % >=2FR, % >=4FR, % >=2lloq, % >=4lloq
 # Post baseline visits
-ds <- getResponder(ds_s, cutoff.name="lloq", times=grep("Day", times, value=T), assays=assays)
+ds <- getResponder(ds_s, cutoff.name="lloq", times=grep("Day", times, value=T), 
+                   assays=assays, pos.cutoffs=pos.cutoffs)
 
 subgrp <- c(
   All = "All participants", 

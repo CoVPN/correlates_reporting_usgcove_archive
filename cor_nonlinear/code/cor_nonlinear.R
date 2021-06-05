@@ -113,9 +113,18 @@ print(paste0("save.results.to equals ", save.results.to))
 
 dat.vacc.pop.ph2 = subset(dat.vacc.pop, ph2)
 
-# for plotting
-load(paste0(here::here(".."), "/cor_coxph/output/D", pop,"/", "marginalized.risk.no.marker."%.%study_name%.%".Rdata")) #prev.plac, prev.vacc
-load(paste0(here::here(".."), "/cor_coxph/output/D", pop,"/", "ylims.cor"%.%study_name%.%".Rdata")) #ylims.cor[[1]] is a list of two: 1 with placebo lines, 2 without placebo lines.
+# there are two dependencies on cor_coxph
+
+# load prev.plac, prev.vacc
+tmp=paste0(here::here(".."), "/cor_coxph/output/D", pop,"/", "marginalized.risk.no.marker."%.%study_name%.%".Rdata")
+if (file.exists(tmp)) load(tmp)
+# if this does not exist, the code will throw error
+
+# load ylims.cor[[1]], which is a list of two: 1 with placebo lines, 2 without placebo lines.
+tmp=paste0(here::here(".."), "/cor_coxph/output/D", pop,"/", "ylims.cor."%.%study_name%.%".Rdata")
+if (file.exists(tmp)) load(tmp)
+# if this does not exist, the code will find alternative ylim
+
 
 
 ####################################################################################################

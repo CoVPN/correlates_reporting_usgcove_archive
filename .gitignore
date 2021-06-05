@@ -285,3 +285,4 @@ cor_nonlinear/output/D57/step.pdf
 cor_nonlinear/output/D57/step_MockCOVE.pdf
 *.pdf
 optimal_surrogate/*
+cor_coxph/output/D29/permutation_replicates_MockCOVE

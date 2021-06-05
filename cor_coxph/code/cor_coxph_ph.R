@@ -145,6 +145,11 @@ if (study_name_code=="COVE") {
     p.1[endsWith(names(p.1), "pseudoneutid80")] = "N/A"
     p.2[endsWith(names(p.2), "pseudoneutid80")] = "N/A"
 }
+# only do multitesting when liveneutmn50 is included
+if (!"liveneutmn50" %in% assays) {
+    for (i in 1:length(p.1)) p.1[i]<-p.2[i]<-"N/A"
+}
+
 
 tab.1=cbind(paste0(nevents, "/", format(natrisk, big.mark=",")), t(est), t(ci), t(p), p.1, p.2)
 rownames(tab.1)=c(labels.axis["Day"%.%pop, assays])
@@ -175,6 +180,10 @@ overall.p.2=formatDouble(pvals.adj["tri."%.%names(pvals.cont),"p.FDR" ], 3);   o
 if (study_name_code=="COVE") {
     overall.p.1[endsWith(names(overall.p.1), "pseudoneutid80")] = "N/A"
     overall.p.2[endsWith(names(overall.p.2), "pseudoneutid80")] = "N/A"
+}
+# only do multitesting when liveneutmn50 is included
+if (!"liveneutmn50" %in% assays) {
+    for (i in 1:length(p.1)) overall.p.1[i]<-overall.p.2[i]<-"N/A"    
 }
 
 

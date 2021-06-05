@@ -1,7 +1,7 @@
 ---
 title: 'Verification Report: Immunogenicity Graphs'
 author: "Di Lu"
-date: "2021/04/04"
+date: "2021/06/02"
 output: pdf_document
 ---
 
@@ -215,11 +215,11 @@ clean_comparison_pass <- all(sapply(data_clean_comparison, `[[`, "equal"))
 
 verification_spearman_correlation <- read.csv(
   here("verification/output/output_tester/spearman_correlation_result.csv")
-) %>% arrange(x,y) %>% mutate(corr = round(corr,6))
+) %>% arrange(x,y) %>% mutate(corr = round(corr,4))
 
 original_spearman_correlation<-read.csv(
   here("verification/input/output_primary_programmer/spearman_correlation_result.csv")
-) %>% arrange(x,y) %>% mutate(corr = round(corr,6))
+) %>% arrange(x,y) %>% mutate(corr = round(corr,4))
 
 ```
 

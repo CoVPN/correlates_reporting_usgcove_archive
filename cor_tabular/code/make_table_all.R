@@ -75,7 +75,6 @@ tlf <-
                        with no COVID primary endpoint up to the time of data cut and no evidence 
                        of SARS-CoV-2 infection up to six days post Day 57 visit."
       ),
-      header_above1 = c(" "=1, "Baseline SARS-CoV-2 Negative" = 9, "Baseline SARS-CoV-2 Positive" = 9),
       deselect = "Arm",
       pack_row = "Arm"
     ),
@@ -397,12 +396,19 @@ tab_strtm <- ds %>%
   arrange(`Baseline SARS-CoV-2`, demo.stratum.ordered) %>% 
   pivot_wider(id_cols=c(Arm, name), 
               names_from = c(`Baseline SARS-CoV-2`, demo.stratum.ordered), 
-              values_from=value)
+              values_from=value) 
 
-colnames(tab_strtm)=c("Arm", "  ", 1:9, paste0(" ", 1:9))
+tab_strtm_header1 <- c(" "=1, 
+                       "Baseline SARS-CoV-2 Negative" = sum(grepl("Negative", names(tab_strtm))), 
+                       "Baseline SARS-CoV-2 Positive" = sum(grepl("Positive", names(tab_strtm))))
+
+colnames(tab_strtm) <- gsub("name", " ", colnames(tab_strtm))
+colnames(tab_strtm) <- gsub("Negative_", "", colnames(tab_strtm))
+colnames(tab_strtm) <- gsub("Positive_", " ", colnames(tab_strtm))
 
 tab_strtm_header2 <- ncol(tab_strtm)-1
 names(tab_strtm_header2) <- sprintf("Per-protocol Cases and Non-Cases (Moderna Trial)")
+tlf$tab_strtm$header_above1 <- tab_strtm_header1
 tlf$tab_strtm$header_above2 <- tab_strtm_header2
 
 

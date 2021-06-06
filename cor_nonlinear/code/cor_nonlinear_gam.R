@@ -6,7 +6,7 @@
 #### only supports type=1 (S=s) now
 # data is ph1 data because bootstrap needs it
 marginalized.risk.gam.boot=function(formula, marker.name, type=1, data, B, ci.type="quantile", numCores=1) {  
-#formula=form.0.logistic; marker.name="Day"%.%pop%.%"bindSpike"; data=dat.vacc.pop; B=2; ci.type="quantile"; numCores=1; type=1
+#formula=form.0.logistic; marker.name="Day"%.%pop%.%a; data=dat.vacc.pop; B=2; ci.type="quantile"; numCores=1; type=1
     
     # store the current rng state 
     save.seed <- try(get(".Random.seed", .GlobalEnv), silent=TRUE) 
@@ -38,8 +38,12 @@ marginalized.risk.gam.boot=function(formula, marker.name, type=1, data, B, ci.ty
                 
         if(type==1) {
         # conditional on S=s
-            fit.risk=mgcv::gam(formula=f1, data=dat.b.ph2, family=binomial, weights=wt.0)
-            marginalized.risk(fit.risk, marker.name, data=dat.b.ph2, ss=ss, weights=dat.b.ph2$wt.0, categorical.s=F)
+            fit.risk=try(mgcv::gam(formula=f1, data=dat.b.ph2, family=binomial, weights=wt.0))
+            if ( class (fit.risk) != "try-error" ) {
+                marginalized.risk(fit.risk, marker.name, data=dat.b.ph2, ss=ss, weights=dat.b.ph2$wt.0, categorical.s=F)
+            } else {
+                rep(NA, length(ss))
+            }
             
         } else if (type==2) {
         # conditional on S>=s
@@ -48,7 +52,7 @@ marginalized.risk.gam.boot=function(formula, marker.name, type=1, data, B, ci.ty
         } else stop("wrong type")
     })
     res=do.call(cbind, out)
-    res=res[,!is.na(res[1,])] # remove NA's
+    res=res[,!is.na(res[1,]),drop=F] # remove NA's
     
     # restore rng state 
     assign(".Random.seed", save.seed, .GlobalEnv)    

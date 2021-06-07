@@ -15,8 +15,11 @@ get_plot <- function(marker, simultaneous_CI = F, monotone = F, above = TRUE) {
      Earlyendpoint <- "EarlyendpointD29"
      
    }
-  keep <- data[[Earlyendpoint]] ==0 & data$Trt == 0 & data$Bserostatus == 0 & data$Perprotocol==1  & data[[Event_Time_variable[[time]]]] >=7 & !is.na(data$Wstratum)
+   #keep <- data[[Earlyendpoint]] ==0 & data$Trt == 0 & data$Bserostatus == 0 & data$Perprotocol==1  & data[[Event_Time_variable[[time]]]] >=7 & !is.na(data$Wstratum)
+  keep <- data[[ph1_id_list[[time]]]]==1  & data$Trt == 0
   tmp <- dat.mock[keep,]
+  print(time)
+  print(ph1_id_list[[time]])
   print(dim(tmp))
   #dat.mock <- read.csv(here::here( "data_clean", data_name))
   #tmp <- dat.mock[dat.mock$Perprotocol==1 & dat.mock$Bserostatus == 0,]

@@ -11,6 +11,7 @@ names(assays)=assays # add names so that lapply results will have names
 # if this flag is true, then the N IgG binding antibody is reported 
 # in the immuno report (but is not analyzed in the cor or cop reports).
 include_bindN <- TRUE
+study_name_code <- "COVE"
 
 # conversion factors
 convf=c(bindSpike=0.0090, bindRBD=0.0272, bindN=0.0024, pseudoneutid50=0.242, pseudoneutid80=1.502)
@@ -399,3 +400,5 @@ get.bootstrap.data.cor = function(data, ptids.by.stratum, seed) {
 
 
 data_name = paste0(attr(config, "config"), "_data_processed.csv")
+data_in_file <- "COVID_VEtrial_practicedata_primarystage1.csv"
+study_name = "COVE"

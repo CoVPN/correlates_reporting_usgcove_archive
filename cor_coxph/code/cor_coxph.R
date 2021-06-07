@@ -35,7 +35,7 @@ Args <- commandArgs(trailingOnly=TRUE)
 if (length(Args)==0) Args=c(pop="29")
 pop=Args[1]; myprint(pop)
 
-if(!has29 & pop=="29") {
+if(!has29 & pop=="57") {
     print("Quitting because there are no Day 29 markers")
     quit()
 }
@@ -84,15 +84,15 @@ if (pop=="57") {
 } else stop("wrong pop")
 
 # the following data frame define the phase 1 ptids
-dat.vacc.pop=subset(dat.mock, Trt==1 & Bserostatus==0 & !is.na(wt.0))
-dat.plac.pop=subset(dat.mock, Trt==0 & Bserostatus==0 & !is.na(wt.0))
+dat.vac.seroneg=subset(dat.mock, Trt==1 & Bserostatus==0 & ph1)
+dat.pla.seroneg=subset(dat.mock, Trt==0 & Bserostatus==0 & ph1)
 
 # define an alias for EventIndPrimaryDxx
-dat.vacc.pop$yy=dat.vacc.pop[["EventIndPrimaryD"%.%pop]]
-dat.plac.pop$yy=dat.plac.pop[["EventIndPrimaryD"%.%pop]]
+dat.vac.seroneg$yy=dat.vac.seroneg[["EventIndPrimaryD"%.%pop]]
+dat.pla.seroneg$yy=dat.pla.seroneg[["EventIndPrimaryD"%.%pop]]
 
 # followup time for the last case
-t0=max(dat.vacc.pop[dat.vacc.pop[["EventIndPrimaryD"%.%pop]]==1, "EventTimePrimaryD"%.%pop])
+t0=max(dat.vac.seroneg[dat.vac.seroneg[["EventIndPrimaryD"%.%pop]]==1, "EventTimePrimaryD"%.%pop])
 myprint(t0)
 
 # formulae
@@ -119,43 +119,43 @@ for (a in assays) {
         myprint(a, ind.t, newline=F)
         
         uppercut=log10(uloqs[a])*.9999
-        if (mean(dat.vacc.pop[[ind.t %.% a]]>uppercut, na.rm=T)>1/3 & startsWith(ind.t, "Day")) {
+        if (mean(dat.vac.seroneg[[ind.t %.% a]]>uppercut, na.rm=T)>1/3 & startsWith(ind.t, "Day")) {
             # if more than 1/3 of vaccine recipients have value > ULOQ
             # let q.a be median among those < ULOQ and ULOQ
             print("more than 1/3 of vaccine recipients have value > ULOQ")
-            q.a=c(  wtd.quantile(dat.vacc.pop[[ind.t %.% a]][dat.vacc.pop[[ind.t %.% a]]<=uppercut], weights = dat.vacc.pop$wt.0[dat.vacc.pop[[ind.t %.% a]]<=uppercut], probs = c(1/2)), 
+            q.a=c(  wtd.quantile(dat.vac.seroneg[[ind.t %.% a]][dat.vac.seroneg[[ind.t %.% a]]<=uppercut], weights = dat.vac.seroneg$wt.0[dat.vac.seroneg[[ind.t %.% a]]<=uppercut], probs = c(1/2)), 
                     uppercut)
         } else {
-            q.a <- wtd.quantile(dat.vacc.pop[[ind.t %.% a]], weights = dat.vacc.pop$wt.0, probs = c(1/3, 2/3))
+            q.a <- wtd.quantile(dat.vac.seroneg[[ind.t %.% a]], weights = dat.vac.seroneg$wt.0, probs = c(1/3, 2/3))
         }
-        tmp=try(factor(cut(dat.vacc.pop[[ind.t %.% a]], breaks = c(-Inf, q.a, Inf))), silent=T)
+        tmp=try(factor(cut(dat.vac.seroneg[[ind.t %.% a]], breaks = c(-Inf, q.a, Inf))), silent=T)
  
         do.cut=FALSE # if TRUE, use cut function which does not use weights
         # if there is a huge point mass, an error would occur, or it may not break into 3 groups
         if (inherits(tmp, "try-error")) do.cut=TRUE else if(length(table(tmp)) != 3) do.cut=TRUE
         
         if(!do.cut) {
-            dat.vacc.pop[[ind.t %.% a %.% "cat"]] <- tmp
+            dat.vac.seroneg[[ind.t %.% a %.% "cat"]] <- tmp
             marker.cutpoints[[a]][[ind.t]] <- q.a
         } else {
             myprint("\ncall cut with breaks=3!!!\n")
             # cut is more robust but it does not incorporate weights
-            tmp=cut(dat.vacc.pop[[ind.t %.% a]], breaks=3)
+            tmp=cut(dat.vac.seroneg[[ind.t %.% a]], breaks=3)
             stopifnot(length(table(tmp))==3)
-            dat.vacc.pop[[ind.t %.% a %.% "cat"]] = tmp
+            dat.vac.seroneg[[ind.t %.% a %.% "cat"]] = tmp
             # extract cut points from factor level labels
             tmpname = names(table(tmp))[2]
             tmpname = substr(tmpname, 2, nchar(tmpname)-1)
             marker.cutpoints[[a]][[ind.t]] <- as.numeric(strsplit(tmpname, ",")[[1]])
         }
-        stopifnot(length(table(dat.vacc.pop[[ind.t %.% a %.% "cat"]])) == 3)
-        print(table(dat.vacc.pop[[ind.t %.% a %.% "cat"]]))
+        stopifnot(length(table(dat.vac.seroneg[[ind.t %.% a %.% "cat"]])) == 3)
+        print(table(dat.vac.seroneg[[ind.t %.% a %.% "cat"]]))
         cat("\n")
     }
 }
 
 # survey design object
-design.vacc.seroneg<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=dat.vacc.pop)
+design.vacc.seroneg<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=dat.vac.seroneg)
 
 
 ###################################################################################################
@@ -196,6 +196,23 @@ source(here::here("code", "cor_coxph_marginalized_risk.R"))
 ###################################################################################################
 # save rv
 save(rv, file=paste0(here::here("verification"), "/D", pop, ".rv."%.%study_name%.%".Rdata"))
+
+
+###################################################################################################
+# sanity check using rv
+if (TRIAL == "moderna_mock") & endsWith(data_name, "riskscore.csv")) {
+    tmp.1=c(sapply(rv$fr.2[-1], function (x) x[c("HR","p.value"),1]))
+    if (pop=="29") {
+        tmp.2=c(3.05421e-01, 3.81451e-05, 5.04954e-01, 1.02274e-02, 4.29867e-01, 1.61460e-02, 3.53596e-01, 1.66990e-03)
+    } else if (pop=="57") {
+        tmp.2=c(3.05421e-01, 3.81451e-05, 5.04954e-01, 1.02274e-02, 4.29867e-01, 1.61460e-02, 3.53596e-01, 1.66990e-03)
+    }
+    assertthat::assert_that(
+        max(abs(tmp.1-tmp.2)/abs(tmp.2))<1e-5,
+        msg = "failed sanity check")        
+}
+
+
 
 print("cor_coxph run time: ")
 print(Sys.time()-time.start)

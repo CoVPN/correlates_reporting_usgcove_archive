@@ -34,7 +34,7 @@ for (idx in 1:1) { # 1 with placebo lines, 2 without placebo lines. Implementati
     for (a in assays) {
         fit=step.fits.logistic[[a]]
         
-        xlim=get.range.cor(dat.vacc.pop, a, pop)
+        xlim=get.range.cor(dat.vac.seroneg, a, pop)
         
         plot(fit, which=1, add.points=F, ylab="COVID risk", xlab=labels.assays.short[a]%.%" (=s)", xaxt="n", xlim=xlim, ylim=ylim)
         
@@ -55,7 +55,7 @@ for (idx in 1:1) { # 1 with placebo lines, 2 without placebo lines. Implementati
         par(new=TRUE) 
         col <- c(col2rgb("olivedrab3")) # orange, darkgoldenrod2
         col <- rgb(col[1], col[2], col[3], alpha=255*0.4, maxColorValue=255)
-        tmp=hist(dat.vacc.pop[["Day"%.%pop%.%a]], breaks=15, plot=F)
+        tmp=hist(dat.vac.seroneg[["Day"%.%pop%.%a]], breaks=15, plot=F)
         plot(tmp, col=col,axes=F,labels=F,main="",xlab="",ylab="",border=0,freq=F, xlim=xlim, ylim=c(0,max(tmp$density*1.25)))
     }
     dev.off()
@@ -82,7 +82,7 @@ for (idx in 1:1) { # 1 with placebo lines, 2 without placebo lines. Implementati
 #    par(new=TRUE) 
 #    col <- c(col2rgb("olivedrab3")) # orange, darkgoldenrod2
 #    col <- rgb(col[1], col[2], col[3], alpha=255*0.4, maxColorValue=255)
-#    hist(dat.vacc.pop[["Day"%.%pop%.%a]],col=col,axes=F,labels=F,main="",xlab="",ylab="",breaks=10,border=0,freq=F)    #,ylim=ylim    
+#    hist(dat.vac.seroneg[["Day"%.%pop%.%a]],col=col,axes=F,labels=F,main="",xlab="",ylab="",breaks=10,border=0,freq=F)    #,ylim=ylim    
 #}
 #dev.off()
 

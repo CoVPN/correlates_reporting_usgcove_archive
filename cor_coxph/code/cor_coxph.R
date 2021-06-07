@@ -200,7 +200,7 @@ save(rv, file=paste0(here::here("verification"), "/D", pop, ".rv."%.%study_name%
 
 ###################################################################################################
 # sanity check using rv
-if (TRIAL == "moderna_mock" & endsWith(data_name, "riskscore.csv")) {
+if (study_name == "MockCOVE" & endsWith(data_name, "riskscore.csv")) {
     tmp.1=c(sapply(rv$fr.2[-1], function (x) x[c("HR","p.value"),1]))
     if (pop=="29") {
         tmp.2=c(3.05421e-01, 3.81451e-05, 5.04954e-01, 1.02274e-02, 4.29867e-01, 1.61460e-02, 3.53596e-01, 1.66990e-03)

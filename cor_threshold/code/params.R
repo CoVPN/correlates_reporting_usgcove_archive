@@ -114,7 +114,8 @@ weight_variable <- list("Day57" = "wt.D57", "Day29" = "wt.D29")
 twophaseind_variable <- list("Day57" = "TwophasesampIndD57", "Day29" = "TwophasesampIndD29")
 # The stratum over which stratified two stage sampling is performed
 twophasegroup_variable <- "Wstratum"
-
+ph1_id_list <-list("Day57" = "ph1.D57", "Day29" = "ph1.D29")
+ph2_id_list <-list("Day57" = "ph2.D57", "Day29" = "ph2.D29")
 
 ####################
 #### Internal variables
@@ -122,8 +123,8 @@ twophasegroup_variable <- "Wstratum"
 # Threshold grid is generated equally spaced (on the quantile level)
 # between the threshold at lower_quantile and threshold at upper_quantile
 # Best to have these be away from 0 and 1.
-lower_quantile <- 0.01
-upper_quantile <- 0.99
+lower_quantile <- 0
+upper_quantile <- 1
 risks_to_estimate_thresh_of_protection <- NULL ### Risk values at which to estimate threshold of protection...
 ###                Leaving at NULL (default) is recommended to ensure risks fall in range of estimate. Example: c(0, 0.0005, 0.001, 0.002, 0.003)
 threshold_grid_size <- max(threshold_grid_size, 15)

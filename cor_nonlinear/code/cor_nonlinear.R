@@ -79,15 +79,15 @@ if (pop=="57") {
 } else stop("wrong pop")
     
 # the following data frame define the phase 1 ptids
-dat.vacc.pop=subset(dat.mock, Trt==1 & Bserostatus==0 & !is.na(wt.0))
-dat.plac.pop=subset(dat.mock, Trt==0 & Bserostatus==0 & !is.na(wt.0))
+dat.vac.seroneg=subset(dat.mock, Trt==1 & Bserostatus==0 & ph1)
+dat.pla.seroneg=subset(dat.mock, Trt==0 & Bserostatus==0 & ph1)
     
 # define an alias for EventIndPrimaryDxx
-dat.vacc.pop$yy=dat.vacc.pop[["EventIndPrimaryD"%.%pop]]
-dat.plac.pop$yy=dat.plac.pop[["EventIndPrimaryD"%.%pop]]
+dat.vac.seroneg$yy=dat.vac.seroneg[["EventIndPrimaryD"%.%pop]]
+dat.pla.seroneg$yy=dat.pla.seroneg[["EventIndPrimaryD"%.%pop]]
     
 # followup time for the last case
-t0=max(dat.vacc.pop[dat.vacc.pop[["EventIndPrimaryD"%.%pop]]==1, "EventTimePrimaryD"%.%pop])
+t0=max(dat.vac.seroneg[dat.vac.seroneg[["EventIndPrimaryD"%.%pop]]==1, "EventTimePrimaryD"%.%pop])
 myprint(t0)
     
 # formulae
@@ -111,7 +111,7 @@ print(paste0("save.results.to equals ", save.results.to))
 
 ####################################################################################################
 
-dat.vacc.pop.ph2 = subset(dat.vacc.pop, ph2)
+dat.vacc.pop.ph2 = subset(dat.vac.seroneg, ph2)
 
 # there are two dependencies on cor_coxph
 

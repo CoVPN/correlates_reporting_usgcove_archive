@@ -8,7 +8,7 @@
 # data is ph1 data
 # t is a time point near to the time of the last observed outcome will be defined
 marginalized.risk.svycoxph.boot=function(formula, marker.name, type, data, t, B, ci.type="quantile", numCores=1) {  
-# formula=form.0; marker.name="Day"%.%pop%.%"bindSpike"; data=dat.vacc.pop; t=t0; weights=dat.vacc.pop$wt.D57; B=2; ci.type="quantile"; numCores=1; type=2
+# formula=form.0; marker.name="Day"%.%pop%.%"bindSpike"; data=dat.vac.seroneg; t=t0; weights=dat.vac.seroneg$wt.D57; B=2; ci.type="quantile"; numCores=1; type=2
     
     # store the current rng state 
     save.seed <- try(get(".Random.seed", .GlobalEnv), silent=TRUE) 
@@ -74,12 +74,12 @@ if(!file.exists(paste0(save.results.to, "marginalized.risk.",study_name,".Rdata"
     
     # vaccine arm, conditional on S=s
     risks.all.1=lapply(assays, function (a) 
-        marginalized.risk.svycoxph.boot(formula=form.0, marker.name="Day"%.%pop%.%a, type=1, data=dat.vacc.pop, t0, B=B, ci.type="quantile", numCores=numCores)                
+        marginalized.risk.svycoxph.boot(formula=form.0, marker.name="Day"%.%pop%.%a, type=1, data=dat.vac.seroneg, t0, B=B, ci.type="quantile", numCores=numCores)                
     )    
     
     # vaccine arm, conditional on S>=s
     risks.all.2=lapply(assays, function (a) 
-        marginalized.risk.svycoxph.boot(formula=form.0, marker.name="Day"%.%pop%.%a, type=2, data=dat.vacc.pop, t0, B=B, ci.type="quantile", numCores=numCores)        
+        marginalized.risk.svycoxph.boot(formula=form.0, marker.name="Day"%.%pop%.%a, type=2, data=dat.vac.seroneg, t0, B=B, ci.type="quantile", numCores=numCores)        
     ) 
     
     save(risks.all.1, risks.all.2, file=paste0(save.results.to, "marginalized.risk."%.%study_name%.%".Rdata"))
@@ -122,10 +122,10 @@ for (idx in 1:2) { # 1 with placebo lines, 2 without placebo lines. Implementati
     par(las=1, cex.axis=0.9, cex.lab=1)# axis label orientation
     for (a in assays) {        
         risks=risks.all[[a]]
-        xlim=get.range.cor(dat.vacc.pop, a, pop)
-        #xlim=quantile(dat.vacc.pop[["Day"%.%pop%.%a]],if(ii==1) c(.025,.975) else c(0,.95), na.rm=T) 
+        xlim=get.range.cor(dat.vac.seroneg, a, pop)
+        #xlim=quantile(dat.vac.seroneg[["Day"%.%pop%.%a]],if(ii==1) c(.025,.975) else c(0,.95), na.rm=T) 
         
-        ncases=sapply(risks$marker, function(s) sum(dat.vacc.pop$yy[dat.vacc.pop[["Day"%.%pop%.%a]]>=s], na.rm=T))
+        ncases=sapply(risks$marker, function(s) sum(dat.vac.seroneg$yy[dat.vac.seroneg[["Day"%.%pop%.%a]]>=s], na.rm=T))
         
         plot(prob~marker, risks, xlab=labels.assays.short[a]%.%ifelse(ii==1," (=s)"," (>=s)"), xlim=xlim, 
             ylab=paste0("Probability* of COVID by Day ", t0), lwd=lwd, ylim=ylim, type="n", main=paste0(labels.assays.long["Day"%.%pop,a]), xaxt="n")
@@ -169,7 +169,7 @@ for (idx in 1:2) { # 1 with placebo lines, 2 without placebo lines. Implementati
         par(new=TRUE) 
         col <- c(col2rgb("olivedrab3")) # orange, darkgoldenrod2
         col <- rgb(col[1], col[2], col[3], alpha=255*0.4, maxColorValue=255)
-        tmp=hist(dat.vacc.pop[["Day"%.%pop%.%a]], breaks=15, plot=F)
+        tmp=hist(dat.vac.seroneg[["Day"%.%pop%.%a]], breaks=15, plot=F)
         plot(tmp,col=col,axes=F,labels=F,main="",xlab="",ylab="",border=0,freq=F, xlim=xlim, ylim=c(0,max(tmp$density*1.25)))
         #axis(side=4, at=axTicks(side=4)[1:5])
         #mtext("Density", side=4, las=0, line=2, cex=1, at=.3)  
@@ -193,12 +193,12 @@ mypdf(onefile=F, file=paste0(save.results.to, "controlled_ve_curves",ii,"_"%.%st
     for (a in assays) {        
         risks=get("risks.all."%.%ii)[[a]]        
     
-        #xlim=quantile(dat.vacc.pop[["Day"%.%pop%.%a]],if(ii==1) c(.025,.975) else c(0,.95),na.rm=T)
-        xlim=get.range.cor(dat.vacc.pop, a, pop)
+        #xlim=quantile(dat.vac.seroneg[["Day"%.%pop%.%a]],if(ii==1) c(.025,.975) else c(0,.95),na.rm=T)
+        xlim=get.range.cor(dat.vac.seroneg, a, pop)
         
         # compute Bias as a vector, which is a function of s
         # choose a reference marker value
-        tmp=subset(dat.vacc.pop, select=yy, drop=T)    
+        tmp=subset(dat.vac.seroneg, select=yy, drop=T)    
         mean(tmp)
         which=which.min(abs(risks$prob-mean(tmp)))
         s.ref=risks$marker[which]
@@ -207,7 +207,7 @@ mypdf(onefile=F, file=paste0(save.results.to, "controlled_ve_curves",ii,"_"%.%st
     
         ylim=if(ii==1) c(0.5, 1) else c(0.8, 1)
     
-        ncases=sapply(risks$marker, function(s) sum(dat.vacc.pop$yy[dat.vacc.pop[["Day"%.%pop%.%a]]>=s], na.rm=T))        
+        ncases=sapply(risks$marker, function(s) sum(dat.vac.seroneg$yy[dat.vac.seroneg[["Day"%.%pop%.%a]]>=s], na.rm=T))        
         .subset=if(ii==1) rep(T, length(risks$marker)) else ncases>=5
         
         # CVE
@@ -253,8 +253,8 @@ mypdf(onefile=F, file=paste0(save.results.to, "controlled_ve_curves",ii,"_"%.%st
         par(new=TRUE) 
         col <- c(col2rgb("olivedrab3")) # orange, darkgoldenrod2
         col <- rgb(col[1], col[2], col[3], alpha=255*0.4, maxColorValue=255)
-        tmp=hist(dat.vacc.pop[["Day"%.%pop%.%a]],breaks=15,plot=F) # 15 is treated as a suggestion and the actual number of breaks is determined by pretty()
-        #tmp=hist(dat.vacc.pop[["Day"%.%pop%.%a]],breaks=seq(min(dat.vacc.pop[["Day"%.%pop%.%a]],na.rm=T), max(dat.vacc.pop[["Day"%.%pop%.%a]],na.rm=T), len = 15),plot=F)
+        tmp=hist(dat.vac.seroneg[["Day"%.%pop%.%a]],breaks=15,plot=F) # 15 is treated as a suggestion and the actual number of breaks is determined by pretty()
+        #tmp=hist(dat.vac.seroneg[["Day"%.%pop%.%a]],breaks=seq(min(dat.vac.seroneg[["Day"%.%pop%.%a]],na.rm=T), max(dat.vac.seroneg[["Day"%.%pop%.%a]],na.rm=T), len = 15),plot=F)
         plot(tmp,col=col,axes=F,labels=F,main="",xlab="",ylab="",border=0,freq=F,xlim=xlim, ylim=c(0,max(tmp$density*1.25))) 
         
         # outer title
@@ -272,21 +272,21 @@ risks.all.ter=list()
 for (a in assays) {        
     marker.name="Day"%.%pop%.%a%.%"cat"    
     f1=update(form.0, as.formula(paste0("~.+",marker.name)))        
-    fit.risk=run.svycoxph(f1, design=twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=dat.vacc.pop))
+    fit.risk=run.svycoxph(f1, design=twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=dat.vac.seroneg))
     
 #    f2=update(form.0, as.formula(paste0(marker.name,"~.")))
-#    fit.s=nnet::multinom(f2, dat.vacc.pop, weights=dat.vacc.pop$wt) 
+#    fit.s=nnet::multinom(f2, dat.vac.seroneg, weights=dat.vac.seroneg$wt) 
         
-    risks.all.ter[[a]]=if(length(fit.risk)==1) NA else marginalized.risk(fit.risk, marker.name, subset(dat.vacc.pop,TwophasesampInd.0==1), categorical.s=T)
+    risks.all.ter[[a]]=if(length(fit.risk)==1) NA else marginalized.risk(fit.risk, marker.name, subset(dat.vac.seroneg,TwophasesampInd.0==1), categorical.s=T)
 }
 
 #rv$marginalized.risk.over.time=list()
 #for (a in assays) rv$marginalized.risk.over.time[[a]] = risks.all.ter[[a]]
 
 
-fit.0=coxph(form.s, dat.plac.pop) 
+fit.0=coxph(form.s, dat.pla.seroneg) 
 risk.0= 1 - exp(-predict(fit.0, type="expected"))
-time.0= dat.plac.pop[["EventTimePrimaryD"%.%pop]]
+time.0= dat.pla.seroneg[["EventTimePrimaryD"%.%pop]]
 
 lwd=2
 ylim=c(0,max(risk.0))
@@ -313,7 +313,7 @@ for (a in assays) {
     
     # add data ribbon    
     f1=update(form.s, as.formula(paste0("~.+",marker.name)))
-    km <- survfit(f1, subset(dat.vacc.pop, TwophasesampInd.0==1), weights=wt.0)
+    km <- survfit(f1, subset(dat.vac.seroneg, TwophasesampInd.0==1), weights=wt.0)
     tmp=summary(km, times=x.time)            
     
     n.risk.L <- round(tmp$n.risk[1:length(x.time)])
@@ -347,5 +347,5 @@ for (a in assays) {
 mtext(toTitleCase(study_name), side = 1, line = 2, outer = T, at = NA, adj = NA, padj = NA, cex = .8, col = NA, font = NA)
 dev.off()    
 #
-cumsum(summary(survfit(form.s, subset(dat.vacc.pop, TwophasesampInd.0==1)), times=x.time)$n.event)
-table(subset(dat.vacc.pop, yy==1)[["Day"%.%pop%.%"pseudoneutid80cat"]])
+cumsum(summary(survfit(form.s, subset(dat.vac.seroneg, TwophasesampInd.0==1)), times=x.time)$n.event)
+table(subset(dat.vac.seroneg, yy==1)[["Day"%.%pop%.%"pseudoneutid80cat"]])

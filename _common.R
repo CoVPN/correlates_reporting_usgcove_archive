@@ -8,7 +8,7 @@ for(opt in names(config)){
 }
 names(assays)=assays # add names so that lapply results will have names
 
-# if this flag is true, then the N IgG binding antibody is reported
+# if this flag is true, then the N IgG binding antibody is reported 
 # in the immuno report (but is not analyzed in the cor or cop reports).
 include_bindN <- TRUE
 
@@ -32,26 +32,26 @@ tmp=list(
         LLOQ = 3.4263,
         ULOQ = 16269.23)
     ,
-    bindN=c(
+    bindN=c( 
         pos.cutoff=23.4711,
         LLOD = 0.093744,
         ULOD = 52488,
         LLOQ = 4.4897,
         ULOQ = 574.6783)
     ,
-    pseudoneutid50=c(
+    pseudoneutid50=c( 
         LLOD = 2.42,
         ULOD = NA,
         LLOQ = 4.477,
         ULOQ = 10919)
     ,
-    pseudoneutid80=c(
+    pseudoneutid80=c( 
         LLOD = 15.02,
         ULOD = NA,
         LLOQ = 21.4786,
         ULOQ = 15368)
     ,
-    liveneutmn50=c(
+    liveneutmn50=c( 
         LLOD = 62.16,
         ULOD = NA,
         LLOQ = 117.35,
@@ -83,19 +83,19 @@ assays_to_be_censored_at_uloq_cor <- c(
 has29 = "Day29" %in% times
 has57 = study_name_code=="COVE"
 
-markers <- c(outer(times[which(times %in% c("B", "Day29", "Day57"))],
+markers <- c(outer(times[which(times %in% c("B", "Day29", "Day57"))], 
                    assays, "%.%"))
 
 # race labeling
 labels.race <- c(
-  "White",
+  "White", 
   "Black or African American",
-  "Asian",
+  "Asian", 
   "American Indian or Alaska Native",
   if (study_name_code=="ENSEMBLE") "Indigenous South American",
-  "Native Hawaiian or Other Pacific Islander",
+  "Native Hawaiian or Other Pacific Islander", 
   "Multiracial",
-  "Other",
+  "Other", 
   "Not reported and unknown"
 )
 
@@ -105,11 +105,11 @@ labels.ethnicity <- c(
   "Not reported and unknown"
 )
 
-labels.assays.short <- c("Anti N IgG (IU/ml)",
-                         "Anti Spike IgG (IU/ml)",
-                         "Anti RBD IgG (IU/ml)",
-                         "Pseudovirus-nAb ID50",
-                         "Pseudovirus-nAb ID80",
+labels.assays.short <- c("Anti N IgG (IU/ml)", 
+                         "Anti Spike IgG (IU/ml)", 
+                         "Anti RBD IgG (IU/ml)", 
+                         "Pseudovirus-nAb ID50", 
+                         "Pseudovirus-nAb ID80", 
                          "Live virus-nAb MN50")
 names(labels.assays.short) <- c("bindN",
   "bindSpike",
@@ -122,12 +122,12 @@ names(labels.assays.short) <- c("bindN",
 # the truncated labels.assays.short later
 labels.assays.short.tabular <- labels.assays.short
 
-labels.time <- c("Day 1", "Day 29", "Day 57",
-                 "D29 fold-rise over D1",
-                 "D57 fold-rise over D1",
+labels.time <- c("Day 1", "Day 29", "Day 57", 
+                 "D29 fold-rise over D1", 
+                 "D57 fold-rise over D1", 
                  "D57 fold-rise over D29")
 
-names(labels.time) <- c("B", "Day29", "Day57", "Delta29overB",
+names(labels.time) <- c("B", "Day29", "Day57", "Delta29overB", 
                         "Delta57overB", "Delta57over29")
 
 # axis labeling
@@ -139,14 +139,14 @@ labels.axis <- outer(
 labels.axis <- as.data.frame(labels.axis)
 rownames(labels.axis) <- times
 
-labels.assays <- c("Binding Antibody to Spike",
+labels.assays <- c("Binding Antibody to Spike", 
                    "Binding Antibody to RBD",
                    "PsV Neutralization 50% Titer",
                    "PsV Neutralization 80% Titer",
                    "WT LV Neutralization 50% Titer")
 
-names(labels.assays) <- c("bindSpike",
-                          "bindRBD",
+names(labels.assays) <- c("bindSpike", 
+                          "bindRBD", 
                           "pseudoneutid50",
                           "pseudoneutid80",
                           "liveneutmn50")
@@ -316,32 +316,32 @@ ggsave_custom <- function(filename = default_name(plot),
 get.range.cor=function(dat, assay=c("bindSpike", "bindRBD", "pseudoneutid50", "pseudoneutid80"), time=c("57","29")) {
     assay<-match.arg(assay)
     a <- assay # Fixes bug
-    time<-match.arg(time)
+    time<-match.arg(time)        
     if(assay %in% c("bindSpike", "bindRBD")) {
         ret=range(dat[["Day"%.%time%.%"bindSpike"]], dat[["Day"%.%time%.%"bindRBD"]], log10(llods[c("bindSpike","bindRBD")]/2), na.rm=T)
         ret[2]=ceiling(ret[2]) # round up
     } else if(assay %in% c("pseudoneutid50", "pseudoneutid80")) {
         ret=range(dat[["Day"%.%time%.%a]], log10(llods[c("pseudoneutid50","pseudoneutid80")]/2), log10(uloqs[c("pseudoneutid50","pseudoneutid80")]), na.rm=T)
         ret[2]=ceiling(ret[2]) # round up
-    }
-    delta=(ret[2]-ret[1])/20
+    }  
+    delta=(ret[2]-ret[1])/20     
     c(ret[1]-delta, ret[2]+delta)
 }
 
 draw.x.axis.cor=function(xlim, llod){
 #    if(xlim[2]<3) {
 #        xx = (c(10,25,50,100,250,500,1000))
-#        for (x in xx) axis(1, at=log10(x), labels=if (llod==x) "lod" else if (x==1000) bquote(10^3) else x  )
+#        for (x in xx) axis(1, at=log10(x), labels=if (llod==x) "lod" else if (x==1000) bquote(10^3) else x  ) 
 #    } else if(xlim[2]<4) {
 #        xx = (c(10,50,250,1000,5000,10000))
-#        for (x in xx) axis(1, at=log10(x), labels=if (llod==x) "lod" else if (x %in% c(1000,10000)) bquote(10^.(log10(x))) else if (x==5000) bquote(.(x/1000)%*%10^3) else  x )
+#        for (x in xx) axis(1, at=log10(x), labels=if (llod==x) "lod" else if (x %in% c(1000,10000)) bquote(10^.(log10(x))) else if (x==5000) bquote(.(x/1000)%*%10^3) else  x ) 
 #    } else {
         xx=seq(floor(xlim[1]), ceiling(xlim[2]))
         for (x in xx) if (x>log10(llod*2)) axis(1, at=x, labels=if (log10(llod)==x) "lod" else if (x>=3) bquote(10^.(x)) else 10^x )
 #    }
     
     # plot llod if llod is not already plotted
-    #if(!any(log10(llod)==xx))
+    #if(!any(log10(llod)==xx)) 
     axis(1, at=log10(llod), labels="lod")
     
 }
@@ -367,21 +367,21 @@ get.labels.x.axis.cor=function(xlim, llod){
 # for bootstrap use
 get.ptids.by.stratum.for.bootstrap = function(data) {
     strat=sort(unique(data$tps.stratum))
-    ptids.by.stratum=lapply(strat, function (i)
+    ptids.by.stratum=lapply(strat, function (i) 
         list(subcohort=subset(data, tps.stratum==i & SubcohortInd==1, Ptid, drop=TRUE), nonsubcohort=subset(data, tps.stratum==i & SubcohortInd==0, Ptid, drop=TRUE))
-    )
-    # add a pseudo-stratum for subjects with NA in tps.stratum (not part of Subcohort).
+    )    
+    # add a pseudo-stratum for subjects with NA in tps.stratum (not part of Subcohort). 
     # we need this group because it contains some cases with missing tps.stratum
     # if data is ph1 only, then this group is only cases because ph1 = subcohort + cases
     tmp=list(subcohort=subset(data, is.na(tps.stratum), Ptid, drop=TRUE),               nonsubcohort=NULL)
-    ptids.by.stratum=append(ptids.by.stratum, list(tmp))
+    ptids.by.stratum=append(ptids.by.stratum, list(tmp))    
     ptids.by.stratum
 }
 
 
 # data is assumed to contain only ph1 ptids
 get.bootstrap.data.cor = function(data, ptids.by.stratum, seed) {
-    set.seed(seed)
+    set.seed(seed)    
     
     # For each sampling stratum, bootstrap samples in subcohort and not in subchort separately
     tmp=lapply(ptids.by.stratum, function(x) c(sample(x$subcohort, r=TRUE), sample(x$nonsubcohort, r=TRUE)))

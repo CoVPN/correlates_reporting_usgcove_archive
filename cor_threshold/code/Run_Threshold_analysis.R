@@ -34,6 +34,7 @@ run_threshold_analysis <- function(marker, direction = "above") {
   if(direction=="above") {
   esttmle_full <- suppressWarnings(thresholdTMLE(data_full, node_list, thresholds = thresholds, biased_sampling_strata = NULL, biased_sampling_indicator = "TwophasesampInd", lrnr_A = lrnr, lrnr_Y = lrnr, lrnr_Delta = lrnr_Delta))
   } else if(direction=="below") {
+      thresholds <- thresholds[-1]
       data_full[[node_list[["A"]]]] <- -data_full[[node_list[["A"]]]]
       esttmle_full <- suppressWarnings(thresholdTMLE(data_full, node_list, thresholds = sort(-thresholds), biased_sampling_strata = NULL, biased_sampling_indicator = "TwophasesampInd", lrnr_A = lrnr, lrnr_Y = lrnr, lrnr_Delta = lrnr_Delta, monotone_decreasing = F))
       esttmle_full[[1]][,1] <- - esttmle_full[[1]][,1]

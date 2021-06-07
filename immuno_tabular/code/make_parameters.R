@@ -69,10 +69,10 @@ tlf <-
       with concentrations $\\geq 2\\times$ LLOQ or $\\geq 4\\times$ LLOQ for binding antibody
       markers",
       table_footer = c(
-        sprintf("Binding Antibody Responders are are defined as participants with concentration 
+        sprintf("Binding Antibody Responders are defined as participants with concentration 
         above the specified positivity cut-off, with a separate cut-off for each 
         antigen Spike, RBD, N (%s, %s, and %s respectively, in IU/ml).", 
-                pos.cutoffs["bindN"], pos.cutoffs["bindRBD"], pos.cutoffs["bindSpike"]),
+                pos.cutoffs["bindSpike"], pos.cutoffs["bindRBD"], pos.cutoffs["bindN"]),
         "Percentages are calculated for the whole per-protocol group/subgroup, 
         using inverse probability weighting."),
       loop = "subgroup",
@@ -86,10 +86,10 @@ tlf <-
       with 2-fold rise, and participants with 4-fold rise for binding antibody
       markers",
       table_footer = c(
-        sprintf("Binding Antibody Responders are are defined as participants with concentration 
+        sprintf("Binding Antibody Responders are defined as participants with concentration 
         above the specified positivity cut-off, with a separate cut-off for each 
         antigen Spike, RBD, N (%s, %s, and %s respectively, in IU/ml).", 
-                pos.cutoffs["bindN"], pos.cutoffs["bindRBD"], pos.cutoffs["bindSpike"]),
+                pos.cutoffs["bindSpike"], pos.cutoffs["bindRBD"], pos.cutoffs["bindN"]), 
         "Percentages are calculated for the whole per-protocol group/subgroup, 
         using inverse probability weighting."),
       loop = "subgroup",

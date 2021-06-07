@@ -179,7 +179,7 @@ for (idx in 1:2) { # 1 with placebo lines, 2 without placebo lines. Implementati
     dev.off()    
 }
 }
-save(ylims.cor, file=paste0(save.results.to, "ylims.cor"%.%study_name%.%".Rdata"))
+save(ylims.cor, file=paste0(save.results.to, "ylims.cor."%.%study_name%.%".Rdata"))
 
 
 

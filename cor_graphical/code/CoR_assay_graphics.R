@@ -136,9 +136,9 @@ for (tt in 2:5){
             legend.text = element_text(size = 14),)
     if (tt <= 3) {
       boxplot_list[[aa]] <- boxplot_list[[aa]] + 
-        geom_hline(yintercept = log10(llods[aa]), linetype = 2, color = "black", lwd = 1) +
-        geom_hline(yintercept = log10(lloqs[aa]), linetype = 2, color = "black", lwd = 1) +
-        geom_hline(yintercept = log10(uloqs[aa]), linetype = 2, color = "black", lwd = 1)
+        geom_hline(yintercept = log10(llods[assays][aa]), linetype = 2, color = "black", lwd = 1) +
+        geom_hline(yintercept = log10(lloqs[assays][aa]), linetype = 2, color = "black", lwd = 1) +
+        geom_hline(yintercept = log10(uloqs[assays][aa]), linetype = 2, color = "black", lwd = 1)
     }
   }
   
@@ -214,10 +214,10 @@ for (tt in 2:5){
             legend.text = element_text(size = 14))
     
     if (tt <= 3) {
-      boxplots <- boxplots + geom_hline(yintercept = log10(llods[aa]), linetype = 2, color = "black", lwd = 1) + 
-        geom_hline(yintercept = log10(llods[aa]), linetype = 2, color = "black", lwd = 1) +
-        geom_hline(yintercept = log10(lloqs[aa]), linetype = 2, color = "black", lwd = 1) +
-        geom_hline(yintercept = log10(uloqs[aa]), linetype = 2, color = "black", lwd = 1)
+      boxplots <- boxplots + 
+        geom_hline(yintercept = log10(llods[assays][aa]), linetype = 2, color = "black", lwd = 1) +
+        geom_hline(yintercept = log10(lloqs[assays][aa]), linetype = 2, color = "black", lwd = 1) +
+        geom_hline(yintercept = log10(uloqs[assays][aa]), linetype = 2, color = "black", lwd = 1)
     }
     
     

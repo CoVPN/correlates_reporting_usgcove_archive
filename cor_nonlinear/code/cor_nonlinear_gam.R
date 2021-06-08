@@ -39,7 +39,7 @@ marginalized.risk.gam.boot=function(formula, marker.name, type=1, data, B, ci.ty
         if(type==1) {
         # conditional on S=s
             fit.risk=try(mgcv::gam(formula=f1, data=dat.b.ph2, family=binomial, weights=wt.0))
-            if ( class (fit.risk) != "try-error" ) {
+            if ( class (fit.risk)[1] != "try-error" ) {
                 marginalized.risk(fit.risk, marker.name, data=dat.b.ph2, ss=ss, weights=dat.b.ph2$wt.0, categorical.s=F)
             } else {
                 rep(NA, length(ss))

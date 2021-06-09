@@ -1,4 +1,4 @@
-#Sys.setenv(TRIAL = "janssen_pooled_mock")
+#Sys.setenv(TRIAL = "janssen_la_mock")
 if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
 #----------------------------------------------- 
 # obligatory to append to the top of each script
@@ -180,15 +180,22 @@ rv=list()
 rv$marker.cutpoints=marker.cutpoints
 
 
+
+
 ###################################################################################################
 # run PH models
 source(here::here("code", "cor_coxph_ph.R"))
+
+
 
 
 ###################################################################################################
 # draw marginalized risk curves
 source(here::here("code", "cor_coxph_marginalized_risk_no_marker.R"))
 source(here::here("code", "cor_coxph_marginalized_risk.R"))
+
+
+
 
 
 ###################################################################################################

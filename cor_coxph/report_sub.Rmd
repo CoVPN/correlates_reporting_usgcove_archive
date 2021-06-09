@@ -95,7 +95,11 @@ $\dagger$ q-value and FWER (family-wide error rate) are computed over the set of
 
 \clearpage
 
-\ifENSEMBLE
+
+\newif\ifShowCountry
+`r if (study_name_code=="ENSEMBLE" & (config$subset_variable=="None" | config$subset_value==1)) "\\ShowCountrytrue"` 
+
+\ifShowCountry
 
 \begin{figure}[H]
     \centering

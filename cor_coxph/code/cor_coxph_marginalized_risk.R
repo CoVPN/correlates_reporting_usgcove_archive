@@ -8,7 +8,7 @@
 # data is ph1 data
 # t is a time point near to the time of the last observed outcome will be defined
 marginalized.risk.svycoxph.boot=function(formula, marker.name, type, data, t, B, ci.type="quantile", numCores=1) {  
-# formula=form.0; marker.name="Day"%.%pop%.%"bindSpike"; data=dat.vac.seroneg; t=t0; weights=dat.vac.seroneg$wt.D57; B=2; ci.type="quantile"; numCores=1; type=2
+# formula=form.0; marker.name="Day"%.%pop%.%a; data=dat.vac.seroneg; t=t0; B=2; ci.type="quantile"; numCores=1; type=2
     
     # store the current rng state 
     save.seed <- try(get(".Random.seed", .GlobalEnv), silent=TRUE) 
@@ -17,13 +17,13 @@ marginalized.risk.svycoxph.boot=function(formula, marker.name, type, data, t, B,
     data.ph2=subset(data, ph2)     
     
     if (type==1) {
-    # conditional on s    
+    # conditional on s
         ss=quantile(data[[marker.name]], seq(.05,.95,by=0.01), na.rm=TRUE) # this is a fine grid because we may need to read points off the curve    
         f1=update(formula, as.formula(paste0("~.+",marker.name)))        
         tmp.design=twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=data)
-        fit.risk=svycoxph(f1, design=tmp.design) # since we don't need se, we could use coxph, but the weights computed by svycoxph are a little different from the coxph due to fpc
+        fit.risk=try(svycoxph(f1, design=tmp.design)) # since we don't need se, we could use coxph, but the weights computed by svycoxph are a little different from the coxph due to fpc
         prob=marginalized.risk(fit.risk, marker.name, data=data.ph2, ss=ss, weights=data.ph2$wt.0, t=t, categorical.s=F)        
-    
+        
     } else if (type==2) {
     # conditional on S>=s
         ss=quantile(data[[marker.name]], seq(0,.9,by=0.05), na.rm=TRUE); myprint(ss)
@@ -43,9 +43,13 @@ marginalized.risk.svycoxph.boot=function(formula, marker.name, type, data, t, B,
         if(type==1) {
         # conditional on s
             tmp.design=twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=dat.b)
-            fit.risk=svycoxph(f1, design=tmp.design)
+            fit.risk=try(svycoxph(f1, design=tmp.design))
             #fit.s=svyglm(f2, tmp.design)      
-            marginalized.risk(fit.risk, marker.name, dat.b.ph2, t=t, ss=ss, weights=dat.b.ph2$wt, categorical.s=F)
+            if ( class (fit.risk)[1] != "try-error" ) {
+                marginalized.risk(fit.risk, marker.name, dat.b.ph2, t=t, ss=ss, weights=dat.b.ph2$wt, categorical.s=F)
+            } else {
+                rep(NA, length(ss))
+            }
             
         } else if (type==2) {
         # conditional on S>=s
@@ -73,9 +77,10 @@ if(!file.exists(paste0(save.results.to, "marginalized.risk.",study_name,".Rdata"
     print("make marginalized.risk")
     
     # vaccine arm, conditional on S=s
-    risks.all.1=lapply(assays, function (a) 
+    risks.all.1=lapply(assays, function (a) {
+        myprint(a)
         marginalized.risk.svycoxph.boot(formula=form.0, marker.name="Day"%.%pop%.%a, type=1, data=dat.vac.seroneg, t0, B=B, ci.type="quantile", numCores=numCores)                
-    )    
+    })    
     
     # vaccine arm, conditional on S>=s
     risks.all.2=lapply(assays, function (a) 

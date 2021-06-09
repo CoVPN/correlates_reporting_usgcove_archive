@@ -205,7 +205,11 @@ mypdf(onefile=F, file=paste0(save.results.to, "controlled_ve_curves",ii,"_"%.%st
         Bias=controlled.risk.bias.factor(ss=risks$marker, s.cent=s.ref, s1=risks$marker[s1], s2=risks$marker[s2], RRud) 
         if (is.nan(Bias[1])) Bias=rep(1,length(Bias))
     
-        ylim=if(ii==1) c(0.5, 1) else c(0.8, 1)
+        if (study_name_code=="COVE") {
+            ylim=if(ii==1) c(0.5, 1) else c(0.8, 1)
+        } else if (study_name_code=="ENSEMBLE") {
+            ylim=if(ii==1) c(0.4, 1) else c(0.6, 1)
+        }
     
         ncases=sapply(risks$marker, function(s) sum(dat.vac.seroneg$yy[dat.vac.seroneg[["Day"%.%pop%.%a]]>=s], na.rm=T))        
         .subset=if(ii==1) rep(T, length(risks$marker)) else ncases>=5
@@ -218,7 +222,7 @@ mypdf(onefile=F, file=paste0(save.results.to, "controlled_ve_curves",ii,"_"%.%st
         mymatplot(risks$marker[.subset], t(rbind(est, ci.band))[.subset,], type="l", lty=c(1,2,2), col=if(ii==1) "red" else "white", lwd=lwd, make.legend=F, ylab=paste0("Controlled VE against COVID by Day ",t0), main=paste0(labels.assays.long["Day"%.%pop,a]),
             xlab=labels.assays.short[a]%.%ifelse(ii==1," (=s)"," (>=s)"), ylim=ylim, xlim=xlim, yaxt="n", xaxt="n", draw.x.axis=F)
         # labels
-        yat=seq(.5,1,by=.1)
+        yat=seq(.2,1,by=.1)
         axis(side=2,at=yat,labels=(yat*100)%.%"%")
     
         # x axis
@@ -292,7 +296,8 @@ lwd=2
 ylim=c(0,max(risk.0))
 x.time<-seq(0,t0,by=30); if(t0-last(x.time)>15) x.time=c(x.time, t0) else x.time[length(x.time)]=t0
 #
-mypdf(oma=c(1,0,0,0), onefile=F, file=paste0(save.results.to, "marginalized_risks_cat_", study_name), mfrow=.mfrow, width=7*1.3, height = 7.5/2*.mfrow[1]*1.3, mar=c(11,4,4,2))
+if(.mfrow[1]==1)  height=7.5/2*1.5 else height=7.5/2*.mfrow[1]*1.3
+mypdf(oma=c(1,0,0,0), onefile=F, file=paste0(save.results.to, "marginalized_risks_cat_", study_name), mfrow=.mfrow, width=7*1.3, height = height, mar=c(11,4,4,2))
 for (a in assays) {        
     par(las=1, cex.axis=0.9, cex.lab=1)# axis label 
     marker.name="Day"%.%pop%.%a%.%"cat"    

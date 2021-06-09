@@ -69,7 +69,7 @@ if (study_name_code=="COVE") {
       )
       
 } else if (study_name_code=="ENSEMBLE") {
-    # only differs from COVE in IndigSouthAmer
+    # add IndigSouthAmer, remove Other
     dat_proc <- dat_proc %>%
       mutate(
         race = labels.race[1],
@@ -80,8 +80,7 @@ if (study_name_code=="COVE") {
           IndigSouthAmer == 1 ~ labels.race[5],
           PacIsl == 1 ~ labels.race[6],
           Multiracial == 1 ~ labels.race[7],
-          Other == 1 ~ labels.race[8],
-          Notreported == 1 | Unknown == 1 ~ labels.race[9],
+          Notreported == 1 | Unknown == 1 ~ labels.race[8],
           TRUE ~ labels.race[1]
         ),
         race = factor(race, levels = labels.race)

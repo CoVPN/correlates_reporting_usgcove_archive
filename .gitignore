@@ -286,3 +286,11 @@ cor_nonlinear/output/D57/step_MockCOVE.pdf
 *.pdf
 optimal_surrogate/*
 cor_coxph/output/D29/permutation_replicates_MockCOVE
+cor_coxph/output/D29/cutpoints_Day29bindRBD_MockENSEMBLE
+cor_coxph/output/D29/cutpoints_Day29bindSpike_MockENSEMBLE
+cor_coxph/output/D29/cutpoints_Delta29overBbindRBD_MockENSEMBLE
+cor_coxph/output/D29/cutpoints_Delta29overBbindSpike_MockENSEMBLE
+cor_coxph/output/D29/timepoints_cum_risk_MockENSEMBLE
+cor_coxph/output/D57/cutpoints_Day57bindSpike_MockENSEMBLE
+cor_coxph/output/D57/timepoints_cum_risk_MockENSEMBLE
+data_clean/janssen_pooled_mock_data_processed.zip

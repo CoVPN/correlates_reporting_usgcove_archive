@@ -27,25 +27,24 @@ library(parallel)
 library(forestplot)
 library(Hmisc) # wtd.quantile, cut2
 library(xtable) # this is a dependency of kyotil
-
 source(here::here("code", "params.R"))
 
 # population is either 57 or 29
 Args <- commandArgs(trailingOnly=TRUE)
-if (length(Args)==0) Args=c(pop="57")
+if (length(Args)==0) Args=c(pop="29")
 pop=Args[1]; myprint(pop)
-
-if(!has29 & pop=="57") {
+if(!has29 & pop=="29") {
     print("Quitting because there are no Day 29 markers")
     quit()
+} else if(!has57 & pop=="57") {
+    print("Quitting because there are no Day 57 markers")
+    quit()
 }
-
 time.start=Sys.time()
 
 
 ###################################################################################################
 # read data_clean
-
 data_name_updated <- sub(".csv", "_with_riskscore.csv", data_name)
 if (file.exists(here::here("..", "data_clean", data_name_updated))) {
     dat.mock <- read.csv(here::here("..", "data_clean", data_name_updated))
@@ -60,7 +59,6 @@ if (file.exists(here::here("..", "data_clean", data_name_updated))) {
 ###################################################################################################
 # uloq censoring
 # note that if delta are used, delta needs to be recomputed
-
 for (a in intersect(assays_to_be_censored_at_uloq_cor, assays)) {
   for (t in c("B", if(has57) "Day57", if(has29) "Day29") ) {
     dat.mock[[t %.% a]] <- ifelse(dat.mock[[t %.% a]] > log10(uloqs[a]), log10(uloqs[a]), dat.mock[[t %.% a]])
@@ -70,7 +68,7 @@ for (a in intersect(assays_to_be_censored_at_uloq_cor, assays)) {
 
 ###################################################################################################
 # set up based on whether to perform D29 or D57 analyses
-
+    
 if (pop=="57") {
     dat.mock$wt.0=dat.mock$wt.D57
     dat.mock$TwophasesampInd.0 = dat.mock$TwophasesampIndD57
@@ -82,19 +80,19 @@ if (pop=="57") {
     dat.mock$ph1=dat.mock$ph1.D29
     dat.mock$ph2=dat.mock$ph2.D29
 } else stop("wrong pop")
-
+    
 # the following data frame define the phase 1 ptids
 dat.vac.seroneg=subset(dat.mock, Trt==1 & Bserostatus==0 & ph1)
 dat.pla.seroneg=subset(dat.mock, Trt==0 & Bserostatus==0 & ph1)
-
+    
 # define an alias for EventIndPrimaryDxx
 dat.vac.seroneg$yy=dat.vac.seroneg[["EventIndPrimaryD"%.%pop]]
 dat.pla.seroneg$yy=dat.pla.seroneg[["EventIndPrimaryD"%.%pop]]
-
+    
 # followup time for the last case
 t0=max(dat.vac.seroneg[dat.vac.seroneg[["EventIndPrimaryD"%.%pop]]==1, "EventTimePrimaryD"%.%pop])
 myprint(t0)
-
+    
 # formulae
 form.s = as.formula(paste0("Surv(EventTimePrimaryD",pop,", EventIndPrimaryD",pop,") ~ 1"))
 if (endsWith(data_name, "riskscore.csv")) {
@@ -104,14 +102,14 @@ if (endsWith(data_name, "riskscore.csv")) {
     form.0 =            update (form.s, ~.+ MinorityInd + HighRiskInd + Age) 
     form.0.logistic = as.formula(paste0("EventIndPrimaryD",pop,"  ~ MinorityInd + HighRiskInd + Age"))  
 }
-
+    
 # covariate length without markers
 p.cov=length(terms(form.0))
 
 
 ###################################################################################################
 # define trichotomized markers and create design object
-
+    
 marker.cutpoints <- list()    
 for (a in assays) {
     marker.cutpoints[[a]] <- list()    
@@ -153,18 +151,18 @@ for (a in assays) {
         cat("\n")
     }
 }
-
+    
 # survey design object
 design.vacc.seroneg<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=dat.vac.seroneg)
 
 
 ###################################################################################################
 # save cutpoints and t0
-
+    
 save.results.to = paste0(here::here("output"), "/D", pop,"/");
 if (!dir.exists(save.results.to))  dir.create(save.results.to)
 print(paste0("save.results.to equals ", save.results.to))
-
+    
 cutpoints=list()
 for (a in assays) {        
     for (t in c("Day"%.%pop, "Delta"%.%pop%.%"overB")) {
@@ -172,7 +170,7 @@ for (a in assays) {
         write(paste0(labels.axis[1,a], " [", concatList(round(q.a, 2), ", "), ")%"), file=paste0(save.results.to, "cutpoints_", t, a, "_"%.%study_name))
     }
 }
-
+    
 write(t0, file=paste0(save.results.to, "timepoints_cum_risk_"%.%study_name))
 
 

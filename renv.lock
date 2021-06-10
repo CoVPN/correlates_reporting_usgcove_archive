@@ -1254,6 +1254,13 @@
       "Repository": "CRAN",
       "Hash": "ad5d45cfde1d122001e0dca07f80182a"
     },
+    "mice": {
+      "Package": "mice",
+      "Version": "3.13.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "ad5d45cfde1d122001e0dca07f80182a"
+    },
     "mime": {
       "Package": "mime",
       "Version": "0.10",

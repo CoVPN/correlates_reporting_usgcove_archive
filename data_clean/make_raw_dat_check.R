@@ -48,18 +48,20 @@ if(length(failed_variables_missing) > 1){
 
 # check failure times for sanity
 ## EventIndPrimaryD57==1 implies EventIndPrimaryD29==1
-pass <- with(dat_proc, all(EventIndPrimaryD29[EventIndPrimaryD57 == 1] == 1))
-if(!pass){
-    stop(paste0("Some individuals with qualifying events for Day 29 analysis are labeled ",
-                "as having no event for the Day 57 analysis."))
-}
-
-## cases that qualify for both events have shorter follow up for Day 57 analysis
-pass <- with(dat_proc, {
-    idx <- EventIndPrimaryD57 == 1 & EventIndPrimaryD29 == 1
-    all(EventTimePrimaryD57[idx] < EventTimePrimaryD29[idx])
-})
-if(!pass){
-    stop(paste0("Amongst individuals who have events that qualify for both Day 29 and Day 57 ",
-                "some follow up times are *longer* for Day 57 than for Day 29."))
+if(has57 & has29) {
+    pass <- with(dat_proc, all(EventIndPrimaryD29[EventIndPrimaryD57 == 1] == 1))
+    if(!pass){
+        stop(paste0("Some individuals with qualifying events for Day 29 analysis are labeled ",
+                    "as having no event for the Day 57 analysis."))
+    }
+    
+    ## cases that qualify for both events have shorter follow up for Day 57 analysis
+    pass <- with(dat_proc, {
+        idx <- EventIndPrimaryD57 == 1 & EventIndPrimaryD29 == 1
+        all(EventTimePrimaryD57[idx] < EventTimePrimaryD29[idx])
+    })
+    if(!pass){
+        stop(paste0("Amongst individuals who have events that qualify for both Day 29 and Day 57 ",
+                    "some follow up times are *longer* for Day 57 than for Day 29."))
+    }
 }

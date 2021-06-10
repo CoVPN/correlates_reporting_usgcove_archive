@@ -1,3 +1,4 @@
+#Sys.setenv(TRIAL = "janssen_pooled_mock")
 if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
 #-----------------------------------------------
 renv::activate(here::here())
@@ -8,7 +9,6 @@ if (.Platform$OS.type == "windows") {
 source(here::here("_common.R"))
 #-----------------------------------------------
 
-
 # packages and settings
 library(here)
 library(tidyverse)
@@ -16,38 +16,31 @@ library(Hmisc) # wtd.quantile, cut2
 library(mice)
 library(dplyr)
 
+myprint(study_name_code)
 
-# load data and rename first column (ID)
 dat_proc <- read.csv(here(
   "data_raw", data_raw_dir, data_in_file
 ))
 
-colnames(dat_proc)[1] <- "Ptid"
 
-#tmp=read.csv("D:/gdrive/Covid19/correlates_reporting/data_raw/COVID_VEtrial_practicedata_primarystage1.csv")
-#summary(tmp$Day57bindSpike+log10(.009))
-#
-#library(digest)
-#digest("D:/gdrive/Covid19/correlates_reporting/data_raw/COVID_VEtrial_practicedata_primarystage1.csv", file=T)
+if(study_name=="MockENSEMBLE") dat_proc=dat_proc[, !contain(names(dat_proc), "pseudoneutid")]
 
+colnames(dat_proc)[1] <- "Ptid" 
 
-#dat_proc=subset(dat_proc, !is.na(Bserostatus))
-dat_proc=subset(dat_proc, !is.na(EventTimePrimaryD1) & !is.na(EventTimePrimaryD57) & !is.na(EventTimePrimaryD29))
+dat_proc=subset(dat_proc, !is.na(Bserostatus))
 
+          dat_proc=subset(dat_proc, !is.na(EventTimePrimaryD1) & !is.na(EventTimePrimaryD29))
+if(has57) dat_proc=subset(dat_proc, !is.na(EventTimePrimaryD57))
 
-#hist(dat_proc$Day57bindSpike[dat_proc$Trt==1])
-#with(dat_proc, table(EventIndPrimaryD1, EventIndPrimaryD29, useNA="ifany"))
-#with(dat_proc, table(EventIndPrimaryD1, EventIndPrimaryD57, useNA="ifany"))
-#with(dat_proc, table(EventIndPrimaryD29, EventIndPrimaryD57, useNA="ifany"))
-
-
-dat_proc$EarlyendpointD57 <- with(dat_proc, ifelse(EarlyinfectionD57==1 | (EventIndPrimaryD1==1 & EventTimePrimaryD1 < NumberdaysD1toD57 + 7),1,0))
-dat_proc$EarlyendpointD29 <- with(dat_proc, ifelse(EarlyinfectionD29==1 | (EventIndPrimaryD1==1 & EventTimePrimaryD1 < NumberdaysD1toD29 + 7),1,0))
+          dat_proc$EarlyendpointD29 <- with(dat_proc, ifelse(EarlyinfectionD29==1 | (EventIndPrimaryD1==1 & EventTimePrimaryD1 < NumberdaysD1toD29 + 7),1,0))
+if(has57) dat_proc$EarlyendpointD57 <- with(dat_proc, ifelse(EarlyinfectionD57==1 | (EventIndPrimaryD1==1 & EventTimePrimaryD1 < NumberdaysD1toD57 + 7),1,0))
 
 dat_proc <- dat_proc %>%
   mutate(
     age.geq.65 = as.integer(Age >= 65)
   )
+
+dat_proc$Senior = as.integer(dat_proc$Age>=switch(study_name_code, COVE=65, ENSEMBLE=60, stop("unknown study_name_code")))
 
   
   
@@ -58,21 +51,42 @@ dat_proc$ethnicity <- factor(dat_proc$ethnicity, levels = labels.ethnicity)
 
 
 # race labeling
-dat_proc <- dat_proc %>%
-  mutate(
-    race = labels.race[1],
-    race = case_when(
-      Black == 1 ~ labels.race[2],
-      Asian == 1 ~ labels.race[3],
-      NatAmer == 1 ~ labels.race[4],
-      PacIsl == 1 ~ labels.race[5],
-      Multiracial == 1 ~ labels.race[6],
-      Other == 1 ~ labels.race[7],
-      Notreported == 1 | Unknown == 1 ~ labels.race[8],
-      TRUE ~ labels.race[1]
-    ),
-    race = factor(race, levels = labels.race)
-  )
+if (study_name_code=="COVE") {
+    dat_proc <- dat_proc %>%
+      mutate(
+        race = labels.race[1],
+        race = case_when(
+          Black == 1 ~ labels.race[2],
+          Asian == 1 ~ labels.race[3],
+          NatAmer == 1 ~ labels.race[4],
+          PacIsl == 1 ~ labels.race[5],
+          Multiracial == 1 ~ labels.race[6],
+          Other == 1 ~ labels.race[7],
+          Notreported == 1 | Unknown == 1 ~ labels.race[8],
+          TRUE ~ labels.race[1]
+        ),
+        race = factor(race, levels = labels.race)
+      )
+      
+} else if (study_name_code=="ENSEMBLE") {
+    # only differs from COVE in IndigSouthAmer
+    dat_proc <- dat_proc %>%
+      mutate(
+        race = labels.race[1],
+        race = case_when(
+          Black == 1 ~ labels.race[2],
+          Asian == 1 ~ labels.race[3],
+          NatAmer == 1 ~ labels.race[4],
+          IndigSouthAmer == 1 ~ labels.race[5],
+          PacIsl == 1 ~ labels.race[6],
+          Multiracial == 1 ~ labels.race[7],
+          Other == 1 ~ labels.race[8],
+          Notreported == 1 | Unknown == 1 ~ labels.race[9],
+          TRUE ~ labels.race[1]
+        ),
+        race = factor(race, levels = labels.race)
+      )
+}
 
 # WhiteNonHispanic=1 IF race is White AND ethnicity is not Hispanic
 dat_proc$WhiteNonHispanic <- NA
@@ -139,20 +153,42 @@ dat_proc$MinorityInd[is.na(dat_proc$MinorityInd)] = 0
 
 # Bstratum: randomization strata
 # Moderna: 1 ~ 3, defines the 3 baseline strata within trt/serostatus
-dat_proc <- dat_proc %>%
-  mutate(
-    Bstratum = ifelse(Age >= 65, 1, ifelse(HighRiskInd == 1, 2, 3))
-  )
+if (study_name_code=="COVE") {
+    dat_proc$Bstratum = with(dat_proc, ifelse(Senior, 1, ifelse(HighRiskInd == 1, 2, 3)))
+    
+} else if (study_name_code=="ENSEMBLE") {
+    dat_proc$Bstratum =  with(dat_proc, strtoi(paste0(Senior, HighRiskInd), base = 2)) + 1
+
+}
+
 names(Bstratum.labels) <- Bstratum.labels
+
+#with(dat_proc, table(Bstratum, Senior, HighRiskInd))
+
 
 # demo.stratum: correlates sampling strata
 # Moderna: 1 ~ 6 defines the 6 baseline strata within trt/serostatus
 # may have NA b/c URMforsubcohortsampling may be NA
-dat_proc <- dat_proc %>%
-  mutate(
-    demo.stratum = ifelse (URMforsubcohortsampling==1, ifelse(Age >= 65, 1, ifelse(HighRiskInd == 1, 2, 3)), 3+ifelse(Age >= 65, 1, ifelse(HighRiskInd == 1, 2, 3)))
-  )
+if (study_name_code=="COVE") {
+    dat_proc$demo.stratum = with(dat_proc, ifelse (URMforsubcohortsampling==1, ifelse(Senior, 1, ifelse(HighRiskInd == 1, 2, 3)), 3+ifelse(Senior, 1, ifelse(HighRiskInd == 1, 2, 3))))
+
+} else if (study_name_code=="ENSEMBLE") {
+    # first step, stratify by age and high risk
+    dat_proc$demo.stratum =  with(dat_proc, strtoi(paste0(Senior, HighRiskInd), base = 2)) + 1
+    # second step, stratify by country
+    dat_proc$demo.stratum=with(dat_proc, ifelse(Region==0 & URMforsubcohortsampling==0, demo.stratum + 4, demo.stratum)) # US, non-URM
+    dat_proc$demo.stratum[dat_proc$Region==1] = dat_proc$demo.stratum[dat_proc$Region==1] + 8 # Latin America
+    dat_proc$demo.stratum[dat_proc$Region==2] = dat_proc$demo.stratum[dat_proc$Region==2] + 12 # Southern Africa
+    # set US URM=NA to NA
+    
+    assertthat::assert_that(
+        all(!with(dat_proc, xor(is.na(demo.stratum),  Region==0 & is.na(URMforsubcohortsampling) ))),
+        msg = "demo.stratum is na if and only if URM is NA and north america")
+    
+} else stop("unknown study_name_code")  
+  
 names(demo.stratum.labels) <- demo.stratum.labels
+
 
 # tps stratum, 1 ~ 4*max(demo.stratum), used in tps regression
 dat_proc <- dat_proc %>%
@@ -175,6 +211,8 @@ dat_proc$Wstratum[with(dat_proc, EventIndPrimaryD29==1 & Trt==1 & Bserostatus==1
 
 #subset(dat_proc, Trt==1 & Bserostatus==1 & EventIndPrimaryD29 == 1)[1:3,]
 
+with(dat_proc, table(tps.stratum))
+
 
 ###############################################################################
 # observation-level weights
@@ -185,6 +223,8 @@ dat_proc$Wstratum[with(dat_proc, EventIndPrimaryD29==1 & Trt==1 & Bserostatus==1
 
 # initially TwophasesampInd just need to be in the case or subcohort and have the necessary markers
 # after defining ph1.xx, we will update TwophasesampInd to be 0 outside ph1.xx
+
+if (has57)
 dat_proc <- dat_proc %>%
   mutate(
     TwophasesampIndD57 =
@@ -226,37 +266,63 @@ if(has29) dat_proc <- dat_proc %>%
   
 
 # wt, for D57 correlates analyses
-wts_table <- dat_proc %>% dplyr::filter(EarlyendpointD57==0 & Perprotocol == 1 & EventTimePrimaryD57 >= 7) %>%
-  with(table(Wstratum, TwophasesampIndD57))
-wts_norm <- rowSums(wts_table) / wts_table[, 2]
-dat_proc$wt.D57 <- wts_norm[dat_proc$Wstratum %.% ""]
-dat_proc$wt.D57 = ifelse(with(dat_proc, EarlyendpointD57==0 & Perprotocol == 1 & EventTimePrimaryD57>=7), dat_proc$wt.D57, NA)
-dat_proc$ph1.D57=!is.na(dat_proc$wt.D57)
-dat_proc$ph2.D57=with(dat_proc, ph1.D57 & TwophasesampIndD57)
+if (has57) {
+    wts_table <- dat_proc %>% dplyr::filter(EarlyendpointD57==0 & Perprotocol==1 & EventTimePrimaryD57>=7) %>%
+      with(table(Wstratum, TwophasesampIndD57))
+    wts_norm <- rowSums(wts_table) / wts_table[, 2]
+    dat_proc$wt.D57 <- wts_norm[dat_proc$Wstratum %.% ""]
+    # the step above assigns weights for some subjects outside ph1. the next step makes them NA
+    dat_proc$wt.D57 = ifelse(with(dat_proc, EarlyendpointD57==0 & Perprotocol==1 & EventTimePrimaryD57>=7), dat_proc$wt.D57, NA) 
+    dat_proc$ph1.D57=!is.na(dat_proc$wt.D57)
+    dat_proc$ph2.D57=with(dat_proc, ph1.D57 & TwophasesampIndD57)
+    
+    assertthat::assert_that(
+        all(!is.na(subset(dat_proc, EarlyendpointD57==0 & Perprotocol==1 & EventTimePrimaryD57>=7 & !is.na(Wstratum), select=wt.D57, drop=T))),
+        msg = "missing wt.D57 for D57 analyses ph1 subjects")
+}
 
-# wt.2D9, for D29 correlates analyses
 if(has29) {
-    wts_table2 <- dat_proc %>% dplyr::filter(EarlyendpointD29==0 & Perprotocol == 1 & EventTimePrimaryD29 >= 7) %>%
+    wts_table2 <- dat_proc %>% dplyr::filter(EarlyendpointD29==0 & Perprotocol==1 & EventTimePrimaryD29>=7) %>%
       with(table(Wstratum, TwophasesampIndD29))
     wts_norm2 <- rowSums(wts_table2) / wts_table2[, 2]
     dat_proc$wt.D29 <- wts_norm2[dat_proc$Wstratum %.% ""]
-    dat_proc$wt.D29 = ifelse(with(dat_proc, EarlyendpointD29==0 & Perprotocol == 1 & EventTimePrimaryD29 >= 7), dat_proc$wt.D29, NA)
+    dat_proc$wt.D29 = ifelse(with(dat_proc, EarlyendpointD29==0 & Perprotocol==1 & EventTimePrimaryD29>=7), dat_proc$wt.D29, NA)
     dat_proc$ph1.D29=!is.na(dat_proc$wt.D29)
     dat_proc$ph2.D29=with(dat_proc, ph1.D29 & TwophasesampIndD29)
 
     assertthat::assert_that(
-        all(!is.na(subset(dat_proc, EarlyendpointD29==0 & Perprotocol == 1 & EventTimePrimaryD29>=7 & !is.na(Wstratum), select=wt.D29, drop=T))),
+        all(!is.na(subset(dat_proc, EarlyendpointD29==0 & Perprotocol==1 & EventTimePrimaryD29>=7 & !is.na(Wstratum), select=wt.D29, drop=T))),
         msg = "missing wt.D29 for D29 analyses ph1 subjects")
 }
 
 # wt.subcohort, for immunogenicity analyses that use subcohort only and are not enriched by cases outside subcohort
-wts_table <- dat_proc %>% dplyr::filter(EarlyendpointD57==0 & Perprotocol == 1) %>%
-  with(table(tps.stratum, TwophasesampIndD57 & SubcohortInd))
-wts_norm <- rowSums(wts_table) / wts_table[, 2]
-dat_proc$wt.subcohort <- wts_norm[dat_proc$tps.stratum %.% ""]
-dat_proc$wt.subcohort = ifelse(with(dat_proc, EarlyendpointD57==0 & Perprotocol == 1), dat_proc$wt.subcohort, NA)
-dat_proc$ph1.immuno=!is.na(dat_proc$wt.subcohort)
-dat_proc$ph2.immuno=with(dat_proc, ph1.immuno & SubcohortInd & TwophasesampIndD57)
+if (study_name_code=="COVE") {
+    wts_table <- dat_proc %>%       dplyr::filter(EarlyendpointD57==0 & Perprotocol==1) %>%
+      with(table(tps.stratum, TwophasesampIndD57 & SubcohortInd))
+    wts_norm <- rowSums(wts_table) / wts_table[, 2]
+    dat_proc$wt.subcohort <- wts_norm[dat_proc$tps.stratum %.% ""]
+    dat_proc$wt.subcohort = ifelse(with(dat_proc, EarlyendpointD57==0 & Perprotocol==1), dat_proc$wt.subcohort, NA)
+    dat_proc$ph1.immuno=!is.na(dat_proc$wt.subcohort)
+    dat_proc$ph2.immuno=with(dat_proc, ph1.immuno & SubcohortInd & TwophasesampIndD57)
+    
+    assertthat::assert_that(
+        all(!is.na(subset(dat_proc, EarlyendpointD57==0 & Perprotocol==1 & !is.na(tps.stratum), select=wt.subcohort, drop=T))), 
+        msg = "missing wt.subcohort for immuno analyses ph1 subjects")
+        
+} else if (study_name_code=="ENSEMBLE") {
+    wts_table <- dat_proc %>%       dplyr::filter(EarlyendpointD29==0 & Perprotocol==1) %>%
+      with(table(tps.stratum, TwophasesampIndD29 & SubcohortInd))
+    wts_norm <- rowSums(wts_table) / wts_table[, 2]
+    dat_proc$wt.subcohort <- wts_norm[dat_proc$tps.stratum %.% ""]
+    dat_proc$wt.subcohort = ifelse(with(dat_proc, EarlyendpointD29==0 & Perprotocol == 1), dat_proc$wt.subcohort, NA)
+    dat_proc$ph1.immuno=!is.na(dat_proc$wt.subcohort)
+    dat_proc$ph2.immuno=with(dat_proc, ph1.immuno & SubcohortInd & TwophasesampIndD29)
+    
+    assertthat::assert_that(
+        all(!is.na(subset(dat_proc, EarlyendpointD29==0 & Perprotocol==1 & !is.na(tps.stratum), select=wt.subcohort, drop=T))), 
+        msg = "missing wt.subcohort for immuno analyses ph1 subjects")
+        
+} else stop("unknown study_name_code")
 
 
 # the following should not be defined because TwophasesampIndD57 and TwophasesampIndD29 are not ph2
@@ -265,14 +331,8 @@ dat_proc$ph2.immuno=with(dat_proc, ph1.immuno & SubcohortInd & TwophasesampIndD5
 #dat_proc$TwophasesampIndD29[!dat_proc$ph1.D29] <- 0
 #}
 
-assertthat::assert_that(
-    all(!is.na(subset(dat_proc, EarlyendpointD57==0 & Perprotocol == 1 & EventTimePrimaryD57>=7 & !is.na(Wstratum), select=wt.D57, drop=T))),
-    msg = "missing wt.D57 for D57 analyses ph1 subjects")
 
 
-assertthat::assert_that(
-    all(!is.na(subset(dat_proc, EarlyendpointD57==0 & Perprotocol == 1 & !is.na(tps.stratum), select=wt.subcohort, drop=T))), 
-    msg = "missing wt.subcohort for immuno analyses ph1 subjects")
 
 
 
@@ -283,50 +343,52 @@ assertthat::assert_that(
 #     use baseline, D29 and D57, but not Delta
 ###############################################################################
 
-n.imp <- 1
-dat.tmp.impute <- subset(dat_proc, TwophasesampIndD57 == 1)
-
-imp.markers=c(outer(c("B", if(has29) "Day29", "Day57"), assays, "%.%"))
-
-for (trt in unique(dat_proc$Trt)) {
-for (sero in unique(dat_proc$Bserostatus)) {
-
-  #summary(subset(dat.tmp.impute, Trt == 1 & Bserostatus==0)[imp.markers])
-  
-  imp <- dat.tmp.impute %>%
-    dplyr::filter(Trt == trt & Bserostatus==sero) %>%
-    select(all_of(imp.markers)) 
+if (has57) {    
+    n.imp <- 1
+    dat.tmp.impute <- subset(dat_proc, TwophasesampIndD57 == 1)
     
-  # deal with constant variables
-  for (a in names(imp)) {
-    if (all(imp[[a]]==min(imp[[a]], na.rm=TRUE), na.rm=TRUE)) imp[[a]]=min(imp[[a]], na.rm=TRUE)
-  }
+    imp.markers=c(outer(c("B", if(has29) "Day29", "Day57"), assays, "%.%"))
     
-  # diagnostics = FALSE , remove_collinear=F are needed to avoid errors due to collinearity
-  imp <- imp %>%
-    mice(m = n.imp, printFlag = FALSE, seed=1, diagnostics = FALSE , remove_collinear = FALSE)
+    for (trt in unique(dat_proc$Trt)) {
+    for (sero in unique(dat_proc$Bserostatus)) {
     
-  dat.tmp.impute[dat.tmp.impute$Trt == trt & dat.tmp.impute$Bserostatus == sero , imp.markers] <-
-    mice::complete(imp, action = 1)
+      #summary(subset(dat.tmp.impute, Trt == 1 & Bserostatus==0)[imp.markers])
+      
+      imp <- dat.tmp.impute %>%
+        dplyr::filter(Trt == trt & Bserostatus==sero) %>%
+        select(all_of(imp.markers)) 
+        
+      # deal with constant variables
+      for (a in names(imp)) {
+        if (all(imp[[a]]==min(imp[[a]], na.rm=TRUE), na.rm=TRUE)) imp[[a]]=min(imp[[a]], na.rm=TRUE)
+      }
+        
+      # diagnostics = FALSE , remove_collinear=F are needed to avoid errors due to collinearity
+      imp <- imp %>%
+        mice(m = n.imp, printFlag = FALSE, seed=1, diagnostics = FALSE , remove_collinear = FALSE)
+        
+      dat.tmp.impute[dat.tmp.impute$Trt == trt & dat.tmp.impute$Bserostatus == sero , imp.markers] <-
+        mice::complete(imp, action = 1)
+        
+    }
+    }
     
+    # missing markers imputed properly?
+    assertthat::assert_that(
+        all(complete.cases(dat.tmp.impute[, imp.markers])),
+        msg = "missing markers imputed properly?"
+    )    
+    
+    # populate dat_proc imp.markers with the imputed values
+    dat_proc[dat_proc$TwophasesampIndD57==1, imp.markers] <-
+      dat.tmp.impute[imp.markers][match(dat_proc[dat_proc$TwophasesampIndD57==1, "Ptid"], dat.tmp.impute$Ptid), ]
+    
+    # imputed values of missing markers merged properly for all individuals in the two phase sample?
+    assertthat::assert_that(
+      all(complete.cases(dat_proc[dat_proc$TwophasesampIndD57 == 1, imp.markers])),
+      msg = "imputed values of missing markers merged properly for all individuals in the two phase sample?"
+    )
 }
-}
-
-# missing markers imputed properly?
-assertthat::assert_that(
-    all(complete.cases(dat.tmp.impute[, imp.markers])),
-    msg = "missing markers imputed properly?"
-)    
-
-# populate dat_proc imp.markers with the imputed values
-dat_proc[dat_proc$TwophasesampIndD57==1, imp.markers] <-
-  dat.tmp.impute[imp.markers][match(dat_proc[dat_proc$TwophasesampIndD57==1, "Ptid"], dat.tmp.impute$Ptid), ]
-
-# imputed values of missing markers merged properly for all individuals in the two phase sample?
-assertthat::assert_that(
-  all(complete.cases(dat_proc[dat_proc$TwophasesampIndD57 == 1, imp.markers])),
-  msg = "imputed values of missing markers merged properly for all individuals in the two phase sample?"
-)
 
 ###############################################################################
 # impute again for TwophasesampIndD29
@@ -376,12 +438,13 @@ if(has29) {
 
 assays.includeN=c(assays, "bindN")
 
+
 ###############################################################################
 # converting binding variables from AU to IU for binding assays
 ###############################################################################
 
-for (a in c("bindSpike", "bindRBD", "bindN")) {
-  for (t in c("B", if(has29) "Day29", "Day57") ) {
+for (a in assays.includeN) {
+  for (t in c("B", if(has29) "Day29", if(has57) "Day57") ) {
       dat_proc[[t %.% a]] <- dat_proc[[t %.% a]] + log10(convf[a])
   }
 }
@@ -393,14 +456,14 @@ for (a in c("bindSpike", "bindRBD", "bindN")) {
 
 # llod censoring
 for (a in assays.includeN) {
-  for (t in c("B", if(has29) "Day29", "Day57") ) {
+  for (t in c("B", if(has29) "Day29", if(has57) "Day57") ) {
     dat_proc[[t %.% a]] <- ifelse(dat_proc[[t %.% a]] < log10(llods[a]), log10(llods[a] / 2), dat_proc[[t %.% a]])
   }
 }
 
 ## uloq censoring for binding only
 #for (a in c("bindSpike", "bindRBD", "bindN")) {
-#  for (t in c("B", if(has29) "Day29", "Day57") ) {
+#  for (t in c("B", if(has29) "Day29", if(has57) "Day57") ) {
 #    dat_proc[[t %.% a]] <- ifelse(dat_proc[[t %.% a]] > log10(uloqs[a]), log10(uloqs[a]    ), dat_proc[[t %.% a]])
 #  }
 #}
@@ -411,34 +474,35 @@ for (a in assays.includeN) {
 # define delta for dat_proc
 ###############################################################################
 
-
 tmp=list()
 # lloq censoring
 for (a in assays.includeN) {
-  for (t in c("B", if(has29) "Day29", "Day57") ) {
+  for (t in c("B", if(has29) "Day29", if(has57) "Day57") ) {
     tmp[[t %.% a]] <- ifelse(dat_proc[[t %.% a]] < log10(lloqs[a]), log10(lloqs[a] / 2), dat_proc[[t %.% a]])
   }
 }
 tmp=as.data.frame(tmp) # cannot subtract list from list, but can subtract data frame from data frame
 
+if(has57)       dat_proc["Delta57overB"  %.% assays.includeN] <- tmp["Day57" %.% assays.includeN] - tmp["B"     %.% assays.includeN]
+if(has29)       dat_proc["Delta29overB"  %.% assays.includeN] <- tmp["Day29" %.% assays.includeN] - tmp["B"     %.% assays.includeN]
+if(has29&has57) dat_proc["Delta57over29" %.% assays.includeN] <- tmp["Day57" %.% assays.includeN] - tmp["Day29" %.% assays.includeN]
 
-dat_proc["Delta57overB"  %.% assays.includeN] <- tmp["Day57" %.% assays.includeN] - tmp["B"     %.% assays.includeN]
-if(has29) {
-  dat_proc["Delta29overB"  %.% assays.includeN] <- tmp["Day29" %.% assays.includeN] - tmp["B"     %.% assays.includeN]
-  dat_proc["Delta57over29" %.% assays.includeN] <- tmp["Day57" %.% assays.includeN] - tmp["Day29" %.% assays.includeN]
-}
+
 
 ###############################################################################
 # subset on subset_variable
 ###############################################################################
+
 if(subset_value != "All"){
   include_in_subset <- dat_proc[[subset_variable]] == subset_value
   dat_proc <- dat_proc[include_in_subset, , drop = FALSE]
 }
 
+
 ###############################################################################
 # bundle data sets and save as CSV
 ###############################################################################
+
 write_csv(dat_proc, file = here("data_clean", data_name))
 
 
@@ -448,36 +512,20 @@ write_csv(dat_proc, file = here("data_clean", data_name))
 # save some common parameters and helper functions
 ###############################################################################
 
-# maxed over all 3 of Spike, RBD, N, restricting to Day 29 or 57
-if (has29) MaxbAbDay29 = max(dat_proc[,paste0("Day29", c("bindSpike", "bindRBD", "bindN"))], na.rm=T)
-MaxbAbDay57 = max(dat_proc[,paste0("Day57", c("bindSpike", "bindRBD", "bindN"))], na.rm=T)
+# maxed over Spike, RBD, N, restricting to Day 29 or 57
+if(has29) MaxbAbDay29 = max(dat_proc[,paste0("Day29", c("bindSpike", "bindRBD", "bindN"))], na.rm=T)
+if(has29) MaxbAbDelta29overB = max(dat_proc[,paste0("Delta29overB", c("bindSpike", "bindRBD", "bindN"))], na.rm=T)
+if(has57) MaxbAbDay57 = max(dat_proc[,paste0("Day57", c("bindSpike", "bindRBD", "bindN"))], na.rm=T)
+if(has57) MaxbAbDelta57overB = max(dat_proc[,paste0("Delta57overB", c("bindSpike", "bindRBD", "bindN"))], na.rm=T)
 
 # maxed over ID50 and ID80, restricting to Day 29 or 57
-if(has29) MaxID50ID80Day29 = max(dat_proc[,paste0("Day29", c("pseudoneutid50", "pseudoneutid80"))], na.rm=T)
-MaxID50ID80Day57 = max(dat_proc[,paste0("Day57", c("pseudoneutid50", "pseudoneutid80"))], na.rm=T)
-
-# for fold change, maxed over all 3 of Spike, RBD, N, restricting to Day 29 or 57
-if(has29) MaxbAbDelta29overB = max(dat_proc[,paste0("Delta29overB", c("bindSpike", "bindRBD", "bindN"))], na.rm=T)
-MaxbAbDelta57overB = max(dat_proc[,paste0("Delta57overB", c("bindSpike", "bindRBD", "bindN"))], na.rm=T)
-
-# for fold change, maxed over ID50 and ID80, restricting to Day 29 or 57
-if (has29) {
-  MaxID50ID80Delta29overB =
-    max(dat_proc[,paste0("Delta29overB", c("pseudoneutid50",
-                                           "pseudoneutid80"))],
-        na.rm=TRUE)
+if("pseudoneutid50" %in% assays & "pseudoneutid80" %in% assays) {
+    if(has29) MaxID50ID80Day29 = max(dat_proc[,paste0("Day29", c("pseudoneutid50", "pseudoneutid80"))], na.rm=T)
+    if(has29) MaxID50ID80Delta29overB = max(dat_proc[,paste0("Delta29overB", c("pseudoneutid50", "pseudoneutid80"))], na.rm=TRUE)
+    if(has57) MaxID50ID80Day57 = max(dat_proc[,paste0("Day57", c("pseudoneutid50", "pseudoneutid80"))], na.rm=T)        
+    if(has57) MaxID50ID80Delta57overB = max(dat_proc[,paste0("Delta57overB", c("pseudoneutid50", "pseudoneutid80"))], na.rm=TRUE)
 }
-MaxID50ID80Delta57overB =
-    max(dat_proc[,paste0("Delta57overB", c("pseudoneutid50",
-                                           "pseudoneutid80"))],
-        na.rm=TRUE)
 
-
-if(has29){
-    save(MaxbAbDay57, MaxID50ID80Day57, MaxbAbDelta57overB, MaxID50ID80Delta57overB, 
-         MaxbAbDelta29overB, MaxID50ID80Delta29overB, MaxbAbDay29, MaxID50ID80Day29,
-    file=here("data_clean", "_params.Rdata"))
-} else {
-    save(MaxbAbDay57, MaxID50ID80Day57, MaxbAbDelta57overB, MaxID50ID80Delta57overB,
-    file=here("data_clean", "_params.Rdata"))
-}
+save(list=c(if(has57) c("MaxbAbDay57", "MaxbAbDelta57overB", if("pseudoneutid50" %in% assays & "pseudoneutid80" %in% assays) c("MaxID50ID80Day57", "MaxID50ID80Delta57overB")), 
+            if(has29) c("MaxbAbDay29", "MaxbAbDelta29overB", if("pseudoneutid50" %in% assays & "pseudoneutid80" %in% assays) c("MaxID50ID80Day29", "MaxID50ID80Delta29overB"))),
+file=here("data_clean", paste0(attr(config, "config"), "_params.Rdata")))

@@ -3,16 +3,20 @@ all: clean cor_coxph
 
 ## clean         : delete saved bootstrap results
 clean:
-	rm -f output/D29/*
-	rm -f output/D57/*
+	rm -rf output/*
 
 ## cor_coxph     : create tables and figures
 cor_coxph:
-	Rscript code/cor_coxph.R 57 && Rscript code/cor_coxph.R 29
+	Rscript code/cor_coxph.R 29
+ifeq ($(TRIAL), moderna_mock)
+	Rscript code/cor_coxph.R 57
+else ifeq ($(TRIAL), moderna_real)
+	Rscript code/cor_coxph.R 57
+endif
 
 ## report        : create a standalone report
 report:
-	Rscript -e "rmarkdown::render('cor_coxph_report.Rmd')"
+	Rscript -e "rmarkdown::render('cor_coxph_report.Rmd', output_file='cor_coxph_report_$(TRIAL).pdf')"
 
 # turn down number of bootstraps and permutations in CoR for faster builds
 before_script:

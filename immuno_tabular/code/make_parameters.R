@@ -69,14 +69,12 @@ tlf <-
       with concentrations $\\geq 2\\times$ LLOQ or $\\geq 4\\times$ LLOQ for binding antibody
       markers",
       table_footer = c(
-        "Binding Antibody Responders are defined as participants who had
-        baseline values below the LLOQ with detectable antibody concentration
-        above the assay LLOQ, or as participants with baseline values above
-        the LLOQ with a 4-fold increase in antibody concentration.",
+        sprintf("Binding Antibody Responders are defined as participants with concentration 
+        above the specified positivity cut-off, with a separate cut-off for each 
+        antigen Spike, RBD, N (%s, %s, and %s respectively, in IU/ml).", 
+                pos.cutoffs["bindSpike"], pos.cutoffs["bindRBD"], pos.cutoffs["bindN"]),
         "Percentages are calculated for the whole per-protocol group/subgroup, 
-        using inverse probability weighting.",
-        sprintf("LLOQ = %.2f, %.2f, %.2f IU/ml for N, RBD, Spike, respectively.", 
-                lloqs["bindN"], lloqs["bindRBD"], lloqs["bindSpike"])),
+        using inverse probability weighting."),
       loop = "subgroup",
       group_table_col = c("Rx", "Group", "Baseline", "Visit", "N", "Marker"),
       deselect = "subgroup",
@@ -88,20 +86,17 @@ tlf <-
       with 2-fold rise, and participants with 4-fold rise for binding antibody
       markers",
       table_footer = c(
-        "Binding Antibody Responders are defined as participants who had
-        baseline values below the LLOQ with detectable antibody concentration
-        above the assay LLOQ, or as participants with baseline values above
-        the LLOQ with a 4-fold increase in antibody concentration.",
+        sprintf("Binding Antibody Responders are defined as participants with concentration 
+        above the specified positivity cut-off, with a separate cut-off for each 
+        antigen Spike, RBD, N (%s, %s, and %s respectively, in IU/ml).", 
+                pos.cutoffs["bindSpike"], pos.cutoffs["bindRBD"], pos.cutoffs["bindN"]), 
         "Percentages are calculated for the whole per-protocol group/subgroup, 
-        using inverse probability weighting.",
-        sprintf("LLOQ = %.2f, %.2f, %.2f IU/ml for N, RBD, Spike, respectively.", 
-                lloqs["bindN"], lloqs["bindRBD"], lloqs["bindSpike"])),
+        using inverse probability weighting."),
       loop = "subgroup",
       group_table_col = c("Rx", "Group", "Baseline", "Visit", "N", "Marker"),
       deselect = "subgroup",
       pack_row = "subgroup"
     ),
-    
     
     tab_pseudo = list(
       table_header = "Percentage of responders, and participants

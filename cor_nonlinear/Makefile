@@ -7,11 +7,19 @@ clean:
 
 ## cor_nonlinear : create output figures
 cor_nonlinear: 
-	cd code; Rscript cor_nonlinear.R 57
+	Rscript code/cor_nonlinear.R 29
+ifeq ($(TRIAL), moderna_mock)
+	Rscript code/cor_nonlinear.R 57
+else ifeq ($(TRIAL), moderna_real)
+	Rscript code/cor_nonlinear.R 57
+endif
 
 ## report        : create a standalone report
 report:  
-	Rscript -e "rmarkdown::render('cor_nonlinear_report.Rmd')"
+	Rscript -e "rmarkdown::render('cor_nonlinear_report.Rmd', output_file='cor_nonlinear_report_$(TRIAL).pdf')"
+
+test: clean cor_nonlinear report
+
 
 # type 'make help' to show all make commands
 help: Makefile

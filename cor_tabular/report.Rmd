@@ -106,4 +106,5 @@ for (i in 1:length(tlf)) {
 
 ```
 \end{landscape}
+\captionsetup[table]{labelformat=default}
 \newgeometry{margin=1in}

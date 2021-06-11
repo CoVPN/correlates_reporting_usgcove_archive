@@ -1,37 +1,3 @@
-#' Truncate the endpoint at LLOD and ULOQ
-#'
-#' @param x An endpoint vector.
-#' @param llod The LLOD for endpoint \code{x}.
-#' @param uloq The ULOQ for endpoint \code{x}.
-#'
-#' @return The endpoint vector after truncation.
-setLOD <- function(x,
-                   uloq = Inf,
-                   llod = -Inf) {
-  
-  llod.half <- ifelse(is.infinite(llod), llod, log10(round(llod, 0)/2))
-  llod <- ifelse(is.infinite(llod), llod, log10(llod))
-  uloq <- log10(uloq)
-  x <- ifelse(x < llod, llod.half, x)
-  x <- ifelse(x > uloq, uloq, x)
-}
-
-
-#' Derive indicators of magnitudes greater than 2xLLOD and 4xLLOD
-#'
-#' @param x An endpoint vector.
-#' @param llod The LLOD for endpoint \code{x}.
-#'
-#' @return Two indicator variables \emph{x}_2llod and \emph{x}_4llod .
-grtLLOD <- function(data,
-                    x, 
-                    llod = -Inf) {
-  data[, paste0(x, "2llod")] <- ifelse(10^data[,x] >= llod*2, 1, 0)
-  data[, paste0(x, "4llod")] <- ifelse(10^data[,x] >= llod*4, 1, 0)
-  return(select_at(data, paste0(x, c(2, 4),"llod")))
-}
-
-
 #' Generate response calls and fold-rise indicator for endpoints:
 #' Responders at each pre-defined timepoint are defined as participants who
 #' had baseline values below the LLOD with detectable ID80 neutralization titer
@@ -43,150 +9,220 @@ grtLLOD <- function(data,
 #' @param bl The variable of endpoint value at baseline
 #' @param post The variable of endpoint value at post-baseline
 #' @param folds Folds to generate fold-rise indicator
-#' @param llod LLOD
+#' @param cutoff LLOD or LLOQ
 #' @param respoderFR Fold-rise used for response call positivity criteria
 #'
 #' @return Response calls and fold-rise indicator for \code{bl}: \emph{bl}Resp,
 #'  \emph{bl}FR\emph{folds}
-setResponder <- function(data, bl, post, folds = c(2, 4), llod,
-                         responderFR = 4) {
-  data[, paste0(post, "FR")] <- 10^(data[, post] - data[, bl])
-  foldsInd <- sapply(folds, function(x) {
-    as.numeric(data[, paste0(post, "FR")] >= x)
-  }) %>% data.frame()
-  names(foldsInd) <- paste0(post, "FR", folds)
-  data <- cbind(data, foldsInd)
-  data[, paste0(post, "Resp")] <-
-    ifelse((data[, bl] < log10(llod) & data[, post] > log10(llod)) |
-             (data[, bl] >= log10(llod) & data[, paste0(post, "FR", responderFR)] == 1),
-           1,
-           0
-    )
-  return(select_at(data, c(paste0(post, "Resp"), paste0(post, "FR", folds))))
-}
-
-#' Generate delta, difference of endpoint between timepoint t1 and t2
-#'
-#' @param data The dataframe with the endpoint of interest at \code{t1} and
-#'  \code{t2}.
-#' @param marker The marker (as in the column name).
-#' @param timepoints Timepoints for comparisons.
-#' @param time.ref The reference timepoint to compare with all other timepoints. Pairwise comparisons between all timepoints if not specified.
-#'
-#' @return A vector of delta: Delta\emph{t2}over\emph{t1Endpoint}.
-setDelta <- function(data, marker, timepoints, time.ref = NA) {
-  ret <- data.frame(matrix(ncol = 0, nrow = nrow(data)))
-  if (is.na(time.ref)) {
-    timepairs <- gtools::combinations(n = length(timepoints), r = 2, v = timepoints)
-  } else {
-    timepairs <- matrix(c(setdiff(timepoints, time.ref), rep(time.ref, length(timepoints)-1)), ncol = 2)
+getResponder <- function(data,
+                         cutoff.name, 
+                         times=times, 
+                         assays=assays, 
+                         folds=c(2, 4),
+                         grtns=c(2, 4),
+                         responderFR = 4,
+                         pos.cutoffs = pos.cutoffs) {
+  cutoff <- get(paste0(cutoff.name, "s"))
+  for (i in times){
+    for (j in assays){
+      post <- paste0(i, j)
+      bl <- paste0("B", j)
+      delta <- paste0("Delta", gsub("Day", "", i), "overB", j)
+      
+      for (k in folds){
+        data[, paste0(post, k, cutoff.name)] <- as.numeric(10^data[, post] >= k*cutoff[j])
+      }
+      
+      for (k in grtns){
+        data[, paste0(post, "FR", k)] <- as.numeric(10^data[, delta] >= k)
+      }
+      if (!is.na(pos.cutoffs[j])) {
+        data[, paste0(post, "Resp")] <- as.numeric(data[, post] > log10(pos.cutoffs[j]))
+      } else {
+      data[, paste0(post, "Resp")] <- as.numeric(
+        (data[, bl] < log10(cutoff[j]) & data[, post] > log10(cutoff[j])) |
+        (data[, bl] >= log10(cutoff[j]) & data[, paste0(post, "FR", responderFR)] == 1))
+      }
+    }
   }
-  for (i in 1:nrow(timepairs)){
-    t1 <- timepairs[i, 1]
-    t2 <- timepairs[i, 2]
-    ret[, gsub("Day", "", paste0("Delta", t2, "over", t1, marker))] <- data[paste0(t2, marker)] - data[paste0(t1, marker)]
-  }
-  return(ret)
+  return(data)
 }
-
 
 #' Wrapper function to generate response rates based on svyciprop()
-#'
-#' @param x The dataframe used for the svydesign() data argument
-#' @param sug_grp_col A formula specifying factors that define subsets to run the model, used for svyby() by argument
-#' @param stratum The stratum used for svydesign()
-#' @param weights The weights used for svydesign()
-get_rr <- function(x, weights, stratum, sub_grp_col){
-  cat("TableRR of ", paste(mutate_at(x, sub_grp_col, as.character) %>% 
-                            distinct_at(sub_grp_col) , collapse = ", "),
-      "\n")
-  if (nrow(x)>1) {
-    ret <- svyciprop(~ response, svydesign(ids = ~ Ptid, 
-                                           strata = as.formula(sprintf("~%s", stratum)),
-                                           weights = as.formula(sprintf("~%s", weights)),
-                                           data = x))
-    ret <- x %>% 
-      distinct_at(sub_grp_col) %>% 
-      mutate(response = ret['response'], 
-             ci_l = attributes(ret)$ci['2.5%'], 
-             ci_u = attributes(ret)$ci['97.5%'])
-  } else{
-    ret <- x %>% 
-      mutate(ci_l = NaN, 
-             ci_u = NaN) %>% 
-      distinct_at(c(sub_grp_col, "response", "ci_l", "ci_u"))
+#' @param dat a data frame containing the variables in the function
+#' @param v binary response variables
+#' @param subs subpopulation groups
+#' @param sub.by subpopulations that are always applied 
+#' @param strata used in twophase()
+#' @param weights used in twophase()
+#' @param subset used in twophase()
+#' 
+get_rr <- function(dat, v, subs, sub.by, strata, weights, subset){
+  rpcnt <- NULL
+  design.full <- twophase(id=list(~Ptid, ~Ptid), 
+                          strata=list(NULL, as.formula(sprintf("~%s", strata))),
+                          weights=list(NULL, as.formula(sprintf("~%s", weights))),
+                          method="simple",
+                          subset=as.formula(sprintf("~%s", subset)),
+                          data=dat %>% select_at(gsub("`", "", c("Ptid", strata, weights, subset, sub.by, v, subs))))
+  for (i in v){
+    design.ij <- subset(design.full, eval(parse(text=sprintf("!is.na(%s)", i))))
+    for (j in subs){
+      cat(i,"--",j,"\n")
+      ret <- svyby(as.formula(sprintf("~%s", i)),
+                   by=as.formula(sprintf("~%s", paste(c(j, sub.by), collapse="+"))),
+                   design=design.ij,
+                   svyciprop, vartype="ci", na.rm=T)
+      
+      retn <- dat %>%
+        dplyr::filter(!!as.name(subset) & !is.na(!!as.name(i))) %>%
+        mutate(rspndr =!!as.name(i)*!!as.name(weights)) %>%
+        group_by_at(gsub("`", "", c(j, sub.by))) %>%
+        summarise(N=n(), Nw=round(sum(!!as.name(weights)),1), rspndr= round(sum(rspndr),1), .groups="drop")
+      
+      rpcnt <- bind_rows(
+        inner_join(ret, retn, by = c(j, gsub("`", "", sub.by))) %>%
+          rename(response=!!as.name(i), Group=!!as.name(j)) %>% 
+          mutate(subgroup=!!j, resp_cat=!!i,
+                 rslt = ifelse(is.na(ci_l)|is.na(ci_u),
+                               sprintf("%s/%s = %.1f%%", rspndr, Nw, response*100),
+                               sprintf("%s/%s = %.1f%%\n(%.1f%%, %.1f%%)",
+                                       rspndr, Nw, response*100, ci_l*100, ci_u*100))),
+        rpcnt)
+    }
   }
-  ret
+  rpcnt <- inner_join(rpcnt, distinct(labels_all, resp_cat, Visit, Marker, Ind), by = "resp_cat")
+  return(rpcnt)
 }
 
-
-
 #' Wrapper function to generate ratio of geometric mean based on svymean()
-#'
-#' @param x The dataframe used for the svydesign() data argument
-#' @param sug_grp_col A formula specifying factors that define subsets to run the model, used for svyby() by argument
-#' @param stratum The stratum used for svydesign()
-#' @param weights The weights used for svydesign()
-get_gm <- function(x, weights, stratum, sub_grp_col){
-  cat("TableGM of ", paste(mutate_at(x, sub_grp_col, as.character) %>% 
-                             distinct_at(sub_grp_col) , collapse = ", "),
-      "\n")
-  if (nrow(x)>1) {
-    ret <- svymean(~ mag, svydesign(ids = ~ Ptid, 
-                                           strata = as.formula(sprintf("~%s", stratum)),
-                                           weights = as.formula(sprintf("~%s", weights)),
-                                           data = x))
-    ret <- x %>% 
-      distinct_at(sub_grp_col) %>% 
-      mutate(mag = ret['mag'], 
-             ci_l = confint(ret)[,'2.5 %'], 
-             ci_u = confint(ret)[,'97.5 %'])
-  } else{
-    ret <- x %>% 
-      mutate(mag = mag, 
-             ci_l = mag, 
-             ci_u = mag) %>% 
-      distinct_at(c(sub_grp_col, "mag", "ci_l", "ci_u"))
+#' @param dat a data frame containing the variables in the function
+#' @param v continuous response variables
+#' @param subs subpopulation groups
+#' @param sub.by subpopulations that are always applied 
+#' @param strata used in twophase()
+#' @param weights used in twophase()
+#' @param subset used in twophase()
+#' 
+get_gm <- function(dat, v, subs, sub.by, strata, weights, subset){
+  rgm <- NULL
+  design.full <- twophase(id=list(~Ptid, ~Ptid), 
+                          strata=list(NULL, as.formula(sprintf("~%s", strata))),
+                          weights=list(NULL, as.formula(sprintf("~%s", weights))),
+                          method="simple",
+                          subset=as.formula(sprintf("~%s", subset)),
+                          data=dat %>% select_at(gsub("`", "", c("Ptid", strata, weights, subset, sub.by, v, subs))))
+  
+  for (i in v){
+    for (j in subs){
+      cat(i,"--",j,"\n")
+      design.ij <- subset(design.full, eval(parse(text=sprintf("!is.na(%s)",i))))
+      ret <- svyby(as.formula(sprintf("~%s", i)),
+                   by=as.formula(sprintf("~%s", paste(c(j, sub.by), collapse="+"))),
+                   design=design.ij,
+                   svymean, vartype="ci", na.rm=T)
+      
+      retn <- dat %>%
+        dplyr::filter(!!as.name(subset) & !is.na(!!as.name(i))) %>%
+        group_by_at(gsub("`", "", c(j, sub.by))) %>%
+        summarise(N=n(), .groups="drop")
+      
+      rgm <- bind_rows( 
+        inner_join(ret, retn, by = gsub("`", "", c(j, sub.by))) %>% 
+          rename(mag=!!as.name(i), Group=!!as.name(j)) %>% 
+          mutate(subgroup=!!j, mag_cat=!!i,
+                 `GMT/GMC`= sprintf("%.2f\n(%.2f, %.2f)", 10^mag, 10^ci_l, 10^ci_u)),
+        rgm)
+      
+    }
   }
-  ret
+  rgm <- inner_join(rgm, distinct(labels_all, mag_cat, Visit, Marker), by = "mag_cat") 
+  return(rgm)
 }
 
 #' Wrapper function to generate ratio of geometric magnitude based on svyglm()
-#'
-#' @param x The dataframe used for the svydesign() data argument
-#' @param comp_v The covariate for comparison
-#' @param f_v The model formula used for svyglm()
-#' @param sug_grp_col A formula specifying factors that define subsets to run the model, used for svyby() by argument
-#' @param stratum The stratum used for svydesign()
-#' @param weights The weights used for svydesign()
-get_rgmt <- function(comp_v, comp_lev=NULL, f_v, sub_grp_col, stratum, weights, x) {
-  cat("Table of ", paste(mutate_at(x, sub_grp_col, as.character) %>% 
-                           distinct_at(sub_grp_col) , collapse = ", "),
-      "\n")
-
-  x <- data.frame(x, check.names = F)
-  comp_i <- unique(sort(x[, comp_v]))
-  if(is.null(comp_lev)) comp_lev <- comp_i
-  x[, comp_v] <- factor(x[, comp_v], levels = comp_lev)
-  comp <- paste(comp_lev, collapse = " vs ")
-  contrasts(x[, comp_v]) <- contr.treatment(2, base = 2)
-    
-  svy <- svydesign(ids = ~ Ptid, 
-                   strata = as.formula(paste0("~", stratum)),
-                   weights = as.formula(paste0("~", weights)),
-                   data = x)
-    
-  rslt <- svyglm(f_v, design = svy)
-  ret <- x %>% 
-    mutate(comp = !!comp) %>% 
-    distinct_at(c("comp", sub_grp_col)) %>% 
-    mutate(Estimate = rslt$coefficients[2], 
-           ci_l = confint(rslt)[2, "2.5 %"],
-           ci_u = confint(rslt)[2, "97.5 %"])
+#' @param dat a data frame containing the variables in the function
+#' @param v continuous response variables
+#' @param groups subpopulation groups to be compared within
+#' @param comp_lev a vector of the compared groups to set the reference group
+#' @param sub.by subpopulations that are always applied 
+#' @param strata used in twophase()
+#' @param weights used in twophase()
+#' @param subset used in twophase()
+get_rgmt <- function(dat, v, groups, comp_lev, sub.by, strata, weights, subset){
+  rgmt <- NULL
+  for (j in groups){
+    comp_i <- comp_lev[comp_lev %in% dat[, gsub("`","",j)]]
+    comp_vs <- paste(comp_i, collapse=" vs ")
+    dat[, gsub("`","",j)] <- factor(dat[, gsub("`","",j)], levels = comp_i)
+    n.j <- dat %>%
+      filter(!is.na(!!as.name(gsub("`","",j)))) %>% 
+      group_by_at(gsub("`", "", sub.by), .drop=F) %>%
+      summarise(n=n_distinct(!!as.name(gsub("`","",j))))
+    if (all(n.j$n!=2)) {
+      warning(paste(j, "has more/less than 2 levels:", paste(unique(dat[,gsub("`","",j)]), collapse = ", ")))
+      next
+    }
+    contrasts(dat[, gsub("`","",j)]) <- contr.treatment(2, base = 2)
+    for (i in v){
+      cat(i,"--",j, comp_vs, "\n")
+      n.ij <- subset(dat, dat[, subset] & !is.na(dat[, gsub("`","",j)]) & !is.na(dat[, i])) %>% 
+        group_by_at(gsub("`", "", sub.by), .drop=F) %>% 
+        summarise(n.j=n_distinct(!!as.name(gsub("`","",j)))) %>% 
+        filter(n.j==2) %>% 
+        unite("all.sub.by", 1:length(sub.by), remove=F)
+      
+      if (nrow(n.j)!=0){
+        dat.ij <- dat %>% 
+          unite("all.sub.by", match(gsub("`", "", sub.by), names(dat)), remove=F) %>% 
+          select_at(gsub("`", "",c("Ptid", strata, weights, subset, sub.by, i, j, "all.sub.by")))
+        
+        design.ij <- twophase(list(~Ptid, ~Ptid), 
+                              strata=list(NULL, as.formula(sprintf("~%s", strata))),
+                              weights=list(NULL, as.formula(sprintf("~%s", weights))), 
+                              subset=as.formula(sprintf("~%s", subset)),
+                              method="simple",
+                              data=dat.ij)
+        
+        design.ij <- subset(design.ij, all.sub.by %in% n.ij$all.sub.by & eval(parse(text=sprintf("!is.na(%s) & !is.na(%s)", i, j))))
+        
+        ret <- svyby(as.formula(sprintf("%s~%s", i, j)),
+                     by=as.formula(sprintf("~%s", paste(sub.by, collapse="+"))),
+                     design=design.ij,
+                     svyglm, vartype="ci")
+        
+        rgmt <- bind_rows(
+          ret %>% 
+            rename_all(gsub, pattern=paste0(j, 1), replacement="Estimate", fixed=T) %>%
+            mutate(subgroup=gsub("`","",!!j), 
+                   mag_cat=!!i, 
+                   comp=!!comp_vs,  
+                   `Ratios of GMT/GMC` = sprintf("%.2f\n(%.2f, %.2f)", 
+                                                 10^Estimate, 10^ci_l.Estimate, 10^ci_u.Estimate)),
+          rgmt)
+      } else {
+        rgmt <- bind_rows(
+          dat %>% 
+            distinct_at(gsub("`","",sub.by)) %>% 
+            mutate(subgroup=gsub("`","", !!j), 
+                   mag_cat=!!i, 
+                   comp=!!comp_vs, 
+                   `Ratios of GMT/GMC` = "-"),
+          rgmt)
+      }
+    } # end of i loop
+  } # end of j loop
   
-  return(ret)
+  if (is.null(rgmt)){
+    rgmt <- merge(distinct_at(dat, gsub("`","",sub.by)), 
+                  expand.grid(subgroup=gsub("`","", j), 
+                              mag_cat=v, 
+                              comp=comp_vs, 
+                              `Ratios of GMT/GMC` = "-"))
+  }
+  rgmt <- inner_join(rgmt, distinct(labels_all, mag_cat, Visit, Marker), by="mag_cat")
+  return(rgmt)
 }
-
 
 #' Function to remove duplicate key rows from table outputs.
 #'

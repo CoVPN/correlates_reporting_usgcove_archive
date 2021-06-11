@@ -1,21 +1,25 @@
-\newcommand{\studyname}{mock}
-\newcommand{\pathCoRNonlinearoutput}{output/D57}
-
-# Nonlinear association
-
-To explore nonlinear association and threshold modeling, we fit smoothing spline models using the mgcv R package and two-phase models using the chngpt R package.
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=1\textwidth]{\pathCoRNonlinearoutput/gam_\studyname}
-    \caption{GAM fit of risk of infection versus markers with clinical covariates adjustment. Histograms of the immunological markers in the vaccine arm are overlaid.}
-    \label{fig:gam_\studyname}
-\end{figure}
+<!-- ```{r, echo=FALSE} -->
+<!-- here::i_am("cor_nonlinear/report.Rmd") -->
+<!-- ``` -->
 
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=1\textwidth]{\pathCoRNonlinearoutput/step_\studyname}
-    \caption{Step model fits with clinical covariates adjustment. Histograms of the immunological markers in the vaccine arm are overlaid.}
-    \label{fig:segmented_\studyname}
-\end{figure}
+```{r, echo=FALSE}
+Day <- 57
+pathCoRoutput <- "cor_nonlinear/output/D57"
+pathCorcoxphOutput <- "cor_coxph/output/D57"
+```
+
+```{r, child=c(here::here('cor_nonlinear', 'report_sub.Rmd'))}
+```
+
+\clearpage
+
+```{r, echo=FALSE}
+Day <- 29
+pathCoRoutput <- "cor_nonlinear/output/D29"
+pathCorcoxphOutput <- "cor_coxph/output/D29"
+```
+
+```{r, child=c(here::here('cor_nonlinear', 'report_sub.Rmd'))}
+```
+

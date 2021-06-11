@@ -3,27 +3,43 @@
 renv::activate(project = here::here(".."))
 source(here::here("..", "_common.R"))
 #-----------------------------------------------
-# load data
-dat.mock <- read.csv(here::here("..", "data_clean", data_name))
-data <- dat.mock
-
 # load parameters
 source(here::here("code", "params.R"))
+
+# load data
+dat.mock <- read.csv(here::here("..", "data_clean", paste0(stringr::str_match(data_name,"(.+).csv")[,2],append_data,".csv")))
+
+for (a in assays_to_be_censored_at_uloq_cor) {
+  for (t in c("B", "Day57", if(has29) "Day29") ) {
+    dat.mock[[t %.% a]] <- ifelse(dat.mock[[t %.% a]] > log10(uloqs[a]), log10(uloqs[a]), dat.mock[[t %.% a]])
+  }
+}
+
+
+data <- dat.mock
+
+
 
 
 # Generate the outcome and censoring indicator variables
 for (time in times) {
+  if(time == "Day57") {
+    Earlyendpoint <- "EarlyendpointD57"
+  } else if(time == "Day29") {
+    Earlyendpoint <- "EarlyendpointD29"
+    
+  }
   print(time)
   data <- dat.mock
   outcome <-
     data[[Event_Ind_variable[[time]]]] == 1 & data[[Event_Time_variable[[time]]]] <= tf[[time]]
   outcome <- as.numeric(outcome)
   # TO CHANGE
-  
+
   if(F & adjust_for_censoring) {
-  Delta <-
-    1 - (data[[Event_Ind_variable[[time]]]] == 0 &
-      data[[Event_Time_variable[[time]]]] < tf[[time]])
+    Delta <-
+      1 - (data[[Event_Ind_variable[[time]]]] == 0 &
+             data[[Event_Time_variable[[time]]]] < tf[[time]])
   } else {
     Delta <- rep(1, length(outcome))
   }
@@ -31,11 +47,11 @@ for (time in times) {
   data$outcome <- outcome
   data$Delta <- Delta
 
-  
+
   data$TwophasesampInd <- as.numeric(data[[twophaseind_variable[[time]]]])
   data$wt <- data[[weight_variable[[time]]]]
   #data$grp <- data[[twophasegroup_variable[[time]]]]
-  
+
   # Subset data
   variables_to_keep <-
     c(
@@ -47,19 +63,21 @@ for (time in times) {
       "outcome",
       "Delta"
     )
-  keep <- data$Trt == 1 & data$Bserostatus == 0 & !is.na(data$wt)
+
+    #keep <- data[[Earlyendpoint]] ==0 & data$Trt == 1 & data$Bserostatus == 0 & data$Perprotocol==1 & !is.na(data$wt) & data[[Event_Time_variable[[time]]]] >=7 & !is.na(data$Wstratum)
+  keep <- data[[ph1_id_list[[time]]]]==1 & data$Trt == 1  & data$Bserostatus == 0
   
   data_firststage <- data[keep, variables_to_keep]
   #data_firststage <- na.omit(data_firststage)
   data_secondstage <- na.omit(data_firststage[data_firststage$TwophasesampInd == 1, ])
 
   write.csv(data_firststage,
-    here::here("data_clean", paste0("data_firststage_", time, ".csv")),
-    row.names = F
+            here::here("data_clean", paste0("data_firststage_", time, ".csv")),
+            row.names = F
   )
   write.csv(data_secondstage,
-    here::here("data_clean", paste0("data_secondstage_", time, ".csv")),
-    row.names = F
+            here::here("data_clean", paste0("data_secondstage_", time, ".csv")),
+            row.names = F
   )
 
 

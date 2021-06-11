@@ -10,21 +10,36 @@ git clone -b gh-pages \
   https://${GH_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git \
   correlates_reporting
 
-# remove contents from existing gh-pages branch
+# overwrite contents from existing gh-pages branch
 cd correlates_reporting
-git rm -rf *
-echo "Remaining files in correlates_reporting/ after git rm:"
+echo "Files in correlates_reporting/ _before_ copying:"
 ls -l
 
 # replace with reports and note R version
-cp -r $TRAVIS_BUILD_DIR/_report_immuno/* ./
-cp -r $TRAVIS_BUILD_DIR/_report_riskscore/* ./
-cp -r $TRAVIS_BUILD_DIR/_report_cor/* ./
-#cp -r $TRAVIS_BUILD_DIR/_report_cop/* ./
+if [ "$REPORT_TYPE" == "IMMUNO" ]
+then
+  echo "copying Immuno report"
+  ls -s $TRAVIS_BUILD_DIR/_report_immuno/*
+  cp -rf $TRAVIS_BUILD_DIR/_report_immuno/* ./
+elif [ "$REPORT_TYPE" == "COR" ]
+then
+  echo "copying COR report and Risk Score"
+  ls -s $TRAVIS_BUILD_DIR/_report_riskscore
+  ls -s $TRAVIS_BUILD_DIR/_report_cor
+  cp -rf $TRAVIS_BUILD_DIR/_report_riskscore/* ./
+  cp -rf $TRAVIS_BUILD_DIR/_report_cor/* ./
+elif [ "$REPORT_TYPE" == "COP" ]
+then
+  echo "copying COP report and Risk Score"
+  ls -s $TRAVIS_BUILD_DIR/_report_riskscore
+  ls -s $TRAVIS_BUILD_DIR/_report_cop
+  cp -rf $TRAVIS_BUILD_DIR/_report_riskscore/* ./
+  cp -rf $TRAVIS_BUILD_DIR/_report_cop/* ./
+fi
 echo "Reports built with R version $TRAVIS_R_VERSION"
 
 # check what files have been copied to branch gh-pages
-echo "All files in correlates_reporting/ after copying:"
+echo "All files in correlates_reporting/ _after_ copying:"
 ls -l
 
 # stage, commit, push copied files to branch gh-pages

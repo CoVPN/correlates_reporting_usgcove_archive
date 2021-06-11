@@ -1,6 +1,3 @@
-# This script executes code under the heading of: Prep to run CV-Superlearner	
-# in the verification documents.
-
 #-----------------------------------------------
 # obligatory to append to the top of each script
 renv::activate(project = here::here("..", "..", ".."))
@@ -16,12 +13,7 @@ if (file.exists(here::here("..", "..", "..", "data_clean", data_name_updated))) 
     dat <- read.csv(here::here("..", "..", "..", "data_clean", data_name))
 }
 
-
-# Baseline demographic variables considered for risk score development (input)
-bl_demo_var <- c("risk_score", "HighRiskInd", "MinorityInd")
-
-# Endpoint (input)	EventIndPrimaryD57	
-end_pt <- "EventIndPrimaryD57"
+source(here::here("code", "params.R"))
 
 # All ptids in the vaccine arm AND as "per protocol". Drop records with missing values for 
 # Ptid, Trt, endpoint and wt columns.
@@ -76,10 +68,11 @@ dat$Delta57overBliveneutmn50 <- dat$Day57liveneutmn50 / dat$Bliveneutmn50
 
 immune_markers <- c(
   outer(
-    c("Day57", "Delta57overB"), c("bindRBD", "bindSpike", "pseudoneutid50", "pseudoneutid80"),
+    c("Day57", "Delta57overB"), 
+    c("bindRBD", "bindSpike", "pseudoneutid50", "pseudoneutid80", "liveneutmn50"),
     paste0
   ), outer(
-  paste0("Delta57overB", c("bindRBD", "bindSpike", "pseudoneutid50", "pseudoneutid80")),
+  paste0("Delta57overB", c("bindRBD", "bindSpike", "pseudoneutid50", "pseudoneutid80", "liveneutmn50")),
          c("_2fold", "_4fold"), paste0
   )
 )
@@ -93,10 +86,10 @@ ph2_idx <- dat_ph1$TwophasesampIndD57 == 1 &
 	!is.na(dat_ph1$Day57bindSpike) & 
 	!is.na(dat_ph1$Day57bindRBD) & 
 	!is.na(dat_ph1$Day57pseudoneutid50) & 
-	!is.na(dat_ph1$Day57pseudoneutid80)
+	!is.na(dat_ph1$Day57pseudoneutid80) &
+	!is.na(dat_ph1$Day57liveneutmn50) 
 
 dat_ph2 <- dat_ph1[ph2_idx, ]
-save(dat_ph2, file = here::here("data_clean", "dat_ph2.rds"))
 
 nv <- sum(dat_ph2[[end_pt]])
 saveRDS(nv, here::here("data_clean", "nv.rds"))
@@ -106,3 +99,55 @@ saveRDS(nv, here::here("data_clean", "nv.rds"))
 Z_plus_weights <- dat_ph1[, c("Ptid", "Trt",  bl_demo_var, end_pt, "wt.D57")]
 Z_plus_weights <- Z_plus_weights[complete.cases(Z_plus_weights), ]
 saveRDS(Z_plus_weights, here::here("data_clean", "Z_plus_weights.rds"))
+
+
+# Use markers 
+# Day57bindSpike, 
+# Day57bindRBD, 
+# Day57pseudoneutid50, 
+# Day57pseudoneutid80, 
+# Day57liveneutmn50 to derive PC1 and PC2 for phase 2 data. 
+# Scale each marker to have mean 0, sd 1.  Use covariance function on scaled 
+# matrix of markers with default arguments. Use eigen function with default 
+# arguments on covariance matrix and consider only eigen vectors 1 and 2. 
+# Reverse them (mutiply by -1). Multiply matrix of scaled markers with eigen 
+# vectors 1  and 2 to derive PC1 and PC2 respectively.
+
+markers <- dat_ph2[, c("Day57bindSpike", "Day57bindRBD", 
+                       "Day57pseudoneutid50", "Day57pseudoneutid80",
+                       "Day57liveneutmn50")]
+markers_scaled <- apply(markers, 2, scale)
+cov_markers_scaled <- cov(markers_scaled)
+eigen_decomp <- eigen(cov_markers_scaled)
+first_two_eigen_vectors <- eigen_decomp$vectors[,1:2]
+prin_comp <- - as.matrix(markers_scaled) %*% eigen_vectors
+
+dat_ph2$pc1 <- prin_comp[,1]
+dat_ph2$pc2 <- prin_comp[,2]
+
+# Use markers Day57bindSpike, Day57bindRBD, Day57pseudoneutid50, Day57pseudoneutid80, 
+# Day57liveneutmn50 to derive maximum signal diversity score for phase 2 data. Scale 
+# markers to have sd 1. Compute pairwise correlations between all markers using cor function 
+# and method = "spearman". Use correlation matrix as input to the mdw::tree.weight function 
+# with plot=FALSE argument to derive marker weights.  Multiply each scaled marker with the 
+# weights and take the rowSums across the 5 marker values to obtain the maximum signal 
+# diversity score for each subject.  
+cor_markers_scaled <- cor(markers_scaled, method = "spearman")
+mdw_fit <- mdw::tree.weight(cor_markers_scaled, plot = FALSE)
+max_signal_diversity_score <- c(markers_scaled %*% matrix(mdw_fit, ncol = 1))
+dat_ph2$max_sig <- max_signal_diversity_score
+
+saveRDS(dat_ph2, file = here::here("data_clean", "dat_ph2.rds"))
+
+# X uses all the variables defined in the "full model" in variables_sets.R
+source(here::here("code", "variable_sets.R"))
+X <- dat_ph2[, full_model]
+X <- apply(X, 2, scale)
+saveRDS(X, file = here::here("data_clean", "X.rds"))
+
+max_var <- if(dat_ph2[[end_pt]] < 25){
+	5
+}else{
+	floor(nv / 6)
+}
+saveRDS(max_var, here::here("output", "max_var.rds"))

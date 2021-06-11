@@ -20,12 +20,27 @@ header-includes:
    - \usepackage[margin=1in]{geometry}
 ---
 
-```{r, include = knitr::is_latex_output() & study_name == "mock"}
+```{r, include = knitr::is_latex_output() & startsWith(study_name, "Mock")}
 knitr::asis_output("\\AddToShipoutPictureFG{
   \\AtPageCenter{
     \\makebox[0pt]{\\rotatebox[origin=c]{45}{
       \\scalebox{10}{\\texttransparent{0.3}{MOCK}}}}}}")
 ```
+
+
+`r if ( !( grepl("moderna", attr(config::get(config = Sys.getenv("TRIAL")), "config") ) ) )'<!--'`
+
+# Disclaimers
+
+* The data presented in the analysis originated from the Moderna Sponsored mRNA-1273-P301 clinical study and are provided to NIAID in accordance with Clinical Trial Agreement between the parties. The study was funded in part by BARDA under Government Contract No. 75A50120C00034
+ 
+* The preliminary immunogenicity data presented here do not reflect the Sponsors statistical analysis plan and therefore should not be interpreted as a protocol defined read-out of the clinical study.
+ 
+* These data are not to be disclosed without written permission of Moderna.
+
+
+`r if ( !( grepl("moderna", attr(config::get(config = Sys.getenv("TRIAL")), "config") ) ) ) '-->'`
+
 
 `r if (knitr::is_latex_output()) '<!--'`
 

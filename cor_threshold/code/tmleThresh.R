@@ -20,7 +20,7 @@ library(mvtnorm)
 #' In the case where both thresholds_above and thresholds_below are supplied, it is a list with two elements "above_estimates" and "lower_estimates" which contains the same information as above for the upper and lower thresholds parameters.
 #'
 #'
-thresholdTMLE <- function(data_full, node_list, thresholds = NULL, biased_sampling_strata = NULL, biased_sampling_indicator = NULL, lrnr_A = Lrnr_glmnet$new(), lrnr_Y = Lrnr_glmnet$new(), lrnr_Delta = Lrnr_glmnet$new()) {
+thresholdTMLE <- function(data_full, node_list, thresholds = NULL, biased_sampling_strata = NULL, biased_sampling_indicator = NULL, lrnr_A = Lrnr_glmnet$new(), lrnr_Y = Lrnr_glmnet$new(), lrnr_Delta = Lrnr_glmnet$new(), monotone_decreasing = TRUE) {
   upper_list <- list()
   lower_list <- list()
   thresholds_above <- sort(thresholds)
@@ -108,16 +108,28 @@ thresholdTMLE <- function(data_full, node_list, thresholds = NULL, biased_sampli
       #print(head(var_D))
       n <- nrow(IC_IPCW)
       se <- sqrt(diag(var_D) / n)
+      se[is.na(se)] <- 0
+      
       level <- 0.95
       rho_D <- as.matrix(var_D / sqrt(tcrossprod(diag(var_D))))
-      psi_mono <- isoreg(thresholds, -psi)
-      psi_mono <- -psi_mono$yf
+      if(monotone_decreasing){
+          factor <- -1
+      } else {
+          factor <- 1
+      }
+       
+      psi_mono <- isoreg(thresholds, factor*psi)
+      psi_mono <- factor*psi_mono$yf
+      
       q <- mvtnorm::qmvnorm(level, tail = "both", corr = rho_D)$quantile
       ci <- as.matrix(wald_ci(psi, se, q = q))
       ci_mono <- as.matrix(wald_ci(psi_mono, se, q = q))
       se_sim <- se*q
       ####
       se <- apply(IC_IPCW, 2, sd) / sqrt(nrow(data_full))
+      
+      se[is.na(se)] <- 0
+      
       estimates_upper <- cbind(thresholds, psi, se, psi - 1.96 * se, psi + 1.96 * se, ci)
       colnames(estimates_upper) <- c("thresholds", "EWE[Y|>=v,W]", "se", "CI_left", "CI_right", "CI_left_simultaneous", "CI_right_simultaneous")
     
@@ -127,6 +139,7 @@ thresholdTMLE <- function(data_full, node_list, thresholds = NULL, biased_sampli
       #attr(estimates_upper, "se_sim") <-  se_sim
     } else {
       se <- apply(IC_IPCW, 2, sd) / sqrt(nrow(data_full))
+      se[is.na(se)] <- 0
       estimates_upper <- cbind(thresholds, psi, se, psi - 1.96 * se, psi + 1.96 * se, psi - 1.96 * se, psi + 1.96 * se)
       colnames(estimates_upper) <- c("thresholds", "EWE[Y|>=v,W]", "se", "CI_left", "CI_right", "CI_left_simultaneous", "CI_right_simultaneous")
       estimates_upper_monotone <- NULL
@@ -174,7 +187,7 @@ thresholdTMLE <- function(data_full, node_list, thresholds = NULL, biased_sampli
   } else {
     estimates_upper <- NULL
   }
- 
+   
   return(list(output = estimates_upper, output_monotone = estimates_upper_monotone))
 }
 
@@ -315,22 +328,34 @@ get_preds_TSM <- function(task_list, lrnr_A = NULL, lrnr_Y = NULL, lrnr_Delta = 
     task_A_train <- task_list[["A"]][["train_u"]]
     task_Y_train <- task_list[["Y"]][["train_u"]]
 
-    if (length(unique(task_A_train$Y)) == 1) {
+    if (length(unique(task_A_train$Y)) ==1 || min(table(task_A_train$Y))  <= 10) {
       lrnr_A <- Lrnr_mean$new()
     }
-    if (length(unique(task_Y_train$Y)) == 1) {
+    if (length(unique(task_Y_train$Y)) ==1 ||min(table(task_Y_train$Y)) <= 4) {
       lrnr_Y <- Lrnr_mean$new()
     }
+    lrnr_A_u <- NULL
+    lrnr_Y_u <- NULL
     tryCatch({
+       
     lrnr_A_u <- lrnr_A$train(task_list[["A"]][["train_u"]])
     }, error = function(cond) {
+      lrnr_A <<- Lrnr_mean$new()
+      lrnr_A_u <<- lrnr_A$train(task_list[["A"]][["train_u"]])
+      print(table(task_A_train$Y))
       print("Failed on training treatment learner")
+      print("Default to unadjusted estimator")
     }
     )
+    
     tryCatch({
       lrnr_Y_u <- lrnr_Y$train(task_list[["Y"]][["train_u"]])
     }, error = function(cond) {
+      lrnr_Y <<- Lrnr_mean$new()
+      lrnr_Y_u <<- lrnr_Y$train(task_list[["Y"]][["train_u"]])
+      print(table(task_A_train$Y))
       print("Failed on training outcome learner")
+      print("Default to unadjusted estimator")
     }
     )
     
@@ -676,6 +701,9 @@ plot_threshold_response <- function(output, simultaneous_CI = T, monotone = F) {
     estimates[, 2] <- -mon$yf
     if (simultaneous_CI) {
       for (i in 2:length(upper)) {
+          if(is.na(upper[i - 1]) || is.na(lower[i - 1])) {
+              next
+          }
         if (upper[i] > upper[i - 1]) {
           upper[i] <- upper[i - 1]
         }

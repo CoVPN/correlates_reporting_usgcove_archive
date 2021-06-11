@@ -1,6 +1,10 @@
 #-----------------------------------------------
 # obligatory to append to the top of each script
 renv::activate(project = here::here(".."))
+
+# There is a bug on Windows that prevents renv from working properly. The following code provides a workaround:
+if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
+
 source(here::here("..", "_common.R"))
 #-----------------------------------------------
 
@@ -49,10 +53,11 @@ convert_SLobject_to_Slresult_dataframe <- function(dat) {
   if (!is.null(newdat[[1]])) {
     as_tibble(do.call(rbind.data.frame, lapply(newdat, function(x) x$aucs))) %>%
       group_by(Learner, Screen) %>%
-      summarise(AUC = mean(AUC), ci_ll = mean(ci_ll), ci_ul = mean(ci_ul),
+      summarise(AUC = mean(AUC), se = sqrt(mean(se ^ 2)),
                 .groups = "drop") %>%
       arrange(-AUC) %>%
       mutate(
+        ci_ll = AUC - qnorm(0.975) * se, ci_ul = AUC + qnorm(0.975) * se,
         AUCstr = paste0(format(round(AUC, 3), nsmall = 3), " [",
                         format(round(ci_ll, 3), nsmall = 3), ", ",
                         format(round(ci_ul, 3), nsmall = 3), "]"),

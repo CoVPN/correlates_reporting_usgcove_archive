@@ -1,6 +1,5 @@
 #-----------------------------------------------
 # obligatory to append to the top of each script
-renv::activate(project = here::here(".."))
 source(here::here("..", "_common.R"))
 #-----------------------------------------------
 
@@ -71,8 +70,6 @@ covid_corr_rcdf_ve_lines <- function(
     geom_rect(data = data.frame(x = min(xgrid), rcdf = 1), 
               aes(xmin = min(xgrid),xmax = line_top, ymin = VE_lb, ymax = VE_ub), 
               fill = "grey", alpha = 0.3) +
-    geom_ribbon(data = dat_areaV, aes(ymin = 0, ymax = rcdf), 
-                alpha = 0.3, fill = "grey") +
     geom_segment(data = dat_seg,
                  aes(x = x, y = y, xend = xend, yend = yend, linetype = type),
                  color = "red",
@@ -97,6 +94,15 @@ covid_corr_rcdf_ve_lines <- function(
           axis.title = element_text(size = axis_title_size),
           axis.text = element_text(size = axis_size))
   
+  # if entire VE CI falls in a flat region of the RCDF curve, there 
+  # will be no points between line_low and line_top (thus, nrow(dat_areaV) == 0), 
+  # in which case we will not draw the ribbon
+  if(nrow(dat_areaV) > 0){
+    output_plot <- output_plot +
+      geom_ribbon(data = dat_areaV, aes(ymin = 0, ymax = rcdf), 
+                  alpha = 0.3, fill = "grey")
+  }
+
   ggsave(
     filename = filename, plot = output_plot, width = width,
     height = height, units = units

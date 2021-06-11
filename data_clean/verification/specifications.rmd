@@ -1,26 +1,31 @@
-# Specifications for DAT_CLEAN
+# Specifications for DAT_CLEAN 
+
+Different TRIAL variable values go through different logical paths of this script and will be tested separately. For now, we have \begin{itemize}
+  \item moderna_mock
+  \item ensemble_mock
+\end{itemize}
+There is no need to test has29 or not anymore.
 
 
+Steps:
 \begin{itemize}
 
   \item Rename the first column to Ptid
+  
+  \item Subset to not missing in Bserostatus
+  
+  \item Subset to rows not missing in EventTimePrimaryD1 and not missing in EventTimePrimaryD29
+  
+  \item If has57 (defined in _common.R), subset to rows not missing in EventTimePrimaryD57
+  
+  \item Define EarlyendpointD29 as: EarlyinfectionD29==1 | (EventIndPrimaryD1==1 & EventTimePrimaryD1 < NumberdaysD1toD29 + 7),1,0))
+
+  \item If has57, Define EarlyendpointD57 as: EarlyinfectionD57==1 | (EventIndPrimaryD1==1 & EventTimePrimaryD1 < NumberdaysD1toD57 + 7),1,0))
 
   \item Define age.geq.65, a binary variable indicating Age >= 65
 
-  \item Define TwophasesampInd, a 0/1 variable to represent the phase 2 samples for D57 analyses. It is defined as as the intersection of
-  \begin{itemize}
-    \item Perprotocol == 1 & EventTimePrimaryD57>=7
-    \item either in the subchort or be a case (EventIndPrimaryD29 == 1)
-    \item no missing values in baseline, Day 29, or Day 57 binding to Spike or RBD
-  \end{itemize}  
+  \item Define Senior, 1 if Age >= 65 (moderna) or Age >= 60 (janssen)
 
-  \item Define TwophasesampInd.2, a 0/1 variable to represent the phase 2 samples for D29 analyses. It is defined as as the intersection of
-  \begin{itemize}
-    \item EventTimePrimaryD29 >= 14 & Perprotocol == 1 | EventTimePrimaryD29 >= 7 & EventTimePrimaryD29 <= 13 & Fullvaccine == 1
-    \item either in the subchort or be a case (EventIndPrimaryD29 == 1)
-    \item no missing values in baseline or Day 29 binding to Spike or RBD
-  \end{itemize}  
-  
   \item Define ethnicity, a factor variable that has three levels:   "Hispanic or Latino", "Not Hispanic or Latino", "Not reported and unknown"
 
   \item Define race, a factor variable that has the following levels:   "White", "Black or African American",
@@ -30,32 +35,51 @@
 
   \item Define WhiteNonHispanic, a binary variable that takes value 1 if race is White and ethnicity is not Hispanic, 0 if race is not "white or unknown" OR ethnicity is Hispanic, and NA otherwise
   
-  \item Define URM, a binary variable that takes value 1 if WhiteNonHispanic is 0, and 0 otherwise including when WhiteNonHispanic is NA
+  \item Define MinorityInd, a binary variable that takes value 1 if WhiteNonHispanic is 0, and 0 otherwise including when WhiteNonHispanic is NA
   
-  \item Define Bstratum, an integer variable to index randomization strata. For Moderna, there are three strata: age >= 65, age < 65 and HighRiskInd==1, age < 65 and HighRiskInd==0
+  \item Define Bstratum, an integer variable to index strata defined by age and at risk. For Moderna, there are three strata: age >= 65, age < 65 and HighRiskInd==1, age < 65 and HighRiskInd==0. For Janssen, there are four strata, from 1 to 4: age < 60 and HighRiskInd==0, age < 60 and HighRiskInd==1, age >= 60 and HighRiskInd==0, and age >= 60 and HighRiskInd==1.
   
-  \item Define demo.stratum, an integer variable to index the demographics strata. For Moderna, there are six strata: URM [1, 0] x Bstratum
+  \item Define demo.stratum, an integer variable to index the demographics strata. For Moderna, there are 6 strata: URMforsubcohortsampling [1, 0] x Bstratum. For Janssen, there are 16 strata: US/URM, US/nonURM, Latin America, and South Africa. Note that there are NA's in URMforsubcohortsampling, so demo.stratum and variables that depend on it would have NA's as well.
   
-  \item Define tps.stratum, an integer variable to index correlates sampling strata. For Moderna, there are 24 strata: [placebo/baseline negative, placebo/baseline positive, vaccine/baseline negative, vaccine/baseline positive] x demo.stratum
+  \item Define tps.stratum, an integer variable to index correlates sampling strata. For Moderna and Janssen, there are 24 and 64 strata, respectively: [placebo/baseline negative, placebo/baseline positive, vaccine/baseline negative, vaccine/baseline positive] x demo.stratum
 
-  \item Define Wstratum, an integer variable to index strata for computing weights. For Moderna, there are 28 strata: if not case (EventIndPrimaryD29==1): tps.stratum, else: [25 - placebo/baseline negative, 26 - placebo/baseline positive, 27 - vaccine/baseline negative, 28 - vaccine/baseline positive] 
+  \item Define Wstratum, an integer variable to index strata for computing weights. For Moderna and Janssen, there are 28 strata and 68 strata, respectively. The four additional strata are the cases in placebo/baseline negative, placebo/baseline positive, vaccine/baseline negative, and vaccine/baseline positive, respectively. Notes: a) Some strata may be empty. b) A case will be assigned a stratum from 25 to 28 even if its demo.stratum is NA. 
   
-  \item Define wt, a double variable for D57 correlates analyses. The weights equal the sampling probabilities of TwophasesampInd==1 within each Wstratum. This variable is only defined for subjects satisfying Perprotocol == 1 and EventTimePrimaryD57>=7 and set to NA otherwise
-  
-  \item Define wt.2, a double variable for D29 correlates analyses. The weights equal the sampling probabilities of TwophasesampInd.2==1 within each Wstratum. This variable is only defined for subjects satisfying EventTimePrimaryD29 >= 14 & Perprotocol == 1 | EventTimePrimaryD29 >= 7 & EventTimePrimaryD29 <= 13 & Fullvaccine == 1 and set to NA otherwise
-  
-  \item Define wt.subcohort, a double variable for immunogenicity analyses that use subcohort only and are not enriched by cases outside subcohort. The weights equal the sampling probabilities of TwophasesampInd==1 and SubcohortInd==1 within each tps.stratum. This variable is only defined for subjects satisfying Perprotocol == 1 and EventTimePrimaryD57>=7 and set to NA otherwise
-  
-  \item Carry out single imputation using the R package mice for the subjects satisfying TwophasesampInd==1. Imputation is done separately for vaccine arm baseline seronegative, vaccine arm baseline seropositive, placebo arm baseline seronegative, and placebo arm baseline seropositive. Since baseline, D29 and D57 binding to Spike and RBD are required in this subset of people, the imputation is intended to fill in missing marker values for neutralization assays at these three time points. The imputation is done with the package mice with default parameters and seed 1. Notes: 1. The order of variables matters in imputation: c(outer(c("B", "Day29", "Day57"), c("bindSpike", "bindRBD", "pseudoneutid50", "pseudoneutid80"), "%.%")). 2. If there is no missing data in the dataset, this piece cannot be verified. 3. Be careful not to change subjects outside TwophasesampInd==1
-  
-  \item Repeat single imputation for the subjects satisfying TwophasesampInd.2==1 and only impute these variables: c(outer(c("B", "Day29"), c("bindSpike", "bindRBD", "pseudoneutid50", "pseudoneutid80"), "%.%")).  
+  \item If has57, define TwophasesampIndD57, a 0/1 variable. It is defined as as the intersection of
+  \begin{itemize}
+    \item either in the subchort or EventIndPrimaryD29 == 1
+    \item no missing values in baseline, Day 29, or Day 57 binding to Spike or RBD
+  \end{itemize}  
 
-  \item Define Delta57overBxxx, Delta29overBxxx, and Delta57over29xxx for each xxx in the variable assays. This step needs to happen before censoring. Deltas are computed by taking the difference between two markers. Since the markers are on the log scale, the deltas represent the log10 fold rise. No transformation is needed. Negative values are left as they are.
+  \item If has29, define TwophasesampIndD29, a 0/1 variable. It is defined as as the intersection of
+  \begin{itemize}
+    \item either in the subchort or EventIndPrimaryD29 == 1
+    \item no missing values in baseline or Day 29 binding to Spike or RBD
+  \end{itemize}  
+
+  \item If has57, define wt.D57. The weights equal the sampling probabilities of TwophasesampIndD57==1 within each Wstratum. This variable is only defined for subjects satisfying EarlyendpointD57==0 & Perprotocol == 1 & EventTimePrimaryD57>=7 and set to NA otherwise. Define ph1.D57 as having non-NA wt.D57. Define ph2.D57 as ph1.D57 & TwophasesampIndD57.
   
-  \item Censor each of the markers in all markers measured by baseline, Day29 and Day57. Censoring means setting values < lower limits of detection (llods, defined in _common.R) to half of the llods and setting values > uloqs to uloqs. Note that llods are on the antilog scale and need to be transformed.
+  \item Repeat above for 29.
   
-  \item Finally, if a dataset does not have the Day29 markers, the previous steps are adjusted accordingly. For example, TwophasesampInd.2 and wt.2 will not be defined. 
+  \item Define wt.subcohort. For Moderna, the weights equal the sampling probabilities of TwophasesampIndD57==1 & SubcohortInd within each tps.stratum. This variable is only defined for subjects satisfying EarlyendpointD57==0 & Perprotocol == 1 and set to NA otherwise. Define ph1.immuno as having non-NA wt.subcohort. ph2.immuno as ph1.immuno & SubcohortInd & TwophasesampIndD57. For Janssen, change 57 to 29. 
   
+  \item Carry out single imputation using the `R` package `mice` for the subjects satisfying TwophasesampIndD57==1. Imputation is done separately for vaccine arm baseline seronegative, vaccine arm baseline seropositive, placebo arm baseline seronegative, and placebo arm baseline seropositive. Since baseline, D29 and D57 binding to Spike and RBD are required in this subset of people, the imputation is intended to fill in missing marker values for neutralization assays at these three time points. The imputation is done with the package mice with default parameters and seed 1. Notes: 1. The order of variables matters in imputation: c(outer(c("B", "Day29", "Day57"), c("bindSpike", "bindRBD", "pseudoneutid50", "pseudoneutid80"), "%.%")). 2. If there is no missing data in the dataset, this piece cannot be verified. 3. Be careful not to change subjects outside TwophasesampIndD57==1. 4. diagnostics = FALSE and remove_collinear=F are needed in call to mice to avoid errors due to collinearity. 5. Before imputation, check to see if any columns are constant columns with missing values. If yes, set the whole column to the constant, including the missing values, otherwise mice will throw an error.
+
+  \item Repeat single imputation for the subjects satisfying TwophasesampIndD29==1 and only impute these variables: c(outer(c("B", "Day29"), c("bindSpike", "bindRBD", "pseudoneutid50", "pseudoneutid80"), "%.%")).  
+
+
+  \item Apply conversion factors (defined in _common.R) to all the binding and ID50 and ID80 variables at baseline, Day29 and Day57. No need to apply conversion factors to deltas because they are fold changes and the conversion factors cancel out. Note that conversion factor is on antilog scale.
+  
+  \item Censor each of the markers in all markers (including bindN but not liveneutmn50 yet) measured by baseline, Day29 and Day57. Censoring means setting values < lower limits of detection (llods, defined in _common.R) to half of the llods. (Note that llods are on the antilog scale and need to be transformed.) However, we will not set values > uloqs to uloqs for either binding variables or nAb markers. ULOQ censoring may happen in sub-analyses.
+  
+  \item Define Delta57overBxxx (if has57), Delta29overBxxx (if has29), and Delta57over29xxx (if has57 and has29) for each xxx in the variable assays+bindN. This step needs to happen after censoring. Deltas are computed by taking the difference between two markers. Since the markers are on the log scale, the deltas represent the log10 fold rise. No transformation is needed. Negative values are left as they are. One complication here is that we want to censor by lloqs (set values less than lloqs to half of lloqs) before computing the delta, but we want the individual time points markers to remain censored by lloq.
+  
+  \item Finally, if subset_value != "All" (defined in _common.R through config), subset to subset_variable==subset_value.
+
+}
+
+  
+
 \end{itemize}
 
 

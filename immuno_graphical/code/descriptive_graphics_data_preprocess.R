@@ -29,11 +29,9 @@ twophase_sample_id <- dat.twophase.sample$Ptid
 ## dat.long.assay_value is the long-form time variables that differ by the assay type
 dat.long.subject_level <- dat[, c(
   "Ptid", "Trt", "MinorityInd", "HighRiskInd", "Age", "Sex",
-  "Bserostatus", "Fullvaccine", "Perprotocol", "EventIndPrimaryD29",
-  "EventIndPrimaryD57", "SubcohortInd", "age.geq.65", "TwophasesampIndD57",
-  "Bstratum", "wt.D57", "wt.D29", "wt.subcohort", "race",
-  "EthnicityHispanic","EthnicityNotreported", "EthnicityUnknown",
-  "WhiteNonHispanic"
+  "Bserostatus", "age.geq.65", "Bstratum", "wt.subcohort", 
+  "race","EthnicityHispanic","EthnicityNotreported", 
+  "EthnicityUnknown", "WhiteNonHispanic"
 )] %>%
   replicate(length(assay_immuno), ., simplify = FALSE) %>%
   bind_rows()

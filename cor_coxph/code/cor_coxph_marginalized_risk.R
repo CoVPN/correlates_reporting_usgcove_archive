@@ -213,7 +213,7 @@ mypdf(onefile=F, file=paste0(save.results.to, "controlled_ve_curves",ii,"_"%.%st
         if (study_name_code=="COVE") {
             ylim=if(ii==1) c(0.5, 1) else c(0.8, 1)
         } else if (study_name_code=="ENSEMBLE") {
-            ylim=if(ii==1) c(0.4, 1) else c(0.6, 1)
+            ylim=if(ii==1) c(0, 1) else c(0.5, 1)
         }
     
         ncases=sapply(risks$marker, function(s) sum(dat.vac.seroneg$yy[dat.vac.seroneg[["Day"%.%pop%.%a]]>=s], na.rm=T))        

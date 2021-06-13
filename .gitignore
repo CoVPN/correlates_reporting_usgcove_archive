@@ -294,3 +294,8 @@ cor_coxph/output/D29/timepoints_cum_risk_MockENSEMBLE
 cor_coxph/output/D57/cutpoints_Day57bindSpike_MockENSEMBLE
 cor_coxph/output/D57/timepoints_cum_risk_MockENSEMBLE
 data_clean/janssen_pooled_mock_data_processed.zip
+cor_coxph/output/D29/bootstrap_replicates_MockCOVE
+cor_coxph/output/D29/ylims.cor.MockCOVE.Rdata
+cor_coxph/output/D57/bootstrap_replicates_MockCOVE
+cor_coxph/output/D57/permutation_replicates_MockCOVE
+cor_coxph/output/D57/ylims.cor.MockCOVE.Rdata

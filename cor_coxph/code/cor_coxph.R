@@ -1,4 +1,4 @@
-#Sys.setenv(TRIAL = "janssen_la_mock")
+#Sys.setenv(TRIAL = "moderna_mock")
 if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
 #----------------------------------------------- 
 # obligatory to append to the top of each script

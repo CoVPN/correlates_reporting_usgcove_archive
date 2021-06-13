@@ -99,40 +99,45 @@ if(!file.exists(paste0(save.results.to, "marginalized.risk.",study_name,".Rdata"
 
 write(ncol(risks.all.1[[1]]$boot), file=paste0(save.results.to, "bootstrap_replicates_"%.%study_name))
 
+# to be saved for cor_nonlinear
 ylims.cor=list()
 ylims.cor[[1]]=list(2)
 ylims.cor[[2]]=list(2)
 
-# draw marginalized risk curves for continuous s
-for (ii in 1:2) {  # 1 conditional on s,   2 is conditional on S>=s
-for (idx in 1:2) { # 1 with placebo lines, 2 without placebo lines. Implementation-wise, only difference is in ylim
-# ii=1; idx=1; a=assays[3]
+
+
+###################################################################################################
+# marginalized risk curves for continuous s
     
-    risks.all=get("risks.all."%.%ii)
+for (eq.geq in 1:2) {  # 1 conditional on s,   2 is conditional on S>=s
+for (w.wo.plac in 1:2) { # 1 with placebo lines, 2 without placebo lines. Implementation-wise, the main difference is in ylim
+# eq.geq=1; w.wo.plac=2; a=assays[3]
     
-    if (ii==2 & idx==2) {
+    risks.all=get("risks.all."%.%eq.geq)
+    
+    if (eq.geq==2 & w.wo.plac==2) {
         # later values in prob may be wildly large due to lack of samples
-        ylim=range(sapply(risks.all, function(x) x$prob[1]), if(idx==1) prev.plac, prev.vacc, 0)
+        ylim=range(sapply(risks.all, function(x) x$prob[1]), if(w.wo.plac==1) prev.plac, prev.vacc, 0)
         # add some white space at the top to write placebo overall risk
         ylim[2]=ylim[2]
 #        ylim=c(0, 0.007)
     } else {
-        ylim=range(sapply(risks.all, function(x) x$prob), if(idx==1) prev.plac, prev.vacc, 0)
+        ylim=range(sapply(risks.all, function(x) x$prob), if(w.wo.plac==1) prev.plac, prev.vacc, 0)
     }
     myprint(ylim)
-    ylims.cor[[ii]][[idx]]=ylim
+    ylims.cor[[eq.geq]][[w.wo.plac]]=ylim
     lwd=2
      
-    mypdf(oma=c(0,0,0,0), onefile=F, file=paste0(save.results.to, "marginalized_risks", ii, ifelse(idx==1,"","_woplacebo"), "_"%.%study_name), mfrow=.mfrow)
+    mypdf(oma=c(0,0,0,0), onefile=F, file=paste0(save.results.to, "marginalized_risks", ifelse(eq.geq==1,"_eq","_geq"), ifelse(w.wo.plac==1,"","_woplacebo"), "_"%.%study_name), mfrow=.mfrow)
     par(las=1, cex.axis=0.9, cex.lab=1)# axis label orientation
     for (a in assays) {        
         risks=risks.all[[a]]
         xlim=get.range.cor(dat.vac.seroneg, a, pop)
-        #xlim=quantile(dat.vac.seroneg[["Day"%.%pop%.%a]],if(ii==1) c(.025,.975) else c(0,.95), na.rm=T) 
+        #xlim=quantile(dat.vac.seroneg[["Day"%.%pop%.%a]],if(eq.geq==1) c(.025,.975) else c(0,.95), na.rm=T) 
         
         ncases=sapply(risks$marker, function(s) sum(dat.vac.seroneg$yy[dat.vac.seroneg[["Day"%.%pop%.%a]]>=s], na.rm=T))
         
-        plot(prob~marker, risks, xlab=labels.assays.short[a]%.%ifelse(ii==1," (=s)"," (>=s)"), xlim=xlim, 
+        plot(prob~marker, risks, xlab=labels.assays.short[a]%.%ifelse(eq.geq==1," (=s)"," (>=s)"), xlim=xlim, 
             ylab=paste0("Probability* of COVID by Day ", t0), lwd=lwd, ylim=ylim, type="n", main=paste0(labels.assays.long["Day"%.%pop,a]), xaxt="n")
     
         draw.x.axis.cor(xlim, llods[a])
@@ -149,7 +154,7 @@ for (idx in 1:2) { # 1 with placebo lines, 2 without placebo lines. Implementati
         abline(h=prev.plac, col="gray", lty=c(1,3,3), lwd=lwd)
         
         # risks
-        if (ii==1) {
+        if (eq.geq==1) {
             abline(h=prev.vacc, col="gray", lty=c(1,3,3), lwd=lwd)
             lines(risks$marker, risks$prob, lwd=lwd)
             lines(risks$marker, risks$lb,   lwd=lwd, lty=3)
@@ -162,12 +167,12 @@ for (idx in 1:2) { # 1 with placebo lines, 2 without placebo lines. Implementati
         }
         
         # text overall risks
-        if (idx==1) {
-            text(x=par("usr")[2]-diff(par("usr")[1:2])/4, y=prev.plac[1]+(prev.plac[1]-prev.plac[2])/2, "placebo overall risk")        
-            text(x=par("usr")[2]-diff(par("usr")[1:2])/4, y=prev.vacc[1]+(prev.plac[1]-prev.plac[2])/2, "vaccine overall risk")
+        if (w.wo.plac==1) {
+            text(x=par("usr")[2]-diff(par("usr")[1:2])/3.5, y=prev.plac[1]+(prev.plac[1]-prev.plac[2])/2, "placebo overall "%.%formatDouble(prev.plac[1],3,remove.leading0=F))        
+            text(x=par("usr")[2]-diff(par("usr")[1:2])/3.5, y=prev.vacc[1]+(prev.plac[1]-prev.plac[2])/2, "vaccine overall "%.%formatDouble(prev.vacc[1],3,remove.leading0=F))
         } else {
-            text(x=par("usr")[2]-diff(par("usr")[1:2])/2.5, y=par("usr")[4]-diff(par("usr")[3:4])/20, "placebo overall risk "%.%formatDouble(prev.plac[1],3,remove.leading0=F))
-            text(x=par("usr")[2]-diff(par("usr")[1:2])/4, y=prev.vacc[1]-(prev.vacc[1]-prev.vacc[2])/4, "vaccine overall risk")
+            text(x=par("usr")[2]-diff(par("usr")[1:2])/3.5, y=par("usr")[4]-diff(par("usr")[3:4])/20,     "placebo overall "%.%formatDouble(prev.plac[1],3,remove.leading0=F))
+            text(x=par("usr")[2]-diff(par("usr")[1:2])/3.5, y=prev.vacc[1]-(prev.vacc[1]-prev.vacc[2])/4, "vaccine overall "%.%formatDouble(prev.vacc[1],3,remove.leading0=F))
         }
         
         # add histogram
@@ -188,17 +193,19 @@ save(ylims.cor, file=paste0(save.results.to, "ylims.cor."%.%study_name%.%".Rdata
 
 
 
-# draw controlled VE curves for S=s and S>=s
+###################################################################################################
+# controlled VE curves for S=s and S>=s
+    
 s2="85%"; s1="15%" # these two reference quantiles are used in the next two blocks of code
 RRud=RReu=4
-for (ii in 1:2) {  # 1 conditional on s,   2 is conditional on S>=s
-mypdf(onefile=F, file=paste0(save.results.to, "controlled_ve_curves",ii,"_"%.%study_name), mfrow=.mfrow, oma=c(0,0,0,0))
+for (eq.geq in 1:2) {  # 1 conditional on s,   2 is conditional on S>=s
+mypdf(onefile=F, file=paste0(save.results.to, "controlled_ve_curves",ifelse(eq.geq==1,"_eq","_geq"),"_"%.%study_name), mfrow=.mfrow, oma=c(0,0,0,0))
     lwd=2.5
     par(las=1, cex.axis=0.9, cex.lab=1)# axis label orientation
     for (a in assays) {        
-        risks=get("risks.all."%.%ii)[[a]]        
+        risks=get("risks.all."%.%eq.geq)[[a]]        
     
-        #xlim=quantile(dat.vac.seroneg[["Day"%.%pop%.%a]],if(ii==1) c(.025,.975) else c(0,.95),na.rm=T)
+        #xlim=quantile(dat.vac.seroneg[["Day"%.%pop%.%a]],if(eq.geq==1) c(.025,.975) else c(0,.95),na.rm=T)
         xlim=get.range.cor(dat.vac.seroneg, a, pop)
         
         # compute Bias as a vector, which is a function of s
@@ -211,52 +218,43 @@ mypdf(onefile=F, file=paste0(save.results.to, "controlled_ve_curves",ii,"_"%.%st
         if (is.nan(Bias[1])) Bias=rep(1,length(Bias))
     
         if (study_name_code=="COVE") {
-            ylim=if(ii==1) c(0.5, 1) else c(0.8, 1)
+            ylim=if(eq.geq==1) c(0.2, 1) else c(0.8, 1)
         } else if (study_name_code=="ENSEMBLE") {
-            ylim=if(ii==1) c(0, 1) else c(0.5, 1)
+            ylim=if(eq.geq==1) c(0, 1) else c(0.5, 1)
         }
     
         ncases=sapply(risks$marker, function(s) sum(dat.vac.seroneg$yy[dat.vac.seroneg[["Day"%.%pop%.%a]]>=s], na.rm=T))        
-        .subset=if(ii==1) rep(T, length(risks$marker)) else ncases>=5
+        .subset=if(eq.geq==1) rep(T, length(risks$marker)) else ncases>=5
         
         # CVE
         est = 1 - risks$prob*Bias/res.plac.cont["est"]
         boot = 1 - t( t(risks$boot*Bias)/res.plac.cont[2:(1+ncol(risks$boot))] ) # res.plac.cont may have more bootstrap replicates than risks$boot
         ci.band=apply(boot, 1, function (x) quantile(x, c(.025,.975)))
-    
-        mymatplot(risks$marker[.subset], t(rbind(est, ci.band))[.subset,], type="l", lty=c(1,2,2), col=if(ii==1) "red" else "white", lwd=lwd, make.legend=F, ylab=paste0("Controlled VE against COVID by Day ",t0), main=paste0(labels.assays.long["Day"%.%pop,a]),
-            xlab=labels.assays.short[a]%.%ifelse(ii==1," (=s)"," (>=s)"), ylim=ylim, xlim=xlim, yaxt="n", xaxt="n", draw.x.axis=F)
+        
+        mymatplot(risks$marker[.subset], t(rbind(est, ci.band))[.subset,], type="l", lty=c(1,2,2), col=if(eq.geq==1) "red" else "white", lwd=lwd, make.legend=F, ylab=paste0("Controlled VE against COVID by Day ",t0), main=paste0(labels.assays.long["Day"%.%pop,a]),
+            xlab=labels.assays.short[a]%.%ifelse(eq.geq==1," (=s)"," (>=s)"), ylim=ylim, xlim=xlim, yaxt="n", xaxt="n", draw.x.axis=F)
         # labels
         yat=seq(.2,1,by=.1)
         axis(side=2,at=yat,labels=(yat*100)%.%"%")
     
+        # overall controlled VE
+        overall.ve = c(1 - res.vacc.cont["est"]/res.plac.cont["est"], quantile(1 - res.vacc.cont[-1]/res.plac.cont[-1], c(0.025, 0.975)))
+        abline(h=overall.ve, col="gray", lwd=1, lty=c(1,3,3))
+        #text(x=par("usr")[1], y=overall.ve[1]+(overall.ve[1]-overall.ve[2])/2,     "overall VE "%.%round(overall.ve[1]*100)%.%"%", adj=0)
+    
         # x axis
         draw.x.axis.cor(xlim, llods[a])
-#        if(xlim[2]<3) {
-#            xx = (c(10,25,50,100,200,400))
-#            for (x in xx) axis(1, at=log10(x), labels=if (llods[a]==x) "lod" else x ) # bquote(.(x/1000)%*%10^3)
-#        } else if(xlim[2]<4) {
-#            xx = (c(10,50,250,1000,4000))
-#            for (x in xx) axis(1, at=log10(x), labels=if (llods[a]==x) "lod" else x ) # bquote(.(x/1000)%*%10^3)
-#        } else {
-#            xx=seq(floor(xlim[1]), ceiling(xlim[2]))
-#            for (x in xx) axis(1, at=x, labels=if (log10(llods[a])==x) "lod" else if (x>=3) bquote(10^.(x)) else 10^x )
-#        }
-#        #
-#        if(!any(log10(llods[a])==xx)) axis(1, at=log10(llods[a]), labels="lod")
             
         # VE
         est = 1 - risks$prob/res.plac.cont["est"]
         boot = 1 - t( t(risks$boot)/res.plac.cont[2:(1+ncol(risks$boot))] )                         
-        ci.band=apply(boot, 1, function (x) quantile(x, c(.025,.975)))
-        
+        ci.band=apply(boot, 1, function (x) quantile(x, c(.025,.975)))        
         mymatplot(risks$marker[.subset], t(rbind(est, ci.band))[.subset,], type="l", lty=c(1,2,2), col="pink", lwd=lwd, make.legend=F, add=T)
         
-        if(ii==1) {
-            mylegend(x=1,legend=c("Controlled VE Sens. Analysis","Controlled VE"), lty=1, col=c("red","pink"), lwd=2, cex=.8)
-        } else {
-            mylegend(x=1,legend=c("Controlled VE"), lty=1, col=c("pink"), lwd=2, cex=.8)
-        }
+        # legend
+        mylegend(x=9,legend=c("Overall VE "%.%round(overall.ve[1]*100)%.%"%", "Controlled VE", if(eq.geq==1) "Controlled VE Sens. Analysis"), 
+                        col=c("white",                                        "pink",          if(eq.geq==1) "red"                         ), 
+            lty=1, lwd=2, cex=.8)
     
         # add histogram
         par(new=TRUE) 

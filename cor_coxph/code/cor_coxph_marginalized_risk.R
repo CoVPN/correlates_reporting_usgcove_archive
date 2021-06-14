@@ -199,6 +199,7 @@ save(ylims.cor, file=paste0(save.results.to, "ylims.cor."%.%study_name%.%".Rdata
 s2="85%"; s1="15%" # these two reference quantiles are used in the next two blocks of code
 RRud=RReu=4
 for (eq.geq in 1:2) {  # 1 conditional on s,   2 is conditional on S>=s
+# eq.geq=1
 mypdf(onefile=F, file=paste0(save.results.to, "controlled_ve_curves",ifelse(eq.geq==1,"_eq","_geq"),"_"%.%study_name), mfrow=.mfrow, oma=c(0,0,0,0))
     lwd=2.5
     par(las=1, cex.axis=0.9, cex.lab=1)# axis label orientation
@@ -252,7 +253,8 @@ mypdf(onefile=F, file=paste0(save.results.to, "controlled_ve_curves",ifelse(eq.g
         mymatplot(risks$marker[.subset], t(rbind(est, ci.band))[.subset,], type="l", lty=c(1,2,2), col="pink", lwd=lwd, make.legend=F, add=T)
         
         # legend
-        mylegend(x=9,legend=c("Overall VE "%.%round(overall.ve[1]*100)%.%"%", "Controlled VE", if(eq.geq==1) "Controlled VE Sens. Analysis"), 
+        tmp=formatDouble(overall.ve*100,1)%.%"%"        
+        mylegend(x=9,legend=c(paste0("Overall VE ",tmp[1]," (",tmp[2],", ",tmp[3],")"), "Controlled VE", if(eq.geq==1) "Controlled VE Sens. Analysis"), 
                         col=c("white",                                        "pink",          if(eq.geq==1) "red"                         ), 
             lty=1, lwd=2, cex=.8)
     

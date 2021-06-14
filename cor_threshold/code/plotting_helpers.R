@@ -15,8 +15,12 @@ get_plot <- function(marker, simultaneous_CI = F, monotone = F, above = TRUE) {
      Earlyendpoint <- "EarlyendpointD29"
      
    }
-  keep <- data[[Earlyendpoint]] ==0 & data$Trt == 0 & data$Bserostatus == 0 & data$Perprotocol==1  & data[[Event_Time_variable[[time]]]] >=7
+   #keep <- data[[Earlyendpoint]] ==0 & data$Trt == 0 & data$Bserostatus == 0 & data$Perprotocol==1  & data[[Event_Time_variable[[time]]]] >=7 & !is.na(data$Wstratum)
+  keep <- data[[ph1_id_list[[time]]]]==1  & data$Trt == 0 & data$Bserostatus == 0
+  #keep <-   data$Trt == 0 & data$Bserostatus == 0   & !is.na(data[[weight_variable[[time]]]])
   tmp <- dat.mock[keep,]
+  print(time)
+  print(ph1_id_list[[time]])
   print(dim(tmp))
   #dat.mock <- read.csv(here::here( "data_clean", data_name))
   #tmp <- dat.mock[dat.mock$Perprotocol==1 & dat.mock$Bserostatus == 0,]
@@ -35,8 +39,8 @@ get_plot <- function(marker, simultaneous_CI = F, monotone = F, above = TRUE) {
  
   fit.risk = coxph(form.0, data = tmp, model=T) # model=T is required because the type of prediction requires it, see Note on ?predict.coxph
   tmp[["time"]] <-  as.numeric(tf[time])
-  print(table(tmp[["time"]]))
-  t <- predict(fit.risk)
+ 
+  
  
   risks = 1 - exp(-predict(fit.risk, newdata=tmp, type="expected"))
   risk_plac <- round(mean(risks),3)

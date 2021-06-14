@@ -36,7 +36,8 @@ dat <- dat[!is.na(dat$cohort_event),]
 dat.long.subject_level <- dat[, c(
   "Ptid", "Trt", "MinorityInd", "EthnicityHispanic", "EthnicityNotreported",
   "EthnicityUnknown", "HighRiskInd", "Age", "BMI", "Sex",
-  "Bserostatus", "Fullvaccine", "Perprotocol", "EventIndPrimaryD29",
+  "Bserostatus", "Fullvaccine", "Perprotocol", "EventIndPrimaryD29", "EventTimePrimaryD29", 
+  "ph1.intercurrent.cases", "ph2.intercurrent.cases", "wt.intercurrent.cases",
   "EventIndPrimaryD57", "SubcohortInd", "age.geq.65", "TwophasesampIndD57",
   "Bstratum", "wt.D57", "wt.D29", "race",
   "WhiteNonHispanic", "cohort_event"
@@ -245,7 +246,9 @@ dat.long.cor.subset$age_minority_label <-
 
 # long to longer format by time
 dat.longer.cor.subset <- dat.long.cor.subset %>% select(Ptid, Trt, Bserostatus, EventIndPrimaryD29,
-                                                        EventIndPrimaryD57, Perprotocol, cohort_event,
+                                                        EventIndPrimaryD57, EventTimePrimaryD29,
+                                                        ph1.intercurrent.cases, ph2.intercurrent.cases, wt.intercurrent.cases,
+                                                        Perprotocol, cohort_event,
                                                         Age, age_geq_65_label, highrisk_label, age_risk_label,
                                                         sex_label, minority_label, Dich_RaceEthnic,
                                                         assay, LLoD, LLoQ, pos.cutoffs, wt.D57, wt.D29,
@@ -285,8 +288,8 @@ groupby_vars1=c("Trt", "Bserostatus", "cohort_event", "time", "assay")
 
 dat.longer.cor.subset.plot1 <-
   dat.longer.cor.subset %>% group_by_at(groupby_vars1) %>%
-  mutate(num = round(sum(response * wt.D29), 1),
-         denom = round(sum(wt.D29), 1),
+  mutate(num = round(sum(response * ifelse(cohort_event=="Intercurrent Cases", wt.intercurrent.cases, wt.D57)), 1),
+         denom = round(sum(ifelse(cohort_event=="Intercurrent Cases", wt.intercurrent.cases, wt.D57)), 1),
          RespRate = paste0(num,"/",denom,"=",round(num/denom*100, 1),"%"),
          min = min(value),
          q1 = quantile(value, 0.25),
@@ -298,8 +301,8 @@ write.csv(dat.longer.cor.subset.plot1, file = here("data_clean", "longer_cor_dat
 
 dat.longer.cor.subset.plot1 <-
   dat.longer.cor.subset %>% group_by_at(groupby_vars1) %>%
-  mutate(num = round(sum(response * wt.D29), 1),
-         denom = round(sum(wt.D29), 1),
+  mutate(num = round(sum(response * ifelse(cohort_event=="Intercurrent Cases", wt.intercurrent.cases, wt.D57)), 1),
+         denom = round(sum(ifelse(cohort_event=="Intercurrent Cases", wt.intercurrent.cases, wt.D57)), 1),
          RespRate = paste0(num,"/",denom,"\n",round(num/denom*100, 1),"%"),
   )
 saveRDS(dat.longer.cor.subset.plot1, file = here("data_clean", "longer_cor_data_plot1.rds"))
@@ -319,8 +322,8 @@ groupby_vars3 <- c("Trt", "Bserostatus", "cohort_event", "time", "assay", "age_g
 
 dat.longer.cor.subset.plot3 <-
   dat.longer.cor.subset %>% group_by_at(groupby_vars3) %>%
-  mutate(num = round(sum(response * wt.D29), 1),
-         denom = round(sum(wt.D29), 1),
+  mutate(num = round(sum(response * ifelse(cohort_event=="Intercurrent Cases", wt.intercurrent.cases, wt.D57)), 1),
+         denom = round(sum(ifelse(cohort_event=="Intercurrent Cases", wt.intercurrent.cases, wt.D57)), 1),
          RespRate = paste0(num,"/",denom,"\n",round(num/denom*100, 1),"%"))
 saveRDS(dat.longer.cor.subset.plot3, file = here("data_clean", "longer_cor_data_plot3.rds"))
 

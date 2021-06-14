@@ -148,8 +148,8 @@ for (typ in c("line","violin")) {
             
             longer_cor_data_plot2 <- 
               longer_cor_data %>% group_by_at(groupby_vars2) %>%
-              mutate(num = round(sum(response * wt.D29), 1), 
-                     denom = round(sum(wt.D29), 1), 
+              mutate(num = round(sum(response * ifelse(cohort_event=="Intercurrent Cases", wt.intercurrent.cases, wt.D57)), 1), 
+                     denom = round(sum(ifelse(cohort_event=="Intercurrent Cases", wt.intercurrent.cases, wt.D57)), 1), 
                      RespRate = paste0(num,"/",denom,"\n",round(num/denom*100, 1),"%"))
             
             # make subset for strata RaceEthnic and Dich_RaceEthnic, only present non-NA categories
@@ -233,6 +233,8 @@ for (i in 1:length(plots)) {
     for (c in c("Vaccine_BaselineNeg","all")) {
       
       ds.tmp <- subset(longer_cor_data, assay==plots[i] & !is.na(value) & time==times[[2]][d])
+      ds.tmp$size <- with(ds.tmp, ifelse(cohort_event %in% c("Intercurrent Cases","Primary Cases"), 4, 
+                                         ifelse(cohort_event == "Non-Cases", 2.5, NA)))
       
       # subset for vaccine baseline neg arm
       if (c=="Vaccine_BaselineNeg"){ds.tmp <- subset(ds.tmp, Bserostatus=="Baseline Neg" & Trt=="Vaccine")}
@@ -245,13 +247,14 @@ for (i in 1:length(plots)) {
       # if show all four arms, multiple panels are needed
       if (c=="all") {p <- p + facet_wrap(~Bserostatus+Trt, nrow = 1)}
       
-      p <- p + geom_point(size = 2.5, alpha = 0.4, aes(color = cohort_event, shape = cohort_event)) + 
+      p <- p + geom_point(alpha = 1, aes(color = cohort_event, shape = cohort_event, size = size)) + 
         geom_smooth(aes(group = cohort_event, color = cohort_event), size=1.5, method = 'loess', se= F, span = 1.15) + 
         scale_y_continuous(limits=y.lim, breaks=y.breaks, labels=math_format(10^.x)) +
         scale_x_continuous(breaks = seq(from=18, to=86, by=17)) +
         scale_color_manual(values = c("#0AB7C9","#FF6F1B","#810094")) +
         scale_shape_manual(values = c(16, 17, 0)) +
-        guides(color = guide_legend(nrow=1)) +
+        guides(color = guide_legend(nrow=1),
+               size = FALSE) +
         labs(title = paste0(plots_titles[i],": ",times[[2]][d]), x = 'Age (years)', y = plots_ytitles[i],
              color="Category", shape="Category") +
         theme(plot.margin = unit(c(1, 1, 1, 1), "cm"), 
@@ -260,6 +263,48 @@ for (i in 1:length(plots)) {
               axis.text.x = element_text(size=ifelse(c=="Vaccine_BaselineNeg", 27, 19)))
       
       file_name <- paste0("scatter_",gsub("bind","",gsub("pseudoneut","pnAb_",plots[i])),"_",c,"_",gsub(" ","",times[[2]][d]),"_", study_name, ".pdf")
+      ggsave2(plot = p, filename = here("figs", file_name), width = 12.5, height = 11)
+      
+    }
+  }
+}
+
+#### Figure 5. Scatter plot, assay vs. days since Day 29, intercurrent vs pp, case vs non-case, (Day 1) Day 29 Day 57
+for (i in 1:length(plots)) {
+  for (d in 1:length(times[[2]])) {
+    for (c in c("Vaccine_BaselineNeg","all")) {
+      
+      ds.tmp <- subset(longer_cor_data, assay==plots[i] & !is.na(value) & time==times[[2]][d])
+      ds.tmp$size <- with(ds.tmp, ifelse(cohort_event %in% c("Intercurrent Cases","Primary Cases"), 4, 
+                                         ifelse(cohort_event == "Non-Cases", 2.5, NA)))
+      
+      # subset for vaccine baseline neg arm
+      if (c=="Vaccine_BaselineNeg"){ds.tmp <- subset(ds.tmp, Bserostatus=="Baseline Neg" & Trt=="Vaccine")}
+      
+      y.breaks <- seq(ifelse(plots[i] %in% c("bindSpike","bindRBD"), -1, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 5, 4))
+      y.lim=c(ifelse(plots[i] %in% c("bindSpike","bindRBD"), -1.5, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 5, 4))
+      
+      p <- ggplot(ds.tmp, aes(x = EventTimePrimaryD29, y = value))
+      
+      # if show all four arms, multiple panels are needed
+      if (c=="all") {p <- p + facet_wrap(~Bserostatus+Trt, nrow = 1)}
+      
+      p <- p + geom_point(alpha = 1, aes(color = cohort_event, shape = cohort_event, size = size)) + 
+        geom_smooth(aes(group = cohort_event, color = cohort_event), size=1.5, method = 'loess', se= F, span = 1.15) + 
+        scale_y_continuous(limits=y.lim, breaks=y.breaks, labels=math_format(10^.x)) +
+        scale_x_continuous(breaks = seq(from=0, to=220, by=40)) +
+        scale_color_manual(values = c("#0AB7C9","#FF6F1B","#810094")) +
+        scale_shape_manual(values = c(16, 17, 0)) +
+        guides(color = guide_legend(nrow=1),
+               size = FALSE) +
+        labs(title = paste0(plots_titles[i],": ",times[[2]][d]), x = 'Days Since the Day 29 Visit', y = plots_ytitles[i],
+             color="Category", shape="Category") +
+        theme(plot.margin = unit(c(1, 1, 1, 1), "cm"), 
+              panel.grid = element_blank(),
+              plot.title = element_text(hjust = 0.5),
+              axis.text.x = element_text(size=ifelse(c=="Vaccine_BaselineNeg", 27, 19)))
+      
+      file_name <- paste0("scatter_daysince29_",gsub("bind","",gsub("pseudoneut","pnAb_",plots[i])),"_",c,"_",gsub(" ","",times[[2]][d]),"_", study_name, ".pdf")
       ggsave2(plot = p, filename = here("figs", file_name), width = 12.5, height = 11)
       
     }

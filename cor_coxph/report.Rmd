@@ -2,6 +2,12 @@
 <!-- here::i_am("cor_coxph/report.Rmd") -->
 <!-- ``` -->
 
+\newif\ifENSEMBLE
+`r if (study_name_code=="ENSEMBLE") "\\ENSEMBLEtrue"` 
+
+
+
+
 
 ```{r, echo=FALSE}
 Day <- 57

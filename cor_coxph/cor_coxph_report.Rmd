@@ -25,6 +25,10 @@ source(here::here("..", "_common.R"), local = knitr::knit_global())
 \counterwithin{figure}{section}
 
 
+\newif\ifENSEMBLE
+`r if (study_name_code=="ENSEMBLE") "\\ENSEMBLEtrue"` 
+
+
 ```{r, echo=FALSE}
 Day <- 57
 pathCoRoutput <- "output/D57"

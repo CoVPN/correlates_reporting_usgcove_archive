@@ -197,7 +197,7 @@ save(ylims.cor, file=paste0(save.results.to, "ylims.cor."%.%study_name%.%".Rdata
 # controlled VE curves for S=s and S>=s
     
 s2="85%"; s1="15%" # these two reference quantiles are used in the next two blocks of code
-RRud=RReu=4
+RRud=RReu=2
 for (eq.geq in 1:2) {  # 1 conditional on s,   2 is conditional on S>=s
 # eq.geq=1
 mypdf(onefile=F, file=paste0(save.results.to, "controlled_ve_curves",ifelse(eq.geq==1,"_eq","_geq"),"_"%.%study_name), mfrow=.mfrow, oma=c(0,0,0,0))

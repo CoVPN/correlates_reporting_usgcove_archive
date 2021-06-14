@@ -78,6 +78,10 @@ if(!file.exists(paste0(save.results.to, "pvals.perm.",study_name,".Rdata"))) {
     dat.ph2 = design.vacc.seroneg$phase1$sample$variables
     design.vacc.seroneg.perm=design.vacc.seroneg
     #design.vacc.seroneg.perm$phase1$full$variables
+
+    # only do multitesting when liveneutmn50 is included
+    if (!"liveneutmn50" %in% assays) numPerm=5
+
     out=mclapply(1:numPerm, mc.cores = numCores, FUN=function(seed) {   
         # store the current rng state 
         save.seed <- try(get(".Random.seed", .GlobalEnv), silent=TRUE) 
@@ -118,7 +122,7 @@ if(!file.exists(paste0(save.results.to, "pvals.perm.",study_name,".Rdata"))) {
 } else {
     load(file=paste0(save.results.to, "pvals.perm."%.%study_name%.%".Rdata"))
 }
-
+# save number of permutation replicates
 write(nrow(pvals.perm), file=paste0(save.results.to, "permutation_replicates_"%.%study_name))
 
 

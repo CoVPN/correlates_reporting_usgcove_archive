@@ -73,8 +73,10 @@ tlf <-
                        primary endpoint diagnosed starting 7 days after the Day 57 study visit. 
                        Non-cases are per-protocol participants sampled into the random subcohort 
                        with no COVID primary endpoint up to the time of data cut and no evidence 
-                       of SARS-CoV-2 infection up to six days post Day 57 visit."
-      ),
+                       of SARS-CoV-2 infection up to six days post Day 57 visit.",
+                       "N is the number of cases sampled into the subcohort within baseline covariate strata.",
+                       "The denominator in Resp Rate is the number of participants in the whole per-protocol cohort within baseline
+covariate strata, calculated using inverse probability weighting."),
       deselect = "Arm",
       pack_row = "Arm"
     ),

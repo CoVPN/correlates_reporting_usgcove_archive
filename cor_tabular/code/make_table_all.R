@@ -74,9 +74,7 @@ tlf <-
                        Non-cases are per-protocol participants sampled into the random subcohort 
                        with no COVID primary endpoint up to the time of data cut and no evidence 
                        of SARS-CoV-2 infection up to six days post Day 57 visit.",
-                       "N is the number of cases sampled into the subcohort within baseline covariate strata.",
-                       "The denominator in Resp Rate is the number of participants in the whole per-protocol cohort within baseline
-covariate strata, calculated using inverse probability weighting."),
+                       "The table shows the numbers of cases sampled into the subcohort within baseline covariate strata."),
       deselect = "Arm",
       pack_row = "Arm"
     ),
@@ -84,12 +82,15 @@ covariate strata, calculated using inverse probability weighting."),
     case_vacc_neg = list(
       table_header = "Antibody levels in the baseline SARS-CoV-2 negative
       per-protocol cohort (vaccine recipients)",
-      table_footer =
+      table_footer =c(
       "Cases for Day 29 marker correlates analyses are baseline negative per-protocol 
       vaccine recipients with the symptomatic infection COVID-19 primary endpoint diagnosed 
       starting 7 days after the Day 29 study visit. Cases for Day 57 marker correlates 
       analyses are baseline negative per-protocol vaccine recipients with the symptomatic 
       infection COVID-19 primary endpoint diagnosed starting 7 days after the Day 57 study visit. ",
+      "N is the number of cases sampled into the subcohort within baseline covariate strata.",
+      "The denominator in Resp Rate is the number of participants in the whole per-protocol cohort within baseline
+covariate strata, calculated using inverse probability weighting."),
 
       col_name = c("Visit", "Marker", "N", "Resp rate", "GMT/GMC", "N",
                    "Resp rate", "GMT/GMC", "Resp Rate\nDifference", "GMTR/GMCR"),
@@ -113,7 +114,10 @@ covariate strata, calculated using inverse probability weighting."),
       per-protocol vaccine recipients with the symptomatic infection COVID-19 primary 
       endpoint diagnosed starting 7 days after the Day 57 study visit. Non-cases/Controls 
       are baseline positive per-protocol vaccine recipients sampled into the random subcohort 
-      with no COVID-19 endpoint diagnosis by the time of data-cut."),
+      with no COVID-19 endpoint diagnosis by the time of data-cut.",
+      "N is the number of cases sampled into the subcohort within baseline covariate strata.",
+      "The denominator in Resp Rate is the number of participants in the whole per-protocol cohort within baseline
+covariate strata, calculated using inverse probability weighting."),
       col_name = c("Visit", "Marker", "N", "Resp rate", "GMT/GMC", "N",
                    "Resp rate", "GMT/GMC", "Resp Rate\nDifference", "GMTR/GMCR"),
       header_above1 = c(" "=2, "Cases*" = 3, "Non-Cases/Control" = 3, 
@@ -136,7 +140,10 @@ covariate strata, calculated using inverse probability weighting."),
         placebo recipients with the symptomatic infection COVID-19 primary endpoint diagnosed 
         starting 7 days after the Day 57 study visit. Non-cases/Controls are baseline positive 
         per-protocol placebo recipients sampled into the random subcohort with no COVID-19 endpoint 
-        diagnosis by the time of data-cut."
+        diagnosis by the time of data-cut.",
+        "N is the number of cases sampled into the subcohort within baseline covariate strata.",
+        "The denominator in Resp Rate is the number of participants in the whole per-protocol cohort within baseline
+covariate strata, calculated using inverse probability weighting."
         ),
       col_name = c("Visit", "Marker", "N", "Resp rate", "GMT/GMC", "N",
                    "Resp rate", "GMT/GMC", "Resp Rate\nDifference", "GMTR/GMCR"),

@@ -64,7 +64,8 @@ for (time in times) {
       "Delta"
     )
 
-  keep <- data[[Earlyendpoint]] ==0 & data$Trt == 1 & data$Bserostatus == 0 & data$Perprotocol==1 & !is.na(data$wt) & data[[Event_Time_variable[[time]]]] >=7
+    #keep <- data[[Earlyendpoint]] ==0 & data$Trt == 1 & data$Bserostatus == 0 & data$Perprotocol==1 & !is.na(data$wt) & data[[Event_Time_variable[[time]]]] >=7 & !is.na(data$Wstratum)
+  keep <- data[[ph1_id_list[[time]]]]==1 & data$Trt == 1  & data$Bserostatus == 0
   
   data_firststage <- data[keep, variables_to_keep]
   #data_firststage <- na.omit(data_firststage)

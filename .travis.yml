@@ -84,10 +84,10 @@ before_script:
 after_script:
   - chmod +x _deploy_reports.sh && ./_deploy_reports.sh
 
-# notifications:
-#   email:
-#     on_success: change
-#     on_failure: always
-#     recipients:
-#       - benkeser@emory.edu
-#       - nh@nimahejazi.org
+notifications:
+  email:
+    on_success: change
+    on_failure: always
+    recipients:
+      - benkeser@emory.edu
+      - nh@nimahejazi.org

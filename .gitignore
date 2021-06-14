@@ -21,9 +21,6 @@ _report_cor/*.html
 _report_cop/*.pdf
 _report_cop/*.html
 data_clean/.README.md.swp
-cor_coxph/output/D57/.gitkeep
-cor_coxph/output/D57/.gitkeep
-cor_coxph/output/D29/.gitkeep
 cor_coxph/report - Copy.tex
 cor_coxph/report_sub - Copy.Rmd
 covpn_correlates_cor.Rmd
@@ -288,3 +285,17 @@ cor_nonlinear/output/D57/step.pdf
 cor_nonlinear/output/D57/step_MockCOVE.pdf
 *.pdf
 optimal_surrogate/*
+cor_coxph/output/D29/permutation_replicates_MockCOVE
+cor_coxph/output/D29/cutpoints_Day29bindRBD_MockENSEMBLE
+cor_coxph/output/D29/cutpoints_Day29bindSpike_MockENSEMBLE
+cor_coxph/output/D29/cutpoints_Delta29overBbindRBD_MockENSEMBLE
+cor_coxph/output/D29/cutpoints_Delta29overBbindSpike_MockENSEMBLE
+cor_coxph/output/D29/timepoints_cum_risk_MockENSEMBLE
+cor_coxph/output/D57/cutpoints_Day57bindSpike_MockENSEMBLE
+cor_coxph/output/D57/timepoints_cum_risk_MockENSEMBLE
+data_clean/janssen_pooled_mock_data_processed.zip
+cor_coxph/output/D29/bootstrap_replicates_MockCOVE
+cor_coxph/output/D29/ylims.cor.MockCOVE.Rdata
+cor_coxph/output/D57/bootstrap_replicates_MockCOVE
+cor_coxph/output/D57/permutation_replicates_MockCOVE
+cor_coxph/output/D57/ylims.cor.MockCOVE.Rdata

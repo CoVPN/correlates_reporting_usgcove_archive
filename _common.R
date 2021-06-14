@@ -95,7 +95,7 @@ labels.race <- c(
   if (study_name_code=="ENSEMBLE") "Indigenous South American",
   "Native Hawaiian or Other Pacific Islander", 
   "Multiracial",
-  "Other", 
+  if (study_name_code=="COVE") "Other", 
   "Not reported and unknown"
 )
 
@@ -209,8 +209,13 @@ if (study_name_code=="COVE") {
     )
 }
 
+labels.regions.ENSEMBLE =c("0"="Northern America", "1"="Latin America", "2"="Southern Africa")
+regions.ENSEMBLE=0:2
+names(regions.ENSEMBLE)=labels.regions.ENSEMBLE
 
-
+labels.countries.ENSEMBLE=c("0"="United States", "1"="Argentina", "2"="Brazil", "3"="Chile", "4"="Columbia", "5"="Mexico", "6"="Peru", "7"="South Africa")
+countries.ENSEMBLE=0:7
+names(countries.ENSEMBLE)=labels.countries.ENSEMBLE
 
 
 ###############################################################################

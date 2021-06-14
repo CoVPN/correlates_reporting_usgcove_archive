@@ -1,3 +1,5 @@
+
+
 ###################################################################################################
 # Regression for continuous markers
 
@@ -10,8 +12,8 @@ for (a in c("Day"%.%pop%.%assays, "Delta"%.%pop%.%"overB"%.%assays)) {
     fits[[a]]=svycoxph(f, design=design.vacc.seroneg) 
 }
 
-natrisk=nrow(dat.vacc.pop)
-nevents=sum(dat.vacc.pop$yy==1)
+natrisk=nrow(dat.vac.seroneg)
+nevents=sum(dat.vac.seroneg$yy==1)
 
 # make pretty table
 fits=fits[1:length(assays)] # for now, we don't need the delta (multitesting adjustment results are affected)
@@ -29,8 +31,8 @@ pvals.cont = sapply(fits, function(x) {
 
 ## not used anymore
 ## mean and max followup time in the vaccine arm
-#write(round(mean(dat.vacc.pop[["EventTimePrimaryD"%.%pop]])), file=paste0(save.results.to, "CoR_mean_followup_time_vacc_"%.%study_name))
-#write(round(max (dat.vacc.pop[["EventTimePrimaryD"%.%pop]])), file=paste0(save.results.to, "CoR_max_followup_time_vacc_"%.% study_name))
+#write(round(mean(dat.vac.seroneg[["EventTimePrimaryD"%.%pop]])), file=paste0(save.results.to, "CoR_mean_followup_time_vacc_"%.%study_name))
+#write(round(max (dat.vac.seroneg[["EventTimePrimaryD"%.%pop]])), file=paste0(save.results.to, "CoR_max_followup_time_vacc_"%.% study_name))
 
 
 
@@ -76,6 +78,10 @@ if(!file.exists(paste0(save.results.to, "pvals.perm.",study_name,".Rdata"))) {
     dat.ph2 = design.vacc.seroneg$phase1$sample$variables
     design.vacc.seroneg.perm=design.vacc.seroneg
     #design.vacc.seroneg.perm$phase1$full$variables
+
+    # only do multitesting when liveneutmn50 is included
+    if (!"liveneutmn50" %in% assays) numPerm=5
+
     out=mclapply(1:numPerm, mc.cores = numCores, FUN=function(seed) {   
         # store the current rng state 
         save.seed <- try(get(".Random.seed", .GlobalEnv), silent=TRUE) 
@@ -116,7 +122,7 @@ if(!file.exists(paste0(save.results.to, "pvals.perm.",study_name,".Rdata"))) {
 } else {
     load(file=paste0(save.results.to, "pvals.perm."%.%study_name%.%".Rdata"))
 }
-
+# save number of permutation replicates
 write(nrow(pvals.perm), file=paste0(save.results.to, "permutation_replicates_"%.%study_name))
 
 
@@ -145,6 +151,11 @@ if (study_name_code=="COVE") {
     p.1[endsWith(names(p.1), "pseudoneutid80")] = "N/A"
     p.2[endsWith(names(p.2), "pseudoneutid80")] = "N/A"
 }
+# only do multitesting when liveneutmn50 is included
+if (!"liveneutmn50" %in% assays) {
+    for (i in 1:length(p.1)) p.1[i]<-p.2[i]<-"N/A"
+}
+
 
 tab.1=cbind(paste0(nevents, "/", format(natrisk, big.mark=",")), t(est), t(ci), t(p), p.1, p.2)
 rownames(tab.1)=c(labels.axis["Day"%.%pop, assays])
@@ -176,6 +187,10 @@ if (study_name_code=="COVE") {
     overall.p.1[endsWith(names(overall.p.1), "pseudoneutid80")] = "N/A"
     overall.p.2[endsWith(names(overall.p.2), "pseudoneutid80")] = "N/A"
 }
+# only do multitesting when liveneutmn50 is included
+if (!"liveneutmn50" %in% assays) {
+    for (i in 1:length(p.1)) overall.p.1[i]<-overall.p.2[i]<-"N/A"    
+}
 
 
 # add space
@@ -186,8 +201,8 @@ overall.p.2=c(rbind(overall.p.2, NA,NA))
 # if "Delta"%.%pop%.%"overB" is included, nevents have a problem because some markers may have only two category in the cases
 
 # n cases and n at risk
-natrisk = round(c(sapply (c("Day"%.%pop%.%assays)%.%"cat", function(a) aggregate(dat.vacc.pop$wt.0, dat.vacc.pop[a], sum, na.rm=T, drop=F)[,2] )))
-nevents = round(c(sapply (c("Day"%.%pop%.%assays)%.%"cat", function(a) aggregate(subset(dat.vacc.pop,yy==1)[["wt.0"]], subset(dat.vacc.pop,yy==1)[a], sum, na.rm=T, drop=F)[,2] )))
+natrisk = round(c(sapply (c("Day"%.%pop%.%assays)%.%"cat", function(a) aggregate(subset(dat.vac.seroneg,ph2)        [["wt.0"]], subset(dat.vac.seroneg,ph2        )[a], sum, na.rm=T, drop=F)[,2] )))
+nevents = round(c(sapply (c("Day"%.%pop%.%assays)%.%"cat", function(a) aggregate(subset(dat.vac.seroneg,yy==1 & ph2)[["wt.0"]], subset(dat.vac.seroneg,yy==1 & ph2)[a], sum, na.rm=T, drop=F)[,2] )))
 natrisk[is.na(natrisk)]=0
 nevents[is.na(nevents)]=0
 colSums(matrix(natrisk, nrow=3))
@@ -216,8 +231,8 @@ mytex(tab[1:(nrow(tab)),], file.name="CoR_univariable_svycoxph_cat_pretty_"%.%st
     add.to.row=list(list(nrow(tab)), # insert at the beginning of table, and at the end of, say, the first table
         c(paste0(" \n \\multicolumn{8}{l}{} \\\\ \n", 
                   "\n \\multicolumn{2}{l}{Placebo} & ", 
-                 paste0(sum(dat.plac.pop$yy), "/", format(nrow(dat.plac.pop), big.mark=",")), "&",  
-                 formatDouble(mean(dat.plac.pop$yy), digit=4, remove.leading0=F), "&",  
+                 paste0(sum(dat.pla.seroneg$yy), "/", format(nrow(dat.pla.seroneg), big.mark=",")), "&",  
+                 formatDouble(mean(dat.pla.seroneg$yy), digit=4, remove.leading0=F), "&",  
                  "\\multicolumn{4}{l}{}  \\\\ \n")
           #"\\hline\n \\multicolumn{4}{l}{Standard Deviation 1 mcg/mL}\\\\ \n"
          )
@@ -249,11 +264,11 @@ for (a in assays) {
     fits[[1]]=fit
     
     for (k in 1:max(dat.mock$Bstratum)) {
-        if(sum (subset(dat.vacc.pop, Bstratum==k, yy))<=2) {
+        if(sum (subset(dat.vac.seroneg, Bstratum==k, yy))<=2) {
             # 0-2 cases
             fits[[k+1]]=NA
         } else {
-            design<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=subset(dat.vacc.pop, Bstratum==k))            
+            design<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=subset(dat.vac.seroneg, Bstratum==k))            
             if (k==1) {
                 f = update(form.0, as.formula(paste0("~.+Day",pop, a)))
             } else {
@@ -266,8 +281,8 @@ for (a in assays) {
     fits.all[[a]]=fits
 }
 
-nevents=c(nrow(subset(dat.vacc.pop, yy==1)),
-          sapply(1:max(dat.mock$Bstratum), function (k) nrow(subset(dat.vacc.pop, yy==1 & Bstratum==k))) 
+nevents=c(nrow(subset(dat.vac.seroneg, yy==1)),
+          sapply(1:max(dat.mock$Bstratum), function (k) nrow(subset(dat.vac.seroneg, yy==1 & Bstratum==k))) 
 )
 
 rv$fr.1=list(nevents=nevents)
@@ -291,40 +306,38 @@ for (a in assays) {
 
 
 ###################################################################################################
-# forest plots for different subpopulations
-
-# for some subpopulations, some strata may have empty ph2 
-# this function removes those strata
-get.dat.with.no.empty=function(dat.tmp) {
-    tab=with(dat.tmp, table(Wstratum, TwophasesampInd.0))
-    subset(dat.tmp, !Wstratum %in% as.integer(rownames(tab)[which(tab[,"TRUE"]==0)]))
-}
+# forest plots for subpopulations
 
 designs=list()
-for (i in 1:4) {    
+for (i in 1:ifelse(study_name_code=="ENSEMBLE",5,4)) {    
     designs[[i]]=list()
     if(i==1) {
-        designs[[i]][[1]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=get.dat.with.no.empty(subset(dat.vacc.pop, Senior==1)))
-        designs[[i]][[2]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=get.dat.with.no.empty(subset(dat.vacc.pop, Senior==0)))        
+        designs[[i]][[1]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=get.dat.with.no.empty(subset(dat.vac.seroneg, Senior==1)))
+        designs[[i]][[2]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=get.dat.with.no.empty(subset(dat.vac.seroneg, Senior==0)))        
     } else if(i==2) {
-        designs[[i]][[1]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=get.dat.with.no.empty(subset(dat.vacc.pop, HighRiskInd==1)))
-        designs[[i]][[2]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=get.dat.with.no.empty(subset(dat.vacc.pop, HighRiskInd==0)))
+        designs[[i]][[1]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=get.dat.with.no.empty(subset(dat.vac.seroneg, HighRiskInd==1)))
+        designs[[i]][[2]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=get.dat.with.no.empty(subset(dat.vac.seroneg, HighRiskInd==0)))
     } else if(i==3) {
-        designs[[i]][[1]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=get.dat.with.no.empty(subset(dat.vacc.pop, MinorityInd==1)))
-        designs[[i]][[2]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=get.dat.with.no.empty(subset(dat.vacc.pop, MinorityInd==0)))
+        designs[[i]][[1]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=get.dat.with.no.empty(subset(dat.vac.seroneg, MinorityInd==1)))
+        designs[[i]][[2]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=get.dat.with.no.empty(subset(dat.vac.seroneg, MinorityInd==0)))
     } else if(i==4) {
-        designs[[i]][[1]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=get.dat.with.no.empty(subset(dat.vacc.pop, Sex==1)))
-        designs[[i]][[2]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=get.dat.with.no.empty(subset(dat.vacc.pop, Sex==0)))
+        designs[[i]][[1]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=get.dat.with.no.empty(subset(dat.vac.seroneg, Sex==1)))
+        designs[[i]][[2]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=get.dat.with.no.empty(subset(dat.vac.seroneg, Sex==0)))
+    } else if(i==5) {
+        designs[[i]][[1]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=get.dat.with.no.empty(subset(dat.vac.seroneg, HIVinfection==1)))
+        designs[[i]][[2]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=get.dat.with.no.empty(subset(dat.vac.seroneg, HIVinfection==0)))        
     }
 }
 
 
+# different fits may use different formulae
 fits.all.2=vector("list", length(assays));names(fits.all.2)=assays
 for (a in assays) {
+    f= update(form.0, as.formula(paste0("~.+Day",pop, a)))
     fits.all.2[[a]]=list()        
-    fits.all.2[[a]][[1]]=run.svycoxph(update(form.0, as.formula(paste0("~.+Day",pop, a))), design=design.vacc.seroneg) 
+    fits.all.2[[a]][[1]]=run.svycoxph(f, design=design.vacc.seroneg) 
     
-    f= update(form.0,                         as.formula(paste0("~.+Day",pop, a)))
+    f= update(form.0, as.formula(paste0("~.+Day",pop, a)))
     fits.all.2[[a]][[2]]=run.svycoxph(f, design=designs[[1]][[1]]) 
     fits.all.2[[a]][[3]]=run.svycoxph(f, design=designs[[1]][[2]]) 
     
@@ -336,30 +349,52 @@ for (a in assays) {
     fits.all.2[[a]][[6]]=run.svycoxph(f, design=designs[[3]][[1]]) 
     fits.all.2[[a]][[7]]=run.svycoxph(f, design=designs[[3]][[2]]) 
     
-    f= update(form.0,                         as.formula(paste0("~.+Day",pop, a)))
+    f= update(form.0, as.formula(paste0("~.+Day",pop, a)))
     fits.all.2[[a]][[8]]=run.svycoxph(f, design=designs[[4]][[1]]) 
     fits.all.2[[a]][[9]]=run.svycoxph(f, design=designs[[4]][[2]]) 
+    
+    if (study_name_code=="ENSEMBLE") {
+        f= update(form.0, as.formula(paste0("~.+Day",pop, a)))
+        fits.all.2[[a]][[10]]=run.svycoxph(f, design=designs[[5]][[1]]) 
+        fits.all.2[[a]][[11]]=run.svycoxph(f, design=designs[[5]][[2]]) 
+    }
 }
+
+
 for (a in assays) {    
-    names(fits.all.2[[a]])=c("All Vaccine", "Age >= "%.%switch(study_name_code,COVE=65,ENSEMBLE=60), "Age < "%.%switch(study_name_code,COVE=65,ENSEMBLE=60), "At risk", "Not at risk", "Comm. of color", "White Non-Hispanic", "Men", "Women")
+    names(fits.all.2[[a]])=c("All Vaccine", 
+                             "Age >= "%.%switch(study_name_code,COVE=65,ENSEMBLE=60), "Age < "%.%switch(study_name_code,COVE=65,ENSEMBLE=60), 
+                             "At risk", "Not at risk", 
+                             "Comm. of color", "White Non-Hispanic", 
+                             "Men", "Women",
+                             if (study_name_code=="ENSEMBLE") c("HIV infection Yes", "HIV infection No")
+    )
 }    
 
-nevents=c(nrow(subset(dat.vacc.pop, yy==1)),
-          nrow(subset(dat.vacc.pop, yy==1 & Senior==1)), 
-          nrow(subset(dat.vacc.pop, yy==1 & Senior==0)), 
-          nrow(subset(dat.vacc.pop, yy==1 & HighRiskInd==1)), 
-          nrow(subset(dat.vacc.pop, yy==1 & HighRiskInd==0)), 
-          nrow(subset(dat.vacc.pop, yy==1 & MinorityInd==1)), 
-          nrow(subset(dat.vacc.pop, yy==1 & MinorityInd==0)), 
-          nrow(subset(dat.vacc.pop, yy==1 & Sex==1)), 
-          nrow(subset(dat.vacc.pop, yy==1 & Sex==0))
+
+nevents=c(nrow(subset(dat.vac.seroneg, yy==1)),
+          nrow(subset(dat.vac.seroneg, yy==1 & Senior==1)), 
+          nrow(subset(dat.vac.seroneg, yy==1 & Senior==0)), 
+          nrow(subset(dat.vac.seroneg, yy==1 & HighRiskInd==1)), 
+          nrow(subset(dat.vac.seroneg, yy==1 & HighRiskInd==0)), 
+          nrow(subset(dat.vac.seroneg, yy==1 & MinorityInd==1)), 
+          nrow(subset(dat.vac.seroneg, yy==1 & MinorityInd==0)), 
+          nrow(subset(dat.vac.seroneg, yy==1 & Sex==1)), 
+          nrow(subset(dat.vac.seroneg, yy==1 & Sex==0)),
+          if (study_name_code=="ENSEMBLE") { c(
+              nrow(subset(dat.vac.seroneg, yy==1 & HIVinfection==1)), 
+              nrow(subset(dat.vac.seroneg, yy==1 & HIVinfection==0)))
+          }
 )
+
+
 
 rv$fr.2=list(nevents=nevents)
 for (a in assays) {
     fits = fits.all.2[[a]]
     est.ci = sapply(fits, function (fit) {
         if (length(fit)==1) return (rep(NA,4))
+        if (last(coef(fit))>log(1000)) return (rep(NA,4)) # cannot be true
         tmp=getFixedEf(fit, exp=T, robust=T)
         tmp[nrow(tmp),c("HR", "(lower", "upper)", "p.value")]
     })
@@ -370,3 +405,49 @@ for (a in assays) {
     
     rv$fr.2[[a]]=est.ci
 }
+
+
+
+###################################################################################################
+# forest plots for different countries and regions
+
+if (study_name_code=="ENSEMBLE") {
+
+regions=  get("regions."  %.%study_name_code)
+countries=get("countries."%.%study_name_code)
+labels.regions=  get("labels.regions."  %.%study_name_code)
+labels.countries=get("labels.countries."%.%study_name_code)
+
+countries.1 = countries[countries %in% unique(dat.vac.seroneg$Country)]
+
+designs=list(design.vacc.seroneg); names(designs)="All Vaccine"
+designs=append(designs, lapply(countries.1, function (i) twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=get.dat.with.no.empty(subset(dat.vac.seroneg, Country==i)))))
+# add Latin America after united states if pooled
+if (config$subset_variable=="None") designs = append(designs, lapply(regions[2], function (i) twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=get.dat.with.no.empty(subset(dat.vac.seroneg, Region==i)))), after=2)
+fits.all.3=lapply(assays, function(a) {
+    f= update(form.0, as.formula(paste0("~.+Day",pop, a)))
+    lapply(designs, function (d) run.svycoxph(f, design=d))
+})
+
+nevents=nrow(subset(dat.vac.seroneg, yy==1))
+nevents=c(nevents, sapply(countries.1, function(i) nrow(subset(dat.vac.seroneg, yy==1 & Country==i))))
+if (config$subset_variable=="None") nevents=append(nevents, sapply(regions[2],   function(i) nrow(subset(dat.vac.seroneg, yy==1 & Region==i ))), after=2)
+
+rv$fr.3=list(nevents=nevents)
+for (a in assays) {
+    fits = fits.all.3[[a]]
+    est.ci = sapply(fits, function (fit) {
+        if (length(fit)==1) return (rep(NA,4))
+        tmp=getFixedEf(fit, exp=T, robust=T)
+        tmp[nrow(tmp),c("HR", "(lower", "upper)", "p.value")]
+    })
+    # move latin american country names to the right by two spaces
+    if (config$subset_variable=="None") colnames(est.ci)[4:9] = "    "%.%colnames(est.ci)[4:9]
+    mypdf(onefile=F, file=paste0(save.results.to, "hr_forest_countries_", a, "_", study_name), width=10,height=4.5) #width and height decide margin
+        theforestplot (lineheight=unit(.75,"cm"), point.estimates=est.ci[1,], lower.bounds=est.ci[2,], upper.bounds=est.ci[3,], p.values=NA, graphwidth=unit(120, "mm"), fontsize=1.2,
+            table.labels = c("Group (Baseline Negative)", "HR (95% CI)","No. Events"), group=colnames(est.ci), decimal.places=2, nEvents=nevents, title=paste0(labels.assays.long["Day"%.%pop,a]))
+    dev.off()        
+    rv$fr.3[[a]]=est.ci
+}
+
+} # end if for countries/regions forest plots

@@ -105,8 +105,9 @@ dat.long.cor.subset$Dich_RaceEthnic = with(dat.long.cor.subset,
 # add LLoD value to show in the plot
 dat.long.cor.subset$LLoD = log10(llods[as.character(dat.long.cor.subset$assay)])
 
-# add LLoQ and ULoQ value for response call and censoring
+# add LLoQ pos.cutoffs, and ULoQ value for response call and censoring - log10 scales
 dat.long.cor.subset$LLoQ = log10(lloqs[as.character(dat.long.cor.subset$assay)])
+dat.long.cor.subset$pos.cutoffs = log10(pos.cutoffs[as.character(dat.long.cor.subset$assay)])
 dat.long.cor.subset$ULoQ = log10(uloqs[as.character(dat.long.cor.subset$assay)])
 
 # assign values above the uloq to the uloq
@@ -247,7 +248,7 @@ dat.longer.cor.subset <- dat.long.cor.subset %>% select(Ptid, Trt, Bserostatus, 
                                                         EventIndPrimaryD57, Perprotocol, cohort_event,
                                                         Age, age_geq_65_label, highrisk_label, age_risk_label,
                                                         sex_label, minority_label, Dich_RaceEthnic,
-                                                        assay, LLoD, LLoQ, wt.D57, wt.D29,
+                                                        assay, LLoD, LLoQ, pos.cutoffs, wt.D57, wt.D29,
                                                         B, Day29, Day57, Delta29overB, Delta57overB) %>%
   pivot_longer(!Ptid:wt.D29, names_to = "time", values_to = "value")
 
@@ -265,10 +266,15 @@ dat.longer.cor.subset <- dat.longer.cor.subset %>%
          increase_4F_D57_ptid=max(increase_4F_D57)) %>%
   ungroup() %>%
   filter(time %in% c("Day 1","Day 29","Day 57")) %>%
-  mutate(response = ifelse(baseline_lt_thres_ptid == 0 & value >= LLoQ, 1,
+  mutate(response_nab = ifelse(baseline_lt_thres_ptid == 0 & value >= LLoQ, 1,
                            ifelse(baseline_lt_thres_ptid == 1 & time == "Day 1", 1,
                                   ifelse(baseline_lt_thres_ptid == 1 & time == "Day 29" & increase_4F_D29_ptid==1, 1,
-                                         ifelse(baseline_lt_thres_ptid == 1 & time == "Day 57" & increase_4F_D57_ptid==1, 1,0)))))
+                                         ifelse(baseline_lt_thres_ptid == 1 & time == "Day 57" & increase_4F_D57_ptid==1, 1,0)))),
+         response_bind = ifelse(value >= pos.cutoffs, 1, 0),
+         response = ifelse(assay %in% c("pseudoneutid50", "pseudoneutid80"), response_nab, 
+                           ifelse(assay %in% c("bindSpike", "bindRBD", "bindN"), response_bind, NA))) %>%
+  select(-baseline_lt_thres_ptid, -increase_4F_D29_ptid, -increase_4F_D57_ptid, -baseline_lt_thres, -increase_4F_D29, -increase_4F_D57, -response_nab, -response_bind)
+
 # subsets for violin/line plots
 #### figure specific data prep
 # 1. define response rate:

@@ -197,8 +197,8 @@ overall.p.2=c(rbind(overall.p.2, NA,NA))
 # if "Delta"%.%pop%.%"overB" is included, nevents have a problem because some markers may have only two category in the cases
 
 # n cases and n at risk
-natrisk = round(c(sapply (c("Day"%.%pop%.%assays)%.%"cat", function(a) aggregate(dat.vac.seroneg$wt.0, dat.vac.seroneg[a], sum, na.rm=T, drop=F)[,2] )))
-nevents = round(c(sapply (c("Day"%.%pop%.%assays)%.%"cat", function(a) aggregate(subset(dat.vac.seroneg,yy==1)[["wt.0"]], subset(dat.vac.seroneg,yy==1)[a], sum, na.rm=T, drop=F)[,2] )))
+natrisk = round(c(sapply (c("Day"%.%pop%.%assays)%.%"cat", function(a) aggregate(subset(dat.vac.seroneg,ph2)        [["wt.0"]], subset(dat.vac.seroneg,ph2        )[a], sum, na.rm=T, drop=F)[,2] )))
+nevents = round(c(sapply (c("Day"%.%pop%.%assays)%.%"cat", function(a) aggregate(subset(dat.vac.seroneg,yy==1 & ph2)[["wt.0"]], subset(dat.vac.seroneg,yy==1 & ph2)[a], sum, na.rm=T, drop=F)[,2] )))
 natrisk[is.na(natrisk)]=0
 nevents[is.na(nevents)]=0
 colSums(matrix(natrisk, nrow=3))

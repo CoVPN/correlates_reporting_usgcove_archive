@@ -48,7 +48,7 @@ janssen_sa_real:
   subset_variable: Region
   subset_value: 2
 
-janssen_default_mock:
+janssen_default_mock: &janssen_default_mock
   data_raw_dir: janssen
   times: [B, Day29, Delta29overB]
   data_in_file: COVID_ENSEMBLE_practicedata.csv

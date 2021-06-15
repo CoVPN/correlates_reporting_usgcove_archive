@@ -1,0 +1,7 @@
+data_clean/*.Rdata
+data_clean/*.rds
+figs/*.png
+figs/*.pdf
+figs/demographics/*.png
+figs/demographics/*.pdf
+Rplots*

@@ -1,0 +1,93 @@
+# which branches to trigger builds on
+branches:
+  only:
+  - master
+
+# language settings
+language: r
+sudo: required
+cran: http://cran.rstudio.com
+latex: false
+pandoc: true
+warnings_are_errors: false
+cache:
+  directories:
+  - "$HOME/.local/share/renv"
+  - "$TRAVIS_BUILD_DIR/renv/library"
+  - "$HOME/.TinyTeX/"
+
+# which versions of R should we build on
+r:
+  #- release
+  # NOTE: can we grab this from the renv.lockfile?
+  - 4.0.4
+
+# public key to allow Travis to push to gh-pages
+env:
+  global:
+    secure: qi7eIEkOEJsuuUj3WwkAGe+kWr3zeDrDz8GYnPQhVOzYAtEWTbImylZYEHhkhBruIipHjzPTIpOM3xfm9SKKnJEQzpCbSLSbKZwMtwHTn3f2Dfd9KZ8dLgVdXG34+8CChksH4zWQkn/7Sgx7rCB3VJvxquOiQA05TsroLnZiJKxxVsBYjww7m4iuYjFc6HsWSLoT/XicZi7GUqN9m+C0eoSJ5kUWfXopSZLCiusTT1+Lc/wdKI9g3QckOINznmZ2ZptaBbdkBeOzzSQhGFuOufnyZD6qJ7RpfCg8nxnQ9ksNOi6SohCBWyRp4TmvPLPsmszZhYkRhmB0K0hoTsYXkEgsSHVMzInRfHk3VHbYz1SFbksHzVM+ZEEDhIFJEoCbwd5n31y9RotzePVKEVIajS3pgxWWAyjiQiRC/dwe7clO5Ser0URPulPuWjURZId8fhOkZK8gJAKVBEmr5Qr3VTKFUSntSa+0rDulHL/TmM2MZnAnVKkeJl9qB5qYB/Q7DjkESAUmNo8IwHnBkFW/6eXB0IleV4gfTej0WeMgR/64XWKCRcLCX5vGtF/dgG8eCAThSgpJmHzzO2iw0gkuJ0sgpRecqUYK+aNRarRw5DSYFgd51WkEaMx8bAHYuhb8lMytmBWI+rilYwXTZC82klNZvzQC/Xj2+NMzmeU/UPo=
+
+# build reports via included Make recipes, in independent simultaneous jobs
+jobs:
+  include:
+    - name: Moderna Immuno Report
+      env:
+        - REPORT_TYPE=IMMUNO
+        - TRIAL=moderna_mock
+      script:
+        - echo "Building immunogenicity report"
+        - make data_processed
+        - make immuno_report
+    - name: Moderna CoR Report
+      env:
+        - REPORT_TYPE=COR
+        - TRIAL=moderna_mock
+      script:
+        - echo "Building correlates of risk report"
+        - make data_processed
+        - make risk_report
+        - make cor_report
+    - name: Moderna CoP Report
+      env:
+        - REPORT_TYPE=COP
+        - TRIAL=moderna_mock
+      script:
+        - echo "Building correlates of protection report"
+        - make data_processed
+        - make risk_report
+        - make cop_report
+
+apt_packages:
+  - libxml2-dev
+  - libssl-dev
+  - libcurl4-openssl-dev
+
+before_install:
+  - sudo apt-get install -y texlive-extra-utils ghostscript
+
+# R packages cannot be installed in TRAVIS_BUILD_DIR; they need to be installed
+# separately from the lockfile
+# tinytex installs tlmgr to a directory that is symlinked to $HOME/bin
+install:
+  - cd .. && Rscript -e "install.packages(c('here', 'renv', 'tinytex'))"
+  - Rscript -e "tinytex::install_tinytex()"
+  - export PATH=$HOME/bin:${PATH}
+  - cd $TRAVIS_BUILD_DIR && Rscript -e "renv::restore()"
+
+# turn down number of bootstraps and permutations in CoR for faster builds
+before_script:
+  - echo "B <- 5" >> $TRAVIS_BUILD_DIR/cor_coxph/code/params.R
+  - echo "numPerm <- 5" >> $TRAVIS_BUILD_DIR/cor_coxph/code/params.R
+  - echo "B <- 5" >> $TRAVIS_BUILD_DIR/cor_nonlinear/code/params.R
+
+# push reports to gh-pages branch
+after_script:
+  - chmod +x _deploy_reports.sh && ./_deploy_reports.sh
+
+notifications:
+  email:
+    on_success: change
+    on_failure: always
+    recipients:
+      - benkeser@emory.edu
+      - nh@nimahejazi.org

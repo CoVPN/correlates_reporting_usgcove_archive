@@ -1,0 +1,8 @@
+figs/*.png
+figs/*.pdf
+data_clean/*.rds
+Rplots.pdf
+verification/*.csv
+verification/*.html
+verification/*.rds
+verification/*.png

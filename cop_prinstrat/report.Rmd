@@ -1,0 +1,8 @@
+# CoP: Correlates of Vaccine Efficacy {#cop-corrve}
+
+TO FILL IN
+
+```{r cop-corrve-setup}
+# TODO
+```
+

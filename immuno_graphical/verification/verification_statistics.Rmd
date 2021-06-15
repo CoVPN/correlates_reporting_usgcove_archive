@@ -1,0 +1,168 @@
+---
+title: "Key statistics for the verification of immunogenicity plots"
+author: "Kendrick Li"
+date: "6/2/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+Load the libraries and datasets
+
+```{r load_lib_dat, warning = FALSE, message = FALSE}
+library(here)
+library(spatstat.geom)
+library(dplyr)
+library(ggplot2)
+library(ggpubr)
+library(GGally)
+library(scales)
+library(tidyverse)
+library(PResiduals)
+source(here::here("..", "_common.R"))
+source(here("code", "params.R"))
+source(here("code", "ggally_cor_resample.R"))
+source(here("code", "covid_corr_plot_functions.R"))
+
+dat.long.twophase.sample <- readRDS(here(
+  "data_clean",
+  "long_twophase_data.rds"
+))
+dat.twophase.sample <- readRDS(here("data_clean", "twophase_data.rds"))
+
+```
+## Plot 2.2; Pair plots of D57 Ab markers: baseline negative vaccine arm 
+*Pairwise resampling-based stratified Spearman correlation*
+(Since the calculation is resampling based, the specific numbers could be different depending on the code and the random seeds. An additional file for selected subjects in the resamples was generated).
+
+```{r pairplot_verification, message = FALSE, warning = FALSE, echo = FALSE}
+subdat <- dat.twophase.sample %>%
+        dplyr::filter(Bserostatus == 0 & Trt == 1)
+
+pairplots <- covid_corr_pairplots_for_verification(
+        plot_dat = subdat,
+        time = "Day57",
+        assays = assay_immuno,
+        strata = "Bstratum",
+        weight = "wt.subcohort",
+        plot_title = "",
+        width = 10,
+        height = 10,
+        corr_file_name = here("verification", "corr.rds"),
+        column_labels = labels.axis[3, seq_along(assay_immuno)] %>% unlist()
+      )
+
+
+
+print(pairplots)
+```
+
+
+
+```{r report_pairwise_correlation}
+cor_res <- readRDS(here("verification", "corr.rds"))
+corr_mat <- data.frame(x = c("bindRBD", "bindN", "pseudoneutid50", "pseudoneutid80", "bindN", "pseudoneutid50", "pseudoneutid80", "pseudoneutid50", "pseudoneutid80", "pseudoneutid80"),
+                       y = c("bindSpike", "bindSpike", "bindSpike", "bindSpike", "bindRBD", "bindRBD", "bindRBD", "bindN", "bindN", "pseudoneutid50"),
+                       corr = cor_res)
+write.csv(corr_mat, "spearman_correlation_result.csv", row.names = FALSE)
+print(corr_mat)
+```
+
+
+
+## Plot 2.25/2.26; RCDF plots for D57 Ab markers: by baseline status for the vaccine arm
+*Weighted RCDF for four assays, stratified by baseline status, evaluated at 1-10*
+
+```{r wrcdf_by_bstatus}
+for (bstatus in 1:2) {
+  cat(bstatus.labels[bstatus], "\n")
+  for (aa in 1:5) {
+    cat(aa, ". ", labels.assays[aa], "\n")
+    
+    subdat <- dat.long.twophase.sample %>%
+      filter(assay == assay_immuno[aa], Bserostatus == bstatus.labels[bstatus],
+             Trt == "Vaccine") %>%
+      select(Day57, wt.subcohort) %>%
+      filter(complete.cases(.))
+    
+    ecdf_res <- with(subdat, ewcdf(Day57, wt.subcohort))
+    eval_matrix <- data.frame(x = 1:10, wrcdf = 1 - ecdf_res(1:10))
+    write.csv(eval_matrix, sprintf("day57_wrcdf_rcdf_plots_bstatus_%s_%s.csv",
+                                   bstatus.labels.2[bstatus],
+                                   assay_immuno[aa]), row.names = FALSE)
+    print(eval_matrix)
+  }
+}
+
+
+```
+## Plot 2.52; Boxplots of D57 Ab markers: baseline negative vaccine + placebo arms 
+
+*Minimum and maximum, quartiles, and mean*
+
+```{r verify_boxplots}
+for (trt in 1:2) {
+  cat("Baseline Negative", trt.labels[trt], "Arm:\n")
+  
+  for (aa in 1:5) {
+    cat(aa, ". ", labels.assays[aa], "\n")
+    
+    subdat <- dat.long.twophase.sample %>%
+      filter(assay == assay_immuno[aa], Bserostatus == "Baseline Neg",
+             Trt == trt.labels[trt]) %>%
+      select(Day57) %>%
+      filter(complete.cases(.))
+    print(summary(subdat$Day57))
+    
+    day57_sum <- summary(subdat$Day57) 
+    day57_sum_mat <- data.frame(summary = attr(day57_sum, "names"),
+                                value = as.numeric(day57_sum))
+    write.csv(day57_sum_mat, sprintf("boxplots_day57_summary_trt_%s_%s.csv", trt.labels[trt], assay_immuno[aa]), row.names = FALSE)
+  }
+}
+```
+
+## Plot 2.67/2.68; Spaghetti plots of Ab markers over time: baseline negative/positive, vaccine + placebo arm (Spaghetti_plot_BaselineNeg_mock.png)
+*Output the data points involved in the spaghetti plots*
+```{r verify_sphaghetti}
+## in each baseline serostatus group, randomly select 10 placebo recipients and 20 vaccine recipients
+set.seed(12345)
+var_names <- expand.grid(times = c("B", "Day29", "Day57"),
+                         assays = assay_immuno) %>%
+  mutate(var_names = paste0(times, assays)) %>%
+  .[, "var_names"]
+
+spaghetti_ptid <- dat.twophase.sample[, c("Ptid", "Bserostatus", "Trt", var_names)] %>%
+  filter(., complete.cases(.)) %>%
+  transmute(BT = paste0(as.character(Bserostatus), as.character(Trt)),
+            Ptid = Ptid) %>%
+  split(., .$BT) %>%
+  lapply(function(xx) {
+    if (xx$BT[1] %in% c("10", "00")) {
+      sample(xx$Ptid, 10)  ## sample 10 placebo recipients
+    } else {
+      sample(xx$Ptid, 20)  ## sample 20 vaccine recipients
+    }
+  }) %>% unlist %>% as.character
+
+spaghetti_dat <- dat.long.twophase.sample[, c("Ptid", "Bserostatus", "Trt", 
+                                              "B", "Day29", "Day57", "assay")] %>%
+  filter(Ptid %in% spaghetti_ptid) %>%
+  pivot_longer(cols = c("B", "Day29", "Day57"),
+               names_to = "time") %>%
+  mutate(assay = factor(assay, labels = labels.assays.short),
+         time_label = factor(time, levels = c("B", "Day29", "Day57"),
+                             labels = c("D1", "D29", "D57"))) %>%
+  as.data.frame
+
+for (bstatus in 1:2) {
+  subdat <- subset(spaghetti_dat, Bserostatus == bstatus.labels[bstatus])
+  cat(bstatus.labels[bstatus], ":\n", sep = "")
+  print(subdat)
+  write.csv(subdat, paste0("spaghetti_plot_data_",
+                           bstatus.labels.2[bstatus], ".csv"), row.names = FALSE)
+}
+
+
+```

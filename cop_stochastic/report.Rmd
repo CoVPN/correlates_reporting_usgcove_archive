@@ -1,0 +1,260 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+header-includes:
+   - \usepackage{eso-pic,graphicx,transparent,caption,pdflscape,float}
+   - \usepackage[margin=1in]{geometry}
+---
+
+# Stochastic Interventional Vaccine Efficacy {#cop-stochastic}
+
+```{r cop-stochastic-setup, echo = FALSE, message = FALSE, warning=FALSE}
+here::i_am("cop_stochastic/report.Rmd")
+renv::activate(project = here::here())
+library(here)
+library(knitr)
+library(stringr)
+source(here("_common.R"))
+source(here("cop_stochastic", "code", "params.R"))
+
+# make figures bigger
+knitr::opts_chunk$set(
+  out.width = "95%",
+  fig.width = 8,
+  results = "asis"
+)
+```
+
+We estimate the counterfactual mean of symptomatic COVID-19 infection under
+posited shifts in the measured activity levels of each of
+`r length(marker_to_name)` _candidate_ mechanistic correlates of protection
+(mCoP) biomarkers. By shifting the _standardized_ biomarker activity levels by
+standard unit shifts along the grid {`r delta_grid`}, we can assess the degree
+to which vaccines that modulate mCoP biomarker activity to these levels could
+mitigate symptomatic COVID-19 infection in terms of counterfactual stochastic
+interventional risk and vaccine efficacy (VE).
+
+## Figures for Stochastic Interventional CoPs for Day 57 {#sve-day57}
+
+```{r cop-stochastic-day57-setup, echo=FALSE, message=FALSE}
+# munging marker names
+this_time <- "Day57"
+this_time_print <- gsub("^(.{3})(.*)$", "\\1 \\2", this_time)
+markers_name_short <- str_remove(markers[, this_time], this_time)
+```
+
+### Stoch interv. risk: `r marker_to_name[[markers_name_short[1]]]`
+
+```{r marker1-risk-day57, fig.cap = paste("Stochastic interventional risk estimates, with confidence intervals, for", marker_to_name[[markers_name_short[1]]], "at", this_time_print)}
+include_graphics(
+  here(
+    "cop_stochastic", "figs",
+    paste0("mcop_risk_", this_time, markers_name_short[1], ".pdf")
+  )
+)
+```
+
+\clearpage
+
+### Stoch. interv. VE: `r marker_to_name[[markers_name_short[1]]]`
+
+```{r marker1-sve-day57, fig.cap = paste("Stochastic interventional VE estimates, with confidence intervals, for", marker_to_name[[markers_name_short[1]]], "at", this_time_print)}
+include_graphics(
+  here(
+    "cop_stochastic", "figs",
+    paste0("mcop_sve_", this_time, markers_name_short[1], ".pdf")
+  )
+)
+```
+
+\clearpage
+
+### Stoch. interv. risk: `r marker_to_name[[markers_name_short[2]]]`
+
+```{r marker2-risk-day57, fig.cap = paste("Stochastic interventional risk estimates, with confidence intervals, for", marker_to_name[[markers_name_short[2]]], "at", this_time_print)}
+include_graphics(
+  here(
+    "cop_stochastic", "figs",
+    paste0("mcop_risk_", this_time, markers_name_short[2], ".pdf")
+  )
+)
+```
+
+\clearpage
+
+### Stoch. interv. VE: `r marker_to_name[[markers_name_short[2]]]`
+
+```{r marker2-sve-day57, fig.cap = paste("Stochastic interventional VE estimates, with confidence intervals, for", marker_to_name[[markers_name_short[2]]], "at", this_time_print)}
+include_graphics(
+  here(
+    "cop_stochastic", "figs",
+    paste0("mcop_sve_", this_time, markers_name_short[2], ".pdf")
+  )
+)
+```
+
+\clearpage
+
+### Stoch. interv. risk: `r marker_to_name[[markers_name_short[3]]]`
+
+```{r marker3-risk-day57, fig.cap = paste("Stochastic interventional risk estimates, with confidence intervals, for", marker_to_name[[markers_name_short[3]]], "at", this_time_print)}
+include_graphics(
+  here(
+    "cop_stochastic", "figs",
+    paste0("mcop_risk_", this_time, markers_name_short[3], ".pdf")
+  )
+)
+```
+
+\clearpage
+
+### Stoch. interv. VE: `r marker_to_name[[markers_name_short[3]]]`
+
+```{r marker3-sve-day57, fig.cap = paste("Stochastic interventional VE estimates, with confidence intervals, for", marker_to_name[[markers_name_short[3]]], "at", this_time_print)}
+include_graphics(
+  here(
+    "cop_stochastic", "figs",
+    paste0("mcop_sve_", this_time, markers_name_short[3], ".pdf")
+  )
+)
+```
+
+\clearpage
+
+### Stoch. interv. risk: `r marker_to_name[[markers_name_short[4]]]`
+
+```{r marker4-risk-day57, fig.cap = paste("Stochastic interventional risk estimates, with confidence intervals, for", marker_to_name[[markers_name_short[4]]], "at", this_time_print)}
+include_graphics(
+  here(
+    "cop_stochastic", "figs",
+    paste0("mcop_risk_", this_time, markers_name_short[4], ".pdf")
+  )
+)
+```
+
+\clearpage
+
+### Stoch. interv. VE: `r marker_to_name[[markers_name_short[4]]]`
+
+```{r marker4-sve-day57, fig.cap = paste("Stochastic interventional VE estimates, with confidence intervals, for", marker_to_name[[markers_name_short[4]]], "at", this_time_print)}
+include_graphics(
+  here(
+    "cop_stochastic", "figs",
+    paste0("mcop_sve_", this_time, markers_name_short[4], ".pdf")
+  )
+)
+```
+
+\clearpage
+
+## Figures for Stochastic Interventional CoPs for Day 29 {#sve-day29}
+
+```{r cop-stochastic-day29-setup, echo=FALSE, message=FALSE}
+# munging marker names
+this_time <- "Day29"
+this_time_print <- gsub("^(.{3})(.*)$", "\\1 \\2", this_time)
+markers_name_short <- str_remove(markers[, this_time], this_time)
+```
+
+### Stoch. interv. risk: `r marker_to_name[[markers_name_short[1]]]`
+
+```{r marker1-risk-day29, fig.cap = paste("Stochastic interventional risk estimates, with confidence intervals, for", marker_to_name[[markers_name_short[1]]], "at", this_time_print)}
+include_graphics(
+  here(
+    "cop_stochastic", "figs",
+    paste0("mcop_risk_", this_time, markers_name_short[1], ".pdf")
+  )
+)
+```
+
+\clearpage
+
+### Stoch. interv. VE: `r marker_to_name[[markers_name_short[1]]]`
+
+```{r marker1-sve-day29, fig.cap = paste("Stochastic interventional VE estimates, with confidence intervals, for", marker_to_name[[markers_name_short[1]]], "at", this_time_print)}
+include_graphics(
+  here(
+    "cop_stochastic", "figs",
+    paste0("mcop_sve_", this_time, markers_name_short[1], ".pdf")
+  )
+)
+```
+
+\clearpage
+
+### Stoch. interv. risk: `r marker_to_name[[markers_name_short[2]]]`
+
+```{r marker2-risk-day29, fig.cap = paste("Stochastic interventional risk estimates, with confidence intervals, for", marker_to_name[[markers_name_short[2]]], "at", this_time_print)}
+include_graphics(
+  here(
+    "cop_stochastic", "figs",
+    paste0("mcop_risk_", this_time, markers_name_short[2], ".pdf")
+  )
+)
+```
+
+\clearpage
+
+### Stoch. interv. VE: `r marker_to_name[[markers_name_short[2]]]`
+
+```{r marker2-sve-day29, fig.cap = paste("Stochastic interventional VE estimates, with confidence intervals, for", marker_to_name[[markers_name_short[2]]], "at", this_time_print)}
+include_graphics(
+  here(
+    "cop_stochastic", "figs",
+    paste0("mcop_sve_", this_time, markers_name_short[2], ".pdf")
+  )
+)
+```
+
+\clearpage
+
+### Stoch. interv. risk: `r marker_to_name[[markers_name_short[3]]]`
+
+```{r marker3-risk-day29, fig.cap = paste("Stochastic interventional risk estimates, with confidence intervals, for", marker_to_name[[markers_name_short[3]]], "at", this_time_print)}
+include_graphics(
+  here(
+    "cop_stochastic", "figs",
+    paste0("mcop_risk_", this_time, markers_name_short[3], ".pdf")
+  )
+)
+```
+
+\clearpage
+
+### Stoch. interv. VE: `r marker_to_name[[markers_name_short[3]]]`
+
+```{r marker3-sve-day29, fig.cap = paste("Stochastic interventional VE estimates, with confidence intervals, for", marker_to_name[[markers_name_short[3]]], "at", this_time_print)}
+include_graphics(
+  here(
+    "cop_stochastic", "figs",
+    paste0("mcop_sve_", this_time, markers_name_short[3], ".pdf")
+  )
+)
+```
+
+\clearpage
+
+### Stoch. interv. risk: `r marker_to_name[[markers_name_short[4]]]`
+
+```{r marker4-risk-day29, fig.cap = paste("Stochastic interventional risk estimates, with confidence intervals, for", marker_to_name[[markers_name_short[4]]], "at", this_time_print)}
+include_graphics(
+  here(
+    "cop_stochastic", "figs",
+    paste0("mcop_risk_", this_time, markers_name_short[4], ".pdf")
+  )
+)
+```
+
+\clearpage
+
+### Stoch. interv. VE: `r marker_to_name[[markers_name_short[4]]]`
+
+```{r marker4-sve-day29, fig.cap = paste("Stochastic interventional VE estimates, with confidence intervals, for", marker_to_name[[markers_name_short[4]]], "at", this_time_print)}
+include_graphics(
+  here(
+    "cop_stochastic", "figs",
+    paste0("mcop_sve_", this_time, markers_name_short[4], ".pdf")
+  )
+)
+```

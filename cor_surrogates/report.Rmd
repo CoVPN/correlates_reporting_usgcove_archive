@@ -1,8 +1,0 @@
-# Multivariable CoR: Super Learning of Optimal Risk Prediction Models {#cor-surrogates}
-
-TO FILL IN
-
-```{r cor-surrogates-setup}
-# TODO
-```
-

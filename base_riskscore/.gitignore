@@ -1,8 +1,0 @@
-report.pdf
-figs/*.png
-output/*.csv
-output/*.rds
-output/*.rda
-output/*.png
-output/*.jpg
-data_clean/*.csv

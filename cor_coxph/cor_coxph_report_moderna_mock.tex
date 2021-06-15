@@ -1,0 +1,427 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{dvipsnames,svgnames*,x11names*}{xcolor}
+%
+\documentclass[
+]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\hypersetup{
+  pdftitle={COVID correlates analysis report CoR},
+  colorlinks=true,
+  linkcolor=blue,
+  filecolor=Maroon,
+  citecolor=Blue,
+  urlcolor=Blue,
+  pdfcreator={LaTeX via pandoc}}
+\urlstyle{same} % disable monospaced font for URLs
+\usepackage[margin=1in]{geometry}
+\usepackage{longtable,booktabs}
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{5}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{graphicx}
+\usepackage[]{natbib}
+\bibliographystyle{plainnat}
+
+\title{COVID correlates analysis report CoR}
+\author{}
+\date{\vspace{-2.5em}2021-06-15}
+
+\begin{document}
+\maketitle
+
+\counterwithin{table}{section}
+\counterwithin{figure}{section}
+
+\newif\ifENSEMBLE
+
+\hypertarget{cor-coxph-Day57}{%
+\section{Day 57 Univariate CoR: Cox Models of Risk}\label{cor-coxph-Day57}}
+
+The main regression model is the Cox proportional hazards model. All plots are made with Cox models fit unless specified otherwise.
+
+\hypertarget{hazard-ratios}{%
+\subsection{Hazard ratios}\label{hazard-ratios}}
+
+\begin{table}[H]
+\caption{Inference for Day 57 antibody marker covariate-adjusted correlates of risk of COVID in the vaccine group: Hazard ratios per 10-fold increment in the marker*}
+\begin{center}
+    \input{output/D57/CoR_univariable_svycoxph_pretty_MockCOVE}\\
+\end{center}
+*Baseline covariates adjusted for: baseline risk score, at risk or not, community of color or not. Maximum failure event time \input{output/D57/timepoints_cum_risk_MockCOVE} days.\\
+**No. at-risk = number of per-protocol baseline negative vaccine recipients at-risk for COVID; no. cases = number of this cohort with an observed COVID endpoints starting 7 days post Day 57 visit.\\
+***q-value and FWER (family-wide error rate) are computed over the set of p-values both for quantitative markers and categorical markers (excluding ID80) using the Westfall and Young permutation method (\protect\input{output/D57/permutation_replicates_MockCOVE} replicates). 
+
+    %\label{tab:CoR_univariable_svycoxph_pretty_MockCOVE}
+\end{table}
+
+\begin{table}[H]
+\caption{Inference for Day 57 antibody marker covariate-adjusted correlates of risk of COVID in the vaccine group: Hazard ratios for Middle vs. Upper tertile vs. Lower tertile*}
+\begin{center}
+\setlength{\tabcolsep}{.5ex}
+\input{output/D57/CoR_univariable_svycoxph_cat_pretty_MockCOVE}\\
+\end{center}
+*Baseline covariates adjusted for: baseline risk score, at risk or not, community of color or not. 
+Maximum failure event time \protect\input{output/D57/timepoints_cum_risk_MockCOVE} days.
+Cutpoints:
+%Day 57 cutpoints:
+\input{output/D57/cutpoints_Day57bindSpike_MockCOVE},  
+\input{output/D57/cutpoints_Day57bindRBD_MockCOVE},  
+\input{output/D57/cutpoints_Day57pseudoneutid50_MockCOVE},
+\input{output/D57/cutpoints_Day57pseudoneutid80_MockCOVE},
+all on the log10 scale.
+%fold-rise cutpoints:
+%\input{output/D57/cutpoints_Delta57overBbindSpike_MockCOVE},  
+%\input{output/D57/cutpoints_Delta57overBbindRBD_MockCOVE},  
+%\input{output/D57/cutpoints_Delta57overBpseudoneutid50_MockCOVE},  
+%\input{output/D57/cutpoints_Delta57overBpseudoneutid80_MockCOVE}.  
+\\
+**No. at-risk = number of per-protocol baseline negative vaccine recipients at-risk for COVID at 7 days post Day 57 visit; no. cases = number of this cohort with an observed COVID endpoints.\\
+***Generalized Wald-test p-value of the null hypothesis that the hazard rate is constant across the Lower, Middle, and Upper tertile groups.\\
+$\dagger$ q-value and FWER (family-wide error rate) are computed over the set of p-values both for quantitative markers and categorical markers (excluding ID80) using the Westfall and Young permutation method (\protect\input{output/D57/permutation_replicates_MockCOVE} replicates). 
+
+    %\label{tab:CoR_univariable_svycoxph_cat_pretty_MockCOVE}
+\end{table}
+
+\begin{figure}[H]
+    \includegraphics[width=1\textwidth]{output/D57/hr_forest_bindSpike_MockCOVE}
+    \includegraphics[width=1\textwidth]{output/D57/hr_forest_bindRBD_MockCOVE}
+    \includegraphics[width=1\textwidth]{output/D57/hr_forest_pseudoneutid50_MockCOVE}
+    \includegraphics[width=1\textwidth]{output/D57/hr_forest_pseudoneutid80_MockCOVE}
+    \caption{Forest plots of hazard ratios per 10-fold increase in the marker among baseline negative vaccine recipients and subgroups with 95\% point-wise confidence intervals.}
+\end{figure}
+\clearpage
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{output/D57/hr_forest_marginal_bindSpike_MockCOVE}
+    \caption{Forest plots of hazard ratios per 10-fold increase in the Day 57 binding Ab to spike markers among baseline negative vaccine recipients (top row) and eight subpopulations (row 2-9) with 95\% point-wise confidence intervals.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{output/D57/hr_forest_marginal_bindRBD_MockCOVE}
+    \caption{Forest plots of hazard ratios per 10-fold increase in the  Day 57 binding Ab to RBD markers among baseline negative vaccine recipients (top row) and eight subpopulations (row 2-9) with 95\% point-wise confidence intervals.}
+\end{figure}
+
+\ifENSEMBLE
+\else
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{output/D57/hr_forest_marginal_pseudoneutid50_MockCOVE}
+    \caption{Forest plots of hazard ratios per 10-fold increase in the  Day 57 pseudo neut ID50 markers among baseline negative vaccine recipients (top row) and eight subpopulations (row 2-9) with 95\% point-wise confidence intervals.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{output/D57/hr_forest_marginal_pseudoneutid80_MockCOVE}
+    \caption{Forest plots of hazard ratios per 10-fold increase in the  Day 57 pseudo neut ID80 markers among baseline negative vaccine recipients (top row) and eight subpopulations (row 2-9) with 95\% point-wise confidence intervals.}
+\end{figure}
+
+\fi
+
+\clearpage
+
+\newif\ifShowCountry
+
+\ifShowCountry
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{output/D57/hr_forest_countries_bindSpike_MockCOVE}
+    \caption{Forest plots of hazard ratios per 10-fold increase in the Day 57 binding Ab to spike markers among baseline negative vaccine recipients (top row) and eight subpopulations (row 2-9) with 95\% point-wise confidence intervals.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{output/D57/hr_forest_countries_bindRBD_MockCOVE}
+    \caption{Forest plots of hazard ratios per 10-fold increase in the  Day 57 binding Ab to RBD markers among baseline negative vaccine recipients (top row) and eight subpopulations (row 2-9) with 95\% point-wise confidence intervals.}
+\end{figure}
+
+\fi
+
+\hypertarget{marginalized-risk-and-controlled-vaccine-efficacy-plots}{%
+\subsection{Marginalized risk and controlled vaccine efficacy plots}\label{marginalized-risk-and-controlled-vaccine-efficacy-plots}}
+
+\begin{center}
+\begingroup
+\renewcommand{\arraystretch}{2} % Default value: 1
+\begin{table}[H] \centering
+\doublespacing
+\singlespacing
+\begin{tabular}{lcccccc} \hline \hline
+ & \multicolumn{2}{c}{marginalized risk} & \multicolumn{2}{c}{controlled risk} & & \\ 
+ & \multicolumn{2}{c}{ratio $RR_M(0,1)$} & \multicolumn{2}{c}{ratio $RR_C(0,1)^1$} & \multicolumn{2}{c}{e(0,1)$^2$} \\ 
+Trial  & Point Est. & 95\% CI  &    Point Est. & 95\% CI  &   Point Est.  & 95\% CI UL \\ \hline
+\input{input/output/D57/marginalized_risks_cat_MockCOVE}  \\ \hline \hline
+\end{tabular}
+\newline
+\caption{Analysis of Day 57 markers (upper vs. lower tertile) as a CoR and a controlled risk CoP.}
+\doublespacing
+\noindent $^1$Conservative (upper bound) estimate assuming unmeasured confounding at level $RR_{UD}(0,1)=RR_{EU}(0,1) = 2$ and thus $B(0,1)=4/3$. \newline
+\noindent $^2$E-values are computed for upper tertile $s=1$ vs. lower tertile $s=0$ biomarker subgroups after controlling for baseline risk score, at risk or not, community of color or not; UL = upper limit.
+\label{table1}
+\end{table}
+\endgroup
+\end{center}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{output/D57/marginalized_risks_cat_MockCOVE}
+    \caption{Marginalized cumulative incidence rate curves for trichotomized Day 57 markers among baseline negative vaccine recipients. The gray line is the overall cumulative incidence rate curve in the placebo arm.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{output/D57/marginalized_risks_eq_MockCOVE}
+    \caption{Marginalized cumulative risk by Day \protect\input{output/D57/timepoints_cum_risk_MockCOVE} as functions of Day 57 markers (=s) among baseline negative vaccine recipients with 95\% bootstrap point-wise confidence bands (\protect\input{output/D57/bootstrap_replicates_MockCOVE} replicates). The horizontal lines indicate the overall cumulative risk of the placebo and vaccine arms by Day \protect\input{output/D57/timepoints_cum_risk_MockCOVE} and its 95\% point-wise confidence interval. Histograms of the immunological markers in the vaccine arm are overlaid. lod = 0.3, 1.6, 2.4, 15 for bAb Spike, bAb RBD, PsV nAb ID50, PsV nAb ID80, respectively.}
+    
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{output/D57/controlled_ve_curves_eq_MockCOVE}
+    \caption{Controlled VE with sensitivity analysis as functions of Day 57 markers (=s) among baseline negative vaccine recipients with 95\% bootstrap point-wise confidence bands (\protect\input{output/D57/bootstrap_replicates_MockCOVE} replicates). Histograms of the immunological markers in the vaccine arm are overlaid. lod = 0.3, 1.6, 2.4, 15 for bAb Spike, bAb RBD, PsV nAb ID50, PsV nAb ID80, respectively.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{output/D57/marginalized_risks_geq_woplacebo_MockCOVE}
+    \caption{Marginalized cumulative risk by Day \protect\input{output/D57/timepoints_cum_risk_MockCOVE} as functions of Day 57 markers above a threshold ($\geq s$) among baseline negative vaccine recipients with 95\% bootstrap point-wise confidence bands (at least 5 cases are required, \protect\input{output/D57/bootstrap_replicates_MockCOVE} replicates). The horizontal lines indicate the overall cumulative risk of the vaccine arm by Day \protect\input{output/D57/timepoints_cum_risk_MockCOVE} and its 95\% point-wise confidence interval. Histograms of the immunological markers in the vaccine arm are overlaid. lod = 0.3, 1.6, 2.4, 15 for bAb Spike, bAb RBD, PsV nAb ID50, PsV nAb ID80, respectively.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{output/D57/controlled_ve_curves_geq_MockCOVE}
+    \caption{Controlled VE as functions of Day 57 markers (>=s) among baseline negative vaccine recipients with 95\% bootstrap point-wise confidence bands (\protect\input{output/D57/bootstrap_replicates_MockCOVE} replicates). Histograms of the immunological markers in the vaccine arm are overlaid. lod = 0.3, 1.6, 2.4, 15 for bAb Spike, bAb RBD, PsV nAb ID50, PsV nAb ID80, respectively.}
+\end{figure}
+
+\clearpage
+
+\hypertarget{cor-coxph-Day29}{%
+\section{Day 29 Univariate CoR: Cox Models of Risk}\label{cor-coxph-Day29}}
+
+The main regression model is the Cox proportional hazards model. All plots are made with Cox models fit unless specified otherwise.
+
+\hypertarget{hazard-ratios-1}{%
+\subsection{Hazard ratios}\label{hazard-ratios-1}}
+
+\begin{table}[H]
+\caption{Inference for Day 29 antibody marker covariate-adjusted correlates of risk of COVID in the vaccine group: Hazard ratios per 10-fold increment in the marker*}
+\begin{center}
+    \input{output/D29/CoR_univariable_svycoxph_pretty_MockCOVE}\\
+\end{center}
+*Baseline covariates adjusted for: baseline risk score, at risk or not, community of color or not. Maximum failure event time \input{output/D29/timepoints_cum_risk_MockCOVE} days.\\
+**No. at-risk = number of per-protocol baseline negative vaccine recipients at-risk for COVID; no. cases = number of this cohort with an observed COVID endpoints starting 7 days post Day 29 visit.\\
+***q-value and FWER (family-wide error rate) are computed over the set of p-values both for quantitative markers and categorical markers (excluding ID80) using the Westfall and Young permutation method (\protect\input{output/D29/permutation_replicates_MockCOVE} replicates). 
+
+    %\label{tab:CoR_univariable_svycoxph_pretty_MockCOVE}
+\end{table}
+
+\begin{table}[H]
+\caption{Inference for Day 29 antibody marker covariate-adjusted correlates of risk of COVID in the vaccine group: Hazard ratios for Middle vs. Upper tertile vs. Lower tertile*}
+\begin{center}
+\setlength{\tabcolsep}{.5ex}
+\input{output/D29/CoR_univariable_svycoxph_cat_pretty_MockCOVE}\\
+\end{center}
+*Baseline covariates adjusted for: baseline risk score, at risk or not, community of color or not. 
+Maximum failure event time \protect\input{output/D29/timepoints_cum_risk_MockCOVE} days.
+Cutpoints:
+%Day 29 cutpoints:
+\input{output/D29/cutpoints_Day29bindSpike_MockCOVE},  
+\input{output/D29/cutpoints_Day29bindRBD_MockCOVE},  
+\input{output/D29/cutpoints_Day29pseudoneutid50_MockCOVE},
+\input{output/D29/cutpoints_Day29pseudoneutid80_MockCOVE},
+all on the log10 scale.
+%fold-rise cutpoints:
+%\input{output/D29/cutpoints_Delta29overBbindSpike_MockCOVE},  
+%\input{output/D29/cutpoints_Delta29overBbindRBD_MockCOVE},  
+%\input{output/D29/cutpoints_Delta29overBpseudoneutid50_MockCOVE},  
+%\input{output/D29/cutpoints_Delta29overBpseudoneutid80_MockCOVE}.  
+\\
+**No. at-risk = number of per-protocol baseline negative vaccine recipients at-risk for COVID at 7 days post Day 29 visit; no. cases = number of this cohort with an observed COVID endpoints.\\
+***Generalized Wald-test p-value of the null hypothesis that the hazard rate is constant across the Lower, Middle, and Upper tertile groups.\\
+$\dagger$ q-value and FWER (family-wide error rate) are computed over the set of p-values both for quantitative markers and categorical markers (excluding ID80) using the Westfall and Young permutation method (\protect\input{output/D29/permutation_replicates_MockCOVE} replicates). 
+
+    %\label{tab:CoR_univariable_svycoxph_cat_pretty_MockCOVE}
+\end{table}
+
+\begin{figure}[H]
+    \includegraphics[width=1\textwidth]{output/D29/hr_forest_bindSpike_MockCOVE}
+    \includegraphics[width=1\textwidth]{output/D29/hr_forest_bindRBD_MockCOVE}
+    \includegraphics[width=1\textwidth]{output/D29/hr_forest_pseudoneutid50_MockCOVE}
+    \includegraphics[width=1\textwidth]{output/D29/hr_forest_pseudoneutid80_MockCOVE}
+    \caption{Forest plots of hazard ratios per 10-fold increase in the marker among baseline negative vaccine recipients and subgroups with 95\% point-wise confidence intervals.}
+\end{figure}
+\clearpage
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{output/D29/hr_forest_marginal_bindSpike_MockCOVE}
+    \caption{Forest plots of hazard ratios per 10-fold increase in the Day 29 binding Ab to spike markers among baseline negative vaccine recipients (top row) and eight subpopulations (row 2-9) with 95\% point-wise confidence intervals.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{output/D29/hr_forest_marginal_bindRBD_MockCOVE}
+    \caption{Forest plots of hazard ratios per 10-fold increase in the  Day 29 binding Ab to RBD markers among baseline negative vaccine recipients (top row) and eight subpopulations (row 2-9) with 95\% point-wise confidence intervals.}
+\end{figure}
+
+\ifENSEMBLE
+\else
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{output/D29/hr_forest_marginal_pseudoneutid50_MockCOVE}
+    \caption{Forest plots of hazard ratios per 10-fold increase in the  Day 29 pseudo neut ID50 markers among baseline negative vaccine recipients (top row) and eight subpopulations (row 2-9) with 95\% point-wise confidence intervals.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{output/D29/hr_forest_marginal_pseudoneutid80_MockCOVE}
+    \caption{Forest plots of hazard ratios per 10-fold increase in the  Day 29 pseudo neut ID80 markers among baseline negative vaccine recipients (top row) and eight subpopulations (row 2-9) with 95\% point-wise confidence intervals.}
+\end{figure}
+
+\fi
+
+\clearpage
+
+\newif\ifShowCountry
+
+\ifShowCountry
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{output/D29/hr_forest_countries_bindSpike_MockCOVE}
+    \caption{Forest plots of hazard ratios per 10-fold increase in the Day 29 binding Ab to spike markers among baseline negative vaccine recipients (top row) and eight subpopulations (row 2-9) with 95\% point-wise confidence intervals.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{output/D29/hr_forest_countries_bindRBD_MockCOVE}
+    \caption{Forest plots of hazard ratios per 10-fold increase in the  Day 29 binding Ab to RBD markers among baseline negative vaccine recipients (top row) and eight subpopulations (row 2-9) with 95\% point-wise confidence intervals.}
+\end{figure}
+
+\fi
+
+\hypertarget{marginalized-risk-and-controlled-vaccine-efficacy-plots-1}{%
+\subsection{Marginalized risk and controlled vaccine efficacy plots}\label{marginalized-risk-and-controlled-vaccine-efficacy-plots-1}}
+
+\textbackslash begin\{center\}
+\begingroup
+
+\renewcommand{\arraystretch}{2}
+
+\% Default value: 1
+
+\begin{table}[H] \centering
+\doublespacing
+\singlespacing
+\begin{tabular}{lcccccc} \hline \hline
+ & \multicolumn{2}{c}{marginalized risk} & \multicolumn{2}{c}{controlled risk} & & \\ 
+ & \multicolumn{2}{c}{ratio $RR_M(0,1)$} & \multicolumn{2}{c}{ratio $RR_C(0,1)^1$} & \multicolumn{2}{c}{e(0,1)$^2$} \\ 
+Trial  & Point Est. & 95\% CI  &    Point Est. & 95\% CI  &   Point Est.  & 95\% CI UL \\ \hline
+\input{input/output/D29/marginalized_risks_cat_MockCOVE}  \\ \hline \hline
+\end{tabular}
+\newline
+\caption{Analysis of Day 29 markers (upper vs. lower tertile) as a CoR and a controlled risk CoP.}
+\doublespacing
+\noindent $^1$Conservative (upper bound) estimate assuming unmeasured confounding at level $RR_{UD}(0,1)=RR_{EU}(0,1) = 2$ and thus $B(0,1)=4/3$. \newline
+\noindent $^2$E-values are computed for upper tertile $s=1$ vs. lower tertile $s=0$ biomarker subgroups after controlling for baseline risk score, at risk or not, community of color or not; UL = upper limit.
+\label{table1}
+\end{table}
+\endgroup
+
+\textbackslash end\{center\}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{output/D29/marginalized_risks_cat_MockCOVE}
+    \caption{Marginalized cumulative incidence rate curves for trichotomized Day 29 markers among baseline negative vaccine recipients. The gray line is the overall cumulative incidence rate curve in the placebo arm.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{output/D29/marginalized_risks_eq_MockCOVE}
+    \caption{Marginalized cumulative risk by Day \protect\input{output/D29/timepoints_cum_risk_MockCOVE} as functions of Day 29 markers (=s) among baseline negative vaccine recipients with 95\% bootstrap point-wise confidence bands (\protect\input{output/D29/bootstrap_replicates_MockCOVE} replicates). The horizontal lines indicate the overall cumulative risk of the placebo and vaccine arms by Day \protect\input{output/D29/timepoints_cum_risk_MockCOVE} and its 95\% point-wise confidence interval. Histograms of the immunological markers in the vaccine arm are overlaid. lod = 0.3, 1.6, 2.4, 15 for bAb Spike, bAb RBD, PsV nAb ID50, PsV nAb ID80, respectively.}
+    
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{output/D29/controlled_ve_curves_eq_MockCOVE}
+    \caption{Controlled VE with sensitivity analysis as functions of Day 29 markers (=s) among baseline negative vaccine recipients with 95\% bootstrap point-wise confidence bands (\protect\input{output/D29/bootstrap_replicates_MockCOVE} replicates). Histograms of the immunological markers in the vaccine arm are overlaid. lod = 0.3, 1.6, 2.4, 15 for bAb Spike, bAb RBD, PsV nAb ID50, PsV nAb ID80, respectively.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{output/D29/marginalized_risks_geq_woplacebo_MockCOVE}
+    \caption{Marginalized cumulative risk by Day \protect\input{output/D29/timepoints_cum_risk_MockCOVE} as functions of Day 29 markers above a threshold ($\geq s$) among baseline negative vaccine recipients with 95\% bootstrap point-wise confidence bands (at least 5 cases are required, \protect\input{output/D29/bootstrap_replicates_MockCOVE} replicates). The horizontal lines indicate the overall cumulative risk of the vaccine arm by Day \protect\input{output/D29/timepoints_cum_risk_MockCOVE} and its 95\% point-wise confidence interval. Histograms of the immunological markers in the vaccine arm are overlaid. lod = 0.3, 1.6, 2.4, 15 for bAb Spike, bAb RBD, PsV nAb ID50, PsV nAb ID80, respectively.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{output/D29/controlled_ve_curves_geq_MockCOVE}
+    \caption{Controlled VE as functions of Day 29 markers (>=s) among baseline negative vaccine recipients with 95\% bootstrap point-wise confidence bands (\protect\input{output/D29/bootstrap_replicates_MockCOVE} replicates). Histograms of the immunological markers in the vaccine arm are overlaid. lod = 0.3, 1.6, 2.4, 15 for bAb Spike, bAb RBD, PsV nAb ID50, PsV nAb ID80, respectively.}
+\end{figure}
+
+  \bibliography{ref.bib}
+
+\end{document}

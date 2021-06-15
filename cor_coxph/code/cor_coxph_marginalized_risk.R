@@ -1,3 +1,9 @@
+# sensitivity analyses parameters
+s2="85%"; s1="15%" # these two reference quantiles are used in the next two blocks of code
+RRud=RReu=2
+bias.factor=bias.factor(RRud, RReu)
+
+
 ###################################################################################################
 # marginalized risk curves and controlled VE curves for continuous markers
 # one conditional on s and one conditional on S>=s
@@ -8,7 +14,7 @@
 # data is ph1 data
 # t is a time point near to the time of the last observed outcome will be defined
 marginalized.risk.svycoxph.boot=function(formula, marker.name, type, data, t, B, ci.type="quantile", numCores=1) {  
-# formula=form.0; marker.name="Day"%.%pop%.%a; data=dat.vac.seroneg; t=t0; B=2; ci.type="quantile"; numCores=1; type=2
+# formula=form.0; marker.name="Day"%.%pop%.%a%.%"cat"; data=dat.vac.seroneg; t=t0; B=2; ci.type="quantile"; numCores=1; type=3
     
     # store the current rng state 
     save.seed <- try(get(".Random.seed", .GlobalEnv), silent=TRUE) 
@@ -28,6 +34,13 @@ marginalized.risk.svycoxph.boot=function(formula, marker.name, type, data, t, B,
     # conditional on S>=s
         ss=quantile(data[[marker.name]], seq(0,.9,by=0.05), na.rm=TRUE); myprint(ss)
         prob=marginalized.risk.threshold (formula, marker.name, data=data.ph2, weights=data.ph2$wt.0, t=t, ss=ss)
+       
+    } else if (type==3) {
+    # conditional on a categorical S
+        f1=update(formula, as.formula(paste0("~.+",marker.name)))        
+        tmp.design=twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=data)
+        fit.risk=try(svycoxph(f1, design=tmp.design)) # since we don't need se, we could use coxph, but the weights computed by svycoxph are a little different from the coxph due to fpc
+        prob=marginalized.risk(fit.risk, marker.name, data=data.ph2, ss=NULL, weights=data.ph2$wt.0, t=t, categorical.s=T, verbose=F)        
        
     } else stop("wrong type")
     
@@ -56,6 +69,16 @@ marginalized.risk.svycoxph.boot=function(formula, marker.name, type, data, t, B,
             tmp=try(marginalized.risk.threshold (formula, marker.name, data=dat.b.ph2, weights=dat.b.ph2$wt, t=t, ss=ss))
             if (class(tmp) != "try-error" ) tmp else rep(NA,length(ss))
             
+        } else if (type==3) {
+        # conditional on a categorical S
+            tmp.design=twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=dat.b)
+            fit.risk=try(svycoxph(f1, design=tmp.design))
+            if ( class (fit.risk)[1] != "try-error" ) {
+                marginalized.risk(fit.risk, marker.name, dat.b.ph2, t=t, ss=NULL, weights=dat.b.ph2$wt, categorical.s=T)
+            } else {
+                rep(NA, length(ss))
+            }
+            
         } else stop("wrong type")
     })
     res=do.call(cbind, out)
@@ -70,24 +93,31 @@ marginalized.risk.svycoxph.boot=function(formula, marker.name, type, data, t, B,
         stop("only quantile bootstrap CI supported for now")
     }
     
-    list(marker=ss, prob=prob, boot=res, lb=ci.band[,1], ub=ci.band[,2])     
+    list(marker=if(type==3) names(prob) else ss, prob=prob, boot=res, lb=ci.band[,1], ub=ci.band[,2])     
 }    
 
 if(!file.exists(paste0(save.results.to, "marginalized.risk.",study_name,".Rdata"))) {    
     print("make marginalized.risk")
     
-    # vaccine arm, conditional on S=s
+    # vaccine arm, conditional on continuous S=s
     risks.all.1=lapply(assays, function (a) {
         myprint(a)
         marginalized.risk.svycoxph.boot(formula=form.0, marker.name="Day"%.%pop%.%a, type=1, data=dat.vac.seroneg, t0, B=B, ci.type="quantile", numCores=numCores)                
     })    
     
     # vaccine arm, conditional on S>=s
-    risks.all.2=lapply(assays, function (a) 
+    risks.all.2=lapply(assays, function (a) {
+        myprint(a)
         marginalized.risk.svycoxph.boot(formula=form.0, marker.name="Day"%.%pop%.%a, type=2, data=dat.vac.seroneg, t0, B=B, ci.type="quantile", numCores=numCores)        
-    ) 
+    }) 
     
-    save(risks.all.1, risks.all.2, file=paste0(save.results.to, "marginalized.risk."%.%study_name%.%".Rdata"))
+    # vaccine arm, conditional on categorical S
+    risks.all.3=lapply(assays, function (a) {
+        myprint(a)
+        marginalized.risk.svycoxph.boot(formula=form.0, marker.name="Day"%.%pop%.%a%.%"cat", type=3, data=dat.vac.seroneg, t0, B=B, ci.type="quantile", numCores=numCores)                
+    })    
+    
+    save(risks.all.1, risks.all.2, risks.all.3, file=paste0(save.results.to, "marginalized.risk."%.%study_name%.%".Rdata"))
     
 } else {
     load(paste0(save.results.to, "marginalized.risk."%.%study_name%.%".Rdata"))
@@ -196,8 +226,8 @@ save(ylims.cor, file=paste0(save.results.to, "ylims.cor."%.%study_name%.%".Rdata
 ###################################################################################################
 # controlled VE curves for S=s and S>=s
     
-s2="85%"; s1="15%" # these two reference quantiles are used in the next two blocks of code
-RRud=RReu=2
+
+#
 for (eq.geq in 1:2) {  # 1 conditional on s,   2 is conditional on S>=s
 # eq.geq=1
 mypdf(onefile=F, file=paste0(save.results.to, "controlled_ve_curves",ifelse(eq.geq==1,"_eq","_geq"),"_"%.%study_name), mfrow=.mfrow, oma=c(0,0,0,0))
@@ -274,7 +304,7 @@ dev.off()
 
 
 ###################################################################################################
-# marginalized risk curves for trichotomized markers
+# marginalized risk curves over time for trichotomized markers
 # no bootstrap
  
 risks.all.ter=list()
@@ -359,3 +389,28 @@ dev.off()
 #
 cumsum(summary(survfit(form.s, subset(dat.vac.seroneg, TwophasesampInd.0==1)), times=x.time)$n.event)
 table(subset(dat.vac.seroneg, yy==1)[["Day"%.%pop%.%"pseudoneutid80cat"]])
+
+
+
+###################################################################################################
+# marginalized risk and controlled risk table for trichotomized markers
+    
+res=sapply (assays, function(a) {        
+    risks=risks.all.3[[a]]
+    with(risks, c(prob[3]/prob[1], quantile(boot[3,]/boot[1,], c(.025,.975))))
+})
+
+tmp=sapply (assays, function(a) {
+    paste0(
+        labels.axis[1, a], "&",
+        # marginal RR and ci
+        formatDouble(res[1,a],2,remove.leading0=F), "&", formatDouble(res[2,a],2,remove.leading0=F), "--", formatDouble(res[3,a],2,remove.leading0=F)
+        , "&" ,
+        # causal RR and ci
+        formatDouble(res[1,a]*bias.factor,2,remove.leading0=F), "&", formatDouble(res[2,a]*bias.factor,2,remove.leading0=F), "--", formatDouble(res[3,a]*bias.factor,2,remove.leading0=F)
+        , "&" ,
+        # E-value and ub
+        formatDouble(E.value(res[1,a]),1), "&", formatDouble(E.value(res[3,a]),1)
+    )
+})
+write(concatList(tmp, "\\\\"), file=paste0(save.results.to, "marginalized_risks_cat_", study_name,".tex"))

@@ -55,16 +55,6 @@ include_graphics(here(
 ))
 ```
 
-\clearpage
-```{r, fig.cap = "Pair plots of D1, D29 and D57 Binding Antibody to N: baseline negative vaccine arm", eval = (all(c('B', 'Day29', 'Day57') %in% times) & include_bindN == TRUE)}
-include_graphics(here(
-  "immuno_graphical", "figs",
-  paste0(
-    "pairs_bindN_by_times_BaselineNeg_vaccine_",
-    study_name, ".png"
-  )
-))
-```
 
 
 
@@ -81,6 +71,17 @@ include_graphics(here(
 
 \clearpage
 ```{r, fig.cap = "Pair plots of D1, D29 and D57 Binding Antibody to RBD: baseline negative vaccine arm", eval = (all(c('B', 'Day29', 'Day57') %in% times) & 'bindRBD'%in% assays)}
+include_graphics(here(
+  "immuno_graphical", "figs",
+  paste0(
+    "pairs_bindRBD_by_times_BaselineNeg_vaccine_",
+    study_name, ".png"
+  )
+))
+```
+
+\clearpage
+```{r, fig.cap = "Pair plots of D1, D29 and D57 Binding Antibody to RBD: baseline negative vaccine arm", eval = (all(c('B', 'Day29', 'Day57') %in% times) & include_bindN == TRUE)}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0(
@@ -159,16 +160,7 @@ include_graphics(here(
 ))
 ```
 
-\clearpage
-```{r, fig.cap = "Pair plots of D1, D29 and D57 Binding Antibody to N: baseline positive vaccine arm", eval = (all(c('B', 'Day29', 'Day57') %in% times) & include_bindN == TRUE)}
-include_graphics(here(
-  "immuno_graphical", "figs",
-  paste0(
-    "pairs_bindN_by_times_BaselinePos_vaccine_",
-    study_name, ".png"
-  )
-))
-```
+
 
 \clearpage
 ```{r, fig.cap = "Pair plots of D1, D29 and D57 Binding Antibody to Spike: baseline positive vaccine arm", eval = (all(c('B', 'Day29', 'Day57') %in% times) & 'bindSpike'%in% assays)}
@@ -187,6 +179,18 @@ include_graphics(here(
   "immuno_graphical", "figs",
   paste0(
     "pairs_bindRBD_by_times_BaselinePos_vaccine_",
+    study_name, ".png"
+  )
+))
+```
+
+
+\clearpage
+```{r, fig.cap = "Pair plots of D1, D29 and D57 Binding Antibody to N: baseline positive vaccine arm", eval = (all(c('B', 'Day29', 'Day57') %in% times) & include_bindN == TRUE)}
+include_graphics(here(
+  "immuno_graphical", "figs",
+  paste0(
+    "pairs_bindN_by_times_BaselinePos_vaccine_",
     study_name, ".png"
   )
 ))
@@ -263,7 +267,7 @@ include_graphics(here(
 
 
 \clearpage
-```{r, fig.cap = "RCDF plots for D29 bAb markers: by baseline status for the vaccine arm", eval = ("Day29" %in% times)}
+```{r, fig.cap = "RCDF plots for D29 bAb markers: by baseline status for the vaccine arm", eval = (("Day29" %in% times) & (any(c("bindSpike", "bindRBD") %in% assays) | include_bindN == TRUE))}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0(
@@ -273,7 +277,7 @@ include_graphics(here(
 ))
 ```
 
-```{r, fig.cap = "RCDF plots for D29 nAb markers: by baseline status for the vaccine arm", eval = ("Day29" %in% times)}
+```{r, fig.cap = "RCDF plots for D29 nAb markers: by baseline status for the vaccine arm", eval = (("Day29" %in% times) & any(c("pseudoneutid50", "pseudoneutid80") %in% assays))}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0(
@@ -284,7 +288,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "RCDF plots for D57 bAb markers: by baseline status for the vaccine arm", eval = ("Day57" %in% times)}
+```{r, fig.cap = "RCDF plots for D57 bAb markers: by baseline status for the vaccine arm", eval = (("Day57" %in% times) & (any(c("bindSpike", "bindRBD") %in% assays) | include_bindN == TRUE))}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0(
@@ -295,7 +299,7 @@ include_graphics(here(
 ```
 
 
-```{r, fig.cap = "RCDF plots for D57 nAb markers: by baseline status for the vaccine arm", eval = ("Day57" %in% times)}
+```{r, fig.cap = "RCDF plots for D57 nAb markers: by baseline status for the vaccine arm", eval = (("Day57" %in% times) & any(c("pseudoneutid50", "pseudoneutid80") %in% assays))}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0(
@@ -306,7 +310,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "RCDF plots for D29 over D1 fold-rise bAb markers: by baseline status for the vaccine arm", eval = ("Delta29overB" %in% times)}
+```{r, fig.cap = "RCDF plots for D29 over D1 fold-rise bAb markers: by baseline status for the vaccine arm", eval = (("Delta29overB" %in% times) & (any(c("bindSpike", "bindRBD") %in% assays) | include_bindN == TRUE))}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0(
@@ -318,7 +322,7 @@ include_graphics(here(
 
 
 
-```{r, fig.cap = "RCDF plots for D29 over D1 fold-rise nAb markers: by baseline status for the vaccine arm", eval = ("Delta29overB" %in% times)}
+```{r, fig.cap = "RCDF plots for D29 over D1 fold-rise nAb markers: by baseline status for the vaccine arm", eval = (("Delta29overB" %in% times) & any(c("pseudoneutid50", "pseudoneutid80") %in% assays))}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0(
@@ -330,7 +334,7 @@ include_graphics(here(
 
 
 \clearpage
-```{r, fig.cap = "RCDF plots for D57 fold-rise over D1 bAb markers: by baseline status for the vaccine arm", eval = ("Delta57overB" %in% times)}
+```{r, fig.cap = "RCDF plots for D57 fold-rise over D1 bAb markers: by baseline status for the vaccine arm", eval = (("Delta57overB" %in% times) & (any(c("bindSpike", "bindRBD") %in% assays) | include_bindN == TRUE))}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0(
@@ -341,7 +345,7 @@ include_graphics(here(
 ```
 
 
-```{r, fig.cap = "RCDF plots for D57 fold-rise over D1 nAb markers: by baseline status for the vaccine arm", eval = ("Delta57overB" %in% times)}
+```{r, fig.cap = "RCDF plots for D57 fold-rise over D1 nAb markers: by baseline status for the vaccine arm", eval = (("Delta57overB" %in% times) & any(c("pseudoneutid50", "pseudoneutid80") %in% assays))}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0(
@@ -352,7 +356,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "RCDF plots for D29 bAb markers: baseline negative vaccine arm", eval = ("Day29" %in% times)}
+```{r, fig.cap = "RCDF plots for D29 bAb markers: baseline negative vaccine arm", eval = (("Day29" %in% times) & (any(c("bindSpike", "bindRBD") %in% assays) | include_bindN == TRUE))}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0(
@@ -363,7 +367,7 @@ include_graphics(here(
 ```
 
 
-```{r, fig.cap = "RCDF plots for D29 nAb markers: baseline negative vaccine arm", eval = ("Day29" %in% times)}
+```{r, fig.cap = "RCDF plots for D29 nAb markers: baseline negative vaccine arm", eval = (("Day29" %in% times) & any(c("pseudoneutid50", "pseudoneutid80") %in% assays))}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0(
@@ -374,7 +378,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "RCDF plots for D57 bAb markers: baseline negative vaccine arm", eval = ("Day57" %in% times)}
+```{r, fig.cap = "RCDF plots for D57 bAb markers: baseline negative vaccine arm", eval = (("Day57" %in% times) & (any(c("bindSpike", "bindRBD") %in% assays) | include_bindN == TRUE))}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0(
@@ -385,7 +389,7 @@ include_graphics(here(
 ```
 
 
-```{r, fig.cap = "RCDF plots for D57 nAb markers: baseline negative vaccine arm", eval = ("Day57" %in% times)}
+```{r, fig.cap = "RCDF plots for D57 nAb markers: baseline negative vaccine arm", eval = (("Day57" %in% times) & any(c("pseudoneutid50", "pseudoneutid80") %in% assays))}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0(
@@ -396,7 +400,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "RCDF plots for D29 fold-rise over D1 bAb markers: baseline negative vaccine arm", eval = ("Delta29overB" %in% times)}
+```{r, fig.cap = "RCDF plots for D29 fold-rise over D1 bAb markers: baseline negative vaccine arm", eval = (("Delta29overB" %in% times) & (any(c("bindSpike", "bindRBD") %in% assays) | include_bindN == TRUE))}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0(
@@ -408,7 +412,7 @@ include_graphics(here(
 
 
 
-```{r, fig.cap = "RCDF plots for D29 fold-rise over D1 nAb markers: baseline negative vaccine arm", eval = ("Delta29overB" %in% times)}
+```{r, fig.cap = "RCDF plots for D29 fold-rise over D1 nAb markers: baseline negative vaccine arm", eval = (("Delta29overB" %in% times) & any(c("pseudoneutid50", "pseudoneutid80") %in% assays))}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0(
@@ -419,7 +423,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "RCDF plots for D57 fold-rise over D1 bAb markers: baseline negative vaccine arm", eval = ("Delta57overB" %in% times)}
+```{r, fig.cap = "RCDF plots for D57 fold-rise over D1 bAb markers: baseline negative vaccine arm", eval = (("Delta57overB" %in% times) & (any(c("bindSpike", "bindRBD") %in% assays) | include_bindN == TRUE))}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0(
@@ -430,7 +434,7 @@ include_graphics(here(
 ```
 
 
-```{r, fig.cap = "RCDF plots for D57 fold-rise over D1 nAb markers: baseline negative vaccine arm", eval = ("Delta57overB" %in% times)}
+```{r, fig.cap = "RCDF plots for D57 fold-rise over D1 nAb markers: baseline negative vaccine arm", eval = (("Delta57overB" %in% times) & any(c("pseudoneutid50", "pseudoneutid80") %in% assays))}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0(
@@ -442,7 +446,7 @@ include_graphics(here(
 
 
 \clearpage
-```{r, fig.cap = "RCDF plots for D29 bAb markers: baseline positive vaccine arm", eval = ("Day29" %in% times)}
+```{r, fig.cap = "RCDF plots for D29 bAb markers: baseline positive vaccine arm", eval = (("Day29" %in% times) & (any(c("bindSpike", "bindRBD") %in% assays) | include_bindN == TRUE))}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0(
@@ -453,7 +457,7 @@ include_graphics(here(
 ```
 
 
-```{r, fig.cap = "RCDF plots for D29 nAb markers: baseline positive vaccine arm", eval = ("Day29" %in% times)}
+```{r, fig.cap = "RCDF plots for D29 nAb markers: baseline positive vaccine arm", eval = (("Day29" %in% times) & any(c("pseudoneutid50", "pseudoneutid80") %in% assays))}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0(
@@ -464,7 +468,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "RCDF plots for D57 bAb markers: baseline positive vaccine arm", eval = ("Day57" %in% times)}
+```{r, fig.cap = "RCDF plots for D57 bAb markers: baseline positive vaccine arm", eval = (("Day57" %in% times) & (any(c("bindSpike", "bindRBD") %in% assays) | include_bindN == TRUE))}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0(
@@ -475,7 +479,7 @@ include_graphics(here(
 ```
 
 
-```{r, fig.cap = "RCDF plots for D57 nAb markers: baseline positive vaccine arm", eval = ("Day57" %in% times)}
+```{r, fig.cap = "RCDF plots for D57 nAb markers: baseline positive vaccine arm", eval = (("Day57" %in% times) & any(c("pseudoneutid50", "pseudoneutid80") %in% assays))}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0(
@@ -486,7 +490,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "RCDF plots for D29 fold-rise over D1 bAb markers: baseline positive vaccine arm", eval = ("Delta29overB" %in% times)}
+```{r, fig.cap = "RCDF plots for D29 fold-rise over D1 bAb markers: baseline positive vaccine arm", eval = (("Delta29overB" %in% times) & (any(c("bindSpike", "bindRBD") %in% assays) | include_bindN == TRUE))}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0(
@@ -498,7 +502,7 @@ include_graphics(here(
 
 
 
-```{r, fig.cap = "RCDF plots for D29 fold-rise over D1 nAb markers: baseline positive vaccine arm", eval = ("Delta29overB" %in% times)}
+```{r, fig.cap = "RCDF plots for D29 fold-rise over D1 nAb markers: baseline positive vaccine arm", eval = (("Delta29overB" %in% times) & any(c("pseudoneutid50", "pseudoneutid80") %in% assays))}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0(
@@ -509,7 +513,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "RCDF plots for D57 fold-rise over D1 bAb markers: baseline positive vaccine arm", eval = ("Delta57overB" %in% times)}
+```{r, fig.cap = "RCDF plots for D57 fold-rise over D1 bAb markers: baseline positive vaccine arm", eval = (("Delta57overB" %in% times) & (any(c("bindSpike", "bindRBD") %in% assays) | include_bindN == TRUE))}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0(
@@ -520,7 +524,7 @@ include_graphics(here(
 ```
 
 
-```{r, fig.cap = "RCDF plots for D57 fold-rise over D1 nAb markers: baseline positive vaccine arm", eval = ("Delta57overB" %in% times)}
+```{r, fig.cap = "RCDF plots for D57 fold-rise over D1 nAb markers: baseline positive vaccine arm", eval = (("Delta57overB" %in% times) & any(c("pseudoneutid50", "pseudoneutid80") %in% assays))}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0(
@@ -723,7 +727,7 @@ include_graphics(here(
 
 ### Baseline SARS-CoV-2 negative
 
-```{r, fig.cap = "Spaghetti plots of Ab markers over time: baseline negative vaccine + placebo arm", eval = all(c("B", "Day29", "Day57") %in% times)}
+```{r, fig.cap = "Spaghetti plots of Ab markers over time: baseline negative vaccine + placebo arm", eval = any(c("B", "Day29", "Day57") %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0("spaghetti_plot_BaselineNeg_", study_name, ".png")
@@ -732,7 +736,7 @@ include_graphics(here(
 
 \clearpage
 ### Baseline SARS-CoV-2 positive
-```{r, fig.cap = "Spaghetti plots of Ab markers over time: baseline positive vaccine + placebo arm", eval = all(c("B", "Day29", "Day57") %in% times)}
+```{r, fig.cap = "Spaghetti plots of Ab markers over time: baseline positive vaccine + placebo arm", eval = any(c("B", "Day29", "Day57") %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0("spaghetti_plot_BaselinePos_", study_name, ".png")

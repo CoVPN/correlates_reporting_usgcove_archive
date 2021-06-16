@@ -20,7 +20,7 @@ fits=fits[1:length(assays)] # for now, we don't need the delta (multitesting adj
 rows=1+p.cov
 est=getFormattedSummary(fits, exp=T, robust=T, rows=rows, type=1)
 ci= getFormattedSummary(fits, exp=T, robust=T, rows=rows, type=13)
-p=  getFormattedSummary(fits, exp=T, robust=T, rows=rows, type=10); p=sub("0.000","<0.001",p)
+p=  getFormattedSummary(fits, exp=T, robust=T, rows=rows, type=10)
 
 pvals.cont = sapply(fits, function(x) {
     tmp=getFixedEf(x)
@@ -210,7 +210,6 @@ colSums(matrix(natrisk, nrow=3))
 est=c(rbind(1.00,  sapply(fits.tri, function (fit) if(length(fit)==1) rep(NA,2) else getFormattedSummary(list(fit), exp=T, robust=T, rows=rows, type=1))  ))
 ci= c(rbind("N/A", sapply(fits.tri, function (fit) if(length(fit)==1) rep(NA,2) else getFormattedSummary(list(fit), exp=T, robust=T, rows=rows, type=13)) ))
 p=  c(rbind("N/A", sapply(fits.tri, function (fit) if(length(fit)==1) rep(NA,2) else getFormattedSummary(list(fit), exp=T, robust=T, rows=rows, type=10)) ))
-p=sub("0.000","<0.001",p)
 
 tab=cbind(
     rep(c("Lower","Middle","Upper"), length(p)/3), 

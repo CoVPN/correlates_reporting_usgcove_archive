@@ -1,7 +1,7 @@
 #-----------------------------------------------
 # obligatory to append to the top of each script
 renv::activate(project = here::here(".."))
-source(here::here("..", "_common.R"))
+source(here::here("..", "_common.R")) 
 #-----------------------------------------------
 
 # load required libraries and functions
@@ -20,7 +20,7 @@ library(xtable)
 library(broom)
 
 # Read in data file
-inputFile <- read.csv(here::here("verification", "verification_input", "moderna_mock_data_processed.csv")) %>%
+inputFile <- read.csv(here::here("verification", "verification_input", "moderna_mock_data_processed_with_riskscore.csv")) %>%
   mutate(Day57bindSpike = ifelse(Day57bindSpike > log10(uloqs[["bindSpike"]]), log10(uloqs[["bindSpike"]]), Day57bindSpike), 
          Day57bindRBD = ifelse(Day57bindRBD > log10(uloqs[["bindRBD"]]), log10(uloqs[["bindRBD"]]), Day57bindRBD),
          Day57pseudoneutid50 = ifelse(Day57pseudoneutid50 > log10(uloqs[["pseudoneutid50"]]), log10(uloqs[["pseudoneutid50"]]), Day57pseudoneutid50),
@@ -35,18 +35,18 @@ inputFile <- read.csv(here::here("verification", "verification_input", "moderna_
 # It returns the HR for the marker, CI and p.value
 getHR_D57_continuous_marker <- function(marker, design, data, group){
   if(group %in% c("Age < 65, At risk", "Age < 65, Not at risk", "At risk", "Not at risk")){
-    fm = as.formula(paste("Surv(EventTimePrimaryD57, EventIndPrimaryD57) ~ ", marker, " + MinorityInd + Age"))
+    fm = as.formula(paste("Surv(EventTimePrimaryD57, EventIndPrimaryD57) ~ ", marker, " + MinorityInd + risk_score"))
   } else if (group %in% c("WhiteNonHispanic", "Comm. of color")){
-    fm = as.formula(paste("Surv(EventTimePrimaryD57, EventIndPrimaryD57) ~ ", marker, " + HighRiskInd + Age"))
+    fm = as.formula(paste("Surv(EventTimePrimaryD57, EventIndPrimaryD57) ~ ", marker, " + HighRiskInd + risk_score"))
   }else{
-    fm = as.formula(paste("Surv(EventTimePrimaryD57, EventIndPrimaryD57) ~ ", marker, " + MinorityInd + HighRiskInd + Age"))
+    fm = as.formula(paste("Surv(EventTimePrimaryD57, EventIndPrimaryD57) ~ ", marker, " + MinorityInd + HighRiskInd + risk_score"))
   }
   
   fit <- survey::svycoxph(fm, design=design)
   
   tidy(fit, conf.int = T, exponentiate = T) %>% data.frame() %>%
     select(term, estimate, conf.low, conf.high, p.value) %>%
-    filter(!term %in% c("MinorityInd", "HighRiskInd", "Age")) %>%
+    filter(!term %in% c("MinorityInd", "HighRiskInd", "risk_score")) %>%
     rename(marker = term) %>%
     mutate(cases = sum(data$EventIndPrimaryD57),
            atRisk = length(data$EventIndPrimaryD57),
@@ -63,13 +63,13 @@ getHR_D57_categorical_marker <- function(marker, design, data, group){
   data_middle <- data %>% filter(get(marker) == (data %>% pull(marker) %>% levels())[2])
   data_upper <- data %>% filter(get(marker) == (data %>% pull(marker) %>% levels())[3])
   
-  fm = as.formula(paste("Surv(EventTimePrimaryD57, EventIndPrimaryD57) ~ ", marker, " + MinorityInd + HighRiskInd + Age"))
+  fm = as.formula(paste("Surv(EventTimePrimaryD57, EventIndPrimaryD57) ~ ", marker, " + MinorityInd + HighRiskInd + risk_score"))
   
   fit <- survey::svycoxph(fm, design=design)
   
   dat <- tidy(fit, conf.int = T, exponentiate = T) %>% data.frame() %>%
     select(term, estimate, conf.low, conf.high, p.value) %>%
-    filter(!term %in% c("MinorityInd", "HighRiskInd", "Age")) %>%
+    filter(!term %in% c("MinorityInd", "HighRiskInd", "risk_score")) %>%
     rename(marker = term) %>%
     add_row(marker = "Lower", estimate = 1, conf.low = NA, conf.high = NA, p.value = NA) %>%
     mutate(marker_cut = c("Middle", "Upper", "Lower")) %>%
@@ -224,6 +224,8 @@ tab <- get_results_in_df_D57(dat = inputFile %>% filter(Trt == 1 & Bserostatus =
 tab %>% 
   write.csv(here("verification", "verification_output", "D57.mock.csv"))
 
+tab <- tab %>% select(marker, cases, atRisk, estimate, conf.low, conf.high, p.value)
+
 ###############################################################################
 ###############################################################################
 ###############################################################################
@@ -232,18 +234,18 @@ tab %>%
 # It returns the HR for the marker, CI and p.value
 getHR_D29_continuous_marker <- function(marker, design, data, group){
   if(group %in% c("Age < 65, At risk", "Age < 65, Not at risk", "At risk", "Not at risk")){
-    fm = as.formula(paste("Surv(EventTimePrimaryD29, EventIndPrimaryD29) ~ ", marker, " + MinorityInd + Age"))
+    fm = as.formula(paste("Surv(EventTimePrimaryD29, EventIndPrimaryD29) ~ ", marker, " + MinorityInd + risk_score"))
   } else if (group %in% c("WhiteNonHispanic", "Comm. of color")){
-    fm = as.formula(paste("Surv(EventTimePrimaryD29, EventIndPrimaryD29) ~ ", marker, " + HighRiskInd + Age"))
+    fm = as.formula(paste("Surv(EventTimePrimaryD29, EventIndPrimaryD29) ~ ", marker, " + HighRiskInd + risk_score"))
   }else{
-    fm = as.formula(paste("Surv(EventTimePrimaryD29, EventIndPrimaryD29) ~ ", marker, " + MinorityInd + HighRiskInd + Age"))
+    fm = as.formula(paste("Surv(EventTimePrimaryD29, EventIndPrimaryD29) ~ ", marker, " + MinorityInd + HighRiskInd + risk_score"))
   }
   
   fit <- survey::svycoxph(fm, design=design)
   
   tidy(fit, conf.int = T, exponentiate = T) %>% data.frame() %>%
     select(term, estimate, conf.low, conf.high, p.value) %>%
-    filter(!term %in% c("MinorityInd", "HighRiskInd", "Age")) %>%
+    filter(!term %in% c("MinorityInd", "HighRiskInd", "risk_score")) %>%
     rename(marker = term) %>%
     mutate(cases = sum(data$EventIndPrimaryD29),
            atRisk = length(data$EventIndPrimaryD29),
@@ -260,13 +262,13 @@ getHR_D29_categorical_marker <- function(marker, design, data, group){
   data_middle <- data %>% filter(get(marker) == (data %>% pull(marker) %>% levels())[2])
   data_upper <- data %>% filter(get(marker) == (data %>% pull(marker) %>% levels())[3])
   
-  fm = as.formula(paste("Surv(EventTimePrimaryD29, EventIndPrimaryD29) ~ ", marker, " + MinorityInd + HighRiskInd + Age"))
+  fm = as.formula(paste("Surv(EventTimePrimaryD29, EventIndPrimaryD29) ~ ", marker, " + MinorityInd + HighRiskInd + risk_score"))
   
   fit <- survey::svycoxph(fm, design=design)
   
   dat <- tidy(fit, conf.int = T, exponentiate = T) %>% data.frame() %>%
     select(term, estimate, conf.low, conf.high, p.value) %>%
-    filter(!term %in% c("MinorityInd", "HighRiskInd", "Age")) %>%
+    filter(!term %in% c("MinorityInd", "HighRiskInd", "risk_score")) %>%
     rename(marker = term) %>%
     add_row(marker = "Lower", estimate = 1, conf.low = NA, conf.high = NA, p.value = NA) %>%
     mutate(marker_cut = c("Middle", "Upper", "Lower")) %>%
@@ -277,7 +279,7 @@ getHR_D29_categorical_marker <- function(marker, design, data, group){
            atRisk = ifelse(marker_cut == "Lower", sum(data_lower %>% .$wt.D29),
                            ifelse(marker_cut == "Middle", sum(data_middle %>% .$wt.D29),
                                   sum(data_upper %>% .$wt.D29))),
-           `Attack rate` = cases/atRisk,
+           `Attack rate` = round(cases, 0)/atRisk,
            group = group)
   
   # Generalized Wald test
@@ -291,7 +293,7 @@ getHR_D29_categorical_marker <- function(marker, design, data, group){
 
 ################################################## 
 get_results_in_df_D29 <- function(dat, group){
-  # Day 29 analysis
+  # Day 29 analysis 
   dat.D29 <- dat %>% filter(!is.na(wt.D29))
   
   dat.D29.design <- twophase(id=list(~Ptid, ~Ptid),strata=list(NULL, ~Wstratum),

@@ -1,7 +1,7 @@
 ---
 title: "Verification Report: cor_coxph"
 author: "Bhavesh Borate"
-date: "2021/04/14"
+date: "`r Sys.Date()`" 
 output: pdf_document
 ---
 

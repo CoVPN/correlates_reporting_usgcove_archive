@@ -79,8 +79,8 @@ if(!file.exists(paste0(save.results.to, "pvals.perm.",study_name,".Rdata"))) {
     design.vacc.seroneg.perm=design.vacc.seroneg
     #design.vacc.seroneg.perm$phase1$full$variables
 
-    # only do multitesting when liveneutmn50 is included
-    if (!"liveneutmn50" %in% assays) numPerm=5
+#    # only do multitesting when liveneutmn50 is included
+#    if (!"liveneutmn50" %in% assays) numPerm=5
 
     out=mclapply(1:numPerm, mc.cores = numCores, FUN=function(seed) {   
         # store the current rng state 
@@ -151,10 +151,10 @@ if (study_name_code=="COVE") {
     p.1[endsWith(names(p.1), "pseudoneutid80")] = "N/A"
     p.2[endsWith(names(p.2), "pseudoneutid80")] = "N/A"
 }
-# only do multitesting when liveneutmn50 is included
-if (!"liveneutmn50" %in% assays) {
-    for (i in 1:length(p.1)) p.1[i]<-p.2[i]<-"N/A"
-}
+## only do multitesting when liveneutmn50 is included
+#if (!"liveneutmn50" %in% assays) {
+#    for (i in 1:length(p.1)) p.1[i]<-p.2[i]<-"N/A"
+#}
 
 
 tab.1=cbind(paste0(nevents, "/", format(natrisk, big.mark=",")), t(est), t(ci), t(p), p.1, p.2)

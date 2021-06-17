@@ -206,8 +206,7 @@ testdat <- verification_data_d29 %>% slice(5:16) %>%
          ci = paste0("(", format(round(conf.low, 2), nsmall=2), "-", 
                      format(round(conf.high, 2), nsmall=2), ")"),
          ci = ifelse(est=="1", "N/A", ci),
-         p = round(p.value, 3),
-         p = ifelse(p < 0.001, "<0.001", format(p, nsmall=3)),
+         p = ifelse(p.value < 0.001, "<0.001", format(round(p.value, 3), nsmall=3)),
          p = ifelse(est=="1", "N/A", p),
          overall.pval = ifelse(is.na(overall.pval), "   ", overall.pval)) %>%
   rename(overall.p.0 = overall.pval) %>%
@@ -328,7 +327,7 @@ if(all(check_vec_d29 == "TRUE")){
 
 ```
 
-Output of `cor_coxph.R` is `r ifelse(clean_comparison_pass_d57, "equivalent to", "different from")` the output of `cor_coxph_validation.R` for marker data at Day 57. Output of `cor_coxph.R` is `r ifelse(clean_comparison_pass_d29, "equivalent to", "different from")` the output of `cor_coxph_validation.R` for marker data at Day 29. `cor_coxph.R` `r ifelse(clean_comparison_pass_d57 && clean_comparison_pass_no_d29, "passes","fails")` verification.
+Output of `cor_coxph.R` is `r ifelse(clean_comparison_pass_d57, "equivalent to", "different from")` the output of `cor_coxph_validation.R` for marker data at Day 57. Output of `cor_coxph.R` is `r ifelse(clean_comparison_pass_d29, "equivalent to", "different from")` the output of `cor_coxph_validation.R` for marker data at Day 29. `cor_coxph.R` `r ifelse(clean_comparison_pass_d57 && clean_comparison_pass_d29, "passes","fails")` verification.
 
 ## Signatures
 

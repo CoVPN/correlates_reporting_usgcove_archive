@@ -1,4 +1,4 @@
-#Sys.setenv(TRIAL = "janssen_pooled_mock")
+#Sys.setenv(TRIAL = "moderna_mock")
 if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
 #-----------------------------------------------
 renv::activate(here::here())
@@ -69,7 +69,7 @@ if (study_name_code=="COVE") {
       )
       
 } else if (study_name_code=="ENSEMBLE") {
-    # only differs from COVE in IndigSouthAmer
+    # add IndigSouthAmer, remove Other
     dat_proc <- dat_proc %>%
       mutate(
         race = labels.race[1],
@@ -80,8 +80,7 @@ if (study_name_code=="COVE") {
           IndigSouthAmer == 1 ~ labels.race[5],
           PacIsl == 1 ~ labels.race[6],
           Multiracial == 1 ~ labels.race[7],
-          Other == 1 ~ labels.race[8],
-          Notreported == 1 | Unknown == 1 ~ labels.race[9],
+          Notreported == 1 | Unknown == 1 ~ labels.race[8],
           TRUE ~ labels.race[1]
         ),
         race = factor(race, levels = labels.race)
@@ -293,6 +292,23 @@ if(has29) {
     assertthat::assert_that(
         all(!is.na(subset(dat_proc, EarlyendpointD29==0 & Perprotocol==1 & EventTimePrimaryD29>=7 & !is.na(Wstratum), select=wt.D29, drop=T))),
         msg = "missing wt.D29 for D29 analyses ph1 subjects")
+}
+
+# define weights for intercurrent cases
+if(has29 & has57) {
+    wts_table2 <- dat_proc %>%               dplyr::filter(EarlyendpointD29==0 & Perprotocol==1 & EventIndPrimaryD29==1 & EventTimePrimaryD29>=7 & EventTimePrimaryD29 <= 6 + NumberdaysD1toD57 - NumberdaysD1toD29) %>%
+      with(table(Wstratum, TwophasesampIndD29))
+    wts_norm2 <- rowSums(wts_table2) / wts_table2[, 2]
+    dat_proc$wt.intercurrent.cases <- wts_norm2[dat_proc$Wstratum %.% ""]
+    dat_proc$wt.intercurrent.cases = ifelse(with(dat_proc, EarlyendpointD29==0 & Perprotocol==1 & EventIndPrimaryD29==1 & EventTimePrimaryD29>=7 & EventTimePrimaryD29 <= 6 + NumberdaysD1toD57 - NumberdaysD1toD29), 
+                                            dat_proc$wt.intercurrent.cases, 
+                                            NA)
+    dat_proc$ph1.intercurrent.cases=!is.na(dat_proc$wt.intercurrent.cases)
+    dat_proc$ph2.intercurrent.cases=with(dat_proc, ph1.intercurrent.cases & TwophasesampIndD29)    
+
+    assertthat::assert_that(
+        all(!is.na(subset(dat_proc,                        EarlyendpointD29==0 & Perprotocol==1 & EventIndPrimaryD29==1 & EventTimePrimaryD29>=7 & EventTimePrimaryD29 <= 6 + NumberdaysD1toD57 - NumberdaysD1toD29 & !is.na(Wstratum), select=wt.intercurrent.cases, drop=T))),
+        msg = "missing wt.intercurrent.cases for intercurrent analyses ph1 subjects")
 }
 
 # wt.subcohort, for immunogenicity analyses that use subcohort only and are not enriched by cases outside subcohort

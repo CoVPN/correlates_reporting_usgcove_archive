@@ -73,8 +73,8 @@ tlf <-
                        primary endpoint diagnosed starting 7 days after the Day 57 study visit. 
                        Non-cases are per-protocol participants sampled into the random subcohort 
                        with no COVID primary endpoint up to the time of data cut and no evidence 
-                       of SARS-CoV-2 infection up to six days post Day 57 visit."
-      ),
+                       of SARS-CoV-2 infection up to six days post Day 57 visit.",
+                       "The table shows the numbers of cases sampled into the subcohort within baseline covariate strata."),
       deselect = "Arm",
       pack_row = "Arm"
     ),
@@ -82,12 +82,15 @@ tlf <-
     case_vacc_neg = list(
       table_header = "Antibody levels in the baseline SARS-CoV-2 negative
       per-protocol cohort (vaccine recipients)",
-      table_footer =
+      table_footer =c(
       "Cases for Day 29 marker correlates analyses are baseline negative per-protocol 
       vaccine recipients with the symptomatic infection COVID-19 primary endpoint diagnosed 
       starting 7 days after the Day 29 study visit. Cases for Day 57 marker correlates 
       analyses are baseline negative per-protocol vaccine recipients with the symptomatic 
       infection COVID-19 primary endpoint diagnosed starting 7 days after the Day 57 study visit. ",
+      "N is the number of cases sampled into the subcohort within baseline covariate strata.",
+      "The denominator in Resp Rate is the number of participants in the whole per-protocol cohort within baseline
+covariate strata, calculated using inverse probability weighting."),
 
       col_name = c("Visit", "Marker", "N", "Resp rate", "GMT/GMC", "N",
                    "Resp rate", "GMT/GMC", "Resp Rate\nDifference", "GMTR/GMCR"),
@@ -111,7 +114,10 @@ tlf <-
       per-protocol vaccine recipients with the symptomatic infection COVID-19 primary 
       endpoint diagnosed starting 7 days after the Day 57 study visit. Non-cases/Controls 
       are baseline positive per-protocol vaccine recipients sampled into the random subcohort 
-      with no COVID-19 endpoint diagnosis by the time of data-cut."),
+      with no COVID-19 endpoint diagnosis by the time of data-cut.",
+      "N is the number of cases sampled into the subcohort within baseline covariate strata.",
+      "The denominator in Resp Rate is the number of participants in the whole per-protocol cohort within baseline
+covariate strata, calculated using inverse probability weighting."),
       col_name = c("Visit", "Marker", "N", "Resp rate", "GMT/GMC", "N",
                    "Resp rate", "GMT/GMC", "Resp Rate\nDifference", "GMTR/GMCR"),
       header_above1 = c(" "=2, "Cases*" = 3, "Non-Cases/Control" = 3, 
@@ -134,7 +140,10 @@ tlf <-
         placebo recipients with the symptomatic infection COVID-19 primary endpoint diagnosed 
         starting 7 days after the Day 57 study visit. Non-cases/Controls are baseline positive 
         per-protocol placebo recipients sampled into the random subcohort with no COVID-19 endpoint 
-        diagnosis by the time of data-cut."
+        diagnosis by the time of data-cut.",
+        "N is the number of cases sampled into the subcohort within baseline covariate strata.",
+        "The denominator in Resp Rate is the number of participants in the whole per-protocol cohort within baseline
+covariate strata, calculated using inverse probability weighting."
         ),
       col_name = c("Visit", "Marker", "N", "Resp rate", "GMT/GMC", "N",
                    "Resp rate", "GMT/GMC", "Resp Rate\nDifference", "GMTR/GMCR"),
@@ -290,7 +299,7 @@ subgrp <- c(
 
 num_v1 <- c("Age") # Summaries - Mean & Range
 num_v2 <- c("BMI") # Summaries - Mean & St.d
-cat_v <- c("Age65C", "SexC", "RaceEthC", "ethnicityC", "HighRiskC", "AgeRiskC", "MinorityC")
+cat_v <- c("Age65C", "SexC", "raceC", "ethnicityC", "HighRiskC", "AgeRiskC", "MinorityC")
 
 ds_long_ttl <- ds %>%
   dplyr::filter(ph2.immuno) %>% 
@@ -311,9 +320,7 @@ dm_cat <- inner_join(
 ) %>%
   mutate(pct = n / N,
          rslt1 = sprintf("%s (%.1f%%)", n, n / N * 100), 
-         rslt2 = sprintf("%s/%s = %.1f%%", n, N, n / N * 100),
-         subgroup = ifelse(subgroup_cat == "Communities of Color", 
-                           "RaceEthC", as.character(subgroup))) %>% 
+         rslt2 = sprintf("%s/%s = %.1f%%", n, N, n / N * 100)) %>% 
   dplyr::filter(subgroup %in% cat_v) 
 
 # Calculate mean and range for numeric covariates
@@ -336,10 +343,11 @@ dm_num <- ds_long_ttl %>%
          subgroup=ifelse(subgroup=="Age", "Age65C", subgroup))
 
 char_lev <- c("Age $<$ 65", "Age $\\geq$ 65", "Mean (Range)","Mean $\\pm$ SD",
-              "Female","Male","White Non-Hispanic ","Black or African American",
+              "Female","Male","White","Black or African American",
               "Asian", "American Indian or Alaska Native",
               "Native Hawaiian or Other Pacific Islander", "Multiracial",
-              "Other", "Not reported and unknown", "Communities of Color",
+              "Other", "Not reported and unknown", 
+              "White Non-Hispanic", "Communities of Color",
               "Hispanic or Latino","Not Hispanic or Latino",
               "Not reported and unknown ","At-risk","Not at-risk",
               "Age $<$ 65 At-risk","Age $<$ 65 Not at-risk", "Age $\\geq$ 65 ")
@@ -348,6 +356,7 @@ tab_dm <- bind_rows(dm_cat, dm_num) %>%
   mutate(rslt = case_when(subgroup %in% cat_v ~ rslt1,
                           subgroup %in% num_v1 ~ rslt1,
                           subgroup %in% num_v2 ~ rslt2)) %>%
+  mutate(subgroup=ifelse(subgroup %in% c("MinorityC", "raceC"), "RaceEthC", subgroup)) %>% 
   dplyr::filter(subgroup_cat %in% char_lev) %>% 
   inner_join(ds_long_ttl %>% 
                distinct(`Baseline SARS-CoV-2`, Arm, Ptid) %>% 
@@ -360,7 +369,7 @@ tab_dm <- bind_rows(dm_cat, dm_num) %>%
               names_sort = T,
               values_from = c(rslt)) %>%
   mutate(Characteristics = factor(subgroup_cat, levels=char_lev),
-         subgroup=factor(subgroup, subgrp)) %>%
+         subgroup=factor(subgroup, levels=subgrp)) %>%
   arrange(`Baseline SARS-CoV-2`, subgroup, Characteristics)
 
 tab_dm_pos <- tab_dm %>% 

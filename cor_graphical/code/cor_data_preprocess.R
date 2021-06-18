@@ -103,13 +103,15 @@ dat.long.cor.subset$Dich_RaceEthnic = with(dat.long.cor.subset,
                                            ifelse(EthnicityHispanic==1, "Hispanic or Latino",
                                                   ifelse(EthnicityHispanic==0 & EthnicityNotreported==0 & EthnicityUnknown==0, "Not Hispanic or Latino", NA)))
 
-# add LLoD value to show in the plot
-dat.long.cor.subset$LLoD = log10(llods[as.character(dat.long.cor.subset$assay)])
-
 # add LLoQ pos.cutoffs, and ULoQ value for response call and censoring - log10 scales
 dat.long.cor.subset$LLoQ = log10(lloqs[as.character(dat.long.cor.subset$assay)])
 dat.long.cor.subset$pos.cutoffs = log10(pos.cutoffs[as.character(dat.long.cor.subset$assay)])
 dat.long.cor.subset$ULoQ = log10(uloqs[as.character(dat.long.cor.subset$assay)])
+
+# add label = LLoD / poscutoff values to show in the plot
+dat.long.cor.subset$LLoD = log10(llods[as.character(dat.long.cor.subset$assay)])
+dat.long.cor.subset$lb = with(dat.long.cor.subset, ifelse(grepl("bind", assay), "Pos.Cut", "LLoD")) 
+dat.long.cor.subset$lbval =  with(dat.long.cor.subset, ifelse(grepl("bind", assay), pos.cutoffs, LLoD))
 
 # assign values above the uloq to the uloq
 for (t in c("B", if(has29) "Day29", "Day57") ) {
@@ -251,7 +253,7 @@ dat.longer.cor.subset <- dat.long.cor.subset %>% select(Ptid, Trt, Bserostatus, 
                                                         Perprotocol, cohort_event,
                                                         Age, age_geq_65_label, highrisk_label, age_risk_label,
                                                         sex_label, minority_label, Dich_RaceEthnic,
-                                                        assay, LLoD, LLoQ, pos.cutoffs, wt.D57, wt.D29,
+                                                        assay, LLoD, LLoQ, pos.cutoffs, lb, lbval, wt.D57, wt.D29,
                                                         B, Day29, Day57, Delta29overB, Delta57overB) %>%
   pivot_longer(!Ptid:wt.D29, names_to = "time", values_to = "value")
 

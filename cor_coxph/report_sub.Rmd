@@ -47,7 +47,6 @@ $\dagger$ q-value and FWER (family-wide error rate) are computed over the set of
 
 
 
-
 `r if(study_name_code!="ENSEMBLE") paste0("
 \\begin{figure}[H]
     \\includegraphics[width=1\\textwidth]{", pathCoRoutput, "/hr_forest_bindSpike_", study_name, "}
@@ -71,27 +70,51 @@ $\dagger$ q-value and FWER (family-wide error rate) are computed over the set of
     \caption{Forest plots of hazard ratios per 10-fold increase in the  Day `r Day` binding Ab to RBD markers among baseline negative vaccine recipients (top row) and eight subpopulations (row 2-9) with 95\% point-wise confidence intervals.}
 \end{figure}
 
-`r if(study_name_code!="ENSEMBLE") paste0("
-\\begin{figure}[H]
-    \\centering
-    \\includegraphics[width=1\\textwidth]{", pathCoRoutput, "/hr_forest_marginal_pseudoneutid50_",  study_name, "} 
-    \\caption{Forest plots of hazard ratios per 10-fold increase in the  Day ", Day,  " pseudo neut ID50 markers among baseline negative vaccine recipients (top row) and eight subpopulations (row 2-9) with 95\\% point-wise confidence intervals.}
-\\end{figure}
-")`
+\ifENSEMBLE
+\else
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{`r pathCoRoutput`/hr_forest_marginal_pseudoneutid50_`r study_name`}
+    \caption{Forest plots of hazard ratios per 10-fold increase in the  Day `r Day` pseudo neut ID50 markers among baseline negative vaccine recipients (top row) and eight subpopulations (row 2-9) with 95\% point-wise confidence intervals.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{`r pathCoRoutput`/hr_forest_marginal_pseudoneutid80_`r study_name`}
+    \caption{Forest plots of hazard ratios per 10-fold increase in the  Day `r Day` pseudo neut ID80 markers among baseline negative vaccine recipients (top row) and eight subpopulations (row 2-9) with 95\% point-wise confidence intervals.}
+\end{figure}
+
+\fi
+
 <!-- \begin{figure}[H] -->
 <!--     \centering -->
 <!--     \includegraphics[width=1\textwidth]{`r pathCoRoutput`/hr_forest_marginal_liveneutmn50_`r study_name`} -->
 <!--     \caption{Forest plots of hazard ratios per 10-fold increase in the  Day `r Day` live neut MN50 markers among baseline negative vaccine recipients (top row) and eight subpopulations (row 2-9) with 95\% point-wise confidence intervals.} -->
 <!-- \end{figure} -->
-`r if(study_name_code!="ENSEMBLE") paste0("
-\\begin{figure}[H]
-    \\centering
-    \\includegraphics[width=1\\textwidth]{", pathCoRoutput, "/hr_forest_marginal_pseudoneutid80_",  study_name, "} 
-    \\caption{Forest plots of hazard ratios per 10-fold increase in the  Day ", Day,  " pseudo neut ID80 markers among baseline negative vaccine recipients (top row) and eight subpopulations (row 2-9) with 95\\% point-wise confidence intervals.}
-\\end{figure}
-")`
 
 \clearpage
+
+
+\newif\ifShowCountry
+`r if (study_name_code=="ENSEMBLE" & (config$subset_variable=="None" | config$subset_value==1)) "\\ShowCountrytrue"` 
+
+\ifShowCountry
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{`r pathCoRoutput`/hr_forest_countries_bindSpike_`r study_name`}
+    \caption{Forest plots of hazard ratios per 10-fold increase in the Day `r Day` binding Ab to spike markers among baseline negative vaccine recipients (top row) and eight subpopulations (row 2-9) with 95\% point-wise confidence intervals.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{`r pathCoRoutput`/hr_forest_countries_bindRBD_`r study_name`}
+    \caption{Forest plots of hazard ratios per 10-fold increase in the  Day `r Day` binding Ab to RBD markers among baseline negative vaccine recipients (top row) and eight subpopulations (row 2-9) with 95\% point-wise confidence intervals.}
+\end{figure}
+
+\fi
+
 
 
 <!-- \begin{table}[H] -->
@@ -124,47 +147,52 @@ $\dagger$ q-value and FWER (family-wide error rate) are computed over the set of
 <!--     \caption{CoR models among baseline negative vaccine recipients. Each column corresponds to one logistic regression model with hinge fitted by chgnpt::chngptm. } -->
 <!--     \label{tab:CoR_univariable_hingelogistic} -->
 <!-- \end{table} -->
+
+
+
+
+
 ## Marginalized risk and controlled vaccine efficacy plots
 <!-- \begin{figure}[H] -->
 <!--     \centering -->
-<!--     \includegraphics[width=1\textwidth]{`r pathCoRoutput`/marginalized_risks1_woplacebo_`r study_name`} -->
+<!--     \includegraphics[width=1\textwidth]{`r pathCoRoutput`/marginalized_risks_eq_woplacebo_`r study_name`} -->
 <!--     \caption{Marginalized cumulative risk by Day \protect\input{`r pathCoRoutput`/timepoints_cum_risk_`r study_name`} as functions of Day `r Day` markers (=s) among baseline negative vaccine recipients with 95\% bootstrap point-wise confidence bands. The horizontal lines indicate the overall cumulative risk of the vaccine arm by Day \protect\input{`r pathCoRoutput`/timepoints_cum_risk_`r study_name`} and its 95\% point-wise confidence interval. Histograms of the immunological markers in the vaccine arm are overlaid.} -->
 <!-- \end{figure} -->
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\textwidth]{`r pathCoRoutput`/marginalized_risks1_`r study_name`}
+    \includegraphics[width=1\textwidth]{`r pathCoRoutput`/marginalized_risks_eq_`r study_name`}
     \caption{Marginalized cumulative risk by Day \protect\input{`r pathCoRoutput`/timepoints_cum_risk_`r study_name`} as functions of Day `r Day` markers (=s) among baseline negative vaccine recipients with 95\% bootstrap point-wise confidence bands (\protect\input{`r pathCoRoutput`/bootstrap_replicates_`r study_name`} replicates). The horizontal lines indicate the overall cumulative risk of the placebo and vaccine arms by Day \protect\input{`r pathCoRoutput`/timepoints_cum_risk_`r study_name`} and its 95\% point-wise confidence interval. Histograms of the immunological markers in the vaccine arm are overlaid. lod = `r round(llods["bindSpike"],1)`, `r round(llods["bindRBD"],1)`, `r round(llods["pseudoneutid50"],1)`, `r round(llods["pseudoneutid80"],1)` for bAb Spike, bAb RBD, PsV nAb ID50, PsV nAb ID80, respectively.}
     
 \end{figure}
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=1\textwidth]{`r pathCoRoutput`/marginalized_risks1_woplacebo_`r study_name`}
-    \caption{Marginalized cumulative risk by Day \protect\input{`r pathCoRoutput`/timepoints_cum_risk_`r study_name`} as functions of Day `r Day` markers (=s) among baseline negative vaccine recipients with 95\% bootstrap point-wise confidence bands (\protect\input{`r pathCoRoutput`/bootstrap_replicates_`r study_name`} replicates). The horizontal lines indicate the overall cumulative risk of the placebo and vaccine arms by Day \protect\input{`r pathCoRoutput`/timepoints_cum_risk_`r study_name`} and its 95\% point-wise confidence interval. Histograms of the immunological markers in the vaccine arm are overlaid. lod = `r round(llods["bindSpike"],1)`, `r round(llods["bindRBD"],1)`, `r round(llods["pseudoneutid50"],1)`, `r round(llods["pseudoneutid80"],1)` for bAb Spike, bAb RBD, PsV nAb ID50, PsV nAb ID80, respectively.}
-\end{figure}
+<!-- \begin{figure}[H] -->
+<!--     \centering -->
+<!--     \includegraphics[width=1\textwidth]{`r pathCoRoutput`/marginalized_risks_eq_woplacebo_`r study_name`} -->
+<!--     \caption{Marginalized cumulative risk by Day \protect\input{`r pathCoRoutput`/timepoints_cum_risk_`r study_name`} as functions of Day `r Day` markers (=s) among baseline negative vaccine recipients with 95\% bootstrap point-wise confidence bands (\protect\input{`r pathCoRoutput`/bootstrap_replicates_`r study_name`} replicates). The horizontal lines indicate the overall cumulative risk of the placebo and vaccine arms by Day \protect\input{`r pathCoRoutput`/timepoints_cum_risk_`r study_name`} and its 95\% point-wise confidence interval. Histograms of the immunological markers in the vaccine arm are overlaid. lod = `r round(llods["bindSpike"],1)`, `r round(llods["bindRBD"],1)`, `r round(llods["pseudoneutid50"],1)`, `r round(llods["pseudoneutid80"],1)` for bAb Spike, bAb RBD, PsV nAb ID50, PsV nAb ID80, respectively.} -->
+<!-- \end{figure} -->
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\textwidth]{`r pathCoRoutput`/controlled_ve_curves1_`r study_name`}
+    \includegraphics[width=1\textwidth]{`r pathCoRoutput`/controlled_ve_curves_eq_`r study_name`}
     \caption{Controlled VE with sensitivity analysis as functions of Day `r Day` markers (=s) among baseline negative vaccine recipients with 95\% bootstrap point-wise confidence bands (\protect\input{`r pathCoRoutput`/bootstrap_replicates_`r study_name`} replicates). Histograms of the immunological markers in the vaccine arm are overlaid. lod = `r round(llods["bindSpike"],1)`, `r round(llods["bindRBD"],1)`, `r round(llods["pseudoneutid50"],1)`, `r round(llods["pseudoneutid80"],1)` for bAb Spike, bAb RBD, PsV nAb ID50, PsV nAb ID80, respectively.}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\textwidth]{`r pathCoRoutput`/marginalized_risks2_woplacebo_`r study_name`}
+    \includegraphics[width=1\textwidth]{`r pathCoRoutput`/marginalized_risks_geq_woplacebo_`r study_name`}
     \caption{Marginalized cumulative risk by Day \protect\input{`r pathCoRoutput`/timepoints_cum_risk_`r study_name`} as functions of Day `r Day` markers above a threshold ($\geq s$) among baseline negative vaccine recipients with 95\% bootstrap point-wise confidence bands (at least 5 cases are required, \protect\input{`r pathCoRoutput`/bootstrap_replicates_`r study_name`} replicates). The horizontal lines indicate the overall cumulative risk of the vaccine arm by Day \protect\input{`r pathCoRoutput`/timepoints_cum_risk_`r study_name`} and its 95\% point-wise confidence interval. Histograms of the immunological markers in the vaccine arm are overlaid. lod = `r round(llods["bindSpike"],1)`, `r round(llods["bindRBD"],1)`, `r round(llods["pseudoneutid50"],1)`, `r round(llods["pseudoneutid80"],1)` for bAb Spike, bAb RBD, PsV nAb ID50, PsV nAb ID80, respectively.}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\textwidth]{`r pathCoRoutput`/controlled_ve_curves2_`r study_name`}
+    \includegraphics[width=1\textwidth]{`r pathCoRoutput`/controlled_ve_curves_geq_`r study_name`}
     \caption{Controlled VE as functions of Day `r Day` markers (>=s) among baseline negative vaccine recipients with 95\% bootstrap point-wise confidence bands (\protect\input{`r pathCoRoutput`/bootstrap_replicates_`r study_name`} replicates). Histograms of the immunological markers in the vaccine arm are overlaid. lod = `r round(llods["bindSpike"],1)`, `r round(llods["bindRBD"],1)`, `r round(llods["pseudoneutid50"],1)`, `r round(llods["pseudoneutid80"],1)` for bAb Spike, bAb RBD, PsV nAb ID50, PsV nAb ID80, respectively.}
 \end{figure}
 
 <!-- \begin{figure}[H] -->
 <!--     \centering -->
-<!--     \includegraphics[width=1\textwidth]{`r pathCoRoutput`/marginalized_risks2_`r study_name`} -->
+<!--     \includegraphics[width=1\textwidth]{`r pathCoRoutput`/marginalized_risks_geq_`r study_name`} -->
 <!--     \caption{Marginalized cumulative risk by Day \protect\input{`r pathCoRoutput`/timepoints_cum_risk_`r study_name`} as functions of Day `r Day` markers above a threshold (>=s) among baseline negative vaccine recipients with 95\% bootstrap point-wise confidence bands (at least 5 cases are required). The horizontal lines indicate the overall cumulative risk of the placebo and vaccine arms by Day \protect\input{`r pathCoRoutput`/timepoints_cum_risk_`r study_name`} and its 95\% point-wise confidence interval. Histograms of the immunological markers in the vaccine arm are overlaid.} -->
 <!-- \end{figure} -->
 \begin{figure}[H]

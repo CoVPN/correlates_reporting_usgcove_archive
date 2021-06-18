@@ -29,7 +29,7 @@ options(survey.lonely.psu="adjust")
 
 num_v1 <- c("Age") # Summaries - Mean & Range
 num_v2 <- c("BMI") # Summaries - Mean & St.d
-cat_v <- c("Age65C", "SexC", "RaceEthC", "ethnicityC", "HighRiskC", "AgeRiskC", "MinorityC")
+cat_v <- c("Age65C", "SexC", "raceC", "ethnicityC", "HighRiskC", "AgeRiskC", "MinorityC")
 
 ds_long_ttl <- ds %>%
   dplyr::filter(ph2.immuno) %>% 
@@ -50,10 +50,9 @@ dm_cat <- inner_join(
 ) %>%
   mutate(pct = n / N,
          rslt1 = sprintf("%s (%.1f%%)", n, n / N * 100), 
-         rslt2 = sprintf("%s/%s = %.1f%%", n, N, n / N * 100),
-         subgroup = ifelse(subgroup_cat == "Communities of Color", 
-                           "RaceEthC", as.character(subgroup))) %>% 
-  dplyr::filter(subgroup %in% cat_v) 
+         rslt2 = sprintf("%s/%s = %.1f%%", n, N, n / N * 100)) %>% 
+  dplyr::filter(as.character(subgroup) %in% cat_v)
+
 
 # Calculate mean and range for numeric covariates
 dm_num <- ds_long_ttl %>%
@@ -75,10 +74,11 @@ dm_num <- ds_long_ttl %>%
          subgroup=ifelse(subgroup=="Age", "Age65C", subgroup))
 
 char_lev <- c("Age $<$ 65", "Age $\\geq$ 65", "Mean (Range)","Mean $\\pm$ SD",
-              "Female","Male","White Non-Hispanic ","Black or African American",
+              "Female","Male", "White", "Black or African American",
               "Asian", "American Indian or Alaska Native",
               "Native Hawaiian or Other Pacific Islander", "Multiracial",
-              "Other", "Not reported and unknown", "Communities of Color",
+              "Other", "Not reported and unknown", 
+              "White Non-Hispanic", "Communities of Color",
               "Hispanic or Latino","Not Hispanic or Latino",
               "Not reported and unknown ","At-risk","Not at-risk",
               "Age $<$ 65 At-risk","Age $<$ 65 Not at-risk", "Age $\\geq$ 65 ")
@@ -87,6 +87,7 @@ tab_dm <- bind_rows(dm_cat, dm_num) %>%
   mutate(rslt = case_when(subgroup %in% cat_v ~ rslt1,
                           subgroup %in% num_v1 ~ rslt1,
                           subgroup %in% num_v2 ~ rslt2)) %>%
+  mutate(subgroup=ifelse(subgroup %in% c("MinorityC", "raceC"), "RaceEthC", subgroup)) %>% 
   dplyr::filter(subgroup_cat %in% char_lev) %>% 
   inner_join(ds_long_ttl %>% 
                distinct(`Baseline SARS-CoV-2`, Arm, Ptid) %>% 
@@ -99,7 +100,7 @@ tab_dm <- bind_rows(dm_cat, dm_num) %>%
               names_sort = T,
               values_from = c(rslt)) %>%
   mutate(Characteristics = factor(subgroup_cat, levels=char_lev),
-         subgroup=factor(subgroup, subgrp)) %>%
+         subgroup=factor(subgroup, levels=subgrp)) %>%
   arrange(`Baseline SARS-CoV-2`, subgroup, Characteristics)
 
 tab_dm_pos <- tab_dm %>% 

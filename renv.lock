@@ -74,10 +74,10 @@
     },
     "Matrix": {
       "Package": "Matrix",
-      "Version": "1.3-3",
+      "Version": "1.3-4",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "df57c82e79600601287edfdcef92c2d6"
+      "Hash": "4ed05e9c9726267e4a5872e09c04587c"
     },
     "MatrixModels": {
       "Package": "MatrixModels",
@@ -1071,15 +1071,15 @@
     },
     "kyotil": {
       "Package": "kyotil",
-      "Version": "2021.5-14",
+      "Version": "2021.6-16",
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
       "RemoteRepo": "kyotil",
       "RemoteUsername": "youyifong",
       "RemoteRef": "HEAD",
-      "RemoteSha": "2bfb20aaf7e0555fca386a981f1db8cc14e200c7",
-      "Hash": "9879e8fad666f66f00b928948260c4ee"
+      "RemoteSha": "747b28ab902e16d9cbe4da0095f71e75489d6009",
+      "Hash": "f00706e1862a9d267b1a01854c2b44cd"
     },
     "labeling": {
       "Package": "labeling",
@@ -1246,13 +1246,6 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "bd4a6c4b600f58651d60d381b0e9a397"
-    },
-    "mice": {
-      "Package": "mice",
-      "Version": "3.13.0",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "ad5d45cfde1d122001e0dca07f80182a"
     },
     "mice": {
       "Package": "mice",

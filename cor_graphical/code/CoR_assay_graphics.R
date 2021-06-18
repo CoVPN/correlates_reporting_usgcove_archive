@@ -26,26 +26,33 @@ dat.cor.subset <- readRDS(here(
 # We made four ggplot objects, each for one assay, and combine them with ggarrange
 #=========================================================================================================================
 wts <- c("wt.D57", "wt.D29", "wt.D57", "wt.D29", "wt.D57")
-
-for (tt in 2:5){
+tps <- c("Day29", "Day57", "Delta29overB", "Delta57overB")
+for (tp in tps[tps %in% times]){
   dat.long.cor.subset$TrtEvent <- paste(as.character(dat.long.cor.subset$Trt), as.character(dat.long.cor.subset$cohort_event),sep = ", ")
-  if (tt %in% c(3, 5)) {  ## day 57 analysis don't include intercurrent cases
+  if (tp %in% c("Day57", "Delta57overB")) {  ## day 57 analysis don't include intercurrent cases
     dat.long.cor.subset <- dat.long.cor.subset %>% filter(cohort_event != "Intercurrent Cases")
   }
   rcdf_list <- vector("list", 4)
-  for (aa in 1:4) {
+  for (aa in seq_along(assays)) {
     rcdf_list[[aa]] <- ggplot(subset(dat.long.cor.subset, assay == assays[aa]), 
-                              aes_string(x = times[tt], colour = "TrtEvent", 
-                                         linetype = "cohort_event",
-                                         weight = wts[tt])) +
+                              aes_string(
+                                x = tp, 
+                                colour = "TrtEvent", 
+                                linetype = "cohort_event",
+                                weight = ifelse(
+                                  tp %in% c("Day29", "Delta29overB"),
+                                  "wt.D29", 
+                                  "wt.D57")
+                              )
+    ) +
       geom_step(aes(y = 1 - ..y..), stat = "ecdf", lwd = 1) +
       theme_pubr(legend = "none") +
-      ylab("Reverse ECDF") + xlab(labels.axis[tt, aa]) +
+      ylab("Reverse ECDF") + xlab(labels.axis[tp, aa]) +
       scale_x_continuous(labels = label_math(10^.x), limits = c(-2, 6), breaks = seq(-2, 6, 2)) +
       scale_color_manual(values = c("#1749FF", "#D92321", "#0AB7C9", "#FF6F1B", "#810094", "#378252", "#FF5EBF", "#3700A5", "#8F8F8F", "#787873")) +
       guides(linetype = "none",
              color = guide_legend(nrow = 3, byrow = TRUE)) +
-      ggtitle(labels.title2[tt, aa]) +
+      ggtitle(labels.title2[tp, aa]) +
       theme(plot.title = element_text(hjust = 0.5, size = 14),
             legend.title = element_blank(),
             legend.text = element_text(size = 14),
@@ -58,7 +65,7 @@ for (tt in 2:5){
   ggsave(ggarrange(plotlist = rcdf_list, ncol = 2, nrow = 2, 
                    common.legend = TRUE, legend = "bottom",
                    align = "h"),
-         filename = paste0(save.results.to, "/Marker_RCDF_", times[tt], 
+         filename = paste0(save.results.to, "/Marker_RCDF_", tp, 
                            "_trt_by_event_status_bstatus_", 
                            study_name,".png"),
          height = 7, width = 6.5)
@@ -102,17 +109,17 @@ dat.sample4 <-  dat.long.cor.subset[, c("Trt", times, "assay", "cohort_event")] 
 
 
 
-for (tt in 2:5){
+for (tp in tps[tps %in% times]){
   subdat <- dat.long.cor.subset
   subdat_jitter <- dat.sample4
-  if (tt %in% c(3, 5)) {
+  if (tp %in% c("Day57", "Delta57overB")) {
     subdat <- dat.long.cor.subset %>% filter(cohort_event != "Intercurrent Cases")
     subdat_jitter <- subdat_jitter %>% filter(cohort_event != "Intercurrent Cases")
   }
   boxplot_list <- vector("list", 4)
-  for (aa in 1:4) {
+  for (aa in seq_along(assays)) {
     boxplot_list[[aa]] <-  ggplot(subset(subdat, assay == assays[aa] & Trt == "Vaccine"), 
-                                  aes_string(x = "cohort_event", y = times[tt])) +
+                                  aes_string(x = "cohort_event", y = tp)) +
       geom_boxplot(aes(colour = cohort_event), width = 0.6, lwd = 1) + 
       stat_boxplot(geom = "errorbar", aes(colour = cohort_event), width = 0.45, lwd = 1) +
       geom_jitter(data = filter(subdat_jitter, assay == assays[aa] & Trt == "Vaccine"), 
@@ -120,7 +127,7 @@ for (tt in 2:5){
                   size = 1.4, show.legend = FALSE) +
       theme_pubr(legend = "none") + 
       guides(alpha = "none") +
-      ylab(labels.axis[tt, aa]) + xlab("") + ggtitle(labels.title2[tt, aa]) +
+      ylab(labels.axis[tp, aa]) + xlab("") + ggtitle(labels.title2[tp, aa]) +
       scale_color_manual(values = c("#1749FF", "#D92321", "#0AB7C9", "#FF6F1B", "#810094", "#378252", 
                                     "#FF5EBF", "#3700A5", "#8F8F8F", "#787873")) +
       scale_y_continuous(limits = c(-2, 6), labels = label_math(10^.x), breaks = seq(-2, 6, 2)) +
@@ -134,12 +141,21 @@ for (tt in 2:5){
             strip.text = element_text(size = 14, face = "bold"),
             legend.title = element_blank(),
             legend.text = element_text(size = 14),)
-    if (tt <= 3) {
+    if (tp %in% c("Day29", "Day57")) {
       boxplot_list[[aa]] <- boxplot_list[[aa]] + 
-        geom_hline(yintercept = log10(llods[assays][aa]), linetype = 2, color = "black", lwd = 1) +
         geom_hline(yintercept = log10(lloqs[assays][aa]), linetype = 2, color = "black", lwd = 1) +
         geom_hline(yintercept = log10(uloqs[assays][aa]), linetype = 2, color = "black", lwd = 1)
     }
+    
+    if (!is.na(pos.cutoffs[aa])) {
+      boxplot_list[[aa]] <- boxplot_list[[aa]] + 
+        geom_hline(yintercept = log10(pos.cutoffs[assays][aa]), linetype = 2, color = "black", lwd = 1) 
+    } else {
+      boxplot_list[[aa]] <- boxplot_list[[aa]] + 
+        geom_hline(yintercept = log10(llods[assays][aa]), linetype = 2, color = "black", lwd = 1)
+    }
+    
+    
   }
   
   ggsave(ggarrange(plotlist = boxplot_list, 
@@ -147,7 +163,7 @@ for (tt in 2:5){
                    common.legend = TRUE, legend = "bottom",
                    align = "h") + 
            theme(plot.title = element_text(hjust = 0.5, size = 10)),
-         filename = paste0(save.results.to, "/boxplots_", times[tt], "_trt_vaccine_x_cc_",
+         filename = paste0(save.results.to, "/boxplots_", tp, "_trt_vaccine_x_cc_",
                            study_name, ".png"),
          height = 9, width = 8)
   
@@ -180,15 +196,15 @@ dat.sample5 <-  dat.long.cor.subset[, c("Trt", times, "assay", "cohort_event", "
 
 
 
-for (tt in 2:5){
+for (tp in tps[tps %in% times]){
   subdat <-dat.long.cor.subset
   subdat_jitter <- dat.sample5
-  if (tt %in% c(3, 5)) {
+  if (tp %in% c("Day57", "Delta57overB")) {
     subdat <- subdat %>% filter(cohort_event != "Intercurrent Cases")
     subdat_jitter <- subdat_jitter %>% filter(cohort_event != "Intercurrent Cases")
   }
-  for (aa in 1:4) {
-    boxplots <-  ggplot(subset(subdat, assay == assays[aa] & Trt == "Vaccine"), aes_string(x = "cohort_event", y = times[tt])) +
+  for (aa in seq_along(assays)) {
+    boxplots <-  ggplot(subset(subdat, assay == assays[aa] & Trt == "Vaccine"), aes_string(x = "cohort_event", y = tp)) +
       geom_boxplot(aes(colour = cohort_event), width = 0.6, lwd = 1) + 
       stat_boxplot(geom = "errorbar", aes(colour = cohort_event), width = 0.45, lwd = 1) +
       geom_jitter(data = filter(subdat_jitter, assay == assays[aa] & Trt == "Vaccine"),
@@ -197,7 +213,7 @@ for (tt in 2:5){
       theme_pubr() + 
       guides(alpha = "none", color = guide_legend(nrow = 1, byrow = TRUE)) +
       facet_wrap(~ demo_lab) +
-      ylab(labels.axis[tt, aa]) + xlab("") + ggtitle(labels.title2[tt, aa]) +
+      ylab(labels.axis[tp, aa]) + xlab("") + ggtitle(labels.title2[tp, aa]) +
       scale_color_manual(values = c("#1749FF", "#D92321", "#0AB7C9", "#FF6F1B", "#810094", "#378252", 
                                     "#FF5EBF", "#3700A5", "#8F8F8F", "#787873")) +
       scale_y_continuous(limits = c(-2, 6), labels = label_math(10^.x), breaks = seq(-2, 6, 2)) +
@@ -213,7 +229,7 @@ for (tt in 2:5){
             legend.title = element_blank(),
             legend.text = element_text(size = 14))
     
-    if (tt <= 3) {
+    if (tp %in% c("Day29", "Day57")) {
       boxplots <- boxplots + 
         geom_hline(yintercept = log10(llods[assays][aa]), linetype = 2, color = "black", lwd = 1) +
         geom_hline(yintercept = log10(lloqs[assays][aa]), linetype = 2, color = "black", lwd = 1) +
@@ -222,7 +238,7 @@ for (tt in 2:5){
     
     
     ggsave(boxplots,
-           filename = paste0(save.results.to, "/boxplots_", times[tt],"_trt_vaccine_x_cc_",
+           filename = paste0(save.results.to, "/boxplots_", tp,"_trt_vaccine_x_cc_",
                              assays[aa], "_", study_name, ".png"),
            height = 9,
            width = 8)
@@ -238,7 +254,8 @@ for (tt in 2:5){
 
 ## in each baseline serostatus group, randomly select 10 placebo recipients and 20 vaccine recipients
 set.seed(12345)
-var_names <- expand.grid(times = c("B", "Day29", "Day57"),
+
+var_names <- expand.grid(times = intersect(c("B", "Day29", "Day57"), times),
                          assays = assays) %>%
   mutate(var_names = paste0(times, assays)) %>%
   .[, "var_names"]
@@ -256,14 +273,14 @@ spaghetti_ptid <- dat.cor.subset[, c("Ptid", "Trt", var_names, "cohort_event")] 
     }
   }) %>% unlist %>% as.character
 
-spaghetti_dat <- dat.long.cor.subset[, c("Ptid", "cohort_event", 
-                                         "B", "Day29", "Day57", "assay")] %>%
+spaghetti_dat <- dat.long.cor.subset[, c("Ptid", "cohort_event", "assay",
+                                         intersect(c("B", "Day29", "Day57"), times))] %>%
   filter(Ptid %in% spaghetti_ptid) %>%
-  pivot_longer(cols = c("B", "Day29", "Day57"),
+  pivot_longer(cols = intersect(c("B", "Day29", "Day57"), times),
                names_to = "time") %>%
   mutate(assay_label = factor(assay, levels = assays, labels = labels.assays.short[assays]),
-         time_label = factor(time, levels = c("B", "Day29", "Day57"),
-                             labels = c("D1", "D29", "D57"))) %>%
+         time_label = factor(time, levels = intersect(c("B", "Day29", "Day57"), times),
+                             labels = c("D1", "D29", "D57")[c("B", "Day29", "Day57") %in% times])) %>%
   as.data.frame
 
 

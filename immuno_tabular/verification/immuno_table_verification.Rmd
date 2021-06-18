@@ -61,7 +61,7 @@ dat.long <- dat.long %>%
 
 # create a new RaceEthC including white hispanic for demographic table reporting
 dat.long$RaceEthC2=dat.long$RaceEthC
-dat.long$RaceEthC2[which(dat.long$RaceEthC2 == 'White' & dat.long$WhiteNonHispanic == 1)] <- 'White Non-Hispanic '
+#dat.long$RaceEthC2[which(dat.long$RaceEthC2 == 'White' & dat.long$WhiteNonHispanic == 1)] <- 'White Non-Hispanic '
 # code white non-hispanic group and set white hispanic as NA
 dat.long$RaceEthC[which(dat.long$RaceEthC == 'White' & dat.long$WhiteNonHispanic == 1)] <- 'White Non-Hispanic '
 dat.long$RaceEthC[which(dat.long$RaceEthC == 'White')] <- NA

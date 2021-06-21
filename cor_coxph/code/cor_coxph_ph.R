@@ -20,7 +20,7 @@ fits=fits[1:length(assays)] # for now, we don't need the delta (multitesting adj
 rows=1+p.cov
 est=getFormattedSummary(fits, exp=T, robust=T, rows=rows, type=1)
 ci= getFormattedSummary(fits, exp=T, robust=T, rows=rows, type=13)
-p=  getFormattedSummary(fits, exp=T, robust=T, rows=rows, type=10); p=sub("0.000","<0.001",p)
+p=  getFormattedSummary(fits, exp=T, robust=T, rows=rows, type=10)
 
 pvals.cont = sapply(fits, function(x) {
     tmp=getFixedEf(x)
@@ -79,8 +79,8 @@ if(!file.exists(paste0(save.results.to, "pvals.perm.",study_name,".Rdata"))) {
     design.vacc.seroneg.perm=design.vacc.seroneg
     #design.vacc.seroneg.perm$phase1$full$variables
 
-    # only do multitesting when liveneutmn50 is included
-    if (!"liveneutmn50" %in% assays) numPerm=5
+#    # only do multitesting when liveneutmn50 is included
+#    if (!"liveneutmn50" %in% assays) numPerm=5
 
     out=mclapply(1:numPerm, mc.cores = numCores, FUN=function(seed) {   
         # store the current rng state 
@@ -151,10 +151,10 @@ if (study_name_code=="COVE") {
     p.1[endsWith(names(p.1), "pseudoneutid80")] = "N/A"
     p.2[endsWith(names(p.2), "pseudoneutid80")] = "N/A"
 }
-# only do multitesting when liveneutmn50 is included
-if (!"liveneutmn50" %in% assays) {
-    for (i in 1:length(p.1)) p.1[i]<-p.2[i]<-"N/A"
-}
+## only do multitesting when liveneutmn50 is included
+#if (!"liveneutmn50" %in% assays) {
+#    for (i in 1:length(p.1)) p.1[i]<-p.2[i]<-"N/A"
+#}
 
 
 tab.1=cbind(paste0(nevents, "/", format(natrisk, big.mark=",")), t(est), t(ci), t(p), p.1, p.2)
@@ -210,7 +210,6 @@ colSums(matrix(natrisk, nrow=3))
 est=c(rbind(1.00,  sapply(fits.tri, function (fit) if(length(fit)==1) rep(NA,2) else getFormattedSummary(list(fit), exp=T, robust=T, rows=rows, type=1))  ))
 ci= c(rbind("N/A", sapply(fits.tri, function (fit) if(length(fit)==1) rep(NA,2) else getFormattedSummary(list(fit), exp=T, robust=T, rows=rows, type=13)) ))
 p=  c(rbind("N/A", sapply(fits.tri, function (fit) if(length(fit)==1) rep(NA,2) else getFormattedSummary(list(fit), exp=T, robust=T, rows=rows, type=10)) ))
-p=sub("0.000","<0.001",p)
 
 tab=cbind(
     rep(c("Lower","Middle","Upper"), length(p)/3), 

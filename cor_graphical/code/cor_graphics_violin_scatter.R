@@ -88,8 +88,8 @@ myplot <- function(dat,
   
   p <- p + 
     geom_text(aes(label=RespRate, x=time, y=rate.y.pos), color="black", size=prop.cex, check_overlap = TRUE) +
-    geom_hline(aes(yintercept=LLoD), linetype="dashed", color="gray") +
-    geom_text(aes(label="LLoD", x=0.75, y=LLoD), color="black", size=ll.cex, check_overlap = TRUE) + 
+    geom_hline(aes(yintercept=lbval), linetype="dashed", color="gray") +
+    geom_text(aes(label=lb, x=0.77, y=lbval), color="black", size=ll.cex, check_overlap = TRUE) + 
     scale_y_continuous(limits=ylim, breaks=ybreaks, labels=math_format(10^.x)) +
     labs(x=xtitle, y=ytitle, title=toptitle, color="Category", shape="Category") +
     scale_color_manual(values=col) +
@@ -216,7 +216,7 @@ for (typ in c("line","violin")) {
                       facetopt = "grid",
                       prop.cex=5.5,
                       ll.cex=8,
-                      rate.y.pos=max(y.lim)-0.45
+                      rate.y.pos=max(y.lim)-0.47
           )
           file_name <- paste0(typ, "box_", gsub("bind","",gsub("pseudoneut","pnAb_",plots[i])), "_", trt[k], "_", gsub(" ","",bstatus[j]), "_Age_Risk_", "v", t,"_", study_name, ".pdf")
           suppressWarnings(ggsave2(plot = p, filename = here("figs", file_name), width = 16, height = 13.5))

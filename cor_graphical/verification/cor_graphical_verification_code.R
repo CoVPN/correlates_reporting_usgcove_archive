@@ -2,7 +2,7 @@
 # File: cor_graphical_verification_code.R
 # Author: Di Lu
 # Creation Date: 2021/03/22
-# Last Edit Date: 2021/06/04
+# Last Edit Date: 2021/06/20
 # Description: Verification of the plots targeted for
 # independent double programming
 # NEWS:
@@ -139,6 +139,7 @@ dat.long <- rbind(dat1_bindSpike,dat1_bindRBD,dat1_pseudoneutid50,dat1_pseudoneu
          Bstratum, 
          wt.D57,  
          wt.D29, 
+         wt.intercurrent.cases,
          race, 
          WhiteNonHispanic,
          cohort_event,
@@ -222,7 +223,7 @@ dat.long.cor.subset <- dat.long.cor.subset %>%
 dat.longer.cor.subset <- dat.long.cor.subset %>% select(
   Ptid, Trt, Bserostatus, EventIndPrimaryD29, EventIndPrimaryD57, Perprotocol,
   cohort_event, Age, age_geq_65_label, highrisk_label, age_risk_label, sex_label,
-  minority_label, Dich_RaceEthnic, assay, LLoD,LLoQ, wt.D57, wt.D29, B, Day29, Day57, Delta29overB, Delta57overB, pos.cutoffs
+  minority_label, Dich_RaceEthnic, assay, LLoD,LLoQ, wt.D57, wt.D29, wt.intercurrent.cases, B, Day29, Day57, Delta29overB, Delta57overB, pos.cutoffs
 )
 
 
@@ -252,8 +253,6 @@ dat.longer.cor.subset <- dat.longer.cor.subset %>%
 dat.longer.cor.subset <- dat.longer.cor.subset %>% filter(time == "Day 1" | time == "Day 29" | time == "Day 57")
 
 
-
-
 dat.longer.cor.subset <- dat.longer.cor.subset %>% 
   mutate(
     response_nab = ifelse((baseline_lt_thres_ptid == 0 & value >= LLoQ) |
@@ -269,7 +268,10 @@ dat.longer.cor.subset <- dat.longer.cor.subset %>%
       assay == "bindN" ~ response_bind,
       assay == "pseudoneutid50" ~ response_nab,
       assay == "pseudoneutid80" ~ response_nab
-    ))
+    )) %>%
+  mutate(
+    wt.D29.1 = ifelse(cohort_event == "Intercurrent Cases",wt.intercurrent.cases,wt.D57)
+  )
 
 
 
@@ -277,8 +279,8 @@ dat.longer.cor.subset <- dat.longer.cor.subset %>%
 dat.longer.cor.subset.plot1_verification <- dat.longer.cor.subset %>% 
   
   group_by(Trt, Bserostatus, cohort_event, time, assay) %>%
-  mutate(num = round(sum(response*wt.D29),1),
-         denom = round(sum(wt.D29),1),
+  mutate(num = round(sum(response*wt.D29.1),1),
+         denom = round(sum(wt.D29.1),1),
          RespRate = paste(num,"/",denom,"=",round(num/denom*100,1),"%",sep = ""),
          min = min(value),
          q1 = quantile(value, 0.25),
@@ -286,7 +288,8 @@ dat.longer.cor.subset.plot1_verification <- dat.longer.cor.subset %>%
          q3 = quantile(value, 0.75),
          max = max(value)) %>%
   ungroup()%>% 
-  arrange(Ptid,assay)
+  arrange(Ptid,assay)%>%
+  select(-wt.D29.1)
 
 
 
@@ -341,7 +344,7 @@ p <- ggplot(lineplots_neg_vaccine_bindSpike_2, aes(x = time, y = value)) +
   scale_y_continuous(breaks = c(-1,0, 1, 2, 3, 4, 5, 6, 7, 8, 9), limits = c(-1, 10)) +
   facet_wrap(~cohort_event) +
   geom_line(data=lineplots_neg_vaccine_bindSpike_plot.25sample1_2,aes(x = time, y = value, group=Ptid)) +
-  geom_hline(yintercept=log10(0.3076), linetype="dashed", color = "black")
+  geom_hline(yintercept=lineplots_neg_vaccine_bindSpike_2$pos.cutoffs, linetype="dashed", color = "black")
 
 p
 
@@ -376,7 +379,7 @@ p <- ggplot(lineplots_neg_vaccine_pseudoneutid50_2, aes(x = time, y = value)) +
   scale_y_continuous(breaks = c(0, 1, 2, 3, 4, 5, 6, 7), limits = c(0, 10)) +
   facet_wrap(~cohort_event) +
   geom_line(data=lineplots_neg_vaccine_pseudoneutid50_plot.25sample1_2,aes(x = time, y = value, group=Ptid)) +
-  geom_hline(yintercept=0.383815, linetype="dashed", color = "black")
+  geom_hline(yintercept=lineplots_neg_vaccine_pseudoneutid50_2$LLoD, linetype="dashed", color = "black")
 
 p
 
@@ -410,7 +413,7 @@ p <- ggplot(lineplots_neg_vaccine_bindSpike_3, aes(x = time, y = value)) +
   scale_y_continuous(breaks = c(0, 1, 2, 3, 4, 5, 6, 7), limits = c(-1, 10)) +
   facet_wrap(~cohort_event) +
   geom_line(data=lineplots_neg_vaccine_bindSpike_plot.25sample1_3,aes(x = time, y = value, group=Ptid)) +
-  geom_hline(yintercept=log10(0.3076), linetype="dashed", color = "black")
+  geom_hline(yintercept=lineplots_neg_vaccine_bindSpike_3$pos.cutoffs, linetype="dashed", color = "black")
 
 p
 

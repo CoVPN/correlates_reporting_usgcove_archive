@@ -153,6 +153,32 @@ $\dagger$ q-value and FWER (family-wide error rate) are computed over the set of
 
 
 ## Marginalized risk and controlled vaccine efficacy plots
+
+
+\begin{table}[H] 
+\caption{Analysis of Day `r Day` markers (upper vs. lower tertile) as a CoR and a controlled risk CoP.}
+\begin{center}
+\begin{tabular}{lcccccc} \hline 
+ & \multicolumn{2}{c}{marginalized risk} & \multicolumn{2}{c}{controlled risk} & & \\ 
+ & \multicolumn{2}{c}{ratio $RR_M(0,1)$} & \multicolumn{2}{c}{ratio $RR_C(0,1)^1$} & \multicolumn{2}{c}{e(0,1)$^2$} \\ 
+Trial  & Point Est. & 95\% CI  &    Point Est. & 95\% CI  &   Point Est.  & 95\% CI UL \\ \hline
+\input{`r pathCoRoutput`/marginalized_risks_cat_`r study_name`}  \\ \hline 
+\end{tabular}
+\end{center}
+$^1$Conservative (upper bound) estimate assuming unmeasured confounding at level $RR_{UD}(0,1)=RR_{EU}(0,1) = 2$ and thus $B(0,1)=4/3$. \\
+$^2$E-values are computed for upper tertile ($s=1$) vs. lower tertile ($s=0$) biomarker subgroups after controlling for baseline risk score, at risk or not, community of color or not; UL = upper limit.
+
+\end{table}
+
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{`r pathCoRoutput`/marginalized_risks_cat_`r study_name`}
+    \caption{Marginalized cumulative incidence rate curves for trichotomized Day `r Day` markers among baseline negative vaccine recipients. The gray line is the overall cumulative incidence rate curve in the placebo arm.}
+\end{figure}
+
+
 <!-- \begin{figure}[H] -->
 <!--     \centering -->
 <!--     \includegraphics[width=1\textwidth]{`r pathCoRoutput`/marginalized_risks_eq_woplacebo_`r study_name`} -->
@@ -195,8 +221,3 @@ $\dagger$ q-value and FWER (family-wide error rate) are computed over the set of
 <!--     \includegraphics[width=1\textwidth]{`r pathCoRoutput`/marginalized_risks_geq_`r study_name`} -->
 <!--     \caption{Marginalized cumulative risk by Day \protect\input{`r pathCoRoutput`/timepoints_cum_risk_`r study_name`} as functions of Day `r Day` markers above a threshold (>=s) among baseline negative vaccine recipients with 95\% bootstrap point-wise confidence bands (at least 5 cases are required). The horizontal lines indicate the overall cumulative risk of the placebo and vaccine arms by Day \protect\input{`r pathCoRoutput`/timepoints_cum_risk_`r study_name`} and its 95\% point-wise confidence interval. Histograms of the immunological markers in the vaccine arm are overlaid.} -->
 <!-- \end{figure} -->
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=1\textwidth]{`r pathCoRoutput`/marginalized_risks_cat_`r study_name`}
-    \caption{Marginalized cumulative incidence rate curves for trichotomized Day `r Day` markers among baseline negative vaccine recipients. The gray line is the overall cumulative incidence rate curve in the placebo arm.}
-\end{figure}

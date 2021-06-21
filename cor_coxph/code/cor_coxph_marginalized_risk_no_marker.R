@@ -6,6 +6,23 @@ get.marginalized.risk.no.marker=function(dat){
     mean(risks)
 }
 
+## these results are close to bootstrap results. they are not used later and only for sanity check
+## compute overall risk regardless of markers in both arms by integrating over form.0. 
+## the point estimate matche the results from bootstrap
+## the variance is asymptotic and still needs to be figured out
+#prevs=sapply (c(placebo=0, vaccine=1), function(i) {
+#    dat.tmp=subset(dat.mock, Trt==i & Bserostatus==0 & ph1)
+#    fit.tmp = coxph(form.0, dat.tmp, model=T) # model=T to make predict possible
+#    dat.tmp[["EventTimePrimaryD"%.%pop]]=t0
+#    pred.tmp=predict(fit.tmp, newdata=dat.tmp, type="expected", se.fit=T)    
+#    sd.tmp=exp(mean(log(pred.tmp$se.fit)))
+#    prev=c(est=NA, "2.5%"=NA, "97.5%"=NA)
+#    prev[1] = mean (1 - exp(-pred.tmp$fit))    
+#    #prev[2:3] = prev[1] + c(-1,1)*1.96*sd.tmp
+#    prev        
+#})
+#prevs
+
 if(!file.exists(paste0(save.results.to, "marginalized.risk.no.marker.",study_name,".Rdata"))) {    
     for (.trt in 0:1) {
         dat.tmp=if(.trt==1) dat.vac.seroneg else dat.pla.seroneg
@@ -46,21 +63,3 @@ if(!file.exists(paste0(save.results.to, "marginalized.risk.no.marker.",study_nam
 } else {
     load(paste0(save.results.to, "marginalized.risk.no.marker."%.%study_name%.%".Rdata"))
 }
-
-
-## these results are close to bootstrap results. they are not used later and only for sanity check
-## compute overall risk regardless of markers in both arms by integrating over form.0. 
-## the point estimate matche the results from bootstrap
-## the variance is asymptotic and still needs to be figured out
-#prevs=sapply (c(placebo=0, vaccine=1), function(i) {
-#    dat.tmp=subset(dat.mock, Trt==i & Bserostatus==0 & ph1)
-#    fit.tmp = coxph(form.0, dat.tmp, model=T) # model=T to make predict possible
-#    dat.tmp[["EventTimePrimaryD"%.%pop]]=t0
-#    pred.tmp=predict(fit.tmp, newdata=dat.tmp, type="expected", se.fit=T)    
-#    sd.tmp=exp(mean(log(pred.tmp$se.fit)))
-#    prev=c(est=NA, "2.5%"=NA, "97.5%"=NA)
-#    prev[1] = mean (1 - exp(-pred.tmp$fit))    
-#    #prev[2:3] = prev[1] + c(-1,1)*1.96*sd.tmp
-#    prev        
-#})
-#prevs

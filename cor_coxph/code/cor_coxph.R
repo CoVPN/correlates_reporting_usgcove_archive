@@ -31,7 +31,7 @@ source(here::here("code", "params.R"))
 
 # population is either 57 or 29
 Args <- commandArgs(trailingOnly=TRUE)
-if (length(Args)==0) Args=c(pop="57")
+if (length(Args)==0) Args=c(pop="29")
 pop=Args[1]; myprint(pop)
 if(!has29 & pop=="29") {
     print("Quitting because there are no Day 29 markers")
@@ -184,6 +184,9 @@ rv$marker.cutpoints=marker.cutpoints
 
 ###################################################################################################
 # run PH models
+###################################################################################################
+    
+    
 source(here::here("code", "cor_coxph_ph.R"))
 
 
@@ -191,8 +194,12 @@ source(here::here("code", "cor_coxph_ph.R"))
 
 ###################################################################################################
 # draw marginalized risk curves
+###################################################################################################
+    
+        
 source(here::here("code", "cor_coxph_marginalized_risk_no_marker.R"))
-source(here::here("code", "cor_coxph_marginalized_risk.R"))
+source(here::here("code", "cor_coxph_marginalized_risk_bootstrap.R"))
+source(here::here("code", "cor_coxph_marginalized_risk_plotting.R"))
 
 
 

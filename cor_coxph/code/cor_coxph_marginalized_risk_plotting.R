@@ -2,133 +2,7 @@
 s2="85%"; s1="15%" # these two reference quantiles are used in the next two blocks of code
 RRud=RReu=2
 bias.factor=bias.factor(RRud, RReu)
-
-
-###################################################################################################
-# marginalized risk curves and controlled VE curves for continuous markers
-# one conditional on s and one conditional on S>=s
-# with bootstrap
-
-
-#### type =1: S=s; type=2: S>=s
-# data is ph1 data
-# t is a time point near to the time of the last observed outcome will be defined
-marginalized.risk.svycoxph.boot=function(formula, marker.name, type, data, t, B, ci.type="quantile", numCores=1) {  
-# formula=form.0; marker.name="Day"%.%pop%.%a%.%"cat"; data=dat.vac.seroneg; t=t0; B=2; ci.type="quantile"; numCores=1; type=3
     
-    # store the current rng state 
-    save.seed <- try(get(".Random.seed", .GlobalEnv), silent=TRUE) 
-    if (class(save.seed)=="try-error") {set.seed(1); save.seed <- get(".Random.seed", .GlobalEnv) } 
-    
-    data.ph2=subset(data, ph2)     
-    
-    if (type==1) {
-    # conditional on s
-        ss=quantile(data[[marker.name]], seq(.0,1,by=0.01), na.rm=TRUE) # this is a fine grid because we may need to read points off the curve    
-        f1=update(formula, as.formula(paste0("~.+",marker.name)))        
-        tmp.design=twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=data)
-        fit.risk=try(svycoxph(f1, design=tmp.design)) # since we don't need se, we could use coxph, but the weights computed by svycoxph are a little different from the coxph due to fpc
-        prob=marginalized.risk(fit.risk, marker.name, data=data.ph2, ss=ss, weights=data.ph2$wt.0, t=t, categorical.s=F)        
-        
-    } else if (type==2) {
-    # conditional on S>=s
-        ss=quantile(data[[marker.name]], seq(0,.9,by=0.05), na.rm=TRUE); myprint(ss)
-        prob=marginalized.risk.threshold (formula, marker.name, data=data.ph2, weights=data.ph2$wt.0, t=t, ss=ss)
-       
-    } else if (type==3) {
-    # conditional on a categorical S
-        f1=update(formula, as.formula(paste0("~.+",marker.name)))        
-        tmp.design=twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=data)
-        fit.risk=try(svycoxph(f1, design=tmp.design)) # since we don't need se, we could use coxph, but the weights computed by svycoxph are a little different from the coxph due to fpc
-        prob=marginalized.risk(fit.risk, marker.name, data=data.ph2, ss=NULL, weights=data.ph2$wt.0, t=t, categorical.s=T, verbose=F)        
-       
-    } else stop("wrong type")
-    
-    # for use in bootstrap
-    ptids.by.stratum=get.ptids.by.stratum.for.bootstrap (data)     
-    
-    # bootstrap
-    out=mclapply(1:B, mc.cores = numCores, FUN=function(seed) {   
-    
-        dat.b = get.bootstrap.data.cor (data, ptids.by.stratum, seed) 
-        dat.b.ph2=subset(dat.b, ph2)     
-    
-        if(type==1) {
-        # conditional on s
-            tmp.design=twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=dat.b)
-            fit.risk=try(svycoxph(f1, design=tmp.design))
-            #fit.s=svyglm(f2, tmp.design)      
-            if ( class (fit.risk)[1] != "try-error" ) {
-                marginalized.risk(fit.risk, marker.name, dat.b.ph2, t=t, ss=ss, weights=dat.b.ph2$wt, categorical.s=F)
-            } else {
-                rep(NA, length(ss))
-            }
-            
-        } else if (type==2) {
-        # conditional on S>=s
-            tmp=try(marginalized.risk.threshold (formula, marker.name, data=dat.b.ph2, weights=dat.b.ph2$wt, t=t, ss=ss))
-            if (class(tmp) != "try-error" ) tmp else rep(NA,length(ss))
-            
-        } else if (type==3) {
-        # conditional on a categorical S
-            tmp.design=twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=dat.b)
-            fit.risk=try(svycoxph(f1, design=tmp.design))
-            if ( class (fit.risk)[1] != "try-error" ) {
-                marginalized.risk(fit.risk, marker.name, dat.b.ph2, t=t, ss=NULL, weights=dat.b.ph2$wt, categorical.s=T)
-            } else {
-                rep(NA, length(ss))
-            }
-            
-        } else stop("wrong type")
-    })
-    res=do.call(cbind, out)
-    res=res[,!is.na(res[1,])] # remove NA's
-    
-    # restore rng state 
-    assign(".Random.seed", save.seed, .GlobalEnv)    
-    
-    if (ci.type=="quantile") {
-        ci.band=t(apply(res, 1, function(x) quantile(x, c(.025,.975))))
-    } else {
-        stop("only quantile bootstrap CI supported for now")
-    }
-    
-    list(marker=if(type==3) names(prob) else ss, prob=prob, boot=res, lb=ci.band[,1], ub=ci.band[,2])     
-}    
-
-if(!file.exists(paste0(save.results.to, "marginalized.risk.",study_name,".Rdata"))) {    
-    print("make marginalized.risk")
-    
-    # vaccine arm, conditional on continuous S=s
-    risks.all.1=lapply(assays, function (a) {
-        myprint(a)
-        marginalized.risk.svycoxph.boot(formula=form.0, marker.name="Day"%.%pop%.%a, type=1, data=dat.vac.seroneg, t0, B=B, ci.type="quantile", numCores=numCores)                
-    })    
-    
-    # vaccine arm, conditional on S>=s
-    risks.all.2=lapply(assays, function (a) {
-        myprint(a)
-        marginalized.risk.svycoxph.boot(formula=form.0, marker.name="Day"%.%pop%.%a, type=2, data=dat.vac.seroneg, t0, B=B, ci.type="quantile", numCores=numCores)        
-    }) 
-    
-    # vaccine arm, conditional on categorical S
-    risks.all.3=lapply(assays, function (a) {
-        myprint(a)
-        marginalized.risk.svycoxph.boot(formula=form.0, marker.name="Day"%.%pop%.%a%.%"cat", type=3, data=dat.vac.seroneg, t0, B=B, ci.type="quantile", numCores=numCores)                
-    })    
-    
-    save(risks.all.1, risks.all.2, risks.all.3, file=paste0(save.results.to, "marginalized.risk."%.%study_name%.%".Rdata"))
-    
-} else {
-    load(paste0(save.results.to, "marginalized.risk."%.%study_name%.%".Rdata"))
-}
-#rv$marginalized.risk.S.eq.s=list()
-#for (a in assays) rv$marginalized.risk.S.eq.s[[a]] = risks.all.1[[a]][c("marker","prob")]
-#rv$marginalized.risk.S.geq.s=list()
-#for (a in assays) rv$marginalized.risk.S.geq.s[[a]] = risks.all.2[[a]][c("marker","prob")]
-
-write(ncol(risks.all.1[[1]]$boot), file=paste0(save.results.to, "bootstrap_replicates_"%.%study_name))
-
 # to be saved for cor_nonlinear
 ylims.cor=list()
 ylims.cor[[1]]=list(2)
@@ -137,7 +11,7 @@ ylims.cor[[2]]=list(2)
 
 
 ###################################################################################################
-# marginalized risk curves for continuous s
+# continuous markers, marginalized risk curves
     
 for (eq.geq in 1:2) {  # 1 conditional on s,   2 is conditional on S>=s
 for (w.wo.plac in 1:2) { # 1 with placebo lines, 2 without placebo lines. Implementation-wise, the main difference is in ylim
@@ -221,20 +95,31 @@ for (w.wo.plac in 1:2) { # 1 with placebo lines, 2 without placebo lines. Implem
 }
 save(ylims.cor, file=paste0(save.results.to, "ylims.cor."%.%study_name%.%".Rdata"))
 
+# show the results at the same assay values as Lars' report
+digits.risk=4
+risks.all=get("risks.all.1")
+out=lapply (assays, function(a) {        
+    risks=risks.all[[a]]
+    pick.out=names(risks$marker)!=""
+    with(risks, cbind("s"=round(10**marker[pick.out]), "Estimate"=paste0(formatDouble(prob[pick.out],digits.risk), " (", formatDouble(lb[pick.out],digits.risk), ",", formatDouble(ub[pick.out],digits.risk), ")")))
+})
+tab=do.call(cbind, out)
+mytex(tab, file.name=paste0("marginalized_risks_eq", "_"%.%study_name), align="c", include.colnames = T, save2input.only=T, input.foldername=save.results.to, include.rownames = F,
+    col.headers=paste0("\\hline\n", concatList(paste0("\\multicolumn{2}{c}{", labels.axis[1,], "}"), "&"), "\\\\\n"))
+
 
 
 ###################################################################################################
-# controlled VE curves for S=s and S>=s
+# continuous markers, controlled VE curves
     
-
-#
 for (eq.geq in 1:2) {  # 1 conditional on s,   2 is conditional on S>=s
-# eq.geq=1
+# eq.geq=2
 mypdf(onefile=F, file=paste0(save.results.to, "controlled_ve_curves",ifelse(eq.geq==1,"_eq","_geq"),"_"%.%study_name), mfrow=.mfrow, oma=c(0,0,0,0))
     lwd=2.5
     par(las=1, cex.axis=0.9, cex.lab=1)# axis label orientation
-    for (a in assays) {        
+    out=lapply (assays, function(a) {        
         risks=get("risks.all."%.%eq.geq)[[a]]        
+        pick.out=names(risks$marker)!=""
     
         #xlim=quantile(dat.vac.seroneg[["Day"%.%pop%.%a]],if(eq.geq==1) c(.025,.975) else c(0,.95),na.rm=T)
         xlim=get.range.cor(dat.vac.seroneg, a, pop)
@@ -257,11 +142,13 @@ mypdf(onefile=F, file=paste0(save.results.to, "controlled_ve_curves",ifelse(eq.g
         ncases=sapply(risks$marker, function(s) sum(dat.vac.seroneg$yy[dat.vac.seroneg[["Day"%.%pop%.%a]]>=s], na.rm=T))        
         .subset=if(eq.geq==1) rep(T, length(risks$marker)) else ncases>=5
         
-        # CVE
+        # CVE with sensitivity analysis
         est = 1 - risks$prob*Bias/res.plac.cont["est"]
         boot = 1 - t( t(risks$boot*Bias)/res.plac.cont[2:(1+ncol(risks$boot))] ) # res.plac.cont may have more bootstrap replicates than risks$boot
         ci.band=apply(boot, 1, function (x) quantile(x, c(.025,.975)))
-        
+        # for table
+        ret=cbind("s"=round(10**risks$marker[pick.out]), "Estimate"=paste0(formatDouble(est[pick.out],digits.risk), " (", formatDouble(ci.band[1,pick.out],digits.risk), ",", formatDouble(ci.band[2,pick.out],digits.risk), ")"))
+
         mymatplot(risks$marker[.subset], t(rbind(est, ci.band))[.subset,], type="l", lty=c(1,2,2), col=if(eq.geq==1) "red" else "white", lwd=lwd, make.legend=F, ylab=paste0("Controlled VE against COVID by Day ",t0), main=paste0(labels.assays.long["Day"%.%pop,a]),
             xlab=labels.assays.short[a]%.%ifelse(eq.geq==1," (=s)"," (>=s)"), ylim=ylim, xlim=xlim, yaxt="n", xaxt="n", draw.x.axis=F)
         # labels
@@ -276,7 +163,7 @@ mypdf(onefile=F, file=paste0(save.results.to, "controlled_ve_curves",ifelse(eq.g
         # x axis
         draw.x.axis.cor(xlim, llods[a])
             
-        # VE
+        # CVE
         est = 1 - risks$prob/res.plac.cont["est"]
         boot = 1 - t( t(risks$boot)/res.plac.cont[2:(1+ncol(risks$boot))] )                         
         ci.band=apply(boot, 1, function (x) quantile(x, c(.025,.975)))        
@@ -296,15 +183,39 @@ mypdf(onefile=F, file=paste0(save.results.to, "controlled_ve_curves",ifelse(eq.g
         #tmp=hist(dat.vac.seroneg[["Day"%.%pop%.%a]],breaks=seq(min(dat.vac.seroneg[["Day"%.%pop%.%a]],na.rm=T), max(dat.vac.seroneg[["Day"%.%pop%.%a]],na.rm=T), len = 15),plot=F)
         plot(tmp,col=col,axes=F,labels=F,main="",xlab="",ylab="",border=0,freq=F,xlim=xlim, ylim=c(0,max(tmp$density*1.25))) 
         
-        # outer title
-        #title(main="Controlled Vaccine Efficacy against COVID by Antibody Titer", outer=T, line=-1)    
+        ret        
+    })
+    
+    if(eq.geq==1) {
+        tab=do.call(cbind, out)
+        mytex(tab, file.name=paste0("controlled_ve_sens_eq", "_"%.%study_name), align="c", include.colnames = T, save2input.only=T, input.foldername=save.results.to, include.rownames = F,
+            col.headers=paste0("\\hline\n", concatList(paste0("\\multicolumn{2}{c}{", labels.axis[1,], "}"), "&"), "\\\\\n"))
     }
 dev.off()    
 }
+    
+# show the results at the same assay values as Lars' report
+digits.risk=4
+risks.all=get("risks.all.1")
+out=lapply (assays, function(a) {        
+    risks=risks.all[[a]]
+    pick.out=names(risks$marker)!=""
+
+    est = 1 - risks$prob/res.plac.cont["est"]
+    boot = 1 - t( t(risks$boot)/res.plac.cont[2:(1+ncol(risks$boot))] )                         
+    ci.band=apply(boot, 1, function (x) quantile(x, c(.025,.975)))        
+
+    cbind("s"=round(10**risks$marker[pick.out]), "Estimate"=paste0(formatDouble(est[pick.out],digits.risk), " (", formatDouble(ci.band[1,pick.out],digits.risk), ",", formatDouble(ci.band[2,pick.out],digits.risk), ")"))
+})
+tab=do.call(cbind, out)
+mytex(tab, file.name=paste0("controlled_ve_eq", "_"%.%study_name), align="c", include.colnames = T, save2input.only=T, input.foldername=save.results.to, include.rownames = F,
+    col.headers=paste0("\\hline\n", concatList(paste0("\\multicolumn{2}{c}{", labels.axis[1,], "}"), "&"), "\\\\\n"))
+
+
 
 
 ###################################################################################################
-# marginalized risk curves over time for trichotomized markers
+# trichotomized markers, marginalized risk curves over time
 # no bootstrap
  
 risks.all.ter=list()
@@ -318,15 +229,14 @@ for (a in assays) {
         
     risks.all.ter[[a]]=if(length(fit.risk)==1) NA else marginalized.risk(fit.risk, marker.name, subset(dat.vac.seroneg,TwophasesampInd.0==1), categorical.s=T)
 }
-
 #rv$marginalized.risk.over.time=list()
 #for (a in assays) rv$marginalized.risk.over.time[[a]] = risks.all.ter[[a]]
-
-
+    
+    
 fit.0=coxph(form.s, dat.pla.seroneg) 
 risk.0= 1 - exp(-predict(fit.0, type="expected"))
 time.0= dat.pla.seroneg[["EventTimePrimaryD"%.%pop]]
-
+    
 lwd=2
 ylim=c(0,max(risk.0))
 x.time<-seq(0,t0,by=30); if(t0-last(x.time)>15) x.time=c(x.time, t0) else x.time[length(x.time)]=t0
@@ -393,13 +303,13 @@ table(subset(dat.vac.seroneg, yy==1)[["Day"%.%pop%.%"pseudoneutid80cat"]])
 
 
 ###################################################################################################
-# marginalized risk and controlled risk table for trichotomized markers
+# trichotomized markers, marginalized risk and controlled risk table
     
 res=sapply (assays, function(a) {        
     risks=risks.all.3[[a]]
     with(risks, c(prob[3]/prob[1], quantile(boot[3,]/boot[1,], c(.025,.975))))
 })
-
+    
 tmp=sapply (assays, function(a) {
     paste0(
         labels.axis[1, a], "&",

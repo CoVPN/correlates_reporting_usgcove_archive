@@ -104,3 +104,6 @@ get.dat.with.no.empty=function(dat.tmp) {
     tab=with(dat.tmp, table(Wstratum, TwophasesampInd.0))
     subset(dat.tmp, !Wstratum %in% as.integer(rownames(tab)[which(tab[,"TRUE"]==0)]))
 }
+
+tmpn=30; lars.quantiles=seq(.0,1,length.out=tmpn) [round(seq.int(1, tmpn, length.out = 10))]
+#quantile(data[["Day57pseudoneutid80"]], lars.quantiles, na.rm=T)

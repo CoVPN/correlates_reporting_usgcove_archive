@@ -301,3 +301,7 @@ cor_coxph/output/D57/permutation_replicates_MockCOVE
 cor_coxph/output/D57/ylims.cor.MockCOVE.Rdata
 cor_coxph/output/D29/marginalized_risks_cat_MockCOVE
 cor_coxph/output/D57/marginalized_risks_cat_MockCOVE
+cor_coxph/output/D29/marginalized_risks_cat_MockCOVE.tex
+cor_coxph/output/D29/marginalized_risks_eq_MockCOVE.tex
+cor_coxph/output/D57/marginalized_risks_cat_MockCOVE.tex
+cor_coxph/output/D57/marginalized_risks_eq_MockCOVE.tex

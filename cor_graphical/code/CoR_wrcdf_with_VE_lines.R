@@ -34,11 +34,19 @@ for (bstatus in 0:1) {
     print(paste0("No D57 events among subjects who are Baseline ", 
                  c("Seronegative", "Seropositive")[bstatus + 1]))
   } else {
-    cox_results <- coxph(Surv(time, event) ~ Trt, data = ve_dat)
+  
+    if(!file.exists("../cor_coxph/output/D57/marginalized.risk.no.marker."%.%study_name%.%".Rdata")) {    
+        cox_results <- coxph(Surv(time, event) ~ Trt, data = ve_dat)
+        VE <- as.numeric(1 - exp(cox_results$coefficients))
+        VE_lb <- as.numeric(1 - exp(confint.default(cox_results)[2]))
+        VE_ub <- as.numeric(1 - exp(confint.default(cox_results)[1]))
+    } else {
+        load("../cor_coxph/output/D57/marginalized.risk.no.marker."%.%study_name%.%".Rdata")
+        VE <- overall.ve[1]
+        VE_lb <- overall.ve[2]
+        VE_ub <- overall.ve[3]        
+    }
     
-    VE <- as.numeric(1 - exp(cox_results$coefficients))
-    VE_lb <- as.numeric(1 - exp(confint.default(cox_results)[2]))
-    VE_ub <- as.numeric(1 - exp(confint.default(cox_results)[1]))
     
     for (aa in 1:length(assays)) {
       subdat <- subset(dat.long.cor.subset, assay == assays[aa] & Trt == "Vaccine" & Bserostatus == bstatus.labels[bstatus + 1])

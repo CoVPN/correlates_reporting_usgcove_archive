@@ -1,4 +1,4 @@
-#Sys.setenv(TRIAL = "moderna_mock")
+#Sys.setenv(TRIAL = "janssen_pooled_mock")
 if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
 #-----------------------------------------------
 renv::activate(here::here())
@@ -211,6 +211,12 @@ dat_proc$Wstratum[with(dat_proc, EventIndPrimaryD29==1 & Trt==1 & Bserostatus==1
 #subset(dat_proc, Trt==1 & Bserostatus==1 & EventIndPrimaryD29 == 1)[1:3,]
 
 with(dat_proc, table(tps.stratum))
+
+# map tps.stratum to stratification variables
+tps.stratums=sort(unique(dat_proc$tps.stratum)); names(tps.stratums)=tps.stratums
+decode.tps.stratum=t(sapply(tps.stratums, function(i) unlist(subset(dat_proc, tps.stratum==i)[1,
+    if (study_name_code=="COVE") c("Senior", "HighRiskInd", "URMforsubcohortsampling") else if (study_name_code=="ENSEMBLE") c("Senior", "HighRiskInd", "Region", "URMforsubcohortsampling")
+])))
 
 
 ###############################################################################
@@ -543,5 +549,7 @@ if("pseudoneutid50" %in% assays & "pseudoneutid80" %in% assays) {
 }
 
 save(list=c(if(has57) c("MaxbAbDay57", "MaxbAbDelta57overB", if("pseudoneutid50" %in% assays & "pseudoneutid80" %in% assays) c("MaxID50ID80Day57", "MaxID50ID80Delta57overB")), 
-            if(has29) c("MaxbAbDay29", "MaxbAbDelta29overB", if("pseudoneutid50" %in% assays & "pseudoneutid80" %in% assays) c("MaxID50ID80Day29", "MaxID50ID80Delta29overB"))),
+            if(has29) c("MaxbAbDay29", "MaxbAbDelta29overB", if("pseudoneutid50" %in% assays & "pseudoneutid80" %in% assays) c("MaxID50ID80Day29", "MaxID50ID80Delta29overB")),
+            "decode.tps.stratum"
+          ),
 file=here("data_clean", paste0(attr(config, "config"), "_params.Rdata")))

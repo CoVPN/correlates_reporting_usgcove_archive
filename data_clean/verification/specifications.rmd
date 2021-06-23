@@ -35,7 +35,7 @@ Steps:
 
   \item Define WhiteNonHispanic, a binary variable that takes value 1 if race is White and ethnicity is not Hispanic, 0 if race is not "white or unknown" OR ethnicity is Hispanic, and NA otherwise
   
-  \item Define MinorityInd, a binary variable that takes value 1 if WhiteNonHispanic is 0, and 0 otherwise including when WhiteNonHispanic is NA
+  \item Define MinorityInd, a binary variable that takes value 1 if WhiteNonHispanic is 0, and 0 otherwise including when WhiteNonHispanic is NA. For Janssen, set MinorityInd to 0 for region 1 and 2
   
   \item Define Bstratum, an integer variable to index strata defined by age and at risk. For Moderna, there are three strata: age >= 65, age < 65 and HighRiskInd==1, age < 65 and HighRiskInd==0. For Janssen, there are four strata, from 1 to 4: age < 60 and HighRiskInd==0, age < 60 and HighRiskInd==1, age >= 60 and HighRiskInd==0, and age >= 60 and HighRiskInd==1.
   

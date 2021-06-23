@@ -15,7 +15,7 @@ marginalized.risk.svycoxph.boot=function(formula, marker.name, type, data, t, B,
     
     if (type==1) {
     # conditional on s
-        #ss contains every 5% to include s1 and s2 for sensitivity analyses, lars quantiles so that to be consistent with his analyses, and equally spaced values so that the curves look good  
+        #ss contains 1) every 5% to include s1 and s2 for sensitivity analyses, 2) lars quantiles so that to be consistent with his analyses, and 3_ equally spaced values so that the curves look good  
         ss=sort(c(quantile(data[[marker.name]], c(lars.quantiles,seq(.05,.95,by=.05)), na.rm=TRUE), seq(min(data[[marker.name]], na.rm=TRUE), max(data[[marker.name]], na.rm=TRUE), length=50)[-c(1,50)]))
         f1=update(formula, as.formula(paste0("~.+",marker.name)))        
         tmp.design=twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=data)

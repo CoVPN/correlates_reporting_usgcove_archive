@@ -19,6 +19,7 @@ bstatus <- c("Baseline Neg")
 trt <- c("Placebo","Vaccine")
 plots_ytitles <- labels.assays.short
 plots_titles <- labels.assays[names(labels.assays) %in% names(labels.assays.short)]
+if(!has57) labels.time <- labels.time[!grepl("Day 57|D57", labels.time)]
 times <- list(labels.time[!grepl("Day 1|fold-rise", labels.time)], labels.time[!grepl("fold-rise", labels.time)])
 
 ## load data 
@@ -44,7 +45,9 @@ plot.25sample3 <- readRDS(here("data_clean", "plot.25sample3.rds"))
 #' @param type Type of figure: "violin" or "line"
 #' @param facetby Faceting variables to form a matrix of panels
 #' @param facetopt Faceting style: "wrap" or "grid"
+#' @param group.num Number of case/non-case groups
 #' @param col Colors options for the colby param
+#' @param shape Shapes options for the shapeby param
 #' @param prop.cex Font size for text within panels, response rate
 #' @param ll.cex Font size for text within panels, llod
 #' @param rate.y.pos Y coordinate for showing response rate
@@ -66,7 +69,9 @@ myplot <- function(dat,
                    facetby=vars(cohort_event),
                    facetopt="wrap",
                    col=c("#0AB7C9","#FF6F1B","#810094"),
+                   shape=c(16, 17, 15),
                    prop.cex=5.4,
+                   group.num=3,
                    ll.cex=prop.cex,
                    rate.y.pos=7.7,
                    axis.text.cex=25){
@@ -83,7 +88,7 @@ myplot <- function(dat,
       geom_jitter(data = dat.sample,  width = 0.1, height = 0, size = 5, show.legend = TRUE) +
       geom_boxplot(width=0.25, lwd=1.5, alpha = 0.3, outlier.shape=NA, show.legend = FALSE)}
   
-  if (facetopt=="wrap") {p <- p + facet_wrap(facetby, ncol=3, drop=FALSE)
+  if (facetopt=="wrap") {p <- p + facet_wrap(facetby, ncol=group.num, drop=FALSE)
   } else if (facetopt=="grid") {p <- p + facet_grid(facetby, drop=FALSE)}
   
   p <- p + 
@@ -93,7 +98,7 @@ myplot <- function(dat,
     scale_y_continuous(limits=ylim, breaks=ybreaks, labels=math_format(10^.x)) +
     labs(x=xtitle, y=ytitle, title=toptitle, color="Category", shape="Category") +
     scale_color_manual(values=col) +
-    scale_shape_manual(values=c(16, 17, 15)) +
+    scale_shape_manual(values=shape) +
     theme(plot.margin = unit(c(0.25,0.25,0.25,0.25), "in"),
           plot.title = element_text(hjust = 0.5),
           axis.text.x=element_text(size=axis.text.cex),
@@ -123,7 +128,10 @@ for (typ in c("line","violin")) {
                       ybreaks=y.breaks,
                       prop.cex=4.8,
                       ll.cex=8.16,
-                      rate.y.pos=max(y.breaks)
+                      rate.y.pos=max(y.breaks),
+                      group.num=4,
+                      col=c(if(!has57) "#FF5EBF", "#0AB7C9","#FF6F1B","#810094"),
+                      shape=c(if(!has57) 18, 16, 17, 15)
                       )
           file_name <- paste0(typ, "box_", gsub("bind","",gsub("pseudoneut","pnAb_",plots[i])), "_", trt[k], "_", gsub(" ","",bstatus[j]), "_","v",t,"_", study_name, ".pdf")
           ggsave2(plot = p, filename = here("figs", file_name), width = 16, height = 11)
@@ -148,8 +156,10 @@ for (typ in c("line","violin")) {
             
             longer_cor_data_plot2 <- 
               longer_cor_data %>% group_by_at(groupby_vars2) %>%
-              mutate(num = round(sum(response * ifelse(cohort_event=="Intercurrent Cases", wt.intercurrent.cases, wt.D57)), 1), 
-                     denom = round(sum(ifelse(cohort_event=="Intercurrent Cases", wt.intercurrent.cases, wt.D57)), 1), 
+              mutate(if(has57) num = round(sum(response * ifelse(cohort_event=="Intercurrent Cases", wt.intercurrent.cases, wt.D57)), 1), 
+                     if(!has57) num = round(sum(response * wt.D29), 1), 
+                     if(has57) denom = round(sum(ifelse(cohort_event=="Intercurrent Cases", wt.intercurrent.cases, wt.D57)), 1), 
+                     if(!has57) denom = round(sum(wt.D29), 1), 
                      RespRate = paste0(num,"/",denom,"\n",round(num/denom*100, 1),"%"))
             
             # make subset for strata RaceEthnic and Dich_RaceEthnic, only present non-NA categories
@@ -164,7 +174,7 @@ for (typ in c("line","violin")) {
             ## make another subsample datasets such that the jitter plot for each subgroup in each panel <= 25 data points
             plot.25sample2 <-  longer_cor_data_sub2 %>% 
               group_by_at(groupby_vars2) %>%
-              sample_n((ifelse(n()>=25, 25, n())), replace=F) %>% filter(time=="Day 57") %>% 
+              sample_n((ifelse(n()>=25, 25, n())), replace=F) %>% filter(time=="Day 29") %>% 
               ungroup() %>%
               select(c("Ptid", groupby_vars2[!groupby_vars2 %in% "time"])) %>%
               inner_join(longer_cor_data_sub2, by=c("Ptid", groupby_vars2[!groupby_vars2 %in% "time"]))
@@ -181,7 +191,10 @@ for (typ in c("line","violin")) {
                         ybreaks=y.breaks,
                         prop.cex=5.7,
                         ll.cex=8,
-                        rate.y.pos=max(y.lim)-0.3
+                        rate.y.pos=max(y.lim)-0.3,
+                        group.num=4,
+                        col=c(if(!has57) "#FF5EBF", "#0AB7C9","#FF6F1B","#810094"),
+                        shape=c(if(!has57) 18, 16, 17, 15)
                         )
             
             s1 <- ifelse(s=="age_geq_65_label", "Age", ifelse(s=="highrisk_label", "Risk", ifelse(s=="sex_label","Sex", ifelse(s=="minority_label","RaceEthnic", ifelse(s=="Dich_RaceEthnic","Dich_RaceEthnic",NA)))))
@@ -216,7 +229,10 @@ for (typ in c("line","violin")) {
                       facetopt = "grid",
                       prop.cex=5.5,
                       ll.cex=8,
-                      rate.y.pos=max(y.lim)-0.47
+                      rate.y.pos=max(y.lim)-0.47,
+                      group.num=4,
+                      col=c(if(!has57) "#FF5EBF", "#0AB7C9","#FF6F1B","#810094"),
+                      shape=c(if(!has57) 18, 16, 17, 15)
           )
           file_name <- paste0(typ, "box_", gsub("bind","",gsub("pseudoneut","pnAb_",plots[i])), "_", trt[k], "_", gsub(" ","",bstatus[j]), "_Age_Risk_", "v", t,"_", study_name, ".pdf")
           suppressWarnings(ggsave2(plot = p, filename = here("figs", file_name), width = 16, height = 13.5))
@@ -233,8 +249,7 @@ for (i in 1:length(plots)) {
     for (c in c("Vaccine_BaselineNeg","all")) {
       
       ds.tmp <- subset(longer_cor_data, assay==plots[i] & !is.na(value) & time==times[[2]][d])
-      ds.tmp$size <- with(ds.tmp, ifelse(cohort_event %in% c("Intercurrent Cases","Primary Cases"), 4, 
-                                         ifelse(cohort_event == "Non-Cases", 2.5, NA)))
+      ds.tmp$size <- with(ds.tmp, ifelse(cohort_event == "Non-Cases", 2.5, 4))
       
       # subset for vaccine baseline neg arm
       if (c=="Vaccine_BaselineNeg"){ds.tmp <- subset(ds.tmp, Bserostatus=="Baseline Neg" & Trt=="Vaccine")}
@@ -251,8 +266,8 @@ for (i in 1:length(plots)) {
         geom_smooth(aes(group = cohort_event, color = cohort_event), size=1.5, method = 'loess', se= F, span = 1.15) + 
         scale_y_continuous(limits=y.lim, breaks=y.breaks, labels=math_format(10^.x)) +
         scale_x_continuous(breaks = seq(from=18, to=86, by=17)) +
-        scale_color_manual(values = c("#0AB7C9","#FF6F1B","#810094")) +
-        scale_shape_manual(values = c(16, 17, 0)) +
+        scale_color_manual(values = c(if(!has57) "#FF5EBF", "#0AB7C9","#FF6F1B","#810094")) + 
+        scale_shape_manual(values = c(if(!has57) 18, 16, 17, 15)) +
         guides(color = guide_legend(nrow=1),
                size = FALSE) +
         labs(title = paste0(plots_titles[i],": ",times[[2]][d]), x = 'Age (years)', y = plots_ytitles[i],
@@ -275,8 +290,7 @@ for (i in 1:length(plots)) {
     for (c in c("Vaccine_BaselineNeg","all")) {
       
       ds.tmp <- subset(longer_cor_data, assay==plots[i] & !is.na(value) & time==times[[2]][d])
-      ds.tmp$size <- with(ds.tmp, ifelse(cohort_event %in% c("Intercurrent Cases","Primary Cases"), 4, 
-                                         ifelse(cohort_event == "Non-Cases", 2.5, NA)))
+      ds.tmp$size <- with(ds.tmp, ifelse(cohort_event == "Non-Cases", 2.5, NA))
       
       # subset for vaccine baseline neg arm
       if (c=="Vaccine_BaselineNeg"){ds.tmp <- subset(ds.tmp, Bserostatus=="Baseline Neg" & Trt=="Vaccine")}
@@ -293,8 +307,8 @@ for (i in 1:length(plots)) {
         geom_smooth(aes(group = cohort_event, color = cohort_event), size=1.5, method = 'loess', se= F, span = 1.15) + 
         scale_y_continuous(limits=y.lim, breaks=y.breaks, labels=math_format(10^.x)) +
         scale_x_continuous(breaks = seq(from=0, to=220, by=40)) +
-        scale_color_manual(values = c("#0AB7C9","#FF6F1B","#810094")) +
-        scale_shape_manual(values = c(16, 17, 0)) +
+        scale_color_manual(values = c(if(!has57) "#FF5EBF", "#0AB7C9","#FF6F1B","#810094")) +
+        scale_shape_manual(values = c(if(!has57) 18, 16, 17, 15)) +
         guides(color = guide_legend(nrow=1),
                size = FALSE) +
         labs(title = paste0(plots_titles[i],": ",times[[2]][d]), x = 'Days Since the Day 29 Visit', y = plots_ytitles[i],

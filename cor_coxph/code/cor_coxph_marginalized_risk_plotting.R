@@ -156,7 +156,6 @@ mypdf(onefile=F, file=paste0(save.results.to, "controlled_ve_curves",ifelse(eq.g
         axis(side=2,at=yat,labels=(yat*100)%.%"%")
     
         # overall controlled VE
-        overall.ve = c(1 - res.vacc.cont["est"]/res.plac.cont["est"], quantile(1 - res.vacc.cont[-1]/res.plac.cont[-1], c(0.025, 0.975)))
         abline(h=overall.ve, col="gray", lwd=1, lty=c(1,3,3))
         #text(x=par("usr")[1], y=overall.ve[1]+(overall.ve[1]-overall.ve[2])/2,     "overall VE "%.%round(overall.ve[1]*100)%.%"%", adj=0)
     

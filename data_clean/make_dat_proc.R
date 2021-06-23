@@ -1,4 +1,4 @@
-#Sys.setenv(TRIAL = "moderna_mock")
+#Sys.setenv(TRIAL = "janssen_pooled_mock")
 if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
 #-----------------------------------------------
 renv::activate(here::here())
@@ -178,7 +178,7 @@ if (study_name_code=="COVE") {
     dat_proc$demo.stratum=with(dat_proc, ifelse(Region==0 & URMforsubcohortsampling==0, demo.stratum + 4, demo.stratum)) # US, non-URM
     dat_proc$demo.stratum[dat_proc$Region==1] = dat_proc$demo.stratum[dat_proc$Region==1] + 8 # Latin America
     dat_proc$demo.stratum[dat_proc$Region==2] = dat_proc$demo.stratum[dat_proc$Region==2] + 12 # Southern Africa
-    # set US URM=NA to NA
+    # the above sequence ends up setting US URM=NA to NA
     
     assertthat::assert_that(
         all(!with(dat_proc, xor(is.na(demo.stratum),  Region==0 & is.na(URMforsubcohortsampling) ))),
@@ -211,6 +211,12 @@ dat_proc$Wstratum[with(dat_proc, EventIndPrimaryD29==1 & Trt==1 & Bserostatus==1
 #subset(dat_proc, Trt==1 & Bserostatus==1 & EventIndPrimaryD29 == 1)[1:3,]
 
 with(dat_proc, table(tps.stratum))
+
+# map tps.stratum to stratification variables
+tps.stratums=sort(unique(dat_proc$tps.stratum)); names(tps.stratums)=tps.stratums
+decode.tps.stratum=t(sapply(tps.stratums, function(i) unlist(subset(dat_proc, tps.stratum==i)[1,
+    if (study_name_code=="COVE") c("Senior", "HighRiskInd", "URMforsubcohortsampling") else if (study_name_code=="ENSEMBLE") c("Senior", "HighRiskInd", "Region", "URMforsubcohortsampling")
+])))
 
 
 ###############################################################################
@@ -543,5 +549,7 @@ if("pseudoneutid50" %in% assays & "pseudoneutid80" %in% assays) {
 }
 
 save(list=c(if(has57) c("MaxbAbDay57", "MaxbAbDelta57overB", if("pseudoneutid50" %in% assays & "pseudoneutid80" %in% assays) c("MaxID50ID80Day57", "MaxID50ID80Delta57overB")), 
-            if(has29) c("MaxbAbDay29", "MaxbAbDelta29overB", if("pseudoneutid50" %in% assays & "pseudoneutid80" %in% assays) c("MaxID50ID80Day29", "MaxID50ID80Delta29overB"))),
+            if(has29) c("MaxbAbDay29", "MaxbAbDelta29overB", if("pseudoneutid50" %in% assays & "pseudoneutid80" %in% assays) c("MaxID50ID80Day29", "MaxID50ID80Delta29overB")),
+            "decode.tps.stratum"
+          ),
 file=here("data_clean", paste0(attr(config, "config"), "_params.Rdata")))

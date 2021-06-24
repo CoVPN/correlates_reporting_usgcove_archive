@@ -8,7 +8,6 @@ if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/
 # Sys.setenv(TRIAL = "moderna_mock")
 source(here::here("..", "_common.R"))
 
-#-----------------------------------------------
 ## ----package-loading-and-options, warning=FALSE, include=FALSE--------------------------------------------------------------------------------------------------------
 
 ## ----load-all-SLobjects, message=FALSE, error=FALSE, warning=FALSE----------------------------------------------------------------------------------------------------

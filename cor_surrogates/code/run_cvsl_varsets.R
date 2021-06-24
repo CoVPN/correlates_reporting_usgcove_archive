@@ -184,7 +184,7 @@ varset_matrix <- rbind(varset_noisyVars,
                        varset_bAb_combScores, varset_allMarkers, varset_allMarkers_combScores)
 
 job_id <- as.numeric(Sys.getenv("SLURM_ARRAY_TASK_ID"))
-job_id <- 10
+# job_id <- 10
 this_var_set <- varset_matrix[job_id, ]
 cat("\n Running ", varset_names[job_id], "\n")
 

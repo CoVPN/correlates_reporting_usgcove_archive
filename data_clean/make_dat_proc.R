@@ -102,7 +102,10 @@ dat_proc$WhiteNonHispanic <-
   )
 dat_proc$MinorityInd = 1-dat_proc$WhiteNonHispanic
 dat_proc$MinorityInd[is.na(dat_proc$MinorityInd)] = 0
-
+# set MinorityInd to 0 for latin america and south africa
+if (study_name_code=="ENSEMBLE") {
+    dat_proc$MinorityInd[dat_proc$Region!=0)] = 0
+}
 
 
 # check coding via tables

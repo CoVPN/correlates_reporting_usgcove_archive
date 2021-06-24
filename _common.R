@@ -1,5 +1,3 @@
-study_name_code <- "COVE"
-
 library(methods)
 library(dplyr)
 library(kyotil)

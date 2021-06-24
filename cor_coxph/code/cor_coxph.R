@@ -31,7 +31,7 @@ source(here::here("code", "params.R"))
 
 # population is either 57 or 29
 Args <- commandArgs(trailingOnly=TRUE)
-if (length(Args)==0) Args=c(pop="29")
+if (length(Args)==0) Args=c(pop="57")
 pop=Args[1]; myprint(pop)
 if(!has29 & pop=="29") {
     print("Quitting because there are no Day 29 markers")
@@ -84,6 +84,16 @@ if (pop=="57") {
 # the following data frame define the phase 1 ptids
 dat.vac.seroneg=subset(dat.mock, Trt==1 & Bserostatus==0 & ph1)
 dat.pla.seroneg=subset(dat.mock, Trt==0 & Bserostatus==0 & ph1)
+
+## temp: experimenting with multitesting
+## based on moderna_mock
+## make their correlation 0.98
+#dat.vac.seroneg$Day57bindRBD = dat.vac.seroneg$Day57bindSpike + rnorm(nrow(dat.vac.seroneg), sd=.1)
+#dat.vac.seroneg$Day57pseudoneutid50 = dat.vac.seroneg$Day57pseudoneutid80 + rnorm(nrow(dat.vac.seroneg), sd=.1)
+## switch 50 and 80
+#tmp=dat.vac.seroneg$Day57pseudoneutid50
+#dat.vac.seroneg$Day57pseudoneutid50=dat.vac.seroneg$Day57pseudoneutid80
+#dat.vac.seroneg$Day57pseudoneutid80=tmp
     
 # define an alias for EventIndPrimaryDxx
 dat.vac.seroneg$yy=dat.vac.seroneg[["EventIndPrimaryD"%.%pop]]

@@ -40,16 +40,33 @@ dat_cleaned <- read.csv(here::here("..", "data_clean", data_name))
 inputFile <- dat_cleaned
 
 # Identify the risk demographic variable names that will be used to compute the risk score
-risk_vars <- c(
-  "MinorityInd", "EthnicityHispanic", "EthnicityNotreported", "EthnicityUnknown", 
-  "Black", "Asian", "NatAmer", "PacIsl", "WhiteNonHispanic", 
-  "Multiracial", "Other", 
-  "Notreported", "Unknown",
-  "HighRiskInd", "Sex", "Age", "BMI"
-)
-
 # Identify the endpoint variable
-endpoint <- "EventIndPrimaryD57"
+if(study_name_code == "MODERNA"){
+  risk_vars <- c(
+    "MinorityInd", "EthnicityHispanic", "EthnicityNotreported", "EthnicityUnknown", 
+    "Black", "Asian", "NatAmer", "PacIsl", "WhiteNonHispanic", 
+    "Multiracial", "Other", 
+    "Notreported", "Unknown",
+    "HighRiskInd", "Sex", "Age", "BMI"
+  )
+  
+  endpoint <- "EventIndPrimaryD57"
+}
+
+if(study_name_code == "ENSEMBLE"){
+  risk_vars <- c(
+    "Age", "Region", "Country", "HighRiskInd", "Sex", 
+    #"WhiteNonHispanic", 
+    "Black", "Asian", "NatAmer", "IndigSouthAmer", "PacIsl", "Multiracial", "Other", "Notreported", "Unknown",
+    "URMforsubcohortsampling",
+    "MinorityInd", 
+    "EthnicityHispanic", "EthnicityNotreported", "EthnicityUnknown"
+    #"BMI"
+  )
+  
+  endpoint <- "EventIndPrimaryD29"
+}
+
 ################################################
 
 # Consider only placebo data for risk score analysis

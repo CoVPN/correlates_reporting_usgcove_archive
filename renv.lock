@@ -1,6 +1,6 @@
 {
   "R": {
-    "Version": "4.0.3",
+    "Version": "4.0.4",
     "Repositories": [
       {
         "Name": "CRAN",
@@ -36,6 +36,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "56b33b77f4cffd78ff96b8e5a69eabb0"
+    },
+    "FSDAM": {
+      "Package": "FSDAM",
+      "Version": "2020.11-18",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "fcb7e1f60e7fa862820a43b974ec57eb"
     },
     "Formula": {
       "Package": "Formula",
@@ -912,8 +919,8 @@
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
-      "RemoteUsername": "tlverse",
       "RemoteRepo": "hal9001",
+      "RemoteUsername": "tlverse",
       "RemoteRef": "devel",
       "RemoteSha": "14b16305ca29cc758fdde5f40603b5a674d76afa",
       "Hash": "ba7be3ec26629d5cf3f64e742863fe8f"
@@ -923,12 +930,12 @@
       "Version": "0.1.5",
       "Source": "GitHub",
       "RemoteType": "github",
+      "Remotes": "github::tlverse/hal9001@devel",
       "RemoteHost": "api.github.com",
-      "RemoteUsername": "nhejazi",
       "RemoteRepo": "haldensify",
+      "RemoteUsername": "nhejazi",
       "RemoteRef": "master",
       "RemoteSha": "16350cc39b68e61566f03a11f633e08073405355",
-      "Remotes": "github::tlverse/hal9001@devel",
       "Hash": "47c34f41535fb9c16bd44e760d61cb67"
     },
     "haven": {
@@ -1232,6 +1239,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "c318d148056e5bb8d7de79b0876f9ae6"
+    },
+    "mdw": {
+      "Package": "mdw",
+      "Version": "2020.6-17",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "90e095eb7e76f8388d2142f523cc297f"
     },
     "memoise": {
       "Package": "memoise",
@@ -1567,6 +1581,13 @@
       "Repository": "CRAN",
       "Hash": "97def703420c8ab10d8f0e6c72101e02"
     },
+    "quadprog": {
+      "Package": "quadprog",
+      "Version": "1.5-8",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "5f919ae5e7f83a6f91dcf2288943370d"
+    },
     "quantreg": {
       "Package": "quantreg",
       "Version": "5.85",
@@ -1692,6 +1713,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "bb5996d0bd962d214a11140d77589917"
+    },
+    "reticulate": {
+      "Package": "reticulate",
+      "Version": "1.20",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "30ab0ea8c8d3dd16a3fa06903449bbfb"
     },
     "rex": {
       "Package": "rex",

@@ -9,6 +9,9 @@ if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/
 source(here::here("..", "_common.R"))
 #-----------------------------------------------
 
+# do.call(file.remove, list(list.files(here::here("output"), full.names = TRUE)))
+# do.call(file.remove, list(list.files(here::here("figs"), full.names = TRUE)))
+
 ## load required libraries and functions
 library(tidyverse)
 library(here)
@@ -22,13 +25,16 @@ library(vimp)
 library(nloptr)
 library(RhpcBLASctl)
 library(conflicted)
+library(mdw)
+library(quadprog)
 conflicted::conflict_prefer("filter", "dplyr")
 conflict_prefer("summarise", "dplyr")
 
 # Define code version to run
 # the demo version is simpler and runs faster!
 # the production version runs SL with a diverse set of learners
-run_prod <- TRUE
+run_demo <- TRUE
+run_prod <- FALSE
 
 # get utility files
 source(here("code", "sl_screens.R")) # set up the screen/algorithm combinations
@@ -178,12 +184,12 @@ varset_matrix <- rbind(varset_noisyVars,
                        varset_bAb_combScores, varset_allMarkers, varset_allMarkers_combScores)
 
 job_id <- as.numeric(Sys.getenv("SLURM_ARRAY_TASK_ID"))
-job_id <- 4
+job_id <- 10
 this_var_set <- varset_matrix[job_id, ]
 cat("\n Running ", varset_names[job_id], "\n")
 
 if(job_id == 1){
-  X_covars2adjust_ph2 <- dat.ph2 %>% select(noiseVar1, noiseVar2, noiseVar3)
+  X_covars2adjust_ph2 <- dat.ph2 %>% select(all_of(briskfactors), noiseVar1, noiseVar2, noiseVar3)
 }else{
   X_covars2adjust_ph2 <- dat.ph2 %>% select(all_of(c(briskfactors, markers)))
 }
@@ -198,7 +204,7 @@ for (a in colnames(X_covars2adjust_ph2)) {
 markers_start <- length(briskfactors) + 1
 
 if(job_id == 1){
-  X_markers_varset <- X_covars2adjust_ph2[1:3] %>%
+  X_markers_varset <- X_covars2adjust_ph2[1:6] %>%
     select_if(function(x) any(!is.na(x))) # Drop column if it has 0 variance, and returned all NAN's from scale function.
 }else{
   X_markers_varset <- bind_cols(X_covars2adjust_ph2[1:length(briskfactors)],

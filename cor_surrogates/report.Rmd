@@ -1,8 +1,26 @@
-# Multivariable CoR: Super Learning of Optimal Risk Prediction Models {#cor-surrogates}
+---
+header-includes:
+   - \usepackage{float}
+   
+title: "COVID-19 Optimal Surrogate Analysis Report (Moderna mock study)"
 
-TO FILL IN
+output:
+  pdf_document: default
+  html_document: default
+  citation_package: natbib
+  number_sections: true
+  extra_dependencies: ["caption", "subcaption", "graphicx"]
+  toc: true
+---
 
-```{r cor-surrogates-setup}
-# TODO
+```{r, include = FALSE}
+library(here)
+here::i_am("optimal_surrogate/report.Rmd")
 ```
+
+```{r, child=here("optimal_surrogate", 'report_sub.Rmd')}
+```
+
+
+
 

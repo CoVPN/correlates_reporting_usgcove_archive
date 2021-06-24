@@ -65,9 +65,10 @@ overall.p.0=formatDouble(c(rbind(overall.p.tri, NA,NA)), digits=3, remove.leadin
 
 p.unadj=c(cont=pvals.cont, tri=overall.p.tri)
 p.unadj.1 = p.unadj # save a copy
-# in Moderna data ID50 and ID80 are highly correlated, bindSpike and bindRBD are highly correlated
-# only keep ID80 and bindSpike in multitesting adjustment
-if (study_name_code=="COVE") p.unadj = p.unadj[endsWith(names(p.unadj), "pseudoneutid80") | endsWith(names(p.unadj), "bindSpike")]
+## we may only keep ID80 and bindSpike in multitesting adjustment because ID50 and ID80 are highly correlated, bindSpike and bindRBD are highly correlated
+#if (study_name_code=="COVE") {
+#    p.unadj = p.unadj[endsWith(names(p.unadj), "pseudoneutid80") | endsWith(names(p.unadj), "bindSpike")]
+#}
 
 #### Holm and FDR adjustment
 pvals.adj.fdr=p.adjust(p.unadj, method="fdr")
@@ -148,12 +149,13 @@ pvals.adj = cbind(p.unadj=p.unadj.1, pvals.adj[match(names(p.unadj.1), rownames(
 
 p.1=formatDouble(pvals.adj["cont."%.%names(pvals.cont),"p.FWER"], 3); p.1=sub(".000","<0.001",p.1)
 p.2=formatDouble(pvals.adj["cont."%.%names(pvals.cont),"p.FDR" ], 3); p.2=sub(".000","<0.001",p.2)
-if (study_name_code=="COVE") {
-    p.1[endsWith(names(p.1), "pseudoneutid50")] = "N/A"
-    p.2[endsWith(names(p.2), "pseudoneutid50")] = "N/A"
-    p.1[endsWith(names(p.1), "bindRBD")] = "N/A"
-    p.2[endsWith(names(p.2), "bindRBD")] = "N/A"
-}
+#if (study_name_code=="COVE") {
+#    p.1[endsWith(names(p.1), "pseudoneutid50")] = "N/A"
+#    p.2[endsWith(names(p.2), "pseudoneutid50")] = "N/A"
+#    p.1[endsWith(names(p.1), "bindRBD")] = "N/A"
+#    p.2[endsWith(names(p.2), "bindRBD")] = "N/A"
+#}
+
 ## if want to only do multitesting when liveneutmn50 is included
 #if (!"liveneutmn50" %in% assays) {
 #    for (i in 1:length(p.1)) p.1[i]<-p.2[i]<-"N/A"
@@ -186,12 +188,13 @@ rv$tab.1=tab.1.nop12
 # or
 overall.p.1=formatDouble(pvals.adj["tri."%.%names(pvals.cont),"p.FWER"], 3);   overall.p.1=sub(".000","<0.001",overall.p.1)
 overall.p.2=formatDouble(pvals.adj["tri."%.%names(pvals.cont),"p.FDR" ], 3);   overall.p.2=sub(".000","<0.001",overall.p.2)
-if (study_name_code=="COVE") {
-    overall.p.1[endsWith(names(overall.p.1), "pseudoneutid50")] = "N/A"
-    overall.p.2[endsWith(names(overall.p.2), "pseudoneutid50")] = "N/A"
-    overall.p.1[endsWith(names(overall.p.1), "bindRBD")] = "N/A"
-    overall.p.2[endsWith(names(overall.p.2), "bindRBD")] = "N/A"
-}
+#if (study_name_code=="COVE") {
+#    overall.p.1[endsWith(names(overall.p.1), "pseudoneutid50")] = "N/A"
+#    overall.p.2[endsWith(names(overall.p.2), "pseudoneutid50")] = "N/A"
+#    overall.p.1[endsWith(names(overall.p.1), "bindRBD")] = "N/A"
+#    overall.p.2[endsWith(names(overall.p.2), "bindRBD")] = "N/A"
+#}
+
 ## if want to only do multitesting when liveneutmn50 is included
 #if (!"liveneutmn50" %in% assays) {
 #    for (i in 1:length(p.1)) overall.p.1[i]<-overall.p.2[i]<-"N/A"    
@@ -366,9 +369,10 @@ for (a in assays) {
 }
 
 
+age.threshold=switch(study_name_code,COVE=65,ENSEMBLE=60)
 for (a in assays) {    
     names(fits.all.2[[a]])=c("All Vaccine", 
-                             "Age >= "%.%switch(study_name_code,COVE=65,ENSEMBLE=60), "Age < "%.%switch(study_name_code,COVE=65,ENSEMBLE=60), 
+                             "Age >= "%.%age.threshold, "Age < "%.%age.threshold, 
                              "At risk", "Not at risk", 
                              "Comm. of color", "White Non-Hispanic", 
                              "Men", "Women",

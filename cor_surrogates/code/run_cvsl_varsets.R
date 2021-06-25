@@ -28,7 +28,7 @@ conflict_prefer("summarise", "dplyr")
 # Define code version to run
 # the demo version is simpler and runs faster!
 # the production version runs SL with a diverse set of learners
-run_prod <- TRUE
+run_prod <- grepl("Mock", study_name))
 
 # get utility files
 source(here("code", "sl_screens.R")) # set up the screen/algorithm combinations

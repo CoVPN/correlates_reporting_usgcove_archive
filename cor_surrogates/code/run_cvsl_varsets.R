@@ -9,6 +9,8 @@ if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/
 source(here::here("..", "_common.R"))
 #-----------------------------------------------
 
+job_id <- as.numeric(commandArgs(trailingOnly = TRUE)[[1]])
+
 ## load required libraries and functions
 library(tidyverse)
 library(quadprog)
@@ -178,13 +180,11 @@ varset_matrix <- rbind(varset_noisyVars,
                        varset_bAb_pnabID50, varset_bAb_pnabID80, varset_bAb_lnabMN50,
                        varset_bAb_combScores, varset_allMarkers, varset_allMarkers_combScores)
 
-job_id <- as.numeric(Sys.getenv("SLURM_ARRAY_TASK_ID"))
-job_id <- 4
 this_var_set <- varset_matrix[job_id, ]
 cat("\n Running ", varset_names[job_id], "\n")
 
 if(job_id == 1){
-  X_covars2adjust_ph2 <- dat.ph2 %>% select(noiseVar1, noiseVar2, noiseVar3)
+  X_covars2adjust_ph2 <- dat.ph2 %>% select(all_of(briskfactors), noiseVar1, noiseVar2, noiseVar3)
 }else{
   X_covars2adjust_ph2 <- dat.ph2 %>% select(all_of(c(briskfactors, markers)))
 }

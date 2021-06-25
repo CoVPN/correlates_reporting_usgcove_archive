@@ -54,7 +54,7 @@ endpoint <- "EventIndPrimaryD57"
 
 # Consider only placebo data for risk score analysis
 dat.ph1 <- inputFile %>%
-  filter(Perprotocol == 1 & Trt == 0) %>%
+  filter(Perprotocol == 1 & Trt == 0 & Bserostatus == 0) %>%
   # Keep only variables to be included in risk score analyses
   select(Ptid, Trt, all_of(endpoint), all_of(risk_vars)) %>%
   # Drop any observation with NA values in Ptid, Trt, or endpoint!

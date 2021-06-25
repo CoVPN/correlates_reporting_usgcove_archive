@@ -115,6 +115,7 @@ include_graphics(here(
 ```
 
 \clearpage
+
 ### Baseline SARS-CoV-2 Positive
 
 ```{r, fig.cap = "Pair plots of D29 Ab markers: baseline positive vaccine arm", eval = ('Day29' %in% times)}
@@ -213,6 +214,111 @@ include_graphics(here(
   "immuno_graphical", "figs",
   paste0(
     "pairs_pseudoneutid80_by_times_BaselinePos_vaccine_",
+    study_name, ".png"
+  )
+))
+```
+
+\clearpage
+
+### Baseline SARS-CoV-2 Positive Placebo Arm
+
+```{r, fig.cap = "Pair plots of D29 Ab markers: baseline positive placebo arm", eval = ('Day29' %in% times)}
+include_graphics(here(
+  "immuno_graphical", "figs",
+  paste0(
+    "pairs_Day29_Markers_BaselinePos_placebo_arm_",
+    study_name, ".png"
+  )
+))
+```
+
+\clearpage
+```{r, fig.cap = "Pair plots of D57 Ab markers: baseline positive placebo arm", eval = ('Day57' %in% times)}
+include_graphics(here(
+  "immuno_graphical", "figs",
+  paste0(
+    "pairs_Day57_Markers_BaselinePos_placebo_arm_",
+    study_name, ".png"
+  )
+))
+```
+
+\clearpage
+```{r, fig.cap = "Pair plots of D29 fold-rise over D1 Ab markers: baseline positive placebo arm", eval = ('Delta29overB' %in% times)}
+include_graphics(here(
+  "immuno_graphical", "figs",
+  paste0(
+    "pairs_Delta29overB_Markers_BaselinePos_placebo_arm_",
+    study_name, ".png"
+  )
+))
+```
+
+\clearpage
+```{r, fig.cap = "Pair plots of D57 fold-rise over D1 Ab markers: baseline positive placebo arm", eval = ('Delta57overB' %in% times)}
+include_graphics(here(
+  "immuno_graphical", "figs",
+  paste0(
+    "pairs_Delta57overB_Markers_BaselinePos_placebo_arm_",
+    study_name, ".png"
+  )
+))
+```
+
+
+
+\clearpage
+```{r, fig.cap = "Pair plots of D1, D29 and D57 Binding Antibody to Spike: baseline positive placebo arm", eval = (all(c('B', 'Day29', 'Day57') %in% times) & 'bindSpike'%in% assays)}
+include_graphics(here(
+  "immuno_graphical", "figs",
+  paste0(
+    "pairs_bindSpike_by_times_BaselinePos_placebo_",
+    study_name, ".png"
+  )
+))
+```
+
+\clearpage
+```{r, fig.cap = "Pair plots of D1, D29 and D57 Binding Antibody to RBD: baseline positive placebo arm", eval = (all(c('B', 'Day29', 'Day57') %in% times) & 'bindRBD'%in% assays)}
+include_graphics(here(
+  "immuno_graphical", "figs",
+  paste0(
+    "pairs_bindRBD_by_times_BaselinePos_placebo_",
+    study_name, ".png"
+  )
+))
+```
+
+
+\clearpage
+```{r, fig.cap = "Pair plots of D1, D29 and D57 Binding Antibody to N: baseline positive placebo arm", eval = (all(c('B', 'Day29', 'Day57') %in% times) & include_bindN == TRUE)}
+include_graphics(here(
+  "immuno_graphical", "figs",
+  paste0(
+    "pairs_bindN_by_times_BaselinePos_placebo_",
+    study_name, ".png"
+  )
+))
+```
+
+\clearpage
+```{r, fig.cap = "Pair plots of D1, D29 and D57 nAb Neutralization 50\\% Titer: baseline positive placebo arm", eval = (all(c('B', 'Day29', 'Day57') %in% times) & 'pseudoneutid50'%in% assays)}
+include_graphics(here(
+  "immuno_graphical", "figs",
+  paste0(
+    "pairs_pseudoneutid50_by_times_BaselinePos_placebo_",
+    study_name, ".png"
+  )
+))
+```
+
+\clearpage
+```{r, fig.cap = "Pair plots of D1, D29 and D57 nAb Neutralization 80\\% Titer: Baseline positive placebo arm", eval = (all(c('B', 'Day29', 'Day57') %in% times) & 'pseudoneutid80'%in% assays)}
+include_graphics(here(
+  "immuno_graphical", "figs",
+  paste0(
+    "pairs_pseudoneutid80_by_times_BaselinePos_placebo_",
     study_name, ".png"
   )
 ))

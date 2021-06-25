@@ -1,8 +1,0 @@
-
-The following have been reloaded with a version change:
-  1) FFTW/3.3.8-gompi-2020b => FFTW/3.3.8-gompic-2020b
-  2) OpenMPI/4.0.5-GCC-10.2.0 => OpenMPI/4.0.5-gcccuda-2020b
-  3) ScaLAPACK/2.1.0-gompi-2020b => ScaLAPACK/2.1.0-gompic-2020b
-  4) UCX/1.9.0-GCCcore-10.2.0 => UCX/1.9.0-GCCcore-10.2.0-CUDA-11.1.1
-
-Submitted batch job 31677608

@@ -20,8 +20,7 @@ run_cvsl_riskscore:
 	Rscript code/run_cvsl_varsets.R 9 && \
 	Rscript code/run_cvsl_varsets.R 10 && \
 	Rscript code/run_cvsl_varsets.R 11 && \
-	Rscript code/run_cvsl_varsets.R 12 && \
-	Rscript code/run_cvsl_varsets.R 13
+	Rscript code/run_cvsl_varsets.R 12
 	#sbatch code/submit_cluster_job.sh
 	
 ## createRDAfiles_fromSLobjects   : create RDA files from SL objects

@@ -1,0 +1,66 @@
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: ‘kyotil’
+
+The following object is masked from ‘package:dplyr’:
+
+    last
+
+── Attaching packages ─────────────────────────────────────── tidyverse 1.3.0 ──
+✔ tibble  3.1.1     ✔ purrr   0.3.4
+✔ tidyr   1.1.3     ✔ stringr 1.4.0
+✔ readr   1.4.0     ✔ forcats 0.5.1
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+✖ kyotil::last()  masks dplyr::last()
+here() starts at /home/bborate/forked_correlates_reporting/correlates_reporting/cor_surrogates
+Loading required package: nnls
+Loading required package: gam
+Loading required package: splines
+Loading required package: foreach
+
+Attaching package: ‘foreach’
+
+The following objects are masked from ‘package:purrr’:
+
+    accumulate, when
+
+Loaded gam 1.20
+
+Super Learner
+Version: 2.0-28
+Package created on 2021-05-04
+
+
+Attaching package: ‘e1071’
+
+The following object is masked from ‘package:kyotil’:
+
+    interpolate
+
+Loading required package: Matrix
+
+Attaching package: ‘Matrix’
+
+The following objects are masked from ‘package:tidyr’:
+
+    expand, pack, unpack
+
+Loaded glmnet 4.1-1
+vimp version 2.1.10: Perform Inference on Algorithm-Agnostic Variable Importance
+Package created on 2021-03-30
+[conflicted] Will prefer dplyr::filter over any other package
+[conflicted] Will prefer dplyr::summarise over any other package
+Error: object 'job_id' not found
+Execution halted

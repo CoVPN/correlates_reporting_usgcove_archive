@@ -122,14 +122,14 @@ dat.ph2 <- dat.ph2 %>%
          max.signal.div.score = get.maxSignalDivScore(dat.ph2 %>%
                                                         select(Day57bindSpike, Day57bindRBD, Day57pseudoneutid50, Day57pseudoneutid80, Day57liveneutmn50))) 
 
-# Create 3 random noise variables using Gaussian distribution
-set.seed(123)
-noiseVars <- c("noiseVar1", "noiseVar2", "noiseVar3")
-dat.ph2 <- dat.ph2 %>% 
-  mutate(noiseVar1 = rnorm(dim(dat.ph2)[1]),
-         noiseVar2 = rnorm(dim(dat.ph2)[1]),
-         noiseVar3 = rnorm(dim(dat.ph2)[1])) %>%
-  select(Ptid, Trt, noiseVar1, noiseVar2, noiseVar3, everything())
+# # Create 3 random noise variables using Gaussian distribution
+# set.seed(123)
+# noiseVars <- c("noiseVar1", "noiseVar2", "noiseVar3")
+# dat.ph2 <- dat.ph2 %>% 
+#   mutate(noiseVar1 = rnorm(dim(dat.ph2)[1]),
+#          noiseVar2 = rnorm(dim(dat.ph2)[1]),
+#          noiseVar3 = rnorm(dim(dat.ph2)[1])) %>%
+#   select(Ptid, Trt, noiseVar1, noiseVar2, noiseVar3, everything())
 
 markers <- dat.ph2 %>%
   select(Day57bindSpike:max.signal.div.score) %>%
@@ -139,13 +139,13 @@ markers <- dat.ph2 %>%
 ## Create variable sets and set up X, Y for super learning
 # Baseline risk variables are default in all sets
 
-# 1. None (No markers or baseline risk variables; only 3 noisy random variables), phase 2 data
-varset_noisyVars <- rep(FALSE, length(markers))
+# # 1. None (No markers or baseline risk variables; only 3 noisy random variables), phase 2 data
+# varset_noisyVars <- rep(FALSE, length(markers))
 
-# 2. None (No markers; only baseline risk variables), phase 2 data
+# 1. None (No markers; only baseline risk variables), phase 2 data
 varset_baselineRiskFactors <- rep(FALSE, length(markers))
 
-# 3-13
+# 2-12
 varset_bAbSpike <- create_varsets(markers, grep('bindSpike', markers, value=TRUE))
 varset_bAbRBD <- create_varsets(markers, grep('bindRBD', markers, value=TRUE))
 varset_pnabID50 <- create_varsets(markers, grep('pseudoneutid50', markers, value=TRUE))
@@ -167,14 +167,14 @@ varset_allMarkers_combScores <- create_varsets(markers,
                                                grep(paste(c('bindSpike', 'bindRBD', 'pseudoneutid50', 'pseudoneutid80', 'liveneutmn50', 'PC', 'nlPCA', 'max.signal.div.score'), 
                                                           collapse="|"), markers, value=TRUE))
 
-varset_names <- c("1_noisyVariables", 
-                  "2_baselineRiskFactors",
-                  "3_varset_bAbSpike", "4_varset_bAbRBD", "5_varset_pnabID50", "6_varset_pnabID80", "7_varset_lnabMN50",
-                  "8_varset_bAb_pnabID50", "9_varset_bAb_pnabID80", "10_varset_bAb_lnabMN50",
-                  "11_varset_bAb_combScores", "12_varset_allMarkers", "13_varset_allMarkers_combScores")
+varset_names <- c(#"1_noisyVariables", 
+                  "1_baselineRiskFactors",
+                  "2_varset_bAbSpike", "3_varset_bAbRBD", "4_varset_pnabID50", "5_varset_pnabID80", "6_varset_lnabMN50",
+                  "7_varset_bAb_pnabID50", "8_varset_bAb_pnabID80", "9_varset_bAb_lnabMN50",
+                  "10_varset_bAb_combScores", "11_varset_allMarkers", "12_varset_allMarkers_combScores")
 
 ## set up a matrix of all
-varset_matrix <- rbind(varset_noisyVars,
+varset_matrix <- rbind(#varset_noisyVars,
                        varset_baselineRiskFactors,
                        varset_bAbSpike, varset_bAbRBD, varset_pnabID50, varset_pnabID80, varset_lnabMN50,
                        varset_bAb_pnabID50, varset_bAb_pnabID80, varset_bAb_lnabMN50,
@@ -183,7 +183,7 @@ varset_matrix <- rbind(varset_noisyVars,
 this_var_set <- varset_matrix[job_id, ]
 cat("\n Running ", varset_names[job_id], "\n")
 
-if(job_id == 1){
+if(varset_names[job_id] == "1_noisyVariables"){
   X_covars2adjust_ph2 <- dat.ph2 %>% select(all_of(briskfactors), noiseVar1, noiseVar2, noiseVar3)
 }else{
   X_covars2adjust_ph2 <- dat.ph2 %>% select(all_of(c(briskfactors, markers)))
@@ -211,7 +211,7 @@ Y = dat.ph2 %>% pull(endpoint)
 weights = dat.ph2$wt.D57
 sl_lib <- SL_library
 
-if(job_id == 1){
+if(varset_names[job_id] == "1_noisyVariables"){
   treatmentDAT <- dat.ph2 %>% select(Ptid, Trt, wt.D57, EventIndPrimaryD57, all_of(c(noiseVars, briskfactors, markers))) %>%
     filter(Trt == 1) %>%
     select(-Trt)
@@ -245,7 +245,6 @@ if (sum(dat.ph2$EventIndPrimaryD57) <= 25){
 } else if(sum(dat.ph2$EventIndPrimaryD57) > 25){
   V_inner <- 5
   maxVar <- floor(nv/6)
-  #V_inner <- length(Y) - 1
 }
 
 
@@ -301,22 +300,3 @@ save(ph2_vacc_ptids, file = here("output", "ph2_vacc_ptids.rda"))
 save(run_prod, Y, dat.ph1, dat.ph2, weights, inputFile, briskfactors, endpoint, maxVar,
      V_outer, file = here("output", "objects_for_running_SL.rda"))
 
-# save(risk_placebo_ptids, file = here("output", "risk_placebo_ptids.rda"))
-# save(run_prod, Y, X_riskVars, weights, inputFile, risk_vars, endpoint, maxVar,
-#      V_outer, file = here("output", "objects_for_running_SL.rda"))
-
-
-# X_mat = X_markers_varset
-# family = "binomial"
-# Z = Z_treatmentDAT
-# z_lib = c("SL.glm", "SL.bayesglm", "SL.step", "SL.gam","SL.cforest")
-# z_lib = "SL.glm"
-# obsWeights = weights
-# all_weights = all_ipw_weights_treatment
-# scale = "identity"
-# ipc_est_type = "ipw"
-# method = "method.CC_nloglik"
-# cvControl = list(V = V_outer, stratifyCV = TRUE)
-# innerCvControl = list(list(V = V_inner))
-# vimp = FALSE
-# mc.cores = num_cores

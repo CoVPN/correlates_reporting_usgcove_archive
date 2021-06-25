@@ -44,24 +44,33 @@ tab <- cvaucs_d57_vacc %>%
   select(Learner, Screen) %>%
   mutate(Screen = fct_relevel(Screen, c("all", "glmnet", "univar_logistic_pval",
                                         "highcor_random")),
-         Learner = as.factor(Learner),
-         Learner = fct_relevel(Learner, c("SL.mean", "SL.glmnet.0", "SL.glmnet.1", "SL.xgboost.2.no", "SL.xgboost.4.no",  
-                                          "SL.xgboost.2.yes", "SL.xgboost.4.yes", "SL.ranger.yes", "SL.ranger.no", "SL.glm"))) %>%
+         Learner = as.factor(Learner)) %>%
   arrange(Learner, Screen) %>% 
   distinct(Learner, Screen) %>%
   rename("Screen*" = Screen) 
+
+if(!grepl("Mock", study_name)){
+  tab <- tab %>%
+    mutate(Learner = fct_relevel(Learner, c("SL.mean", "SL.glmnet.0", "SL.glmnet.1", "SL.xgboost.2.no", "SL.xgboost.4.no",  
+                                            "SL.xgboost.2.yes", "SL.xgboost.4.yes", "SL.ranger.yes", "SL.ranger.no", "SL.glm"))) %>%
+    arrange(Learner, `Screen*`)
+}else{
+  tab <- tab %>%
+    mutate(Learner = fct_relevel(Learner, c("SL.mean", "SL.glm"))) %>%
+    arrange(Learner, `Screen*`)
+}
 
 tab %>% write.csv(here("output", "learner-screens.csv"))
 
 ## ----All 14 variable sets --------------------------------------------------------------------------------------------------------------------
 caption <- "The 12 variable sets on which an estimated optimal surrogate was built."
 
-tab <- data.frame(`Variable Set Name` = c("1_noisyVars",
-                                          "2_baselineRiskFactors", 
-                                          "3_varset_bAbSpike", "4_varset_bAbRBD", "5_varset_pnabID50", "6_varset_pnabID80", "7_varset_lnabMN50", 
-                                          "8_varset_bAb_pnabID50", "9_varset_bAb_pnabID80", "10_varset_bAb_lnabMN50", 
-                                          "11_varset_bAb_combScores", "12_varset_allMarkers", "13_varset_allMarkers_combScores"),
-                  `Variables included in the set` = c("Noisy variables only (3 random predictors based off gaussian distribution)",
+tab <- data.frame(`Variable Set Name` = c(#"1_noisyVars",
+                                          "1_baselineRiskFactors", 
+                                          "2_varset_bAbSpike", "3_varset_bAbRBD", "4_varset_pnabID50", "5_varset_pnabID80", "6_varset_lnabMN50", 
+                                          "7_varset_bAb_pnabID50", "8_varset_bAb_pnabID80", "9_varset_bAb_lnabMN50", 
+                                          "10_varset_bAb_combScores", "11_varset_allMarkers", "12_varset_allMarkers_combScores"),
+                  `Variables included in the set` = c(#"Noisy variables only (3 random predictors based off gaussian distribution)",
                                                       "Baseline risk factors only (Reference model)",
                                                       "Baseline risk factors + bAb anti-Spike markers",
                                                       "Baseline risk factors + bAb anti-RBD markers",

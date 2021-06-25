@@ -112,7 +112,7 @@ screen_univariate_logistic_pval <- function(Y, X, family, obsWeights, id,
 }
 
 ## screen to avoid high-correlation amongst risk variables
-screen_highcor_random <- function(Y, X, family, obsWeights, id, nVar = maxVar,
+screen_highcor_random <- function(Y, X, family, obsWeights, id, nVar = maxVar, 
                                   ...) {
   # set all vars to FALSE
   vars <- rep(FALSE, ncol(X))

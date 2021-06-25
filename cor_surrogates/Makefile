@@ -1,7 +1,6 @@
 ## all           : clean saved results and get results to populate report
 all: clean run_cvsl_riskscore createRDAfiles_fromSLobjects tables_figures \
-	constructSL_predict_on_vaccine get_SLweights_Modelpredictors \
-	append_risk_score
+	constructSL_predict_on_vaccine get_SLweights_Modelpredictors
 
 ## clean         : delete all SL results
 clean:
@@ -10,7 +9,7 @@ clean:
 
 ## run_cvsl_riskscore   : run CV-SL on placebo arm
 run_cvsl_riskscore:
-	Rscript code/run_cvsl_riskscore.R
+	Rscript code/run_cvsl_varsets.R
 	#sbatch code/submit_cluster_job.sh
 	
 ## createRDAfiles_fromSLobjects   : create RDA files from SL objects
@@ -32,10 +31,6 @@ constructSL_predict_on_vaccine:
 get_SLweights_Modelpredictors:
 	Rscript code/get_SLweights_Modelpredictors.R
 	#sbatch code/get_SLweights_Modelpredictors.sh
-
-## append_risk_score         : appends the computed risk scores to cleaned data
-append_risk_score:
-	Rscript code/append_risk_score_to_data.R
 
 ## report        : create a standalone report
 report:

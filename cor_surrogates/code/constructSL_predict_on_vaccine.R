@@ -29,6 +29,7 @@ conflict_prefer("filter", "dplyr")
 conflict_prefer("select", "dplyr")
 load(here("output", "objects_for_running_SL.rda"))
 load(here("output", "cvaucs_d57_vacc.rda"))
+run_prod <- grepl("Mock", study_name))
 source(here("code", "sl_screens.R")) # set up the screen/algorithm combinations
 source(here("code", "utils.R")) # get CV-AUC for all algs
 

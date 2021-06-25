@@ -117,6 +117,5 @@ cvaucs_d57_vacc <- readin_SLobjects_fromFolder(data_folder, file_pattern = "*.rd
          #file = str_replace(file, "_y2_placebo", ""),
          varset = str_replace(varset, ".rds", "")) 
 
-cvaucs_d57_vacc %>% 
-  save(file = here("output", "cvaucs_d57_vacc.rda"))
+save(cvaucs_d57_vacc, file = here("output", "cvaucs_d57_vacc.rda"))
 

@@ -33,6 +33,7 @@ source(here::here("code", "params.R"))
 Args <- commandArgs(trailingOnly=TRUE)
 if (length(Args)==0) Args=c(pop="57")
 pop=Args[1]; myprint(pop)
+
 if(!has29 & pop=="29") {
     print("Quitting because there are no Day 29 markers")
     quit()

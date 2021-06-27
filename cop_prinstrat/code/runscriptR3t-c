@@ -1,0 +1,11 @@
+#!/bin/bash
+
+        
+	for (( i =1; i<=2;  i++)); do
+		for ((j =1; j<=6; j++)); do
+			for ((k=1;k<=10;k++));do
+		sbatch --wrap="R --no-save --no-restore < githubCluster_boot.R --args $i $j $k" --output=out3.txt
+	done
+done
+done
+       

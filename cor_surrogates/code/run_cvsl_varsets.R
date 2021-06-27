@@ -39,7 +39,7 @@ source(here("code", "utils.R")) # get CV-AUC for all algs
 
 # SL optimal surrogate analysis: Superlearner code requires computing environment with more than 10 cores!
 num_cores <- parallel::detectCores()
-if(num_cores < 10) stop("Number of cores on this computing environment are less than 10! Superlearner code needs atleast 11 cores to run smoothly.")
+# if(num_cores < 10) stop("Number of cores on this computing environment are less than 10! Superlearner code needs atleast 11 cores to run smoothly.")
 
 ############ SETUP INPUT #######################
 # Read in data file

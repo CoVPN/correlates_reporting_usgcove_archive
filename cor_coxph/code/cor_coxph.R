@@ -223,19 +223,19 @@ save(rv, file=paste0(here::here("verification"), "/D", pop, ".rv."%.%study_name%
 
 ###################################################################################################
 # sanity check using rv
-if (study_name == "MockCOVE" & endsWith(data_name, "riskscore.csv")) {
-    tmp.1=c(sapply(rv$fr.2[-1], function (x) x[c("HR","p.value"),1]))
-    # concatList(tmp.1, ", ")
-    if (pop=="29") {
-        tmp.2=c(3.05421e-01, 3.81451e-05, 5.04954e-01, 1.02274e-02, 4.29867e-01, 1.61460e-02, 3.53596e-01, 1.66990e-03)
-    } else if (pop=="57") {
-        tmp.2=c(0.204095984712382, 2.64623152995293e-08, 0.427643725113847, 0.00266677290367735, 0.321097672744844, 0.000412544862547617, 0.34676662290256, 0.000700882529029697)
-    }
-    assertthat::assert_that(
-        max(abs(tmp.1-tmp.2)/abs(tmp.2))<1e-5,
-        msg = "failed sanity check")    
-    print("Passed sanity check")    
-}
+# if (study_name == "MockCOVE" & endsWith(data_name, "riskscore.csv")) {
+#     tmp.1=c(sapply(rv$fr.2[-1], function (x) x[c("HR","p.value"),1]))
+#     # concatList(tmp.1, ", ")
+#     if (pop=="29") {
+#         tmp.2=c(3.05421e-01, 3.81451e-05, 5.04954e-01, 1.02274e-02, 4.29867e-01, 1.61460e-02, 3.53596e-01, 1.66990e-03)
+#     } else if (pop=="57") {
+#         tmp.2=c(0.204095984712382, 2.64623152995293e-08, 0.427643725113847, 0.00266677290367735, 0.321097672744844, 0.000412544862547617, 0.34676662290256, 0.000700882529029697)
+#     }
+#     assertthat::assert_that(
+#         max(abs(tmp.1-tmp.2)/abs(tmp.2))<1e-5,
+#         msg = "failed sanity check")    
+#     print("Passed sanity check")    
+# }
 
 
 

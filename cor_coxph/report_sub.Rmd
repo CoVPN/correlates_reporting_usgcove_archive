@@ -11,7 +11,7 @@ The main regression model is the Cox proportional hazards model. All plots are m
 \end{center}
 *Baseline covariates adjusted for: baseline risk score, at risk or not, community of color or not. Maximum failure event time \input{`r pathCoRoutput`/timepoints_cum_risk_`r study_name`} days.\\
 **No. at-risk = number of per-protocol baseline negative vaccine recipients at-risk for COVID; no. cases = number of this cohort with an observed COVID endpoints starting 7 days post Day `r Day` visit.\\
-***q-value and FWER (family-wide error rate) are computed over the set of p-values both for quantitative markers and categorical markers `r ifelse(study_name_code=="COVE", "(excluding ID80)", "")` using the Westfall and Young permutation method (\protect\input{`r pathCoRoutput`/permutation_replicates_`r study_name`} replicates). 
+***q-value and FWER (family-wide error rate) are computed over the set of p-values both for quantitative markers and categorical markers `r ifelse(study_name_code=="COVE", "", "")` using the Westfall and Young permutation method (\protect\input{`r pathCoRoutput`/permutation_replicates_`r study_name`} replicates). 
 
     %\label{tab:CoR_univariable_svycoxph_pretty_`r study_name`}
 \end{table}
@@ -40,7 +40,7 @@ all on the log10 scale.
 \\
 **No. at-risk = number of per-protocol baseline negative vaccine recipients at-risk for COVID at 7 days post Day `r Day` visit; no. cases = number of this cohort with an observed COVID endpoints.\\
 ***Generalized Wald-test p-value of the null hypothesis that the hazard rate is constant across the Lower, Middle, and Upper tertile groups.\\
-$\dagger$ q-value and FWER (family-wide error rate) are computed over the set of p-values both for quantitative markers and categorical markers `r ifelse(study_name_code=="COVE", "(excluding ID80)", "")` using the Westfall and Young permutation method (\protect\input{`r pathCoRoutput`/permutation_replicates_`r study_name`} replicates). 
+$\dagger$ q-value and FWER (family-wide error rate) are computed over the set of p-values both for quantitative markers and categorical markers `r ifelse(study_name_code=="COVE", "", "")` using the Westfall and Young permutation method (\protect\input{`r pathCoRoutput`/permutation_replicates_`r study_name`} replicates). 
 
     %\label{tab:CoR_univariable_svycoxph_cat_pretty_`r study_name`}
 \end{table}
@@ -193,15 +193,6 @@ $^2$E-values are computed for upper tertile ($s=1$) vs. lower tertile ($s=0$) bi
 
 
 
-\begin{table}[H]
-\caption{Marginalized cumulative risk by Day \protect\input{`r pathCoRoutput`/timepoints_cum_risk_`r study_name`} as functions of Day `r Day` markers (=s) among baseline negative vaccine recipients with 95\% bootstrap point-wise confidence intervals (\protect\input{`r pathCoRoutput`/bootstrap_replicates_`r study_name`} replicates).}
-\begin{center}
-\setlength{\tabcolsep}{.5ex}
-\input{`r pathCoRoutput`/marginalized_risks_eq_`r study_name`}
-\end{center}
-\end{table}
-
-
 <!-- \begin{figure}[H] -->
 <!--     \centering -->
 <!--     \includegraphics[width=1\textwidth]{`r pathCoRoutput`/marginalized_risks_eq_woplacebo_`r study_name`} -->
@@ -214,23 +205,12 @@ $^2$E-values are computed for upper tertile ($s=1$) vs. lower tertile ($s=0$) bi
     \caption{Controlled VE with sensitivity analysis as functions of Day `r Day` markers (=s) among baseline negative vaccine recipients with 95\% bootstrap point-wise confidence bands (\protect\input{`r pathCoRoutput`/bootstrap_replicates_`r study_name`} replicates). Histograms of the immunological markers in the vaccine arm are overlaid. lod = `r round(llods["bindSpike"],1)`, `r round(llods["bindRBD"],1)`, `r round(llods["pseudoneutid50"],1)`, `r round(llods["pseudoneutid80"],1)` for bAb Spike, bAb RBD, PsV nAb ID50, PsV nAb ID80, respectively.}
 \end{figure}
 
-\begin{table}[H]
-\caption{Controlled VE as functions of Day `r Day` markers (=s) among baseline negative vaccine recipients with 95\% bootstrap point-wise confidence intervals (\protect\input{`r pathCoRoutput`/bootstrap_replicates_`r study_name`} replicates).}
-\begin{center}
-\setlength{\tabcolsep}{.5ex}
-\input{`r pathCoRoutput`/controlled_ve_eq_`r study_name`}
-\end{center}
-\end{table}
 
-\begin{table}[H]
-\caption{Controlled VE with sensitivity analysis as functions of Day `r Day` markers (=s) among baseline negative vaccine recipients with 95\% bootstrap point-wise confidence intervals (\protect\input{`r pathCoRoutput`/bootstrap_replicates_`r study_name`} replicates).}
-\begin{center}
-\setlength{\tabcolsep}{.5ex}
-\input{`r pathCoRoutput`/controlled_ve_sens_eq_`r study_name`}
-\end{center}
-\end{table}
-
-
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{`r pathCoRoutput`/controlled_ve_curves_eq_manus_`r study_name`}
+    \caption{Controlled VE with sensitivity analysis as functions of Day `r Day` markers (=s) among baseline negative vaccine recipients with 95\% bootstrap point-wise confidence bands (\protect\input{`r pathCoRoutput`/bootstrap_replicates_`r study_name`} replicates). Histograms of the immunological markers in the vaccine arm are overlaid. lod = `r round(llods["bindSpike"],1)`, `r round(llods["bindRBD"],1)`, `r round(llods["pseudoneutid50"],1)`, `r round(llods["pseudoneutid80"],1)` for bAb Spike, bAb RBD, PsV nAb ID50, PsV nAb ID80, respectively.}
+\end{figure}
 
 
 \begin{figure}[H]
@@ -250,3 +230,35 @@ $^2$E-values are computed for upper tertile ($s=1$) vs. lower tertile ($s=0$) bi
 <!--     \includegraphics[width=1\textwidth]{`r pathCoRoutput`/marginalized_risks_geq_`r study_name`} -->
 <!--     \caption{Marginalized cumulative risk by Day \protect\input{`r pathCoRoutput`/timepoints_cum_risk_`r study_name`} as functions of Day `r Day` markers above a threshold (>=s) among baseline negative vaccine recipients with 95\% bootstrap point-wise confidence bands (at least 5 cases are required). The horizontal lines indicate the overall cumulative risk of the placebo and vaccine arms by Day \protect\input{`r pathCoRoutput`/timepoints_cum_risk_`r study_name`} and its 95\% point-wise confidence interval. Histograms of the immunological markers in the vaccine arm are overlaid.} -->
 <!-- \end{figure} -->
+
+
+
+
+\begin{table}[H]
+\caption{Marginalized cumulative risk by Day \protect\input{`r pathCoRoutput`/timepoints_cum_risk_`r study_name`} as functions of Day `r Day` markers (=s) among baseline negative vaccine recipients with 95\% bootstrap point-wise confidence intervals (\protect\input{`r pathCoRoutput`/bootstrap_replicates_`r study_name`} replicates).}
+\begin{center}
+\setlength{\tabcolsep}{.5ex}
+\input{`r pathCoRoutput`/marginalized_risks_eq_`r study_name`}
+\end{center}
+\end{table}
+
+\clearpage
+
+\begin{table}[H]
+\caption{Controlled VE as functions of Day `r Day` markers (=s) among baseline negative vaccine recipients with 95\% bootstrap point-wise confidence intervals (\protect\input{`r pathCoRoutput`/bootstrap_replicates_`r study_name`} replicates).}
+\begin{center}
+\setlength{\tabcolsep}{.5ex}
+\input{`r pathCoRoutput`/controlled_ve_eq_`r study_name`}
+\end{center}
+\end{table}
+
+\begin{table}[H]
+\caption{Controlled VE with sensitivity analysis as functions of Day `r Day` markers (=s) among baseline negative vaccine recipients with 95\% bootstrap point-wise confidence intervals (\protect\input{`r pathCoRoutput`/bootstrap_replicates_`r study_name`} replicates).}
+\begin{center}
+\setlength{\tabcolsep}{.5ex}
+\input{`r pathCoRoutput`/controlled_ve_sens_eq_`r study_name`}
+\end{center}
+\end{table}
+
+
+

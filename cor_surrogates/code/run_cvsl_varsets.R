@@ -42,8 +42,15 @@ num_cores <- parallel::detectCores()
 # if(num_cores < 10) stop("Number of cores on this computing environment are less than 10! Superlearner code needs atleast 11 cores to run smoothly.")
 
 ############ SETUP INPUT #######################
-# Read in data file
-inputFile <- read.csv(here::here("..", "data_clean", "moderna_mock_data_processed_with_riskscore.csv"))
+# Read data_clean
+data_name_updated <- sub(".csv", "_with_riskscore.csv", data_name)
+if (file.exists(here::here("..", "data_clean", data_name_updated))) {
+  dat.mock <- read.csv(here::here("..", "data_clean", data_name_updated))
+  data_name = data_name_updated
+} else {
+  dat.mock <- read.csv(here::here("..", "data_clean", data_name))
+}
+
 briskfactors <- c("risk_score", "HighRiskInd", "MinorityInd")
 markerVars <- c("Day57bindSpike", "Delta57overBbindSpike", "Delta57overBbindSpike_2fold", "Delta57overBbindSpike_4fold",
                 "Day57bindRBD", "Delta57overBbindRBD", "Delta57overBbindRBD_2fold", "Delta57overBbindRBD_4fold",

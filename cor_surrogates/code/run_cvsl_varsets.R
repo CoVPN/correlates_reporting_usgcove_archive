@@ -62,7 +62,7 @@ endpoint <- "EventIndPrimaryD57"
 
 # Create combined new dataset which has imputed values of demographics (for phase 1 data) from dat.covar.imp AND 
 # imputed values for markers (for phase 2 data) from dat.wide.v
-dat.ph1 <- inputFile %>%
+dat.ph1 <- dat.mock %>%
   filter(Perprotocol == 1) %>%
   filter(Trt == 1) %>% # consider only vaccine group
   mutate(Delta57overBbindSpike_2fold = ifelse(Day57bindSpike > (BbindSpike + log10(2)), 1, 0),
@@ -285,6 +285,6 @@ for(i in 1:length(seeds)) {
 saveRDS(cvaucs, file = here("output", paste0("CVSLaucs_vacc_", endpoint, "_", varset_names[job_id], ".rds")))
 save(cvfits, file = here("output", paste0("CVSLfits_vacc_", endpoint, "_", varset_names[job_id], ".rda")))
 save(ph2_vacc_ptids, file = here("output", "ph2_vacc_ptids.rda"))
-save(run_prod, Y, dat.ph1, dat.ph2, weights, inputFile, briskfactors, endpoint, maxVar,
+save(run_prod, Y, dat.ph1, dat.ph2, weights, dat.mock, briskfactors, endpoint, maxVar,
      V_outer, file = here("output", "objects_for_running_SL.rda"))
 

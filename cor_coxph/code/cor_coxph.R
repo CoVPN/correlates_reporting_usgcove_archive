@@ -1,4 +1,4 @@
-#Sys.setenv(TRIAL = "janssen_pooled_mock")
+#Sys.setenv(TRIAL = "janssen_la_mock")
 if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
 #----------------------------------------------- 
 # obligatory to append to the top of each script
@@ -111,7 +111,7 @@ if (endsWith(data_name, "riskscore.csv")) {
 } else {
     form.0 = update (form.s, ~.+ MinorityInd + HighRiskInd + Age) 
 }
-if (study_name_code=="COVE") {
+if (study_name_code=="ENSEMBLE") {
     form.0 = update (form.0, ~.+ strata(Region)) 
 }
     

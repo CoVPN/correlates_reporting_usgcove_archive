@@ -1,5 +1,3 @@
-
-
 ###################################################################################################
 # Regression for continuous markers
 
@@ -8,6 +6,7 @@
 
 fits=list()
 for (a in c("Day"%.%pop%.%assays, "Delta"%.%pop%.%"overB"%.%assays)) {
+# a = "Day"%.%pop%.%assays[1]
     f= update(form.0, as.formula(paste0("~.+", a)))
     fits[[a]]=svycoxph(f, design=design.vacc.seroneg) 
 }

@@ -2,7 +2,7 @@
 header-includes:
    - \usepackage{float}
    
-title: "COVID-19 Optimal Surrogate Analysis Report (Moderna mock study)"
+title: "COVID-19 Optimal Surrogate Analysis Report"
 
 output:
   pdf_document: default

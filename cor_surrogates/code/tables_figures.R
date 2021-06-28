@@ -23,7 +23,6 @@ library(here)
 conflict_prefer("filter", "dplyr")
 conflict_prefer("summarise", "dplyr")
 source(here("code", "utils.R"))
-source(here("code", "make_forest_plot.R"))
 method <- "method.CC_nloglik" # since SuperLearner relies on this to be in GlobalEnv
 ggplot2::theme_set(theme_cowplot())
 

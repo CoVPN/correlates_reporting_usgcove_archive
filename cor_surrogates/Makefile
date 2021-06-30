@@ -1,6 +1,5 @@
 ## all           : clean saved results and get results to populate report
-all: clean run_cvsl_riskscore createRDAfiles_fromSLobjects tables_figures \
-	constructSL_predict_on_vaccine get_SLweights_Modelpredictors
+all: clean run_cvsl_riskscore createRDAfiles_fromSLobjects tables_figures
 
 ## clean         : delete all SL results
 clean:

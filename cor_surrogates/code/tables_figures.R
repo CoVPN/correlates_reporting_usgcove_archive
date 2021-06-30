@@ -8,6 +8,7 @@ if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/
 source(here::here("..", "_common.R"))
 
 ## ----load-all-SLobjects, message=FALSE, error=FALSE, warning=FALSE----------------------------------------------------------------------------------------------------
+
 library("cvAUC")
 library("conflicted")
 library("tidyverse")
@@ -59,18 +60,16 @@ tab %>% write.csv(here("output", "learner-screens.csv"))
 caption <- "The 12 variable sets on which an estimated optimal surrogate was built."
 
 tab <- data.frame(`Variable Set Name` = c("1_baselineRiskFactors", 
-                                          "2_varset_bAbSpike", "3_varset_bAbRBD", "4_varset_pnabID50", "5_varset_pnabID80", "6_varset_lnabMN50", 
-                                          "7_varset_bAb_pnabID50", "8_varset_bAb_pnabID80", "9_varset_bAb_lnabMN50", 
-                                          "10_varset_bAb_combScores", "11_varset_allMarkers", "12_varset_allMarkers_combScores"),
+                                          "2_varset_bAbSpike", "3_varset_bAbRBD", "4_varset_pnabID50", "5_varset_pnabID80",  
+                                          "6_varset_bAb_pnabID50", "7_varset_bAb_pnabID80", 
+                                          "8_varset_bAb_combScores", "9_varset_allMarkers", "10_varset_allMarkers_combScores"),
                   `Variables included in the set` = c("Baseline risk factors only (Reference model)",
                                                       "Baseline risk factors + bAb anti-Spike markers",
                                                       "Baseline risk factors + bAb anti-RBD markers",
                                                       "Baseline risk factors + p-nAb ID50 markers",
                                                       "Baseline risk factors + p-nAb ID80 markers",
-                                                      "Baseline risk factors + l-nAb MN50 markers",
                                                       "Baseline risk factors + bAb markers + p-nAb ID50 markers",
                                                       "Baseline risk factors + bAb markers + p-nAb ID80 markers",
-                                                      "Baseline risk factors + bAb markers + l-nAb MN50 markers",
                                                       "Baseline risk factors + bAb markers + combination scores across the five markers [PCA1, PCA2, FSDAM1/FSDAM2 (the first two
 components of nonlinear PCA), and the maximum signal diversity score]",
                                                       "Baseline risk factors + all individual markers",
@@ -130,7 +129,7 @@ allSLs_withCoord <- allSLs %>%
 top_learner_nms_plot <- ggplot(allSLs_withCoord, aes(x = xcoord, y = ycoord, label = strDisplay)) +
   geom_text(hjust=1, vjust=0, size=5) +
   xlim(0.7,2) +
-  theme(plot.margin=unit(c(1.1,-0.15,1.75,-0.15),"cm"),
+  theme(plot.margin=unit(c(1.7,-0.15,2.4,-0.15),"cm"),
         axis.line=element_blank(),
         axis.text.y = element_blank(),
         axis.text.x = element_text(size = 2, color = "white"),

@@ -1,3 +1,3 @@
 #!/bin/bash
-Rscript code/run_cvsl_varsets.R 1
+Rscript code/run_cvsl_varsets.R 10
   

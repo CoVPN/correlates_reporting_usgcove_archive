@@ -1,4 +1,4 @@
-#Sys.setenv(TRIAL = "moderna_mock")
+#Sys.setenv(TRIAL = "janssen_la_mock")
 if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
 #----------------------------------------------- 
 # obligatory to append to the top of each script
@@ -31,7 +31,7 @@ source(here::here("code", "params.R"))
 
 # population is either 57 or 29
 Args <- commandArgs(trailingOnly=TRUE)
-if (length(Args)==0) Args=c(pop="57")
+if (length(Args)==0) Args=c(pop="29")# has to be 29 if it is janssen
 pop=Args[1]; myprint(pop)
 
 if(!has29 & pop=="29") {
@@ -107,11 +107,12 @@ myprint(t0)
 # formulae
 form.s = as.formula(paste0("Surv(EventTimePrimaryD",pop,", EventIndPrimaryD",pop,") ~ 1"))
 if (endsWith(data_name, "riskscore.csv")) {
-    form.0 =            update (form.s, ~.+ MinorityInd + HighRiskInd + risk_score)
-    form.0.logistic = as.formula(paste0("EventIndPrimaryD",pop,"  ~ MinorityInd + HighRiskInd + risk_score"))
+    form.0 = update (form.s, ~.+ MinorityInd + HighRiskInd + risk_score)
 } else {
-    form.0 =            update (form.s, ~.+ MinorityInd + HighRiskInd + Age) 
-    form.0.logistic = as.formula(paste0("EventIndPrimaryD",pop,"  ~ MinorityInd + HighRiskInd + Age"))  
+    form.0 = update (form.s, ~.+ MinorityInd + HighRiskInd + Age) 
+}
+if (study_name_code=="ENSEMBLE") {
+    form.0 = update (form.0, ~.+ strata(Region)) 
 }
     
 # covariate length without markers

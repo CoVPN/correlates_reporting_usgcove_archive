@@ -54,8 +54,8 @@ briskfactors <- c("risk_score", "HighRiskInd", "MinorityInd")
 markerVars <- c("Day57bindSpike", "Delta57overBbindSpike", "Delta57overBbindSpike_2fold", "Delta57overBbindSpike_4fold",
                 "Day57bindRBD", "Delta57overBbindRBD", "Delta57overBbindRBD_2fold", "Delta57overBbindRBD_4fold",
                 "Day57pseudoneutid50", "Delta57overBpseudoneutid50", "Delta57overBpseudoneutid50_2fold", "Delta57overBpseudoneutid50_4fold",
-                "Day57pseudoneutid80", "Delta57overBpseudoneutid80", "Delta57overBpseudoneutid80_2fold", "Delta57overBpseudoneutid80_4fold",
-                "Day57liveneutmn50", "Delta57overBliveneutmn50", "Delta57overBliveneutmn50_2fold", "Delta57overBliveneutmn50_4fold")
+                "Day57pseudoneutid80", "Delta57overBpseudoneutid80", "Delta57overBpseudoneutid80_2fold", "Delta57overBpseudoneutid80_4fold")
+
 # Identify the endpoint variable
 endpoint <- "EventIndPrimaryD57"
 ################################################    
@@ -72,10 +72,7 @@ dat.ph1 <- dat.mock %>%
          Delta57overBpseudoneutid50_2fold = ifelse(Day57pseudoneutid50 > (Bpseudoneutid50  + log10(2)), 1, 0), 
          Delta57overBpseudoneutid50_4fold = ifelse(Day57pseudoneutid50 > (Bpseudoneutid50  + log10(4)), 1, 0), 
          Delta57overBpseudoneutid80_2fold = ifelse(Day57pseudoneutid80 > (Bpseudoneutid80  + log10(2)), 1, 0), 
-         Delta57overBpseudoneutid80_4fold = ifelse(Day57pseudoneutid80 > (Bpseudoneutid80  + log10(4)), 1, 0), 
-         Delta57overBliveneutmn50_2fold = ifelse(Day57liveneutmn50 > (Bliveneutmn50  + log10(2)), 1, 0), 
-         Delta57overBliveneutmn50_4fold = ifelse(Day57liveneutmn50 > (Bliveneutmn50  + log10(4)), 1, 0), 
-         Delta57overBliveneutmn50 = Day57liveneutmn50 / Bliveneutmn50) %>% 
+         Delta57overBpseudoneutid80_4fold = ifelse(Day57pseudoneutid80 > (Bpseudoneutid80  + log10(4)), 1, 0)) %>%
   # Drop any observation with NA values in Ptid, Trt, briskfactors, endpoint and wt.D57
   drop_na(Ptid, Trt, all_of(briskfactors), all_of(endpoint), wt.D57) %>%
   arrange(desc(get(endpoint)))
@@ -83,7 +80,7 @@ dat.ph1 <- dat.mock %>%
 dat.ph2 <- dat.ph1 %>%
   filter(TwophasesampIndD57 == 1) %>%
   select(Ptid, Trt, all_of(briskfactors), all_of(endpoint), wt.D57, any_of(markerVars)) %>%
-  drop_na(Day57bindSpike, Day57bindRBD, Day57pseudoneutid50, Day57pseudoneutid80, Day57liveneutmn50) %>%
+  drop_na(Day57bindSpike, Day57bindRBD, Day57pseudoneutid50, Day57pseudoneutid80) %>%
   arrange(desc(get(endpoint)))
 
 # Limit total variables that will be included in models 
@@ -118,13 +115,13 @@ Z_plus_weights <- dat.ph1 %>%
 # Create combination scores across the 5 markers
 dat.ph2 <- dat.ph2 %>% 
   left_join(get.pca.scores(dat.ph2 %>%
-                             select(Ptid, Day57bindSpike, Day57bindRBD, Day57pseudoneutid50, Day57pseudoneutid80, Day57liveneutmn50)), 
+                             select(Ptid, Day57bindSpike, Day57bindRBD, Day57pseudoneutid50, Day57pseudoneutid80)),
             by = "Ptid") %>%
   # left_join(get.nonlinearPCA.scores(dat.ph2 %>%
-  #                                     select(Ptid, Day57bindSpike, Day57bindRBD, Day57pseudoneutid50, Day57pseudoneutid80, Day57liveneutmn50)),
+  #                                     select(Ptid, Day57bindSpike, Day57bindRBD, Day57pseudoneutid50, Day57pseudoneutid80)),
   #          by = "Ptid") %>%
   mutate(max.signal.div.score = get.maxSignalDivScore(dat.ph2 %>%
-                                                        select(Day57bindSpike, Day57bindRBD, Day57pseudoneutid50, Day57pseudoneutid80, Day57liveneutmn50))) 
+                                                        select(Day57bindSpike, Day57bindRBD, Day57pseudoneutid50, Day57pseudoneutid80)))
 
 markers <- dat.ph2 %>%
   select(Day57bindSpike:max.signal.div.score) %>%
@@ -142,32 +139,32 @@ varset_bAbSpike <- create_varsets(markers, grep('bindSpike', markers, value=TRUE
 varset_bAbRBD <- create_varsets(markers, grep('bindRBD', markers, value=TRUE))
 varset_pnabID50 <- create_varsets(markers, grep('pseudoneutid50', markers, value=TRUE))
 varset_pnabID80 <- create_varsets(markers, grep('pseudoneutid80', markers, value=TRUE))
-varset_lnabMN50 <- create_varsets(markers, grep('liveneutmn50', markers, value=TRUE)) 
+#varset_lnabMN50 <- create_varsets(markers, grep('liveneutmn50', markers, value=TRUE)) 
 varset_bAb_pnabID50 <- create_varsets(markers, grep(paste(c('bindSpike', 'bindRBD', 'pseudoneutid50'), 
                                                           collapse="|"), markers, value=TRUE))
 varset_bAb_pnabID80 <- create_varsets(markers, grep(paste(c('bindSpike', 'bindRBD', 'pseudoneutid80'), 
                                                           collapse="|"), markers, value=TRUE))
-varset_bAb_lnabMN50 <- create_varsets(markers, grep(paste(c('bindSpike', 'bindRBD', 'liveneutmn50'), 
-                                                          collapse="|"), markers, value=TRUE))
+# varset_bAb_lnabMN50 <- create_varsets(markers, grep(paste(c('bindSpike', 'bindRBD', 'liveneutmn50'), 
+#                                                           collapse="|"), markers, value=TRUE))
 varset_bAb_combScores <- create_varsets(markers, 
                                         grep(paste(c('bindSpike', 'bindRBD', 'PC', 'nlPCA', 'max.signal.div.score'), 
                                                    collapse="|"), markers, value=TRUE))
 varset_allMarkers <- create_varsets(markers, 
-                                    grep(paste(c('bindSpike', 'bindRBD', 'pseudoneutid50', 'pseudoneutid80', 'liveneutmn50'), 
+                                    grep(paste(c('bindSpike', 'bindRBD', 'pseudoneutid50', 'pseudoneutid80'), 
                                                collapse="|"), markers, value=TRUE))
 varset_allMarkers_combScores <- create_varsets(markers, 
-                                               grep(paste(c('bindSpike', 'bindRBD', 'pseudoneutid50', 'pseudoneutid80', 'liveneutmn50', 'PC', 'nlPCA', 'max.signal.div.score'), 
+                                               grep(paste(c('bindSpike', 'bindRBD', 'pseudoneutid50', 'pseudoneutid80', 'PC', 'nlPCA', 'max.signal.div.score'), 
                                                           collapse="|"), markers, value=TRUE))
 
 varset_names <- c("1_baselineRiskFactors",
-                  "2_varset_bAbSpike", "3_varset_bAbRBD", "4_varset_pnabID50", "5_varset_pnabID80", "6_varset_lnabMN50",
-                  "7_varset_bAb_pnabID50", "8_varset_bAb_pnabID80", "9_varset_bAb_lnabMN50",
-                  "10_varset_bAb_combScores", "11_varset_allMarkers", "12_varset_allMarkers_combScores")
+                  "2_varset_bAbSpike", "3_varset_bAbRBD", "4_varset_pnabID50", "5_varset_pnabID80", 
+                  "6_varset_bAb_pnabID50", "7_varset_bAb_pnabID80", 
+                  "8_varset_bAb_combScores", "9_varset_allMarkers", "10_varset_allMarkers_combScores")
 
 ## set up a matrix of all
 varset_matrix <- rbind(varset_baselineRiskFactors,
-                       varset_bAbSpike, varset_bAbRBD, varset_pnabID50, varset_pnabID80, varset_lnabMN50,
-                       varset_bAb_pnabID50, varset_bAb_pnabID80, varset_bAb_lnabMN50,
+                       varset_bAbSpike, varset_bAbRBD, varset_pnabID50, varset_pnabID80, 
+                       varset_bAb_pnabID50, varset_bAb_pnabID80, 
                        varset_bAb_combScores, varset_allMarkers, varset_allMarkers_combScores)
 
 this_var_set <- varset_matrix[job_id, ]

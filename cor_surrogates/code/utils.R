@@ -313,7 +313,7 @@ get.maxSignalDivScore <- function(dat){
   }
 
   dat <- dat %>%
-    mutate(max.signal.div.score = rowSums(.[1:5]))
+    mutate(max.signal.div.score = rowSums(.[1:4])) #rowSums(.[1:5]))
 
   return(dat$max.signal.div.score)
 }

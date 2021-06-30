@@ -46,9 +46,6 @@ for(i in 1:length(unique(cvaucs_d57_vacc$varset))) {
   colnames(mean_discreteSL_preds) = colnames(as.data.frame(discreteSL_preds[[1]]))
   
   
-  
-  
-  
   ####################################################
   pred <- get_cv_predictions(cv_fit_libs = mean_preds, cvaucDAT = top2)
   
@@ -64,7 +61,6 @@ for(i in 1:length(unique(cvaucs_d57_vacc$varset))) {
   options(bitmapType = "cairo")
   png(file = here("figs", paste0("predProb_", variableSet, ".png")),
       width = 1000, height = 1000)
-  #png(file = here("figs", paste0("predProb_, variableSet, ".png"),      width = 1100, height = 1400)
   p2 <- plot_predicted_probabilities(pred)
   print(p2)
   dev.off()

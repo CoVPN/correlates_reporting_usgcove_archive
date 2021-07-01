@@ -1,5 +1,4 @@
 delete_merged_file: true
-book_filename: "covpn_correlates_cor"
 before_chapter_script: "_common.R"
 output_dir: "_report_cor"
 clean: packages.bib
@@ -19,7 +18,7 @@ rmd_files: [
   "cor_coxph/report.Rmd",
   "cor_threshold/report.Rmd",
   "cor_nonlinear/report.Rmd",
-  
+  "cor_surrogates/report.Rmd",
   "references.Rmd",
   "appendix.Rmd"
 ]

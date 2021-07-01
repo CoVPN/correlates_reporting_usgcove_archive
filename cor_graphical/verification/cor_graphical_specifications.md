@@ -99,7 +99,7 @@ eg: "lineplots of Binding Antibody to RBD: baseline negative vaccine arm (3 time
 
 1. create a new vector `groupby_vars1` = ("Trt", "Bserostatus", "cohort_event", "time", "assay")
 
-2. In `dat.longer.cor.subset`, group by `groupby_vars1`, calculate new fields `num` = sum(`response` * `wt.D29`), `denom` = sum(`wt.D29`), and `RespRate` = `num` / `denom`, save to a new data frame `dat.longer.cor.subset.plot1`
+2. In `dat.longer.cor.subset`, group by `groupby_vars1`, calculate new fields `num` = sum(`response` * ifelse(`cohort_event`=="Intercurrent Cases", `wt.intercurrent.cases`, `wt.D57`)), `denom` = sum(ifelse(`cohort_event`=="Intercurrent Cases", `wt.intercurrent.cases`, `wt.D57`)), and `RespRate` = `num` / `denom`, save to a new data frame `dat.longer.cor.subset.plot1`
 
 3. In `dat.longer.cor.subset.plot1`, group by `groupby_vars1`, sample the same random 25 participants without replacement at each value of `time` ("Day 1", "Day 29", and "Day 57").
 
@@ -122,7 +122,7 @@ eg: "violinplots of Binding Antibody to Spike: baseline negative placebo arm by 
 
 2. Inside all loops, create a new vector `groupby_vars2` = ("Trt", "Bserostatus", "cohort_event", "time", "assay", `s`)
 
-3. In `dat.longer.cor.subset`, group by `groupby_vars2`, calculate new fields `num` = sum(`response` * `wt.D29`), `denom` = sum(`wt.D29`), and `RespRate` = `num` / `denom`, save to a new data frame `dat.longer_cor_data_plot2`  
+3. In `dat.longer.cor.subset`, group by `groupby_vars2`, calculate new fields `num` = sum(`response` * ifelse(`cohort_event`=="Intercurrent Cases", `wt.intercurrent.cases`, `wt.D57`)), `denom` = sum(ifelse(`cohort_event`=="Intercurrent Cases", `wt.intercurrent.cases`, `wt.D57`)), and `RespRate` = `num` / `denom`, save to a new data frame `dat.longer_cor_data_plot2`  
 
 3. If `s` == "minority_label", subset `dat.longer_cor_data_plot2` with `minority_label` in ("White Non-Hispanic","Comm. of Color"), save to a new data frame `dat.longer_cor_data_sub2`, else if `s` == "Dich_RaceEthnic", subset `dat.longer_cor_data_plot2` with `Dich_RaceEthnic` in ("Hispanic or Latino","Not Hispanic or Latino"), save to a new data frame `dat.longer_cor_data_sub2`, else save `dat.longer_cor_data_plot2` to `dat.longer_cor_data_sub2`.
 
@@ -145,7 +145,7 @@ eg: "lineplots of Binding Antibody to Spike: baseline negative placebo arm by ag
 
 1. create a new vector `groupby_vars3`= ("Trt", "Bserostatus", "cohort_event", "time", "assay", "age_geq_65_label", "highrisk_label")
 
-2. In `dat.longer.cor.subset`, group by `groupby_vars3`, calculate new fields `num` = sum(`response` * `wt.D29`), `denom` = sum(`wt.D29`), and `RespRate` = `num` / `denom`, save to a new data frame `dat.longer.cor.subset.plot3`
+2. In `dat.longer.cor.subset`, group by `groupby_vars3`, calculate new fields `num` = sum(`response` * ifelse(`cohort_event`=="Intercurrent Cases", `wt.intercurrent.cases`, `wt.D57`)), `denom` = sum(ifelse(`cohort_event`=="Intercurrent Cases", `wt.intercurrent.cases`, `wt.D57`)), and `RespRate` = `num` / `denom`, save to a new data frame `dat.longer.cor.subset.plot3`
 
 3. In `dat.longer.cor.subset.plot3`, group by `groupby_vars3`, sample the same random 25 participants without replacement at each value of `time` ("Day 1","Day 29", and "Day 57"), save to a new data frame `plot.25sample3`.
 

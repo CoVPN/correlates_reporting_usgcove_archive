@@ -797,6 +797,7 @@ covid_corr_boxplot_facets <- function(plot_dat,
                                       ),
                                       plot_LLOD = TRUE,
                                       LLOD = NULL,
+                                      POS.CUTOFFS = NULL,
                                       LLOD_lwd = 0.5,
                                       LLOQ = NULL,
                                       ULOQ = NULL,
@@ -901,17 +902,27 @@ covid_corr_boxplot_facets <- function(plot_dat,
     if (plot_LLOD) {
       boxplot_list[[aa]] <- boxplot_list[[aa]] +
         geom_hline(
-          yintercept = LLOD[aa], linetype = 2, color = "black",
-          lwd = LLOD_lwd
-        ) +
-        geom_hline(
           yintercept = LLOQ[aa], linetype = 2, color = "black",
           lwd = LLOD_lwd
         ) +
         geom_hline(
           yintercept = ULOQ[aa], linetype = 2, color = "black",
           lwd = LLOD_lwd
-        ) 
+        )
+      
+      if (!is.na(POS.CUTOFFS[aa])) {
+        boxplot_list[[aa]] <- boxplot_list[[aa]] +
+          geom_hline(
+            yintercept = POS.CUTOFFS[aa], linetype = 2, color = "black",
+            lwd = LLOD_lwd
+          ) 
+      } else {
+        boxplot_list[[aa]] <- boxplot_list[[aa]] +
+          geom_hline(
+            yintercept = LLOD[aa], linetype = 2, color = "black",
+            lwd = LLOD_lwd
+          )
+      }
     }
   }
   output_plot <- ggarrange(

@@ -191,6 +191,10 @@ get_plot <- function(marker, simultaneous_CI = F, monotone = F, above = TRUE) {
 #' @param marker The marker variable to generate plots for.
 #' @param num_show The number of thresholds to include in table.
 generate_tables <- function(marker, num_show = 10, monotone = F, above = T) {
+    time <- marker_to_time[[marker]]
+     
+    data_secondstage <- read.csv(here::here("data_clean", paste0("data_secondstage_", time, ".csv")))
+     
     if(above){
         append <- ""
     } else {
@@ -215,7 +219,12 @@ generate_tables <- function(marker, num_show = 10, monotone = F, above = T) {
   esttmle_table[esttmle_table[, 3] < 0, 3] <- 0
   colnames(esttmle_table) <- c("log$_{10}$-Threshold", "Threshold", "Risk estimate", "CI left", "CI right", "CI left", "CI right")
   # Save nice latex table
-  index_to_show <- unique(round(seq.int(1, nrow(esttmle_table), length.out = num_show)))
+  thresh_mand <- report.assay.values(data_secondstage[[marker]], marker)
+  index_to_show <- sapply(thresh_mand, function(thresh) {
+      which.min(abs(thresh-esttmle_table[,1]))
+  })
+  #index_to_show <- unique(round(seq.int(1, nrow(esttmle_table), length.out = num_show)))
+  
   ptwise_tab_guts <- esttmle_table[index_to_show, c(1, 2, 3, 4, 5)]
 
   if(monotone) {

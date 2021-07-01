@@ -17,9 +17,7 @@ run_cvsl_varsets:
 	Rscript code/run_cvsl_varsets.R 7 && \
 	Rscript code/run_cvsl_varsets.R 8 && \
 	Rscript code/run_cvsl_varsets.R 9 && \
-	Rscript code/run_cvsl_varsets.R 10 && \
-	Rscript code/run_cvsl_varsets.R 11 && \
-	Rscript code/run_cvsl_varsets.R 12
+	Rscript code/run_cvsl_varsets.R 10 
 	#sbatch code/submit_cluster_job.sh
 	
 ## createRDAfiles_fromSLobjects   : create RDA files from SL objects

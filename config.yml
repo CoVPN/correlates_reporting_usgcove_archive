@@ -28,27 +28,25 @@ janssen_default_real: &janssen_default_real
   study_name_code: ENSEMBLE
   assays: [bindSpike, bindRBD]
 
-janssen_pooled_real: &janssen_default_real
+janssen_pooled_real: 
   <<: *janssen_default_real
   subset_variable: None
   subset_value: All
 
-janssen_na_real: &janssen_default_real
+janssen_na_real: 
   <<: *janssen_default_real
   subset_variable: Region
   subset_value: 0
 
-janssen_la_real: &janssen_default_real
+janssen_la_real: 
   <<: *janssen_default_real
   subset_variable: Region
   subset_value: 1
 
-janssen_sa_real: &janssen_default_real
+janssen_sa_real: 
   <<: *janssen_default_real
   subset_variable: Region
   subset_value: 2
-
-
 
 janssen_default_mock: &janssen_default_mock
   data_raw_dir: janssen
@@ -58,22 +56,22 @@ janssen_default_mock: &janssen_default_mock
   study_name_code: ENSEMBLE
   assays: [bindSpike, bindRBD]
 
-janssen_pooled_mock: &janssen_default_mock
+janssen_pooled_mock:
   <<: *janssen_default_mock
   subset_variable: None
   subset_value: All
 
-janssen_na_mock: &janssen_default_mock
+janssen_na_mock:
   <<: *janssen_default_mock
   subset_variable: Region
   subset_value: 0
 
-janssen_la_mock: &janssen_default_mock
+janssen_la_mock:
   <<: *janssen_default_mock
   subset_variable: Region
   subset_value: 1
 
-janssen_sa_mock: &janssen_default_mock
+janssen_sa_mock:
   <<: *janssen_default_mock
   subset_variable: Region
   subset_value: 2

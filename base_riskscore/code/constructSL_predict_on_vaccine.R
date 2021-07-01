@@ -51,7 +51,7 @@ save(sl_riskscore_slfits, file = here("output", "sl_riskscore_slfits.rda"))
 
 # Predict on vaccine arm
 dat.ph1.vacc <- inputFile %>%
-  filter(Perprotocol == 1 & Trt == 1) %>%
+  filter(Perprotocol == 1 & Trt == 1 & Bserostatus == 0) %>%
   # Keep only variables to be included in risk score analyses
   select(Ptid, Trt, all_of(endpoint), all_of(risk_vars)) %>%
   # Drop any observation with NA values in Ptid, Trt, or endpoint!

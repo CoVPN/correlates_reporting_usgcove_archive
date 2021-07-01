@@ -97,9 +97,13 @@ for (time in times) {
           seq(lower_quantile, upper_quantile, length.out = threshold_grid_size),
           na.rm = T
         ))
+         
+      thresh_mand <- report.assay.values(data_secondstage[[marker]], marker)
+      thresh_grid <- sort(union(thresh_mand, thresh_grid))
     } else {
       thresh_grid <- sort(unique(data_secondstage[[marker]]))
     }
+     
 
     write.csv(data.frame(thresh = thresh_grid), here::here("data_clean", "Thresholds_by_marker", paste0("thresholds_", marker, ".csv")), row.names = F)
 

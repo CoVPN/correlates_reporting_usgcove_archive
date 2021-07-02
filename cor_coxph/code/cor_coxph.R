@@ -1,4 +1,4 @@
-#Sys.setenv(TRIAL = "janssen_la_mock")
+#Sys.setenv(TRIAL = "moderna_mock")
 if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
 #----------------------------------------------- 
 # obligatory to append to the top of each script
@@ -186,7 +186,6 @@ for (a in assays) {
 write(t0, file=paste0(save.results.to, "timepoints_cum_risk_"%.%study_name))
 
 
-###################################################################################################
 # create verification object to be populated by the following scripts
 rv=list() 
 rv$marker.cutpoints=marker.cutpoints
@@ -198,9 +197,22 @@ rv$marker.cutpoints=marker.cutpoints
 # run PH models
 ###################################################################################################
     
-    
 source(here::here("code", "cor_coxph_ph.R"))
 
+# sanity check against unintended consequences
+if (study_name == "MockCOVE" & !endsWith(data_name, "riskscore.csv")) {
+    tmp.1=c(sapply(rv$fr.2[-1], function (x) x[c("HR","p.value"),1]))
+    # concatList(tmp.1, ", ")
+    if (pop=="29") {
+        tmp.2=c(2.89108e-01,1.86059e-05,4.91460e-01,7.62402e-03,4.22427e-01,1.35351e-02,3.43234e-01,1.30351e-03)
+    } else if (pop=="57") {
+        tmp.2=c(1.97396e-01,5.06030e-08,4.14723e-01,1.70766e-03,3.23171e-01,2.99022e-04,3.32166e-01,4.92577e-04)
+    }
+    assertthat::assert_that(
+        max(abs(tmp.1-tmp.2)/abs(tmp.2))<1e-5,
+        msg = "failed sanity check")    
+    print("Passed sanity check")    
+}
 
 
 
@@ -208,7 +220,6 @@ source(here::here("code", "cor_coxph_ph.R"))
 # draw marginalized risk curves
 ###################################################################################################
     
-        
 source(here::here("code", "cor_coxph_marginalized_risk_no_marker.R"))
 source(here::here("code", "cor_coxph_marginalized_risk_bootstrap.R"))
 source(here::here("code", "cor_coxph_marginalized_risk_plotting.R"))
@@ -217,28 +228,8 @@ source(here::here("code", "cor_coxph_marginalized_risk_plotting.R"))
 
 
 
-###################################################################################################
 # save rv
 save(rv, file=paste0(here::here("verification"), "/D", pop, ".rv."%.%study_name%.%".Rdata"))
-
-
-###################################################################################################
-# sanity check using rv
-# if (study_name == "MockCOVE" & endsWith(data_name, "riskscore.csv")) {
-#     tmp.1=c(sapply(rv$fr.2[-1], function (x) x[c("HR","p.value"),1]))
-#     # concatList(tmp.1, ", ")
-#     if (pop=="29") {
-#         tmp.2=c(3.05421e-01, 3.81451e-05, 5.04954e-01, 1.02274e-02, 4.29867e-01, 1.61460e-02, 3.53596e-01, 1.66990e-03)
-#     } else if (pop=="57") {
-#         tmp.2=c(0.204095984712382, 2.64623152995293e-08, 0.427643725113847, 0.00266677290367735, 0.321097672744844, 0.000412544862547617, 0.34676662290256, 0.000700882529029697)
-#     }
-#     assertthat::assert_that(
-#         max(abs(tmp.1-tmp.2)/abs(tmp.2))<1e-5,
-#         msg = "failed sanity check")    
-#     print("Passed sanity check")    
-# }
-
-
 
 print("cor_coxph run time: ")
 print(Sys.time()-time.start)

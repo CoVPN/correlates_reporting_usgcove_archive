@@ -29,13 +29,13 @@ Steps:
   \item Define ethnicity, a factor variable that has three levels:   "Hispanic or Latino", "Not Hispanic or Latino", "Not reported and unknown"
 
   \item Define race, a factor variable that has the following levels:   "White", "Black or African American",
-  "Asian", "American Indian or Alaska Native",
+  "Asian", "American Indian or Alaska Native", if (ENSEMBLE) "Indigenous South American"
   "Native Hawaiian or Other Pacific Islander", "Multiracial",
-  "Other", "Not reported and unknown"
+  if (COVE) "Other", "Not reported and unknown"
 
   \item Define WhiteNonHispanic, a binary variable that takes value 1 if race is White and ethnicity is not Hispanic, 0 if race is not "white or unknown" OR ethnicity is Hispanic, and NA otherwise
   
-  \item Define MinorityInd, a binary variable that takes value 1 if WhiteNonHispanic is 0, and 0 otherwise including when WhiteNonHispanic is NA
+  \item Define MinorityInd, a binary variable that takes value 1 if WhiteNonHispanic is 0, and 0 otherwise including when WhiteNonHispanic is NA. For Janssen, set MinorityInd to 0 for region 1 and 2
   
   \item Define Bstratum, an integer variable to index strata defined by age and at risk. For Moderna, there are three strata: age >= 65, age < 65 and HighRiskInd==1, age < 65 and HighRiskInd==0. For Janssen, there are four strata, from 1 to 4: age < 60 and HighRiskInd==0, age < 60 and HighRiskInd==1, age >= 60 and HighRiskInd==0, and age >= 60 and HighRiskInd==1.
   
@@ -61,7 +61,7 @@ Steps:
   
   \item Repeat above for 29.
   
-  \item If has57 and has29, define wt.intercurrent.cases. The weights equal the sampling probabilities of TwophasesampIndD29==1 within each Wstratum. This variable is only defined for subjects satisfying EarlyendpointD29==0 & Perprotocol==1 & EventIndPrimaryD29==1 & EventTimePrimaryD29>=7 & EventTimePrimaryD29 <= 6 + NumberdaysD1toD57 - NumberdaysD1toD29 and set to NA otherwise. Define ph1.intercurrent.cases. as having non-NA wt.intercurrent.cases.. Define ph2.intercurrent.cases as ph1.D57 & TwophasesampIndD29.
+  \item If has57 and has29, define wt.intercurrent.cases. The weights equal the sampling probabilities of TwophasesampIndD29==1 within each Wstratum. This variable is only defined for subjects satisfying EarlyendpointD29==0 & Perprotocol==1 & EventIndPrimaryD29==1 & EventTimePrimaryD29>=7 & EventTimePrimaryD29 <= 6 + NumberdaysD1toD57 - NumberdaysD1toD29 and set to NA otherwise. Define ph1.intercurrent.cases. as having non-NA wt.intercurrent.cases. Define ph2.intercurrent.cases as ph1.D57 & TwophasesampIndD29.
   
   \item Define wt.subcohort. For Moderna, the weights equal the sampling probabilities of TwophasesampIndD57==1 & SubcohortInd within each tps.stratum. This variable is only defined for subjects satisfying EarlyendpointD57==0 & Perprotocol == 1 and set to NA otherwise. Define ph1.immuno as having non-NA wt.subcohort. ph2.immuno as ph1.immuno & SubcohortInd & TwophasesampIndD57. For Janssen, change 57 to 29. 
   

@@ -194,7 +194,7 @@ dat.long.twophase.sample$Ptid <- as.character(dat.long.twophase.sample$Ptid)
 dat.twophase.sample$Ptid <- as.character(dat.twophase.sample$Ptid) 
 
 
-
+dat.long.twophase.sample <- filter(dat.long.twophase.sample, assay %in% assay_immuno)
 
 
 saveRDS(as.data.frame(dat.long.twophase.sample),

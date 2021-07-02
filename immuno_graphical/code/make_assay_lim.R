@@ -20,7 +20,7 @@ dat.long.twophase.sample <- readRDS(here(
 MaxbAbDay29 <- ifelse(exists("MaxbAbDay29"), MaxbAbDay29, NA)
 MaxbAbDay57 <- ifelse(exists("MaxbAbDay57"), MaxbAbDay57, NA)
 MaxID50ID80Day29 <- ifelse(exists("MaxID50ID80Day29"), MaxID50ID80Day29, NA)
-MaxID50ID80Day57 <- ifelse(exists("MaxID50ID80Day29"), MaxID50ID80Day57, NA)
+MaxID50ID80Day57 <- ifelse(exists("MaxID50ID80Day57"), MaxID50ID80Day57, NA)
 
 
 

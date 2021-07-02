@@ -1,0 +1,85 @@
+---
+title: "Specifications for optimal surrogate analyses"
+author: "Bhavesh Borate"
+date: "06/03/2021"
+output: html_document
+classoption: landscape
+---
+
+<!-- \listoftables -->
+<!-- \listoffigures -->
+
+```{r setup, include=FALSE}
+  library(tidyverse)
+  library(kableExtra)
+  library(here)
+```
+
+
+
+\clearpage 
+
+```{r specs, warning=FALSE, echo=FALSE}
+caption <- ""
+
+dat <- read.csv(file = here("verification", "specifications_optSurrogate.csv")) %>%
+  dplyr::rename(`Steps in algorithm` = `Steps.in.algorithm`,
+                `Value/Derivation` = `Value.Derivation`) %>%
+  select(`Steps in algorithm`, Definition, Parameters, `Value/Derivation`, Details) 
+  
+
+dat$`Steps in algorithm` <- cell_spec(
+  dat$`Steps in algorithm`, 
+  color = ifelse(dat$`Steps in algorithm` %in% 
+                   c("Prep to run CV-Superlearner",
+                     "Input to CV-SuperLearner run on vaccine arm data (CV-SL fit)",
+                     "Derive CV-AUCs using measure_auc function in vimp package (Refer note at bottom)",
+                     "Run Superlearner on phase 2 vaccine arm data (SL_fit)",
+                     "Prepare phase 1 vaccine arm data to perform predictions",
+                     "Predict probability of outcome using SuperLearner",
+                     "Info on computing platform, R version",
+                     "Version no. of R packages"), "blue",
+                 ifelse(dat$`Steps in algorithm` %in% c("Validate CV-AUCs and 95% CIs for each Learner-Screen combination!",
+                                                        "Validate CV-AUCs!"), 
+                        "red",
+                        "black")))
+
+
+dat %>%
+  kable(
+    #format = output_type,
+    booktabs = TRUE,
+    linesep = "",
+    caption = caption,
+    escape = FALSE
+  ) %>%
+  column_spec(2, width = "3cm") %>%
+  column_spec(4, width = "3cm") %>%
+  row_spec(0, bold=TRUE, font_size=16) %>%
+  kable_styling(latex_options = c("hold_position"),
+                font_size = 12)
+
+```
+
+
+
+**NOTE:**
+
+There is a slight correction in the cv_auc function in the HVTN505 code. I talked this with Brian. Essentially, the 3rd line in the function, which is                                                                                        
+
+```
+
+folds_z <- c(folds_numeric, sample(seq_len(V), nrow(Z) - length(folds_numeric), replace = TRUE)) 
+
+```
+
+needs to be replaced by
+
+```
+if(is.null(Z)){
+    folds_z <- folds_numeric
+  }else{
+    folds_z <- c(folds_numeric, sample(seq_len(V), nrow(Z) - length(folds_numeric), replace = TRUE))
+}
+
+```

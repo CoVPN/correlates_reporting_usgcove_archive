@@ -1,0 +1,242 @@
+---
+header-includes:
+  - \usepackage{float}
+output:
+  pdf_document: default
+html_document: default
+citation_package: natbib
+number_sections: true
+extra_dependencies: ["caption", "subcaption", "graphicx"]
+toc: true
+---
+
+<!-- # Optimal Surrogate Analysis {#optimal-surrogate} -->
+
+```{r learner-screens, warning=FALSE, echo=FALSE, message=FALSE}
+library(tidyverse, quietly = T)
+library(kableExtra, quietly = T)
+library(conflicted, quietly = T)
+conflicted::conflict_prefer("filter", "dplyr")
+conflict_prefer("summarise", "dplyr")
+
+caption <- "All learner-screen combinations (13 in total) used as input to the Superlearner."
+
+read.csv(here("cor_surrogates", "output", "learner-screens.csv"), row.names = 1,
+         header = TRUE) %>%
+  rename(Screen = `Screen.`) %>%
+  kable(
+    #format = output_type,
+    booktabs = TRUE,
+    linesep = "",
+    caption = caption
+  ) %>%
+  # column_spec(2, width = "3cm") %>%
+  # column_spec(4, width = "3cm") %>%
+  kable_styling(latex_options = c("hold_position"),
+                font_size = 9)
+# %>%
+# footnote(c("Missing values for variables not dropped from analysis were imputed."),
+#          threeparttable = TRUE)
+```
+
+
+\clearpage
+```{r variable-sets, warning=FALSE, echo=FALSE}
+caption <- "All variable sets (10 in total) with immunological markers for which Superlearner was run."
+
+read.csv(here::here("cor_surrogates", "output", "varsets.csv"),
+         row.names = 1, header = TRUE) %>%
+  rename(`Variable Set Name` = `Variable.Set.Name`,
+         `Variables included in the set` = `Variables.included.in.the.set`) %>%
+  kable(
+    booktabs = TRUE,
+    linesep = "",
+    caption = caption
+  ) %>%
+  kable_styling(latex_options = c("hold_position"),
+                font_size = 9) %>%
+  column_spec(2, width = "10cm") %>%
+  row_spec(0,bold=TRUE) %>%
+  footnote(c("Baseline risk factors include risk score, HighRiskInd and MinorityInd variables."),
+           threeparttable = TRUE)
+
+```
+
+
+\clearpage
+```{r SLperformance-allvarsets, warning=FALSE, echo=FALSE, message=FALSE}
+caption <- "Superlearner performance across all 10 variable sets sorted by weighted CV-AUC performance."
+
+read.csv(here("cor_surrogates", "output", "SLperformance_allvarsets.csv"), row.names = 1,
+         header = TRUE) %>%
+  rename(`Variable set` = varset, 
+         `CV-AUC (95% CI)` = AUCstr) %>%
+  kable(
+    #format = output_type,
+    booktabs = TRUE,
+    linesep = "",
+    caption = caption
+  ) %>%
+  # column_spec(2, width = "3cm") %>%
+  # column_spec(4, width = "3cm") %>%
+  kable_styling(latex_options = c("hold_position"),
+                font_size = 9)
+
+```
+
+\clearpage
+```{r, echo=FALSE, out.width="99%", out.height="120%", fig.cap="Forest plot showing Superlearner performance (weighted CV-AUC with 95\\% CI) across all 10 variable sets."}
+
+knitr::include_graphics(here::here("cor_surrogates", "figs", "forest_vacc_cvaucs_allSLs.png"))
+
+```
+
+\clearpage
+# Appendix
+
+Forest plots, ROC curves and predicted probability plots are shown for each variable set.
+
+
+```{r, echo=FALSE, out.width="99%", out.height="120%", fig.cap="1\\_baselineRiskFactors: Weighted CV-AUC (95\\% CI) of algorithms for predicting COVID-19 disease status starting 7 days after Day 57."}
+knitr::include_graphics(here::here("cor_surrogates", "figs", "forest_vacc_cvaucs_1_baselineRiskFactors.png"))
+```
+
+```{r, echo=FALSE, out.width="99%", out.height="120%", fig.cap="1\\_baselineRiskFactors: Weighted CV-AUC ROC curves of top two individual learners along with Superlearner and discrete-SL."}
+knitr::include_graphics(here::here("cor_surrogates", "figs", "ROCcurve_1_baselineRiskFactors.png"))
+```
+
+```{r, echo=FALSE, out.width="99%", out.height="120%", fig.cap="1\\_baselineRiskFactors: Weighted prediction probability plots of top two individual learners along with Superlearner and discrete-SL."}
+knitr::include_graphics(here::here("cor_surrogates", "figs", "predProb_1_baselineRiskFactors.png"))
+```
+
+
+```{r, echo=FALSE, out.width="99%", out.height="120%", fig.cap="2\\_varset\\_bAbSpike: Weighted CV-AUC (95\\% CI) of algorithms for predicting COVID-19 disease status starting 7 days after Day 57."}
+knitr::include_graphics(here::here("cor_surrogates", "figs", "forest_vacc_cvaucs_2_varset_bAbSpike.png"))
+```
+
+
+```{r, echo=FALSE, out.width="99%", out.height="120%", fig.cap="2\\_varset\\_bAbSpike: Weighted CV-AUC ROC curves of top two individual learners along with Superlearner and discrete-SL."}
+knitr::include_graphics(here::here("cor_surrogates", "figs", "ROCcurve_2_varset_bAbSpike.png"))
+```
+
+```{r, echo=FALSE, out.width="99%", out.height="120%", fig.cap="2\\_varset\\_bAbSpike: Weighted prediction probability plots of top two individual learners along with Superlearner and discrete-SL."}
+knitr::include_graphics(here::here("cor_surrogates", "figs", "predProb_2_varset_bAbSpike.png"))
+```
+
+
+```{r, echo=FALSE, out.width="99%", out.height="120%", fig.cap="3\\_varset\\_bAbRBD: Weighted CV-AUC (95\\% CI) of algorithms for predicting COVID-19 disease status starting 7 days after Day 57."}
+knitr::include_graphics(here::here("cor_surrogates", "figs", "forest_vacc_cvaucs_3_varset_bAbRBD.png"))
+```
+
+```{r, echo=FALSE, out.width="99%", out.height="120%", fig.cap="3\\_varset\\_bAbRBD: Weighted CV-AUC ROC curves of top two individual learners along with Superlearner and discrete-SL."}
+knitr::include_graphics(here::here("cor_surrogates", "figs", "ROCcurve_3_varset_bAbRBD.png"))
+```
+
+```{r, echo=FALSE, out.width="99%", out.height="120%", fig.cap="3\\_varset\\_bAbRBD: Weighted prediction probability plots of top two individual learners along with Superlearner and discrete-SL."}
+knitr::include_graphics(here::here("cor_surrogates", "figs", "predProb_3_varset_bAbRBD.png"))
+```
+
+
+```{r, echo=FALSE, out.width="99%", out.height="120%", fig.cap="4\\_varset\\_pnabID50: Weighted CV-AUC (95\\% CI) of algorithms for predicting COVID-19 disease status starting 7 days after Day 57."}
+knitr::include_graphics(here::here("cor_surrogates", "figs", "forest_vacc_cvaucs_4_varset_pnabID50.png"))
+```
+
+```{r, echo=FALSE, out.width="99%", out.height="120%", fig.cap="4\\_varset\\_pnabID50: Weighted CV-AUC ROC curves of top two individual learners along with Superlearner and discrete-SL."}
+knitr::include_graphics(here::here("cor_surrogates", "figs", "ROCcurve_4_varset_pnabID50.png"))
+```
+
+
+```{r, echo=FALSE, out.width="99%", out.height="120%", fig.cap="4\\_varset\\_pnabID50: Weighted prediction probability plots of top two individual learners along with Superlearner and discrete-SL."}
+knitr::include_graphics(here::here("cor_surrogates", "figs", "predProb_4_varset_pnabID50.png"))
+```
+
+
+
+```{r, echo=FALSE, out.width="99%", out.height="120%", fig.cap="5\\_varset\\_pnabID80: Weighted CV-AUC (95\\% CI) of algorithms for predicting COVID-19 disease status starting 7 days after Day 57."}
+knitr::include_graphics(here::here("cor_surrogates", "figs", "forest_vacc_cvaucs_5_varset_pnabID80.png"))
+```
+
+
+```{r, echo=FALSE, out.width="99%", out.height="120%", fig.cap="5\\_varset\\_pnabID80: Weighted CV-AUC ROC curves of top two individual learners along with Superlearner and discrete-SL."}
+knitr::include_graphics(here::here("cor_surrogates", "figs", "ROCcurve_5_varset_pnabID80.png"))
+```
+
+```{r, echo=FALSE, out.width="99%", out.height="120%", fig.cap="5\\_varset\\_pnabID80: Weighted prediction probability plots of top two individual learners along with Superlearner and discrete-SL."}
+knitr::include_graphics(here::here("cor_surrogates", "figs", "predProb_5_varset_pnabID80.png"))
+```
+
+
+```{r, echo=FALSE, out.width="99%", out.height="120%", fig.cap="6\\_varset\\_bAb\\_pnabID50: Weighted CV-AUC (95\\% CI) of algorithms for predicting COVID-19 disease status starting 7 days after Day 57."}
+knitr::include_graphics(here::here("cor_surrogates", "figs", "forest_vacc_cvaucs_6_varset_bAb_pnabID50.png"))
+```
+
+
+```{r, echo=FALSE, out.width="99%", out.height="120%", fig.cap="6\\_varset\\_bAb\\_pnabID50: Weighted CV-AUC ROC curves of top two individual learners along with Superlearner and discrete-SL."}
+knitr::include_graphics(here::here("cor_surrogates", "figs", "ROCcurve_6_varset_bAb_pnabID50.png"))
+```
+
+
+```{r, echo=FALSE, out.width="99%", out.height="120%", fig.cap="6\\_varset\\_bAb\\_pnabID50: Weighted prediction probability plots of top two individual learners along with Superlearner and discrete-SL."}
+knitr::include_graphics(here::here("cor_surrogates", "figs", "predProb_6_varset_bAb_pnabID50.png"))
+```
+
+
+```{r, echo=FALSE, out.width="99%", out.height="120%", fig.cap="7\\_varset\\_bAb\\_pnabID80: Weighted CV-AUC (95\\% CI) of algorithms for predicting COVID-19 disease status starting 7 days after Day 57."}
+knitr::include_graphics(here::here("cor_surrogates", "figs", "forest_vacc_cvaucs_7_varset_bAb_pnabID80.png"))
+```
+
+```{r, echo=FALSE, out.width="99%", out.height="120%", fig.cap="7\\_varset\\_bAb\\_pnabID80: Weighted CV-AUC ROC curves of top two individual learners along with Superlearner and discrete-SL."}
+knitr::include_graphics(here::here("cor_surrogates", "figs", "ROCcurve_7_varset_bAb_pnabID80.png"))
+```
+
+```{r, echo=FALSE, out.width="99%", out.height="120%", fig.cap="7\\_varset\\_bAb\\_pnabID80: Weighted prediction probability plots of top two individual learners along with Superlearner and discrete-SL."}
+knitr::include_graphics(here::here("cor_surrogates", "figs", "predProb_7_varset_bAb_pnabID80.png"))
+```
+
+
+
+```{r, echo=FALSE, out.width="99%", out.height="120%", fig.cap="8\\_varset\\_bAb\\_combScores: Weighted CV-AUC (95\\% CI) of algorithms for predicting COVID-19 disease status starting 7 days after Day 57."}
+knitr::include_graphics(here::here("cor_surrogates", "figs", "forest_vacc_cvaucs_8_varset_bAb_combScores.png"))
+```
+
+
+```{r, echo=FALSE, out.width="99%", out.height="120%", fig.cap="8\\_varset\\_bAb\\_combScores: Weighted CV-AUC ROC curves of top two individual learners along with Superlearner and discrete-SL."}
+knitr::include_graphics(here::here("cor_surrogates", "figs", "ROCcurve_8_varset_bAb_combScores.png"))
+```
+
+
+```{r, echo=FALSE, out.width="99%", out.height="120%", fig.cap="8\\_varset\\_bAb\\_combScores: Weighted prediction probability plots of top two individual learners along with Superlearner and discrete-SL."}
+knitr::include_graphics(here::here("cor_surrogates", "figs", "predProb_8_varset_bAb_combScores.png"))
+```
+
+
+
+```{r, echo=FALSE, out.width="99%", out.height="120%", fig.cap="9\\_varset\\_allMarkers: Weighted CV-AUC (95\\% CI) of algorithms for predicting COVID-19 disease status starting 7 days after Day 57."}
+knitr::include_graphics(here::here("cor_surrogates", "figs", "forest_vacc_cvaucs_9_varset_allMarkers.png"))
+```
+
+```{r, echo=FALSE, out.width="99%", out.height="120%", fig.cap="9\\_varset\\_allMarkers: Weighted CV-AUC ROC curves of top two individual learners along with Superlearner and discrete-SL."}
+knitr::include_graphics(here::here("cor_surrogates", "figs", "ROCcurve_9_varset_allMarkers.png"))
+```
+
+
+```{r, echo=FALSE, out.width="99%", out.height="120%", fig.cap="9\\_varset\\_allMarkers: Weighted prediction probability plots of top two individual learners along with Superlearner and discrete-SL."}
+knitr::include_graphics(here::here("cor_surrogates", "figs", "predProb_9_varset_allMarkers.png"))
+```
+
+
+
+
+```{r, echo=FALSE, out.width="99%", out.height="120%", fig.cap="10\\_varset\\_allMarkers\\_combScores: Weighted CV-AUC (95\\% CI) of algorithms for predicting COVID-19 disease status starting 7 days after Day 57."}
+knitr::include_graphics(here::here("cor_surrogates", "figs", "forest_vacc_cvaucs_10_varset_allMarkers_combScores.png"))
+```
+
+```{r, echo=FALSE, out.width="99%", out.height="120%", fig.cap="10\\_varset\\_allMarkers\\_combScores: Weighted CV-AUC ROC curves of top two individual learners along with Superlearner and discrete-SL."}
+knitr::include_graphics(here::here("cor_surrogates", "figs", "ROCcurve_10_varset_allMarkers_combScores.png"))
+```
+
+
+```{r, echo=FALSE, out.width="99%", out.height="120%", fig.cap="10\\_varset\\_allMarkers\\_combScores: Weighted prediction probability plots of top two individual learners along with Superlearner and discrete-SL."}
+knitr::include_graphics(here::here("cor_surrogates", "figs", "predProb_10_varset_allMarkers_combScores.png"))
+```
+

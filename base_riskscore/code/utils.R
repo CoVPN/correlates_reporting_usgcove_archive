@@ -324,20 +324,30 @@ impute_missing_values <- function(X, riskVars) {
     print(paste("Imputing missing values in following variables: ", paste(as.character(covars), collapse = ", ")))
     n.imp <- 1
 
-    imp <- X %>% select(all_of(covars))
-
+    impVars <- X %>% select(all_of(covars))
+    
     # deal with constant variables
-    for (a in names(imp)) {
-      if (all(imp[[a]]==min(imp[[a]], na.rm=TRUE), na.rm=TRUE)) imp[[a]]=min(imp[[a]], na.rm=TRUE)
+    for (a in names(impVars)) {
+      print(a)
+      if (all(impVars[[a]]==min(impVars[[a]], na.rm=TRUE), na.rm=TRUE)) {
+        X[[a]] = min(impVars[[a]], na.rm=TRUE)
+        covars = covars[!covars %in% a]
+      }
     }
+    
+    noimpVars <- X %>% select(-all_of(covars)) %>% colnames()
 
+    init = mice(X, maxit=0) 
+    meth = init$method
+    predM = init$predictorMatrix 
+    meth[c(noimpVars)] = ""
+    
     # diagnostics = FALSE , remove_collinear=F are needed to avoid errors due to collinearity
-    imp <- imp %>%
-      mice(m = n.imp, printFlag = FALSE, seed=1, diagnostics = FALSE, remove_collinear = FALSE)
-
-    X[, covars] <- mice::complete(imp, action = 1L)
+    impX <- mice(X, method=meth, predictorMatrix=predM, m=n.imp,
+                   printFlag = FALSE, seed=1, diagnostics = FALSE, remove_collinear = FALSE)
+    impX <- mice::complete(impX, action = 1L)
   }
-  return(X)
+  return(impX)
 }
 
 

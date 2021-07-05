@@ -55,13 +55,9 @@ if(study_name_code == "MODERNA"){
 
 if(study_name_code == "ENSEMBLE"){
   risk_vars <- c(
-    "Age", "Region", "Country", "HighRiskInd", "Sex", 
-    #"WhiteNonHispanic", 
-    "Black", "Asian", "NatAmer", "IndigSouthAmer", "PacIsl", "Multiracial", "Other", "Notreported", "Unknown",
-    "URMforsubcohortsampling",
-    "MinorityInd", 
-    "EthnicityHispanic", "EthnicityNotreported", "EthnicityUnknown"
-    #"BMI"
+    "EthnicityHispanic", 
+    "Black", "URMforsubcohortsampling", "HighRiskInd", "Sex", "Age", "BMI", "Country",
+    "HIVinfection", "CalendarDateEnrollment"
   )
   
   endpoint <- "EventIndPrimaryD29"
@@ -107,6 +103,9 @@ risk_placebo_ptids <- dat.ph1 %>% select(Ptid, all_of(endpoint))
 # Impute missing values in any variable included in risk_vars using the mice package!
 print("Make sure data is clean before conducting imputations!")
 X_covars2adjust <- impute_missing_values(X_covars2adjust, risk_vars)
+
+# # Check for missing values before and after imputation
+# sapply(X_covars2adjust, function(x) sum(is.na(x)))
 
 # Scale X_covars2adjust to have mean 0, sd 1 for all vars
 for (a in colnames(X_covars2adjust)) {

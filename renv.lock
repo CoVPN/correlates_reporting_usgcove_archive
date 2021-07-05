@@ -1,6 +1,6 @@
 {
   "R": {
-    "Version": "4.0.3",
+    "Version": "4.0.4",
     "Repositories": [
       {
         "Name": "CRAN",
@@ -36,6 +36,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "56b33b77f4cffd78ff96b8e5a69eabb0"
+    },
+    "FSDAM": {
+      "Package": "FSDAM",
+      "Version": "2020.11-18",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "fcb7e1f60e7fa862820a43b974ec57eb"
     },
     "Formula": {
       "Package": "Formula",
@@ -1707,6 +1714,13 @@
       "Repository": "CRAN",
       "Hash": "bb5996d0bd962d214a11140d77589917"
     },
+    "reticulate": {
+      "Package": "reticulate",
+      "Version": "1.20",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "30ab0ea8c8d3dd16a3fa06903449bbfb"
+    },
     "rex": {
       "Package": "rex",
       "Version": "1.2.0",
@@ -2109,15 +2123,15 @@
     },
     "vimp": {
       "Package": "vimp",
-      "Version": "2.1.10",
+      "Version": "2.2.1",
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
       "RemoteRepo": "vimp",
       "RemoteUsername": "bdwilliamson",
-      "RemoteRef": "HEAD",
-      "RemoteSha": "0a0e89fd735edcbf32f12d6fe99190566589f5f0",
-      "Hash": "4a1bb4ee87eca9d9c46e81d3db8b0e9e"
+      "RemoteRef": "v2.2.1",
+      "RemoteSha": "cd0599fea1ccf66cec7a1013706459850be91d01",
+      "Hash": "fb0e7153a77ce8af74aaaf8459dc9bfa"
     },
     "viridis": {
       "Package": "viridis",

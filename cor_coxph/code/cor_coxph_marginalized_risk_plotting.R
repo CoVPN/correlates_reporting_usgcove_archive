@@ -134,12 +134,8 @@ mypdf(onefile=F, file=paste0(save.results.to, "controlled_ve_curves",ifelse(eq.g
         Bias=controlled.risk.bias.factor(ss=risks$marker, s.cent=s.ref, s1=risks$marker[s1], s2=risks$marker[s2], RRud) 
         if (is.nan(Bias[1])) Bias=rep(1,length(Bias))
     
-        if (study_name_code=="COVE") {
-            ylim=if(eq.geq==1 | eq.geq==3) c(0, 1) else c(0.8, 1)
-        } else if (study_name_code=="ENSEMBLE") {
-            ylim=if(eq.geq==1 | eq.geq==3) c(0, 1) else c(0.5, 1)
-        }
-    
+        ylim=if(eq.geq==1 | eq.geq==3) c(0, 1) else c(ifelse(study_name_code=="COVE", 0.8, 0.5), 1)
+        
         ncases=sapply(risks$marker, function(s) sum(dat.vac.seroneg$yy[dat.vac.seroneg[["Day"%.%pop%.%a]]>=s], na.rm=T))        
         .subset=if(eq.geq==1 | eq.geq==3) rep(T, length(risks$marker)) else ncases>=5
         
@@ -151,14 +147,17 @@ mypdf(onefile=F, file=paste0(save.results.to, "controlled_ve_curves",ifelse(eq.g
         tmp=10**risks$marker[pick.out]; tmp=c(round(tmp[1],1), round(tmp[-1]))
         ret=cbind("s"=tmp, "Estimate"=paste0(formatDouble(est[pick.out],digits.risk), " (", formatDouble(ci.band[1,pick.out],digits.risk), ",", formatDouble(ci.band[2,pick.out],digits.risk), ")"))
 
-        mymatplot(risks$marker[.subset], t(rbind(est, ci.band))[.subset,], type="l", lty=c(1,2,2), col=ifelse(eq.geq==1,"red","white"), lwd=lwd, make.legend=F, ylab=paste0("Controlled VE against COVID by Day ",t0), main=paste0(labels.assays.long["Day"%.%pop,a]),
-            xlab=labels.assays.short[a]%.%ifelse(eq.geq==1 | eq.geq==3," (=s)"," (>=s)"), ylim=ylim, xlim=xlim, yaxt="n", xaxt="n", draw.x.axis=F)
+        mymatplot(risks$marker[.subset], t(rbind(est, ci.band))[.subset,], type="l", lty=c(1,2,2), col=ifelse(eq.geq==1,"red","white"), lwd=lwd, make.legend=F, 
+            ylab=paste0("Controlled VE against COVID by Day ",t0), 
+            main=paste0(labels.assays.long["Day"%.%pop,a]),
+            xlab=labels.assays.short[a]%.%ifelse(eq.geq==1 | eq.geq==3," (=s)"," (>=s)"), 
+            ylim=ylim, xlim=xlim, yaxt="n", xaxt="n", draw.x.axis=F)
         # labels
-        yat=seq(.2,1,by=.1)
+        yat=seq(.0,1,by=.1)
         axis(side=2,at=yat,labels=(yat*100)%.%"%")
     
         # overall controlled VE
-        abline(h=overall.ve, col="gray", lwd=1, lty=c(1,3,3))
+        abline(h=overall.ve, col="gray", lwd=2, lty=c(1,3,3))
         #text(x=par("usr")[1], y=overall.ve[1]+(overall.ve[1]-overall.ve[2])/2,     "overall VE "%.%round(overall.ve[1]*100)%.%"%", adj=0)
     
         # x axis
@@ -314,7 +313,7 @@ for (a in assays) {
     mtext(paste0("High:"),side=1,outer=F,line=5.2,at=at.label,adj=0,cex=cex.text); mtext(n.risk.H,side=1,outer=FALSE,line=5.2,at=x.time,cex=cex.text)
     mtext(paste0("Plac:"),side=1,outer=F,line=6.2,at=at.label,adj=0,cex=cex.text); mtext(n.risk.P,side=1,outer=FALSE,line=6.2,at=x.time,cex=cex.text)
     
-    mtext(expression(bold("Cumulative No. of Overall infections")),side=1,outer=FALSE,line=7.4,at=-2,adj=0,cex=cex.text)
+    mtext(expression(bold("Cumulative No. of COVID Endpoints")),side=1,outer=FALSE,line=7.4,at=-2,adj=0,cex=cex.text)
     mtext(paste0("Low:"),side=1,outer=FALSE,line=8.3,at=at.label,adj=0,cex=cex.text);  mtext(cum.L,side=1,outer=FALSE,line=8.3,at=x.time,cex=cex.text)
     mtext(paste0("Med:"),side=1,outer=FALSE,line=9.2,at=at.label,adj=0,cex=cex.text);  mtext(cum.M,side=1,outer=FALSE,line=9.2,at=x.time,cex=cex.text)
     mtext(paste0("High:"),side=1,outer=FALSE,line=10.1,at=at.label,adj=0,cex=cex.text);mtext(cum.H,side=1,outer=FALSE,line=10.1,at=x.time,cex=cex.text)

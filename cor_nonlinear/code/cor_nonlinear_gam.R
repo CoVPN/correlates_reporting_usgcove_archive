@@ -16,7 +16,7 @@ marginalized.risk.gam.boot=function(formula, marker.name, type=1, data, B, ci.ty
     
     if (type==1) {
     # conditional on S=s
-        ss=quantile(data[[marker.name]], seq(.05,.95,by=0.01), na.rm=TRUE) # this is a fine grid because we may need to read points off the curve    
+        ss=sort(c(report.assay.values(data[[marker.name]], marker.name.to.assay(marker.name)), seq(min(data[[marker.name]], na.rm=TRUE), max(data[[marker.name]], na.rm=TRUE), length=50)[-c(1,50)]))
         f1=update(form.0.logistic, as.formula(paste0("~.+s(",marker.name,")")))        
         fit.risk=mgcv::gam(f1, data=data.ph2, family=binomial, weights=wt.0)
         prob=marginalized.risk(fit.risk, marker.name, data=data.ph2, ss=ss, weights=data.ph2$wt.0, categorical.s=F)        
@@ -96,22 +96,22 @@ dfs=sapply (assays, function(a) {
 })
 
 
-for (idx in 1:2) { # 1 with placebo lines, 2 without placebo lines. Implementation-wise, only difference is in ylim
-# ii=1; idx=1; a=assays[3]
+for (w.wo.plac in 1:2) { # 1 with placebo lines, 2 without placebo lines. Implementation-wise, only difference is in ylim
+# ii=1; w.wo.plac=1; a=assays[3]
     
     risks.all=get("risks.all.vacc.gam")
     
     if (exists("ylims.cor")) {
-        ylim=ylims.cor[[1]][[idx]] # from cor_coxph
+        ylim=ylims.cor[[1]][[w.wo.plac]] # from cor_coxph
     } else {
         print("no ylims.cor found")
-        ylim=range(sapply(risks.all, function(x) x$prob), if(idx==1) prev.plac, prev.vacc, 0)
+        ylim=range(sapply(risks.all, function(x) x$prob), if(w.wo.plac==1) prev.plac, prev.vacc, 0)
     }
     
     myprint(ylim)
     lwd=2
      
-    mypdf(oma=c(0,0,0,0), onefile=F, file=paste0(save.results.to, "marginalized_risks_gam", ifelse(idx==1,"","_woplacebo"), "_"%.%study_name), mfrow=.mfrow)
+    mypdf(oma=c(0,0,0,0), onefile=F, file=paste0(save.results.to, "marginalized_risks_gam", ifelse(w.wo.plac==1,"","_woplacebo"), "_"%.%study_name), mfrow=.mfrow)
     par(las=1, cex.axis=0.9, cex.lab=1)# axis label orientation
     for (a in assays) {        
         risks=risks.all[[a]]
@@ -139,12 +139,12 @@ for (idx in 1:2) { # 1 with placebo lines, 2 without placebo lines. Implementati
         }
         
         # text overall risks
-        if (idx==1) {
-            text(x=par("usr")[2]-diff(par("usr")[1:2])/4, y=prev.plac[1]+(prev.plac[1]-prev.plac[2])/2, "placebo overall risk")        
-            text(x=par("usr")[2]-diff(par("usr")[1:2])/4, y=prev.vacc[1]+(prev.plac[1]-prev.plac[2])/2, "vaccine overall risk")
-        } else {
-            text(x=par("usr")[2]-diff(par("usr")[1:2])/2.5, y=par("usr")[4]-diff(par("usr")[3:4])/20, "placebo overall risk "%.%formatDouble(prev.plac[1],3,remove.leading0=F))
-            text(x=par("usr")[2]-diff(par("usr")[1:2])/4, y=prev.vacc[1]-(prev.vacc[1]-prev.vacc[2])/4, "vaccine overall risk")
+        if (w.wo.plac==1) {
+            text(x=par("usr")[2]-diff(par("usr")[1:2])/3.5, y=prev.plac[1]+(prev.plac[1]-prev.plac[2])/2, "placebo overall "%.%formatDouble(prev.plac[1],3,remove.leading0=F))        
+            text(x=par("usr")[2]-diff(par("usr")[1:2])/3.5, y=prev.vacc[1]+(prev.plac[1]-prev.plac[2])/2, "vaccine overall "%.%formatDouble(prev.vacc[1],3,remove.leading0=F))
+        } else { 
+            text(x=par("usr")[2]-diff(par("usr")[1:2])/3.5, y=par("usr")[4]-diff(par("usr")[3:4])/20,     "placebo overall "%.%formatDouble(prev.plac[1],3,remove.leading0=F))
+            text(x=par("usr")[2]-diff(par("usr")[1:2])/3.5, y=prev.vacc[1]-(prev.vacc[1]-prev.vacc[2])/4, "vaccine overall "%.%formatDouble(prev.vacc[1],3,remove.leading0=F))
         }
         
         # add histogram

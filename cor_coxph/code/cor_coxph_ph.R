@@ -1,5 +1,3 @@
-
-
 ###################################################################################################
 # Regression for continuous markers
 
@@ -8,6 +6,7 @@
 
 fits=list()
 for (a in c("Day"%.%pop%.%assays, "Delta"%.%pop%.%"overB"%.%assays)) {
+#a = "Day"%.%pop%.%assays[1]
     f= update(form.0, as.formula(paste0("~.+", a)))
     fits[[a]]=svycoxph(f, design=design.vacc.seroneg) 
 }
@@ -64,7 +63,7 @@ overall.p.0=formatDouble(c(rbind(overall.p.tri, NA,NA)), digits=3, remove.leadin
 # multitesting adjustment for continuous and trichotomized markers together
 
 p.unadj=c(cont=pvals.cont, tri=overall.p.tri)
-p.unadj.1 = p.unadj # save a copy
+p.unadj.1 = p.unadj # save a copy for later use
 ## we may only keep ID80 and bindSpike in multitesting adjustment because ID50 and ID80 are highly correlated, bindSpike and bindRBD are highly correlated
 #if (study_name_code=="COVE") {
 #    p.unadj = p.unadj[endsWith(names(p.unadj), "pseudoneutid80") | endsWith(names(p.unadj), "bindSpike")]

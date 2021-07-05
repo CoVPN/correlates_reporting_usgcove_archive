@@ -91,7 +91,7 @@ labels.race <- c(
   "White", 
   "Black or African American",
   "Asian", 
-  if (study_name_code=="ENSEMBLE" & Region==1) "Indigenous South American" else "American Indian or Alaska Native",
+  if (study_name_code=="ENSEMBLE" & startsWith(attr(config, "config"),"janssen_la")) "Indigenous South American" else "American Indian or Alaska Native",
   "Native Hawaiian or Other Pacific Islander", 
   "Multiracial",
   if (study_name_code=="COVE") "Other", 

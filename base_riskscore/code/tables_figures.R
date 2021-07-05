@@ -16,6 +16,7 @@ library(cowplot)
 library(here)
 conflict_prefer("filter", "dplyr")
 conflict_prefer("summarise", "dplyr")
+conflict_prefer("load", "base")
 source(here("code", "utils.R"))
 method <- "method.CC_nloglik" # since SuperLearner relies on this to be in GlobalEnv
 ggplot2::theme_set(theme_cowplot())

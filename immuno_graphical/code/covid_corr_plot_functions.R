@@ -1013,7 +1013,7 @@ covid_corr_spaghetti_facets <- function(plot_dat,
                                         ylim,
                                         ybreaks = 2,
                                         arrange_nrow = ceiling(
-                                          lenght(unique(plot_dat[, facet_by])) / 2
+                                          length(unique(plot_dat[, facet_by])) / 2
                                         ),
                                         arrange_ncol = 2,
                                         panel_titles,

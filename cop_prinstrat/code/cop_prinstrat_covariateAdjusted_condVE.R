@@ -358,11 +358,11 @@ for (i in 1:length(biomarkerlist)){
                 "immune marker" = biomarker,
                 "number of levels of BIP" = args)
   save(params, file=paste0(save.results.to, "parameters_info_"%.%study_name%.%".rda"))
-  save(results, file=paste0(here::here("output"), "/", biomarker,"/cor_prinstrat_BIP_",args,"."%.%study_name%.%".rda"))
+  save(results, file=paste0(here::here("output"), "/", biomarker,"/cop_prinstrat_covariateAdjusted_condVE_BIP_",args,"."%.%study_name%.%".rda"))
   
 }
 
 
-print("cor_prinstrat run time: ")
+print("cop_prinstrat_covariateAdjusted_condVE run time: ")
 print(Sys.time()-time.start)
 

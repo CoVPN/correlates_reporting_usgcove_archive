@@ -161,7 +161,7 @@ $\dagger$ q-value and FWER (family-wide error rate) are computed over the set of
 \begin{tabular}{lcccccc} \hline 
  & \multicolumn{2}{c}{marginalized risk} & \multicolumn{2}{c}{controlled risk} & & \\ 
  & \multicolumn{2}{c}{ratio $RR_M(0,1)$} & \multicolumn{2}{c}{ratio $RR_C(0,1)^1$} & \multicolumn{2}{c}{e(0,1)$^2$} \\ 
-Trial  & Point Est. & 95\% CI  &    Point Est. & 95\% CI  &   Point Est.  & 95\% CI UL \\ \hline
+  & Point Est. & 95\% CI  &    Point Est. & 95\% CI  &   Point Est.  & 95\% CI UL \\ \hline
 \input{`r pathCoRoutput`/marginalized_risks_cat_`r study_name`}  \\ \hline 
 \end{tabular}
 \end{center}

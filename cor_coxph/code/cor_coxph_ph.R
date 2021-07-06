@@ -1,5 +1,3 @@
-
-
 ###################################################################################################
 # Regression for continuous markers
 
@@ -8,6 +6,7 @@
 
 fits=list()
 for (a in c("Day"%.%pop%.%assays, "Delta"%.%pop%.%"overB"%.%assays)) {
+#a = "Day"%.%pop%.%assays[1]
     f= update(form.0, as.formula(paste0("~.+", a)))
     fits[[a]]=svycoxph(f, design=design.vacc.seroneg) 
 }
@@ -64,9 +63,11 @@ overall.p.0=formatDouble(c(rbind(overall.p.tri, NA,NA)), digits=3, remove.leadin
 # multitesting adjustment for continuous and trichotomized markers together
 
 p.unadj=c(cont=pvals.cont, tri=overall.p.tri)
-p.unadj.1 = p.unadj # save a copy
-# in Moderna data ID50 and ID80 are highly correlated and ID80 is to be removed from multitesting adjustment
-if (study_name_code=="COVE") p.unadj = p.unadj[!endsWith(names(p.unadj), "pseudoneutid80")]
+p.unadj.1 = p.unadj # save a copy for later use
+## we may only keep ID80 and bindSpike in multitesting adjustment because ID50 and ID80 are highly correlated, bindSpike and bindRBD are highly correlated
+#if (study_name_code=="COVE") {
+#    p.unadj = p.unadj[endsWith(names(p.unadj), "pseudoneutid80") | endsWith(names(p.unadj), "bindSpike")]
+#}
 
 #### Holm and FDR adjustment
 pvals.adj.fdr=p.adjust(p.unadj, method="fdr")
@@ -79,7 +80,7 @@ if(!file.exists(paste0(save.results.to, "pvals.perm.",study_name,".Rdata"))) {
     design.vacc.seroneg.perm=design.vacc.seroneg
     #design.vacc.seroneg.perm$phase1$full$variables
 
-#    # only do multitesting when liveneutmn50 is included
+#    # if want to only do multitesting when liveneutmn50 is included
 #    if (!"liveneutmn50" %in% assays) numPerm=5
 
     out=mclapply(1:numPerm, mc.cores = numCores, FUN=function(seed) {   
@@ -147,11 +148,14 @@ pvals.adj = cbind(p.unadj=p.unadj.1, pvals.adj[match(names(p.unadj.1), rownames(
 
 p.1=formatDouble(pvals.adj["cont."%.%names(pvals.cont),"p.FWER"], 3); p.1=sub(".000","<0.001",p.1)
 p.2=formatDouble(pvals.adj["cont."%.%names(pvals.cont),"p.FDR" ], 3); p.2=sub(".000","<0.001",p.2)
-if (study_name_code=="COVE") {
-    p.1[endsWith(names(p.1), "pseudoneutid80")] = "N/A"
-    p.2[endsWith(names(p.2), "pseudoneutid80")] = "N/A"
-}
-## only do multitesting when liveneutmn50 is included
+#if (study_name_code=="COVE") {
+#    p.1[endsWith(names(p.1), "pseudoneutid50")] = "N/A"
+#    p.2[endsWith(names(p.2), "pseudoneutid50")] = "N/A"
+#    p.1[endsWith(names(p.1), "bindRBD")] = "N/A"
+#    p.2[endsWith(names(p.2), "bindRBD")] = "N/A"
+#}
+
+## if want to only do multitesting when liveneutmn50 is included
 #if (!"liveneutmn50" %in% assays) {
 #    for (i in 1:length(p.1)) p.1[i]<-p.2[i]<-"N/A"
 #}
@@ -183,14 +187,17 @@ rv$tab.1=tab.1.nop12
 # or
 overall.p.1=formatDouble(pvals.adj["tri."%.%names(pvals.cont),"p.FWER"], 3);   overall.p.1=sub(".000","<0.001",overall.p.1)
 overall.p.2=formatDouble(pvals.adj["tri."%.%names(pvals.cont),"p.FDR" ], 3);   overall.p.2=sub(".000","<0.001",overall.p.2)
-if (study_name_code=="COVE") {
-    overall.p.1[endsWith(names(overall.p.1), "pseudoneutid80")] = "N/A"
-    overall.p.2[endsWith(names(overall.p.2), "pseudoneutid80")] = "N/A"
-}
-# only do multitesting when liveneutmn50 is included
-if (!"liveneutmn50" %in% assays) {
-    for (i in 1:length(p.1)) overall.p.1[i]<-overall.p.2[i]<-"N/A"    
-}
+#if (study_name_code=="COVE") {
+#    overall.p.1[endsWith(names(overall.p.1), "pseudoneutid50")] = "N/A"
+#    overall.p.2[endsWith(names(overall.p.2), "pseudoneutid50")] = "N/A"
+#    overall.p.1[endsWith(names(overall.p.1), "bindRBD")] = "N/A"
+#    overall.p.2[endsWith(names(overall.p.2), "bindRBD")] = "N/A"
+#}
+
+## if want to only do multitesting when liveneutmn50 is included
+#if (!"liveneutmn50" %in% assays) {
+#    for (i in 1:length(p.1)) overall.p.1[i]<-overall.p.2[i]<-"N/A"    
+#}
 
 
 # add space
@@ -221,6 +228,7 @@ tmp=rbind(c(labels.axis["Day"%.%pop, assays]), "", "")
 rownames(tab)=c(tmp)
 tab
 
+cond.plac=dat.pla.seroneg[["EventTimePrimaryD"%.%pop]]<=t0
 mytex(tab[1:(nrow(tab)),], file.name="CoR_univariable_svycoxph_cat_pretty_"%.%study_name, align="c", include.colnames = F, save2input.only=T, input.foldername=save.results.to,
     col.headers=paste0("\\hline\n 
          \\multicolumn{1}{l}{", toTitleCase(study_name), "} & \\multicolumn{1}{c}{Tertile}   & \\multicolumn{1}{c}{No. cases /}   & \\multicolumn{1}{c}{Attack}   & \\multicolumn{2}{c}{Haz. Ratio}                     & \\multicolumn{1}{c}{P-value}   & \\multicolumn{1}{c}{Overall P-}      & \\multicolumn{1}{c}{Overall q-}   & \\multicolumn{1}{c}{Overall} \\\\ 
@@ -230,8 +238,8 @@ mytex(tab[1:(nrow(tab)),], file.name="CoR_univariable_svycoxph_cat_pretty_"%.%st
     add.to.row=list(list(nrow(tab)), # insert at the beginning of table, and at the end of, say, the first table
         c(paste0(" \n \\multicolumn{8}{l}{} \\\\ \n", 
                   "\n \\multicolumn{2}{l}{Placebo} & ", 
-                 paste0(sum(dat.pla.seroneg$yy), "/", format(nrow(dat.pla.seroneg), big.mark=",")), "&",  
-                 formatDouble(mean(dat.pla.seroneg$yy), digit=4, remove.leading0=F), "&",  
+                 paste0(sum(dat.pla.seroneg$yy[cond.plac]), "/", format(nrow(dat.pla.seroneg), big.mark=",")), "&",  
+                 formatDouble(sum(dat.pla.seroneg$yy[cond.plac])/nrow(dat.pla.seroneg), digit=4, remove.leading0=F), "&",  
                  "\\multicolumn{4}{l}{}  \\\\ \n")
           #"\\hline\n \\multicolumn{4}{l}{Standard Deviation 1 mcg/mL}\\\\ \n"
          )
@@ -360,9 +368,10 @@ for (a in assays) {
 }
 
 
+age.threshold=switch(study_name_code,COVE=65,ENSEMBLE=60)
 for (a in assays) {    
     names(fits.all.2[[a]])=c("All Vaccine", 
-                             "Age >= "%.%switch(study_name_code,COVE=65,ENSEMBLE=60), "Age < "%.%switch(study_name_code,COVE=65,ENSEMBLE=60), 
+                             "Age >= "%.%age.threshold, "Age < "%.%age.threshold, 
                              "At risk", "Not at risk", 
                              "Comm. of color", "White Non-Hispanic", 
                              "Men", "Women",

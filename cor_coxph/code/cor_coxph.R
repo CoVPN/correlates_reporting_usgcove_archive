@@ -1,4 +1,4 @@
-#Sys.setenv(TRIAL = "moderna_mock")
+#Sys.setenv(TRIAL = "janssen_la_mock")
 if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
 #----------------------------------------------- 
 # obligatory to append to the top of each script
@@ -31,8 +31,9 @@ source(here::here("code", "params.R"))
 
 # population is either 57 or 29
 Args <- commandArgs(trailingOnly=TRUE)
-if (length(Args)==0) Args=c(pop="29")
+if (length(Args)==0) Args=c(pop="29")# has to be 29 if it is janssen
 pop=Args[1]; myprint(pop)
+
 if(!has29 & pop=="29") {
     print("Quitting because there are no Day 29 markers")
     quit()
@@ -84,6 +85,16 @@ if (pop=="57") {
 # the following data frame define the phase 1 ptids
 dat.vac.seroneg=subset(dat.mock, Trt==1 & Bserostatus==0 & ph1)
 dat.pla.seroneg=subset(dat.mock, Trt==0 & Bserostatus==0 & ph1)
+
+## temp: experimenting with multitesting
+## based on moderna_mock
+## make their correlation 0.98
+#dat.vac.seroneg$Day57bindRBD = dat.vac.seroneg$Day57bindSpike + rnorm(nrow(dat.vac.seroneg), sd=.1)
+#dat.vac.seroneg$Day57pseudoneutid50 = dat.vac.seroneg$Day57pseudoneutid80 + rnorm(nrow(dat.vac.seroneg), sd=.1)
+## switch 50 and 80
+#tmp=dat.vac.seroneg$Day57pseudoneutid50
+#dat.vac.seroneg$Day57pseudoneutid50=dat.vac.seroneg$Day57pseudoneutid80
+#dat.vac.seroneg$Day57pseudoneutid80=tmp
     
 # define an alias for EventIndPrimaryDxx
 dat.vac.seroneg$yy=dat.vac.seroneg[["EventIndPrimaryD"%.%pop]]
@@ -96,11 +107,12 @@ myprint(t0)
 # formulae
 form.s = as.formula(paste0("Surv(EventTimePrimaryD",pop,", EventIndPrimaryD",pop,") ~ 1"))
 if (endsWith(data_name, "riskscore.csv")) {
-    form.0 =            update (form.s, ~.+ MinorityInd + HighRiskInd + risk_score)
-    form.0.logistic = as.formula(paste0("EventIndPrimaryD",pop,"  ~ MinorityInd + HighRiskInd + risk_score"))
+    form.0 = update (form.s, ~.+ MinorityInd + HighRiskInd + risk_score)
 } else {
-    form.0 =            update (form.s, ~.+ MinorityInd + HighRiskInd + Age) 
-    form.0.logistic = as.formula(paste0("EventIndPrimaryD",pop,"  ~ MinorityInd + HighRiskInd + Age"))  
+    form.0 = update (form.s, ~.+ MinorityInd + HighRiskInd + Age) 
+}
+if (study_name_code=="ENSEMBLE") {
+    form.0 = update (form.0, ~.+ strata(Region)) 
 }
     
 # covariate length without markers
@@ -212,19 +224,19 @@ save(rv, file=paste0(here::here("verification"), "/D", pop, ".rv."%.%study_name%
 
 ###################################################################################################
 # sanity check using rv
-if (study_name == "MockCOVE" & endsWith(data_name, "riskscore.csv")) {
-    tmp.1=c(sapply(rv$fr.2[-1], function (x) x[c("HR","p.value"),1]))
-    # concatList(tmp.1, ", ")
-    if (pop=="29") {
-        tmp.2=c(3.05421e-01, 3.81451e-05, 5.04954e-01, 1.02274e-02, 4.29867e-01, 1.61460e-02, 3.53596e-01, 1.66990e-03)
-    } else if (pop=="57") {
-        tmp.2=c(0.204095984712382, 2.64623152995293e-08, 0.427643725113847, 0.00266677290367735, 0.321097672744844, 0.000412544862547617, 0.34676662290256, 0.000700882529029697)
-    }
-    assertthat::assert_that(
-        max(abs(tmp.1-tmp.2)/abs(tmp.2))<1e-5,
-        msg = "failed sanity check")    
-    print("Passed sanity check")    
-}
+# if (study_name == "MockCOVE" & endsWith(data_name, "riskscore.csv")) {
+#     tmp.1=c(sapply(rv$fr.2[-1], function (x) x[c("HR","p.value"),1]))
+#     # concatList(tmp.1, ", ")
+#     if (pop=="29") {
+#         tmp.2=c(3.05421e-01, 3.81451e-05, 5.04954e-01, 1.02274e-02, 4.29867e-01, 1.61460e-02, 3.53596e-01, 1.66990e-03)
+#     } else if (pop=="57") {
+#         tmp.2=c(0.204095984712382, 2.64623152995293e-08, 0.427643725113847, 0.00266677290367735, 0.321097672744844, 0.000412544862547617, 0.34676662290256, 0.000700882529029697)
+#     }
+#     assertthat::assert_that(
+#         max(abs(tmp.1-tmp.2)/abs(tmp.2))<1e-5,
+#         msg = "failed sanity check")    
+#     print("Passed sanity check")    
+# }
 
 
 

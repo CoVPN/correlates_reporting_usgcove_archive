@@ -1,4 +1,4 @@
-# Super Learning of Optimal Predictive Surrogates for Correlates of Risk
+# Correlates: Optimal Surrogates
 
 ## Contents
 
@@ -7,4 +7,6 @@
 * `figs`: visualizations of exploratory and analytic results
 * `output`: results files produced by statistical analyses
 * `slurm`: scheduler scripts for submission of batch jobs
+
+
 

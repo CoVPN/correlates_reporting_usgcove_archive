@@ -49,16 +49,18 @@ if(!file.exists(paste0(save.results.to, "marginalized.risk.no.marker.",study_nam
         
         if (.trt==0) {
             res.plac.cont=c(est=prob, boot)
+            prev.plac=c(res.plac.cont[1], quantile(res.plac.cont[-1], c(.025,.975)))
         } else {
             res.vacc.cont=c(est=prob, boot)
+            prev.vacc=c(res.vacc.cont[1], quantile(res.vacc.cont[-1], c(.025,.975)))
         }
     }    
     
-    prev.plac=c(res.plac.cont[1], quantile(res.plac.cont[-1], c(.025,.975)))
-    prev.vacc=c(res.vacc.cont[1], quantile(res.vacc.cont[-1], c(.025,.975)))
-    print(cbind(prev.plac, prev.vacc))
+    overall.ve = c(1 - res.vacc.cont["est"]/res.plac.cont["est"], quantile(1 - res.vacc.cont[-1]/res.plac.cont[-1], c(0.025, 0.975)))
+
+    print(cbind(prev.plac, prev.vacc, overall.ve))
     
-    save(res.plac.cont, res.vacc.cont, prev.plac, prev.vacc, file=paste0(save.results.to, "marginalized.risk.no.marker."%.%study_name%.%".Rdata"))
+    save(res.plac.cont, res.vacc.cont, prev.plac, prev.vacc, overall.ve, file=paste0(save.results.to, "marginalized.risk.no.marker."%.%study_name%.%".Rdata"))
     
 } else {
     load(paste0(save.results.to, "marginalized.risk.no.marker."%.%study_name%.%".Rdata"))

@@ -33,7 +33,7 @@ if(!has57) dat$cohort_event <- factor(with(dat,
                                            ifelse(Perprotocol==1 & Bserostatus==0 & TwophasesampIndD29==1 & EventIndPrimaryD1==1  & EventTimePrimaryD1 <= 13, 
                                                   "Day 2-14 Cases",
                                                   ifelse(Perprotocol==1 & Bserostatus==0 & TwophasesampIndD29==1 & EventIndPrimaryD1==1  & EventTimePrimaryD1 > 13
-                                                         & EventTimePrimaryD1 <= 7 + NumberdaysD1toD29, "Day 15-35 Cases",
+                                                         & EventTimePrimaryD1 <= 6 + NumberdaysD1toD29, "Day 15-35 Cases",
                                                          ifelse(Perprotocol==1 & Bserostatus==0 & TwophasesampIndD29==1 & EventIndPrimaryD29==1 & EventTimePrimaryD29 >= 7, "Primary Cases",
                                                                 ifelse(Perprotocol==1 & Bserostatus==0 & TwophasesampIndD29==1 & EventIndPrimaryD1==0  & EarlyendpointD29==0, "Non-Cases", NA))))),
                                       levels = c("Day 2-14 Cases", "Day 15-35 Cases", "Primary Cases", "Non-Cases"))

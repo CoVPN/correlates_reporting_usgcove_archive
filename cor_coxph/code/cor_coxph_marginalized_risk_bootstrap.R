@@ -114,9 +114,8 @@ if(!file.exists(paste0(save.results.to, "marginalized.risk.",study_name,".Rdata"
 } else {
     load(paste0(save.results.to, "marginalized.risk."%.%study_name%.%".Rdata"))
 }
+write(ncol(risks.all.1[[1]]$boot), file=paste0(save.results.to, "bootstrap_replicates_"%.%study_name))
 #rv$marginalized.risk.S.eq.s=list()
 #for (a in assays) rv$marginalized.risk.S.eq.s[[a]] = risks.all.1[[a]][c("marker","prob")]
 #rv$marginalized.risk.S.geq.s=list()
 #for (a in assays) rv$marginalized.risk.S.geq.s[[a]] = risks.all.2[[a]][c("marker","prob")]
-
-write(ncol(risks.all.1[[1]]$boot), file=paste0(save.results.to, "bootstrap_replicates_"%.%study_name))

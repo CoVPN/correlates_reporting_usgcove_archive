@@ -4,10 +4,14 @@ RRud=RReu=2
 bias.factor=bias.factor(RRud, RReu)
     
 # to be saved for cor_nonlinear
-ylims.cor=list()
-ylims.cor[[1]]=list(2)
-ylims.cor[[2]]=list(2)
-    
+if (!exists("ylims.cor")) {
+    ylims.cor=list()
+    ylims.cor[[1]]=list(2)
+    ylims.cor[[2]]=list(2)
+    create.ylims.cor=T
+} else {
+    create.ylims.cor=F
+}
 #
 report.ve.levels=c(.65,.9,.95)
 
@@ -21,17 +25,22 @@ for (w.wo.plac in 1:2) { # 1 with placebo lines, 2 without placebo lines. Implem
     
     risks.all=get("risks.all."%.%eq.geq)
     
-    if (eq.geq==2 & w.wo.plac==2) {
-        # later values in prob may be wildly large due to lack of samples
-        ylim=range(sapply(risks.all, function(x) x$prob[1]), if(w.wo.plac==1) prev.plac, prev.vacc, 0)
-        # add some white space at the top to write placebo overall risk
-        ylim[2]=ylim[2]
-#        ylim=c(0, 0.007)
+    if (!create.ylims.cor) {
+        ylim=ylims.cor[[eq.geq]][[w.wo.plac]] # use D29 values
     } else {
-        ylim=range(sapply(risks.all, function(x) x$prob), if(w.wo.plac==1) prev.plac, prev.vacc, 0)
+        print("no ylims.cor found")        
+        if (eq.geq==2 & w.wo.plac==2) {
+            # later values in prob may be wildly large due to lack of samples
+            ylim=range(sapply(risks.all, function(x) x$prob[1]), if(w.wo.plac==1) prev.plac, prev.vacc, 0)
+            # add some white space at the top to write placebo overall risk
+            ylim[2]=ylim[2]
+    #        ylim=c(0, 0.007)
+        } else {
+            ylim=range(sapply(risks.all, function(x) x$prob), if(w.wo.plac==1) prev.plac, prev.vacc, 0)
+        }
+        ylims.cor[[eq.geq]][[w.wo.plac]]=ylim
     }
     myprint(ylim)
-    ylims.cor[[eq.geq]][[w.wo.plac]]=ylim
     lwd=2
      
     mypdf(oma=c(0,0,0,0), onefile=F, file=paste0(save.results.to, "marginalized_risks", ifelse(eq.geq==1,"_eq","_geq"), ifelse(w.wo.plac==1,"","_woplacebo"), "_"%.%study_name), mfrow=.mfrow)

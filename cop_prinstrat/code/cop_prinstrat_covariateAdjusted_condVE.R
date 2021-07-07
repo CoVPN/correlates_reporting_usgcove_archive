@@ -389,8 +389,10 @@ for (i in 1:length(biomarkerlist)){
   additiveVE = bootresults[1,]
   multiplicativeVE = bootresults[2,]
   print(paste0("save.bootstrap.results.to equals ", save.results.to))
-  save(getsd("additive"), file=paste0(here::here("output"), "/", biomarker,"/cop_prinstrat_covariateAdjusted_condVE_additiveStd_BIP_",args,"."%.%study_name%.%".rda"))
-  save(getsd("multiplicative"), file=paste0(here::here("output"), "/", biomarker,"/cop_prinstrat_covariateAdjusted_condVE_MultiplicativeStd_BIP_",args,"."%.%study_name%.%".rda"))
+  out.additiveVE = getsd("additive")
+  out.multiplicativeVE = getsd("multiplicative")
+  save(out.additiveVE, file=paste0(here::here("output"), "/", biomarker,"/cop_prinstrat_covariateAdjusted_condVE_additiveStd_BIP_",args,"."%.%study_name%.%".rda"))
+  save(out.multiplicativeVE, file=paste0(here::here("output"), "/", biomarker,"/cop_prinstrat_covariateAdjusted_condVE_MultiplicativeStd_BIP_",args,"."%.%study_name%.%".rda"))
   
 }
 

@@ -121,7 +121,7 @@ tmp=paste0(here::here(".."), "/cor_coxph/output/D", pop,"/", "marginalized.risk.
 if (file.exists(tmp)) load(tmp)
 # if this does not exist, the code will throw error
 
-# load ylims.cor[[1]], which is a list of two: 1 with placebo lines, 2 without placebo lines.
+# load ylims.cor, which is a list of two: 1 with placebo lines, 2 without placebo lines.
 tmp=paste0(here::here(".."), "/cor_coxph/output/D", pop,"/", "ylims.cor."%.%study_name%.%".Rdata")
 if (file.exists(tmp)) load(tmp)
 # if this does not exist, the code will find alternative ylim

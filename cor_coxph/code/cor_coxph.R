@@ -220,6 +220,11 @@ if (study_name == "MockCOVE" & !endsWith(data_name, "riskscore.csv")) {
 # draw marginalized risk curves
 ###################################################################################################
     
+# load ylims.cor[[1]] from D29 analyses, which is a list of two: 1 with placebo lines, 2 without placebo lines.
+tmp=paste0(here::here(), "/output/D29/ylims.cor."%.%study_name%.%".Rdata")
+if (file.exists(tmp)) load(tmp)
+# if this does not exist, the code will find alternative ylim
+
 source(here::here("code", "cor_coxph_marginalized_risk_no_marker.R"))
 source(here::here("code", "cor_coxph_marginalized_risk_bootstrap.R"))
 source(here::here("code", "cor_coxph_marginalized_risk_plotting.R"))

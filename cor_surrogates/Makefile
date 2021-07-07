@@ -1,13 +1,13 @@
 ## all           : clean saved results and get results to populate report
-all: clean run_cvsl_riskscore createRDAfiles_fromSLobjects tables_figures
+all: clean run_cvsl_varsets createRDAfiles_fromSLobjects tables_figures
 
 ## clean         : delete all SL results
 clean:
 	rm -f output/*
 	rm -f results/*
 
-## run_cvsl_riskscore   : run CV-SL on placebo arm
-run_cvsl_riskscore: 
+## run_cvsl_varsets   : run CV-SL on vaccine arm and each variable set
+run_cvsl_varsets: 
 	Rscript code/run_cvsl_varsets.R 1 && \
 	Rscript code/run_cvsl_varsets.R 2 && \
 	Rscript code/run_cvsl_varsets.R 3 && \
@@ -17,13 +17,11 @@ run_cvsl_riskscore:
 	Rscript code/run_cvsl_varsets.R 7 && \
 	Rscript code/run_cvsl_varsets.R 8 && \
 	Rscript code/run_cvsl_varsets.R 9 && \
-	Rscript code/run_cvsl_varsets.R 10 && \
-	Rscript code/run_cvsl_varsets.R 11 && \
-	Rscript code/run_cvsl_varsets.R 12
+	Rscript code/run_cvsl_varsets.R 10 
 	#sbatch code/submit_cluster_job.sh
 	
 ## createRDAfiles_fromSLobjects   : create RDA files from SL objects
-createRDAfiles_fromSLobjects: run_cvsl_riskscore
+createRDAfiles_fromSLobjects: run_cvsl_varsets
 	Rscript code/createRDAfiles_fromSLobjects.R
 	#sbatch code/createRDAfiles_fromSLobjects.sh
 	

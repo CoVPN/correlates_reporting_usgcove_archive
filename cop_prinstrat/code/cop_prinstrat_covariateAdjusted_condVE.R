@@ -118,7 +118,7 @@ standard = function(data){
 ### negative immune response group (column 1) and positive immune response group
 ### (column 2). Estimates under the BIP design are presented in row 1. 
 ### Covariate-adjusted estimates  under BIP design are presented in row 2.
-### Standard errors can be computed by bootstrapping
+### Standard errors are computed by bootstrapping
 
 condVE = function(data,nseeds=10,weightX=rep(1,nrow(data)),weightW=rep(1,nrow(data)),weightX.adjust=rep(1,nrow(data)),weightW.adjust=rep(1,nrow(data))){
   
@@ -154,7 +154,7 @@ condVE = function(data,nseeds=10,weightX=rep(1,nrow(data)),weightW=rep(1,nrow(da
            weights*(assign==1)*((!is.na(x) & x==1)*log(eta_2[w+1]) + (!is.na(x) & x==0)*log(1-eta_2[w+1]))+
            weightW*(assign==0)*y*log(theta[1]*eta_2[w+1]  +theta[2]*(1-eta_2[w+1]) )+
            weightX*(assign==0)*(1-y)*log((1-theta[1])*eta_2[w+1]  +(1-theta[2])*(1-eta_2[w+1]) )+
-           log(1/k)+assign*log(pA)+(1-assign)*log(pA))
+           log(1/k)+assign*log(pA)+(1-assign)*log(1-pA))
   }
   
   mle.BIP = optim(rep(0.2,(k+4)),fn.BIP,method = "L-BFGS-B", lower=rep(0.0001,(k+4)),upper = rep(0.99,(k+4)))$par
@@ -210,8 +210,8 @@ condVE = function(data,nseeds=10,weightX=rep(1,nrow(data)),weightW=rep(1,nrow(da
 
     predict.treat.1 = predict(sl.y,data.frame(model.matrix(as.formula(paste0(frm,"+immune")),data)),onlySL = T)$pred[data$immune[!is.na(data$immune)]==1 & data$assign[!is.na(data$immune)]==1]
     predict.treat.0 =  predict(sl.y,data.frame(model.matrix(as.formula(paste0(frm,"+immune")),data)),onlySL = T)$pred[data$immune[!is.na(data$immune)]==0 & data$assign[!is.na(data$immune)]==1]
-    tmle.y.1 = glm(as.matrix(subset(data,assign==1 &immune==1,select = infection))~ -1+rep(1/px1a1,sum(as.numeric(assign==1&x==1),na.rm = T)),family = "binomial",offset = logit(clip(predict.treat.1)))
-    tmle.y.0 = glm(as.matrix(subset(data,assign==1 &immune==0,select = infection))~ -1+rep(1/px0a1,sum(as.numeric(assign==1&x==0),na.rm = T)),family ="binomial",offset = logit(clip(predict.treat.0)))
+    tmle.y.1 = glm(as.matrix(subset(data,assign==1 &immune==1,select = infection))~ 1,family = "binomial",offset = logit(clip(predict.treat.1)),weights =  weights[data$assign==1 &data$immune==1 & !is.na(data$immune)]/px1a1)
+    tmle.y.0 = glm(as.matrix(subset(data,assign==1 &immune==0,select = infection))~ 1,family = "binomial",offset = logit(clip(predict.treat.0)),weights =  weights[data$assign==1 &data$immune==0 & !is.na(data$immune)]/px0a1)
     predict.treat.y1.update = predict.treat.y0.update = array(NA,nrow(data))
     predict.treat.y1.update[!is.na(x)&x==1] =expit(logit(predict(sl.y,data.frame(model.matrix(as.formula(paste0(frm,"+immune")),data)),onlySL = T)$pred)[data$immune[!is.na(data$immune)]==1] + coef(summary(tmle.y.1))[1]/pA)
     predict.treat.y0.update[!is.na(x)&x==0] =expit(logit(predict(sl.y,data.frame(model.matrix(as.formula(paste0(frm,"+immune")),data)),onlySL = T)$pred)[data$immune[!is.na(data$immune)]==0] + coef(summary(tmle.y.0))[1]/pA)
@@ -284,7 +284,7 @@ condVE = function(data,nseeds=10,weightX=rep(1,nrow(data)),weightW=rep(1,nrow(da
            (!is.na(x))*(assign==1)*(p.x[w+1]*log(eta_2[w+1]) + (1-p.x[w+1])*log(1-eta_2[w+1]))+
            weightW.adjust*(assign==0)*(1-p.y[w+1])*log((1-theta[1])*eta_2[w+1] + (1-theta[2])*(1-eta_2[w+1]))+
            weightW.adjust*(assign==0)*(p.y[w+1])*log(theta[1]*eta_2[w+1] + theta[2]*(1-eta_2[w+1]))+
-           log(1/k)+assign*log(pA)+(1-assign)*log(pA))
+           log(1/k)+assign*log(pA)+(1-assign)*log(1-pA))
     
   }
   mle.adjusted.BIP = optim(rep(0.2,k+4),fn.adjusted.BIP,method = "L-BFGS-B", lower=rep(0.001,k+4),upper = rep(0.99,k+4))$par
@@ -309,7 +309,32 @@ condVE = function(data,nseeds=10,weightX=rep(1,nrow(data)),weightW=rep(1,nrow(da
   return(list("AdditiveVE"=results,"MultiplicativeVE"=resultsM))
 }
 
+### This function outputs additive and multiplicative conditional vaccine efficacy
+### using bootstraps
+condVE.boot = function(data,nseeds=10,weightX=rep(1,nrow(data)),weightW=rep(1,nrow(data)),weightX.adjust=rep(1,nrow(data)),weightW.adjust=rep(1,nrow(data))){
+  index = sample(1:nrow(data),replace = T)
+  data = data[index,]
+  condVE(data,nseeds,weightX,weightW,weightX.adjust,weightW.adjust)
+}
 
+### This function outputs the standard error of additive and multiplicative VE
+### for x=0 and x=1 
+getsd = function(which){
+  if (which=="additive"){
+    result = matrix(unlist(additiveVE),ncol=4,byrow=T)
+    sd = sqrt(apply(result, 2,var))
+  }else{
+    result = matrix(unlist(multiplicativeVE),ncol=4,byrow=T)
+    ### need to clip out extreme values. Here set the multiplicative VE threshold to be
+    ### [-5,1]. The lower bound suggests that conditioning on the same immune response level,
+    ### the vaccine is at most 5 times harmful.
+    index = c(which(result[,1] >= 1),which(result[,2] >= 1),which(result[,3] >= 1),which(result[,4] >= 1),
+              which(result[,1] <= -5),which(result[,2] <= -5),which(result[,3] <= -5),which(result[,4] <= -5))
+    result =result[-index,]
+    sd = sqrt(apply(result, 2,var))
+  }
+  return(list("unadjusted" = sd[c(1,3)], "adjusted" = sd[c(2,4)]))
+}
 ###################################################################################################
 # read data_clean
 data_name_updated <- sub(".csv", "_with_riskscore.csv", data_name)
@@ -359,6 +384,13 @@ for (i in 1:length(biomarkerlist)){
                 "number of levels of BIP" = args)
   save(params, file=paste0(save.results.to, "parameters_info_"%.%study_name%.%".rda"))
   save(results, file=paste0(here::here("output"), "/", biomarker,"/cop_prinstrat_covariateAdjusted_condVE_BIP_",args,"."%.%study_name%.%".rda"))
+  ### save bootstrapped standard errors: # of replications  = 50
+  bootresults = replicate(50,condVE.boot(data)) 
+  additiveVE = bootresults[1,]
+  multiplicativeVE = bootresults[2,]
+  print(paste0("save.bootstrap.results.to equals ", save.results.to))
+  save(getsd("additive"), file=paste0(here::here("output"), "/", biomarker,"/cop_prinstrat_covariateAdjusted_condVE_additiveStd_BIP_",args,"."%.%study_name%.%".rda"))
+  save(getsd("multiplicative"), file=paste0(here::here("output"), "/", biomarker,"/cop_prinstrat_covariateAdjusted_condVE_MultiplicativeStd_BIP_",args,"."%.%study_name%.%".rda"))
   
 }
 

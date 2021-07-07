@@ -167,8 +167,8 @@ dat.long.twophase.sample$ethnicity_label <-
 dat.long.twophase.sample$minority_label <-
   with(
     dat.long.twophase.sample,
-    factor(WhiteNonHispanic,
-      levels = c(1, 0),
+    factor(MinorityInd,
+      levels = c(0, 1),
       labels = c("White Non-Hispanic", "Comm. of Color")
     )
   )
@@ -176,8 +176,8 @@ dat.long.twophase.sample$minority_label <-
 dat.long.twophase.sample$age_minority_label <-
   with(
     dat.long.twophase.sample,
-    factor(paste0(age.geq.65, WhiteNonHispanic),
-      levels = c("00", "01", "10", "11"),
+    factor(paste0(age.geq.65, MinorityInd),
+      levels = c("01", "00", "11", "10"),
       labels = c(
         "Age < 65 Comm. of Color",
         "Age < 65 White Non-Hispanic",
@@ -194,7 +194,7 @@ dat.long.twophase.sample$Ptid <- as.character(dat.long.twophase.sample$Ptid)
 dat.twophase.sample$Ptid <- as.character(dat.twophase.sample$Ptid) 
 
 
-
+dat.long.twophase.sample <- filter(dat.long.twophase.sample, assay %in% assay_immuno)
 
 
 saveRDS(as.data.frame(dat.long.twophase.sample),

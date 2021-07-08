@@ -154,13 +154,19 @@ for (typ in c("line","violin")) {
             # ID50/80 pseudo/live neut, a positive response: serum ID50 titer > 1:20 (log10(20)), a negative response as the complement
             groupby_vars2 <- c("Trt", "Bserostatus", "cohort_event", "time", "assay", s)
             
-            longer_cor_data_plot2 <- 
-              longer_cor_data %>% group_by_at(groupby_vars2) %>%
-              mutate(if(has57) num = round(sum(response * ifelse(cohort_event=="Intercurrent Cases", wt.intercurrent.cases, wt.D57)), 1), 
-                     if(!has57) num = round(sum(response * wt.D29), 1), 
-                     if(has57) denom = round(sum(ifelse(cohort_event=="Intercurrent Cases", wt.intercurrent.cases, wt.D57)), 1), 
-                     if(!has57) denom = round(sum(wt.D29), 1), 
-                     RespRate = paste0(num,"/",denom,"\n",round(num/denom*100, 1),"%"))
+            if(has57) {
+              longer_cor_data_plot2 <- 
+                longer_cor_data %>% group_by_at(groupby_vars2) %>%
+                mutate(num = round(sum(response * ifelse(cohort_event=="Intercurrent Cases", wt.intercurrent.cases, wt.D57)), 1), 
+                       denom = round(sum(ifelse(cohort_event=="Intercurrent Cases", wt.intercurrent.cases, wt.D57)), 1), 
+                       RespRate = paste0(num,"/",denom,"\n",round(num/denom*100, 1),"%"))
+            } else {
+              longer_cor_data_plot2 <- 
+                longer_cor_data %>% group_by_at(groupby_vars2) %>%
+                mutate(num = round(sum(response * wt.D29), 1), 
+                       denom = round(sum(wt.D29), 1), 
+                       RespRate = paste0(num,"/",denom,"\n",round(num/denom*100, 1),"%"))
+            }
             
             # make subset for strata RaceEthnic and Dich_RaceEthnic, only present non-NA categories
             if (s=="minority_label") {

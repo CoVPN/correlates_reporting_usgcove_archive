@@ -121,10 +121,12 @@ dat.long.cor.subset$LLoQ = log10(lloqs[as.character(dat.long.cor.subset$assay)])
 dat.long.cor.subset$pos.cutoffs = log10(pos.cutoffs[as.character(dat.long.cor.subset$assay)])
 dat.long.cor.subset$ULoQ = log10(uloqs[as.character(dat.long.cor.subset$assay)])
 
-# add label = LLoD / poscutoff values to show in the plot
+# add label = LLoD / poscutoff, uloq values to show in the plot
 dat.long.cor.subset$LLoD = log10(llods[as.character(dat.long.cor.subset$assay)])
 dat.long.cor.subset$lb = with(dat.long.cor.subset, ifelse(grepl("bind", assay), "Pos.Cut", "LLoD")) 
 dat.long.cor.subset$lbval =  with(dat.long.cor.subset, ifelse(grepl("bind", assay), pos.cutoffs, LLoD))
+dat.long.cor.subset$lb2 = with(dat.long.cor.subset, ifelse(grepl("bind", assay), "ULoQ", "")) 
+dat.long.cor.subset$lbval2 =  with(dat.long.cor.subset, ifelse(grepl("bind", assay), ULoQ, -99))
 
 # assign values above the uloq to the uloq
 for (t in c("B", if(has29) "Day29", "Day57") ) {
@@ -263,10 +265,10 @@ dat.long.cor.subset$age_minority_label <-
 dat.longer.cor.subset <- dat.long.cor.subset[,c("Ptid", "Trt", "Bserostatus", "EventIndPrimaryD29", 
         "EventTimePrimaryD29", "Perprotocol", "cohort_event", "Age", "age_geq_65_label", 
         "highrisk_label", "age_risk_label", "sex_label", "minority_label", "Dich_RaceEthnic", "assay", 
-        "LLoD", "LLoQ", "pos.cutoffs", "ULoQ", "lb", "lbval", 
-        if(has57) c("EventIndPrimaryD57", "Day57", "Delta57overB", "ph1.intercurrent.cases", 
-                    "ph2.intercurrent.cases", "wt.intercurrent.cases", "wt.D57"),
-        "wt.D29", "B", "Day29", "Delta29overB")] %>%
+        "LLoD", "LLoQ", "pos.cutoffs", "ULoQ", "lb", "lbval", "lb2", "lbval2", 
+        if(has57) c("EventIndPrimaryD57", "ph1.intercurrent.cases", 
+                    "ph2.intercurrent.cases", "wt.intercurrent.cases", "wt.D57"), "wt.D29", 
+        "B", "Day29", "Delta29overB", if(has57) c("Day57", "Delta57overB"))] %>%
   pivot_longer(!Ptid:wt.D29, names_to = "time", values_to = "value")
 
 # define response rates
@@ -401,3 +403,4 @@ saveRDS(as.data.frame(dat.cor.subset),
 
 saveRDS(as.data.frame(dat.longer.cor.subset),
         file = here("data_clean", "longer_cor_data.rds"))
+

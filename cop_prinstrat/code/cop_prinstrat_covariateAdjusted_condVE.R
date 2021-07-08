@@ -25,6 +25,7 @@ library(ranger)
 library(xgboost)
 library(polspline)
 library(glmnet)
+library(parallel)
 # source(here::here("code", "params.R")) if needed
 
 # Input number of levels of BIP: k
@@ -310,8 +311,9 @@ condVE = function(data,nseeds=10,weightX=rep(1,nrow(data)),weightW=rep(1,nrow(da
 }
 
 ### This function outputs additive and multiplicative conditional vaccine efficacy
-### using bootstraps
-condVE.boot = function(data,nseeds=10,weightX=rep(1,nrow(data)),weightW=rep(1,nrow(data)),weightX.adjust=rep(1,nrow(data)),weightW.adjust=rep(1,nrow(data))){
+### using bootstraps in parallel
+condVE.boot = function(seed,data,nseeds=1,weightX=rep(1,nrow(data)),weightW=rep(1,nrow(data)),weightX.adjust=rep(1,nrow(data)),weightW.adjust=rep(1,nrow(data))){
+  set.seed(seed)
   index = sample(1:nrow(data),replace = T)
   data = data[index,]
   condVE(data,nseeds,weightX,weightW,weightX.adjust,weightW.adjust)
@@ -384,10 +386,13 @@ for (i in 1:length(biomarkerlist)){
                 "number of levels of BIP" = args)
   save(params, file=paste0(save.results.to, "parameters_info_"%.%study_name%.%".rda"))
   save(results, file=paste0(here::here("output"), "/", biomarker,"/cop_prinstrat_covariateAdjusted_condVE_BIP_",args,"."%.%study_name%.%".rda"))
-  ### save bootstrapped standard errors: # of replications  = 50
-  bootresults = replicate(50,condVE.boot(data)) 
-  additiveVE = bootresults[1,]
-  multiplicativeVE = bootresults[2,]
+  ### save bootstrapped standard errors: # of replications  = 500
+  cores = detectCores()
+  print(paste0("running bootstrap using ", cores," cores"))
+  bootresults = mclapply(1:500,function(i){condVE.boot(i,data)},mc.cores = cores)
+  additiveVE = lapply(1:500,function(i){bootresults[[i]]$AdditiveVE})
+  multiplicativeVE = lapply(1:500,function(i){bootresults[[i]]$MultiplicativeVE})
+  
   print(paste0("save.bootstrap.results.to equals ", save.results.to))
   out.additiveVE = getsd("additive")
   out.multiplicativeVE = getsd("multiplicative")

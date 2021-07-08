@@ -1,0 +1,14 @@
+Bottleneck @ file:///app/build/SciPybundle/2020.11/fosscuda-2020b/Bottleneck/Bottleneck-1.3.2
+deap @ file:///app/build/SciPybundle/2020.11/fosscuda-2020b/deap/deap-1.3.1
+mpi4py @ file:///app/build/SciPybundle/2020.11/fosscuda-2020b/mpi4py/mpi4py-3.0.3
+mpmath @ file:///app/build/SciPybundle/2020.11/fosscuda-2020b/mpmath/mpmath-1.1.0
+numexpr @ file:///app/build/SciPybundle/2020.11/fosscuda-2020b/numexpr/numexpr-2.7.1
+numpy @ file:///app/build/SciPybundle/2020.11/fosscuda-2020b/numpy/numpy-1.19.4
+pandas @ file:///app/build/SciPybundle/2020.11/fosscuda-2020b/pandas/pandas-1.1.4
+Pillow @ file:///app/build/Pillow/8.0.1/GCCcore-10.2.0/Pillow-8.0.1
+protobuf @ file:///app/build/protobufpython/3.14.0/GCCcore-10.2.0/protobuf-3.14.0
+pybind11 @ file:///app/build/pybind11/2.6.0/GCCcore-10.2.0/pybind11-2.6.0
+PyYAML @ file:///app/build/PyYAML/5.3.1/GCCcore-10.2.0/PyYAML-5.3.1
+scipy @ file:///app/build/SciPybundle/2020.11/fosscuda-2020b/scipy/scipy-1.5.4
+torch==1.7.1
+typing-extensions @ file:///app/build/typingextensions/3.7.4.3/GCCcore-10.2.0/typing_extensions-3.7.4.3

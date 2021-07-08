@@ -20,8 +20,8 @@ format_row <- function(fit, digits = 3){
   g <- matrix(c(log(direct_eff)/(log(total_eff))^2*1/risk_est[1], log(indirect_eff)/(log(total_eff))^2*1/risk_est[2],
               -1/(risk_est[3]*log(total_eff)), 0))
   se_prop_med <- sqrt(t(g) %*% fit$cov %*% g)
-  cil <- prop_med - qnorm(0.975) * se_prop_med
-  ciu <- prop_med + qnorm(0.975) * se_prop_med
+  cil <- prop_med + qnorm(0.975) * se_prop_med
+  ciu <- prop_med - qnorm(0.975) * se_prop_med
 
   this_row <- c(
     format_ci(1 - fit$eff["Direct", 2:4], digits = digits),

@@ -3,16 +3,16 @@ if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/
 #----------------------------------------------- 
 # obligatory to append to the top of each script
 renv::activate(project = here::here(".."))
-
+    
 # There is a bug on Windows that prevents renv from working properly. The following code provides a workaround:
 if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
-
+        
 #if (.Platform$OS.type == "windows") {
 #    options(renv.config.install.transactional = FALSE)
 #    renv::restore(library=saved.system.libPaths, prompt=FALSE) # for a quick test, add: packages="backports"
 #    .libPaths(c(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
 #} else renv::restore(prompt=FALSE)
-
+    
 # after updating a package, run renv::snapshot() to override the global library record with your changes
 source(here::here("..", "_common.R"))
 #-----------------------------------------------

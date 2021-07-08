@@ -5,7 +5,7 @@ all: clean cop_prinstrat_covariateAdjusted_condVE
 clean:
 	rm -rf output/*
 
-## cop_prinstrat_covariateAdjusted_condVE     : run analysis and output results with number of levels of BIP = 4 for example.
+## cop_prinstrat_covariateAdjusted_condVE     : run analysis and output results with number of levels of BIP = 4 for example. Number of replications for bootstrap is set to be 500 with number of cores to be detectCores().
 cop_prinstrat_covariateAdjusted_condVE:
 	Rscript code/cop_prinstrat_covariateAdjusted_condVE.R 4 
 ifeq ($(TRIAL), moderna_mock)

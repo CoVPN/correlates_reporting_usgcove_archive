@@ -121,10 +121,12 @@ dat.long.cor.subset$LLoQ = log10(lloqs[as.character(dat.long.cor.subset$assay)])
 dat.long.cor.subset$pos.cutoffs = log10(pos.cutoffs[as.character(dat.long.cor.subset$assay)])
 dat.long.cor.subset$ULoQ = log10(uloqs[as.character(dat.long.cor.subset$assay)])
 
-# add label = LLoD / poscutoff values to show in the plot
+# add label = LLoD / poscutoff, uloq values to show in the plot
 dat.long.cor.subset$LLoD = log10(llods[as.character(dat.long.cor.subset$assay)])
 dat.long.cor.subset$lb = with(dat.long.cor.subset, ifelse(grepl("bind", assay), "Pos.Cut", "LLoD")) 
 dat.long.cor.subset$lbval =  with(dat.long.cor.subset, ifelse(grepl("bind", assay), pos.cutoffs, LLoD))
+dat.long.cor.subset$lb2 = with(dat.long.cor.subset, ifelse(grepl("bind", assay), "ULoQ", "")) 
+dat.long.cor.subset$lbval2 =  with(dat.long.cor.subset, ifelse(grepl("bind", assay), ULoQ, -99))
 
 # assign values above the uloq to the uloq
 for (t in c("B", if(has29) "Day29", "Day57") ) {
@@ -260,41 +262,45 @@ dat.long.cor.subset$age_minority_label <-
 
 
 # long to longer format by time
-dat.longer.cor.subset <- dat.long.cor.subset %>% select(Ptid, Trt, Bserostatus, EventIndPrimaryD29,
-                                                        EventTimePrimaryD29,
-                                                        Perprotocol, cohort_event,
-                                                        Age, age_geq_65_label, highrisk_label, age_risk_label,
-                                                        sex_label, minority_label, Dich_RaceEthnic,
-                                                        assay, LLoD, LLoQ, pos.cutoffs, lb, lbval, wt.D29,
-                                                        B, Day29, Delta29overB, 
-                                                        if(has57) c(EventIndPrimaryD57, Day57, Delta57overB, ph1.intercurrent.cases, 
-                                                            ph2.intercurrent.cases, wt.intercurrent.cases, wt.D57)             
-                                                        ) %>%
+dat.longer.cor.subset <- dat.long.cor.subset[,c("Ptid", "Trt", "Bserostatus", "EventIndPrimaryD29", 
+        "EventTimePrimaryD29", "Perprotocol", "cohort_event", "Age", "age_geq_65_label", 
+        "highrisk_label", "age_risk_label", "sex_label", "minority_label", "Dich_RaceEthnic", "assay", 
+        "LLoD", "LLoQ", "pos.cutoffs", "ULoQ", "lb", "lbval", "lb2", "lbval2", 
+        if(has57) c("EventIndPrimaryD57", "ph1.intercurrent.cases", 
+                    "ph2.intercurrent.cases", "wt.intercurrent.cases", "wt.D57"), "wt.D29", 
+        "B", "Day29", "Delta29overB", if(has57) c("Day57", "Delta57overB"))] %>%
   pivot_longer(!Ptid:wt.D29, names_to = "time", values_to = "value")
 
 # define response rates
 dat.longer.cor.subset <- dat.longer.cor.subset %>%
   mutate(
     time = ifelse(time=="B", "Day 1", ifelse(time=="Day29", "Day 29", ifelse(time=="Day57", "Day 57", time))),
-
     baseline_lt_thres = ifelse(time=="Day 1" & value >= LLoQ, 1, 0),
     increase_4F_D29 = ifelse(time=="Delta29overB" & value>log10(4), 1, 0),
-    if(has57) increase_4F_D57 = ifelse(time=="Delta57overB" & value>log10(4), 1, 0)) %>%
+    increase_4F_D57 = ifelse(time=="Delta57overB" & value>log10(4), 1, 0)) %>%
   group_by(Ptid, assay) %>%
   mutate(baseline_lt_thres_ptid=max(baseline_lt_thres),
          increase_4F_D29_ptid=max(increase_4F_D29),
-         if(has57) increase_4F_D57_ptid=max(increase_4F_D57)) %>%
+         increase_4F_D57_ptid=max(increase_4F_D57)) %>%
   ungroup() %>%
-  filter(time %in% c("Day 1","Day 29",if(has57) "Day 57")) %>%
-  mutate(if(has57) response_nab = ifelse(baseline_lt_thres_ptid == 0 & value >= LLoQ, 1,
-                           ifelse(baseline_lt_thres_ptid == 1 & time == "Day 1", 1,
-                                  ifelse(baseline_lt_thres_ptid == 1 & time == "Day 29" & increase_4F_D29_ptid==1, 1,
-                                         ifelse(baseline_lt_thres_ptid == 1 & time == "Day 57" & increase_4F_D57_ptid==1, 1,0)))),
-         if(!has57) response_nab = ifelse(baseline_lt_thres_ptid == 0 & value >= LLoQ, 1,
-                                         ifelse(baseline_lt_thres_ptid == 1 & time == "Day 1", 1,
-                                                ifelse(baseline_lt_thres_ptid == 1 & time == "Day 29" & increase_4F_D29_ptid==1, 1, 0))),
-         response_bind = ifelse(value >= pos.cutoffs, 1, 0),
-         response = ifelse(assay %in% c("pseudoneutid50", "pseudoneutid80"), response_nab, 
+  filter(time %in% c("Day 1","Day 29",if(has57) "Day 57"))
+
+if(has57) {
+  dat.longer.cor.subset$response_nab = with(dat.longer.cor.subset, 
+          ifelse(baseline_lt_thres_ptid == 0 & value >= LLoQ, 1,
+                 ifelse(baseline_lt_thres_ptid == 1 & time == "Day 1", 1,
+                       ifelse(baseline_lt_thres_ptid == 1 & time == "Day 29" & increase_4F_D29_ptid==1, 1,
+                              ifelse(baseline_lt_thres_ptid == 1 & time == "Day 57" & increase_4F_D57_ptid==1, 1,0)))))
+} else {
+  dat.longer.cor.subset$increase_4F_D57=NULL
+  dat.longer.cor.subset$increase_4F_D57_ptid=NULL
+  dat.longer.cor.subset$response_nab = with(dat.longer.cor.subset, 
+           ifelse(baseline_lt_thres_ptid == 0 & value >= LLoQ, 1,
+                  ifelse(baseline_lt_thres_ptid == 1 & time == "Day 1", 1,
+                         ifelse(baseline_lt_thres_ptid == 1 & time == "Day 29" & increase_4F_D29_ptid==1, 1, 0))))}
+
+dat.longer.cor.subset$response_bind = with(dat.longer.cor.subset, ifelse(value >= pos.cutoffs, 1, 0))
+dat.longer.cor.subset$response = with(dat.longer.cor.subset, ifelse(assay %in% c("pseudoneutid50", "pseudoneutid80"), response_nab, 
                            ifelse(assay %in% c("bindSpike", "bindRBD", "bindN"), response_bind, NA)))
 
 # subsets for violin/line plots
@@ -305,29 +311,45 @@ dat.longer.cor.subset <- dat.longer.cor.subset %>%
 #### for Figure 1. intercurrent vs pp, case vs non-case, (Day 1), Day 29 Day 57
 groupby_vars1=c("Trt", "Bserostatus", "cohort_event", "time", "assay")
 
- dat.longer.cor.subset.plot1 <-
-  dat.longer.cor.subset %>% group_by_at(groupby_vars1) %>%
-  mutate(if(has57) num = round(sum(response * ifelse(cohort_event=="Intercurrent Cases", wt.intercurrent.cases, wt.D57)), 1),
-         if(!has57) num = round(sum(response * wt.D29), 1),
-         if(has57) denom = round(sum(ifelse(cohort_event=="Intercurrent Cases", wt.intercurrent.cases, wt.D57)), 1),
-         if(!has57) denom = round(sum(wt.D29), 1),
-         RespRate = paste0(num,"/",denom,"=",round(num/denom*100, 1),"%"),
-         min = min(value, na.rm=T),
-         q1 = quantile(value, 0.25, na.rm=T),
-         median = median(value, na.rm=T),
-         q3 = quantile(value, 0.75, na.rm=T),
-         max= max(value, na.rm=T)
-  )
+if(has57) {
+  dat.longer.cor.subset.plot1 <-
+    dat.longer.cor.subset %>% group_by_at(groupby_vars1) %>%
+    mutate(num = round(sum(response * ifelse(cohort_event=="Intercurrent Cases", wt.intercurrent.cases, wt.D57)), 1),
+           denom = round(sum(ifelse(cohort_event=="Intercurrent Cases", wt.intercurrent.cases, wt.D57)), 1),
+           RespRate = paste0(num,"/",denom,"=",round(num/denom*100, 1),"%"),
+           min = min(value, na.rm=T),
+           q1 = quantile(value, 0.25, na.rm=T),
+           median = median(value, na.rm=T),
+           q3 = quantile(value, 0.75, na.rm=T),
+           max= max(value, na.rm=T))
+} else {
+  dat.longer.cor.subset.plot1 <-
+    dat.longer.cor.subset %>% group_by_at(groupby_vars1) %>%
+    mutate(num = round(sum(response * wt.D29), 1),
+           denom = round(sum(wt.D29), 1),
+           RespRate = paste0(num,"/",denom,"=",round(num/denom*100, 1),"%"),
+           min = min(value, na.rm=T),
+           q1 = quantile(value, 0.25, na.rm=T),
+           median = median(value, na.rm=T),
+           q3 = quantile(value, 0.75, na.rm=T),
+           max= max(value, na.rm=T))
+}
 write.csv(dat.longer.cor.subset.plot1, file = here("data_clean", "longer_cor_data_plot1.csv"), row.names=F)
 
-dat.longer.cor.subset.plot1 <-
-  dat.longer.cor.subset %>% group_by_at(groupby_vars1) %>%
-  mutate(if(has57) num = round(sum(response * ifelse(cohort_event=="Intercurrent Cases", wt.intercurrent.cases, wt.D57)), 1),
-         if(!has57) num = round(sum(response * wt.D29), 1),
-         if(has57) denom = round(sum(ifelse(cohort_event=="Intercurrent Cases", wt.intercurrent.cases, wt.D57)), 1),
-         if(!has57) denom = round(sum(wt.D29), 1),
-         RespRate = paste0(num,"/",denom,"\n",round(num/denom*100, 1),"%"),
-  )
+
+if(has57) {
+  dat.longer.cor.subset.plot1 <-
+    dat.longer.cor.subset %>% group_by_at(groupby_vars1) %>%
+    mutate(num = round(sum(response * ifelse(cohort_event=="Intercurrent Cases", wt.intercurrent.cases, wt.D57)), 1),
+           denom = round(sum(ifelse(cohort_event=="Intercurrent Cases", wt.intercurrent.cases, wt.D57)), 1),
+           RespRate = paste0(num,"/",denom,"\n",round(num/denom*100, 1),"%"))
+} else {
+  dat.longer.cor.subset.plot1 <-
+    dat.longer.cor.subset %>% group_by_at(groupby_vars1) %>%
+    mutate(num = round(sum(response * wt.D29), 1),
+           denom = round(sum(wt.D29), 1),
+           RespRate = paste0(num,"/",denom,"\n",round(num/denom*100, 1),"%"))
+}
 saveRDS(dat.longer.cor.subset.plot1, file = here("data_clean", "longer_cor_data_plot1.rds"))
 
 
@@ -343,13 +365,19 @@ saveRDS(plot.25sample1, file = here("data_clean", "plot.25sample1.rds"))
 #### for Figure 3. intercurrent vs pp, case vs non-case, (Day 1) Day 29 Day 57, by if Age >=65 and if at risk
 groupby_vars3 <- c("Trt", "Bserostatus", "cohort_event", "time", "assay", "age_geq_65_label", "highrisk_label")
 
-dat.longer.cor.subset.plot3 <-
-  dat.longer.cor.subset %>% group_by_at(groupby_vars3) %>%
-  mutate(if(has57) num = round(sum(response * ifelse(cohort_event=="Intercurrent Cases", wt.intercurrent.cases, wt.D57)), 1),
-         if(!has57) num = round(sum(response * wt.D29), 1),
-         if(has57) denom = round(sum(ifelse(cohort_event=="Intercurrent Cases", wt.intercurrent.cases, wt.D57)), 1),
-         if(!has57) denom = round(sum(wt.D29), 1),
-         RespRate = paste0(num,"/",denom,"\n",round(num/denom*100, 1),"%"))
+if(has57) {
+  dat.longer.cor.subset.plot3 <-
+    dat.longer.cor.subset %>% group_by_at(groupby_vars3) %>%
+    mutate(num = round(sum(response * ifelse(cohort_event=="Intercurrent Cases", wt.intercurrent.cases, wt.D57)), 1),
+           denom = round(sum(ifelse(cohort_event=="Intercurrent Cases", wt.intercurrent.cases, wt.D57)), 1),
+           RespRate = paste0(num,"/",denom,"\n",round(num/denom*100, 1),"%"))
+} else {
+  dat.longer.cor.subset.plot3 <-
+    dat.longer.cor.subset %>% group_by_at(groupby_vars3) %>%
+    mutate(num = round(sum(response * wt.D29), 1),
+           denom = round(sum(wt.D29), 1),
+           RespRate = paste0(num,"/",denom,"\n",round(num/denom*100, 1),"%"))
+}
 saveRDS(dat.longer.cor.subset.plot3, file = here("data_clean", "longer_cor_data_plot3.rds"))
 
 plot.25sample3 <-  dat.longer.cor.subset.plot3 %>%
@@ -375,3 +403,4 @@ saveRDS(as.data.frame(dat.cor.subset),
 
 saveRDS(as.data.frame(dat.longer.cor.subset),
         file = here("data_clean", "longer_cor_data.rds"))
+

@@ -29,6 +29,7 @@ dat.long.twophase.sample <- readRDS(here(
   "data_clean",
   "long_twophase_data.rds"
 ))
+
 dat.twophase.sample <- readRDS(here("data_clean", "twophase_data.rds"))
 
 assay_lim <- readRDS(here("data_clean", "assay_lim.rds"))
@@ -179,7 +180,7 @@ for (tp in tps[tps %in% times]) {
     facet_by = "assay",
     color = "trt_bstatus_label",
     weight = "wt.subcohort",
-    xlim = assay_lim[, tp, ],
+    xlim = assay_lim[assay_immuno, tp, ],
     arrange_ncol = 3,
     arrange_nrow = ceiling(length(assay_immuno) / 3),
     panel_titles = labels.title2[tp, ] %>% unlist(),
@@ -221,10 +222,10 @@ for (bAb in c(0, 1)) {
         xlab = paste0(
           switch(tp, Day29 = "D29", Day57 = "D57"), " Ab Markers"
         ),
-        xlim = c(min(assay_lim[assay_immuno %in% rcdf_assays, tp, 1]), 
-                 max(assay_lim[assay_immuno %in% rcdf_assays, tp, 2])),
-        xbreaks = seq(min(assay_lim[assay_immuno %in% rcdf_assays, tp, 1]), 
-                      max(assay_lim[assay_immuno %in% rcdf_assays, tp, 2]), 
+        xlim = c(min(assay_lim[rcdf_assays, tp, 1]), 
+                 max(assay_lim[rcdf_assays, tp, 2])),
+        xbreaks = seq(min(assay_lim[rcdf_assays, tp, 1]), 
+                      max(assay_lim[rcdf_assays, tp, 2]), 
                       2),
         plot_title = paste0(switch(tp, Day29 = "Day 29", Day57 = "Day 57"), " Ab Markers"),
         filename = paste0(
@@ -248,10 +249,10 @@ for (bAb in c(0, 1)) {
         weight = "wt.subcohort",
         xlab = paste0(switch(tp, Delta29overB = "D29", Delta57overB = "D57"), 
                       " Fold-rise over D1 Ab Markers"),
-        xlim = c(min(assay_lim[assay_immuno %in% rcdf_assays, tp, 1]), 
-                 max(assay_lim[assay_immuno %in% rcdf_assays, tp, 2])),
-        xbreaks = seq(min(assay_lim[assay_immuno %in% rcdf_assays, tp, 1]), 
-                      max(assay_lim[assay_immuno %in% rcdf_assays, tp, 2]), 
+        xlim = c(min(assay_lim[rcdf_assays, tp, 1]), 
+                 max(assay_lim[rcdf_assays, tp, 2])),
+        xbreaks = seq(min(assay_lim[rcdf_assays, tp, 1]), 
+                      max(assay_lim[rcdf_assays, tp, 2]), 
                       2),
         plot_title = paste0(switch(tp, Delta29overB = "Day 29", Delta57overB = "Day 57"),
                             " over Baseline Ab Markers"),
@@ -281,10 +282,10 @@ for (bAb in c(0, 1)) {
           xlab = paste0(
             switch(tp, Day29 = "D29", Day57 = "D57"), " Ab Markers"
           ),
-          xlim = c(min(assay_lim[assay_immuno %in% rcdf_assays, tp, 1]), 
-                   max(assay_lim[assay_immuno %in% rcdf_assays, tp, 2])),
-          xbreaks = seq(min(assay_lim[assay_immuno %in% rcdf_assays, tp, 1]), 
-                        max(assay_lim[assay_immuno %in% rcdf_assays, tp, 2]), 
+          xlim = c(min(assay_lim[rcdf_assays, tp, 1]), 
+                   max(assay_lim[rcdf_assays, tp, 2])),
+          xbreaks = seq(min(assay_lim[rcdf_assays, tp, 1]), 
+                        max(assay_lim[rcdf_assays, tp, 2]), 
                         2),
           plot_title = paste0(
             switch(tp, Day29 = "Day 29", Day57 = "Day 57"), " Ab Markers"
@@ -310,10 +311,10 @@ for (bAb in c(0, 1)) {
             switch(tp, Delta29overB = "D29", Delta57overB = "D57"),
             " Fold-rise over D1 Ab Markers"
           ),
-          xlim = c(min(assay_lim[assay_immuno %in% rcdf_assays, tp, 1]), 
-                   max(assay_lim[assay_immuno %in% rcdf_assays, tp, 2])),
-          xbreaks = seq(min(assay_lim[assay_immuno %in% rcdf_assays, tp, 1]), 
-                        max(assay_lim[assay_immuno %in% rcdf_assays, tp, 2]), 
+          xlim = c(min(assay_lim[rcdf_assays, tp, 1]), 
+                   max(assay_lim[rcdf_assays, tp, 2])),
+          xbreaks = seq(min(assay_lim[rcdf_assays, tp, 1]), 
+                        max(assay_lim[rcdf_assays, tp, 2]), 
                         2),
           plot_title = paste0(
             switch(tp, Delta29overB = "Day 29", Delta57overB = "Day 57"),

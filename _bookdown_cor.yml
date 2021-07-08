@@ -18,6 +18,7 @@ rmd_files: [
   "cor_coxph/report.Rmd",
   "cor_threshold/report.Rmd",
   "cor_nonlinear/report.Rmd",
+  "cop_mediation/report.Rmd",
   "cor_surrogates/report.Rmd",
   "references.Rmd",
   "appendix.Rmd"

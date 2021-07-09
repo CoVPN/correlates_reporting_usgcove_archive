@@ -1,4 +1,4 @@
-#Sys.setenv(TRIAL = "moderna_mock")
+### This code uses baseline covariates as BIP
 
 #if (.Platform$OS.type == "windows") .libPaths(c("C:/Users/yhuang/Documents/renv/library/R-4.0/x86_64-w64-mingw32", "C:/Users/yhuang/AppData/Local/Temp/RtmpUPdelA/renv-system-library",
 #.libPaths()))
@@ -6,7 +6,6 @@
 #
 #
 ##----------------------------------------------- 
-## obligatory to append to the top of each script
 renv::activate(project = here::here(".."))
 #renv::activate(project = here::here())
 
@@ -46,9 +45,8 @@ library(kyotil)
 library(splines)
 library(nnet)
 
-#setwd("~/correlates_reporting")
 
-dat.mock<-read.csv(here::here("..","data_clean", "moderna_mock_data_processed.csv")) 
+dat.mock<-read.csv(here::here("..","data_clean", "janssen_pooled_mock_data_processed.csv")) 
   
 y.v<-"EventIndPrimaryD"%.%pop       
 
@@ -64,7 +62,16 @@ if (pop=="57") {
 
      
 dat.wide=subset(dat.mock, Bserostatus==0 & !is.na(wt.0))    
-     
+  
+
+  
+dat.wide$MinorityInd[dat.wide$Region!=0]=0 
+dat.wide$RM<-as.numeric(dat.wide$Region==0 & dat.wide$MinorityInd==1)
+dat.wide$RM<-ifelse(dat.wide$Region==1,2,dat.wide$RM)
+dat.wide$RM<-ifelse(dat.wide$Region==2,3,dat.wide$RM)
+
+
+
 #
 #source(here::here("code","YingFunctions","NonparFun_NoW.R"))
 #
@@ -73,56 +80,58 @@ source(here::here("code","YingFunctions","Fun_COVIDgeneral.R"))
 #source(here::here("code","YingFunctions","function10_15_Full.R"))
 #
 source(here::here("code","YingFunctions","FunctionCall.R"))
-#
+#  
 
 for (a in assays){
 
-ps<-c("Day"%.%pop%.%a)
-
-check<-try.error(load(file=paste0(save.results.to,"outCOVE_",ps,"_",y.v,".Rdata")))
-if (inherits(check,'try-error')) {
-
-    S1<-dat.wide[,ps]
-    Z<-dat.wide$Trt
-    Y<-dat.wide[,y.v]
-    X<-rep(0,length(Y))
-    Xu<-unique(X)
+    ps<-c("Day"%.%pop%.%a)
     
-    ### Since MinorityInd does not have missing value, we use it instead of URMforsubcohortsampling
-    W<-dat.wide$MinorityInd*100+dat.wide$HighRiskInd*10+dat.wide$Senior
-    Wu<-unique(sort(W))
-    dat.wide$W=W
+    check<-try.error(load(file=paste0(save.results.to,"outENSEMBLE_",ps,"_",y.v,".Rdata")))
+    if (inherits(check,'try-error')) {
     
+        S1<-dat.wide[,ps]
+        Z<-dat.wide$Trt
+        Y<-dat.wide[,y.v]
+        X<-rep(0,length(Y))
+        Xu<-unique(X)
+               
+        W<-dat.wide$RM*100+dat.wide$HighRiskInd*10+dat.wide$Senior
+        Wu<-unique(sort(W))
+        dat.wide$W=W
+           
+        S1[Z==0]<-NA
+        S1[is.na(W)]<-NA
+        
+        Su=sort(unique(S1))
+        delta1=as.numeric(!is.na(W))
+        delta2=as.numeric(!is.na(S1))
+        
+        
+        Sout.NC.All.X<-covDFcc.Nonpar2.X.New(S1[delta2==1],W[delta2==1],X[delta2==1],Wu=Wu,Xu=Xu,weights=rep(1,sum(delta2)))
+        
+        WoutA.NC.All.X<-covDFcc.Nonpar2.Full(W[delta2==1],X[delta2==1],Wu=Xu)
+        
+        
+        source(here::here("code","YingFunctions","functionPar2020.R"))
     
-    S1[Z==0]<-NA
-    S1[is.na(W)]<-NA
-    
-    Su=sort(unique(S1))
-    delta1=as.numeric(!is.na(W))
-    delta2=as.numeric(!is.na(S1))
-    
-    
-    Sout.NC.All.X<-covDFcc.Nonpar2.X.New(S1[delta2==1],W[delta2==1],X[delta2==1],Wu=Wu,Xu=Xu,weights=rep(1,sum(delta2)))
-    
-    WoutA.NC.All.X<-covDFcc.Nonpar2.Full(W[delta2==1],X[delta2==1],Wu=Xu)
-    
-    
-    source(here::here("code","YingFunctions","functionPar2020.R"))
-    
-    datin<-data.frame(S1=S1,Z=Z,Y=Y,X=X,W=W,weights=dat.wide$wt.0)
-    
-    ### No additional covariate adjustment, allow baseline covariate to affect risk
-    fit2<-try.error(
-       EM.cc.CPV.Probit.Small.Nonpar2.NC.SubWA.X.Short.New.COVID.M(Z,Sout.NC.All.X,WoutA.NC.All.X,S1,W,Y,X,Wu,Xu,delta1,delta2,pd2.YZXW,varlist=c("MinorityInd","HighriskInd","Senior"),beta=rep(0,7)))
-    
-    
-    VE2<-integVE.COVID.M(Su,datin,varlist=c("MinorityInd","HighriskInd","Senior"),beta=fit2)
-    
-    
-    save(fit2,VE2,file=paste0(save.results.to,"outCOVE_",ps,"_",y.v,".Rdata"))
+        datin<-data.frame(S1=S1,Z=Z,Y=Y,X=X,W=W,weights=dat.wide$wt.0)
+        
+        
+        ### No additional covariate adjustment, allow baseline covariate to affect risk
+        fit2<-try.error(
+           EM.cc.CPV.Probit.Small.Nonpar2.NC.SubWA.X.Short.New.COVID.E(Z,Sout.NC.All.X,WoutA.NC.All.X,S1,W,Y,X,Wu,Xu,delta1,delta2,pd2.YZXW,varlist=c("RM1","RM2","RM3","HighriskInd","Senior"),beta=rep(0,9)))
+        
+        
+        
+        VE2<-integVE.COVID.E(Su,datin,varlist=c("RM1","RM2","RM3","HighriskInd","Senior"),beta=fit2)
+        
+        
+        
+          save(fit2,VE2,file=paste0(save.results.to,"outENSEMBLE_",ps,"_",y.v,".Rdata"))
+    }
 }
-}
 
 
-source(here::here("code", "cop_cove_bootstrap_Run.R"))
-source(here::here("code", "cop_cove_plotting.R"))
+
+source(here::here("code", "cop_ensemble_bootstrap_Run.R"))
+source(here::here("code", "cop_ensemble_plotting.R"))

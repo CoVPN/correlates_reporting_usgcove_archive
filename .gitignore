@@ -310,3 +310,8 @@ cor_coxph/output/D57/marginalized_risks_eq_MockCOVE.tex
 cor_graphical/.Rprofile
 cor_graphical/renv/activate.R
 .Makefile.swp
+cop_prinstrat/cop_prinstrat_report_.ptp
+cop_prinstrat/cop_prinstrat_report_.tex
+cop_prinstrat/output/D29/outCOVE_boot_Day29bindRBD_EventIndPrimaryD29.Rdata
+cop_prinstrat/output/D29/outCOVE_boot_Day29bindSpike_EventIndPrimaryD29.Rdata
+cop_prinstrat/output/D29/outCOVE_boot_Day29pseudoneutid50_EventIndPrimaryD29.Rdata

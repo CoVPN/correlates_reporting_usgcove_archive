@@ -1,6 +1,7 @@
-library(parallel)
+### This code uses baseline covariates as BIP
 
-#Sys.setenv(TRIAL = "moderna_mock")
+
+library(parallel)
 
 #if (.Platform$OS.type == "windows") .libPaths(c("C:/Users/yhuang/Documents/renv/library/R-4.0/x86_64-w64-mingw32", "C:/Users/yhuang/AppData/Local/Temp/RtmpUPdelA/renv-system-library",
 #.libPaths()))
@@ -8,11 +9,16 @@ library(parallel)
 #
 #
 ##----------------------------------------------- 
-## obligatory to append to the top of each script
-##renv::activate(project = here::here(".."))
+#renv::activate(project = here::here(".."))
 #renv::activate(project = here::here())
 
 #source(here::here("..", "_common.R"))
+
+
+#blas_get_num_procs()
+#blas_set_num_threads(1)
+#stopifnot(blas_get_num_procs()==1)
+#importFrom(RhpcBLASctl, blas_get_num_procs, blas_set_num_threads)
 #
 #
 ## There is a bug on Windows that prevents renv from working properly. The following code provides a workaround:
@@ -37,39 +43,6 @@ library(parallel)
 #print(paste0("save.results.to equals ", save.results.to))
 #    
 ##index1=1;index2=1
-#
-#library(kyotil)
-#library(splines)
-#library(nnet)
-#
-##setwd("~/correlates_reporting")
-#
-#dat.mock<-read.csv(here::here("..","data_clean", "moderna_mock_data_processed.csv")) 
-#  
-#y.v<-"EventIndPrimaryD"%.%pop       
-#
-#if (pop=="57") {
-#    dat.mock$wt.0=dat.mock$wt.D57
-#    dat.mock$TwophasesampInd.0 = dat.mock$TwophasesampIndD57
-#    dat.mock$ph1=dat.mock$ph1.D57   
-#} else if (pop=="29") {
-#    dat.mock$wt.0=dat.mock$wt.D29
-#    dat.mock$TwophasesampInd.0 = dat.mock$TwophasesampIndD29 
-#    dat.mock$ph1=dat.mock$ph1.D29
-#} else stop("wrong pop")
-#
-#     
-#dat.wide=subset(dat.mock, Bserostatus==0 & !is.na(wt.0))    
-#     
-##
-##source(here::here("YingFunctions","NonparFun_NoW.R"))
-##
-#source(here::here("YingFunctions","Fun_COVIDgeneral.R"))
-##
-##source(here::here("YingFunctions","function10_15_Full.R"))
-##
-#source(here::here("YingFunctions","FunctionCall.R"))
-##
 
 B <- 50 # number of bootstrap replicates 1e3
 numCores <- unname(ifelse(Sys.info()["sysname"] == "Windows",
@@ -119,13 +92,13 @@ return(list(Su=Su,VE.S=VE.S,low.ci=low.ci,high.ci=high.ci,low.cb=low.cb,high.cb=
 
 #for (a in assays){
 
-genVE.M.boot<-function(dat,a){
+genVE.E.boot<-function(dat,a){
 
     save.seed <- try(get(".Random.seed", .GlobalEnv), silent=TRUE) 
     if (class(save.seed)=="try-error") {set.seed(1); save.seed <- get(".Random.seed", .GlobalEnv) } 
     
     ps<-c("Day"%.%pop%.%a)
-    load(file=paste0(save.results.to,"outCOVE_",ps,"_",y.v,".Rdata"))
+    load(file=paste0(save.results.to,"outENSEMBLE_",ps,"_",y.v,".Rdata"))
     Su<-VE2$Su
     
     ptids.by.stratum=get.ptids.by.stratum.for.bootstrap (dat) 
@@ -140,11 +113,12 @@ genVE.M.boot<-function(dat,a){
         X<-rep(0,length(Y))
         Xu<-unique(X)
         
-        ### Since MinorityInd does not have missing value, we use it instead of URMforsubcohortsampling
-        W<-dat.wide.boot$MinorityInd*100+dat.wide.boot$HighRiskInd*10+dat.wide.boot$Senior
+        
+        W<-dat.wide.boot$RM*100+dat.wide.boot$HighRiskInd*10+dat.wide.boot$Senior
         Wu<-unique(sort(W))
         dat.wide.boot$W=W
-    
+        
+        
         S1[Z==0]<-NA
         S1[is.na(W)]<-NA
         
@@ -159,10 +133,7 @@ genVE.M.boot<-function(dat,a){
         
         
         #source(here::here("code","YingFunctions","functionPar2020.R"))
-        
-        ### computer a few probabilties to enter into the pseudo-score estimation
-
-
+    
         kk.short<-table(delta2,Y,Z,X)
         kk.short.sum<-apply(kk.short,c(2,3,4),sum)
 
@@ -186,7 +157,6 @@ genVE.M.boot<-function(dat,a){
         }  
     
     
-     
         pd2.YZXW<-array(NA,dim=c(2,2,length(Xu)*length(Wu)))
         for (j in 1:length(Xu)){
         for (k in 1:length(Wu)){
@@ -194,35 +164,37 @@ genVE.M.boot<-function(dat,a){
         }
         }
             
-        
+     
         datin<-data.frame(S1=S1,Z=Z,Y=Y,X=X,W=W,weights=dat.wide.boot$wt.0)
         ### No additional covariate adjustment, allow baseline covariate to affect risk
-        coef<-rep(NA,7);VE<-rep(NA,length(Su))
         fit<-try.error(
-           EM.cc.CPV.Probit.Small.Nonpar2.NC.SubWA.X.Short.New.COVID.M(Z,Sout.NC.All.X,WoutA.NC.All.X,S1,W,Y,X,Wu,Xu,delta1,delta2,pd2.YZXW,varlist=c("MinorityInd","HighriskInd","Senior"),beta=fit2))
+           EM.cc.CPV.Probit.Small.Nonpar2.NC.SubWA.X.Short.New.COVID.E(Z,Sout.NC.All.X,WoutA.NC.All.X,S1,W,Y,X,Wu,Xu,delta1,delta2,pd2.YZXW,varlist=c("RM1","RM2","RM3","HighriskInd","Senior"),beta=fit2))
+        
+        coef<-rep(NA,9);VE<-rep(NA,length(Su))
         if(!inherits(fit,'try-error')){
             coef<-fit
-            VE<-integVE.COVID.M(Su,datin,varlist=c("MinorityInd","HighriskInd","Senior"),beta=fit)
+            VE<-integVE.COVID.E(Su,datin,varlist=c("RM1","RM2","RM3","HighriskInd","Senior"),beta=fit)
         
         }
     
         c(coef,VE$VE)
-    #save(fit2,VE2,file=paste0(save.results.to,"outCOVE_",ps,"_",y.v,".Rdata"))
+        #save(fit2,VE2,file=paste0(save.results.to,"outCOVE_",ps,"_",y.v,".Rdata"))
     })
-  res=do.call(rbind, out)
-  #res=res[,!is.na(res[1,])] # remove NA's
-  out=getcicb(VE2$Su,res[,-(1:7)],VE2$VE,res[,4],fit2[4])
-  list(low.ci=out$low.ci,high.ci=out$high.ci,Su=out$Su,VE.S=out$VE.S,low.cb=out$low.cb,high.cb=out$high.cb,pvalue=out$pvalue,SE.beta=out$SE.beta,SE.RR=out$SE.RR1)
+    res=do.call(rbind, out)
+    #res=res[,!is.na(res[1,])] # remove NA's
+    out=getcicb(VE2$Su,res[,-(1:9)],VE2$VE,res[,4],fit2[4])
+    list(low.ci=out$low.ci,high.ci=out$high.ci,Su=out$Su,VE.S=out$VE.S,low.cb=out$low.cb,high.cb=out$high.cb,pvalue=out$pvalue,SE.beta=out$SE.beta,SE.RR=out$SE.RR1)
 }
-
+        
+  
 for (a in assays){
     ps<-c("Day"%.%pop%.%a)  
     
-    check<-try.error(load(file=paste0(save.results.to,"outCOVE_boot_",ps,"_",y.v,".Rdata")))
+    check<-try.error(load(file=paste0(save.results.to,"outENSEMBLE_boot_",ps,"_",y.v,".Rdata")))
     if (inherits(check,'try-error')) {
 
-      outb=genVE.M.boot(dat.wide,a)  
+      outb=genVE.E.boot(dat.wide,a)  
     }
-    save(outb,file=paste0(save.results.to,"outCOVE_boot_",ps,"_",y.v,".Rdata"))
+    save(outb,file=paste0(save.results.to,"outENSEMBLE_boot_",ps,"_",y.v,".Rdata"))
 
 }

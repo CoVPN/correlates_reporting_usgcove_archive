@@ -49,7 +49,7 @@ plot.25sample3 <- readRDS(here("data_clean", "plot.25sample3.rds"))
 #' @param col Colors options for the colby param
 #' @param shape Shapes options for the shapeby param
 #' @param prop.cex Font size for text within panels, response rate
-#' @param ll.cex Font size for text within panels, llod
+#' @param ll.cex Font size for text within panels, eg: llod, pos.cut, uloq
 #' @param rate.y.pos Y coordinate for showing response rate
 #' @param axis.text.cex font size for x & y axis text
 #' @return A ggplot object for violin or line plots
@@ -95,6 +95,8 @@ myplot <- function(dat,
     geom_text(aes(label=RespRate, x=time, y=rate.y.pos), color="black", size=prop.cex, check_overlap = TRUE) +
     geom_hline(aes(yintercept=lbval), linetype="dashed", color="gray") +
     geom_text(aes(label=lb, x=0.77, y=lbval), color="black", size=ll.cex, check_overlap = TRUE) + 
+    geom_hline(aes(yintercept=lbval2), linetype="dashed", color="gray") +
+    geom_text(aes(label=lb2, x=0.77, y=lbval2), color="black", size=ll.cex, check_overlap = TRUE) + 
     scale_y_continuous(limits=ylim, breaks=ybreaks, labels=math_format(10^.x)) +
     labs(x=xtitle, y=ytitle, title=toptitle, color="Category", shape="Category") +
     scale_color_manual(values=col) +
@@ -118,6 +120,7 @@ for (typ in c("line","violin")) {
           
           y.breaks <- seq(ifelse(plots[i] %in% c("bindSpike","bindRBD"), -1, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 5, 4), 1)
           y.lim=c(ifelse(plots[i] %in% c("bindSpike","bindRBD"), -1.5, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 5, 4))
+          group.num <- length(levels(longer_cor_data_plot1$cohort_event))
           
           p <- myplot(dat=subset(longer_cor_data_plot1, assay==plots[i] & Bserostatus==bstatus[j] & Trt==trt[k] & !is.na(value) & time %in% unlist(times[t])), 
                       dat.sample=subset(plot.25sample1, assay==plots[i] & Bserostatus==bstatus[j] & Trt==trt[k] & !is.na(value) & time %in% unlist(times[t])), 
@@ -128,8 +131,8 @@ for (typ in c("line","violin")) {
                       ybreaks=y.breaks,
                       prop.cex=4.8,
                       ll.cex=8.16,
+                      group.num=group.num,
                       rate.y.pos=max(y.breaks),
-                      group.num=4,
                       col=c(if(!has57) "#FF5EBF", "#0AB7C9","#FF6F1B","#810094"),
                       shape=c(if(!has57) 18, 16, 17, 15)
                       )
@@ -154,13 +157,19 @@ for (typ in c("line","violin")) {
             # ID50/80 pseudo/live neut, a positive response: serum ID50 titer > 1:20 (log10(20)), a negative response as the complement
             groupby_vars2 <- c("Trt", "Bserostatus", "cohort_event", "time", "assay", s)
             
-            longer_cor_data_plot2 <- 
-              longer_cor_data %>% group_by_at(groupby_vars2) %>%
-              mutate(if(has57) num = round(sum(response * ifelse(cohort_event=="Intercurrent Cases", wt.intercurrent.cases, wt.D57)), 1), 
-                     if(!has57) num = round(sum(response * wt.D29), 1), 
-                     if(has57) denom = round(sum(ifelse(cohort_event=="Intercurrent Cases", wt.intercurrent.cases, wt.D57)), 1), 
-                     if(!has57) denom = round(sum(wt.D29), 1), 
-                     RespRate = paste0(num,"/",denom,"\n",round(num/denom*100, 1),"%"))
+            if(has57) {
+              longer_cor_data_plot2 <- 
+                longer_cor_data %>% group_by_at(groupby_vars2) %>%
+                mutate(num = round(sum(response * ifelse(cohort_event=="Intercurrent Cases", wt.intercurrent.cases, wt.D57)), 1), 
+                       denom = round(sum(ifelse(cohort_event=="Intercurrent Cases", wt.intercurrent.cases, wt.D57)), 1), 
+                       RespRate = paste0(num,"/",denom,"\n",round(num/denom*100, 1),"%"))
+            } else {
+              longer_cor_data_plot2 <- 
+                longer_cor_data %>% group_by_at(groupby_vars2) %>%
+                mutate(num = round(sum(response * wt.D29), 1), 
+                       denom = round(sum(wt.D29), 1), 
+                       RespRate = paste0(num,"/",denom,"\n",round(num/denom*100, 1),"%"))
+            }
             
             # make subset for strata RaceEthnic and Dich_RaceEthnic, only present non-NA categories
             if (s=="minority_label") {
@@ -180,7 +189,8 @@ for (typ in c("line","violin")) {
               inner_join(longer_cor_data_sub2, by=c("Ptid", groupby_vars2[!groupby_vars2 %in% "time"]))
             
             y.breaks <- seq(ifelse(plots[i] %in% c("bindSpike","bindRBD"), -1, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 5, 4), 1)
-            y.lim=c(ifelse(plots[i] %in% c("bindSpike","bindRBD"), -1.5, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 6.2, 5.2))
+            y.lim <- c(ifelse(plots[i] %in% c("bindSpike","bindRBD"), -1.5, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 6.2, 5.2))
+            group.num <- length(levels(longer_cor_data_sub2$cohort_event))
             
             p <- myplot(dat=subset(longer_cor_data_sub2, assay==plots[i] & Bserostatus==bstatus[j] & Trt==trt[k] & !is.na(value) & time %in% unlist(times[t])), 
                         dat.sample=subset(plot.25sample2, assay==plots[i] & Bserostatus==bstatus[j] & Trt==trt[k] & !is.na(value) & time %in% unlist(times[t])), 
@@ -192,7 +202,7 @@ for (typ in c("line","violin")) {
                         prop.cex=5.7,
                         ll.cex=8,
                         rate.y.pos=max(y.lim)-0.3,
-                        group.num=4,
+                        group.num=group.num,
                         col=c(if(!has57) "#FF5EBF", "#0AB7C9","#FF6F1B","#810094"),
                         shape=c(if(!has57) 18, 16, 17, 15)
                         )
@@ -218,6 +228,7 @@ for (typ in c("line","violin")) {
           
           y.breaks <- seq(ifelse(plots[i] %in% c("bindSpike","bindRBD"), -1, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 5, 4), 2)
           y.lim=c(ifelse(plots[i] %in% c("bindSpike","bindRBD"), -1.5, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 6.7, 6))
+          group.num <- length(levels(longer_cor_data_plot3$cohort_event))
           
           p <- myplot(dat=subset(longer_cor_data_plot3, assay==plots[i] & Bserostatus==bstatus[j] & Trt==trt[k] & !is.na(value) & time %in% unlist(times[t])), 
                       dat.sample=subset(plot.25sample3, assay==plots[i] & Bserostatus==bstatus[j] & Trt==trt[k] & !is.na(value) & time %in% unlist(times[t])), 
@@ -230,7 +241,7 @@ for (typ in c("line","violin")) {
                       prop.cex=5.5,
                       ll.cex=8,
                       rate.y.pos=max(y.lim)-0.47,
-                      group.num=4,
+                      group.num=group.num,
                       col=c(if(!has57) "#FF5EBF", "#0AB7C9","#FF6F1B","#810094"),
                       shape=c(if(!has57) 18, 16, 17, 15)
           )
@@ -266,14 +277,15 @@ for (i in 1:length(plots)) {
         geom_smooth(aes(group = cohort_event, color = cohort_event), size=1.5, method = 'loess', se= F, span = 1.15) + 
         scale_y_continuous(limits=y.lim, breaks=y.breaks, labels=math_format(10^.x)) +
         scale_x_continuous(breaks = seq(from=18, to=86, by=17)) +
-        scale_color_manual(values = c(if(!has57) "#FF5EBF", "#0AB7C9","#FF6F1B","#810094")) + 
-        scale_shape_manual(values = c(if(!has57) 18, 16, 17, 15)) +
+        scale_color_manual(values = c(if(!has57) "#FF5EBF", "#0AB7C9","#FF6F1B","#810094"), drop=F) + 
+        scale_shape_manual(values = c(if(!has57) 18, 16, 17, 15), drop=F) +
         guides(color = guide_legend(nrow=1),
                size = FALSE) +
         labs(title = paste0(plots_titles[i],": ",times[[2]][d]), x = 'Age (years)', y = plots_ytitles[i],
              color="Category", shape="Category") +
         theme(plot.margin = unit(c(1, 1, 1, 1), "cm"), 
               panel.grid = element_blank(),
+              legend.title = element_text(size=22),
               plot.title = element_text(hjust = 0.5),
               axis.text.x = element_text(size=ifelse(c=="Vaccine_BaselineNeg", 27, 19)))
       
@@ -307,14 +319,15 @@ for (i in 1:length(plots)) {
         geom_smooth(aes(group = cohort_event, color = cohort_event), size=1.5, method = 'loess', se= F, span = 1.15) + 
         scale_y_continuous(limits=y.lim, breaks=y.breaks, labels=math_format(10^.x)) +
         scale_x_continuous(breaks = seq(from=0, to=220, by=40)) +
-        scale_color_manual(values = c(if(!has57) "#FF5EBF", "#0AB7C9","#FF6F1B","#810094")) +
-        scale_shape_manual(values = c(if(!has57) 18, 16, 17, 15)) +
+        scale_color_manual(values = c(if(!has57) "#FF5EBF", "#0AB7C9","#FF6F1B","#810094"), drop=F) +
+        scale_shape_manual(values = c(if(!has57) 18, 16, 17, 15), drop=F) +
         guides(color = guide_legend(nrow=1),
                size = FALSE) +
         labs(title = paste0(plots_titles[i],": ",times[[2]][d]), x = 'Days Since the Day 29 Visit', y = plots_ytitles[i],
              color="Category", shape="Category") +
         theme(plot.margin = unit(c(1, 1, 1, 1), "cm"), 
               panel.grid = element_blank(),
+              legend.title = element_text(size=22),
               plot.title = element_text(hjust = 0.5),
               axis.text.x = element_text(size=ifelse(c=="Vaccine_BaselineNeg", 27, 19)))
       

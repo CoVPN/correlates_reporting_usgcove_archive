@@ -35,18 +35,19 @@ if(fast_run){
 cat_result <- NULL
 quant_result <- NULL
 assay_col <- day_col <- NULL
-for (marker in markers) {
+for (marker in c(outer(times, assays, FUN=paste0))) {
   print(marker)
 
   time <- marker_to_time[[marker]]
 
   # quantitative marker
   data_full <- readRDS(here("data_clean", paste0("data_", time, ".rds")))
-  # check whether to perform the analysis with quantitative marker
-  perform_continuous_analysis <- 
-    min(data_full[data_full$Trt == 1 , marker], na.rm = TRUE) < 
-      max(data_full[data_full$Trt == 0, marker], na.rm = TRUE)
-
+  # # check whether to perform the analysis with quantitative marker
+  # perform_continuous_analysis <- 
+  #   min(data_full[data_full$Trt == 1 , marker], na.rm = TRUE) < 
+  #     max(data_full[data_full$Trt == 0, marker], na.rm = TRUE)
+  perform_continuous_analysis <- TRUE
+  
   if(perform_continuous_analysis){
 	  fit <- natmed2(
 	    W = data_full[, covariates, drop = FALSE],

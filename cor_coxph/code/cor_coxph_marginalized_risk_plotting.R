@@ -4,10 +4,16 @@ RRud=RReu=2
 bias.factor=bias.factor(RRud, RReu)
     
 # to be saved for cor_nonlinear
-ylims.cor=list()
-ylims.cor[[1]]=list(2)
-ylims.cor[[2]]=list(2)
-
+if (!exists("ylims.cor")) {
+    ylims.cor=list()
+    ylims.cor[[1]]=list(2)
+    ylims.cor[[2]]=list(2)
+    create.ylims.cor=T
+} else {
+    create.ylims.cor=F
+}
+#
+report.ve.levels=c(.65,.9,.95)
 
 
 ###################################################################################################
@@ -19,17 +25,22 @@ for (w.wo.plac in 1:2) { # 1 with placebo lines, 2 without placebo lines. Implem
     
     risks.all=get("risks.all."%.%eq.geq)
     
-    if (eq.geq==2 & w.wo.plac==2) {
-        # later values in prob may be wildly large due to lack of samples
-        ylim=range(sapply(risks.all, function(x) x$prob[1]), if(w.wo.plac==1) prev.plac, prev.vacc, 0)
-        # add some white space at the top to write placebo overall risk
-        ylim[2]=ylim[2]
-#        ylim=c(0, 0.007)
+    if (!create.ylims.cor) {
+        ylim=ylims.cor[[eq.geq]][[w.wo.plac]] # use D29 values
     } else {
-        ylim=range(sapply(risks.all, function(x) x$prob), if(w.wo.plac==1) prev.plac, prev.vacc, 0)
+        print("no ylims.cor found")        
+        if (eq.geq==2 & w.wo.plac==2) {
+            # later values in prob may be wildly large due to lack of samples
+            ylim=range(sapply(risks.all, function(x) x$prob[1]), if(w.wo.plac==1) prev.plac, prev.vacc, 0)
+            # add some white space at the top to write placebo overall risk
+            ylim[2]=ylim[2]
+    #        ylim=c(0, 0.007)
+        } else {
+            ylim=range(sapply(risks.all, function(x) x$prob), if(w.wo.plac==1) prev.plac, prev.vacc, 0)
+        }
+        ylims.cor[[eq.geq]][[w.wo.plac]]=ylim
     }
     myprint(ylim)
-    ylims.cor[[eq.geq]][[w.wo.plac]]=ylim
     lwd=2
      
     mypdf(oma=c(0,0,0,0), onefile=F, file=paste0(save.results.to, "marginalized_risks", ifelse(eq.geq==1,"_eq","_geq"), ifelse(w.wo.plac==1,"","_woplacebo"), "_"%.%study_name), mfrow=.mfrow)
@@ -114,7 +125,7 @@ mytex(tab, file.name=paste0("marginalized_risks_eq", "_"%.%study_name), align="c
 # continuous markers, controlled VE curves
     
 for (eq.geq in 1:3) {  # 1 conditional on s, 2 is conditional on S>=s, 3 is same as 1 except that no sens curve is shown
-# eq.geq=2
+# eq.geq=1
 mypdf(onefile=F, file=paste0(save.results.to, "controlled_ve_curves",ifelse(eq.geq==1,"_eq",ifelse(eq.geq==2,"_geq","_eq_manus")),"_"%.%study_name), mfrow=.mfrow, oma=c(0,0,0,0))
     lwd=2.5
     par(las=1, cex.axis=0.9, cex.lab=1)# axis label orientation
@@ -168,6 +179,11 @@ mypdf(onefile=F, file=paste0(save.results.to, "controlled_ve_curves",ifelse(eq.g
         boot = 1 - t( t(risks$boot)/res.plac.cont[2:(1+ncol(risks$boot))] )                         
         ci.band=apply(boot, 1, function (x) quantile(x, c(.025,.975)))        
         mymatplot(risks$marker[.subset], t(rbind(est, ci.band))[.subset,], type="l", lty=c(1,2,2), col=if(eq.geq==3) "black" else "pink", lwd=lwd, make.legend=F, add=T)
+        # find marker values under specific VE
+        tmpind=sapply(report.ve.levels, function (x) ifelse (x>min(est)-0.01 & x<max(est)+0.01, which.min(abs(est-x)), NA))
+        tmp=10**risks$marker[tmpind]; tmp=c(round(tmp[1],1), round(tmp[-1]))
+        ret=rbind(ret, cbind("s"=tmp, "Estimate"=paste0(formatDouble(est[tmpind],digits.risk), " (", formatDouble(ci.band[1,tmpind],digits.risk), ",", formatDouble(ci.band[2,tmpind],digits.risk), ")")))
+        
         
         # legend
         tmp=formatDouble(overall.ve*100,1)%.%"%"        
@@ -194,7 +210,7 @@ mypdf(onefile=F, file=paste0(save.results.to, "controlled_ve_curves",ifelse(eq.g
 dev.off()    
 }
     
-# show tables of results at select assay values
+# show tables of controlled ve without sensitivity at select assay values
 digits.risk=4
 risks.all=get("risks.all.1")
 out=lapply (assays, function(a) {        
@@ -206,7 +222,14 @@ out=lapply (assays, function(a) {
     ci.band=apply(boot, 1, function (x) quantile(x, c(.025,.975)))        
     
     tmp=10**risks$marker[pick.out]; tmp=c(round(tmp[1],1), round(tmp[-1]))
-    cbind("s"=tmp, "Estimate"=paste0(formatDouble(est[pick.out],digits.risk), " (", formatDouble(ci.band[1,pick.out],digits.risk), ",", formatDouble(ci.band[2,pick.out],digits.risk), ")"))
+    ret = cbind("s"=tmp, "Estimate"=paste0(formatDouble(est[pick.out],digits.risk), " (", formatDouble(ci.band[1,pick.out],digits.risk), ",", formatDouble(ci.band[2,pick.out],digits.risk), ")"))
+
+    # find marker values under specific VE
+    tmpind=sapply(report.ve.levels, function (x) ifelse (x>min(est)-0.01 & x<max(est)+0.01, which.min(abs(est-x)), NA))
+    tmp=10**risks$marker[tmpind]; tmp=c(round(tmp[1],1), round(tmp[-1]))
+    ret=rbind(ret, cbind("s"=tmp, "Estimate"=paste0(formatDouble(est[tmpind],digits.risk), " (", formatDouble(ci.band[1,tmpind],digits.risk), ",", formatDouble(ci.band[2,tmpind],digits.risk), ")")))
+    
+    ret
 })
 tab=do.call(cbind, out)
 mytex(tab, file.name=paste0("controlled_ve_eq", "_"%.%study_name), align="c", include.colnames = T, save2input.only=T, input.foldername=save.results.to, include.rownames = F,

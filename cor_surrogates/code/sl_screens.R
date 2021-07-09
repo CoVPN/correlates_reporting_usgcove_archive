@@ -49,7 +49,7 @@ screen_all <- function(Y, X, family, obsWeights, id, nVar = maxVar, ...) {
   names(vars) <- names(X)
   # always keep the first three columns of X (correspond to risk_score, HighRiskInd, MinorityInd)
   vars[names(X) %in% c("risk_score", "HighRiskInd", "MinorityInd")] <- TRUE
-  print(paste0("vars is length: ", length(vars)))
+#  print(paste0("vars is length: ", length(vars)))
   print(vars)
   return(vars)
 }
@@ -74,7 +74,7 @@ screen_glmnet <- function(Y, X, family, obsWeights, id, alpha = 1,
   names(vars) <- names(X)
   # always keep the first three columns of X (correspond to risk_score, HighRiskInd, MinorityInd)
   vars[names(X) %in% c("risk_score", "HighRiskInd", "MinorityInd")] <- TRUE
-  print(paste0("vars is length: ", length(vars)))
+#  print(paste0("vars is length: ", length(vars)))
   print(vars)
   return(vars)
 }
@@ -106,7 +106,7 @@ screen_univariate_logistic_pval <- function(Y, X, family, obsWeights, id,
   vars[vars][ranked_vars > nVar] <- FALSE
   # always keep the first three columns of X (correspond to risk_score, HighRiskInd, MinorityInd)
   vars[names(X) %in% c("risk_score", "HighRiskInd", "MinorityInd")] <- TRUE
-  print(paste0("vars is length: ", length(vars)))
+#  print(paste0("vars is length: ", length(vars)))
   print(vars)
   return(vars)
 }
@@ -133,14 +133,6 @@ screen_highcor_random <- function(Y, X, family, obsWeights, id, nVar = maxVar,
   ) %>%
     filter(corr == "FALSE")
 
-  # if (dim(long.cormat)[1] > 0) { # NEEDS TO BE UPDATED; CHECK SAP
-  #   # select random element out of any pair
-  #   long.cormat$randCol <- apply(long.cormat, 1, function(x) sample(c(x[1], x[2]), 1, replace = T))
-  #   # get the unique columns
-  #   randCols <- unique(long.cormat$randCol)
-  #   vars[randCols] <- TRUE
-  # }
-  
   # Function to select markers based off priorities
   get_priorities <- function(x){
     if((str_detect(x[1], "mn50") & str_detect(x[2], "pseudo")) | (str_detect(x[2], "mn50") & str_detect(x[1], "pseudo"))){
@@ -160,8 +152,6 @@ screen_highcor_random <- function(Y, X, family, obsWeights, id, nVar = maxVar,
     long.cormat$selectCol = apply(long.cormat, 1, function(x)  get_priorities(x))
     # get the unique columns
     selectCols = unique(long.cormat$selectCol)
-    # # just select 2 for now for checking!
-    # randCols = randCols[1:2]
     vars[selectCols] <- TRUE
   }
   
@@ -174,7 +164,7 @@ screen_highcor_random <- function(Y, X, family, obsWeights, id, nVar = maxVar,
   vars[vars][ranked_vars > nVar] <- FALSE
   # always keep the first three columns of X (correspond to risk_score, HighRiskInd, MinorityInd)
   vars[names(X) %in% c("risk_score", "HighRiskInd", "MinorityInd")] <- TRUE
-  print(paste0("vars is length: ", length(vars)))
+#  print(paste0("vars is length: ", length(vars)))
   print(vars)
   return(vars)
 }
@@ -282,17 +272,6 @@ SL.step.skinny <- function(Y, X, newX, family, obsWeights, ...) {
   return(SL.step.fit)
 }
 
-# # boosted decision stumps
-# SL.stumpboost <- function(Y, X, newX, family, obsWeights, ...) {
-#   fit <- SL.xgboost(
-#     Y = Y, X = X, newX = newX, family = family, obsWeights = obsWeights,
-#     max_depth = 1, # so it's only a stump
-#     ...
-#   )
-#   return(fit)
-# }
-
-
 #############################################################################################
 #############################################################################################
 # boosted decision trees
@@ -393,7 +372,6 @@ SL.ranger.imp <- function (Y, X, newX, family, obsWeights, case.weights,
   fit <- ranger::ranger(`_Y` ~ ., data = cbind(`_Y` = Y, X),
                         num.trees = num.trees, mtry = mtry, min.node.size = min.node.size,
                         replace = replace, sample.fraction = sample.fraction,
-                        #case.weights = obsWeights, 
                         case.weights = case.weights, write.forest = write.forest,
                         probability = probability, num.threads = num.threads,
                         verbose = verbose, importance = "impurity")
@@ -407,26 +385,6 @@ SL.ranger.imp <- function (Y, X, newX, family, obsWeights, case.weights,
   return(out)
 }
 
-
-# # naive bayes wrapper
-# SL.naivebayes <- function(Y, X, newX, family, obsWeights, laplace = 0, ...) {
-#   SuperLearner:::.SL.require("e1071")
-#   if (family$family == "gaussian") {
-#     stop("SL.naivebayes only works with binary outcomes")
-#   } else {
-#     nb <- naiveBayes(y = Y, x = X, laplace = laplace)
-#     pred <- predict(nb, newX, type = "raw")[, 2]
-#     out <- list(fit = list(object = nb), pred = pred)
-#     class(out$fit) <- "SL.naivebayes"
-#     return(out)
-#   }
-# }
-# 
-# # predict method for naive bayes wrapper
-# predict.SL.naivebayes <- function(object, newdata, ...) {
-#   pred <- predict(object$object, newdata = newdata, type = "raw")[, 2]
-#   return(pred)
-# }
 
 ## ----------------------------------------------------------------------------
 ## Create SL Library

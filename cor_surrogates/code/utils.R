@@ -242,7 +242,7 @@ run_cv_sl_once <- function(seed = 1, Y = NULL, X_mat = NULL,
     SL.library = sl_lib,
     method = method, cvControl = cvControl,
     innerCvControl = innerCvControl,
-    verbose = TRUE
+    verbose = FALSE
   )
 
   aucs <- get_all_aucs(sl_fit = fit, scale = scale, weights = all_weights,
@@ -272,14 +272,12 @@ get.pca.scores <- function(dat){
 
   dat.cov <- cov(scaled_dat)
   dat.eigen <- eigen(dat.cov)
-  # str(dat.eigen)
 
   (phi <- dat.eigen$vectors[,1:2])
 
   phi <- -phi
   row.names(phi) <- names(scaled_dat)
   colnames(phi) <- c("PC1", "PC2")
-  # phi
 
   # Calculate Principal Components scores
   PC1 <- as.matrix(scaled_dat) %*% phi[,1]
@@ -311,12 +309,11 @@ get.maxSignalDivScore <- function(dat){
 
   ## multiply marker values with weights
   for (a in colnames(dat)) {
-    #print(a)
     dat[[a]] <- dat[[a]] * marker.wts[a]
   }
 
   dat <- dat %>%
-    mutate(max.signal.div.score = rowSums(.[1:5]))
+    mutate(max.signal.div.score = rowSums(.[1:4])) #rowSums(.[1:5]))
 
   return(dat$max.signal.div.score)
 }
@@ -335,9 +332,10 @@ get.nonlinearPCA.scores <- function(dat){
   # reticulate::py_config() # Check if pythonhome is "C:/Users/bborate/Anaconda3" ! If not, then .rs.restartR() !
   # .rs.restartR()
   # Sys.setenv(RETICULATE_PYTHON = "C:\\Users\\bborate\\Anaconda3")
-  library(reticulate)
-  library(FSDAM)
-  fit=fsdam(dat.scaled, opt_numCode = 2)
+  reticulate::use_python(Sys.getenv("PY_VERSION"))
+  #library(reticulate)
+  #library(FSDAM)
+  fit=FSDAM::fsdam(dat.scaled, opt_numCode = 2)
   nlPCA1 <- kyotil::INT(fit$code[,1]) # the first component
   nlPCA2 <- kyotil::INT(fit$code[,2])
 
@@ -650,8 +648,6 @@ make_forest_plot_prod <- function(avgs) {
     theme_bw() +
     labs(y = "CV-AUC [95% CI]", x = "") +
     theme(
-      #panel.grid.major.x = element_blank(),
-      #panel.grid.minor.x = element_blank(),
       axis.title.y = element_blank(),
       axis.text = element_text(size = 30),
       axis.title = element_text(size = 30),
@@ -690,3 +686,50 @@ make_forest_plot_prod <- function(avgs) {
 
   return(list(top_learner_plot = top_learner_plot, top_learner_nms_plot = top_learner_nms_plot))
 }
+
+
+# Create forest plot in general
+# @param avgs dataframe containing Screen, Learner, AUC estimates and CIs as columns
+# @return list of 2 ggplot objects: one containing forest plot and the other containing labels (Screen, Learner and CV-AUCs)
+make_forest_plot <- function(avgs){
+  lowestXTick <- floor(min(avgs$ci_ll)*10)/10
+  highestXTick <- ceiling(max(avgs$ci_ul)*10)/10
+  top_learner_plot <- ggplot() +
+    geom_pointrange(avgs %>% mutate(LearnerScreen = fct_reorder(LearnerScreen, AUC, .desc = F)), mapping=aes(x=LearnerScreen, y=AUC, ymin=ci_ll, ymax=ci_ul), size = 1, color="blue", fill="blue", shape=20) +
+    coord_flip() +
+    scale_y_continuous(breaks = seq(lowestXTick, max(highestXTick, 1), 0.1), labels = seq(lowestXTick, max(highestXTick, 1), 0.1), limits = c(lowestXTick, max(highestXTick, 1))) +
+    theme_bw() +
+    labs(y = "CV-AUC [95% CI]", x = "") +
+    theme(panel.grid.major.x = element_blank(),
+          panel.grid.minor.x = element_blank(),
+          axis.title.y = element_blank(),
+          axis.text.x = element_text(size=16),
+          axis.title.x = element_text(size=16),
+          axis.text.y = element_blank(),
+          plot.margin=unit(c(1,-0.15,1,-0.15),"cm"),
+          panel.border = element_blank(),
+          axis.line = element_line(colour = "black"))
+  
+  total_learnerScreen_combos = length(avgs$LearnerScreen)
+  
+  avgs_withCoord <- avgs %>%
+    select(Learner, Screen, AUCstr) %>%
+    gather("columnVal", "strDisplay") %>%
+    mutate(xcoord = case_when(columnVal=="Learner" ~ 1,
+                              columnVal=="Screen" ~ 1.5,
+                              columnVal=="AUCstr" ~ 2),
+           ycoord = rep(total_learnerScreen_combos:1, 3))
+  
+  top_learner_nms_plot <- ggplot(avgs_withCoord, aes(x = xcoord, y = ycoord, label = strDisplay)) +
+    geom_text(hjust=1, vjust=0, size=5) +
+    xlim(0.7,2) +
+    theme(plot.margin=unit(c(1.1,-0.15,1.75,-0.15),"cm"),
+          axis.line=element_blank(),
+          axis.text.y = element_blank(),
+          axis.text.x = element_text(size = 2, color = "white"),
+          axis.ticks = element_blank(),
+          axis.title = element_blank())
+  
+  return(list(top_learner_plot = top_learner_plot, top_learner_nms_plot = top_learner_nms_plot))
+}
+

@@ -21,7 +21,7 @@ endif
 
 ## report        : create a standalone report
 report:
-	Rscript -e "rmarkdown::render('cop_prinstrat_report.rmd', output_file='cop_prinstrat_report_$(trial).pdf')"
+	Rscript -e "rmarkdown::render('cop_prinstrat_report.Rmd', output_file='cop_prinstrat_report_$(TRIAL).pdf')"
 
 # turn down number of bootstraps and permutations in cor for faster builds
 before_script:

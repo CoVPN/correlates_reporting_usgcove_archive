@@ -50,7 +50,7 @@ screen_all <- function(Y, X, family, obsWeights, id, nVar = maxVar, ...) {
   # always keep the first three columns of X (correspond to risk_score, HighRiskInd, MinorityInd)
   vars[names(X) %in% c("risk_score", "HighRiskInd", "MinorityInd")] <- TRUE
 #  print(paste0("vars is length: ", length(vars)))
-  print(vars)
+#  print(vars)
   return(vars)
 }
 
@@ -75,7 +75,7 @@ screen_glmnet <- function(Y, X, family, obsWeights, id, alpha = 1,
   # always keep the first three columns of X (correspond to risk_score, HighRiskInd, MinorityInd)
   vars[names(X) %in% c("risk_score", "HighRiskInd", "MinorityInd")] <- TRUE
 #  print(paste0("vars is length: ", length(vars)))
-  print(vars)
+#  print(vars)
   return(vars)
 }
 
@@ -107,7 +107,7 @@ screen_univariate_logistic_pval <- function(Y, X, family, obsWeights, id,
   # always keep the first three columns of X (correspond to risk_score, HighRiskInd, MinorityInd)
   vars[names(X) %in% c("risk_score", "HighRiskInd", "MinorityInd")] <- TRUE
 #  print(paste0("vars is length: ", length(vars)))
-  print(vars)
+#  print(vars)
   return(vars)
 }
 
@@ -165,7 +165,7 @@ screen_highcor_random <- function(Y, X, family, obsWeights, id, nVar = maxVar,
   # always keep the first three columns of X (correspond to risk_score, HighRiskInd, MinorityInd)
   vars[names(X) %in% c("risk_score", "HighRiskInd", "MinorityInd")] <- TRUE
 #  print(paste0("vars is length: ", length(vars)))
-  print(vars)
+#  print(vars)
   return(vars)
 }
 

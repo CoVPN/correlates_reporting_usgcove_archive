@@ -1,13 +1,22 @@
+---
+header-includes:
+   - \usepackage{float}
+output:
+  pdf_document: default
+  html_document: default
+  
+---
 # Graphical Description of Immunogenicity Data {#immuno-graphical}
 
 ## Pairs plots of antibody markers for overall per-protocal cohort
 
 ### Baseline SARS-CoV-2 Negative
 
-```{r immuno-graphical-setup, echo = FALSE, message = FALSE}
+```{r immuno-graphical-setup, echo = FALSE, message = FALSE, include=FALSE}
 library(here)
 library(latex2exp)
 library(knitr)
+source(here("immuno_graphical/code/params.R"))
 here::i_am("immuno_graphical/report.Rmd")
 ```
 
@@ -2472,7 +2481,7 @@ include_graphics(here(
 \clearpage
 ### Baseline SARS-CoV-2 Positive
 
-```{r, fig.cap = "Boxplots of D29 Ab markers: baseline positive vaccine arm by age group. The three dashed lines in each figure are ULOQ, LLOQ, and positivity cutoffs for binding antibody assays, or ULOQ, LLOQ, and LLOD for neutralizing antibody assays, from top to bottom respectively.", eval=FALSE}
+```{r, fig.cap = "Boxplots of D29 Ab markers: baseline positive vaccine arm by age group. The three dashed lines in each figure are ULOQ, LLOQ, and positivity cutoffs for binding antibody assays, or ULOQ, LLOQ, and LLOD for neutralizing antibody assays, from top to bottom respectively.", eval=FALSE, eval = ("Day29" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
@@ -2483,7 +2492,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "Boxplots of D57 Ab markers: baseline positive vaccine arm by age group. The three dashed lines in each figure are ULOQ, LLOQ, and positivity cutoffs for binding antibody assays, or ULOQ, LLOQ, and LLOD for neutralizing antibody assays, from top to bottom respectively.", eval=FALSE}
+```{r, fig.cap = "Boxplots of D57 Ab markers: baseline positive vaccine arm by age group. The three dashed lines in each figure are ULOQ, LLOQ, and positivity cutoffs for binding antibody assays, or ULOQ, LLOQ, and LLOD for neutralizing antibody assays, from top to bottom respectively.", eval=FALSE, eval = ("Day57" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(

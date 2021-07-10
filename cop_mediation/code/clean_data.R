@@ -3,8 +3,11 @@
 renv::activate(project = here::here(".."))
 source(here::here("..", "_common.R"))
 #-----------------------------------------------
+# load parameters
+source(here::here("code", "params.R"))
+
 # load data
-full_data <- read.csv(here::here("..", "data_clean", data_name))
+full_data <- read.csv(here::here("..", "data_clean", data_name_updated))
 
 # define trichotomized markers
 #   adding 1e-6 to the first cut point helps avoid an error when 33% is the minimial value
@@ -13,7 +16,7 @@ full_data <- read.csv(here::here("..", "data_clean", data_name))
 marker.cutpoints <- list()    
 for (a in assays) {
     marker.cutpoints[[a]] <- list()    
-    for (ind.t in c("Day57", "Day29")) {
+    for (ind.t in times) {
         if(ind.t == "Day57"){
           dat.vacc.pop=subset(full_data, Trt==1 & Bserostatus==0 & !is.na(wt.D57))
           wt <- dat.vacc.pop$wt.D57
@@ -29,9 +32,6 @@ for (a in assays) {
     }
 }
 
-# load parameters
-source(here::here("code", "params.R"))
-
 # Generate the outcome and censoring indicator variables
 for (time in times) {
   print(time)
@@ -39,9 +39,8 @@ for (time in times) {
   outcome <-
     data[[Event_Ind_variable[[time]]]] == 1 & data[[Event_Time_variable[[time]]]] <= tf[[time]]
   outcome <- as.numeric(outcome)
-  # TO CHANGE
-  
-  if(adjust_for_censoring) {
+
+  if(FALSE) {
   Delta <-
     1 - (data[[Event_Ind_variable[[time]]]] == 0 &
       data[[Event_Time_variable[[time]]]] < tf[[time]])
@@ -60,14 +59,15 @@ for (time in times) {
   variables_to_keep <-
     c(
       covariates,
-      markers[marker_to_time[markers] == time],
+      c(outer(times, assays, FUN=paste0)),
       "TwophasesampInd",
       #"grp",
+      "Trt",
       "wt",
       "outcome",
-      "Delta",
-      "Trt"
+      "Delta"
     )
+
   keep <- data$Bserostatus == 0 & !is.na(data$wt)
   
   data_keep <- data[keep, variables_to_keep]
@@ -80,7 +80,7 @@ for (time in times) {
   variables_to_keep_cat <-
     c(
       covariates,
-      paste0(markers[marker_to_time[markers] == time], "cat"),
+      paste0(c(outer(times, assays, FUN=paste0)), "cat"),
       "TwophasesampInd",
       #"grp",
       "wt",

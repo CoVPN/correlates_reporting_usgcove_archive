@@ -120,7 +120,10 @@ dat.ph2 <- dat.ph2 %>%
   # left_join(get.nonlinearPCA.scores(dat.ph2 %>%
   #                                     select(Ptid, Day57bindSpike, Day57bindRBD, Day57pseudoneutid50, Day57pseudoneutid80)),
   #          by = "Ptid") %>%
-  mutate(max.signal.div.score = get.maxSignalDivScore(dat.ph2 %>%
+  mutate(
+    nlPCA1 = PC1,
+    nlPCA2 = PC2,
+    max.signal.div.score = get.maxSignalDivScore(dat.ph2 %>%
                                                         select(Day57bindSpike, Day57bindRBD, Day57pseudoneutid50, Day57pseudoneutid80)))
 
 markers <- dat.ph2 %>%

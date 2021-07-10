@@ -3,6 +3,7 @@
 renv::activate(project = here::here(".."))
 source(here::here("..", "_common.R"))
 #-----------------------------------------------
+
 # install.packages(c("ggpubr", "GGally", "SWIM", "scales", "dummies",
 # "gridExtra", "PResiduals"))
 library(here)
@@ -19,9 +20,9 @@ library(gridExtra)
 library(PResiduals)
 
 # produce geom_statistics w/ resampling-based covariate-adjusted Spearman
+source(here("code", "params.R"))
 source(here("code", "ggally_cor_resample.R"))
 source(here("code", "covid_corr_plot_functions.R"))
-source(here("code", "params.R"))
 
 set.seed(12345)
 # load cleaned data

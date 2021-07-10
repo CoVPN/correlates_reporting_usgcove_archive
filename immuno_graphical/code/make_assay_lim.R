@@ -52,7 +52,7 @@ dimnames(assay_lim) <- list(assay_immuno, times, c("lb", "ub"))
 assay_lim[, times %in% c("B", "Day29", "Day57"), "lb"] <- 
   floor(log10(llods[assay_immuno] / 2)) - floor(log10(llods[assay_immuno] / 2)) %% 2
 assay_lim[assay_immuno %in% bAb_assays, times %in% c("B", "Day29", "Day57"), "ub"] <- 
-  ceiling(MaxbAb) + ceiling(MaxbAb) %% 2
+  max(ceiling(MaxbAb) + ceiling(MaxbAb) %% 2, ceiling(log10(uloqs[assay_immuno])))
 assay_lim[assay_immuno %in% nAb_assays, times %in% c("B", "Day29", "Day57"), "ub"] <-
   ceiling(MaxID50ID80) + ceiling(MaxID50ID80) %% 2
 

@@ -31,6 +31,7 @@ conflict_prefer("summarise", "dplyr")
 # the demo version is simpler and runs faster!
 # the production version runs SL with a diverse set of learners
 run_prod <- !grepl("Mock", study_name)
+run_prod <- TRUE
 
 # get utility files
 source(here("code", "sl_screens.R")) # set up the screen/algorithm combinations
@@ -121,8 +122,8 @@ dat.ph2 <- dat.ph2 %>%
   #                                     select(Ptid, Day57bindSpike, Day57bindRBD, Day57pseudoneutid50, Day57pseudoneutid80)),
   #          by = "Ptid") %>%
   mutate(
-    nlPCA1 = PC1,
-    nlPCA2 = PC2,
+    #nlPCA1 = PC1,
+    #nlPCA2 = PC2,
     max.signal.div.score = get.maxSignalDivScore(dat.ph2 %>%
                                                         select(Day57bindSpike, Day57bindRBD, Day57pseudoneutid50, Day57pseudoneutid80)))
 

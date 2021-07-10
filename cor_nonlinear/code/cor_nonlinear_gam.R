@@ -97,7 +97,7 @@ dfs=sapply (assays, function(a) {
 
 
 for (w.wo.plac in 1:2) { # 1 with placebo lines, 2 without placebo lines. Implementation-wise, only difference is in ylim
-# ii=1; w.wo.plac=1; a=assays[3]
+# ii=1; w.wo.plac=1; a=assays[2]
     
     risks.all=get("risks.all.vacc.gam")
     
@@ -131,10 +131,13 @@ for (w.wo.plac in 1:2) { # 1 with placebo lines, 2 without placebo lines. Implem
         # risks
         if (ii==1) {
             abline(h=prev.vacc, col="gray", lty=c(1,3,3), lwd=lwd)
+            # showing bootstrap replicates
+            #for(i in 1:100) lines(risks$marker, risks$boot[,i], lwd=lwd, col="darkgray")
             # risk curve
             lines(risks$marker, risks$prob, lwd=lwd)
             lines(risks$marker, risks$lb,   lwd=lwd, lty=3)
             lines(risks$marker, risks$ub,   lwd=lwd, lty=3)    
+            
         } else {
         }
         

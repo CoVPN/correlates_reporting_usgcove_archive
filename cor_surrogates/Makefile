@@ -4,7 +4,7 @@ all: clean run_cvsl_varsets createRDAfiles_fromSLobjects tables_figures
 ## clean         : delete all SL results
 clean:
 	rm -f output/*
-	rm -f results/*
+	rm -f figs/*
 
 ## run_cvsl_varsets   : run CV-SL on vaccine arm and each variable set
 run_cvsl_varsets: 

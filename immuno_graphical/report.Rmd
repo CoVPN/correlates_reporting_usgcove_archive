@@ -1,6 +1,4 @@
 ---
-header-includes:
-   - \usepackage{float}
 output:
   pdf_document: default
   html_document: default

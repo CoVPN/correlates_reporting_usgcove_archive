@@ -46,7 +46,9 @@ assay_lim <- readRDS(here("data_clean", "assay_lim.rds"))
 tps <- c("Day29", "Day57", "Delta29overB", "Delta57overB")
 for (tp in tps[tps %in% times]) {
   for (trt in 1:2) {
-    for (bstatus in 1:2) {
+    # Don't produce figures for placebo baseline negative to improve build time
+    if(trt==1) {bstatus.range <- 2} else {bstatus.range <- 1:2}
+    for (bstatus in bstatus.range) {
       subdat <- subset(
         dat.long.twophase.sample,
         Bserostatus == bstatus.labels[bstatus] &

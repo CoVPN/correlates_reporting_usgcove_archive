@@ -14,7 +14,6 @@ output:
 library(here)
 library(latex2exp)
 library(knitr)
-source(here("immuno_graphical/code/params.R"))
 here::i_am("immuno_graphical/report.Rmd")
 ```
 

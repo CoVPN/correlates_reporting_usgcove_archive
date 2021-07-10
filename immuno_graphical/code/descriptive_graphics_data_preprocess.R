@@ -20,7 +20,7 @@ print("Data preprocess")
 # subcohort, which is a stratified sample of enrolled participants. So,
 # immunogenicity analysis is always done in ppts that meet all of the criteria.
 dat.twophase.sample <- dat %>%
-  dplyr::filter(ph2.immuno == 1)
+  filter(ph2.immuno == 1)
 twophase_sample_id <- dat.twophase.sample$Ptid
 
 
@@ -29,9 +29,9 @@ twophase_sample_id <- dat.twophase.sample$Ptid
 ## dat.long.assay_value is the long-form time variables that differ by the assay type
 dat.long.subject_level <- dat[, c(
   "Ptid", "Trt", "MinorityInd", "HighRiskInd", "Age", "Sex",
-  "Bserostatus", "age.geq.65", "Bstratum", "wt.subcohort", 
+  "Bserostatus", "Senior", "Bstratum", "wt.subcohort", 
   "race","EthnicityHispanic","EthnicityNotreported", 
-  "EthnicityUnknown", "WhiteNonHispanic"
+  "EthnicityUnknown", "WhiteNonHispanic", "Country", "HIVinfection"
 )] %>%
   replicate(length(assay_immuno), ., simplify = FALSE) %>%
   bind_rows()
@@ -93,9 +93,9 @@ dat.long.twophase.sample$trt_bstatus_label <-
 dat.long.twophase.sample$age_geq_65_label <-
   with(
     dat.long.twophase.sample,
-    factor(age.geq.65,
+    factor(Senior,
       levels = c(0, 1),
-      labels = c("Age < 65", "Age >= 65")
+      labels = paste0(c("Age < ", "Age >= "), age.cutoff)
     )
   )
 
@@ -111,13 +111,13 @@ dat.long.twophase.sample$highrisk_label <-
 dat.long.twophase.sample$age_risk_label <-
   with(
     dat.long.twophase.sample,
-    factor(paste0(age.geq.65, HighRiskInd),
+    factor(paste0(Senior, HighRiskInd),
       levels = c("00", "01", "10", "11"),
       labels = c(
-        "Age < 65 not at risk",
-        "Age < 65 at risk",
-        "Age >= 65 not at risk",
-        "Age >= 65 at risk"
+        paste0("Age < ", age.cutoff, " not at risk"),
+        paste0("Age < ", age.cutoff, " at risk"),
+        paste0("Age >= ", age.cutoff, " not at risk"),
+        paste0("Age >= ", age.cutoff, " at risk")
       )
     )
   )
@@ -134,13 +134,13 @@ dat.long.twophase.sample$sex_label <-
 dat.long.twophase.sample$age_sex_label <-
   with(
     dat.long.twophase.sample,
-    factor(paste0(age.geq.65, Sex),
+    factor(paste0(Senior, Sex),
       levels = c("00", "01", "10", "11"),
       labels = c(
-        "Age < 65 male",
-        "Age < 65 female",
-        "Age >= 65 male",
-        "Age >= 65 female"
+        paste0("Age < ", age.cutoff, " male"),
+        paste0("Age < ", age.cutoff, " female"),
+        paste0("Age >= ", age.cutoff, " male"),
+        paste0("Age >= ", age.cutoff, " female")
       )
     )
   )
@@ -167,8 +167,8 @@ dat.long.twophase.sample$ethnicity_label <-
 dat.long.twophase.sample$minority_label <-
   with(
     dat.long.twophase.sample,
-    factor(WhiteNonHispanic,
-      levels = c(1, 0),
+    factor(MinorityInd,
+      levels = c(0, 1),
       labels = c("White Non-Hispanic", "Comm. of Color")
     )
   )
@@ -176,16 +176,28 @@ dat.long.twophase.sample$minority_label <-
 dat.long.twophase.sample$age_minority_label <-
   with(
     dat.long.twophase.sample,
-    factor(paste0(age.geq.65, WhiteNonHispanic),
-      levels = c("00", "01", "10", "11"),
+    factor(paste0(Senior, MinorityInd),
+      levels = c("01", "00", "11", "10"),
       labels = c(
-        "Age < 65 Comm. of Color",
-        "Age < 65 White Non-Hispanic",
-        "Age >= 65 Comm. of Color",
-        "Age >= 65 White Non-Hispanic"
+        paste0("Age < ", age.cutoff, " Comm. of Color"),
+        paste0("Age < ", age.cutoff, " White Non-Hispanic"),
+        paste0("Age >= ", age.cutoff, " Comm. of Color"),
+        paste0("Age >= ", age.cutoff, " White Non-Hispanic")
       )
     )
   )
+
+if(study_name_code == "ENSEMBLE") {
+  dat.long.twophase.sample$country_label <- factor(sapply(dat.long.twophase.sample$Country, function(x) {
+    names(countries.ENSEMBLE)[countries.ENSEMBLE==x]
+  }), levels = names(countries.ENSEMBLE))
+  
+  dat.long.twophase.sample$hiv_label <- factor(sapply(dat.long.twophase.sample$HIVinfection, function(x) {
+    ifelse(x,
+           "HIV Positive",
+           "HIV Negative")
+  }), levels=c("HIV Negative", "HIV Positive"))
+}
 
 dat.long.twophase.sample$race <- as.factor(dat.long.twophase.sample$race)
 dat.twophase.sample$race <- as.factor(dat.twophase.sample$race)
@@ -194,7 +206,7 @@ dat.long.twophase.sample$Ptid <- as.character(dat.long.twophase.sample$Ptid)
 dat.twophase.sample$Ptid <- as.character(dat.twophase.sample$Ptid) 
 
 
-
+dat.long.twophase.sample <- filter(dat.long.twophase.sample, assay %in% assay_immuno)
 
 
 saveRDS(as.data.frame(dat.long.twophase.sample),

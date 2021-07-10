@@ -1,7 +1,15 @@
+#-----------------------------------------------
+# obligatory to append to the top of each script
+renv::activate(project = here::here(".."))
+source(here::here("..", "_common.R"))
+#-----------------------------------------------
+
 library(here)
 library(stringr)
 save.results.to <- here("figs")
 
+# Define age cutoff based on trial
+age.cutoff <- switch(study_name_code, "COVE"=65, "ENSEMBLE"=60)
 
 trt.labels <- c("Placebo", "Vaccine")
 bstatus.labels <- c("Baseline Neg", "Baseline Pos")
@@ -14,6 +22,10 @@ nAb_assays <- c("pseudoneutid50", "pseudoneutid80")
 # 
 if (!has29) {
   times <- c("B", "Day57", "Delta57overB")
+} else if (!has57) {
+  times <- c("B", "Day29", "Delta29overB")
+} else {
+  times <- c("B", "Day29", "Delta29overB", "Day57", "Delta57overB")
 }
 
 # Depends on the Incoming data

@@ -376,7 +376,7 @@ get.ptids.by.stratum.for.bootstrap = function(data) {
     )    
     # add a pseudo-stratum for subjects with NA in tps.stratum (not part of Subcohort). 
     # we need this group because it contains some cases with missing tps.stratum
-    # if data is ph1 only, then this group is only cases because ph1 = subcohort + cases
+    # if data is ph2 only, then this group is only cases because ph2 = subcohort + cases
     tmp=list(subcohort=subset(data, is.na(tps.stratum), Ptid, drop=TRUE),               nonsubcohort=NULL)
     ptids.by.stratum=append(ptids.by.stratum, list(tmp))    
     ptids.by.stratum

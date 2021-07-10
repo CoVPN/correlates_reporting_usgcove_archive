@@ -6,7 +6,6 @@ source(here::here("..", "_common.R"))
 
 library(here)
 library(stringr)
-source(here("..", "_common.R"))
 save.results.to <- here("figs")
 
 # Define age cutoff based on trial

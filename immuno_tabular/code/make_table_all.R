@@ -7,6 +7,7 @@ source(here::here("..", "_common.R")) #
 # Immunogenicity Tables
 
 # Reload clean_data
+base::load(here::here("data_clean", "params.Rdata"))
 base::load(here::here("data_clean", "ds_all.Rdata"))
 source(here::here("code", "make_functions.R"))
 library(survey)
@@ -29,12 +30,14 @@ options(survey.lonely.psu="adjust")
 
 num_v1 <- c("Age") # Summaries - Mean & Range
 num_v2 <- c("BMI") # Summaries - Mean & St.d
-cat_v <- c("Age65C", "SexC", "raceC", "ethnicityC", "HighRiskC", "AgeRiskC", "MinorityC")
+cat_v <- c("AgeC", "SexC", "raceC", "ethnicityC", "HighRiskC", "AgeRiskC", "MinorityC")
+
+if (study_name_code=="ENSEMBLE") cat_v <- c("AgeC", "SexC", "raceC", "ethnicityC", "HighRiskC", "AgeRiskC", "URMC",  "CountryC")
 
 ds_long_ttl <- ds %>%
   dplyr::filter(ph2.immuno) %>% 
   bind_rows(mutate(., Arm="Total")) %>% 
-  mutate(AgeRiskC = ifelse(grepl("$\\geq$", AgeRiskC, fixed=T), "Age $\\geq$ 65 ", AgeRiskC)) %>% 
+  mutate(AgeRiskC = ifelse(grepl("$\\geq$ 65", AgeRiskC, fixed=T), "Age $\\geq$ 65 ", AgeRiskC)) %>% 
   mutate_all(as.character) %>% 
   pivot_longer(all_of(c(num_v1, num_v2, cat_v)), names_to="subgroup", values_to="subgroup_cat")
 
@@ -71,9 +74,9 @@ dm_num <- ds_long_ttl %>%
   ) %>% 
   mutate(subgroup_cat = case_when(subgroup %in% num_v1 ~ "Mean (Range)",
                                   subgroup %in% num_v2 ~ "Mean $\\pm$ SD"),
-         subgroup=ifelse(subgroup=="Age", "Age65C", subgroup))
+         subgroup=ifelse(subgroup=="Age", "AgeC", subgroup))
 
-char_lev <- c("Age $<$ 65", "Age $\\geq$ 65", "Mean (Range)","Mean $\\pm$ SD",
+char_lev <- c(labels.age[1], labels.age[2], "Mean (Range)","Mean $\\pm$ SD",
               "Female","Male", "White", "Black or African American",
               "Asian", "American Indian or Alaska Native",
               "Native Hawaiian or Other Pacific Islander", "Multiracial",
@@ -81,7 +84,9 @@ char_lev <- c("Age $<$ 65", "Age $\\geq$ 65", "Mean (Range)","Mean $\\pm$ SD",
               "White Non-Hispanic", "Communities of Color",
               "Hispanic or Latino","Not Hispanic or Latino",
               "Not reported and unknown ","At-risk","Not at-risk",
-              "Age $<$ 65 At-risk","Age $<$ 65 Not at-risk", "Age $\\geq$ 65 ")
+              paste(labels.age[1],"At-risk"), paste(labels.age[1], "Not at-risk"), 
+              paste(labels.age[2],"At-risk"), paste(labels.age[2], "Not at-risk"),
+              paste(labels.age[2], ""), "URM", "Non-URM", labels.countries.ENSEMBLE)
 
 tab_dm <- bind_rows(dm_cat, dm_num) %>%
   mutate(rslt = case_when(subgroup %in% cat_v ~ rslt1,
@@ -123,9 +128,13 @@ tab_dm_neg <- tab_dm %>%
 print("Done with table 1") 
 
 # Added table: 
-demo.ordered <- c("Age >= 65, URM", "Age >= 65, White non-Hisp", "Age < 65, At risk, URM",
-                  "Age < 65, At risk, White non-Hisp", "Age < 65, Not at risk, URM", 
-                  "Age < 65, Not at risk, White non-Hisp")
+if (study_name_code=="COVE") {
+  demo.ordered <- c("Age >= 65, URM", "Age >= 65, White non-Hisp", "Age < 65, At risk, URM",
+                    "Age < 65, At risk, White non-Hisp", "Age < 65, Not at risk, URM", 
+                    "Age < 65, Not at risk, White non-Hisp")
+} else if (study_name_code=="ENSEMBLE") {
+  demo.ordered <- demo.stratum.labels
+  }
 
 tab_strtm <- ds %>% 
   filter(ph2.immuno) %>% 
@@ -137,12 +146,92 @@ tab_strtm <- ds %>%
   pivot_wider(id_cols=c(Arm, name), 
               names_from = c(`Baseline SARS-CoV-2`, demo.stratum.ordered), 
               values_from=value)
-    
-colnames(tab_strtm)=c("Arm", "  ", paste0(1:6,""), paste0(" ", 1:6))
 
-tab_strtm_header2 <- ncol(tab_strtm)-1
-names(tab_strtm_header2) <- sprintf("Random Subcohort Sample Sizes (N=%s Participants) (Moderna Trial)", sum(ds$ph2.immuno))
-tlf$tab_strtm$header_above2 <- tab_strtm_header2
+demo.stratum.footnote <- function(x, gap, labels){
+  paste(paste0(x, ". ", gsub(">=", "$\\\\geq$", labels[x], fixed = T)), 
+        collapse = sprintf("\\\\hspace{%spt}", gap))
+}
+
+if (study_name_code=="COVE") {
+  tab_strtm1 <- tab_strtm
+  tab_strtm2 <- NULL
+  
+  colnames(tab_strtm1)=c("Arm", "  ", paste0(1:(ncol(tab_strtm1)/2-1),""), paste0(" ", 1:(ncol(tab_strtm1)/2-1)))
+  tab_strtm_header2 <- ncol(tab_strtm1)-1
+  names(tab_strtm_header2) <- sprintf("Random Subcohort Sample Sizes (N=%s Participants) (%s Trial)", 
+                                      sum(ds$ph2.immuno), stringr::str_to_title(data_raw_dir))
+  
+  tlf$tab_strtm1$header_above1 <- c(" "=1, "Baseline SARS-CoV-2 Negative" = ncol(tab_strtm1)/2-1, 
+                                    "Baseline SARS-CoV-2 Positive" = ncol(tab_strtm1)/2-1)
+  tlf$tab_strtm1$header_above2 <- tab_strtm_header2
+  tlf$tab_strtm1$table_footer <- c("Demographic covariate strata:",
+                   "1. Age $\\\\geq$ 65 Minority\\\\hspace{81pt}4. Age < 65 At-risk Non-Minority", 
+                   "2. Age $\\\\geq$ 65 Non-Minority\\\\hspace{60pt}5. Age < 65 Not At-risk Minority",
+                   "3. Age < 65 At-risk Minority\\\\hspace{48pt}6. Age < 65 Not At-risk Non-Minority",
+                   " ",
+                   "Minority includes Blacks or African Americans, Hispanics or Latinos, American Indians or
+                   Alaska Natives, Native Hawaiians, and other Pacific Islanders.",
+                   "Non-Minority includes all other races with observed race (Asian, Multiracial, White, Other) and observed ethnicity Not Hispanic or Latino.
+                   Participants not classifiable as Minority or Non-Minority because of unknown, unreported or missing were not included.",
+                   " ",
+                   "Observed = Numbers of participants sampled into the subcohort within baseline covariate strata.",
+                   "Estimated = Estimated numbers of participants in the whole per-protocol cohort within baseline 
+  covariate strata, calculated using inverse probability weighting.")
+  
+} else if (study_name_code=="ENSEMBLE") {
+  tab_strtm1 <- tab_strtm %>% select(Arm, name, paste0("Negative_", 1:8), paste0("Positive_", 1:8))
+  tab_strtm2 <- tab_strtm %>% select(Arm, name, paste0("Negative_", 9:16), paste0("Positive_", 9:16))
+  
+  colnames(tab_strtm1)=c("Arm", "  ", paste0(1:(ncol(tab_strtm1)/2-1),""), paste0(" ", 1:(ncol(tab_strtm1)/2-1)))
+  colnames(tab_strtm2)=c("Arm", "  ", paste0(1:(ncol(tab_strtm2)/2-1),""), paste0(" ", 1:(ncol(tab_strtm2)/2-1)))
+  
+ 
+  tab_strtm_header2 <- ncol(tab_strtm1)-1
+  names(tab_strtm_header2) <- sprintf("U.S. Random Subcohort Sample Sizes (N=%s Participants) (%s Trial)", 
+                                      sum(ds[ds$demo.stratum%in%1:8, ]$ph2.immuno), stringr::str_to_title(data_raw_dir))
+  
+  tlf$tab_strtm1$header_above1 <- c(" "=1, "Baseline SARS-CoV-2 Negative" = ncol(tab_strtm1)/2-1, 
+                                    "Baseline SARS-CoV-2 Positive" = ncol(tab_strtm1)/2-1)
+  tlf$tab_strtm1$header_above2 <- tab_strtm_header2
+  tlf$tab_strtm1$table_footer <- c("Demographic covariate strata:",
+                                   demo.stratum.footnote(1:2, 60, labels=demo.stratum.labels[1:8]),
+                                   demo.stratum.footnote(3:4, 62, labels=demo.stratum.labels[1:8]),
+                                   demo.stratum.footnote(5:6, 15, labels=demo.stratum.labels[1:8]),
+                                   demo.stratum.footnote(7:8, 17, labels=demo.stratum.labels[1:8]),
+                   #                 " ",
+                   #                 "Minority includes Blacks or African Americans, Hispanics or Latinos, American Indians or
+                   # Alaska Natives, Native Hawaiians, and other Pacific Islanders.",
+                   #                 "Non-Minority includes all other races with observed race (Asian, Multiracial, White, Other) and observed ethnicity Not Hispanic or Latino.
+                   # Participants not classifiable as Minority or Non-Minority because of unknown, unreported or missing were not included.",
+                                   " ",
+                                   "Observed = Numbers of participants sampled into the subcohort within baseline covariate strata.",
+                                   "Estimated = Estimated numbers of participants in the whole per-protocol cohort within baseline 
+  covariate strata, calculated using inverse probability weighting.")
+  
+  tab_strtm_header2 <- ncol(tab_strtm2)-1
+  names(tab_strtm_header2) <- sprintf("Latin America and South Africa Random Subcohort Sample Sizes (N=%s Participants) (%s Trial)", 
+                                      sum(ds[ds$demo.stratum%in%9:16,]$ph2.immuno), stringr::str_to_title(data_raw_dir))
+  
+  tlf$tab_strtm2$header_above1 <- c(" "=1, "Baseline SARS-CoV-2 Negative" = ncol(tab_strtm1)/2-1, 
+                                    "Baseline SARS-CoV-2 Positive" = ncol(tab_strtm1)/2-1)
+  tlf$tab_strtm2$header_above2 <- tab_strtm_header2
+  tlf$tab_strtm2$table_footer <- c("Demographic covariate strata:",
+                                   demo.stratum.footnote(1:2, 60, labels=demo.stratum.labels[9:16]),
+                                   demo.stratum.footnote(3:4, 62, labels=demo.stratum.labels[9:16]),
+                                   demo.stratum.footnote(5:6, 67, labels=demo.stratum.labels[9:16]),
+                                   demo.stratum.footnote(7:8, 69, labels=demo.stratum.labels[9:16]),
+                                   #                 " ",
+                                   #                 "Minority includes Blacks or African Americans, Hispanics or Latinos, American Indians or
+                                   # Alaska Natives, Native Hawaiians, and other Pacific Islanders.",
+                                   #                 "Non-Minority includes all other races with observed race (Asian, Multiracial, White, Other) and observed ethnicity Not Hispanic or Latino.
+                                   # Participants not classifiable as Minority or Non-Minority because of unknown, unreported or missing were not included.",
+                                   " ",
+                                   "Observed = Numbers of participants sampled into the subcohort within baseline covariate strata.",
+                                   "Estimated = Estimated numbers of participants in the whole per-protocol cohort within baseline 
+  covariate strata, calculated using inverse probability weighting.")
+}
+
+
 
 ### Table 2. Responder Rates & Proportions of Magnitudes >= 2FR, 4FR
 # For each binding antibody marker, the estimated percentage of participants
@@ -158,11 +247,19 @@ tlf$tab_strtm$header_above2 <- tab_strtm_header2
 # Group: Category in each subgroup
 
 sub.by <- c("Arm", "`Baseline SARS-CoV-2`")
-resp.v <- grep("Resp|2lloq|4lloq|FR2|FR4", names(ds), value = T) 
-subs <- c("All", "Age65C", "HighRiskC", "AgeRiskC", "AgeRisk1", "AgeRisk2", "SexC",
-       "AgeSexC", "ethnicityC", "RaceEthC", "MinorityC", "AgeMinorC")
+resp.v <- grep("Resp|2lloq|4lloq|2llod|4llod|FR2|FR4", names(ds), value = T) 
+
+if (study_name_code=="COVE") {
+  subs <- c("All", "AgeC", "HighRiskC", "AgeRiskC", "AgeRisk1", "AgeRisk2", "SexC",
+            "AgeSexC", "ethnicityC", "RaceEthC", "MinorityC", "AgeMinorC")
+} else if (study_name_code=="ENSEMBLE") {
+  subs <- c("All", "AgeC", "CountryC", "HighRiskC", "AgeRiskC", "AgeRisk1", "AgeRisk2", "SexC",
+            "AgeSexC", "ethnicityC", "RaceEthC", "URMC", "AgeURM")
+}
+
 rpcnt <- get_rr(dat=ds, v=resp.v, subs=subs, sub.by=sub.by, strata="tps.stratum",
                 weights="wt.subcohort", subset="ph2.immuno")
+
 tab_rr <- rpcnt %>% 
   dplyr::filter(!subgroup %in% c("AgeRisk1", "AgeRisk2") & Visit != "Day 1" & Group %in% names(grplev)) %>% 
   mutate(subgroup=factor(subgrp[subgroup], levels=subgrp), Group=factor(grplev[Group], levels=grplev)) %>% 
@@ -175,7 +272,7 @@ if(any(grepl("bind", assays))){
   tab_bind1 <- tab_rr %>% 
     dplyr::filter(Marker %in% labels_all$Marker[grep("bind", labels_all$marker)]) %>% 
     select(subgroup, Group, Visit, Arm, `Baseline SARS-CoV-2`, Marker, N, Responder, 
-           `% Greater than 2xLLOQ`,`% Greater than 4xLLOQ`)
+           paste0(c("% Greater than 2x", "% Greater than 4x"), toupper(cutoff.name)))
   
   tab_bind2 <- tab_rr %>% 
     dplyr::filter(Marker %in% labels_all$Marker[grep("bind", labels_all$marker)]) %>% 
@@ -270,16 +367,19 @@ print("Done with table6")
 # 
 # Ratios of GMT/GMC between subgroups among vacinees
 
-comp_lev <- c("Age $\\geq$ 65", "Age $<$ 65",
+comp_lev <- c(labels.age[2:1],
               "At-risk", "Not at-risk",
-              "Age $<$ 65 At-risk", "Age $<$ 65 Not at-risk",
-              "Age $\\geq$ 65 At-risk", "Age $\\geq$ 65 Not at-risk",
+              paste(labels.age[1], c("At-risk", "Not at-risk")),
+              paste(labels.age[2], c("At-risk", "Not at-risk")),
               "Male", "Female",
               "Hispanic or Latino", "Not Hispanic or Latino",
-              "Communities of Color", "White Non-Hispanic")
+              labels.minor)
 
-groups <- c("Age65C", "HighRiskC", "AgeRisk1", "AgeRisk2",
-            "SexC", "ethnicityC", "MinorityC")
+groups <- c("AgeC", "HighRiskC", "AgeRisk1", "AgeRisk2",
+            "SexC", "ethnicityC", case_when(study_name_code=="COVE"~"MinorityC",
+                                            study_name_code=="ENSEMBLE"~"URMC"))
+
+
 mag_groups <- assays_col
 
 rgmt <- get_rgmt(ds, mag_groups, groups, comp_lev=comp_lev, 
@@ -433,7 +533,7 @@ tab_plcb <- tab_bl %>% dplyr::filter(Arm == "Placebo") %>% select(-Arm)
 
 print("Done with all tables") 
 
-save(tlf, tab_dm_pos, tab_dm_neg, tab_strtm, tab_bind1, tab_bind2, tab_pseudo, tab_wt, tab_gm,
+save(tlf, tab_dm_pos, tab_dm_neg, tab_strtm1, tab_strtm2, tab_bind1, tab_bind2, tab_pseudo, tab_wt, tab_gm,
      tab_gmr, tab_rgmt, tab_rrdiff, tab_neg, tab_pos, tab_vacc, tab_plcb,
      file = here::here("output", "Tables.Rdata"))
 

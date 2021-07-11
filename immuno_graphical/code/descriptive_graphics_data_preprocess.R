@@ -127,29 +127,65 @@ dat.long.twophase.sample$age_risk_label <-
     )
   )
 
-dat.long.twophase.sample$sex_label <-
-  with(
-    dat.long.twophase.sample,
-    factor(Sex,
-      levels = c(1, 0),
-      labels = c("Female", "Male")
-    )
-  )
+if (study_name_code == "COVE") {
 
-dat.long.twophase.sample$age_sex_label <-
-  with(
-    dat.long.twophase.sample,
-    factor(paste0(Senior, Sex),
-      levels = c("00", "01", "10", "11"),
-      labels = c(
-        paste0("Age < ", age.cutoff, " male"),
-        paste0("Age < ", age.cutoff, " female"),
-        paste0("Age >= ", age.cutoff, " male"),
-        paste0("Age >= ", age.cutoff, " female")
+  dat.long.twophase.sample$sex_label <-
+    with(
+      dat.long.twophase.sample,
+      factor(Sex,
+        levels = c(1, 0),
+        labels = c("Female", "Male")
       )
     )
-  )
+  
+  dat.long.twophase.sample$age_sex_label <-
+    with(
+      dat.long.twophase.sample,
+      factor(paste0(Senior, Sex),
+        levels = c("00", "01", "10", "11"),
+        labels = c(
+          paste0("Age < ", age.cutoff, " male"),
+          paste0("Age < ", age.cutoff, " female"),
+          paste0("Age >= ", age.cutoff, " male"),
+          paste0("Age >= ", age.cutoff, " female")
+        )
+      )
+    )
 
+} else if (study_name_code == "ENSEMBLE") {
+  
+  dat.long.twophase.sample$sex_label <-
+    with(
+      dat.long.twophase.sample,
+      factor(Sex,
+             levels = c(0, 1, 2, 3),
+             labels = c("Male", "Female", "Undifferentiated", "Unknown")
+      )
+    )
+  
+  dat.long.twophase.sample$age_sex_label <-
+    with(
+      dat.long.twophase.sample,
+      factor(paste0(Senior, Sex),
+             levels = c("00", "01", "02", "03", "10", "11", "12", "13"),
+             labels = c(
+               paste0("Age < ", age.cutoff, " male"),
+               paste0("Age < ", age.cutoff, " female"),
+               paste0("Age < ", age.cutoff, " undifferentiated"),
+               paste0("Age < ", age.cutoff, " unknown"),
+               paste0("Age >= ", age.cutoff, " male"),
+               paste0("Age >= ", age.cutoff, " female"),
+               paste0("Age >= ", age.cutoff, " undifferentiated"),
+               paste0("Age >= ", age.cutoff, " unknown")
+             )
+      )
+    )
+  
+  # Ignore undifferentiated participants
+  dat.long.twophase.sample$sex_label[dat.long.twophase.sample$sex_label == "Undifferentiated"] <- NA
+  
+  dat.long.twophase.sample$age_sex_label[endsWith(as.character(dat.long.twophase.sample$age_sex_label), "undifferentiated")] <- NA
+}
 
 dat.long.twophase.sample$ethnicity_label <-
   with(

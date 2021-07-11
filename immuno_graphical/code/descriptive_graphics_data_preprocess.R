@@ -182,11 +182,9 @@ if (study_name_code == "COVE") {
     )
   
   # Ignore undifferentiated participants
-  dat.long.twophase.sample$sex_label <- ifelse(dat.long.twophase.sample$sex_label == 2,
-                                               NA, dat.long.twophase.sample$sex_label)
-  dat.long.twophase.sample$age_sex_label <- ifelse(endsWith(dat.long.twophase.sample$age_sex_label, 2),
-                                                   NA, dat.long.twophase.sample$age_sex_label)
+  dat.long.twophase.sample$sex_label[dat.long.twophase.sample$sex_label == "Undifferentiated"] <- NA
   
+  dat.long.twophase.sample$age_sex_label[endsWith(as.character(dat.long.twophase.sample$age_sex_label), "undifferentiated")] <- NA
 }
 
 dat.long.twophase.sample$ethnicity_label <-

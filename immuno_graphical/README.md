@@ -37,7 +37,7 @@ follow the steps below:
 1. In `code/params.R`, change the variable "assay" to specify the types of
     biomarker assay for plotting; change the variable "times" to specify the
     time points for the comparative analysis; change the labels correspondingly.
-2. In `code/descriptuve_graphics_data_preprocess.R`, change the variable `dat`
+2. In `code/descriptive_graphics_data_preprocess.R`, change the variable `dat`
      to specify the data input.
 3. The R scripts `code/descriptive_graphics_two_phase_plots.R` and
     `code/descriptive_graphics_demographic_strata.R` contain the R code that

@@ -235,7 +235,7 @@ if (has57)
 dat_proc <- dat_proc %>%
   mutate(
     TwophasesampIndD57 =
-      (SubcohortInd | EventIndPrimaryD29 == 1) &
+      (SubcohortInd | !(is.na(EventIndPrimaryD29) | EventIndPrimaryD29 == 0)) &
       complete.cases(cbind(
         if("bindSpike" %in% must_have_assays) BbindSpike,
         if("bindRBD" %in% must_have_assays) BbindRBD,
@@ -257,7 +257,7 @@ dat_proc <- dat_proc %>%
 if(has29) dat_proc <- dat_proc %>%
   mutate(
     TwophasesampIndD29 =
-      (SubcohortInd | EventIndPrimaryD29 == 1) &
+      (SubcohortInd | !(is.na(EventIndPrimaryD29) | EventIndPrimaryD29 == 0)) &
       complete.cases(cbind(
         if("bindSpike" %in% must_have_assays) BbindSpike, 
         if("bindRBD" %in% must_have_assays) BbindRBD, 

@@ -13,8 +13,12 @@ names(assays)=assays # add names so that lapply results will have names
 include_bindN <- TRUE
 
 # conversion factors
-convf=c(bindSpike=0.0090, bindRBD=0.0272, bindN=0.0024, pseudoneutid50=0.242, pseudoneutid80=1.502)
-
+if(grepl("COVE", study_name)){
+  convf=c(bindSpike=0.0090, bindRBD=0.0272, bindN=0.0024, pseudoneutid50=0.242, pseudoneutid80=1.502)
+}else if(grepl("ENSEMBLE", study_name)){
+  # it seems binding Ab data already on IU scale for ENSEMBLE
+  convf=c(bindSpike=1.0, bindRBD=1.0, bindN=1.0, pseudoneutid50=0.242, pseudoneutid80=1.502)
+}
 # limits for each assay (IU for bAb and pseudoneut, no need to convert again)
 # the following are copied from SAP to avoid any mistake (get rid of commas)
 tmp=list(
@@ -433,3 +437,5 @@ report.assay.values=function(x, assay){
     #out[!duplicated(out)] # unique strips away the names. But don't take out duplicates because 15% may be needed and because we may want the same number of values for each assay
 }
 #report.assay.values (dat.vac.seroneg[["Day57pseudoneutid80"]], "pseudoneutid80")
+
+options(bitmapType='cairo')

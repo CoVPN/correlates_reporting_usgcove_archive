@@ -1,4 +1,4 @@
-#Sys.setenv(TRIAL = "janssen_pooled_mock")
+#Sys.setenv(TRIAL = "moderna_mock")
 if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
 #-----------------------------------------------
 renv::activate(here::here())
@@ -272,7 +272,7 @@ if(has29) dat_proc <- dat_proc %>%
   )
   
 
-# wt, for D57 correlates analyses
+# weights for D57 correlates analyses
 if (has57) {
     wts_table <- dat_proc %>% dplyr::filter(EarlyendpointD57==0 & Perprotocol==1 & EventTimePrimaryD57>=7) %>%
       with(table(Wstratum, TwophasesampIndD57))
@@ -288,6 +288,7 @@ if (has57) {
         msg = "missing wt.D57 for D57 analyses ph1 subjects")
 }
 
+# weights for D29 correlates analyses
 if(has29) {
     wts_table2 <- dat_proc %>% dplyr::filter(EarlyendpointD29==0 & Perprotocol==1 & EventTimePrimaryD29>=7) %>%
       with(table(Wstratum, TwophasesampIndD29))
@@ -302,7 +303,7 @@ if(has29) {
         msg = "missing wt.D29 for D29 analyses ph1 subjects")
 }
 
-# define weights for intercurrent cases
+# weights for intercurrent cases
 if(has29 & has57) {
     wts_table2 <- dat_proc %>%               dplyr::filter(EarlyendpointD29==0 & Perprotocol==1 & EventIndPrimaryD29==1 & EventTimePrimaryD29>=7 & EventTimePrimaryD29 <= 6 + NumberdaysD1toD57 - NumberdaysD1toD29) %>%
       with(table(Wstratum, TwophasesampIndD29))
@@ -319,7 +320,7 @@ if(has29 & has57) {
         msg = "missing wt.intercurrent.cases for intercurrent analyses ph1 subjects")
 }
 
-# wt.subcohort, for immunogenicity analyses that use subcohort only and are not enriched by cases outside subcohort
+# weights for immunogenicity analyses that use subcohort only and are not enriched by cases outside subcohort
 if (study_name_code=="COVE") {
     wts_table <- dat_proc %>%       dplyr::filter(EarlyendpointD57==0 & Perprotocol==1) %>%
       with(table(tps.stratum, TwophasesampIndD57 & SubcohortInd))
@@ -467,10 +468,12 @@ assays.includeN=c(assays, "bindN")
 # converting binding variables from AU to IU for binding assays
 ###############################################################################
 
-for (a in assays.includeN) {
-  for (t in c("B", if(has29) "Day29", if(has57) "Day57") ) {
-      dat_proc[[t %.% a]] <- dat_proc[[t %.% a]] + log10(convf[a])
-  }
+if (study_name_code=="COVE") {
+    for (a in assays.includeN) {
+      for (t in c("B", if(has29) "Day29", if(has57) "Day57") ) {
+          dat_proc[[t %.% a]] <- dat_proc[[t %.% a]] + log10(convf[a])
+      }
+    }
 }
 
 

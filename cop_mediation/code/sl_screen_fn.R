@@ -37,8 +37,13 @@ screen_glmnet <- eval(parse(text = paste0(
 # screen_univariate_logistic_pval minPvalue = 0.1, minscreen = 2; If number of variables with p-value less than minPvalue is less than minscreen, 
 # then issue warning and select the two variables with lowest minimum pvalue.
 univariate_logistic_pval <- function(Y, X, family = binomial(), obsWeights = rep(1, length(Y)), ...){
-	listp <- apply(X, 2, function(x, Y) {
-        fit <- glm(Y ~ x, data = data.frame(Y = Y, x), family = family, weights = obsWeights)
+  my_family <- if(all(Y %in% c(0,1))){
+    binomial()
+  }else{
+    gaussian()
+  }  
+  listp <- apply(X, 2, function(x, Y) {
+        fit <- glm(Y ~ x, data = data.frame(Y = Y, x), family = my_family, weights = obsWeights)
         summary_fit <- summary(fit)
         pval <- summary_fit$coefficients[2, 4]
         return(pval)
@@ -47,7 +52,12 @@ univariate_logistic_pval <- function(Y, X, family = binomial(), obsWeights = rep
 }
 
 screen_univariate_logistic_pval_tmp <- function(Y, X,  family = binomial(), obsWeights = rep(1, length(Y)), id, minPvalue = 0.1, minscreen = 2,...){
-	listp <- univariate_logistic_pval(Y = Y, X = X, family = family, obsWeights = obsWeights)
+	 my_family <- if(all(Y %in% c(0,1))){
+    binomial()
+  }else{
+    gaussian()
+  }
+  listp <- univariate_logistic_pval(Y = Y, X = X, family = my_family, obsWeights = obsWeights)
 	whichVariable <- (listp <= minPvalue)
     if (sum(whichVariable) < minscreen) {
         warning("number of variables with p value less than minPvalue is less than minscreen")

@@ -3,6 +3,7 @@
 renv::activate(project = here::here(".."))
 source(here::here("..", "_common.R"))
 #-----------------------------------------------
+
 # install.packages(c("ggpubr", "GGally", "SWIM", "scales", "dummies",
 # "gridExtra", "PResiduals"))
 library(here)
@@ -19,9 +20,9 @@ library(gridExtra)
 library(PResiduals)
 
 # produce geom_statistics w/ resampling-based covariate-adjusted Spearman
+source(here("code", "params.R"))
 source(here("code", "ggally_cor_resample.R"))
 source(here("code", "covid_corr_plot_functions.R"))
-source(here("code", "params.R"))
 
 set.seed(12345)
 # load cleaned data
@@ -48,8 +49,10 @@ tps <- c("Day29", "Day57", "Delta29overB", "Delta57overB")
 #-----------------------------------------------
 print("Pair plots 1:")
 for (tp in tps[tps %in% times]) {
-  for (bserostatus in 0:1) {
-    for (trt in c(0, 1)) {
+  for (trt in 0:1) {
+    # Don't produce figures for placebo baseline negative to improve build time
+    if(trt==0) {bstatus.range <- 1} else {bstatus.range <- 0:1}
+    for (bserostatus in bstatus.range) {
       
       if(tp == "Day29"){
         tt <- 2
@@ -101,8 +104,10 @@ for (tp in tps[tps %in% times]) {
 # baseline demographic subgroups use the case-deleted data set.
 #-----------------------------------------------
 print("Pair plots 2:")
-for (bserostatus in 0:1) {
-  for (trt in 0:1) {
+for (trt in 0:1) {
+  # Don't produce figures for placebo baseline negative to improve build time
+  if(trt==0) {bstatus.range <- 1} else {bstatus.range <- 0:1}
+  for (bserostatus in bstatus.range) {
     subdat <- dat.twophase.sample %>%
       dplyr::filter(Bserostatus == bserostatus & as.numeric(Trt) == trt)
     
@@ -134,8 +139,10 @@ print("Pair plots 3:")
 
 ## pairplots of assay readouts for multiple timepoints
 ## pairplots by baseline serostatus
-for (bserostatus in 0:1) {
-  for (trt in 0:1) {
+for (trt in 0:1) {
+  # Don't produce figures for placebo baseline negative to improve build time
+  if(trt==0) {bstatus.range <- 1} else {bstatus.range <- 0:1}
+  for (bserostatus in bstatus.range) {
     subdat <- dat.twophase.sample %>%
       dplyr::filter(Bserostatus == bserostatus & Trt == trt)
     
@@ -479,8 +486,10 @@ for (bstatus in 1:2) {
 print("Scatter plots:")
 tps <- c("B", "Day29", "Day57")
 for (tp in tps[tps %in% times]) {
-  for (bstatus in 1:2) {
-    for (trt in 1:2) {
+  for (trt in 1:2) {
+    # Don't produce figures for placebo baseline negative to improve build time
+    if(trt==1) {bstatus.range <- 2} else {bstatus.range <- 1:2}
+    for (bstatus in bstatus.range) {
       subdat <- dat.long.twophase.sample %>%
         filter(Bserostatus == bstatus.labels[bstatus], Trt == trt.labels[trt])
       

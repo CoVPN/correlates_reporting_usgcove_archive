@@ -310,4 +310,6 @@ cor_coxph/output/D57/marginalized_risks_eq_MockCOVE.tex
 cor_graphical/.Rprofile
 cor_graphical/renv/activate.R
 .Makefile.swp
+cor_nonlinear/output/D29/bootstrap_replicates_MockCOVE
+cor_nonlinear/output/D29/marginalized.risk.gam.MockCOVE.Rdata
 cop_mediation/*.html

@@ -1,15 +1,34 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+  
+---
 # Graphical Description of Immunogenicity Data {#immuno-graphical}
 
 ## Pairs plots of antibody markers for overall per-protocal cohort
 
 ### Baseline SARS-CoV-2 Negative
 
-```{r immuno-graphical-setup, echo = FALSE, message = FALSE}
+```{r immuno-graphical-setup, echo = FALSE, message = FALSE, include=FALSE}
 library(here)
 library(latex2exp)
 library(knitr)
 here::i_am("immuno_graphical/report.Rmd")
 ```
+
+```{r immuno-graphical-caption-setup, echo = FALSE, message = FALSE, include=FALSE}
+
+is.ensemble <- study_name_code=="ENSEMBLE"
+
+minority.disclaimer <- switch(study_name_code, "COVE"="", "ENSEMBLE"="These plots are restricted to only United States trial participants.")
+
+neut.marker.captions <- switch(study_name_code, 
+                               "COVE"="The three dashed lines in each figure are ULOQ, LLOQ, and positivity cutoffs for binding antibody assays, or ULOQ, LLOQ, and LLOD for neutralizing antibody assays, from top to bottom respectively.",
+                               "ENSEMBLE"="The three dashed lines in each figure are ULOQ, LLOQ, and positivity cutoffs for binding antibody assays.")
+
+```
+
 
 ```{r, fig.cap = "Pair plots of D29 Ab markers: baseline negative vaccine arm", eval = ('Day29' %in% times)}
 include_graphics(here(
@@ -719,7 +738,7 @@ include_graphics(here(
 
 ### Baseline SARS-CoV-2 Negative
 
-```{r, fig.cap = "Boxplots of D29 Ab markers: baseline negative vaccine + placebo arms. The three dashed lines in each figure are ULOQ, LLOQ, and positivity cutoffs for binding antibody assays, or ULOQ, LLOQ, and LLOD for neutralizing antibody assays, from top to bottom respectively.", eval = ("Day29" %in% times)}
+```{r, fig.cap = paste("Boxplots of D29 Ab markers: baseline negative vaccine + placebo arms.", neut.marker.captions), eval = ("Day29" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0("boxplots_Day29_x_trt_BaselineNeg_", study_name, ".png")
@@ -727,7 +746,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "Boxplots of D57 Ab markers: baseline negative vaccine + placebo arms. The three dashed lines in each figure are ULOQ, LLOQ, and positivity cutoffs for binding antibody assays, or ULOQ, LLOQ, and LLOD for neutralizing antibody assays, from top to bottom respectively.", eval = ("Day57" %in% times)}
+```{r, fig.cap = paste("Boxplots of D57 Ab markers: baseline negative vaccine + placebo arms.", neut.marker.captions), eval = ("Day57" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0("boxplots_Day57_x_trt_BaselineNeg_", study_name, ".png")
@@ -753,7 +772,7 @@ include_graphics(here(
 \clearpage
 ### Baseline SARS-CoV-2 Positive
 
-```{r, fig.cap = "Boxplots of D29 Ab markers: baseline positive vaccine + placebo arms. The three dashed lines in each figure are ULOQ, LLOQ, and positivity cutoffs for binding antibody assays, or ULOQ, LLOQ, and LLOD for neutralizing antibody assays, from top to bottom respectively.", eval = ("Day29" %in% times)}
+```{r, fig.cap = paste("Boxplots of D29 Ab markers: baseline positive vaccine + placebo arms.", neut.marker.captions), eval = ("Day29" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0("boxplots_Day29_x_trt_BaselinePos_", study_name, ".png")
@@ -761,7 +780,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "Boxplots of D57 Ab markers: baseline positive vaccine + placebo arms. The three dashed lines in each figure are ULOQ, LLOQ, and positivity cutoffs for binding antibody assays, or ULOQ, LLOQ, and LLOD for neutralizing antibody assays, from top to bottom respectively.", eval = ("Day57" %in% times)}
+```{r, fig.cap = paste("Boxplots of D57 Ab markers: baseline positive vaccine + placebo arms.", neut.marker.captions), eval = ("Day57" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0("boxplots_Day57_x_trt_BaselinePos_", study_name, ".png")
@@ -787,7 +806,7 @@ include_graphics(here(
 \clearpage
 ### Baseline negative vs. positive vaccine recipients
 
-```{r, fig.cap = "Boxplots of D29 Ab markers: baseline positive + negative vaccine arm. The three dashed lines in each figure are ULOQ, LLOQ, and positivity cutoffs for binding antibody assays, or ULOQ, LLOQ, and LLOD for neutralizing antibody assays, from top to bottom respectively.", eval = ("Day29" %in% times)}
+```{r, fig.cap = paste("Boxplots of D29 Ab markers: baseline positive + negative vaccine arm.", neut.marker.captions), eval = ("Day29" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0("boxplots_Day29_x_bstatus_vaccine_arm_", study_name, ".png")
@@ -795,7 +814,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "Boxplots of D57 Ab markers: baseline positive + negative vaccine arm. The three dashed lines in each figure are ULOQ, LLOQ, and positivity cutoffs for binding antibody assays, or ULOQ, LLOQ, and LLOD for neutralizing antibody assays, from top to bottom respectively.", eval = ("Day57" %in% times)}
+```{r, fig.cap = paste("Boxplots of D57 Ab markers: baseline positive + negative vaccine arm.", neut.marker.captions), eval = ("Day57" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0("boxplots_Day57_x_bstatus_vaccine_arm_", study_name, ".png")
@@ -821,7 +840,7 @@ include_graphics(here(
 \clearpage
 ### Baseline negative vs. positive placebo recipients
 
-```{r, fig.cap = "Boxplots of D29 Ab markers: baseline positive + negative placebo arm. The three dashed lines in each figure are ULOQ, LLOQ, and positivity cutoffs for binding antibody assays, or ULOQ, LLOQ, and LLOD for neutralizing antibody assays, from top to bottom respectively.", eval = ("Day29" %in% times)}
+```{r, fig.cap = paste("Boxplots of D29 Ab markers: baseline positive + negative placebo arm.", neut.marker.captions), eval = ("Day29" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0("boxplots_Day29_x_bstatus_placebo_arm_", study_name, ".png")
@@ -829,7 +848,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "Boxplots of D57 Ab markers: baseline positive + negative placebo arm. The three dashed lines in each figure are ULOQ, LLOQ, and positivity cutoffs for binding antibody assays, or ULOQ, LLOQ, and LLOD for neutralizing antibody assays, from top to bottom respectively.", eval = ("Day57" %in% times)}
+```{r, fig.cap = paste("Boxplots of D57 Ab markers: baseline positive + negative placebo arm.", neut.marker.captions), eval = ("Day57" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs",
   paste0("boxplots_Day57_x_bstatus_placebo_arm_", study_name, ".png")
@@ -1186,7 +1205,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "RCDF plots for D29 Ab markers: baseline negative vaccine arm by dichotomous classification of race and ethnic group.", eval = ("Day29" %in% times)}
+```{r, fig.cap = paste("RCDF plots for D29 Ab markers: baseline negative vaccine arm by dichotomous classification of race and ethnic group.", minority.disclaimer), eval = ("Day29" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
@@ -1197,7 +1216,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "RCDF plots for D57 Ab markers: baseline negative vaccine arm by dichotomous classification of race and ethnic group.", eval = ("Day57" %in% times)}
+```{r, fig.cap = paste("RCDF plots for D57 Ab markers: baseline negative vaccine arm by dichotomous classification of race and ethnic group.", minority.disclaimer), eval = ("Day57" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
@@ -1208,7 +1227,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "RCDF plots for D29 fold-rise over D1 Ab markers: baseline negative vaccine arm by dichotomous classification of race and ethnic group.", eval = ("Delta29overB" %in% times)}
+```{r, fig.cap = paste("RCDF plots for D29 fold-rise over D1 Ab markers: baseline negative vaccine arm by dichotomous classification of race and ethnic group.", minority.disclaimer), eval = ("Delta29overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
@@ -1219,7 +1238,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "RCDF plots for D57 fold-rise over D1 Ab markers: baseline negative vaccine arm by dichotomous classification of race and ethnic group.", eval = ("Delta57overB" %in% times)}
+```{r, fig.cap = paste("RCDF plots for D57 fold-rise over D1 Ab markers: baseline negative vaccine arm by dichotomous classification of race and ethnic group.", minority.disclaimer), eval = ("Delta57overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
@@ -1230,7 +1249,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "RCDF plots for D29 Ab markers: baseline negative vaccine arm by age and dichotomous classification of race and ethnic group.", eval = ("Day29" %in% times)}
+```{r, fig.cap = paste("RCDF plots for D29 Ab markers: baseline negative vaccine arm by age and dichotomous classification of race and ethnic group.", minority.disclaimer), eval = ("Day29" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
@@ -1241,7 +1260,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "RCDF plots for D57 Ab markers: baseline negative vaccine arm by age and dichotomous classification of race and ethnic group.", eval = ("Day57" %in% times)}
+```{r, fig.cap = paste("RCDF plots for D57 Ab markers: baseline negative vaccine arm by age and dichotomous classification of race and ethnic group.", minority.disclaimer), eval = ("Day57" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
@@ -1252,7 +1271,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "RCDF plots for D29 fold-rise over D1 Ab markers: baseline negative vaccine arm by age and dichotomous classification of race and ethnic group.", eval = ("Delta29overB" %in% times)}
+```{r, fig.cap = paste("RCDF plots for D29 fold-rise over D1 Ab markers: baseline negative vaccine arm by age and dichotomous classification of race and ethnic group.", minority.disclaimer), eval = ("Delta29overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
@@ -1263,11 +1282,98 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "RCDF plots for D57 fold-rise over D1 Ab markers: baseline negative vaccine arm by age and dichotomous classification of race and ethnic group.", eval = ("Delta57overB" %in% times)}
+```{r, fig.cap = paste("RCDF plots for D57 fold-rise over D1 Ab markers: baseline negative vaccine arm by age and dichotomous classification of race and ethnic group.", minority.disclaimer), eval = ("Delta57overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
     "Marker_Rcdf_Delta57overB_trt_vaccine_BaselineNeg_by_age_minority_group_",
+    study_name, ".png"
+  )
+))
+```
+
+```{r, fig.cap = "RCDF plots for D29 Ab markers: baseline negative vaccine arm by country of residence.", eval = ("Day29" %in% times) & is.ensemble}
+include_graphics(here(
+  "immuno_graphical", "figs", "demographics",
+  paste0(
+    "Marker_Rcdf_Day29_trt_vaccine_BaselineNeg_by_country_",
+    study_name, ".png"
+  )
+))
+```
+
+\clearpage
+```{r, fig.cap = "RCDF plots for D57 Ab markers: baseline negative vaccine arm by country of residence.", eval = ("Day57" %in% times) & is.ensemble}
+include_graphics(here(
+  "immuno_graphical", "figs", "demographics",
+  paste0(
+    "Marker_Rcdf_Day57_trt_vaccine_BaselineNeg_by_country_",
+    study_name, ".png"
+  )
+))
+```
+
+\clearpage
+```{r, fig.cap = "RCDF plots for D29 fold-rise over D1 Ab markers: baseline negative vaccine arm by country of residence.", eval = ("Delta29overB" %in% times) & is.ensemble}
+include_graphics(here(
+  "immuno_graphical", "figs", "demographics",
+  paste0(
+    "Marker_Rcdf_Delta29overB_trt_vaccine_BaselineNeg_by_country_",
+    study_name, ".png"
+  )
+))
+```
+
+\clearpage
+```{r, fig.cap = "RCDF plots for D57 fold-rise over D1 Ab markers: baseline negative vaccine arm by country of residence.", eval = ("Delta57overB" %in% times) & is.ensemble}
+include_graphics(here(
+  "immuno_graphical", "figs", "demographics",
+  paste0(
+    "Marker_Rcdf_Delta57overB_trt_vaccine_BaselineNeg_by_country_",
+    study_name, ".png"
+  )
+))
+```
+
+\clearpage
+```{r, fig.cap = "RCDF plots for D29 Ab markers: baseline negative vaccine arm by HIV positivity.", eval = ("Day29" %in% times) & is.ensemble}
+include_graphics(here(
+  "immuno_graphical", "figs", "demographics",
+  paste0(
+    "Marker_Rcdf_Day29_trt_vaccine_BaselineNeg_by_hiv_group_",
+    study_name, ".png"
+  )
+))
+```
+
+\clearpage
+```{r, fig.cap = "RCDF plots for D57 Ab markers: baseline negative vaccine arm by HIV positivity.", eval = ("Day57" %in% times) & is.ensemble}
+include_graphics(here(
+  "immuno_graphical", "figs", "demographics",
+  paste0(
+    "Marker_Rcdf_Day57_trt_vaccine_BaselineNeg_by_hiv_group_",
+    study_name, ".png"
+  )
+))
+```
+
+\clearpage
+```{r, fig.cap = "RCDF plots for D29 fold-rise over D1 Ab markers: baseline negative vaccine arm by HIV positivity.", eval = ("Delta29overB" %in% times) & is.ensemble}
+include_graphics(here(
+  "immuno_graphical", "figs", "demographics",
+  paste0(
+    "Marker_Rcdf_Delta29overB_trt_vaccine_BaselineNeg_by_hiv_group_",
+    study_name, ".png"
+  )
+))
+```
+
+\clearpage
+```{r, fig.cap = "RCDF plots for D57 fold-rise over D1 Ab markers: baseline negative vaccine arm by HIV positivity.", eval = ("Delta57overB" %in% times) & is.ensemble}
+include_graphics(here(
+  "immuno_graphical", "figs", "demographics",
+  paste0(
+    "Marker_Rcdf_Delta57overB_trt_vaccine_BaselineNeg_by_hiv_group_",
     study_name, ".png"
   )
 ))
@@ -1584,7 +1690,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "RCDF plots for D29 Ab markers: baseline positive vaccine arm by dichotomous classification of race and ethnic group.", eval = ("Day29" %in% times)}
+```{r, fig.cap = paste("RCDF plots for D29 Ab markers: baseline positive vaccine arm by dichotomous classification of race and ethnic group.", minority.disclaimer), eval = ("Day29" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
@@ -1595,7 +1701,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "RCDF plots for D57 Ab markers: baseline positive vaccine arm by dichotomous classification of race and ethnic group.", eval = ("Day57" %in% times)}
+```{r, fig.cap = paste("RCDF plots for D57 Ab markers: baseline positive vaccine arm by dichotomous classification of race and ethnic group.", minority.disclaimer), eval = ("Day57" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
@@ -1606,7 +1712,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "RCDF plots for D29 fold-rise over D1 Ab markers: baseline positive vaccine arm by dichotomous classification of race and ethnic group.", eval = ("Delta29overB" %in% times)}
+```{r, fig.cap = paste("RCDF plots for D29 fold-rise over D1 Ab markers: baseline positive vaccine arm by dichotomous classification of race and ethnic group.", minority.disclaimer), eval = ("Delta29overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
@@ -1617,7 +1723,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "RCDF plots for D57 fold-rise over D1 Ab markers: baseline positive vaccine arm by dichotomous classification of race and ethnic group.", eval = ("Delta57overB" %in% times)}
+```{r, fig.cap = paste("RCDF plots for D57 fold-rise over D1 Ab markers: baseline positive vaccine arm by dichotomous classification of race and ethnic group.", minority.disclaimer), eval = ("Delta57overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
@@ -1628,7 +1734,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "RCDF plots for D29 Ab markers: baseline positive vaccine arm by age and dichotomous classification of race and ethnic group.", eval = ("Day29" %in% times)}
+```{r, fig.cap = paste("RCDF plots for D29 Ab markers: baseline positive vaccine arm by age and dichotomous classification of race and ethnic group.", minority.disclaimer), eval = ("Day29" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
@@ -1639,7 +1745,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "RCDF plots for D57 Ab markers: baseline positive vaccine arm by age and dichotomous classification of race and ethnic group.", eval = ("Day57" %in% times)}
+```{r, fig.cap = paste("RCDF plots for D57 Ab markers: baseline positive vaccine arm by age and dichotomous classification of race and ethnic group.", minority.disclaimer), eval = ("Day57" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
@@ -1650,7 +1756,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "RCDF plots for D29 fold-rise over D1 Ab markers: baseline positive vaccine arm by age and dichotomous classification of race and ethnic group.", eval = ("Delta29overB" %in% times)}
+```{r, fig.cap = paste("RCDF plots for D29 fold-rise over D1 Ab markers: baseline positive vaccine arm by age and dichotomous classification of race and ethnic group.", minority.disclaimer), eval = ("Delta29overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
@@ -1661,11 +1767,99 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "RCDF plots for D57 fold-rise over D1 Ab markers: baseline positive vaccine arm by age and dichotomous classification of race and ethnic group.", eval = ("Delta57overB" %in% times)}
+```{r, fig.cap = paste("RCDF plots for D57 fold-rise over D1 Ab markers: baseline positive vaccine arm by age and dichotomous classification of race and ethnic group.", minority.disclaimer), eval = ("Delta57overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
     "Marker_Rcdf_Delta57overB_trt_vaccine_BaselinePos_by_age_minority_group_",
+    study_name, ".png"
+  )
+))
+```
+
+\clearpage
+```{r, fig.cap = "RCDF plots for D29 Ab markers: baseline positive vaccine arm by country of residence.", eval = ("Day29" %in% times) & is.ensemble}
+include_graphics(here(
+  "immuno_graphical", "figs", "demographics",
+  paste0(
+    "Marker_Rcdf_Day29_trt_vaccine_BaselinePos_by_country_",
+    study_name, ".png"
+  )
+))
+```
+
+\clearpage
+```{r, fig.cap = "RCDF plots for D57 Ab markers: baseline positive vaccine arm by country of residence.", eval = ("Day57" %in% times) & is.ensemble}
+include_graphics(here(
+  "immuno_graphical", "figs", "demographics",
+  paste0(
+    "Marker_Rcdf_Day57_trt_vaccine_BaselinePos_by_country_",
+    study_name, ".png"
+  )
+))
+```
+
+\clearpage
+```{r, fig.cap = "RCDF plots for D29 fold-rise over D1 Ab markers: baseline positive vaccine arm by country of residence.", eval = ("Delta29overB" %in% times) & is.ensemble}
+include_graphics(here(
+  "immuno_graphical", "figs", "demographics",
+  paste0(
+    "Marker_Rcdf_Delta29overB_trt_vaccine_BaselinePos_by_country_",
+    study_name, ".png"
+  )
+))
+```
+
+\clearpage
+```{r, fig.cap = "RCDF plots for D57 fold-rise over D1 Ab markers: baseline positive vaccine arm by country of residence.", eval = ("Delta57overB" %in% times) & is.ensemble}
+include_graphics(here(
+  "immuno_graphical", "figs", "demographics",
+  paste0(
+    "Marker_Rcdf_Delta57overB_trt_vaccine_BaselinePos_by_country_",
+    study_name, ".png"
+  )
+))
+```
+
+\clearpage
+```{r, fig.cap = "RCDF plots for D29 Ab markers: baseline positive vaccine arm by HIV positivity.", eval = ("Day29" %in% times) & is.ensemble}
+include_graphics(here(
+  "immuno_graphical", "figs", "demographics",
+  paste0(
+    "Marker_Rcdf_Day29_trt_vaccine_BaselinePos_by_hiv_group_",
+    study_name, ".png"
+  )
+))
+```
+
+\clearpage
+```{r, fig.cap = "RCDF plots for D57 Ab markers: baseline positive vaccine arm by HIV positivity.", eval = ("Day57" %in% times) & is.ensemble}
+include_graphics(here(
+  "immuno_graphical", "figs", "demographics",
+  paste0(
+    "Marker_Rcdf_Day57_trt_vaccine_BaselinePos_by_hiv_group_",
+    study_name, ".png"
+  )
+))
+```
+
+\clearpage
+```{r, fig.cap = "RCDF plots for D29 fold-rise over D1 Ab markers: baseline positive vaccine arm by HIV positivity.", eval = ("Delta29overB" %in% times) & is.ensemble}
+include_graphics(here(
+  "immuno_graphical", "figs", "demographics",
+  paste0(
+    "Marker_Rcdf_Delta29overB_trt_vaccine_BaselinePos_by_hiv_group_",
+    study_name, ".png"
+  )
+))
+```
+
+\clearpage
+```{r, fig.cap = "RCDF plots for D57 fold-rise over D1 Ab markers: baseline positive vaccine arm by HIV positivity.", eval = ("Delta57overB" %in% times) & is.ensemble}
+include_graphics(here(
+  "immuno_graphical", "figs", "demographics",
+  paste0(
+    "Marker_Rcdf_Delta57overB_trt_vaccine_BaselinePos_by_hiv_group_",
     study_name, ".png"
   )
 ))
@@ -1982,7 +2176,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "RCDF plots for D29 Ab markers: baseline positive placebo arm by dichotomous classification of race and ethnic group.", eval = ("Day29" %in% times)}
+```{r, fig.cap = paste("RCDF plots for D29 Ab markers: baseline positive placebo arm by dichotomous classification of race and ethnic group.", minority.disclaimer), eval = ("Day29" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
@@ -1993,7 +2187,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "RCDF plots for D57 Ab markers: baseline positive placebo arm by dichotomous classification of race and ethnic group.", eval = ("Day57" %in% times)}
+```{r, fig.cap = paste("RCDF plots for D57 Ab markers: baseline positive placebo arm by dichotomous classification of race and ethnic group.", minority.disclaimer), eval = ("Day57" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
@@ -2004,7 +2198,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "RCDF plots for D29 fold-rise over D1 Ab markers: baseline positive placebo arm by dichotomous classification of race and ethnic group.", eval = ("Delta29overB" %in% times)}
+```{r, fig.cap = paste("RCDF plots for D29 fold-rise over D1 Ab markers: baseline positive placebo arm by dichotomous classification of race and ethnic group.", minority.disclaimer), eval = ("Delta29overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
@@ -2015,7 +2209,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "RCDF plots for D57 fold-rise over D1 Ab markers: baseline positive placebo arm by dichotomous classification of race and ethnic group.", eval = ("Delta57overB" %in% times)}
+```{r, fig.cap = paste("RCDF plots for D57 fold-rise over D1 Ab markers: baseline positive placebo arm by dichotomous classification of race and ethnic group.", minority.disclaimer), eval = ("Delta57overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
@@ -2026,7 +2220,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "RCDF plots for D29 Ab markers: baseline positive placebo arm by age and dichotomous classification of race and ethnic group.", eval = ("Day29" %in% times)}
+```{r, fig.cap = paste("RCDF plots for D29 Ab markers: baseline positive placebo arm by age and dichotomous classification of race and ethnic group.", minority.disclaimer), eval = ("Day29" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
@@ -2037,7 +2231,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "RCDF plots for D57 Ab markers: baseline positive placebo arm by age and dichotomous classification of race and ethnic group.", eval = ("Day57" %in% times)}
+```{r, fig.cap = paste("RCDF plots for D57 Ab markers: baseline positive placebo arm by age and dichotomous classification of race and ethnic group.",minority.disclaimer), eval = ("Day57" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
@@ -2048,7 +2242,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "RCDF plots for D29 fold-rise over D1 Ab markers: baseline positive placebo arm by age and dichotomous classification of race and ethnic group.", eval = ("Delta29overB" %in% times)}
+```{r, fig.cap = paste("RCDF plots for D29 fold-rise over D1 Ab markers: baseline positive placebo arm by age and dichotomous classification of race and ethnic group.", minority.disclaimer), eval = ("Delta29overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
@@ -2059,7 +2253,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "RCDF plots for D57 fold-rise over D1 Ab markers: baseline positive placebo arm by age and dichotomous classification of race and ethnic group.", eval = ("Delta57overB" %in% times)}
+```{r, fig.cap = paste("RCDF plots for D57 fold-rise over D1 Ab markers: baseline positive placebo arm by age and dichotomous classification of race and ethnic group.", minority.disclaimer), eval = ("Delta57overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
@@ -2070,11 +2264,99 @@ include_graphics(here(
 ```
 
 \clearpage
+```{r, fig.cap = "RCDF plots for D29 Ab markers: baseline positive placebo arm by country of residence.", eval = ("Day29" %in% times) & is.ensemble}
+include_graphics(here(
+  "immuno_graphical", "figs", "demographics",
+  paste0(
+    "Marker_Rcdf_Day29_trt_placebo_BaselinePos_by_country_",
+    study_name, ".png"
+  )
+))
+```
+
+\clearpage
+```{r, fig.cap = "RCDF plots for D57 Ab markers: baseline positive placebo arm by country of residence.", eval = ("Day57" %in% times) & is.ensemble}
+include_graphics(here(
+  "immuno_graphical", "figs", "demographics",
+  paste0(
+    "Marker_Rcdf_Day57_trt_placebo_BaselinePos_by_country_",
+    study_name, ".png"
+  )
+))
+```
+
+\clearpage
+```{r, fig.cap = "RCDF plots for D29 fold-rise over D1 Ab markers: baseline positive placebo arm by country of residence.", eval = ("Delta29overB" %in% times) & is.ensemble}
+include_graphics(here(
+  "immuno_graphical", "figs", "demographics",
+  paste0(
+    "Marker_Rcdf_Delta29overB_trt_placebo_BaselinePos_by_country_",
+    study_name, ".png"
+  )
+))
+```
+
+\clearpage
+```{r, fig.cap = "RCDF plots for D57 fold-rise over D1 Ab markers: baseline positive placebo arm by country of residence.", eval = ("Delta57overB" %in% times) & is.ensemble}
+include_graphics(here(
+  "immuno_graphical", "figs", "demographics",
+  paste0(
+    "Marker_Rcdf_Delta57overB_trt_placebo_BaselinePos_by_country_",
+    study_name, ".png"
+  )
+))
+```
+
+\clearpage
+```{r, fig.cap = "RCDF plots for D29 Ab markers: baseline positive placebo arm by HIV positivity.", eval = ("Day29" %in% times) & is.ensemble}
+include_graphics(here(
+  "immuno_graphical", "figs", "demographics",
+  paste0(
+    "Marker_Rcdf_Day29_trt_placebo_BaselinePos_by_hiv_group_",
+    study_name, ".png"
+  )
+))
+```
+
+\clearpage
+```{r, fig.cap = "RCDF plots for D57 Ab markers: baseline positive placebo arm by HIV positivity.", eval = ("Day57" %in% times) & is.ensemble}
+include_graphics(here(
+  "immuno_graphical", "figs", "demographics",
+  paste0(
+    "Marker_Rcdf_Day57_trt_placebo_BaselinePos_by_hiv_group_",
+    study_name, ".png"
+  )
+))
+```
+
+\clearpage
+```{r, fig.cap = "RCDF plots for D29 fold-rise over D1 Ab markers: baseline positive placebo arm by HIV positivity.", eval = ("Delta29overB" %in% times) & is.ensemble}
+include_graphics(here(
+  "immuno_graphical", "figs", "demographics",
+  paste0(
+    "Marker_Rcdf_Delta29overB_trt_placebo_BaselinePos_by_hiv_group_",
+    study_name, ".png"
+  )
+))
+```
+
+\clearpage
+```{r, fig.cap = "RCDF plots for D57 fold-rise over D1 Ab markers: baseline positive placebo arm by HIV positivity.", eval = ("Delta57overB" %in% times) & is.ensemble}
+include_graphics(here(
+  "immuno_graphical", "figs", "demographics",
+  paste0(
+    "Marker_Rcdf_Delta57overB_trt_placebo_BaselinePos_by_hiv_group_",
+    study_name, ".png"
+  )
+))
+```
+
+\clearpage
 ## Boxplots of antibody markers by demographics for per-protocol cohort
 
 ### Baseline SARS-CoV-2 Negative
 
-```{r, fig.cap = "Boxplots of D29 Ab markers: Baseline negative vaccine arm by age group. The three dashed lines in each figure are ULOQ, LLOQ, and positivity cutoffs for binding antibody assays, or ULOQ, LLOQ, and LLOD for neutralizing antibody assays, from top to bottom respectively.", eval=FALSE, eval = ("Day29" %in% times)}
+```{r, fig.cap = paste("Boxplots of D29 Ab markers: Baseline negative vaccine arm by age group.", neut.marker.captions), eval=FALSE, eval = ("Day29" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
@@ -2085,7 +2367,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "Boxplots of D57 Ab markers: Baseline negative vaccine arm by age group. The three dashed lines in each figure are ULOQ, LLOQ, and positivity cutoffs for binding antibody assays, or ULOQ, LLOQ, and LLOD for neutralizing antibody assays, from top to bottom respectively.", eval=FALSE, eval = ("Day57" %in% times)}
+```{r, fig.cap = paste("Boxplots of D57 Ab markers: Baseline negative vaccine arm by age group.", neut.marker.captions), eval=FALSE, eval = ("Day57" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
@@ -2118,7 +2400,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "Boxplots of D29 Ab markers: Baseline negative vaccine arm by high-risk condition. The three dashed lines in each figure are ULOQ, LLOQ, and positivity cutoffs for binding antibody assays, or ULOQ, LLOQ, and LLOD for neutralizing antibody assays, from top to bottom respectively.", eval=FALSE}
+```{r, fig.cap = paste("Boxplots of D29 Ab markers: Baseline negative vaccine arm by high-risk condition.", neut.marker.captions), eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
@@ -2129,7 +2411,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "Boxplots of D57 Ab markers: Baseline negative vaccine arm by high-risk condition. The three dashed lines in each figure are ULOQ, LLOQ, and positivity cutoffs for binding antibody assays, or ULOQ, LLOQ, and LLOD for neutralizing antibody assays, from top to bottom respectively.", eval=FALSE}
+```{r, fig.cap = paste("Boxplots of D57 Ab markers: Baseline negative vaccine arm by high-risk condition.", neut.marker.captions), eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
@@ -2162,7 +2444,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "Boxplots of D29 Ab markers: Baseline negative vaccine arm by age and high-risk condition. The three dashed lines in each figure are ULOQ, LLOQ, and positivity cutoffs for binding antibody assays, or ULOQ, LLOQ, and LLOD for neutralizing antibody assays, from top to bottom respectively.", eval=FALSE}
+```{r, fig.cap = paste("Boxplots of D29 Ab markers: Baseline negative vaccine arm by age and high-risk condition.", neut.marker.captions), eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
@@ -2173,7 +2455,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "Boxplots of D57 Ab markers: Baseline negative vaccine arm by age and high-risk condition. The three dashed lines in each figure are ULOQ, LLOQ, and positivity cutoffs for binding antibody assays, or ULOQ, LLOQ, and LLOD for neutralizing antibody assays, from top to bottom respectively.", eval=FALSE}
+```{r, fig.cap = paste("Boxplots of D57 Ab markers: Baseline negative vaccine arm by age and high-risk condition.", neut.marker.captions), eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
@@ -2206,7 +2488,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "Boxplots of D29 Ab markers: Baseline negative vaccine arm by sex assigned at birth. The three dashed lines in each figure are ULOQ, LLOQ, and positivity cutoffs for binding antibody assays, or ULOQ, LLOQ, and LLOD for neutralizing antibody assays, from top to bottom respectively.", eval=FALSE}
+```{r, fig.cap = paste("Boxplots of D29 Ab markers: Baseline negative vaccine arm by sex assigned at birth.", neut.marker.captions), eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
@@ -2217,7 +2499,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "Boxplots of D57 Ab markers: Baseline negative vaccine arm by sex assigned at birth. The three dashed lines in each figure are ULOQ, LLOQ, and positivity cutoffs for binding antibody assays, or ULOQ, LLOQ, and LLOD for neutralizing antibody assays, from top to bottom respectively.", eval=FALSE}
+```{r, fig.cap = paste("Boxplots of D57 Ab markers: Baseline negative vaccine arm by sex assigned at birth.", neut.marker.captions), eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
@@ -2250,7 +2532,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "Boxplots of D29 Ab markers: Baseline negative vaccine arm by age and sex assigned at birth. The three dashed lines in each figure are ULOQ, LLOQ, and positivity cutoffs for binding antibody assays, or ULOQ, LLOQ, and LLOD for neutralizing antibody assays, from top to bottom respectively.", eval=FALSE}
+```{r, fig.cap = paste("Boxplots of D29 Ab markers: Baseline negative vaccine arm by age and sex assigned at birth.", neut.marker.captions), eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
@@ -2261,7 +2543,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "Boxplots of D57 Ab markers: Baseline negative vaccine arm by age and sex assigned at birth. The three dashed lines in each figure are ULOQ, LLOQ, and positivity cutoffs for binding antibody assays, or ULOQ, LLOQ, and LLOD for neutralizing antibody assays, from top to bottom respectively.", eval=FALSE}
+```{r, fig.cap = paste("Boxplots of D57 Ab markers: Baseline negative vaccine arm by age and sex assigned at birth.", neut.marker.captions), eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
@@ -2294,7 +2576,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "Boxplots of D29 Ab markers: Baseline negative vaccine arm by ethnicity. The three dashed lines in each figure are ULOQ, LLOQ, and positivity cutoffs for binding antibody assays, or ULOQ, LLOQ, and LLOD for neutralizing antibody assays, from top to bottom respectively.", eval=FALSE}
+```{r, fig.cap = paste("Boxplots of D29 Ab markers: Baseline negative vaccine arm by ethnicity.", neut.marker.captions), eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
@@ -2305,7 +2587,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "Boxplots of D57 Ab markers: Baseline negative vaccine arm by ethnicity. The three dashed lines in each figure are ULOQ, LLOQ, and positivity cutoffs for binding antibody assays, or ULOQ, LLOQ, and LLOD for neutralizing antibody assays, from top to bottom respectively.", eval=FALSE}
+```{r, fig.cap = paste("Boxplots of D57 Ab markers: Baseline negative vaccine arm by ethnicity.", neut.marker.captions), eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
@@ -2338,7 +2620,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "Boxplots of D29 Ab markers: Baseline negative vaccine arm by race. The three dashed lines in each figure are ULOQ, LLOQ, and positivity cutoffs for binding antibody assays, or ULOQ, LLOQ, and LLOD for neutralizing antibody assays, from top to bottom respectively.", eval=FALSE}
+```{r, fig.cap = paste("Boxplots of D29 Ab markers: Baseline negative vaccine arm by race.", neut.marker.captions), eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
@@ -2349,7 +2631,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "Boxplots of D57 Ab markers: Baseline negative vaccine arm by race. The three dashed lines in each figure are ULOQ, LLOQ, and positivity cutoffs for binding antibody assays, or ULOQ, LLOQ, and LLOD for neutralizing antibody assays, from top to bottom respectively.", eval=FALSE}
+```{r, fig.cap = paste("Boxplots of D57 Ab markers: Baseline negative vaccine arm by race.", neut.marker.captions), eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
@@ -2382,7 +2664,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "Boxplots of D29 Ab markers: Baseline negative vaccine arm by dichotomous classification of race and ethnic group. The three dashed lines in each figure are ULOQ, LLOQ, and positivity cutoffs for binding antibody assays, or ULOQ, LLOQ, and LLOD for neutralizing antibody assays, from top to bottom respectively.", eval=FALSE}
+```{r, fig.cap = paste("Boxplots of D29 Ab markers: Baseline negative vaccine arm by dichotomous classification of race and ethnic group.", neut.marker.captions, minority.disclaimer), eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
@@ -2393,7 +2675,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "Boxplots of D57 Ab markers: Baseline negative vaccine arm by dichotomous classification of race and ethnic group. The three dashed lines in each figure are ULOQ, LLOQ, and positivity cutoffs for binding antibody assays, or ULOQ, LLOQ, and LLOD for neutralizing antibody assays, from top to bottom respectively.", eval=FALSE}
+```{r, fig.cap = paste("Boxplots of D57 Ab markers: Baseline negative vaccine arm by dichotomous classification of race and ethnic group.", neut.marker.captions, minority.disclaimer), eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
@@ -2404,7 +2686,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "Boxplots of D29 fold-rise over D1 Ab markers: Baseline negative vaccine arm by dichotomous classification of race and ethnic group.", eval = ("Delta29overB" %in% times)}
+```{r, fig.cap = paste("Boxplots of D29 fold-rise over D1 Ab markers: Baseline negative vaccine arm by dichotomous classification of race and ethnic group.", minority.disclaimer), eval = ("Delta29overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
@@ -2415,7 +2697,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "Boxplots of D57 fold-rise over D1 Ab markers: Baseline negative vaccine arm by dichotomous classification of race and ethnic group.", eval = ("Delta57overB" %in% times)}
+```{r, fig.cap = paste("Boxplots of D57 fold-rise over D1 Ab markers: Baseline negative vaccine arm by dichotomous classification of race and ethnic group.", minority.disclaimer), eval = ("Delta57overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
@@ -2426,7 +2708,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "Boxplots of D29 Ab markers: Baseline negative vaccine arm by age and dichotomous classification of race and ethnic group. The three dashed lines in each figure are ULOQ, LLOQ, and positivity cutoffs for binding antibody assays, or ULOQ, LLOQ, and LLOD for neutralizing antibody assays, from top to bottom respectively.", eval=FALSE}
+```{r, fig.cap = paste("Boxplots of D29 Ab markers: Baseline negative vaccine arm by age and dichotomous classification of race and ethnic group.", neut.marker.captions, minority.disclaimer), eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
@@ -2437,7 +2719,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "Boxplots of D57 Ab markers: Baseline negative vaccine arm by age and dichotomous classification of race and ethnic group. The three dashed lines in each figure are ULOQ, LLOQ, and positivity cutoffs for binding antibody assays, or ULOQ, LLOQ, and LLOD for neutralizing antibody assays, from top to bottom respectively.", eval=FALSE}
+```{r, fig.cap = paste("Boxplots of D57 Ab markers: Baseline negative vaccine arm by age and dichotomous classification of race and ethnic group.", neut.marker.captions, minority.disclaimer), eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
@@ -2448,7 +2730,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "Boxplots of D29 fold-rise over D1 Ab markers: Baseline negative vaccine arm by age and dichotomous classification of race and ethnic group.", eval = ("Delta29overB" %in% times)}
+```{r, fig.cap = paste("Boxplots of D29 fold-rise over D1 Ab markers: Baseline negative vaccine arm by age and dichotomous classification of race and ethnic group.", minority.disclaimer), eval = ("Delta29overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
@@ -2459,7 +2741,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "Boxplots of D57 fold-rise over D1 Ab markers: Baseline negative vaccine arm by age and dichotomous classification of race and ethnic group.", eval = ("Delta57overB" %in% times)}
+```{r, fig.cap = paste("Boxplots of D57 fold-rise over D1 Ab markers: Baseline negative vaccine arm by age and dichotomous classification of race and ethnic group.", minority.disclaimer), eval = ("Delta57overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
@@ -2470,24 +2752,112 @@ include_graphics(here(
 ```
 
 \clearpage
-### Baseline SARS-CoV-2 Positive
-
-```{r, fig.cap = "Boxplots of D29 Ab markers: baseline positive vaccine arm by age group. The three dashed lines in each figure are ULOQ, LLOQ, and positivity cutoffs for binding antibody assays, or ULOQ, LLOQ, and LLOD for neutralizing antibody assays, from top to bottom respectively.", eval=FALSE}
+```{r, fig.cap = paste("Boxplots of D29 Ab markers: Baseline negative vaccine arm by country of residence.", neut.marker.captions), eval=FALSE, eval = ("Day29" %in% times) & is.ensemble}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
-    "boxplots_Day29_BaselinePos_trt_vaccine_by_age_group_",
+    "boxplots_Day29_BaselineNeg_trt_Vaccine_by_country_",
     study_name, ".png"
   )
 ))
 ```
 
 \clearpage
-```{r, fig.cap = "Boxplots of D57 Ab markers: baseline positive vaccine arm by age group. The three dashed lines in each figure are ULOQ, LLOQ, and positivity cutoffs for binding antibody assays, or ULOQ, LLOQ, and LLOD for neutralizing antibody assays, from top to bottom respectively.", eval=FALSE}
+```{r, fig.cap = paste("Boxplots of D57 Ab markers: Baseline negative vaccine arm by country of residence.", neut.marker.captions), eval=FALSE, eval = ("Day57" %in% times) & is.ensemble}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
-    "boxplots_Day57_BaselinePos_trt_vaccine_by_age_group_",
+    "boxplots_Day57_BaselineNeg_trt_Vaccine_by_country_",
+    study_name, ".png"
+  )
+))
+```
+
+\clearpage
+```{r, fig.cap = "Boxplots of D29 fold-rise over D1 Ab markers: Baseline negative vaccine arm by country of residence.", eval=("Delta29overB" %in% times) & is.ensemble}
+include_graphics(here(
+  "immuno_graphical", "figs", "demographics",
+  paste0(
+    "boxplots_Delta29overB_BaselineNeg_trt_Vaccine_by_country_",
+    study_name, ".png"
+  )
+))
+```
+
+\clearpage
+```{r, fig.cap = "Boxplots of D57 fold-rise over D1 Ab markers: Baseline negative vaccine arm by country of residence.", eval=FALSE & is.ensemble}
+include_graphics(here(
+  "immuno_graphical", "figs", "demographics",
+  paste0(
+    "boxplots_Delta57overB_BaselineNeg_trt_Vaccine_by_country_",
+    study_name, ".png"
+  )
+))
+```
+
+\clearpage
+```{r, fig.cap = paste("Boxplots of D29 Ab markers: Baseline negative vaccine arm by HIV positivity.", neut.marker.captions), eval=FALSE, eval = ("Day29" %in% times) & is.ensemble}
+include_graphics(here(
+  "immuno_graphical", "figs", "demographics",
+  paste0(
+    "boxplots_Day29_BaselineNeg_trt_Vaccine_by_hiv_group_",
+    study_name, ".png"
+  )
+))
+```
+
+\clearpage
+```{r, fig.cap = paste("Boxplots of D57 Ab markers: Baseline negative vaccine arm by HIV positivity.", neut.marker.captions), eval=FALSE, eval = ("Day57" %in% times) & is.ensemble}
+include_graphics(here(
+  "immuno_graphical", "figs", "demographics",
+  paste0(
+    "boxplots_Day57_BaselineNeg_trt_Vaccine_by_hiv_group_",
+    study_name, ".png"
+  )
+))
+```
+
+\clearpage
+```{r, fig.cap = "Boxplots of D29 fold-rise over D1 Ab markers: Baseline negative vaccine arm by HIV positivity.", eval=("Delta29overB" %in% times) & is.ensemble}
+include_graphics(here(
+  "immuno_graphical", "figs", "demographics",
+  paste0(
+    "boxplots_Delta29overB_BaselineNeg_trt_Vaccine_by_hiv_group_",
+    study_name, ".png"
+  )
+))
+```
+
+\clearpage
+```{r, fig.cap = "Boxplots of D57 fold-rise over D1 Ab markers: Baseline negative vaccine arm by HIV positivity.", eval=FALSE & is.ensemble}
+include_graphics(here(
+  "immuno_graphical", "figs", "demographics",
+  paste0(
+    "boxplots_Delta57overB_BaselineNeg_trt_Vaccine_by_hiv_group_",
+    study_name, ".png"
+  )
+))
+```
+
+\clearpage
+### Baseline SARS-CoV-2 Positive
+
+```{r, fig.cap = paste("Boxplots of D29 Ab markers: baseline positive vaccine arm by age group.", neut.marker.captions), eval=FALSE, eval = ("Day29" %in% times)}
+include_graphics(here(
+  "immuno_graphical", "figs", "demographics",
+  paste0(
+    "boxplots_Day29_BaselinePos_trt_Vaccine_by_age_group_",
+    study_name, ".png"
+  )
+))
+```
+
+\clearpage
+```{r, fig.cap = paste("Boxplots of D57 Ab markers: baseline positive vaccine arm by age group.", neut.marker.captions), eval=FALSE, eval = ("Day57" %in% times)}
+include_graphics(here(
+  "immuno_graphical", "figs", "demographics",
+  paste0(
+    "boxplots_Day57_BaselinePos_trt_Vaccine_by_age_group_",
     study_name, ".png"
   )
 ))
@@ -2516,7 +2886,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "Boxplots of D29 Ab markers: baseline positive vaccine arm by high-risk condition. The three dashed lines in each figure are ULOQ, LLOQ, and positivity cutoffs for binding antibody assays, or ULOQ, LLOQ, and LLOD for neutralizing antibody assays, from top to bottom respectively.", eval=FALSE}
+```{r, fig.cap = paste("Boxplots of D29 Ab markers: baseline positive vaccine arm by high-risk condition.", neut.marker.captions), eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
@@ -2527,7 +2897,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "Boxplots of D57 Ab markers: baseline positive vaccine arm by high-risk condition. The three dashed lines in each figure are ULOQ, LLOQ, and positivity cutoffs for binding antibody assays, or ULOQ, LLOQ, and LLOD for neutralizing antibody assays, from top to bottom respectively.", eval=FALSE}
+```{r, fig.cap = paste("Boxplots of D57 Ab markers: baseline positive vaccine arm by high-risk condition.", neut.marker.captions), eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
@@ -2560,7 +2930,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "Boxplots of D29 Ab markers: baseline positive vaccine arm by age and high-risk condition. The three dashed lines in each figure are ULOQ, LLOQ, and positivity cutoffs for binding antibody assays, or ULOQ, LLOQ, and LLOD for neutralizing antibody assays, from top to bottom respectively.", eval=FALSE}
+```{r, fig.cap = paste("Boxplots of D29 Ab markers: baseline positive vaccine arm by age and high-risk condition.", neut.marker.captions), eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
@@ -2571,7 +2941,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "Boxplots of D57 Ab markers: baseline positive vaccine arm by age and high-risk condition. The three dashed lines in each figure are ULOQ, LLOQ, and positivity cutoffs for binding antibody assays, or ULOQ, LLOQ, and LLOD for neutralizing antibody assays, from top to bottom respectively.", eval=FALSE}
+```{r, fig.cap = paste("Boxplots of D57 Ab markers: baseline positive vaccine arm by age and high-risk condition.", neut.marker.captions), eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
@@ -2604,7 +2974,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "Boxplots of D29 Ab markers: baseline positive vaccine arm by sex assigned at birth. The three dashed lines in each figure are ULOQ, LLOQ, and positivity cutoffs for binding antibody assays, or ULOQ, LLOQ, and LLOD for neutralizing antibody assays, from top to bottom respectively.", eval=FALSE}
+```{r, fig.cap = paste("Boxplots of D29 Ab markers: baseline positive vaccine arm by sex assigned at birth.", neut.marker.captions), eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
@@ -2615,7 +2985,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "Boxplots of D57 Ab markers: baseline positive vaccine arm by sex assigned at birth. The three dashed lines in each figure are ULOQ, LLOQ, and positivity cutoffs for binding antibody assays, or ULOQ, LLOQ, and LLOD for neutralizing antibody assays, from top to bottom respectively.", eval=FALSE}
+```{r, fig.cap = paste("Boxplots of D57 Ab markers: baseline positive vaccine arm by sex assigned at birth.", neut.marker.captions), eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
@@ -2648,7 +3018,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "Boxplots of D29 Ab markers: baseline positive vaccine arm by age and sex assigned at birth. The three dashed lines in each figure are ULOQ, LLOQ, and positivity cutoffs for binding antibody assays, or ULOQ, LLOQ, and LLOD for neutralizing antibody assays, from top to bottom respectively.", eval=FALSE}
+```{r, fig.cap = paste("Boxplots of D29 Ab markers: baseline positive vaccine arm by age and sex assigned at birth.", neut.marker.captions), eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
@@ -2659,7 +3029,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "Boxplots of D57 Ab markers: baseline positive vaccine arm by age and sex assigned at birth. The three dashed lines in each figure are ULOQ, LLOQ, and positivity cutoffs for binding antibody assays, or ULOQ, LLOQ, and LLOD for neutralizing antibody assays, from top to bottom respectively.", eval=FALSE}
+```{r, fig.cap = paste("Boxplots of D57 Ab markers: baseline positive vaccine arm by age and sex assigned at birth.", neut.marker.captions), eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
@@ -2692,7 +3062,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "Boxplots of D29 Ab markers: baseline positive vaccine arm by ethnicity. The three dashed lines in each figure are ULOQ, LLOQ, and positivity cutoffs for binding antibody assays, or ULOQ, LLOQ, and LLOD for neutralizing antibody assays, from top to bottom respectively.", eval=FALSE}
+```{r, fig.cap = paste("Boxplots of D29 Ab markers: baseline positive vaccine arm by ethnicity", neut.marker.captions), eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
@@ -2703,7 +3073,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "Boxplots of D57 Ab markers: baseline positive vaccine arm by ethnicity. The three dashed lines in each figure are ULOQ, LLOQ, and positivity cutoffs for binding antibody assays, or ULOQ, LLOQ, and LLOD for neutralizing antibody assays, from top to bottom respectively.", eval=FALSE}
+```{r, fig.cap = paste("Boxplots of D57 Ab markers: baseline positive vaccine arm by ethnicity.", neut.marker.captions), eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
@@ -2736,7 +3106,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "Boxplots of D29 Ab markers: baseline positive vaccine arm by race. The three dashed lines in each figure are ULOQ, LLOQ, and positivity cutoffs for binding antibody assays, or ULOQ, LLOQ, and LLOD for neutralizing antibody assays, from top to bottom respectively.", eval=FALSE}
+```{r, fig.cap = paste("Boxplots of D29 Ab markers: baseline positive vaccine arm by race.", neut.marker.captions), eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
@@ -2747,7 +3117,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "Boxplots of D57 Ab markers: baseline positive vaccine arm by race. The three dashed lines in each figure are ULOQ, LLOQ, and positivity cutoffs for binding antibody assays, or ULOQ, LLOQ, and LLOD for neutralizing antibody assays, from top to bottom respectively.", eval=FALSE}
+```{r, fig.cap = paste("Boxplots of D57 Ab markers: baseline positive vaccine arm by race.", neut.marker.captions), eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
@@ -2780,7 +3150,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "Boxplots of D29 Ab markers: baseline positive vaccine arm by dichotomous classification of race and ethnic group. The three dashed lines in each figure are ULOQ, LLOQ, and positivity cutoffs for binding antibody assays, or ULOQ, LLOQ, and LLOD for neutralizing antibody assays, from top to bottom respectively.", eval=FALSE}
+```{r, fig.cap = paste("Boxplots of D29 Ab markers: baseline positive vaccine arm by dichotomous classification of race and ethnic group.", neut.marker.captions, minority.disclaimer), eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
@@ -2791,7 +3161,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "Boxplots of D57 Ab markers: baseline positive vaccine arm by dichotomous classification of race and ethnic group. The three dashed lines in each figure are ULOQ, LLOQ, and positivity cutoffs for binding antibody assays, or ULOQ, LLOQ, and LLOD for neutralizing antibody assays, from top to bottom respectively.", eval=FALSE}
+```{r, fig.cap = paste("Boxplots of D57 Ab markers: baseline positive vaccine arm by dichotomous classification of race and ethnic group.", neut.marker.captions, minority.disclaimer), eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
@@ -2802,7 +3172,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "Boxplots of D29 fold-rise over D1 Ab markers: baseline positive vaccine arm by dichotomous classification of race and ethnic group.", eval = ("Delta29overB" %in% times)}
+```{r, fig.cap = paste("Boxplots of D29 fold-rise over D1 Ab markers: baseline positive vaccine arm by dichotomous classification of race and ethnic group.", minority.disclaimer), eval = ("Delta29overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
@@ -2813,7 +3183,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "Boxplots of D57 fold-rise over D1 Ab markers: baseline positive vaccine arm by dichotomous classification of race and ethnic group.", eval = ("Delta57overB" %in% times)}
+```{r, fig.cap = paste("Boxplots of D57 fold-rise over D1 Ab markers: baseline positive vaccine arm by dichotomous classification of race and ethnic group.", minority.disclaimer), eval = ("Delta57overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
@@ -2824,7 +3194,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "Boxplots of D29 Ab markers: baseline positive vaccine arm by age and dichotomous classification of race and ethnic group. The three dashed lines in each figure are ULOQ, LLOQ, and positivity cutoffs for binding antibody assays, or ULOQ, LLOQ, and LLOD for neutralizing antibody assays, from top to bottom respectively.", eval=FALSE}
+```{r, fig.cap = paste("Boxplots of D29 Ab markers: baseline positive vaccine arm by age and dichotomous classification of race and ethnic group.", neut.marker.captions, minority.disclaimer), eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
@@ -2835,7 +3205,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "Boxplots of D57 Ab markers: baseline positive vaccine arm by age and dichotomous classification of race and ethnic group. The three dashed lines in each figure are ULOQ, LLOQ, and positivity cutoffs for binding antibody assays, or ULOQ, LLOQ, and LLOD for neutralizing antibody assays, from top to bottom respectively.", eval=FALSE}
+```{r, fig.cap = paste("Boxplots of D57 Ab markers: baseline positive vaccine arm by age and dichotomous classification of race and ethnic group.", neut.marker.captions, minority.disclaimer), eval=FALSE}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
@@ -2846,7 +3216,7 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "Boxplots of D29 fold-rise over D1 Ab markers: baseline positive vaccine arm by age and dichotomous classification of race and ethnic group.", eval = ("Delta29overB" %in% times)}
+```{r, fig.cap = paste("Boxplots of D29 fold-rise over D1 Ab markers: baseline positive vaccine arm by age and dichotomous classification of race and ethnic group.", minority.disclaimer), eval = ("Delta29overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
@@ -2857,11 +3227,99 @@ include_graphics(here(
 ```
 
 \clearpage
-```{r, fig.cap = "Boxplots of D57 fold-rise over D1 Ab markers: baseline positive vaccine arm by age and dichotomous classification of race and ethnic group.", eval = ("Delta57overB" %in% times)}
+```{r, fig.cap = paste("Boxplots of D57 fold-rise over D1 Ab markers: baseline positive vaccine arm by age and dichotomous classification of race and ethnic group.", minority.disclaimer), eval = ("Delta57overB" %in% times)}
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
     "boxplots_Delta57overB_BaselinePos_trt_Vaccine_by_age_x_minority_",
+    study_name, ".png"
+  )
+))
+```
+
+\clearpage
+```{r, fig.cap = paste("Boxplots of D29 Ab markers: baseline positive vaccine arm by country of residence.", neut.marker.captions), eval=FALSE, eval = ("Day29" %in% times) & is.ensemble}
+include_graphics(here(
+  "immuno_graphical", "figs", "demographics",
+  paste0(
+    "boxplots_Day29_BaselinePos_trt_Vaccine_by_country_",
+    study_name, ".png"
+  )
+))
+```
+
+\clearpage
+```{r, fig.cap = paste("Boxplots of D57 Ab markers: baseline positive vaccine arm by country of residence.", neut.marker.captions), eval=FALSE, eval = ("Day57" %in% times) & is.ensemble}
+include_graphics(here(
+  "immuno_graphical", "figs", "demographics",
+  paste0(
+    "boxplots_Day57_BaselinePos_trt_Vaccine_by_country_",
+    study_name, ".png"
+  )
+))
+```
+
+\clearpage
+```{r, fig.cap = "Boxplots of D29 fold-rise over D1 Ab markers: baseline positive vaccine arm by country of residence.", eval = ("Delta29overB" %in% times) & is.ensemble}
+include_graphics(here(
+  "immuno_graphical", "figs", "demographics",
+  paste0(
+    "boxplots_Delta29overB_BaselinePos_trt_Vaccine_by_country_",
+    study_name, ".png"
+  )
+))
+```
+
+\clearpage
+```{r, fig.cap = "Boxplots of D57 fold-rise over D1 Ab markers: baseline positive vaccine arm by country of residence.", eval = ("Delta57overB" %in% times) & is.ensemble}
+include_graphics(here(
+  "immuno_graphical", "figs", "demographics",
+  paste0(
+    "boxplots_Delta57overB_BaselinePos_trt_Vaccine_by_country_",
+    study_name, ".png"
+  )
+))
+```
+
+\clearpage
+```{r, fig.cap = paste("Boxplots of D29 Ab markers: baseline positive vaccine arm by HIV positivity.", neut.marker.captions), eval=FALSE, eval = ("Day29" %in% times) & is.ensemble}
+include_graphics(here(
+  "immuno_graphical", "figs", "demographics",
+  paste0(
+    "boxplots_Day29_BaselinePos_trt_Vaccine_by_hiv_group_",
+    study_name, ".png"
+  )
+))
+```
+
+\clearpage
+```{r, fig.cap = paste("Boxplots of D57 Ab markers: baseline positive vaccine arm by HIV positivity.", neut.marker.captions), eval=FALSE, eval = ("Day57" %in% times) & is.ensemble}
+include_graphics(here(
+  "immuno_graphical", "figs", "demographics",
+  paste0(
+    "boxplots_Day57_BaselinePos_trt_Vaccine_by_hiv_group_",
+    study_name, ".png"
+  )
+))
+```
+
+\clearpage
+```{r, fig.cap = "Boxplots of D29 fold-rise over D1 Ab markers: baseline positive vaccine arm by HIV positivity.", eval = ("Delta29overB" %in% times) & is.ensemble}
+include_graphics(here(
+  "immuno_graphical", "figs", "demographics",
+  paste0(
+    "boxplots_Delta29overB_BaselinePos_trt_Vaccine_by_hiv_group_",
+    study_name, ".png"
+  )
+))
+```
+
+\clearpage
+```{r, fig.cap = "Boxplots of D57 fold-rise over D1 Ab markers: baseline positive vaccine arm by HIV positivity.", eval = ("Delta57overB" %in% times) & is.ensemble}
+include_graphics(here(
+  "immuno_graphical", "figs", "demographics",
+  paste0(
+    "boxplots_Delta57overB_BaselinePos_trt_Vaccine_by_hiv_group_",
     study_name, ".png"
   )
 ))

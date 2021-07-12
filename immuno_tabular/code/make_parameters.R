@@ -8,19 +8,32 @@ library(tidyverse)
 
 # To select which tables are included in the report.
 # Also to modify the headers, footers, etc. for each table
-tlf <-
-  list(
-    tab_dm_neg = list(
-      table_header = "Demographic and Clinical Characteristics at Baseline in 
-      the Baseline SARS-CoV-2 Negative Per-Protocol Cohort",
-      table_footer = "This table summarizes the random subcohort, which was 
-      randomly sampled from the per-protocol cohort. The sampling was 
+
+cutoff.name <- case_when(study_name_code=="COVE" ~ "lloq", 
+                         study_name_code=="ENSEMBLE" ~ "llod")
+
+randomsubcohort <- case_when(study_name_code=="COVE" ~ "The sampling was 
       stratified by 24 strata defined by enrollment characteristics: Assigned 
       treatment arm $\\\\times$ Baseline SARS-CoV-2 naïve vs. non-naïve status 
       (defined by serostatus and NAAT testing) $\\\\times$ Randomization strata 
       (Age < 65 and at-risk, Age < 65 and not at-risk, Age $\\\\geq 65)\\\\times$ 
       Communities of color (Yes/No) defined by White Non-Hispanic vs. all 
       others (following the primary COVE trial paper).",
+      study_name_code=="ENSEMBLE" ~ "The sampling was 
+      stratified by strata defined by enrollment characteristics: Assigned 
+      treatment arm $\\\\times$ Baseline SARS-CoV-2 naïve vs. non-naïve status 
+      (defined by serostatus and NAAT testing) $\\\\times$ Randomization strata.
+      In the U.S. subcohort 8 baseline demographic strata are used; 
+      each of the Latin America and South Africa subcohorts includes 4 baseline 
+      demographic strata.")
+
+tlf <-
+  list(
+    tab_dm_neg = list(
+      table_header = "Demographic and Clinical Characteristics at Baseline in 
+      the Baseline SARS-CoV-2 Negative Per-Protocol Cohort",
+      table_footer = sprintf("This table summarizes the random subcohort, which was 
+      randomly sampled from the per-protocol cohort. %s", randomsubcohort),
       deselect = "subgroup",
       pack_row = "subgroup",
       col1="7cm"
@@ -29,45 +42,29 @@ tlf <-
     tab_dm_pos = list(
       table_header = "Demographic and Clinical Characteristics at Baseline in 
       the Baseline SARS-CoV-2 Positive Per-Protocol Cohort",
-      table_footer ="This table summarizes the random subcohort, which was 
-      randomly sampled from the per-protocol cohort. The sampling was 
-      stratified by 24 strata defined by enrollment characteristics: Assigned 
-      treatment arm $\\\\times$ Baseline SARS-CoV-2 naïve vs. non-naïve status 
-      (defined by serostatus and NAAT testing) $\\\\times$ Randomization strata 
-      (Age < 65 and at-risk, Age < 65 and not at-risk, Age $\\\\geq 65)\\\\times$ 
-      Communities of color (Yes/No) defined by White Non-Hispanic vs. all 
-      others (following the primary COVE trial paper).",
+      table_footer = sprintf("This table summarizes the random subcohort, which was 
+      randomly sampled from the per-protocol cohort. %s", randomsubcohort),
       deselect = "subgroup",
       pack_row = "subgroup",
       col1="7cm"
     ),
     
-    tab_strtm = list(
+    tab_strtm1 = list(
       table_header = "Sample Sizes of Random Subcohort Strata for Measuring Antibody Markers",
-      table_footer = c("Demographic covariate strata:",
-                       "1. Age $\\\\geq$ 65 Minority\\\\hspace{81pt}4. Age < 65 At-risk Non-Minority", 
-                       "2. Age $\\\\geq$ 65 Non-Minority\\\\hspace{60pt}5. Age < 65 Not At-risk Minority",
-                       "3. Age < 65 At-risk Minority\\\\hspace{48pt}6. Age < 65 Not At-risk Non-Minority",
-                       " ",
-                       "Minority includes Blacks or African Americans, Hispanics or Latinos, American Indians or
-                   Alaska Natives, Native Hawaiians, and other Pacific Islanders.",
-                       "Non-Minority includes all other races with observed race (Asian, Multiracial, White, Other) and observed ethnicity Not Hispanic or Latino.
-                   Participants not classifiable as Minority or Non-Minority because of unknown, unreported or missing were not included.",
-                       " ",
-                       "Observed = Numbers of participants sampled into the subcohort within baseline covariate strata.",
-                       "Estimated = Estimated numbers of participants in the whole per-protocol cohort within baseline 
-  covariate strata, calculated using inverse probability weighting."
-      ),
-      # header_above2 = tab_strtm_header2,
-      header_above1 = c(" "=1, "Baseline SARS-CoV-2 Negative" = 6, "Baseline SARS-CoV-2 Positive" = 6),
+      deselect = "Arm",
+      pack_row = "Arm"
+    ),
+    
+    tab_strtm2 = list(
+      table_header = "Sample Sizes of Random Subcohort Strata for Measuring Antibody Markers",
       deselect = "Arm",
       pack_row = "Arm"
     ),
     
     tab_bind1 = list(
-      table_header = "Percentage of responders, and participants
-      with concentrations $\\geq 2\\times$ LLOQ or $\\geq 4\\times$ LLOQ for binding antibody
-      markers",
+      table_header = sprintf("Percentage of responders, and participants
+      with concentrations $\\geq 2\\times$ %s or $\\geq 4\\times$ %s for binding antibody
+      markers", toupper(cutoff.name), toupper(cutoff.name)),
       table_footer = c(
         sprintf("Binding Antibody Responders are defined as participants with concentration 
         above the specified positivity cut-off, with a separate cut-off for each 
@@ -235,6 +232,12 @@ tlf <-
 if(include_bindN){
   assays <- sort(c("bindN", assays))
 }
+labels.age <- case_when(study_name_code=="COVE"~ c("Age $<$ 65", "Age $\\geq$ 65"), 
+                        study_name_code=="ENSEMBLE"~ c("Age 18 - 59", "Age $\\geq$ 60"))
+
+labels.minor <- case_when(study_name_code=="COVE"~ c("Communities of Color", "White Non-Hispanic"), 
+                          study_name_code=="ENSEMBLE"~ c("URM", "Non-URM"))
+
 labels.time <- labels.time[times]
 # hacky fix
 labels.assays.short <- labels.assays.short.tabular[assays]
@@ -262,14 +265,16 @@ labels.assays <- expand.grid(
 
 resp.lb <- expand.grid(
   time = visits, marker = assays,
-  ind = c("Resp", "FR2", "FR4", "2lloq", "4lloq"), stringsAsFactors = F
+  ind = c("Resp", "FR2", "FR4", "2lloq", "4lloq", "2llod", "4llod"), stringsAsFactors = F
 ) %>%
   mutate(Ind = case_when(
     ind == "FR2" ~ "% 2-Fold Rise",
     ind == "FR4" ~ "% 4-Fold Rise",
     ind == "Resp" ~ "Responder",
     ind == "2lloq" ~ "% Greater than 2xLLOQ",
-    ind == "4lloq" ~ "% Greater than 4xLLOQ"
+    ind == "4lloq" ~ "% Greater than 4xLLOQ",
+    ind == "2llod" ~ "% Greater than 2xLLOD",
+    ind == "4llod" ~ "% Greater than 4xLLOD"
   )) 
 
 labels_all <- full_join(labels.assays, resp.lb, by = c("time", "marker")) %>% 

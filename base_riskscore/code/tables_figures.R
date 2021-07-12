@@ -16,6 +16,7 @@ library(cowplot)
 library(here)
 conflict_prefer("filter", "dplyr")
 conflict_prefer("summarise", "dplyr")
+conflict_prefer("load", "base")
 source(here("code", "utils.R"))
 method <- "method.CC_nloglik" # since SuperLearner relies on this to be in GlobalEnv
 ggplot2::theme_set(theme_cowplot())
@@ -27,7 +28,8 @@ load(file = here("output", "cvsl_risk_placebo_cvaucs.rda"))
 
 ######## Table of demographic variables used to derive the risk score ##########
 dat <- read.csv(here::here("..", "data_clean", data_name)) %>%
-  select(all_of(risk_vars))
+  filter(Perprotocol == 1 & Trt == 0 & Bserostatus == 0) %>%
+  select(all_of(risk_vars)) 
 
 dat %>%
   map(~ sum(is.na(.))) %>%

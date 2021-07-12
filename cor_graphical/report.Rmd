@@ -1221,7 +1221,7 @@ include_graphics(here("cor_graphical", "figs", paste0("scatter_Spike_Vaccine_Bas
 ```
 
 \clearpage
-```{r, fig.cap = "scatterplots of Binding Antibody to Spike vs Age: baseline negative vaccine arm at day 57"}
+```{r, fig.cap = "scatterplots of Binding Antibody to Spike vs Age: baseline negative vaccine arm at day 57", eval = has57}
 include_graphics(here("cor_graphical", "figs", paste0("scatter_Spike_Vaccine_BaselineNeg_Day57_", study_name, ".pdf")))
 ```
 
@@ -1236,7 +1236,7 @@ include_graphics(here("cor_graphical", "figs", paste0("scatter_RBD_Vaccine_Basel
 ```
 
 \clearpage
-```{r, fig.cap = "scatterplots of Binding Antibody to RBD vs Age: baseline negative vaccine arm at day 57"}
+```{r, fig.cap = "scatterplots of Binding Antibody to RBD vs Age: baseline negative vaccine arm at day 57", eval = has57}
 include_graphics(here("cor_graphical", "figs", paste0("scatter_RBD_Vaccine_BaselineNeg_Day57_", study_name, ".pdf")))
 ```
 
@@ -1251,7 +1251,7 @@ include_graphics(here("cor_graphical", "figs", paste0("scatter_pnAb_id50_Vaccine
 ```
 
 \clearpage
-```{r, fig.cap = "scatterplots of Pseudovirus Neutralization ID50 vs Age: baseline negative vaccine arm at day 57"}
+```{r, fig.cap = "scatterplots of Pseudovirus Neutralization ID50 vs Age: baseline negative vaccine arm at day 57", eval = has57}
 include_graphics(here("cor_graphical", "figs", paste0("scatter_pnAb_id50_Vaccine_BaselineNeg_Day57_", study_name, ".pdf")))
 ```
 
@@ -1266,7 +1266,7 @@ include_graphics(here("cor_graphical", "figs", paste0("scatter_pnAb_id80_Vaccine
 ```
 
 \clearpage
-```{r, fig.cap = "scatterplots of Pseudovirus Neutralization ID80 vs Age: baseline negative vaccine arm at day 57"}
+```{r, fig.cap = "scatterplots of Pseudovirus Neutralization ID80 vs Age: baseline negative vaccine arm at day 57", eval = has57}
 include_graphics(here("cor_graphical", "figs", paste0("scatter_pnAb_id80_Vaccine_BaselineNeg_Day57_", study_name, ".pdf")))
 ```
 
@@ -1283,7 +1283,7 @@ include_graphics(here("cor_graphical", "figs", paste0("scatter_Spike_all_Day29_"
 ```
 
 \clearpage
-```{r, fig.cap = "scatterplots of Binding Antibody to Spike vs Age: by arm at day 57"}
+```{r, fig.cap = "scatterplots of Binding Antibody to Spike vs Age: by arm at day 57", eval = has57}
 include_graphics(here("cor_graphical", "figs", paste0("scatter_Spike_all_Day57_", study_name, ".pdf"))
 )
 ```
@@ -1301,7 +1301,7 @@ include_graphics(here("cor_graphical", "figs", paste0("scatter_RBD_all_Day29_", 
 ```
 
 \clearpage
-```{r, fig.cap = "scatterplots of Binding Antibody to RBD vs Age: by arm at day 57"}
+```{r, fig.cap = "scatterplots of Binding Antibody to RBD vs Age: by arm at day 57", eval = has57}
 include_graphics(here("cor_graphical", "figs", paste0("scatter_RBD_all_Day57_", study_name, ".pdf"))
 )
 ```
@@ -1317,7 +1317,7 @@ include_graphics(here("cor_graphical", "figs", paste0("scatter_pnAb_id50_all_Day
 ```
 
 \clearpage
-```{r, fig.cap = "scatterplots of Pseudovirus Neutralization ID50 vs Age: by arm at day 57"}
+```{r, fig.cap = "scatterplots of Pseudovirus Neutralization ID50 vs Age: by arm at day 57", eval = has57}
 include_graphics(here("cor_graphical", "figs", paste0("scatter_pnAb_id50_all_Day57_", study_name, ".pdf")))
 ```
 
@@ -1332,7 +1332,7 @@ include_graphics(here("cor_graphical", "figs", paste0("scatter_pnAb_id80_all_Day
 ```
 
 \clearpage
-```{r, fig.cap = "scatterplots of Pseudovirus Neutralization ID80 vs Age: by arm at day 57"}
+```{r, fig.cap = "scatterplots of Pseudovirus Neutralization ID80 vs Age: by arm at day 57", eval = has57}
 include_graphics(here("cor_graphical", "figs", paste0("scatter_pnAb_id80_all_Day57_", study_name, ".pdf")))
 ```
 
@@ -1347,7 +1347,7 @@ include_graphics(here("cor_graphical", "figs", paste0("scatter_daysince29_Spike_
 ```
 
 \clearpage
-```{r, fig.cap = "scatterplots of Binding Antibody to Spike vs Days Since the Day 29 Visit: baseline negative vaccine arm at day 57"}
+```{r, fig.cap = "scatterplots of Binding Antibody to Spike vs Days Since the Day 29 Visit: baseline negative vaccine arm at day 57", eval = has57}
 include_graphics(here("cor_graphical", "figs", paste0("scatter_daysince29_Spike_Vaccine_BaselineNeg_Day57_", study_name, ".pdf")))
 ```
 
@@ -1362,7 +1362,7 @@ include_graphics(here("cor_graphical", "figs", paste0("scatter_daysince29_RBD_Va
 ```
 
 \clearpage
-```{r, fig.cap = "scatterplots of Binding Antibody to RBD vs Days Since the Day 29 Visit: baseline negative vaccine arm at day 57"}
+```{r, fig.cap = "scatterplots of Binding Antibody to RBD vs Days Since the Day 29 Visit: baseline negative vaccine arm at day 57", eval = has57}
 include_graphics(here("cor_graphical", "figs", paste0("scatter_daysince29_RBD_Vaccine_BaselineNeg_Day57_", study_name, ".pdf")))
 ```
 
@@ -1377,7 +1377,7 @@ include_graphics(here("cor_graphical", "figs", paste0("scatter_daysince29_pnAb_i
 ```
 
 \clearpage
-```{r, fig.cap = "scatterplots of Pseudovirus Neutralization ID50 vs Days Since the Day 29 Visit: baseline negative vaccine arm at day 57"}
+```{r, fig.cap = "scatterplots of Pseudovirus Neutralization ID50 vs Days Since the Day 29 Visit: baseline negative vaccine arm at day 57", eval = has57}
 include_graphics(here("cor_graphical", "figs", paste0("scatter_daysince29_pnAb_id50_Vaccine_BaselineNeg_Day57_", study_name, ".pdf")))
 ```
 
@@ -1392,7 +1392,7 @@ include_graphics(here("cor_graphical", "figs", paste0("scatter_daysince29_pnAb_i
 ```
 
 \clearpage
-```{r, fig.cap = "scatterplots of Pseudovirus Neutralization ID80 vs Days Since the Day 29 Visit: baseline negative vaccine arm at day 57"}
+```{r, fig.cap = "scatterplots of Pseudovirus Neutralization ID80 vs Days Since the Day 29 Visit: baseline negative vaccine arm at day 57", eval = has57}
 include_graphics(here("cor_graphical", "figs", paste0("scatter_daysince29_pnAb_id80_Vaccine_BaselineNeg_Day57_", study_name, ".pdf")))
 ```
 
@@ -1409,7 +1409,7 @@ include_graphics(here("cor_graphical", "figs", paste0("scatter_daysince29_Spike_
 ```
 
 \clearpage
-```{r, fig.cap = "scatterplots of Binding Antibody to Spike vs Days Since the Day 29 Visit: by arm at day 57"}
+```{r, fig.cap = "scatterplots of Binding Antibody to Spike vs Days Since the Day 29 Visit: by arm at day 57", eval = has57}
 include_graphics(here("cor_graphical", "figs", paste0("scatter_daysince29_Spike_all_Day57_", study_name, ".pdf"))
 )
 ```
@@ -1427,7 +1427,7 @@ include_graphics(here("cor_graphical", "figs", paste0("scatter_daysince29_RBD_al
 ```
 
 \clearpage
-```{r, fig.cap = "scatterplots of Binding Antibody to RBD vs Days Since the Day 29 Visit: by arm at day 57"}
+```{r, fig.cap = "scatterplots of Binding Antibody to RBD vs Days Since the Day 29 Visit: by arm at day 57", eval = has57}
 include_graphics(here("cor_graphical", "figs", paste0("scatter_daysince29_RBD_all_Day57_", study_name, ".pdf"))
 )
 ```
@@ -1443,7 +1443,7 @@ include_graphics(here("cor_graphical", "figs", paste0("scatter_daysince29_pnAb_i
 ```
 
 \clearpage
-```{r, fig.cap = "scatterplots of Pseudovirus Neutralization ID50 vs Days Since the Day 29 Visit: by arm at day 57"}
+```{r, fig.cap = "scatterplots of Pseudovirus Neutralization ID50 vs Days Since the Day 29 Visit: by arm at day 57", eval = has57}
 include_graphics(here("cor_graphical", "figs", paste0("scatter_daysince29_pnAb_id50_all_Day57_", study_name, ".pdf")))
 ```
 
@@ -1458,7 +1458,7 @@ include_graphics(here("cor_graphical", "figs", paste0("scatter_daysince29_pnAb_i
 ```
 
 \clearpage
-```{r, fig.cap = "scatterplots of Pseudovirus Neutralization ID80 vs Days Since the Day 29 Visit: by arm at day 57"}
+```{r, fig.cap = "scatterplots of Pseudovirus Neutralization ID80 vs Days Since the Day 29 Visit: by arm at day 57", eval = has57}
 include_graphics(here("cor_graphical", "figs", paste0("scatter_daysince29_pnAb_id80_all_Day57_", study_name, ".pdf")))
 ```
 

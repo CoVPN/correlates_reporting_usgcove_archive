@@ -1,6 +1,6 @@
 {
   "R": {
-    "Version": "4.0.3",
+    "Version": "4.1.0",
     "Repositories": [
       {
         "Name": "CRAN",
@@ -901,10 +901,10 @@
     },
     "gtools": {
       "Package": "gtools",
-      "Version": "3.8.2",
+      "Version": "3.9.2",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "0a749b4458d19a54acae93c64e3e7c85"
+      "Hash": "2ace6c4a06297d0b364e0444384a2b82"
     },
     "hal9001": {
       "Package": "hal9001",
@@ -1347,8 +1347,8 @@
       "RemoteRepo": "natmed2",
       "RemoteUsername": "benkeser",
       "RemoteRef": "HEAD",
-      "RemoteSha": "28fc89ed504a111b0f21ea184bd1500cfdfeadb8",
-      "Hash": "cfc787d0e0021294aa7e6d6a8fc8aff8"
+      "RemoteSha": "158509db7e25e9b43b37f346fba29ad9df4d4ad3",
+      "Hash": "c6efffe9591b4db85d7ef315f8de3aa9"
     },
     "nleqslv": {
       "Package": "nleqslv",

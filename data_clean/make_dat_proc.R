@@ -468,12 +468,10 @@ assays.includeN=c(assays, "bindN")
 # converting binding variables from AU to IU for binding assays
 ###############################################################################
 
-if (study_name_code=="COVE") {
-    for (a in assays.includeN) {
-      for (t in c("B", if(has29) "Day29", if(has57) "Day57") ) {
-          dat_proc[[t %.% a]] <- dat_proc[[t %.% a]] + log10(convf[a])
-      }
-    }
+for (a in assays.includeN) {
+  for (t in c("B", if(has29) "Day29", if(has57) "Day57") ) {
+      dat_proc[[t %.% a]] <- dat_proc[[t %.% a]] + log10(convf[a])
+  }
 }
 
 
@@ -553,8 +551,36 @@ if("pseudoneutid50" %in% assays & "pseudoneutid80" %in% assays) {
     if(has57) MaxID50ID80Delta57overB = max(dat_proc[,paste0("Delta57overB", c("pseudoneutid50", "pseudoneutid80"))], na.rm=TRUE)
 }
 
+# a function to print tables of cases counts with different marker availability
+# note that D57 cases and intercurrent cases may add up to more than D29 cases because ph1.D57 requires EarlyendpointD57==0 while ph1.D29 requires EarlyendpointD29==0
+make.case.count.marker.availability.table=function() {
+    if (study_name_code=="COVE") {
+        idx.trt=1:0
+        names(idx.trt)=c("vacc","plac")
+        cnts = sapply (idx.trt, simplify="array", function(trt) {
+             idx=1:3
+             names(idx)=c("Day 29 Cases", "Day 57 Cases", "Intercurrent Cases")
+             tab=t(sapply (idx, function(i) {           
+                tmp.1 = with(subset(dat_proc, Trt==trt & Bserostatus==0 & if(i==2) EventIndPrimaryD57 else EventIndPrimaryD29 &   if(i==2) ph1.D57 else if(i==1) ph1.D29 else ph1.intercurrent.cases), is.na(BbindSpike)     | is.na(BbindRBD) )
+                tmp.2 = with(subset(dat_proc, Trt==trt & Bserostatus==0 & if(i==2) EventIndPrimaryD57 else EventIndPrimaryD29 &   if(i==2) ph1.D57 else if(i==1) ph1.D29 else ph1.intercurrent.cases), is.na(Day29bindSpike) | is.na(Day29bindRBD))
+                tmp.3 = with(subset(dat_proc, Trt==trt & Bserostatus==0 & if(i==2) EventIndPrimaryD57 else EventIndPrimaryD29 &   if(i==2) ph1.D57 else if(i==1) ph1.D29 else ph1.intercurrent.cases), is.na(Day57bindSpike) | is.na(Day57bindRBD))    
+                
+                c(sum(tmp.1 & tmp.2 & tmp.3), sum(tmp.1 & tmp.2 & !tmp.3), sum(tmp.1 & !tmp.2 & tmp.3), sum(tmp.1 & !tmp.2 & !tmp.3), 
+                  sum(!tmp.1 & tmp.2 & tmp.3), sum(!tmp.1 & tmp.2 & !tmp.3), sum(!tmp.1 & !tmp.2 & tmp.3), sum(!tmp.1 & !tmp.2 & !tmp.3))
+            }))
+            colnames(tab)=c("---", "--+", "-+-", "-++", "+--", "+-+", "++-", "+++")
+            tab
+        })
+        cnts
+    } else {
+        NA
+    }
+}
+#subset(dat_proc, Trt==trt & Bserostatus==0 & EventIndPrimaryD29==1 & ph1.intercurrent.cases)
+
+
 save(list=c(if(has57) c("MaxbAbDay57", "MaxbAbDelta57overB", if("pseudoneutid50" %in% assays & "pseudoneutid80" %in% assays) c("MaxID50ID80Day57", "MaxID50ID80Delta57overB")), 
             if(has29) c("MaxbAbDay29", "MaxbAbDelta29overB", if("pseudoneutid50" %in% assays & "pseudoneutid80" %in% assays) c("MaxID50ID80Day29", "MaxID50ID80Delta29overB")),
-            "decode.tps.stratum"
+            "decode.tps.stratum", "make.case.count.marker.availability.table"
           ),
 file=here("data_clean", paste0(attr(config, "config"), "_params.Rdata")))

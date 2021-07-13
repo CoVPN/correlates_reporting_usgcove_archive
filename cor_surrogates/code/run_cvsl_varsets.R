@@ -8,24 +8,36 @@ if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/
 source(here::here("..", "_common.R"))
 #-----------------------------------------------
 
-job_id <- as.numeric(commandArgs(trailingOnly = TRUE)[[1]])
+args <- commandArgs(trailingOnly = TRUE)
+job_id <- as.numeric(args[1])
+DAY <- as.character(args[2])
+if(DAY %in% c("Day57", "Both")){
+  WEIGHT = "wt.D57"
+  TWOPHASESAMPIND = "TwophasesampIndD57"
+}
+if(DAY == "Day29"){
+  WEIGHT = "wt.D29"
+  TWOPHASESAMPIND = "TwophasesampIndD29"
+}
+# print(paste0("JOBID is ", args[1]))
+# print(paste0("Day is ", args[2]))
 
 ## load required libraries and functions
-library(tidyverse)
-library(quadprog)
-library(here)
-library(methods)
-library(SuperLearner)
-library(e1071)
-library(glmnet)
-library(kyotil)
-library(argparse)
-library(vimp)
-library(nloptr)
-library(RhpcBLASctl)
-library(conflicted)
-conflicted::conflict_prefer("filter", "dplyr")
-conflict_prefer("summarise", "dplyr")
+suppressMessages(library(tidyverse))
+suppressMessages(library(quadprog))
+suppressMessages(library(here))
+suppressMessages(library(methods))
+suppressMessages(library(SuperLearner))
+suppressMessages(library(e1071))
+suppressMessages(library(glmnet))
+suppressMessages(library(kyotil))
+suppressMessages(library(argparse))
+suppressMessages(library(vimp))
+suppressMessages(library(nloptr))
+suppressMessages(library(RhpcBLASctl))
+suppressMessages(library(conflicted))
+suppressMessages(conflicted::conflict_prefer("filter", "dplyr"))
+suppressMessages(conflict_prefer("summarise", "dplyr"))
 
 # Define code version to run
 # the demo version is simpler and runs faster!
@@ -33,6 +45,7 @@ conflict_prefer("summarise", "dplyr")
 run_prod <- !grepl("Mock", study_name)
 
 # get utility files
+source(here("code", "day57or29analyses.R")) # set up analyses for markers
 source(here("code", "sl_screens.R")) # set up the screen/algorithm combinations
 source(here("code", "utils.R")) # get CV-AUC for all algs
 
@@ -51,10 +64,28 @@ if (file.exists(here::here("..", "data_clean", data_name_updated))) {
 }
 
 briskfactors <- c("risk_score", "HighRiskInd", "MinorityInd")
-markerVars <- c("Day57bindSpike", "Delta57overBbindSpike", "Delta57overBbindSpike_2fold", "Delta57overBbindSpike_4fold",
-                "Day57bindRBD", "Delta57overBbindRBD", "Delta57overBbindRBD_2fold", "Delta57overBbindRBD_4fold",
-                "Day57pseudoneutid50", "Delta57overBpseudoneutid50", "Delta57overBpseudoneutid50_2fold", "Delta57overBpseudoneutid50_4fold",
-                "Day57pseudoneutid80", "Delta57overBpseudoneutid80", "Delta57overBpseudoneutid80_2fold", "Delta57overBpseudoneutid80_4fold")
+
+if(DAY == "Day57"){
+  markerVars <- c("Day57bindSpike", "Delta57overBbindSpike", "Delta57overBbindSpike_2fold", "Delta57overBbindSpike_4fold",
+                  "Day57bindRBD", "Delta57overBbindRBD", "Delta57overBbindRBD_2fold", "Delta57overBbindRBD_4fold",
+                  "Day57pseudoneutid50", "Delta57overBpseudoneutid50", "Delta57overBpseudoneutid50_2fold", "Delta57overBpseudoneutid50_4fold",
+                  "Day57pseudoneutid80", "Delta57overBpseudoneutid80", "Delta57overBpseudoneutid80_2fold", "Delta57overBpseudoneutid80_4fold")
+}else if(DAY == "Day29"){
+  markerVars <- c("Day29bindSpike", "Delta29overBbindSpike", "Delta29overBbindSpike_2fold", "Delta29overBbindSpike_4fold",
+                  "Day29bindRBD", "Delta29overBbindRBD", "Delta29overBbindRBD_2fold", "Delta29overBbindRBD_4fold",
+                  "Day29pseudoneutid50", "Delta29overBpseudoneutid50", "Delta29overBpseudoneutid50_2fold", "Delta29overBpseudoneutid50_4fold",
+                  "Day29pseudoneutid80", "Delta29overBpseudoneutid80", "Delta29overBpseudoneutid80_2fold", "Delta29overBpseudoneutid80_4fold")
+}else if(DAY == "Both"){
+  markerVars <- c("Day29bindSpike", "Delta29overBbindSpike", "Delta29overBbindSpike_2fold", "Delta29overBbindSpike_4fold",
+                  "Day29bindRBD", "Delta29overBbindRBD", "Delta29overBbindRBD_2fold", "Delta29overBbindRBD_4fold",
+                  "Day29pseudoneutid50", "Delta29overBpseudoneutid50", "Delta29overBpseudoneutid50_2fold", "Delta29overBpseudoneutid50_4fold",
+                  "Day29pseudoneutid80", "Delta29overBpseudoneutid80", "Delta29overBpseudoneutid80_2fold", "Delta29overBpseudoneutid80_4fold",
+                  
+                  "Day57bindSpike", "Delta57overBbindSpike", "Delta57overBbindSpike_2fold", "Delta57overBbindSpike_4fold",
+                  "Day57bindRBD", "Delta57overBbindRBD", "Delta57overBbindRBD_2fold", "Delta57overBbindRBD_4fold",
+                  "Day57pseudoneutid50", "Delta57overBpseudoneutid50", "Delta57overBpseudoneutid50_2fold", "Delta57overBpseudoneutid50_4fold",
+                  "Day57pseudoneutid80", "Delta57overBpseudoneutid80", "Delta57overBpseudoneutid80_2fold", "Delta57overBpseudoneutid80_4fold")
+}
 
 # Identify the endpoint variable
 endpoint <- "EventIndPrimaryD57"
@@ -65,22 +96,17 @@ endpoint <- "EventIndPrimaryD57"
 dat.ph1 <- dat.mock %>%
   filter(Perprotocol == 1) %>%
   filter(Trt == 1) %>% # consider only vaccine group
-  mutate(Delta57overBbindSpike_2fold = ifelse(Day57bindSpike > (BbindSpike + log10(2)), 1, 0),
-         Delta57overBbindSpike_4fold = ifelse(Day57bindSpike > (BbindSpike + log10(4)), 1, 0),
-         Delta57overBbindRBD_2fold = ifelse(Day57bindRBD > (BbindRBD  + log10(2)), 1, 0),
-         Delta57overBbindRBD_4fold = ifelse(Day57bindRBD > (BbindRBD  + log10(4)), 1, 0),
-         Delta57overBpseudoneutid50_2fold = ifelse(Day57pseudoneutid50 > (Bpseudoneutid50  + log10(2)), 1, 0), 
-         Delta57overBpseudoneutid50_4fold = ifelse(Day57pseudoneutid50 > (Bpseudoneutid50  + log10(4)), 1, 0), 
-         Delta57overBpseudoneutid80_2fold = ifelse(Day57pseudoneutid80 > (Bpseudoneutid80  + log10(2)), 1, 0), 
-         Delta57overBpseudoneutid80_4fold = ifelse(Day57pseudoneutid80 > (Bpseudoneutid80  + log10(4)), 1, 0)) %>%
+  createBinaryVars(DAY) %>%
   # Drop any observation with NA values in Ptid, Trt, briskfactors, endpoint and wt.D57
-  drop_na(Ptid, Trt, all_of(briskfactors), all_of(endpoint), wt.D57) %>%
+  drop_na(Ptid, Trt, all_of(briskfactors), all_of(endpoint), all_of(WEIGHT)) %>%
+  #dropNAforweightDay(DAY) %>%
   arrange(desc(get(endpoint)))
 
 dat.ph2 <- dat.ph1 %>%
-  filter(TwophasesampIndD57 == 1) %>%
-  select(Ptid, Trt, all_of(briskfactors), all_of(endpoint), wt.D57, any_of(markerVars)) %>%
-  drop_na(Day57bindSpike, Day57bindRBD, Day57pseudoneutid50, Day57pseudoneutid80) %>%
+  filter(get(TWOPHASESAMPIND) == TRUE) %>%
+  select(Ptid, Trt, all_of(briskfactors), all_of(endpoint), all_of(WEIGHT), any_of(markerVars)) %>%
+  dropNAforDayMarker(DAY) %>%
+  #drop_na(Day57bindSpike, Day57bindRBD, Day57pseudoneutid50, Day57pseudoneutid80) %>%
   arrange(desc(get(endpoint)))
 
 # Limit total variables that will be included in models 
@@ -91,7 +117,7 @@ dat.ph2 <- drop_riskVars_with_fewer_0s_or_1s(dat.ph2, c(briskfactors, markerVars
 
 # Update predictor variables
 pred_vars <- dat.ph2 %>%
-  select(-Ptid, -Trt, -all_of(endpoint), -wt.D57) %>%
+  select(-Ptid, -Trt, -all_of(endpoint), -all_of(WEIGHT)) %>% 
   colnames()
 
 # Remove any baseline risk factors with more than 5% missing values. Impute the missing
@@ -100,37 +126,27 @@ dat.ph2 <- drop_riskVars_with_high_total_missing_values(dat.ph2, briskfactors)
 
 # Update risk_vars
 pred_vars <- dat.ph2 %>%
-  select(-Ptid, -Trt, -all_of(endpoint), -wt.D57) %>%
+  select(-Ptid, -Trt, -all_of(endpoint), -all_of(WEIGHT)) %>%
   colnames()
 
 # Save ptids to merge with predictions later
-ph2_vacc_ptids <- dat.ph2 %>% select(Ptid, all_of(endpoint), wt.D57)
+ph2_vacc_ptids <- dat.ph2 %>% select(Ptid, all_of(endpoint), all_of(WEIGHT))
 
 Z_plus_weights <- dat.ph1 %>% 
-  select(Ptid, all_of(endpoint), wt.D57, Trt, all_of(briskfactors)) %>%
+  select(Ptid, all_of(endpoint), all_of(WEIGHT), Trt, all_of(briskfactors)) %>%
   # Drop any observation with NA values in Ptid, Trt, briskfactors, endpoint or wt.D57
-  drop_na(Ptid, Trt, all_of(briskfactors), all_of(endpoint), wt.D57) 
+  drop_na(Ptid, Trt, all_of(briskfactors), all_of(endpoint), all_of(WEIGHT)) 
   
 ###########################################################################
 # Create combination scores across the 5 markers
 dat.ph2 <- dat.ph2 %>% 
-  left_join(get.pca.scores(dat.ph2 %>%
-                             select(Ptid, Day57bindSpike, Day57bindRBD, Day57pseudoneutid50, Day57pseudoneutid80)),
-            by = "Ptid") %>%
-  # left_join(get.nonlinearPCA.scores(dat.ph2 %>%
-  #                                     select(Ptid, Day57bindSpike, Day57bindRBD, Day57pseudoneutid50, Day57pseudoneutid80)),
-  #          by = "Ptid") %>%
-  mutate(
-    #nlPCA1 = PC1,
-    #nlPCA2 = PC2,
-    max.signal.div.score = get.maxSignalDivScore(dat.ph2 %>%
-                                                        select(Day57bindSpike, Day57bindRBD, Day57pseudoneutid50, Day57pseudoneutid80)))
+  left_join(get.combination.scores(dat.ph2, DAY), by = "Ptid")
 
 markers <- dat.ph2 %>%
-  select(Day57bindSpike:max.signal.div.score) %>%
+  select(-Ptid, -Trt, -risk_score, -HighRiskInd, -MinorityInd, -EventIndPrimaryD57, -all_of(WEIGHT)) %>%
   colnames()
 
-#####################################################################################################################
+###########################################################################
 ## Create variable sets and set up X, Y for super learning
 # Baseline risk variables are default in all sets
 
@@ -171,7 +187,7 @@ varset_matrix <- rbind(varset_baselineRiskFactors,
                        varset_bAb_combScores, varset_allMarkers, varset_allMarkers_combScores)
 
 this_var_set <- varset_matrix[job_id, ]
-cat("\n Running ", varset_names[job_id], "\n")
+cat("\n Running", varset_names[job_id], "variable set for", DAY, "markers! \n")
 
 if(varset_names[job_id] == "1_noisyVariables"){
   X_covars2adjust_ph2 <- dat.ph2 %>% select(all_of(briskfactors), noiseVar1, noiseVar2, noiseVar3)
@@ -198,7 +214,12 @@ if(job_id == 1){
 }
 
 Y = dat.ph2 %>% pull(endpoint)
-weights = dat.ph2$wt.D57
+if(DAY %in% c("Day57", "Both")){
+  weights = dat.ph2$wt.D57
+}else if(DAY == "Day29"){
+  weights = dat.ph2$wt.D29
+}
+  
 sl_lib <- SL_library
 
 if(varset_names[job_id] == "1_noisyVariables"){
@@ -206,7 +227,7 @@ if(varset_names[job_id] == "1_noisyVariables"){
     filter(Trt == 1) %>%
     select(-Trt)
 }else{
-  treatmentDAT <- dat.ph2 %>% select(Ptid, Trt, wt.D57, EventIndPrimaryD57, all_of(c(briskfactors, markers))) %>%
+  treatmentDAT <- dat.ph2 %>% select(Ptid, Trt, all_of(WEIGHT), EventIndPrimaryD57, all_of(c(briskfactors, markers))) %>%
     filter(Trt == 1) %>%
     select(-Trt)
 }
@@ -221,22 +242,20 @@ all_non_cc_treatment <- Z_plus_weights %>%
 phase_1_data_treatmentDAT <- dplyr::bind_rows(all_cc_treatment, all_non_cc_treatment) %>%
   select(-Trt)
 Z_treatmentDAT <- phase_1_data_treatmentDAT %>%
-  select(-Ptid, -wt.D57)
+  select(-Ptid, -all_of(WEIGHT))
 all_ipw_weights_treatment <- phase_1_data_treatmentDAT %>%
-  pull(wt.D57)
+  pull(all_of(WEIGHT))
 C <- (phase_1_data_treatmentDAT$Ptid %in% treatmentDAT$Ptid)
 
 ## set up outer folds for cv variable importance; do stratified sampling
 V_outer <- 5
-if (sum(dat.ph2$EventIndPrimaryD57) <= 25){
+if (sum(dat.ph2 %>% pull(endpoint)) <= 25){
   V_inner <- length(Y) - 1
   maxVar <- 5
-
-} else if(sum(dat.ph2$EventIndPrimaryD57) > 25){
+} else if(sum(dat.ph2 %>% pull(endpoint)) > 25){
   V_inner <- 5
   maxVar <- floor(nv/6)
 }
-
 
 ## ---------------------------------------------------------------------------------
 ## run super learner, with leave-one-out cross-validation and all screens
@@ -249,9 +268,9 @@ seeds <- round(runif(10, 1000, 10000)) # average over 10 random starts
 
 ##solve cores issue
 library(RhpcBLASctl)
-blas_get_num_procs()
+#blas_get_num_procs()
 blas_set_num_threads(1)
-print(blas_get_num_procs())
+#print(blas_get_num_procs())
 stopifnot(blas_get_num_procs()==1)
 
 fits <- parallel::mclapply(seeds, FUN = run_cv_sl_once,
@@ -282,9 +301,9 @@ for(i in 1:length(seeds)) {
   cvfits[[i]] = fits[[i]]$cvfits
 }
 
-saveRDS(cvaucs, file = here("output", paste0("CVSLaucs_vacc_", endpoint, "_", varset_names[job_id], ".rds")))
-save(cvfits, file = here("output", paste0("CVSLfits_vacc_", endpoint, "_", varset_names[job_id], ".rda")))
-save(ph2_vacc_ptids, file = here("output", "ph2_vacc_ptids.rda"))
-save(run_prod, Y, dat.ph1, dat.ph2, weights, dat.mock, briskfactors, endpoint, maxVar,
-     V_outer, file = here("output", "objects_for_running_SL.rda"))
+saveRDS(cvaucs, file = here("output", paste0("CVSLaucs_vacc_", endpoint, "_", varset_names[job_id], "_", DAY, ".rds")))
+save(cvfits, file = here("output", paste0("CVSLfits_vacc_", endpoint, "_", varset_names[job_id], "_", DAY, ".rda")))
+save(ph2_vacc_ptids, file = here("output", paste0("ph2_vacc_ptids_", DAY, ".rda")))
+save(run_prod, DAY, Y, dat.ph1, dat.ph2, weights, dat.mock, briskfactors, endpoint, maxVar,
+     V_outer, file = here("output", paste0("objects_for_running_SL_", DAY, ".rda")))
 

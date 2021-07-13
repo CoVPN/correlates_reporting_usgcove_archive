@@ -6,8 +6,10 @@ renv::activate(project = here::here(".."))
 if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
 
 source(here::here("..", "_common.R"))
-
 ## ----load-all-SLobjects, message=FALSE, error=FALSE, warning=FALSE----------------------------------------------------------------------------------------------------
+
+args <- commandArgs(trailingOnly = TRUE)
+DAY <- as.character(args[1])
 
 library("cvAUC")
 library("conflicted")
@@ -27,13 +29,13 @@ source(here("code", "utils.R"))
 method <- "method.CC_nloglik" # since SuperLearner relies on this to be in GlobalEnv
 ggplot2::theme_set(theme_cowplot())
 
-load(file = here("output", "cvaucs_d57_vacc.rda"))
-load(file = here("output", "ph2_vacc_ptids.rda"))
+load(file = here("output", paste0("cvaucs_vacc_EventIndPrimaryD57_", DAY, ".rda")))
+load(file = here("output", paste0("ph2_vacc_ptids_", DAY, ".rda")))
 
 ## ----learner-screens, warning=kable_warnings--------------------------------------------------------------------------------------------------------------------------
 caption <- "All learner-screen combinations (14 in total) used as input to the Superlearner."
 
-tab <- cvaucs_d57_vacc %>%
+tab <- cvaucs_vacc %>%
   filter(!Learner %in% c("SL", "Discrete SL")) %>%
   select(Learner, Screen) %>%
   mutate(Screen = fct_relevel(Screen, c("all", "glmnet", "univar_logistic_pval",
@@ -82,23 +84,23 @@ tab %>% write.csv(here("output", "varsets.csv"))
 # Forest plots for vaccine model
 # vaccine group
 options(bitmapType = "cairo")
-for(i in 1:length(unique(cvaucs_d57_vacc$varset))) {
-  variableSet = unique(cvaucs_d57_vacc$varset)[i]
-  png(file = here("figs", paste0("forest_vacc_cvaucs_", variableSet, ".png")), width=1000, height=1100)
-  top_learner <- make_forest_plot(cvaucs_d57_vacc %>% filter(varset==variableSet))
+for(i in 1:length(unique(cvaucs_vacc$varset))) {
+  variableSet = unique(cvaucs_vacc$varset)[i]
+  png(file = here("figs", paste0("forest_vacc_cvaucs_", variableSet, "_", DAY,".png")), width=1000, height=1100)
+  top_learner <- make_forest_plot(cvaucs_vacc %>% filter(varset==variableSet))
   grid.arrange(top_learner$top_learner_nms_plot, top_learner$top_learner_plot, ncol=2)
   dev.off()
 }
 
 # All 12 Superlearners
-allSLs <- cvaucs_d57_vacc %>% filter(Learner == "SL") %>%
+allSLs <- cvaucs_vacc %>% filter(Learner == "SL") %>%
   mutate(varsetNo = sapply(strsplit(varset, "_"), `[`, 1),
          varsetNo = as.numeric(varsetNo)) %>%
   arrange(varsetNo) %>% 
   mutate(varset = fct_reorder(varset, AUC, .desc = F)) %>%
   arrange(-AUC)
 
-png(file = here("figs", paste0("forest_vacc_cvaucs_allSLs.png")), width=1000, height=1100)
+png(file = here("figs", paste0("forest_vacc_cvaucs_allSLs_", DAY, ".png")), width=1000, height=1100)
 lowestXTick <- floor(min(allSLs$ci_ll)*10)/10
 highestXTick <- ceiling(max(allSLs$ci_ul)*10)/10
 top_learner_plot <- ggplot() +
@@ -143,9 +145,9 @@ dev.off()
 #################################################################################################################################
 #################################################################################################################################
 # plot ROC curve and pred.Prob with SL, Discrete SL and top 2 best-performing individual Learners for all 12 variable sets
-for(i in 1:length(unique(cvaucs_d57_vacc$varset))) {
-  variableSet = unique(cvaucs_d57_vacc$varset)[i]
-  dat <- cvaucs_d57_vacc %>% filter(varset==variableSet)
+for(i in 1:length(unique(cvaucs_vacc$varset))) {
+  variableSet = unique(cvaucs_vacc$varset)[i]
+  dat <- cvaucs_vacc %>% filter(varset==variableSet)
   
   top2 <- bind_rows(
     dat %>% 
@@ -162,12 +164,12 @@ for(i in 1:length(unique(cvaucs_d57_vacc$varset))) {
                                          paste0(Learner, "_", Screen_fromRun))))
   
   # Get cvsl fit and extract cv predictions
-  load(file = here("output", paste0("CVSLfits_vacc_EventIndPrimaryD57_", variableSet, ".rda")))
+  load(file = here("output", paste0("CVSLfits_vacc_EventIndPrimaryD57_", variableSet, "_", DAY, ".rda")))
   pred <- get_cv_predictions(cv_fit = cvfits[[1]], cvaucDAT = top2)
   
   # plot ROC curve
   options(bitmapType = "cairo")
-  png(file = here("figs", paste0("ROCcurve_", variableSet, ".png")),
+  png(file = here("figs", paste0("ROCcurve_", variableSet, "_", DAY, ".png")),
       width = 1000, height = 1000)
   p1 <- plot_roc_curves(predict = pred, cvaucDAT = top2, weights = ph2_vacc_ptids$wt.D57)
   print(p1)
@@ -175,7 +177,7 @@ for(i in 1:length(unique(cvaucs_d57_vacc$varset))) {
   
   # plot pred prob plot
   options(bitmapType = "cairo")
-  png(file = here("figs", paste0("predProb_", variableSet, ".png")),
+  png(file = here("figs", paste0("predProb_", variableSet, "_", DAY, ".png")),
       width = 1000, height = 1000)
   p2 <- plot_predicted_probabilities(pred)
   print(p2)
@@ -184,8 +186,8 @@ for(i in 1:length(unique(cvaucs_d57_vacc$varset))) {
 
 
 # Get top 2 Superlearner performers
-cvaucs_d57_vacc %>% arrange(-AUC) %>% 
+cvaucs_vacc %>% arrange(-AUC) %>% 
   filter(Learner == "SL") %>%
   select(varset, AUCstr) %>%
-  write.csv(here("output", "SLperformance_allvarsets.csv"))
+  write.csv(here("output", paste0("SLperformance_allvarsets_", DAY, ".csv")))
   

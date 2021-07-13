@@ -297,7 +297,7 @@ create_varsets <- function(markers, vars){
 }
 
 library(mdw)
-get.maxSignalDivScore <- function(dat){
+get.maxSignalDivScore <- function(dat, day){
   ## scale markers to have sd 1 for all vars
   for (a in colnames(dat)) {
     dat[[a]] <- scale(dat[[a]],
@@ -312,9 +312,14 @@ get.maxSignalDivScore <- function(dat){
     dat[[a]] <- dat[[a]] * marker.wts[a]
   }
 
-  dat <- dat %>%
-    mutate(max.signal.div.score = rowSums(.[1:4])) #rowSums(.[1:5]))
-
+  if(day %in% c("Day29", "Day57")){
+    dat <- dat %>%
+      mutate(max.signal.div.score = rowSums(.[1:4])) #rowSums(.[1:5]))
+  }else if(day == "Both"){
+    dat <- dat %>%
+      mutate(max.signal.div.score = rowSums(.[1:8])) #rowSums(.[1:10]))
+  }
+  
   return(dat$max.signal.div.score)
 }
 

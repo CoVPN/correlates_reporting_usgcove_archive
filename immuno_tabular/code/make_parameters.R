@@ -10,7 +10,7 @@ library(tidyverse)
 # Also to modify the headers, footers, etc. for each table
 
 cutoff.name <- case_when(study_name_code=="COVE" ~ "lloq", 
-                         study_name_code=="ENSEMBLE" ~ "llod")
+                         study_name_code=="ENSEMBLE" ~ "lloq")
 
 randomsubcohort <- case_when(study_name_code=="COVE" ~ "The sampling was 
       stratified by 24 strata defined by enrollment characteristics: Assigned 
@@ -247,7 +247,7 @@ labels.assays.long <- data.frame (purrr::imap_dfc(labels.assays.short, ~ paste0(
 rownames(labels.assays.long) <- names(labels.time)
 
 visits <- names(labels.time)[!grepl("Delta", names(labels.time))]
-assays_col <- levels(interaction(visits, assays, sep=""))
+assays_col <- as.vector(outer(visits, assays, paste0))
 
 labels.assays <- expand.grid(
   time = rownames(labels.assays.long),

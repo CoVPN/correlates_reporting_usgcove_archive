@@ -99,8 +99,10 @@ readin_SLobjects_fromFolder <- function(data_path, file_pattern, endpoint, trt, 
 data_folder <- here("output")
 cvaucs_vacc <- readin_SLobjects_fromFolder(data_folder, file_pattern = "*.rds", endpoint = "EventIndPrimaryD57", trt = "vaccine", day = DAY) %>%
   mutate(varset = str_replace(file, "CVSLaucs_vacc_EventIndPrimaryD57_", ""),
-         varset = str_replace(varset, ".rds", ""),
+         varset = str_replace(varset, "_Day29.rds", ""),
+         varset = str_replace(varset, "_Day57.rds", ""),
+         varset = str_replace(varset, "_Both.rds", ""),
          timepoint = DAY) 
 
-save(cvaucs_vacc, file = here("output", paste0("cvaucs_vacc_", endpoint, "_", DAY, ".rda")))
+save(cvaucs_vacc, file = here("output", paste0("cvaucs_vacc_EventIndPrimaryD57_", DAY, ".rda")))
 

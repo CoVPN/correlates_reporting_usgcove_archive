@@ -32,6 +32,17 @@ ggplot2::theme_set(theme_cowplot())
 load(file = here("output", paste0("cvaucs_vacc_EventIndPrimaryD57_", DAY, ".rda")))
 load(file = here("output", paste0("ph2_vacc_ptids_", DAY, ".rda")))
 
+
+# Assign weight and twophasesampind vars based off marker timepoint analyses
+if(DAY %in% c("Day57", "Both")){
+  WEIGHT = "wt.D57"
+  TWOPHASESAMPIND = "TwophasesampIndD57"
+}
+if(DAY == "Day29"){
+  WEIGHT = "wt.D29"
+  TWOPHASESAMPIND = "TwophasesampIndD29"
+}
+
 ## ----learner-screens, warning=kable_warnings--------------------------------------------------------------------------------------------------------------------------
 caption <- "All learner-screen combinations (14 in total) used as input to the Superlearner."
 
@@ -123,7 +134,8 @@ total_learnerScreen_combos = length(allSLs$LearnerScreen)
 
 allSLs_withCoord <- allSLs %>%
   select(varset, AUCstr) %>%
-  gather("columnVal", "strDisplay") %>%
+  mutate(varset = as.character(varset)) %>%
+  tidyr::gather("columnVal", "strDisplay") %>%
   mutate(xcoord = case_when(columnVal=="varset" ~ 1.4,
                             columnVal=="AUCstr" ~ 2),
          ycoord = rep(total_learnerScreen_combos:1, 2))
@@ -171,7 +183,7 @@ for(i in 1:length(unique(cvaucs_vacc$varset))) {
   options(bitmapType = "cairo")
   png(file = here("figs", paste0("ROCcurve_", variableSet, "_", DAY, ".png")),
       width = 1000, height = 1000)
-  p1 <- plot_roc_curves(predict = pred, cvaucDAT = top2, weights = ph2_vacc_ptids$wt.D57)
+  p1 <- plot_roc_curves(predict = pred, cvaucDAT = top2, weights = ph2_vacc_ptids %>% pull(WEIGHT))
   print(p1)
   dev.off()
   

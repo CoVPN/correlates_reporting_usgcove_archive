@@ -63,6 +63,13 @@ llods=sapply(tmp, function(x) unname(x["LLOD"]))
 lloqs=sapply(tmp, function(x) unname(x["LLOQ"]))
 uloqs=sapply(tmp, function(x) unname(x["ULOQ"]))
 
+if(study_name_code=="ENSEMBLE") {
+    uloqs["bindRBD"]=172.5755
+    uloqs["bindSpike"]=238.1165 
+    lloqs["bindRBD"]=5.0243 
+    lloqs["bindSpike"]=1.8429 
+}
+
 
 must_have_assays <- c(
   "bindSpike", "bindRBD"
@@ -433,3 +440,6 @@ report.assay.values=function(x, assay){
     #out[!duplicated(out)] # unique strips away the names. But don't take out duplicates because 15% may be needed and because we may want the same number of values for each assay
 }
 #report.assay.values (dat.vac.seroneg[["Day57pseudoneutid80"]], "pseudoneutid80")
+
+options(bitmapType='cairo') 
+

@@ -18,10 +18,6 @@ options(dplyr.summarise.inform = FALSE)
 # Read in original data
 dat <- read.csv(here::here("..", "data_clean", data_name))
 
-if (subset_variable != "None") {
-  dat <- dat %>% dplyr::filter(!!as.name(subset_variable)==subset_value)
-  }
-
 # The stratified random cohort for immunogenicity
 
 ds_s <- dat %>%
@@ -108,6 +104,6 @@ grplev <- c("", labels.age, "At-risk", "Not at-risk",
 
 names(grplev) <- c("All participants", grplev[-1])
 
-save(ds, assays, assays_col, labels_all, subgrp, grplev, tlf, 
+save(ds, assays, assays_col, labels_all, subgrp, grplev, tlf,
      file = here::here("data_clean", "ds_all.Rdata"))
 

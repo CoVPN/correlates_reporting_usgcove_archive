@@ -11,6 +11,25 @@ source(here::here("..", "_common.R"))
 args <- commandArgs(trailingOnly = TRUE)
 job_id <- as.numeric(args[1])
 DAY <- as.character(args[2])
+
+## load required libraries and functions
+library(tidyverse)
+library(quadprog)
+library(here)
+library(methods)
+library(SuperLearner)
+library(e1071)
+library(glmnet)
+library(kyotil)
+library(argparse)
+library(vimp)
+library(nloptr)
+library(RhpcBLASctl)
+library(conflicted)
+conflicted::conflict_prefer("filter", "dplyr")
+conflict_prefer("summarise", "dplyr")
+
+# Assign weight and twophasesampind vars based off marker timepoint analyses
 if(DAY %in% c("Day57", "Both")){
   WEIGHT = "wt.D57"
   TWOPHASESAMPIND = "TwophasesampIndD57"
@@ -22,22 +41,6 @@ if(DAY == "Day29"){
 # print(paste0("JOBID is ", args[1]))
 # print(paste0("Day is ", args[2]))
 
-## load required libraries and functions
-suppressMessages(library(tidyverse))
-suppressMessages(library(quadprog))
-suppressMessages(library(here))
-suppressMessages(library(methods))
-suppressMessages(library(SuperLearner))
-suppressMessages(library(e1071))
-suppressMessages(library(glmnet))
-suppressMessages(library(kyotil))
-suppressMessages(library(argparse))
-suppressMessages(library(vimp))
-suppressMessages(library(nloptr))
-suppressMessages(library(RhpcBLASctl))
-suppressMessages(library(conflicted))
-suppressMessages(conflicted::conflict_prefer("filter", "dplyr"))
-suppressMessages(conflict_prefer("summarise", "dplyr"))
 
 # Define code version to run
 # the demo version is simpler and runs faster!

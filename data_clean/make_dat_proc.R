@@ -1,4 +1,4 @@
-#Sys.setenv(TRIAL = "janssen_pooled_mock")
+#Sys.setenv(TRIAL = "janssen_pooled_real")
 if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
 #-----------------------------------------------
 renv::activate(here::here())
@@ -272,7 +272,7 @@ if(has29) dat_proc <- dat_proc %>%
   )
   
 
-# wt, for D57 correlates analyses
+# weights for D57 correlates analyses
 if (has57) {
     wts_table <- dat_proc %>% dplyr::filter(EarlyendpointD57==0 & Perprotocol==1 & EventTimePrimaryD57>=7) %>%
       with(table(Wstratum, TwophasesampIndD57))
@@ -288,6 +288,7 @@ if (has57) {
         msg = "missing wt.D57 for D57 analyses ph1 subjects")
 }
 
+# weights for D29 correlates analyses
 if(has29) {
     wts_table2 <- dat_proc %>% dplyr::filter(EarlyendpointD29==0 & Perprotocol==1 & EventTimePrimaryD29>=7) %>%
       with(table(Wstratum, TwophasesampIndD29))
@@ -302,7 +303,7 @@ if(has29) {
         msg = "missing wt.D29 for D29 analyses ph1 subjects")
 }
 
-# define weights for intercurrent cases
+# weights for intercurrent cases
 if(has29 & has57) {
     wts_table2 <- dat_proc %>%               dplyr::filter(EarlyendpointD29==0 & Perprotocol==1 & EventIndPrimaryD29==1 & EventTimePrimaryD29>=7 & EventTimePrimaryD29 <= 6 + NumberdaysD1toD57 - NumberdaysD1toD29) %>%
       with(table(Wstratum, TwophasesampIndD29))
@@ -319,7 +320,7 @@ if(has29 & has57) {
         msg = "missing wt.intercurrent.cases for intercurrent analyses ph1 subjects")
 }
 
-# wt.subcohort, for immunogenicity analyses that use subcohort only and are not enriched by cases outside subcohort
+# weights for immunogenicity analyses that use subcohort only and are not enriched by cases outside subcohort
 if (study_name_code=="COVE") {
     wts_table <- dat_proc %>%       dplyr::filter(EarlyendpointD57==0 & Perprotocol==1) %>%
       with(table(tps.stratum, TwophasesampIndD57 & SubcohortInd))
@@ -550,8 +551,36 @@ if("pseudoneutid50" %in% assays & "pseudoneutid80" %in% assays) {
     if(has57) MaxID50ID80Delta57overB = max(dat_proc[,paste0("Delta57overB", c("pseudoneutid50", "pseudoneutid80"))], na.rm=TRUE)
 }
 
+# a function to print tables of cases counts with different marker availability
+# note that D57 cases and intercurrent cases may add up to more than D29 cases because ph1.D57 requires EarlyendpointD57==0 while ph1.D29 requires EarlyendpointD29==0
+make.case.count.marker.availability.table=function() {
+    if (study_name_code=="COVE") {
+        idx.trt=1:0
+        names(idx.trt)=c("vacc","plac")
+        cnts = sapply (idx.trt, simplify="array", function(trt) {
+             idx=1:3
+             names(idx)=c("Day 29 Cases", "Day 57 Cases", "Intercurrent Cases")
+             tab=t(sapply (idx, function(i) {           
+                tmp.1 = with(subset(dat_proc, Trt==trt & Bserostatus==0 & if(i==2) EventIndPrimaryD57 else EventIndPrimaryD29 &   if(i==2) ph1.D57 else if(i==1) ph1.D29 else ph1.intercurrent.cases), is.na(BbindSpike)     | is.na(BbindRBD) )
+                tmp.2 = with(subset(dat_proc, Trt==trt & Bserostatus==0 & if(i==2) EventIndPrimaryD57 else EventIndPrimaryD29 &   if(i==2) ph1.D57 else if(i==1) ph1.D29 else ph1.intercurrent.cases), is.na(Day29bindSpike) | is.na(Day29bindRBD))
+                tmp.3 = with(subset(dat_proc, Trt==trt & Bserostatus==0 & if(i==2) EventIndPrimaryD57 else EventIndPrimaryD29 &   if(i==2) ph1.D57 else if(i==1) ph1.D29 else ph1.intercurrent.cases), is.na(Day57bindSpike) | is.na(Day57bindRBD))    
+                
+                c(sum(tmp.1 & tmp.2 & tmp.3), sum(tmp.1 & tmp.2 & !tmp.3), sum(tmp.1 & !tmp.2 & tmp.3), sum(tmp.1 & !tmp.2 & !tmp.3), 
+                  sum(!tmp.1 & tmp.2 & tmp.3), sum(!tmp.1 & tmp.2 & !tmp.3), sum(!tmp.1 & !tmp.2 & tmp.3), sum(!tmp.1 & !tmp.2 & !tmp.3))
+            }))
+            colnames(tab)=c("---", "--+", "-+-", "-++", "+--", "+-+", "++-", "+++")
+            tab
+        })
+        cnts
+    } else {
+        NA
+    }
+}
+#subset(dat_proc, Trt==trt & Bserostatus==0 & EventIndPrimaryD29==1 & ph1.intercurrent.cases)
+
+
 save(list=c(if(has57) c("MaxbAbDay57", "MaxbAbDelta57overB", if("pseudoneutid50" %in% assays & "pseudoneutid80" %in% assays) c("MaxID50ID80Day57", "MaxID50ID80Delta57overB")), 
             if(has29) c("MaxbAbDay29", "MaxbAbDelta29overB", if("pseudoneutid50" %in% assays & "pseudoneutid80" %in% assays) c("MaxID50ID80Day29", "MaxID50ID80Delta29overB")),
-            "decode.tps.stratum"
+            "decode.tps.stratum", "make.case.count.marker.availability.table"
           ),
 file=here("data_clean", paste0(attr(config, "config"), "_params.Rdata")))

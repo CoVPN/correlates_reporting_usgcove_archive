@@ -68,7 +68,7 @@ get_rr <- function(dat, v, subs, sub.by, strata, weights, subset){
   for (i in v){
     design.ij <- subset(design.full, eval(parse(text=sprintf("!is.na(%s)", i))))
     for (j in subs){
-      cat(i,"--",j,"\n")
+      # cat(i,"--",j,"\n")
       ret <- svyby(as.formula(sprintf("~%s", i)),
                    by=as.formula(sprintf("~%s", paste(c(j, sub.by), collapse="+"))),
                    design=design.ij,
@@ -115,7 +115,7 @@ get_gm <- function(dat, v, subs, sub.by, strata, weights, subset){
   
   for (i in v){
     for (j in subs){
-      cat(i,"--",j,"\n")
+      # cat(i,"--",j,"\n")
       design.ij <- subset(design.full, eval(parse(text=sprintf("!is.na(%s)",i))))
       ret <- svyby(as.formula(sprintf("~%s", i)),
                    by=as.formula(sprintf("~%s", paste(c(j, sub.by), collapse="+"))),
@@ -165,7 +165,7 @@ get_rgmt <- function(dat, v, groups, comp_lev, sub.by, strata, weights, subset){
     }
     contrasts(dat[, gsub("`","",j)]) <- contr.treatment(2, base = 2)
     for (i in v){
-      cat(i,"--",j, comp_vs, "\n")
+      # cat(i,"--",j, comp_vs, "\n")
       n.ij <- subset(dat, dat[, subset] & !is.na(dat[, gsub("`","",j)]) & !is.na(dat[, i])) %>% 
         group_by_at(gsub("`", "", sub.by), .drop=F) %>% 
         summarise(n.j=n_distinct(!!as.name(gsub("`","",j)))) %>% 

@@ -1,4 +1,4 @@
-#Sys.setenv(TRIAL = "moderna_mock")
+#Sys.setenv(TRIAL = "janssen_pooled_real")
 if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
 #-----------------------------------------------
 renv::activate(here::here())

@@ -65,8 +65,10 @@ assay_lim[assay_immuno %in% nAb_assays, times %in% c("Delta29overB", "Delta57ove
 
 
 # Quick workaround for janssen presentation report
-assay_lim[,,'lb'] <- -1
-assay_lim[,,'ub'] <- 3
+if(study_name_code="ENSEMBLE") {
+  assay_lim[,,'lb'] <- -1
+  assay_lim[,,'ub'] <- 3
+}
 
 saveRDS(assay_lim,
         file = here("data_clean", "assay_lim.rds")

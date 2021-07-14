@@ -65,7 +65,7 @@ assay_lim[assay_immuno %in% nAb_assays, times %in% c("Delta29overB", "Delta57ove
 
 
 # Quick workaround for janssen presentation report
-if(study_name_code="ENSEMBLE") {
+if(study_name_code=="ENSEMBLE") {
   assay_lim[,,'lb'] <- -1
   assay_lim[,,'ub'] <- 3
 }

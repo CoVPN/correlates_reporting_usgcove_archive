@@ -103,6 +103,7 @@ myplot <- function(dat,
     scale_shape_manual(values=shape) +
     theme(plot.margin = unit(c(0.25,0.25,0.25,0.25), "in"),
           plot.title = element_text(hjust = 0.5),
+          strip.text.y = element_text(size = 18),
           axis.text.x=element_text(size=axis.text.cex),
           axis.text.y=element_text(size=axis.text.cex))
   return (p)
@@ -118,8 +119,18 @@ for (typ in c("line","violin")) {
       for (k in 1:length(trt)) {
         for (t in 1:length(times)) {
           
-          y.breaks <- seq(ifelse(plots[i] %in% c("bindSpike","bindRBD"), -1, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 5, 4), 1)
-          y.lim=c(ifelse(plots[i] %in% c("bindSpike","bindRBD"), -1.5, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 5, 4))
+          if (study_name_code=="COVE"){
+            y.breaks <- seq(ifelse(plots[i] %in% c("bindSpike","bindRBD"), -1, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 5, 4), 1)
+            y.lim <- c(ifelse(plots[i] %in% c("bindSpike","bindRBD"), -1.5, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 5, 4))
+            rate.y.pos <- max(y.breaks)
+            prop.cex=4.8
+          } else {
+            y.breaks <- seq(ifelse(plots[i] %in% c("bindSpike","bindRBD"), 0, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 3, 3))
+            y.lim <- c(ifelse(plots[i] %in% c("bindSpike","bindRBD"), 0, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 3, 3))
+            rate.y.pos <- max(y.lim)
+            prop.cex=7.5
+          }
+            
           group.num <- length(levels(longer_cor_data_plot1$cohort_event))
           
           p <- myplot(dat=subset(longer_cor_data_plot1, assay==plots[i] & Bserostatus==bstatus[j] & Trt==trt[k] & !is.na(value) & time %in% unlist(times[t])), 
@@ -129,10 +140,10 @@ for (typ in c("line","violin")) {
                       facetby=vars(cohort_event),
                       ylim=y.lim,
                       ybreaks=y.breaks,
-                      prop.cex=4.8,
+                      prop.cex=prop.cex,
                       ll.cex=8.16,
                       group.num=group.num,
-                      rate.y.pos=max(y.breaks),
+                      rate.y.pos=rate.y.pos,
                       col=c(if(!has57) "#FF5EBF", "#0AB7C9","#FF6F1B","#810094"),
                       shape=c(if(!has57) 18, 16, 17, 15)
                       )
@@ -173,7 +184,7 @@ for (typ in c("line","violin")) {
             
             # make subset for strata RaceEthnic and Dich_RaceEthnic, only present non-NA categories
             if (s=="minority_label") {
-              longer_cor_data_sub2 <- subset(longer_cor_data_plot2, minority_label %in% c("White Non-Hispanic","Comm. of Color"))
+              longer_cor_data_sub2 <- subset(longer_cor_data_plot2, !is.na(minority_label))
               
             } else if(s=="Dich_RaceEthnic"){
               longer_cor_data_sub2 <- subset(longer_cor_data_plot2, Dich_RaceEthnic %in% c("Hispanic or Latino","Not Hispanic or Latino"))
@@ -188,8 +199,18 @@ for (typ in c("line","violin")) {
               select(c("Ptid", groupby_vars2[!groupby_vars2 %in% "time"])) %>%
               inner_join(longer_cor_data_sub2, by=c("Ptid", groupby_vars2[!groupby_vars2 %in% "time"]))
             
-            y.breaks <- seq(ifelse(plots[i] %in% c("bindSpike","bindRBD"), -1, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 5, 4), 1)
-            y.lim <- c(ifelse(plots[i] %in% c("bindSpike","bindRBD"), -1.5, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 6.2, 5.2))
+            if (study_name_code=="COVE"){
+              y.breaks <- seq(ifelse(plots[i] %in% c("bindSpike","bindRBD"), -1, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 5, 4), 1)
+              y.lim <- c(ifelse(plots[i] %in% c("bindSpike","bindRBD"), -1.5, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 6.2, 5.2))
+              rate.y.pos <- max(y.lim)-0.3
+              prop.cex=5.7
+            } else {
+              y.breaks <- seq(ifelse(plots[i] %in% c("bindSpike","bindRBD"), 0, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 3, 3))
+              y.lim <- c(ifelse(plots[i] %in% c("bindSpike","bindRBD"), 0, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 3.7, 3.7))
+              rate.y.pos <- max(y.lim)-0.3
+              prop.cex=7
+            }
+            
             group.num <- length(levels(longer_cor_data_sub2$cohort_event))
             
             p <- myplot(dat=subset(longer_cor_data_sub2, assay==plots[i] & Bserostatus==bstatus[j] & Trt==trt[k] & !is.na(value) & time %in% unlist(times[t])), 
@@ -199,9 +220,9 @@ for (typ in c("line","violin")) {
                         facetby=as.formula(paste("~",s,"+cohort_event")),
                         ylim=y.lim,
                         ybreaks=y.breaks,
-                        prop.cex=5.7,
+                        prop.cex=prop.cex,
                         ll.cex=8,
-                        rate.y.pos=max(y.lim)-0.3,
+                        rate.y.pos=rate.y.pos,
                         group.num=group.num,
                         col=c(if(!has57) "#FF5EBF", "#0AB7C9","#FF6F1B","#810094"),
                         shape=c(if(!has57) 18, 16, 17, 15)
@@ -226,8 +247,18 @@ for (typ in c("line","violin")) {
       for (k in 1:length(trt)) {
         for (t in 1:length(times)) {
           
-          y.breaks <- seq(ifelse(plots[i] %in% c("bindSpike","bindRBD"), -1, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 5, 4), 2)
-          y.lim=c(ifelse(plots[i] %in% c("bindSpike","bindRBD"), -1.5, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 6.7, 6))
+          if (study_name_code=="COVE"){
+            y.breaks <- seq(ifelse(plots[i] %in% c("bindSpike","bindRBD"), -1, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 5, 4), 2)
+            y.lim <- c(ifelse(plots[i] %in% c("bindSpike","bindRBD"), -1.5, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 6.7, 6))
+            rate.y.pos <- max(y.lim)-0.47
+            prop.cex=5.5
+          } else {
+            y.breaks <- seq(ifelse(plots[i] %in% c("bindSpike","bindRBD"), 0, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 3, 3))
+            y.lim <- c(ifelse(plots[i] %in% c("bindSpike","bindRBD"), 0, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 3.7, 3.7))
+            rate.y.pos <- max(y.lim)-0.47
+            prop.cex=7
+          }
+          
           group.num <- length(levels(longer_cor_data_plot3$cohort_event))
           
           p <- myplot(dat=subset(longer_cor_data_plot3, assay==plots[i] & Bserostatus==bstatus[j] & Trt==trt[k] & !is.na(value) & time %in% unlist(times[t])), 
@@ -238,9 +269,9 @@ for (typ in c("line","violin")) {
                       ylim=y.lim,
                       ybreaks=y.breaks,
                       facetopt = "grid",
-                      prop.cex=5.5,
+                      prop.cex=prop.cex,
                       ll.cex=8,
-                      rate.y.pos=max(y.lim)-0.47,
+                      rate.y.pos=rate.y.pos,
                       group.num=group.num,
                       col=c(if(!has57) "#FF5EBF", "#0AB7C9","#FF6F1B","#810094"),
                       shape=c(if(!has57) 18, 16, 17, 15)
@@ -265,8 +296,13 @@ for (i in 1:length(plots)) {
       # subset for vaccine baseline neg arm
       if (c=="Vaccine_BaselineNeg"){ds.tmp <- subset(ds.tmp, Bserostatus=="Baseline Neg" & Trt=="Vaccine")}
       
-      y.breaks <- seq(ifelse(plots[i] %in% c("bindSpike","bindRBD"), -1, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 5, 4))
-      y.lim=c(ifelse(plots[i] %in% c("bindSpike","bindRBD"), -1.5, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 5, 4))
+      if (study_name_code=="COVE"){
+        y.breaks <- seq(ifelse(plots[i] %in% c("bindSpike","bindRBD"), -1, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 5, 4))
+        y.lim <- c(ifelse(plots[i] %in% c("bindSpike","bindRBD"), -1.5, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 5, 4))
+      } else {
+        y.breaks <- seq(ifelse(plots[i] %in% c("bindSpike","bindRBD"), 0, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 3, 3))
+        y.lim <- c(ifelse(plots[i] %in% c("bindSpike","bindRBD"), 0, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 3, 3))
+      }
       
       p <- ggplot(ds.tmp, aes(x = Age, y = value))
       
@@ -307,8 +343,13 @@ for (i in 1:length(plots)) {
       # subset for vaccine baseline neg arm
       if (c=="Vaccine_BaselineNeg"){ds.tmp <- subset(ds.tmp, Bserostatus=="Baseline Neg" & Trt=="Vaccine")}
       
-      y.breaks <- seq(ifelse(plots[i] %in% c("bindSpike","bindRBD"), -1, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 5, 4))
-      y.lim=c(ifelse(plots[i] %in% c("bindSpike","bindRBD"), -1.5, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 5, 4))
+      if (study_name_code=="COVE") {
+        y.breaks <- seq(ifelse(plots[i] %in% c("bindSpike","bindRBD"), -1, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 5, 4))
+        y.lim=c(ifelse(plots[i] %in% c("bindSpike","bindRBD"), -1.5, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 5, 4))
+      } else {
+        y.breaks <- seq(ifelse(plots[i] %in% c("bindSpike","bindRBD"), 0, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 3, 3))
+        y.lim=c(ifelse(plots[i] %in% c("bindSpike","bindRBD"), 0, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 3, 3))
+      }
       
       p <- ggplot(ds.tmp, aes(x = EventTimePrimaryD29, y = value))
       

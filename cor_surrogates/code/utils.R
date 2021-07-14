@@ -337,9 +337,8 @@ get.nonlinearPCA.scores <- function(dat){
   # reticulate::py_config() # Check if pythonhome is "C:/Users/bborate/Anaconda3" ! If not, then .rs.restartR() !
   # .rs.restartR()
   # Sys.setenv(RETICULATE_PYTHON = "C:\\Users\\bborate\\Anaconda3")
-  reticulate::use_python(Sys.getenv("PY_VERSION"))
-  #library(reticulate)
-  #library(FSDAM)
+  #reticulate::use_python(Sys.getenv("PY_VERSION"))
+
   fit=FSDAM::fsdam(dat.scaled, opt_numCode = 2)
   nlPCA1 <- kyotil::INT(fit$code[,1]) # the first component
   nlPCA2 <- kyotil::INT(fit$code[,2])

@@ -123,13 +123,21 @@ for (typ in c("line","violin")) {
             y.breaks <- seq(ifelse(plots[i] %in% c("bindSpike","bindRBD"), -1, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 5, 4), 1)
             y.lim <- c(ifelse(plots[i] %in% c("bindSpike","bindRBD"), -1.5, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 5, 4))
             rate.y.pos <- max(y.breaks)
-            prop.cex=4.8
           } else {
-            y.breaks <- seq(ifelse(plots[i] %in% c("bindSpike","bindRBD"), 0, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 3, 3))
-            y.lim <- c(ifelse(plots[i] %in% c("bindSpike","bindRBD"), 0, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 3, 3))
+            
+            min <- ifelse(plots[i] %in% c("bindSpike","bindRBD"),
+                       min(subset(longer_cor_data_plot1, assay %in% c("bindSpike","bindRBD"))$value), 
+                       min(subset(longer_cor_data_plot1, !assay %in% c("bindSpike","bindRBD"))$value))
+            max <- ifelse(plots[i] %in% c("bindSpike","bindRBD"),
+                          max(subset(longer_cor_data_plot1, assay %in% c("bindSpike","bindRBD"))$value), 
+                          max(subset(longer_cor_data_plot1, !assay %in% c("bindSpike","bindRBD"))$value))
+
+            y.breaks <- seq(floor(min), ceiling(max))
+            y.lim <- c(floor(min), ceiling(max))
             rate.y.pos <- max(y.lim)
-            prop.cex=7.5
           }
+          
+          prop.cex <- ifelse(has57, 4.8, 7.5)
             
           group.num <- length(levels(longer_cor_data_plot1$cohort_event))
           
@@ -203,13 +211,23 @@ for (typ in c("line","violin")) {
               y.breaks <- seq(ifelse(plots[i] %in% c("bindSpike","bindRBD"), -1, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 5, 4), 1)
               y.lim <- c(ifelse(plots[i] %in% c("bindSpike","bindRBD"), -1.5, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 6.2, 5.2))
               rate.y.pos <- max(y.lim)-0.3
-              prop.cex=5.7
+
             } else {
-              y.breaks <- seq(ifelse(plots[i] %in% c("bindSpike","bindRBD"), 0, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 3, 3))
-              y.lim <- c(ifelse(plots[i] %in% c("bindSpike","bindRBD"), 0, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 3.7, 3.7))
+              
+              min <- ifelse(plots[i] %in% c("bindSpike","bindRBD"),
+                            min(subset(longer_cor_data_plot2, assay %in% c("bindSpike","bindRBD"))$value), 
+                            min(subset(longer_cor_data_plot2, !assay %in% c("bindSpike","bindRBD"))$value))
+              max <- ifelse(plots[i] %in% c("bindSpike","bindRBD"),
+                            max(subset(longer_cor_data_plot2, assay %in% c("bindSpike","bindRBD"))$value), 
+                            max(subset(longer_cor_data_plot2, !assay %in% c("bindSpike","bindRBD"))$value))
+              
+              y.breaks <- seq(floor(min), ceiling(max))
+              y.lim <- c(floor(min), max+1)
               rate.y.pos <- max(y.lim)-0.3
-              prop.cex=7
+
             }
+            
+            prop.cex <- ifelse(has57, 5.7, 7)
             
             group.num <- length(levels(longer_cor_data_sub2$cohort_event))
             
@@ -251,13 +269,22 @@ for (typ in c("line","violin")) {
             y.breaks <- seq(ifelse(plots[i] %in% c("bindSpike","bindRBD"), -1, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 5, 4), 2)
             y.lim <- c(ifelse(plots[i] %in% c("bindSpike","bindRBD"), -1.5, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 6.7, 6))
             rate.y.pos <- max(y.lim)-0.47
-            prop.cex=5.5
+
           } else {
-            y.breaks <- seq(ifelse(plots[i] %in% c("bindSpike","bindRBD"), 0, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 3, 3))
-            y.lim <- c(ifelse(plots[i] %in% c("bindSpike","bindRBD"), 0, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 3.7, 3.7))
+            min <- ifelse(plots[i] %in% c("bindSpike","bindRBD"),
+                          min(subset(longer_cor_data_plot3, assay %in% c("bindSpike","bindRBD"))$value), 
+                          min(subset(longer_cor_data_plot3, !assay %in% c("bindSpike","bindRBD"))$value))
+            max <- ifelse(plots[i] %in% c("bindSpike","bindRBD"),
+                          max(subset(longer_cor_data_plot3, assay %in% c("bindSpike","bindRBD"))$value), 
+                          max(subset(longer_cor_data_plot3, !assay %in% c("bindSpike","bindRBD"))$value))
+            
+            y.breaks <- seq(floor(min), ceiling(max))
+            y.lim <- c(floor(min), max+1)
             rate.y.pos <- max(y.lim)-0.47
-            prop.cex=7
+
           }
+          
+          prop.cex <- ifelse(has57, 5.5, 7)
           
           group.num <- length(levels(longer_cor_data_plot3$cohort_event))
           
@@ -300,9 +327,16 @@ for (i in 1:length(plots)) {
         y.breaks <- seq(ifelse(plots[i] %in% c("bindSpike","bindRBD"), -1, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 5, 4))
         y.lim <- c(ifelse(plots[i] %in% c("bindSpike","bindRBD"), -1.5, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 5, 4))
       } else {
-        y.breaks <- seq(ifelse(plots[i] %in% c("bindSpike","bindRBD"), 0, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 3, 3))
-        y.lim <- c(ifelse(plots[i] %in% c("bindSpike","bindRBD"), 0, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 3, 3))
-      }
+        min <- ifelse(plots[i] %in% c("bindSpike","bindRBD"),
+                      min(subset(longer_cor_data, assay %in% c("bindSpike","bindRBD"))$value), 
+                      min(subset(longer_cor_data, !assay %in% c("bindSpike","bindRBD"))$value))
+        max <- ifelse(plots[i] %in% c("bindSpike","bindRBD"),
+                      max(subset(longer_cor_data, assay %in% c("bindSpike","bindRBD"))$value), 
+                      max(subset(longer_cor_data, !assay %in% c("bindSpike","bindRBD"))$value))
+        
+        y.breaks <- seq(floor(min), ceiling(max))
+        y.lim <- c(floor(min), ceiling(max))
+        }
       
       p <- ggplot(ds.tmp, aes(x = Age, y = value))
       
@@ -345,10 +379,17 @@ for (i in 1:length(plots)) {
       
       if (study_name_code=="COVE") {
         y.breaks <- seq(ifelse(plots[i] %in% c("bindSpike","bindRBD"), -1, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 5, 4))
-        y.lim=c(ifelse(plots[i] %in% c("bindSpike","bindRBD"), -1.5, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 5, 4))
+        y.lim <- c(ifelse(plots[i] %in% c("bindSpike","bindRBD"), -1.5, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 5, 4))
       } else {
-        y.breaks <- seq(ifelse(plots[i] %in% c("bindSpike","bindRBD"), 0, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 3, 3))
-        y.lim=c(ifelse(plots[i] %in% c("bindSpike","bindRBD"), 0, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 3, 3))
+        min <- ifelse(plots[i] %in% c("bindSpike","bindRBD"),
+                      min(subset(longer_cor_data, assay %in% c("bindSpike","bindRBD"))$value), 
+                      min(subset(longer_cor_data, !assay %in% c("bindSpike","bindRBD"))$value))
+        max <- ifelse(plots[i] %in% c("bindSpike","bindRBD"),
+                      max(subset(longer_cor_data, assay %in% c("bindSpike","bindRBD"))$value), 
+                      max(subset(longer_cor_data, !assay %in% c("bindSpike","bindRBD"))$value))
+        
+        y.breaks <- seq(floor(min), ceiling(max))
+        y.lim <- c(floor(min), ceiling(max))
       }
       
       p <- ggplot(ds.tmp, aes(x = EventTimePrimaryD29, y = value))

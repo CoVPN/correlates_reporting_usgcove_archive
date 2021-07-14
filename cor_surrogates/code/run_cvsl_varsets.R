@@ -12,22 +12,24 @@ args <- commandArgs(trailingOnly = TRUE)
 job_id <- as.numeric(args[1])
 DAY <- as.character(args[2])
 
-## load required libraries and functions
-library(tidyverse)
-library(quadprog)
-library(here)
-library(methods)
-library(SuperLearner)
-library(e1071)
-library(glmnet)
-library(kyotil)
-library(argparse)
-library(vimp)
-library(nloptr)
-library(RhpcBLASctl)
-library(conflicted)
-conflicted::conflict_prefer("filter", "dplyr")
-conflict_prefer("summarise", "dplyr")
+## load required libraries 
+suppressPackageStartupMessages(library(tidyverse, warn.conflicts = FALSE, quietly = TRUE))
+suppressPackageStartupMessages(library(quadprog))
+suppressPackageStartupMessages(library(here))
+suppressPackageStartupMessages(library(methods))
+suppressPackageStartupMessages(library(SuperLearner))
+suppressPackageStartupMessages(library(e1071))
+suppressPackageStartupMessages(library(glmnet))
+suppressPackageStartupMessages(library(kyotil, warn.conflicts = FALSE))
+suppressPackageStartupMessages(library(argparse))
+suppressPackageStartupMessages(library(vimp))
+suppressPackageStartupMessages(library(nloptr))
+suppressPackageStartupMessages(library(RhpcBLASctl))
+suppressPackageStartupMessages(library(reticulate))
+suppressPackageStartupMessages(library(FSDAM))
+suppressPackageStartupMessages(library(conflicted, warn.conflicts = FALSE))
+suppressMessages(conflicted::conflict_prefer("filter", "dplyr"))
+suppressMessages(conflict_prefer("summarise", "dplyr"))
 
 # Assign weight and twophasesampind vars based off marker timepoint analyses
 if(DAY %in% c("Day57", "Both")){
@@ -47,7 +49,7 @@ if(DAY == "Day29"){
 # the production version runs SL with a diverse set of learners
 run_prod <- !grepl("Mock", study_name)
 
-# get utility files
+# load required files and functions 
 source(here("code", "day57or29analyses.R")) # set up analyses for markers
 source(here("code", "sl_screens.R")) # set up the screen/algorithm combinations
 source(here("code", "utils.R")) # get CV-AUC for all algs
@@ -102,14 +104,12 @@ dat.ph1 <- dat.mock %>%
   createBinaryVars(DAY) %>%
   # Drop any observation with NA values in Ptid, Trt, briskfactors, endpoint and wt.D57
   drop_na(Ptid, Trt, all_of(briskfactors), all_of(endpoint), all_of(WEIGHT)) %>%
-  #dropNAforweightDay(DAY) %>%
   arrange(desc(get(endpoint)))
 
 dat.ph2 <- dat.ph1 %>%
   filter(get(TWOPHASESAMPIND) == TRUE) %>%
   select(Ptid, Trt, all_of(briskfactors), all_of(endpoint), all_of(WEIGHT), any_of(markerVars)) %>%
   dropNAforDayMarker(DAY) %>%
-  #drop_na(Day57bindSpike, Day57bindRBD, Day57pseudoneutid50, Day57pseudoneutid80) %>%
   arrange(desc(get(endpoint)))
 
 # Limit total variables that will be included in models 

@@ -1,3 +1,9 @@
+
+
+# Create binary variables from continuous marker data
+# @param dat dataframe containing data_clean filtered on PerProtocol and Vaccine Arm
+# @param day string variable containing timepoint for marker analyses
+# @return dat dataframe added with columns containing binary variables
 createBinaryVars <- function(dat, day){
   if(day == "Day57"){
     dat %>%
@@ -43,7 +49,10 @@ createBinaryVars <- function(dat, day){
 
 
 
-
+# Drop rows containing NA for marker variables
+# @param dat dataframe containing phase 1 data
+# @param day string variable containing timepoint for marker analyses
+# @return dat dataframe with rows filtered for NA on marker data
 dropNAforDayMarker <- function(dat, day){
   if(day %in% c("Day57", "Both")){
     dat %>% drop_na(Day57bindSpike, Day57bindRBD, Day57pseudoneutid50, Day57pseudoneutid80)
@@ -53,34 +62,38 @@ dropNAforDayMarker <- function(dat, day){
 }
 
 
-
+# Get combination scores
+# @param dat dataframe containing phase 2 data
+# @param day string variable containing timepoint for marker analyses
+# @return dataframe containing combination scores with ptids
 get.combination.scores <- function(dat, day){
   if(day == "Day57"){
-    combn.scores = get.pca.scores(dat %>%
-                                    select(Ptid, Day57bindSpike, Day57bindRBD, Day57pseudoneutid50, Day57pseudoneutid80)) %>%
-      # left_join(get.nonlinearPCA.scores(dat %>%
-      #                                     select(Ptid, Day57bindSpike, Day57bindRBD, Day57pseudoneutid50, Day57pseudoneutid80)), 
-      #           by = "Ptid") %>%
+    combn_scores <- get.pca.scores(dat %>%
+                     select(Ptid, Day57bindSpike, Day57bindRBD, Day57pseudoneutid50, Day57pseudoneutid80)) %>%
+      left_join(get.nonlinearPCA.scores(dat %>%
+                                          select(Ptid, Day57bindSpike, Day57bindRBD, Day57pseudoneutid50, Day57pseudoneutid80)), 
+                 by = "Ptid") %>%
       mutate(max.signal.div.score = get.maxSignalDivScore(dat.ph2 %>%
                                                             select(Day57bindSpike, Day57bindRBD, Day57pseudoneutid50, Day57pseudoneutid80), DAY))
   }else if(day == "Day29"){
-    combn.scores = get.pca.scores(dat %>%
-                                    select(Ptid, Day29bindSpike, Day29bindRBD, Day29pseudoneutid50, Day29pseudoneutid80)) %>%
-      # left_join(get.nonlinearPCA.scores(dat %>%
-      #                                     select(Ptid, Day29bindSpike, Day29bindRBD, Day29pseudoneutid50, Day29pseudoneutid80)), 
-      #           by = "Ptid") %>%
+    combn_scores <- get.pca.scores(dat %>%
+                     select(Ptid, Day29bindSpike, Day29bindRBD, Day29pseudoneutid50, Day29pseudoneutid80)) %>%
+      left_join(get.nonlinearPCA.scores(dat %>%
+                                          select(Ptid, Day29bindSpike, Day29bindRBD, Day29pseudoneutid50, Day29pseudoneutid80)), 
+                 by = "Ptid") %>%
       mutate(max.signal.div.score = get.maxSignalDivScore(dat.ph2 %>%
                                                             select(Day29bindSpike, Day29bindRBD, Day29pseudoneutid50, Day29pseudoneutid80), DAY))
   }else if(day == "Both"){
-    combn.scores = get.pca.scores(dat %>%
-                                    select(Ptid, Day29bindSpike, Day29bindRBD, Day29pseudoneutid50, Day29pseudoneutid80,
-                                                Day57bindSpike, Day57bindRBD, Day57pseudoneutid50, Day57pseudoneutid80)) %>%
-      # left_join(get.nonlinearPCA.scores(dat %>%
-      #                                     select(Ptid, Day29bindSpike, Day29bindRBD, Day29pseudoneutid50, Day29pseudoneutid80,
-      #                                             Day57bindSpike, Day57bindRBD, Day57pseudoneutid50, Day57pseudoneutid80)), 
-      #           by = "Ptid") %>%
+    combn_scores <- get.pca.scores(dat %>%
+                     select(Ptid, Day29bindSpike, Day29bindRBD, Day29pseudoneutid50, Day29pseudoneutid80,
+                            Day57bindSpike, Day57bindRBD, Day57pseudoneutid50, Day57pseudoneutid80)) %>%
+      left_join(get.nonlinearPCA.scores(dat %>%
+                                          select(Ptid, Day29bindSpike, Day29bindRBD, Day29pseudoneutid50, Day29pseudoneutid80,
+                                                 Day57bindSpike, Day57bindRBD, Day57pseudoneutid50, Day57pseudoneutid80)), 
+                 by = "Ptid") %>%
       mutate(max.signal.div.score = get.maxSignalDivScore(dat.ph2 %>%
                                                             select(Day29bindSpike, Day29bindRBD, Day29pseudoneutid50, Day29pseudoneutid80,
                                                                    Day57bindSpike, Day57bindRBD, Day57pseudoneutid50, Day57pseudoneutid80), DAY))
   }
+  return(combn_scores)
 }

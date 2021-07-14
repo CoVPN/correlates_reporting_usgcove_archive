@@ -127,7 +127,7 @@ dat.long.cor.subset$LLoD = log10(llods[as.character(dat.long.cor.subset$assay)])
 dat.long.cor.subset$lb = with(dat.long.cor.subset, ifelse(grepl("bind", assay), "Pos.Cut", "LLoD")) 
 dat.long.cor.subset$lbval =  with(dat.long.cor.subset, ifelse(grepl("bind", assay), pos.cutoffs, LLoD))
 dat.long.cor.subset$lb2 = with(dat.long.cor.subset, ifelse(grepl("bind", assay), "ULoQ", "")) 
-dat.long.cor.subset$lbval2 =  with(dat.long.cor.subset, ifelse(grepl("bind", assay) & study_name_code=="COVE", ULoQ, -99))
+dat.long.cor.subset$lbval2 =  with(dat.long.cor.subset, ifelse(grepl("bind", assay), ULoQ, -99))
 
 # assign values above the uloq to the uloq
 for (t in c("B", if(has29) "Day29", "Day57") ) {

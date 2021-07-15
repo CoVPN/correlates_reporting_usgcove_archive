@@ -5,7 +5,7 @@ all: clean cop_prinstrat
 clean:
 	rm -rf output/*
 
-## cop_prinstrat     : create tables and figures. If TRIAL=janssen pooled mock, run condVE analysis with number of levels of BIP = 4 for example. Number of replications for bootstrap is set to be 500 with number of cores to be detectCores().
+## cop_prinstrat     : create tables and figures. 
 cop_prinstrat:
 ifeq ($(TRIAL), moderna_mock)
 	Rscript code/cop_cove_Run.R 57

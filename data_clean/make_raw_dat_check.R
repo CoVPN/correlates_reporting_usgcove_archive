@@ -20,11 +20,12 @@ colnames(dat_proc)[1] <- "Ptid"
 ## missing values in variables that should have no missing values
 ## binary variables only take values 0/1
 variables_with_no_missing <-
-    c("Trt", if(study_name_code=="COVE") "Bserostatus", #"Age", # age is not binary
+    c("Trt", "Bserostatus", #"Age", # age is not binary
       "EthnicityHispanic", "EthnicityNotreported", "EthnicityUnknown",
       "Black", "Asian", "NatAmer", "PacIsl", "Multiracial",
       "Other", "Notreported", "Unknown",
-      "SubcohortInd")
+      "SubcohortInd",
+      if(study_name_code=="ENSEMBLE") c("HIVinfection"))
 failed_variables_missing <- failed_variables_01 <- NULL
 for(variable in variables_with_no_missing){
     pass <- all(!is.na(dat_proc[[variable]]))

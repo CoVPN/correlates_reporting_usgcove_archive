@@ -557,10 +557,9 @@ plot_roc_curves <- function(predict, cvaucDAT, weights) {
 # @param weights the inverse probability weights
 # @return ggplot object containing the predicted probability plots
 plot_predicted_probabilities <- function(pred, weights = rep(1, length(pred$pred))) {
-  normalized_weights <- weights / sum(weights)
   pred %>%
-    mutate(Ychar = ifelse(Y == 0, "Control", "Case"), wt_pred = pred * normalized_weights) %>%
-    ggplot(aes(x = Ychar, y = wt_pred, color = Ychar)) +
+    mutate(Ychar = ifelse(Y == 0, "Control", "Case")) %>% 
+    ggplot(aes(x = Ychar, y = pred, color = Ychar)) +
     geom_jitter(width = 0.015, size = 0.01) +
     geom_violin(alpha = 0.2, color = "black") +
     geom_boxplot(alpha = 0.2, width = 0.025, color = "black", outlier.size = NA, outlier.shape = NA) +

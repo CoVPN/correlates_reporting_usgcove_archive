@@ -76,7 +76,7 @@ dm_num <- ds_long_ttl %>%
                                   subgroup %in% num_v2 ~ "Mean $\\pm$ SD"),
          subgroup=ifelse(subgroup=="Age", "AgeC", subgroup))
 
-char_lev <- c(labels.age[1], labels.age[2], "Mean (Range)","Mean $\\pm$ SD",
+char_lev <- c(labels.age, "Mean (Range)","Mean $\\pm$ SD",
               "Female","Male", "White", "Black or African American",
               "Asian", "American Indian or Alaska Native",
               "Native Hawaiian or Other Pacific Islander", "Multiracial",
@@ -128,110 +128,84 @@ tab_dm_neg <- tab_dm %>%
 print("Done with table 1") 
 
 # Added table: 
-if (study_name_code=="COVE") {
-  demo.ordered <- c("Age >= 65, URM", "Age >= 65, White non-Hisp", "Age < 65, At risk, URM",
-                    "Age < 65, At risk, White non-Hisp", "Age < 65, Not at risk, URM", 
-                    "Age < 65, Not at risk, White non-Hisp")
+
+demo.stratum.ordered <- gsub(">=", "$\\\\geq$", demo.stratum.labels, fixed=T)
+
+if (study_name_code=="COVE"){
+  demo.stratum.ordered <- gsub("URM", "Minority", demo.stratum.ordered)
+  demo.stratum.ordered <- gsub("White non-Hisp", "Non-Minority", demo.stratum.ordered)
+  
 } else if (study_name_code=="ENSEMBLE") {
-  demo.ordered <- demo.stratum.labels
-  }
+  demo.stratum.ordered <- gsub("URM", "Underrepresented minority", demo.stratum.ordered)
+  demo.stratum.ordered <- gsub("At risk", "Presence of comorbidities", demo.stratum.ordered)
+  demo.stratum.ordered <- gsub("Not at risk", "Absence of comorbidities", demo.stratum.ordered)
+}
+
 
 tab_strtm <- ds %>% 
   filter(ph2.immuno) %>% 
-  mutate(demo.stratum.ordered=match(demo.stratum.labels[demo.stratum], demo.ordered)) %>% 
-  group_by(demo.stratum.ordered, wt.subcohort, Arm, `Baseline SARS-CoV-2`) %>% 
+  group_by(demo.stratum, wt.subcohort, Arm, `Baseline SARS-CoV-2`) %>% 
   summarise(Observed=n(), Estimated=round(sum(wt.subcohort), 0)) %>% 
   pivot_longer(cols=c(Observed, Estimated)) %>% 
-  arrange(`Baseline SARS-CoV-2`, demo.stratum.ordered) %>% 
+  arrange(`Baseline SARS-CoV-2`, demo.stratum) %>% 
   pivot_wider(id_cols=c(Arm, name), 
-              names_from = c(`Baseline SARS-CoV-2`, demo.stratum.ordered), 
+              names_from = c(`Baseline SARS-CoV-2`, demo.stratum), 
               values_from=value)
 
-demo.stratum.footnote <- function(x, gap, labels){
-  paste(paste0(x, ". ", gsub(">=", "$\\\\geq$", labels[x], fixed = T)), 
-        collapse = sprintf("\\\\hspace{%spt}", gap))
-}
 
-if (study_name_code=="COVE") {
-  tab_strtm1 <- tab_strtm
-  tab_strtm2 <- NULL
-  
-  colnames(tab_strtm1)=c("Arm", "  ", paste0(1:(ncol(tab_strtm1)/2-1),""), paste0(" ", 1:(ncol(tab_strtm1)/2-1)))
+tab_strtm1 <- tab_strtm %>% select(Arm, name, any_of(paste0("Negative_", 1:8)), any_of(paste0("Positive_", 1:8)))
+tab_strtm2 <- tab_strtm %>% select(Arm, name, any_of(paste0("Negative_", 9:16)), any_of(paste0("Positive_", 9:16)))
+
+if ((n_strtm1 <- ncol(tab_strtm1)/2-1)!=0) {
+  colnames(tab_strtm1) <- c("Arm", "  ", 1:n_strtm1, paste0(" ", 1:n_strtm1))
+  tlf$tab_strtm1$header_above1 <- c(" "=1, "Baseline SARS-CoV-2 Negative" = n_strtm1, 
+                                    "Baseline SARS-CoV-2 Positive" = n_strtm1)
   tab_strtm_header2 <- ncol(tab_strtm1)-1
-  names(tab_strtm_header2) <- sprintf("Random Subcohort Sample Sizes (N=%s Participants) (%s Trial)", 
-                                      sum(ds$ph2.immuno), stringr::str_to_title(data_raw_dir))
-  
-  tlf$tab_strtm1$header_above1 <- c(" "=1, "Baseline SARS-CoV-2 Negative" = ncol(tab_strtm1)/2-1, 
-                                    "Baseline SARS-CoV-2 Positive" = ncol(tab_strtm1)/2-1)
+  names(tab_strtm_header2) <- sprintf("%sRandom Subcohort Sample Sizes (N=%s Participants) (%s Trial)", 
+                                      case_when(study_name_code=="COVE" ~ "", 
+                                                study_name_code=="ENSEMBLE" ~ "U.S. "),
+                                      sum(ds[ds$demo.stratum%in%1:8, ]$ph2.immuno), 
+                                      stringr::str_to_title(data_raw_dir))
   tlf$tab_strtm1$header_above2 <- tab_strtm_header2
   tlf$tab_strtm1$table_footer <- c("Demographic covariate strata:",
-                   "1. Age $\\\\geq$ 65 Minority\\\\hspace{81pt}4. Age < 65 At-risk Non-Minority", 
-                   "2. Age $\\\\geq$ 65 Non-Minority\\\\hspace{60pt}5. Age < 65 Not At-risk Minority",
-                   "3. Age < 65 At-risk Minority\\\\hspace{48pt}6. Age < 65 Not At-risk Non-Minority",
-                   " ",
-                   "Minority includes Blacks or African Americans, Hispanics or Latinos, American Indians or
-                   Alaska Natives, Native Hawaiians, and other Pacific Islanders.",
-                   "Non-Minority includes all other races with observed race (Asian, Multiracial, White, Other) and observed ethnicity Not Hispanic or Latino.
-                   Participants not classifiable as Minority or Non-Minority because of unknown, unreported or missing were not included.",
-                   " ",
-                   "Observed = Numbers of participants sampled into the subcohort within baseline covariate strata.",
-                   "Estimated = Estimated numbers of participants in the whole per-protocol cohort within baseline 
-  covariate strata, calculated using inverse probability weighting.")
-  
-} else if (study_name_code=="ENSEMBLE") {
-  tab_strtm1 <- tab_strtm %>% select(Arm, name, paste0("Negative_", 1:8), paste0("Positive_", 1:8))
-  tab_strtm2 <- tab_strtm %>% select(Arm, name, paste0("Negative_", 9:16), paste0("Positive_", 9:16))
-  
-  colnames(tab_strtm1)=c("Arm", "  ", paste0(1:(ncol(tab_strtm1)/2-1),""), paste0(" ", 1:(ncol(tab_strtm1)/2-1)))
-  colnames(tab_strtm2)=c("Arm", "  ", paste0(1:(ncol(tab_strtm2)/2-1),""), paste0(" ", 1:(ncol(tab_strtm2)/2-1)))
-  
- 
-  tab_strtm_header2 <- ncol(tab_strtm1)-1
-  names(tab_strtm_header2) <- sprintf("U.S. Random Subcohort Sample Sizes (N=%s Participants) (%s Trial)", 
-                                      sum(ds[ds$demo.stratum%in%1:8, ]$ph2.immuno), stringr::str_to_title(data_raw_dir))
-  
-  tlf$tab_strtm1$header_above1 <- c(" "=1, "Baseline SARS-CoV-2 Negative" = ncol(tab_strtm1)/2-1, 
-                                    "Baseline SARS-CoV-2 Positive" = ncol(tab_strtm1)/2-1)
-  tlf$tab_strtm1$header_above2 <- tab_strtm_header2
-  tlf$tab_strtm1$table_footer <- c("Demographic covariate strata:",
-                                   demo.stratum.footnote(1:2, 60, labels=demo.stratum.labels[1:8]),
-                                   demo.stratum.footnote(3:4, 62, labels=demo.stratum.labels[1:8]),
-                                   demo.stratum.footnote(5:6, 15, labels=demo.stratum.labels[1:8]),
-                                   demo.stratum.footnote(7:8, 17, labels=demo.stratum.labels[1:8]),
-                   #                 " ",
-                   #                 "Minority includes Blacks or African Americans, Hispanics or Latinos, American Indians or
-                   # Alaska Natives, Native Hawaiians, and other Pacific Islanders.",
-                   #                 "Non-Minority includes all other races with observed race (Asian, Multiracial, White, Other) and observed ethnicity Not Hispanic or Latino.
-                   # Participants not classifiable as Minority or Non-Minority because of unknown, unreported or missing were not included.",
+                                   paste(1:n_strtm1, 
+                                         demo.stratum.ordered[sort(unique(ds$demo.stratum[ds$demo.stratum <9]))], 
+                                         sep=". "),
                                    " ",
+                                   "Minority includes Blacks or African Americans, Hispanics or Latinos, American Indians or
+                   Alaska Natives, Native Hawaiians, and other Pacific Islanders."[study_name_code=="COVE"],
+                                   "Non-Minority includes all other races with observed race (Asian, Multiracial, White, Other) and observed ethnicity Not Hispanic or Latino.
+                   Participants not classifiable as Minority or Non-Minority because of unknown, unreported or missing were not included."[study_name_code=="COVE"],
+                                   " "[study_name_code=="COVE"],
                                    "Observed = Numbers of participants sampled into the subcohort within baseline covariate strata.",
                                    "Estimated = Estimated numbers of participants in the whole per-protocol cohort within baseline 
   covariate strata, calculated using inverse probability weighting.")
   
+} else {
+  tab_strtm1 <- NULL
+}
+
+if ((n_strtm2 <- ncol(tab_strtm2)/2-1)!=0) {
+  colnames(tab_strtm2) <- c("Arm", "  ", 1:n_strtm2, paste0(" ", 1:n_strtm2))
+  tlf$tab_strtm2$header_above1 <- c(" "=1, "Baseline SARS-CoV-2 Negative" = n_strtm2, 
+                                    "Baseline SARS-CoV-2 Positive" = n_strtm2)
   tab_strtm_header2 <- ncol(tab_strtm2)-1
-  names(tab_strtm_header2) <- sprintf("Latin America and South Africa Random Subcohort Sample Sizes (N=%s Participants) (%s Trial)", 
-                                      sum(ds[ds$demo.stratum%in%9:16,]$ph2.immuno), stringr::str_to_title(data_raw_dir))
-  
-  tlf$tab_strtm2$header_above1 <- c(" "=1, "Baseline SARS-CoV-2 Negative" = ncol(tab_strtm1)/2-1, 
-                                    "Baseline SARS-CoV-2 Positive" = ncol(tab_strtm1)/2-1)
+  names(tab_strtm_header2) <- sprintf("%s Random Subcohort Sample Sizes (N=%s Participants) (%s Trial)", 
+                                      paste(c("Latin America", "South Africa")[sort(unique(ds$Region))], collapse=" and "),
+                                      sum(ds[ds$demo.stratum%in%9:16, ]$ph2.immuno), 
+                                      stringr::str_to_title(data_raw_dir))
   tlf$tab_strtm2$header_above2 <- tab_strtm_header2
   tlf$tab_strtm2$table_footer <- c("Demographic covariate strata:",
-                                   demo.stratum.footnote(1:2, 60, labels=demo.stratum.labels[9:16]),
-                                   demo.stratum.footnote(3:4, 62, labels=demo.stratum.labels[9:16]),
-                                   demo.stratum.footnote(5:6, 67, labels=demo.stratum.labels[9:16]),
-                                   demo.stratum.footnote(7:8, 69, labels=demo.stratum.labels[9:16]),
-                                   #                 " ",
-                                   #                 "Minority includes Blacks or African Americans, Hispanics or Latinos, American Indians or
-                                   # Alaska Natives, Native Hawaiians, and other Pacific Islanders.",
-                                   #                 "Non-Minority includes all other races with observed race (Asian, Multiracial, White, Other) and observed ethnicity Not Hispanic or Latino.
-                                   # Participants not classifiable as Minority or Non-Minority because of unknown, unreported or missing were not included.",
+                                   paste(1:n_strtm2, 
+                                         demo.stratum.ordered[sort(unique(ds$demo.stratum[ds$demo.stratum >8]))], 
+                                         sep=". "),
                                    " ",
                                    "Observed = Numbers of participants sampled into the subcohort within baseline covariate strata.",
                                    "Estimated = Estimated numbers of participants in the whole per-protocol cohort within baseline 
   covariate strata, calculated using inverse probability weighting.")
+} else {
+  tab_strtm2 <- NULL
 }
-
-
 
 ### Table 2. Responder Rates & Proportions of Magnitudes >= 2FR, 4FR
 # For each binding antibody marker, the estimated percentage of participants
@@ -254,7 +228,7 @@ if (study_name_code=="COVE") {
             "AgeSexC", "ethnicityC", "RaceEthC", "MinorityC", "AgeMinorC")
 } else if (study_name_code=="ENSEMBLE") {
   subs <- c("All", "AgeC", "CountryC", "HighRiskC", "AgeRiskC", "AgeRisk1", "AgeRisk2", "SexC",
-            "AgeSexC", "ethnicityC", "RaceEthC", "URMC", "AgeURM")
+            "AgeSexC", "ethnicityC", "RaceEthC", "URMC"[0 %in% ds$Region], "AgeURM"[0 %in% ds$Region])
 }
 
 rpcnt <- get_rr(dat=ds, v=resp.v, subs=subs, sub.by=sub.by, strata="tps.stratum",

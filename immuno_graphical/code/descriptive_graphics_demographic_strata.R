@@ -404,9 +404,15 @@ for (tp in tps[tps %in% times]) {
         )
       )
 
+      if(study_name_code=="ENSEMBLE") {
+        minority.data <- subset(subdat, Country==0)
+      } else {
+        minority.data <- subdat
+      }
+      
       ##  (8) minority status
       covid_corr_boxplot_facets(
-        plot_dat = subset(subdat, Country==0),
+        plot_dat = minority.data,
         x = "minority_label",
         y = tp,
         facet_by = "assay",
@@ -432,7 +438,7 @@ for (tp in tps[tps %in% times]) {
       )
 
       covid_corr_rcdf_facets(
-        plot_dat = subset(subdat, Country==0),
+        plot_dat = minority.data,
         x = tp,
         facet_by = "assay",
         xlim = assay_lim[assay_immuno, tp, ],
@@ -455,7 +461,7 @@ for (tp in tps[tps %in% times]) {
 
       ##  (9) age * minority status
       covid_corr_boxplot_facets(
-        plot_dat = subset(subdat, Country==0),
+        plot_dat = minority.data,
         x = "age_minority_label",
         y = tp,
         facet_by = "assay",
@@ -481,7 +487,7 @@ for (tp in tps[tps %in% times]) {
       )
 
       covid_corr_rcdf_facets(
-        plot_dat = subset(subdat, Country==0),
+        plot_dat = minority.data,
         x = tp,
         facet_by = "assay",
         xlim = assay_lim[assay_immuno, tp, ],

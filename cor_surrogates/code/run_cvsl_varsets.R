@@ -121,8 +121,8 @@ dat.ph2 <- dat.ph2 %>%
   #                                     select(Ptid, Day57bindSpike, Day57bindRBD, Day57pseudoneutid50, Day57pseudoneutid80)),
   #          by = "Ptid") %>%
   mutate(
-    nlPCA1 = PC1,
-    nlPCA2 = PC2,
+    #nlPCA1 = PC1,
+    #nlPCA2 = PC2,
     max.signal.div.score = get.maxSignalDivScore(dat.ph2 %>%
                                                         select(Day57bindSpike, Day57bindRBD, Day57pseudoneutid50, Day57pseudoneutid80)))
 

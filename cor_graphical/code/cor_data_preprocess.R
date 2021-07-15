@@ -255,7 +255,7 @@ if (study_name_code=="COVE") {
   dat.long.cor.subset$age_minority_label <-
     with(
       dat.long.cor.subset,
-      factor(paste0(age.geq.65, URMforsubcohortsampling),
+      factor(paste0(age.geq.65, WhiteNonHispanic),
              levels = c("00", "01", "10", "11"),
              labels = c(
                paste(younger_age, "Comm. of Color"),

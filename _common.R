@@ -444,3 +444,6 @@ report.assay.values=function(x, assay){
     #out[!duplicated(out)] # unique strips away the names. But don't take out duplicates because 15% may be needed and because we may want the same number of values for each assay
 }
 #report.assay.values (dat.vac.seroneg[["Day57pseudoneutid80"]], "pseudoneutid80")
+
+options(bitmapType='cairo') 
+

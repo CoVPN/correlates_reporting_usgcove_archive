@@ -10,30 +10,32 @@ library(tidyverse)
 # Also to modify the headers, footers, etc. for each table
 
 cutoff.name <- case_when(study_name_code=="COVE" ~ "lloq", 
-                         study_name_code=="ENSEMBLE" ~ "llod")
+                         study_name_code=="ENSEMBLE" ~ "lloq")
 
-randomsubcohort <- case_when(study_name_code=="COVE" ~ "The sampling was 
-      stratified by 24 strata defined by enrollment characteristics: Assigned 
+randomsubcohort <- case_when(study_name_code=="COVE" ~ "This table summarizes the 
+      random subcohort, which was randomly sampled from the per-protocol cohort. The 
+      sampling was stratified by 24 strata defined by enrollment characteristics: Assigned 
       treatment arm $\\\\times$ Baseline SARS-CoV-2 naïve vs. non-naïve status 
       (defined by serostatus and NAAT testing) $\\\\times$ Randomization strata 
       (Age < 65 and at-risk, Age < 65 and not at-risk, Age $\\\\geq 65)\\\\times$ 
       Communities of color (Yes/No) defined by White Non-Hispanic vs. all 
       others (following the primary COVE trial paper).",
-      study_name_code=="ENSEMBLE" ~ "The sampling was 
-      stratified by strata defined by enrollment characteristics: Assigned 
-      treatment arm $\\\\times$ Baseline SARS-CoV-2 naïve vs. non-naïve status 
-      (defined by serostatus and NAAT testing) $\\\\times$ Randomization strata.
-      In the U.S. subcohort 8 baseline demographic strata are used; 
-      each of the Latin America and South Africa subcohorts includes 4 baseline 
-      demographic strata.")
+                             
+      study_name_code=="ENSEMBLE" ~ "This table summarizes characteristics of 
+      per-protocol participants in the immunogenicity subcohort, which was randomly 
+      sampled from the study cohort. The sampling was The sampling was stratified by 
+      strata defined by enrollment characteristics: Assigned randomization arm $\\\\times$ 
+      Baseline SARS-CoV-2 seronegative vs. seropositive $\\\\times$ Randomization strata. 
+      The U.S. subcohort includes 8 baseline demographic strata; the Latin America 
+      and South Africa subcohorts each include 4 baseline demographic strata."
+      )
 
 tlf <-
   list(
     tab_dm_neg = list(
       table_header = "Demographic and Clinical Characteristics at Baseline in 
       the Baseline SARS-CoV-2 Negative Per-Protocol Cohort",
-      table_footer = sprintf("This table summarizes the random subcohort, which was 
-      randomly sampled from the per-protocol cohort. %s", randomsubcohort),
+      table_footer = randomsubcohort,
       deselect = "subgroup",
       pack_row = "subgroup",
       col1="7cm"
@@ -42,8 +44,7 @@ tlf <-
     tab_dm_pos = list(
       table_header = "Demographic and Clinical Characteristics at Baseline in 
       the Baseline SARS-CoV-2 Positive Per-Protocol Cohort",
-      table_footer = sprintf("This table summarizes the random subcohort, which was 
-      randomly sampled from the per-protocol cohort. %s", randomsubcohort),
+      table_footer = randomsubcohort,
       deselect = "subgroup",
       pack_row = "subgroup",
       col1="7cm"
@@ -247,7 +248,7 @@ labels.assays.long <- data.frame (purrr::imap_dfc(labels.assays.short, ~ paste0(
 rownames(labels.assays.long) <- names(labels.time)
 
 visits <- names(labels.time)[!grepl("Delta", names(labels.time))]
-assays_col <- levels(interaction(visits, assays, sep=""))
+assays_col <- as.vector(outer(visits, assays, paste0))
 
 labels.assays <- expand.grid(
   time = rownames(labels.assays.long),
@@ -281,4 +282,6 @@ labels_all <- full_join(labels.assays, resp.lb, by = c("time", "marker")) %>%
   mutate(mag_cat = colname, resp_cat = paste0(colname, ind))
 
 save.image(file = here::here("data_clean", "params.Rdata"))
+
+
 

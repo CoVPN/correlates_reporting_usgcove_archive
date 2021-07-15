@@ -63,6 +63,10 @@ llods=sapply(tmp, function(x) unname(x["LLOD"]))
 lloqs=sapply(tmp, function(x) unname(x["LLOQ"]))
 uloqs=sapply(tmp, function(x) unname(x["ULOQ"]))
 
+
+# Per Sarah O'Connell, for ensemble, the positivity cut offs and LLODs will be identical, 
+# as will the quantitative limits for N protein which are based on convalescent samples.
+# But the RBD and Spike quantitation ranges will be different for the Janssen partial validation than for Moderna. 
 if(study_name_code=="ENSEMBLE") {
     uloqs["bindRBD"]=172.5755
     uloqs["bindSpike"]=238.1165 

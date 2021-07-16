@@ -71,6 +71,13 @@ jobs:
         - echo "Building immunogenicity report"
         - make data_processed
         - make immuno_report
+    - name: Janssen Pooled Risk Score Report
+      env:
+        - REPORT_TYPE=RISK
+        - TRIAL=janssen_pooled_mock
+      script:
+        - echo "Building risk score report"
+        - make risk_report
     # - name: Janssen Pooled Correlates Report
     #   env:
     #     - REPORT_TYPE=COR

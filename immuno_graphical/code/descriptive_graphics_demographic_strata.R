@@ -31,22 +31,26 @@ dat.twophase.sample <- readRDS(here("data_clean", "twophase_data.rds"))
 assay_lim <- readRDS(here("data_clean", "assay_lim.rds"))
 ## ============================================================================
 ## boxplots and weighted rcdf plots of assay readouts at time points versus
-##  (1) age >= 65 or age < 65
-##  (2) at risk / not at risk
-##  (3) age * high risk
-##  (4) sex at birth
-##  (5) age * sex at birth
-##  (6) ethnicity
-##  (7) race
-##  (8) minority status
-##  (9) age * minority status
+##  (1)  age >= 65 or age < 65
+##  (2)  at risk / not at risk
+##  (3)  age * high risk
+##  (4)  sex at birth
+##  (5)  age * sex at birth
+##  (6)  ethnicity
+##  (7)  race
+##  (8)  minority status
+##  (9)  age * minority status
+##  (10) HIV positivity
+##  (11) Country
 ## plot for each treatment group by baseline status
 ## ============================================================================
 
 tps <- c("Day29", "Day57", "Delta29overB", "Delta57overB")
 for (tp in tps[tps %in% times]) {
   for (trt in 1:2) {
-    for (bstatus in 1:2) {
+    # Don't produce figures for placebo baseline negative to improve build time
+    if(trt==1) {bstatus.range <- 2} else {bstatus.range <- 1:2}
+    for (bstatus in bstatus.range) {
       subdat <- subset(
         dat.long.twophase.sample,
         Bserostatus == bstatus.labels[bstatus] &
@@ -64,7 +68,7 @@ for (tp in tps[tps %in% times]) {
         POS.CUTOFFS = log10(pos.cutoffs[assay_immuno]),
         LLOQ = log10(lloqs[assay_immuno]),
         ULOQ = log10(uloqs[assay_immuno]),
-        ylim = assay_lim[, tp, ],
+        ylim = assay_lim[assay_immuno, tp, ],
         axis_titles_y = labels.axis[tp, ] %>% unlist(),
         panel_titles = labels.title2[tp, ] %>% unlist(),
         arrange_ncol = 3,
@@ -84,7 +88,7 @@ for (tp in tps[tps %in% times]) {
         plot_dat = subdat,
         x = tp,
         facet_by = "assay",
-        xlim = assay_lim[, tp, ],
+        xlim = assay_lim[assay_immuno, tp, ],
         color = "age_geq_65_label",
         weight = "wt.subcohort",
         panel_titles = labels.title2[tp, ] %>% unlist(),
@@ -108,7 +112,7 @@ for (tp in tps[tps %in% times]) {
         x = "highrisk_label",
         y = tp,
         facet_by = "assay",
-        ylim = assay_lim[, tp, ],
+        ylim = assay_lim[assay_immuno, tp, ],
         plot_LLOD = tp %in% c("B", "Day29", "Day57"),
         LLOD = log10(llods[assay_immuno]),
         POS.CUTOFFS = log10(pos.cutoffs[assay_immuno]),
@@ -133,7 +137,7 @@ for (tp in tps[tps %in% times]) {
         plot_dat = subdat,
         x = tp,
         facet_by = "assay",
-        xlim = assay_lim[, tp, ],
+        xlim = assay_lim[assay_immuno, tp, ],
         color = "highrisk_label",
         weight = "wt.subcohort",
         panel_titles = labels.title2[tp, ] %>% unlist(),
@@ -157,7 +161,7 @@ for (tp in tps[tps %in% times]) {
         x = "age_risk_label",
         y = tp,
         facet_by = "assay",
-        ylim = assay_lim[, tp, ],
+        ylim = assay_lim[assay_immuno, tp, ],
         plot_LLOD = tp %in% c("B", "Day29", "Day57"),
         LLOD = log10(llods[assay_immuno]),
         POS.CUTOFFS = log10(pos.cutoffs[assay_immuno]),
@@ -182,7 +186,7 @@ for (tp in tps[tps %in% times]) {
         plot_dat = subdat,
         x = tp,
         facet_by = "assay",
-        xlim = assay_lim[, tp, ],
+        xlim = assay_lim[assay_immuno, tp, ],
         color = "age_risk_label",
         weight = "wt.subcohort",
         panel_titles = labels.title2[tp, ] %>% unlist(),
@@ -206,7 +210,7 @@ for (tp in tps[tps %in% times]) {
         x = "sex_label",
         y = tp,
         facet_by = "assay",
-        ylim = assay_lim[, tp, ],
+        ylim = assay_lim[assay_immuno, tp, ],
         plot_LLOD = tp %in% c("B", "Day29", "Day57"),
         LLOD = log10(llods[assay_immuno]),
         POS.CUTOFFS = log10(pos.cutoffs[assay_immuno]),
@@ -231,7 +235,7 @@ for (tp in tps[tps %in% times]) {
         plot_dat = subdat,
         x = tp,
         facet_by = "assay",
-        xlim = assay_lim[, tp, ],
+        xlim = assay_lim[assay_immuno, tp, ],
         color = "sex_label",
         weight = "wt.subcohort",
         panel_titles = labels.title2[tp, ] %>% unlist(),
@@ -255,7 +259,7 @@ for (tp in tps[tps %in% times]) {
         x = "age_sex_label",
         y = tp,
         facet_by = "assay",
-        ylim = assay_lim[, tp, ],
+        ylim = assay_lim[assay_immuno, tp, ],
         plot_LLOD = tp %in% c("B", "Day29", "Day57"),
         LLOD = log10(llods[assay_immuno]),
         POS.CUTOFFS = log10(pos.cutoffs[assay_immuno]),
@@ -280,7 +284,7 @@ for (tp in tps[tps %in% times]) {
         plot_dat = subdat,
         x = tp,
         facet_by = "assay",
-        xlim = assay_lim[, tp, ],
+        xlim = assay_lim[assay_immuno, tp, ],
         color = "age_sex_label",
         weight = "wt.subcohort",
         panel_titles = labels.title2[tp, ] %>% unlist(),
@@ -304,7 +308,7 @@ for (tp in tps[tps %in% times]) {
         x = "ethnicity_label",
         y = tp,
         facet_by = "assay",
-        ylim = assay_lim[, tp, ],
+        ylim = assay_lim[assay_immuno, tp, ],
         plot_LLOD = tp %in% c("B", "Day29", "Day57"),
         LLOD = log10(llods[assay_immuno]),
         POS.CUTOFFS = log10(pos.cutoffs[assay_immuno]),
@@ -329,7 +333,7 @@ for (tp in tps[tps %in% times]) {
         plot_dat = subdat,
         x = tp,
         facet_by = "assay",
-        xlim = assay_lim[, tp, ],
+        xlim = assay_lim[assay_immuno, tp, ],
         color = "ethnicity_label",
         weight = "wt.subcohort",
         panel_titles = labels.title2[tp, ] %>% unlist(),
@@ -355,7 +359,7 @@ for (tp in tps[tps %in% times]) {
         x = "race",
         y = tp,
         facet_by = "assay",
-        ylim = assay_lim[, tp, ],
+        ylim = assay_lim[assay_immuno, tp, ],
         plot_LLOD = tp %in% c("B", "Day29", "Day57"),
         LLOD = log10(llods[assay_immuno]),
         POS.CUTOFFS = log10(pos.cutoffs[assay_immuno]),
@@ -382,7 +386,7 @@ for (tp in tps[tps %in% times]) {
             WhiteNonHispanic == 0)),
         x = tp,
         facet_by = "assay",
-        xlim = assay_lim[, tp, ],
+        xlim = assay_lim[assay_immuno, tp, ],
         color = "race",
         weight = "wt.subcohort",
         panel_titles = labels.title2[tp, ] %>% unlist(),
@@ -400,13 +404,19 @@ for (tp in tps[tps %in% times]) {
         )
       )
 
+      if(study_name_code=="ENSEMBLE") {
+        minority.data <- subset(subdat, Country==0)
+      } else {
+        minority.data <- subdat
+      }
+      
       ##  (8) minority status
       covid_corr_boxplot_facets(
-        plot_dat = subdat,
+        plot_dat = minority.data,
         x = "minority_label",
         y = tp,
         facet_by = "assay",
-        ylim = assay_lim[, tp, ],
+        ylim = assay_lim[assay_immuno, tp, ],
         plot_LLOD = tp %in% c("B", "Day29", "Day57"),
         LLOD = log10(llods[assay_immuno]),
         POS.CUTOFFS = log10(pos.cutoffs[assay_immuno]),
@@ -428,10 +438,10 @@ for (tp in tps[tps %in% times]) {
       )
 
       covid_corr_rcdf_facets(
-        plot_dat = subdat,
+        plot_dat = minority.data,
         x = tp,
         facet_by = "assay",
-        xlim = assay_lim[, tp, ],
+        xlim = assay_lim[assay_immuno, tp, ],
         color = "minority_label",
         weight = "wt.subcohort",
         panel_titles = labels.title2[tp, ] %>% unlist(),
@@ -451,11 +461,11 @@ for (tp in tps[tps %in% times]) {
 
       ##  (9) age * minority status
       covid_corr_boxplot_facets(
-        plot_dat = subdat,
+        plot_dat = minority.data,
         x = "age_minority_label",
         y = tp,
         facet_by = "assay",
-        ylim = assay_lim[, tp, ],
+        ylim = assay_lim[assay_immuno, tp, ],
         plot_LLOD = tp %in% c("B", "Day29", "Day57"),
         LLOD = log10(llods[assay_immuno]),
         POS.CUTOFFS = log10(pos.cutoffs[assay_immuno]),
@@ -477,10 +487,10 @@ for (tp in tps[tps %in% times]) {
       )
 
       covid_corr_rcdf_facets(
-        plot_dat = subdat,
+        plot_dat = minority.data,
         x = tp,
         facet_by = "assay",
-        xlim = assay_lim[, tp, ],
+        xlim = assay_lim[assay_immuno, tp, ],
         color = "age_minority_label",
         weight = "wt.subcohort",
         panel_titles = labels.title2[tp, ] %>% unlist(),
@@ -497,6 +507,109 @@ for (tp in tps[tps %in% times]) {
           study_name, ".png"
         )
       )
+      
+      if(study_name_code=="ENSEMBLE") {
+        
+        ##  (10) country
+        covid_corr_boxplot_facets(
+          plot_dat = subdat,
+          x = "country_label",
+          y = tp,
+          facet_by = "assay",
+          ylim = assay_lim[assay_immuno, tp, ],
+          plot_LLOD = tp %in% c("B", "Day29", "Day57"),
+          LLOD = log10(llods[assay_immuno]),
+          POS.CUTOFFS = log10(pos.cutoffs[assay_immuno]),
+          LLOQ = log10(lloqs[assay_immuno]),
+          ULOQ = log10(uloqs[assay_immuno]),
+          axis_titles_y = labels.axis[tp, ] %>% unlist(),
+          panel_titles = labels.title2[tp, ] %>% unlist(),
+          arrange_nrow = ceiling(length(assay_immuno) / 3),
+          arrange_ncol = 3,
+          filename = paste0(
+            save.results.to,
+            "/demographics/boxplots_",
+            tp, "_",
+            bstatus.labels.2[bstatus],
+            "_trt_", trt.labels[trt],
+            "_by_country_",
+            study_name, ".png"
+          )
+        )
+        
+        covid_corr_rcdf_facets(
+          plot_dat = subdat,
+          x = tp,
+          facet_by = "assay",
+          xlim = assay_lim[assay_immuno, tp, ],
+          color = "country_label",
+          weight = "wt.subcohort",
+          panel_titles = labels.title2[tp, ] %>% unlist(),
+          axis_titles = labels.axis[tp, ] %>% unlist(),
+          arrange_nrow = ceiling(length(assay_immuno) / 3),
+          arrange_ncol = 3,
+          filename = paste0(
+            save.results.to,
+            "/demographics/Marker_Rcdf_",
+            tp, "_trt_",
+            c("placebo_", "vaccine_")[trt],
+            bstatus.labels.2[bstatus],
+            "_by_country_",
+            study_name, ".png"
+          )
+        )
+        
+        ##  (10) HIV positivity
+        covid_corr_boxplot_facets(
+          plot_dat = subdat,
+          x = "hiv_label",
+          y = tp,
+          facet_by = "assay",
+          ylim = assay_lim[assay_immuno, tp, ],
+          plot_LLOD = tp %in% c("B", "Day29", "Day57"),
+          LLOD = log10(llods[assay_immuno]),
+          POS.CUTOFFS = log10(pos.cutoffs[assay_immuno]),
+          LLOQ = log10(lloqs[assay_immuno]),
+          ULOQ = log10(uloqs[assay_immuno]),
+          axis_titles_y = labels.axis[tp, ] %>% unlist(),
+          panel_titles = labels.title2[tp, ] %>% unlist(),
+          arrange_nrow = ceiling(length(assay_immuno) / 3),
+          arrange_ncol = 3,
+          filename = paste0(
+            save.results.to,
+            "/demographics/boxplots_",
+            tp, "_",
+            bstatus.labels.2[bstatus],
+            "_trt_", trt.labels[trt],
+            "_by_hiv_group_",
+            study_name, ".png"
+          )
+        )
+        
+        covid_corr_rcdf_facets(
+          plot_dat = subdat,
+          x = tp,
+          facet_by = "assay",
+          xlim = assay_lim[assay_immuno, tp, ],
+          color = "hiv_label",
+          weight = "wt.subcohort",
+          panel_titles = labels.title2[tp, ] %>% unlist(),
+          axis_titles = labels.axis[tp, ] %>% unlist(),
+          arrange_nrow = ceiling(length(assay_immuno) / 3),
+          arrange_ncol = 3,
+          filename = paste0(
+            save.results.to,
+            "/demographics/Marker_Rcdf_",
+            tp, "_trt_",
+            c("placebo_", "vaccine_")[trt],
+            bstatus.labels.2[bstatus],
+            "_by_hiv_group_",
+            study_name, ".png"
+          )
+        )
+        
+      }
+      
       print(paste0("Done with loop of ", tp, ", trt=",
                    trt," and bstatus=", bstatus))
     }

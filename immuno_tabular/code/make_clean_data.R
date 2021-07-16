@@ -19,6 +19,7 @@ options(dplyr.summarise.inform = FALSE)
 dat <- read.csv(here::here("..", "data_clean", data_name))
 
 # The stratified random cohort for immunogenicity
+
 ds_s <- dat %>%
   dplyr::filter(ph1.immuno) %>%
   mutate(
@@ -37,57 +38,72 @@ ds_s <- dat %>%
       WhiteNonHispanic == 1 ~ "White Non-Hispanic"
     ),
     HighRiskC = ifelse(HighRiskInd == 1, "At-risk", "Not at-risk"),
-    Age65C = ifelse(age.geq.65 == 1, "Age $\\geq$ 65", "Age $<$ 65"),
+    AgeC = ifelse(Senior == 1, labels.age[2], labels.age[1]),
     SexC = ifelse(Sex == 1, "Female", "Male"),
-    AgeRiskC = paste(Age65C, HighRiskC),
-    AgeSexC = paste(Age65C, SexC),
-    AgeMinorC = ifelse(is.na(MinorityC), NA, paste(Age65C, MinorityC)),
+    AgeRiskC = paste(AgeC, HighRiskC),
+    AgeSexC = paste(AgeC, SexC),
+    AgeMinorC = ifelse(is.na(MinorityC), NA, paste(AgeC, MinorityC)),
     `Baseline SARS-CoV-2` = factor(ifelse(Bserostatus == 1, "Positive", "Negative"),
                       levels = c("Negative", "Positive")
     ),
     Arm = factor(ifelse(Trt == 1, "Vaccine", "Placebo"), 
                 levels = c("Vaccine", "Placebo")),
-    AgeRisk1 = ifelse(Age65C=="Age $<$ 65", AgeRiskC, NA),
-    AgeRisk2 = ifelse(Age65C=="Age $\\geq$ 65", AgeRiskC, NA),
+    AgeRisk1 = ifelse(AgeC==labels.age[1], AgeRiskC, NA),
+    AgeRisk2 = ifelse(AgeC==labels.age[2], AgeRiskC, NA),
     All = "All participants"
   ) 
 
+if(study_name_code=="ENSEMBLE"){
+  ds_s <- ds_s %>% 
+    mutate(CountryC=labels.countries.ENSEMBLE[Country+1],
+           RegionC=labels.regions.ENSEMBLE[Region+1],
+           URMC=case_when(URMforsubcohortsampling == 1 ~ "URM",
+                          URMforsubcohortsampling == 0 ~ "Non-URM"),
+           AgeURM=paste(AgeC, URMC))
+}
+
 # Step2: Responders, % >=2FR, % >=4FR, % >=2lloq, % >=4lloq
 # Post baseline visits
-ds <- getResponder(ds_s, cutoff.name="lloq", times=grep("Day", times, value=T), 
+ds <- getResponder(ds_s, cutoff.name=cutoff.name, times=grep("Day", times, value=T), 
                    assays=assays, pos.cutoffs=pos.cutoffs)
 
 subgrp <- c(
   All = "All participants", 
-  Age65C = "Age",
+  AgeC = "Age",
   BMI="BMI",
   HighRiskC = "Risk for Severe Covid-19",
   AgeRiskC = "Age, Risk for Severe Covid-19",
-  AgeRisk1 = "Age < 65, Risk for Severe Covid-19",
-  AgeRisk2 = "Age >= 65, Risk for Severe Covid-19",
+  AgeRisk1 = paste0(labels.age[1], ", Risk for Severe Covid-19"),
+  AgeRisk2 = paste0(labels.age[2], ", Risk for Severe Covid-19"),
   SexC = "Sex", 
   AgeSexC = "Age, sex",
   ethnicityC = "Hispanic or Latino ethnicity", 
   RaceEthC = "Race",
   MinorityC = "Communities of color",
-  AgeMinorC = "Age, Communities of color"
+  AgeMinorC = "Age, Communities of color",
+  URMC = "Underrepresented Minority Status in the U.S.",
+  AgeURM = "Age, Underrepresented Minority Status in the U.S.",
+  CountryC = "Country"
 )
 
-grplev <- c("", "Age $<$ 65",  "Age $\\geq$ 65", "At-risk", "Not at-risk", 
-            "Age $<$ 65 At-risk", "Age $<$ 65 Not at-risk", 
-            "Age $\\geq$ 65 At-risk", "Age $\\geq$ 65 Not at-risk", "Male", "Female", 
-            "Age $<$ 65 Female", "Age $<$ 65 Male", 
-            "Age $\\geq$ 65 Male", "Age $\\geq$ 65 Female", 
+grplev <- c("", labels.age, "At-risk", "Not at-risk", 
+            paste(labels.age[1], c("At-risk", "Not at-risk")),
+            paste(labels.age[2], c("At-risk", "Not at-risk")),
+            "Male", "Female", 
+            paste(labels.age[1], c("Female", "Male")),
+            paste(labels.age[2], c("Female", "Male")),
             "Hispanic or Latino", "Not Hispanic or Latino", "Not reported and unknown ", 
             "White Non-Hispanic ", "Black or African American", "Asian", 
             "American Indian or Alaska Native", 
             "Native Hawaiian or Other Pacific Islander", 
             "Multiracial", "Other", "Not reported and unknown",  
-            "Communities of Color", "White Non-Hispanic",
-            "Age $<$ 65 Communities of Color", "Age $<$ 65 White Non-Hispanic",  
-            "Age $\\geq$ 65 Communities of Color", "Age $\\geq$ 65 White Non-Hispanic")
+            labels.minor, 
+            paste(labels.age[1], labels.minor),  
+            paste(labels.age[2], labels.minor),
+            labels.countries.ENSEMBLE)
+
 names(grplev) <- c("All participants", grplev[-1])
 
-save(ds, assays, assays_col, labels_all, subgrp, grplev, tlf, 
+save(ds, assays, assays_col, labels_all, subgrp, grplev, tlf,
      file = here::here("data_clean", "ds_all.Rdata"))
 

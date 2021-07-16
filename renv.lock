@@ -1,6 +1,6 @@
 {
   "R": {
-    "Version": "4.0.4",
+    "Version": "4.1.0",
     "Repositories": [
       {
         "Name": "CRAN",
@@ -36,13 +36,6 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "56b33b77f4cffd78ff96b8e5a69eabb0"
-    },
-    "FSDAM": {
-      "Package": "FSDAM",
-      "Version": "2020.11-18",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "fcb7e1f60e7fa862820a43b974ec57eb"
     },
     "Formula": {
       "Package": "Formula",
@@ -689,13 +682,6 @@
       "Repository": "CRAN",
       "Hash": "77bd60a6157420d4ffa93b27cf6a58b8"
     },
-    "findpython": {
-      "Package": "findpython",
-      "Version": "1.0.7",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "73cb09f8220dfed388bd89d180f0b922"
-    },
     "forcats": {
       "Package": "forcats",
       "Version": "0.5.1",
@@ -908,10 +894,10 @@
     },
     "gtools": {
       "Package": "gtools",
-      "Version": "3.8.2",
+      "Version": "3.9.2",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "0a749b4458d19a54acae93c64e3e7c85"
+      "Hash": "2ace6c4a06297d0b364e0444384a2b82"
     },
     "hal9001": {
       "Package": "hal9001",
@@ -1240,13 +1226,6 @@
       "Repository": "CRAN",
       "Hash": "c318d148056e5bb8d7de79b0876f9ae6"
     },
-    "mdw": {
-      "Package": "mdw",
-      "Version": "2020.6-17",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "90e095eb7e76f8388d2142f523cc297f"
-    },
     "memoise": {
       "Package": "memoise",
       "Version": "2.0.0",
@@ -1354,8 +1333,8 @@
       "RemoteRepo": "natmed2",
       "RemoteUsername": "benkeser",
       "RemoteRef": "HEAD",
-      "RemoteSha": "28fc89ed504a111b0f21ea184bd1500cfdfeadb8",
-      "Hash": "cfc787d0e0021294aa7e6d6a8fc8aff8"
+      "RemoteSha": "158509db7e25e9b43b37f346fba29ad9df4d4ad3",
+      "Hash": "c6efffe9591b4db85d7ef315f8de3aa9"
     },
     "nleqslv": {
       "Package": "nleqslv",
@@ -1713,13 +1692,6 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "bb5996d0bd962d214a11140d77589917"
-    },
-    "reticulate": {
-      "Package": "reticulate",
-      "Version": "1.20",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "30ab0ea8c8d3dd16a3fa06903449bbfb"
     },
     "rex": {
       "Package": "rex",

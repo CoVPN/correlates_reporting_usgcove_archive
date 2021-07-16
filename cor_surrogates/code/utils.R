@@ -242,7 +242,7 @@ run_cv_sl_once <- function(seed = 1, Y = NULL, X_mat = NULL,
     SL.library = sl_lib,
     method = method, cvControl = cvControl,
     innerCvControl = innerCvControl,
-    verbose = TRUE
+    verbose = FALSE
   )
 
   aucs <- get_all_aucs(sl_fit = fit, scale = scale, weights = all_weights,
@@ -332,9 +332,10 @@ get.nonlinearPCA.scores <- function(dat){
   # reticulate::py_config() # Check if pythonhome is "C:/Users/bborate/Anaconda3" ! If not, then .rs.restartR() !
   # .rs.restartR()
   # Sys.setenv(RETICULATE_PYTHON = "C:\\Users\\bborate\\Anaconda3")
-  library(reticulate)
-  library(FSDAM)
-  fit=fsdam(dat.scaled, opt_numCode = 2)
+  reticulate::use_python(Sys.getenv("PY_VERSION"))
+  #library(reticulate)
+  #library(FSDAM)
+  fit=FSDAM::fsdam(dat.scaled, opt_numCode = 2)
   nlPCA1 <- kyotil::INT(fit$code[,1]) # the first component
   nlPCA2 <- kyotil::INT(fit$code[,2])
 
@@ -556,10 +557,9 @@ plot_roc_curves <- function(predict, cvaucDAT, weights) {
 # @param weights the inverse probability weights
 # @return ggplot object containing the predicted probability plots
 plot_predicted_probabilities <- function(pred, weights = rep(1, length(pred$pred))) {
-  normalized_weights <- weights / sum(weights)
   pred %>%
-    mutate(Ychar = ifelse(Y == 0, "Control", "Case"), wt_pred = pred * normalized_weights) %>%
-    ggplot(aes(x = Ychar, y = wt_pred, color = Ychar)) +
+    mutate(Ychar = ifelse(Y == 0, "Control", "Case")) %>% 
+    ggplot(aes(x = Ychar, y = pred, color = Ychar)) +
     geom_jitter(width = 0.015, size = 0.01) +
     geom_violin(alpha = 0.2, color = "black") +
     geom_boxplot(alpha = 0.2, width = 0.025, color = "black", outlier.size = NA, outlier.shape = NA) +

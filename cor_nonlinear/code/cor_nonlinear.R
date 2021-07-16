@@ -1,4 +1,4 @@
-#Sys.setenv(TRIAL = "janssen_la_mock")
+#Sys.setenv(TRIAL = "moderna_mock")
 if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
 #----------------------------------------------- 
 # obligatory to append to the top of each script
@@ -29,7 +29,7 @@ source(here::here("code", "params.R"))
     
 # population is either 57 or 29
 Args <- commandArgs(trailingOnly=TRUE)
-if (length(Args)==0) Args=c(pop="29")
+if (length(Args)==0) Args=c(pop="57")
 pop=Args[1]; myprint(pop)
     
 if(!has29 & pop=="29") {
@@ -121,7 +121,7 @@ tmp=paste0(here::here(".."), "/cor_coxph/output/D", pop,"/", "marginalized.risk.
 if (file.exists(tmp)) load(tmp)
 # if this does not exist, the code will throw error
 
-# load ylims.cor[[1]], which is a list of two: 1 with placebo lines, 2 without placebo lines.
+# load ylims.cor, which is a list of two: 1 with placebo lines, 2 without placebo lines.
 tmp=paste0(here::here(".."), "/cor_coxph/output/D", pop,"/", "ylims.cor."%.%study_name%.%".Rdata")
 if (file.exists(tmp)) load(tmp)
 # if this does not exist, the code will find alternative ylim

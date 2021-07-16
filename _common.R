@@ -64,6 +64,17 @@ lloqs=sapply(tmp, function(x) unname(x["LLOQ"]))
 uloqs=sapply(tmp, function(x) unname(x["ULOQ"]))
 
 
+# Per Sarah O'Connell, for ensemble, the positivity cut offs and LLODs will be identical, 
+# as will the quantitative limits for N protein which are based on convalescent samples.
+# But the RBD and Spike quantitation ranges will be different for the Janssen partial validation than for Moderna. 
+if(study_name_code=="ENSEMBLE") {
+    uloqs["bindRBD"]=172.5755
+    uloqs["bindSpike"]=238.1165 
+    lloqs["bindRBD"]=5.0243 
+    lloqs["bindSpike"]=1.8429 
+}
+
+
 must_have_assays <- c(
   "bindSpike", "bindRBD"
   # NOTE: the live neutralization marker will eventually be available
@@ -91,8 +102,7 @@ labels.race <- c(
   "White", 
   "Black or African American",
   "Asian", 
-  "American Indian or Alaska Native",
-  if (study_name_code=="ENSEMBLE") "Indigenous South American",
+  if (study_name_code=="ENSEMBLE" & startsWith(attr(config, "config"),"janssen_la")) "Indigenous South American" else "American Indian or Alaska Native",
   "Native Hawaiian or Other Pacific Islander", 
   "Multiracial",
   if (study_name_code=="COVE") "Other", 
@@ -377,7 +387,7 @@ get.ptids.by.stratum.for.bootstrap = function(data) {
     )    
     # add a pseudo-stratum for subjects with NA in tps.stratum (not part of Subcohort). 
     # we need this group because it contains some cases with missing tps.stratum
-    # if data is ph1 only, then this group is only cases because ph1 = subcohort + cases
+    # if data is ph2 only, then this group is only cases because ph2 = subcohort + cases
     tmp=list(subcohort=subset(data, is.na(tps.stratum), Ptid, drop=TRUE),               nonsubcohort=NULL)
     ptids.by.stratum=append(ptids.by.stratum, list(tmp))    
     ptids.by.stratum
@@ -434,3 +444,6 @@ report.assay.values=function(x, assay){
     #out[!duplicated(out)] # unique strips away the names. But don't take out duplicates because 15% may be needed and because we may want the same number of values for each assay
 }
 #report.assay.values (dat.vac.seroneg[["Day57pseudoneutid80"]], "pseudoneutid80")
+
+options(bitmapType='cairo') 
+

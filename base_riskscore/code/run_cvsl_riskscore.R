@@ -29,6 +29,7 @@ library(mice)
 # the demo version is simpler and runs faster!
 # the production version runs SL with a diverse set of learners
 run_prod <- !grepl("Mock", study_name)
+run_prod <- TRUE
 
 # get utility files
 source(here("code", "sl_screens.R")) # set up the screen/algorithm combinations
@@ -36,8 +37,7 @@ source(here("code", "utils.R")) # get CV-AUC for all algs
 
 ############ SETUP INPUT #######################
 # Read in data file
-dat_cleaned <- read.csv(here::here("..", "data_clean", data_name))
-inputFile <- dat_cleaned
+inputFile <- read.csv(here::here("..", "data_clean", data_name))
 
 # Identify the risk demographic variable names that will be used to compute the risk score
 # Identify the endpoint variable
@@ -55,8 +55,9 @@ if(study_name_code == "MODERNA"){
 
 if(study_name_code == "ENSEMBLE"){
   risk_vars <- c(
-    "EthnicityHispanic", 
-    "Black", "URMforsubcohortsampling", "HighRiskInd", "Sex", "Age", "BMI", "Country",
+    "EthnicityHispanic","EthnicityNotreported", "EthnicityUnknown",
+    "Black", "Asian", "NatAmer", "PacIsl", "Multiracial", "Notreported", "Unknown",
+    "URMforsubcohortsampling", "HighRiskInd", "Sex", "Age", "BMI", "Country", "Region",
     "HIVinfection", "CalendarDateEnrollment"
   )
   
@@ -72,6 +73,7 @@ dat.ph1 <- inputFile %>%
   select(Ptid, Trt, all_of(endpoint), all_of(risk_vars)) %>%
   # Drop any observation with NA values in Ptid, Trt, or endpoint!
   drop_na(Ptid, Trt, all_of(endpoint))
+
 
 # Derive maxVar: the maximum number of variables that will be allowed by SL screens in the models.
 np <- sum(dat.ph1 %>% select(matches(endpoint)))
@@ -130,9 +132,9 @@ if (np <= 30) {
 
 ## solve cores issue
 library(RhpcBLASctl)
-blas_get_num_procs()
+#blas_get_num_procs()
 blas_set_num_threads(1)
-print(blas_get_num_procs())
+#print(blas_get_num_procs())
 stopifnot(blas_get_num_procs() == 1)
 
 

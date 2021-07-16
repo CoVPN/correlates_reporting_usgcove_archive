@@ -18,9 +18,7 @@ library(dplyr)
 
 myprint(study_name_code)
 
-dat_proc <- read.csv(here(
-  "data_raw", data_raw_dir, data_in_file
-))
+dat_proc <- read.csv(here("data_raw", data_raw_dir, data_in_file))
 
 
 if(study_name=="MockENSEMBLE") dat_proc=dat_proc[, !contain(names(dat_proc), "pseudoneutid")]

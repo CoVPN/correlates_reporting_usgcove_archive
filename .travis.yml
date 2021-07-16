@@ -47,15 +47,15 @@ jobs:
         - make data_processed
         - make risk_report
         - make cor_report
-    - name: Moderna CoP Report
-      env:
-        - REPORT_TYPE=COP
-        - TRIAL=moderna_mock
-      script:
-        - echo "Building correlates of protection report"
-        - make data_processed
-        - make risk_report
-        - make cop_report
+    # - name: Moderna CoP Report
+    #   env:
+    #     - REPORT_TYPE=COP
+    #     - TRIAL=moderna_mock
+    #   script:
+    #     - echo "Building correlates of protection report"
+    #     - make data_processed
+    #     - make risk_report
+    #     - make cop_report
     - name: Janssen Data Processing
       env:
         - REPORT_TYPE=IMMUNO
@@ -63,14 +63,14 @@ jobs:
       script:
         - echo "Processing data"
         - make data_processed
-    # - name: Janssen Pooled Immuno Report
-    #   env:
-    #     - REPORT_TYPE=IMMUNO
-    #     - TRIAL=janssen_pooled_mock
-    #   script:
-    #     - echo "Building immunogenicity report"
-    #     - make data_processed
-    #     - make immuno_report
+    - name: Janssen Pooled Immuno Report
+      env:
+        - REPORT_TYPE=IMMUNO
+        - TRIAL=janssen_pooled_mock
+      script:
+        - echo "Building immunogenicity report"
+        - make data_processed
+        - make immuno_report
     # - name: Janssen Pooled Correlates Report
     #   env:
     #     - REPORT_TYPE=COR

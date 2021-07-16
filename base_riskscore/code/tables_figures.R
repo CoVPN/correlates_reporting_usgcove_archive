@@ -28,7 +28,8 @@ load(file = here("output", "cvsl_risk_placebo_cvaucs.rda"))
 
 ######## Table of demographic variables used to derive the risk score ##########
 dat <- read.csv(here::here("..", "data_clean", data_name)) %>%
-  select(all_of(risk_vars))
+  filter(Perprotocol == 1 & Trt == 0 & Bserostatus == 0) %>%
+  select(all_of(risk_vars)) 
 
 dat %>%
   map(~ sum(is.na(.))) %>%

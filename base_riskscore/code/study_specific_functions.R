@@ -2,7 +2,7 @@
 # @param dataframe containing Variable Name of input variable used in risk score analysis
 # @return dataframe with two new columns: Definition and Comments
 get_defs_comments_riskVars <- function(dat){
-  if(study_name_code == "MODERNA"){
+  if(study_name_code == "COVE"){
     dat %>%
       mutate(Definition = case_when(
         `Variable Name` == "Age" ~ "Age at enrollment in years, between 18 and 85",

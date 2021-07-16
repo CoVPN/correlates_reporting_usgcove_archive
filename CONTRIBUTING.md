@@ -188,6 +188,10 @@ follows.
 export TRIAL=moderna_mock
 ```
 
+```tcsh
+setenv TRIAL moderna_mock
+```
+
 On Windows, replace export with set in command line prompt. This can also be achieved in an interactive `R` session as follows.
 
 ```r

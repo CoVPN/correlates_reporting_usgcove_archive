@@ -36,20 +36,33 @@ source(here("code", "utils.R")) # get CV-AUC for all algs
 
 ############ SETUP INPUT #######################
 # Read in data file
-dat_cleaned <- read.csv(here::here("..", "data_clean", data_name))
-inputFile <- dat_cleaned
+inputFile <- read.csv(here::here("..", "data_clean", data_name))
 
 # Identify the risk demographic variable names that will be used to compute the risk score
-risk_vars <- c(
-  "MinorityInd", "EthnicityHispanic", "EthnicityNotreported", "EthnicityUnknown", 
-  "Black", "Asian", "NatAmer", "PacIsl", "WhiteNonHispanic", 
-  "Multiracial", "Other", 
-  "Notreported", "Unknown",
-  "HighRiskInd", "Sex", "Age", "BMI"
-)
-
 # Identify the endpoint variable
-endpoint <- "EventIndPrimaryD57"
+if(study_name_code == "MODERNA"){
+  risk_vars <- c(
+    "MinorityInd", "EthnicityHispanic", "EthnicityNotreported", "EthnicityUnknown", 
+    "Black", "Asian", "NatAmer", "PacIsl", "WhiteNonHispanic", 
+    "Multiracial", "Other", 
+    "Notreported", "Unknown",
+    "HighRiskInd", "Sex", "Age", "BMI"
+  )
+  
+  endpoint <- "EventIndPrimaryD57"
+}
+
+if(study_name_code == "ENSEMBLE"){
+  risk_vars <- c(
+    "EthnicityHispanic","EthnicityNotreported", "EthnicityUnknown",
+    "Black", "Asian", "NatAmer", "PacIsl", "Multiracial", "Notreported", "Unknown",
+    "URMforsubcohortsampling", "HighRiskInd", "Sex", "Age", "BMI", "Country", "Region",
+    "HIVinfection", "CalendarDateEnrollment"
+  )
+  
+  endpoint <- "EventIndPrimaryD29"
+}
+
 ################################################
 
 # Consider only placebo data for risk score analysis
@@ -59,6 +72,7 @@ dat.ph1 <- inputFile %>%
   select(Ptid, Trt, all_of(endpoint), all_of(risk_vars)) %>%
   # Drop any observation with NA values in Ptid, Trt, or endpoint!
   drop_na(Ptid, Trt, all_of(endpoint))
+
 
 # Derive maxVar: the maximum number of variables that will be allowed by SL screens in the models.
 np <- sum(dat.ph1 %>% select(matches(endpoint)))
@@ -91,6 +105,9 @@ risk_placebo_ptids <- dat.ph1 %>% select(Ptid, all_of(endpoint))
 print("Make sure data is clean before conducting imputations!")
 X_covars2adjust <- impute_missing_values(X_covars2adjust, risk_vars)
 
+# # Check for missing values before and after imputation
+# sapply(X_covars2adjust, function(x) sum(is.na(x)))
+
 # Scale X_covars2adjust to have mean 0, sd 1 for all vars
 for (a in colnames(X_covars2adjust)) {
   X_covars2adjust[[a]] <- scale(X_covars2adjust[[a]],
@@ -114,9 +131,9 @@ if (np <= 30) {
 
 ## solve cores issue
 library(RhpcBLASctl)
-blas_get_num_procs()
+#blas_get_num_procs()
 blas_set_num_threads(1)
-print(blas_get_num_procs())
+#print(blas_get_num_procs())
 stopifnot(blas_get_num_procs() == 1)
 
 

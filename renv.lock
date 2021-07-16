@@ -682,13 +682,6 @@
       "Repository": "CRAN",
       "Hash": "77bd60a6157420d4ffa93b27cf6a58b8"
     },
-    "findpython": {
-      "Package": "findpython",
-      "Version": "1.0.7",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "73cb09f8220dfed388bd89d180f0b922"
-    },
     "forcats": {
       "Package": "forcats",
       "Version": "0.5.1",

@@ -1,59 +1,57 @@
 ## all           : clean saved results and get results to populate report
-all: clean run_cvsl_varsets_d29 createRDAfiles_fromSLobjects_d29 tables_figures_d29 \
-	run_cvsl_varsets_d57 createRDAfiles_fromSLobjects_d57 tables_figures_d57 \
-	run_cvsl_varsets_Both createRDAfiles_fromSLobjects_Both tables_figures_Both 
+all: clean run_cvsl_varsets createRDAfiles_fromSLobjects tables_figures 
 
 ## clean         : delete all SL results
 clean:
 	rm -f output/*
 	rm -f figs/*
 
-######################################################################
-## DAY 29 MARKERS ANALYSES
-run_cvsl_varsets_d29:
-	for number in 1 2 3 4 5 6 7 8 9 10; do \
-	Rscript code/run_cvsl_varsets.R $$number Day29; \
-	done
+
+run_cvsl_varsets: 
+	Rscript code/run_cvsl_varsets.R 1 && \
+	Rscript code/run_cvsl_varsets.R 2 && \
+	Rscript code/run_cvsl_varsets.R 3 && \
+	Rscript code/run_cvsl_varsets.R 4 && \
+	Rscript code/run_cvsl_varsets.R 5 && \
+	Rscript code/run_cvsl_varsets.R 6 && \
+	Rscript code/run_cvsl_varsets.R 7 && \
+	Rscript code/run_cvsl_varsets.R 8 && \
+	Rscript code/run_cvsl_varsets.R 9 && \
+	Rscript code/run_cvsl_varsets.R 10 && \
+	Rscript code/run_cvsl_varsets.R 11 && \
+	Rscript code/run_cvsl_varsets.R 12 && \
+	Rscript code/run_cvsl_varsets.R 13 && \
+	Rscript code/run_cvsl_varsets.R 14 && \
+	Rscript code/run_cvsl_varsets.R 15 && \
+	Rscript code/run_cvsl_varsets.R 16 && \
+	Rscript code/run_cvsl_varsets.R 17 && \
+	Rscript code/run_cvsl_varsets.R 18 && \
+	Rscript code/run_cvsl_varsets.R 19 && \
+	Rscript code/run_cvsl_varsets.R 20 && \
+	Rscript code/run_cvsl_varsets.R 21 && \
+	Rscript code/run_cvsl_varsets.R 22 && \
+	Rscript code/run_cvsl_varsets.R 23 && \
+	Rscript code/run_cvsl_varsets.R 24 && \
+	Rscript code/run_cvsl_varsets.R 25 && \
+	Rscript code/run_cvsl_varsets.R 26 && \
+	Rscript code/run_cvsl_varsets.R 27 && \
+	Rscript code/run_cvsl_varsets.R 28 && \
+	Rscript code/run_cvsl_varsets.R 29 && \
+	Rscript code/run_cvsl_varsets.R 30 && \
+	Rscript code/run_cvsl_varsets.R 31 && \
+	Rscript code/run_cvsl_varsets.R 32 && \
+	Rscript code/run_cvsl_varsets.R 33 && \
+	Rscript code/run_cvsl_varsets.R 34
+	
     
 ## createRDAfiles_fromSLobjects   : create RDA files from SL objects
-createRDAfiles_fromSLobjects_d29: run_cvsl_varsets_d29
-	Rscript code/createRDAfiles_fromSLobjects.R Day29 
+createRDAfiles_fromSLobjects: run_cvsl_varsets
+	Rscript code/createRDAfiles_fromSLobjects.R  
 
 ## tables_figures   : create tables and figures
-tables_figures_d29: createRDAfiles_fromSLobjects_d29
-	Rscript code/tables_figures.R Day29
+tables_figures: createRDAfiles_fromSLobjects
+	Rscript code/tables_figures.R 
 	
-######################################################################
-## DAY 57 MARKERS ANALYSES
-run_cvsl_varsets_d57:
-	for number in 1 2 3 4 5 6 7 8 9 10; do \
-	Rscript code/run_cvsl_varsets.R $$number Day57; \
-	done
-    
-## createRDAfiles_fromSLobjects   : create RDA files from SL objects
-createRDAfiles_fromSLobjects_d57: run_cvsl_varsets_d57
-	Rscript code/createRDAfiles_fromSLobjects.R Day57 
-
-## tables_figures   : create tables and figures
-tables_figures_d57: createRDAfiles_fromSLobjects_d57
-	Rscript code/tables_figures.R Day57
-	
-######################################################################
-## BOTH DAY 29 AND DAY 57 MARKERS ANALYSES
-run_cvsl_varsets_Both:
-	for number in 1 2 3 4 5 6 7 8 9 10; do \
-	Rscript code/run_cvsl_varsets.R $$number Both; \
-	done
-    
-## createRDAfiles_fromSLobjects   : create RDA files from SL objects
-createRDAfiles_fromSLobjects_Both: run_cvsl_varsets_Both
-	Rscript code/createRDAfiles_fromSLobjects.R Both 
-
-## tables_figures   : create tables and figures
-tables_figures_Both: createRDAfiles_fromSLobjects_Both
-	Rscript code/tables_figures.R Both
-	
-######################################################################
 ## report        : create a standalone report
 report:
 	Rscript -e "rmarkdown::render('report.Rmd')"

@@ -315,7 +315,7 @@ get.maxSignalDivScore <- function(dat, day){
   if(day %in% c("Day29", "Day57")){
     dat <- dat %>%
       mutate(max.signal.div.score = rowSums(.[1:4])) #rowSums(.[1:5]))
-  }else if(day == "Both"){
+  }else if(day == "Day57_29"){
     dat <- dat %>%
       mutate(max.signal.div.score = rowSums(.[1:8])) #rowSums(.[1:10]))
   }
@@ -324,30 +324,30 @@ get.maxSignalDivScore <- function(dat, day){
 }
 
 
-get.nonlinearPCA.scores <- function(dat){
-  ptid.vec <- dat %>% pull(Ptid)
-  dat <- dat %>% select(-Ptid)
-
-  ## scale markers to have sd 1 for all vars
-  for (a in colnames(dat)) {
-    dat[[a]] <- scale(dat[[a]],
-                      scale = sd(dat[[a]], na.rm = T))
-  }
-  dat.scaled = data.frame(as.matrix(dat))
-  # reticulate::py_config() # Check if pythonhome is "C:/Users/bborate/Anaconda3" ! If not, then .rs.restartR() !
-  # .rs.restartR()
-  # Sys.setenv(RETICULATE_PYTHON = "C:\\Users\\bborate\\Anaconda3")
-  #reticulate::use_python(Sys.getenv("PY_VERSION"))
-
-  fit=FSDAM::fsdam(dat.scaled, opt_numCode = 2)
-  nlPCA1 <- kyotil::INT(fit$code[,1]) # the first component
-  nlPCA2 <- kyotil::INT(fit$code[,2])
-
-  # Create data frame with non-linear Principal Components
-  nlPCA <- data.frame(Ptid = ptid.vec, nlPCA1, nlPCA2)
-
-  return(nlPCA)
-}
+# get.nonlinearPCA.scores <- function(dat){
+#   ptid.vec <- dat %>% pull(Ptid)
+#   dat <- dat %>% select(-Ptid)
+# 
+#   ## scale markers to have sd 1 for all vars
+#   for (a in colnames(dat)) {
+#     dat[[a]] <- scale(dat[[a]],
+#                       scale = sd(dat[[a]], na.rm = T))
+#   }
+#   dat.scaled = data.frame(as.matrix(dat))
+#   # reticulate::py_config() # Check if pythonhome is "C:/Users/bborate/Anaconda3" ! If not, then .rs.restartR() !
+#   # .rs.restartR()
+#   # Sys.setenv(RETICULATE_PYTHON = "C:\\Users\\bborate\\Anaconda3")
+#   #reticulate::use_python(Sys.getenv("PY_VERSION"))
+# 
+#   fit=FSDAM::fsdam(dat.scaled, opt_numCode = 2)
+#   nlPCA1 <- kyotil::INT(fit$code[,1]) # the first component
+#   nlPCA2 <- kyotil::INT(fit$code[,2])
+# 
+#   # Create data frame with non-linear Principal Components
+#   nlPCA <- data.frame(Ptid = ptid.vec, nlPCA1, nlPCA2)
+# 
+#   return(nlPCA)
+# }
 
 
 

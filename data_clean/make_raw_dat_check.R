@@ -20,7 +20,7 @@ colnames(dat_proc)[1] <- "Ptid"
 ## missing values in variables that should have no missing values
 ## binary variables only take values 0/1
 variables_with_no_missing <-
-    c("Trt", "Bserostatus", "EventIndPrimaryD1", #"Age", # age is not binary
+    c("Trt", "Bserostatus", #"Age", # age is not binary
       "EthnicityHispanic", "EthnicityNotreported", "EthnicityUnknown",
       "Black", "Asian", "NatAmer", "PacIsl", "Multiracial",
       "Other", "Notreported", "Unknown",

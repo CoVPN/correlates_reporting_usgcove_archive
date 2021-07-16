@@ -1,3 +1,6 @@
+# Add input variable definition column and comments column to dataset
+# @param dataframe containing Variable Name of input variable used in risk score analysis
+# @return dataframe with two new columns: Definition and Comments
 get_defs_comments_riskVars <- function(dat){
   if(study_name_code == "MODERNA"){
     dat %>%

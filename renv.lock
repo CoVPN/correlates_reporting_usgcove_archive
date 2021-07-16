@@ -1226,6 +1226,13 @@
       "Repository": "CRAN",
       "Hash": "c318d148056e5bb8d7de79b0876f9ae6"
     },
+    "mdw": {
+      "Package": "mdw",
+      "Version": "2020.6-17",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "90e095eb7e76f8388d2142f523cc297f"
+    },
     "memoise": {
       "Package": "memoise",
       "Version": "2.0.0",

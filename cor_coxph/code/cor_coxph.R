@@ -1,23 +1,29 @@
-#Sys.setenv(TRIAL = "janssen_la_mock")
-if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
+#Sys.setenv(TRIAL = "moderna_mock")
 #----------------------------------------------- 
 # obligatory to append to the top of each script
-renv::activate(project = here::here(".."))
-    
+renv::activate(project = here::here(".."))    
 # There is a bug on Windows that prevents renv from working properly. The following code provides a workaround:
 if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
-        
-#if (.Platform$OS.type == "windows") {
-#    options(renv.config.install.transactional = FALSE)
-#    renv::restore(library=saved.system.libPaths, prompt=FALSE) # for a quick test, add: packages="backports"
-#    .libPaths(c(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
-#} else renv::restore(prompt=FALSE)
-    
-# after updating a package, run renv::snapshot() to override the global library record with your changes
 source(here::here("..", "_common.R"))
 #-----------------------------------------------
 myprint(study_name_code)
 
+#if (.Platform$OS.type == "windows") {
+#    options(renv.config.install.transactional = FALSE)
+#    renv::restore(library=saved.system.libPaths, prompt=FALSE) # for a quick test, add: packages="backports"
+#    .libPaths(c(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
+#} else renv::restore(prompt=FALSE)    
+
+
+# population is either 57 or 29
+Args <- commandArgs(trailingOnly=TRUE)
+if (length(Args)==0) Args=c(pop="29")# has to be 29 if it is janssen
+pop=Args[1]; myprint(pop)
+
+save.results.to = paste0(here::here("output"), "/D", pop,"/");
+if (!dir.exists(save.results.to))  dir.create(save.results.to)
+print(paste0("save.results.to equals ", save.results.to))
+    
 
 library(kyotil) # p.adj.perm, getFormattedSummary
 library(marginalizedRisk)
@@ -28,11 +34,6 @@ library(forestplot)
 library(Hmisc) # wtd.quantile, cut2
 library(xtable) # this is a dependency of kyotil
 source(here::here("code", "params.R"))
-
-# population is either 57 or 29
-Args <- commandArgs(trailingOnly=TRUE)
-if (length(Args)==0) Args=c(pop="29")# has to be 29 if it is janssen
-pop=Args[1]; myprint(pop)
 
 if(!has29 & pop=="29") {
     print("Quitting because there are no Day 29 markers")
@@ -75,12 +76,45 @@ if (pop=="57") {
     dat.mock$TwophasesampInd.0 = dat.mock$TwophasesampIndD57
     dat.mock$ph1=dat.mock$ph1.D57   
     dat.mock$ph2=dat.mock$ph2.D57   
+    dat.mock$EventIndPrimary=dat.mock$EventIndPrimaryD57   
+    dat.mock$EventTimePrimary=dat.mock$EventTimePrimaryD57   
 } else if (pop=="29") {
     dat.mock$wt.0=dat.mock$wt.D29
     dat.mock$TwophasesampInd.0 = dat.mock$TwophasesampIndD29 
     dat.mock$ph1=dat.mock$ph1.D29
     dat.mock$ph2=dat.mock$ph2.D29
+    dat.mock$EventIndPrimary=dat.mock$EventIndPrimaryD29
+    dat.mock$EventTimePrimary=dat.mock$EventTimePrimaryD29 
 } else stop("wrong pop")
+
+
+# Average follow-up of vaccine recipients starting at 7 days post Day 29 visit
+tmp=round(mean(subset(dat.mock, Trt==1 & ph1, EventTimePrimary, drop=T), na.rm=T)-7)
+write(tmp, file=paste0(save.results.to, "avg_followup_"%.%study_name))
+
+# Number of breakthrough vaccine cases with Day 57 ID80 > 660 IU
+if(pop=="57") {
+    res=nrow(subset(dat.mock, Trt==1 & ph1 & EventIndPrimary & Day57pseudoneutid80>log10(660)))
+    write(res, file=paste0(save.results.to, "num_vacc_cases_highid80_"%.%study_name))
+}
+
+#Median and IQR and range of days from dose 1 to Day 29 visit, and from dose 1 to Day 57 visit (requested by Lindsey B).  
+#subsetting by (a) the whole immunogenicity subcohort, (2) non-cases in the immunogenicity subcohort, (3) intercurrent cases, (4) primary cases.
+if (has29 & has57) {
+    tab=sapply(1:4, function (i) {
+        idx=with(dat.mock, {
+            tmp = if(i==1) ph1.immuno else if(i==2) ph1.immuno & EventIndPrimary else if(i==3) idx=ph1.intercurrent.cases else if(i==4) idx=ph1.D57 & EventIndPrimaryD57
+            tmp [!is.na(tmp)]
+        })
+        res=c(quantile(dat.mock[idx, "NumberdaysD1toD"%.%pop], 1:3/4, na.rm=T))
+        c(res, range=unname(res[3]-res[1]))
+    })
+    tab=t(tab)
+    rownames(tab)=c("(a)","(b)","(c)","(d)")
+    colnames(tab)=c("1st quartile", "median", "3d quartile", "range")
+    mytex(tab, file.name="dose1_interval_summary_"%.%study_name, align="c", include.colnames = T, save2input.only=T, input.foldername=save.results.to, digits=0)
+}
+
     
 # the following data frame define the phase 1 ptids
 dat.vac.seroneg=subset(dat.mock, Trt==1 & Bserostatus==0 & ph1)
@@ -170,10 +204,6 @@ design.vacc.seroneg<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subse
 
 ###################################################################################################
 # save cutpoints and t0
-    
-save.results.to = paste0(here::here("output"), "/D", pop,"/");
-if (!dir.exists(save.results.to))  dir.create(save.results.to)
-print(paste0("save.results.to equals ", save.results.to))
     
 cutpoints=list()
 for (a in assays) {        

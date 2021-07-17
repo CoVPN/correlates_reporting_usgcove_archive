@@ -314,3 +314,4 @@ cor_nonlinear/output/D29/bootstrap_replicates_MockCOVE
 cor_nonlinear/output/D29/marginalized.risk.gam.MockCOVE.Rdata
 cop_mediation/*.html
 data_raw/janssen/COVID_ENSEMBLE_realdata.csv
+.config.yml.swp

@@ -4,6 +4,7 @@ renv::activate(here::here())
 # There is a bug on Windows that prevents renv from working properly. The following code provides a workaround:
 if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
 source(here::here("_common.R"))
+myprint(study_name_code)
 #-----------------------------------------------
 
 # packages and settings
@@ -13,9 +14,11 @@ library(Hmisc) # wtd.quantile, cut2
 library(mice)
 library(dplyr)
 
-myprint(study_name_code)
 
 dat_proc <- read.csv(here("data_raw", data_raw_dir, data_in_file))
+#summary(dat_proc)
+#hist(dat_proc$Day29bindSpike)
+
 
 
 if(study_name=="MockENSEMBLE") dat_proc=dat_proc[, !contain(names(dat_proc), "pseudoneutid")]

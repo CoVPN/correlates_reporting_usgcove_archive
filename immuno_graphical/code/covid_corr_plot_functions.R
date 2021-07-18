@@ -56,12 +56,16 @@ covid_corr_pairplots <- function(plot_dat, ## data for plotting
 
   breaks <- floor(rr[1]):ceiling(rr[2])
 
-  if (rr[2] > ceiling(rr[1])) {
-    breaks <- ceiling(rr[1]):floor(rr[2])
-  } else {
-    breaks <- floor(rr[1]):ceiling(rr[2]) ## breaks on the axis
-  }
+  # Not really sure why the below code is here
+  # if (rr[2] > ceiling(rr[1])) { 
+  #   breaks <- ceiling(rr[1]):floor(rr[2])
+  # } else {
+  #   breaks <- floor(rr[1]):ceiling(rr[2]) ## breaks on the axis
+  # }
 
+  # readjust limits to include all of the breaks
+  rr <- c(floor(rr[1]), ceiling(rr[2]))
+  
   if (max(breaks) - min(breaks) >= 6) {
     breaks <- breaks[breaks %% 2 == 0]
   }
@@ -388,7 +392,7 @@ covid_corr_rcdf_facets <- function(plot_dat,
                                    weight,
                                    lwd = 1,
                                    xlim,
-                                   xbreaks = 2,
+                                   xbreaks = 1,
                                    palette = c(
                                      "#1749FF", "#D92321", "#0AB7C9",
                                      "#FF6F1B", "#810094", "#378252",
@@ -819,7 +823,7 @@ covid_corr_boxplot_facets <- function(plot_dat,
                                       xlab_use_letters =
                                         (length(unique(plot_dat[, x])) > 2),
                                       ylim,
-                                      ybreaks = 2,
+                                      ybreaks = 1,
                                       arrange_nrow = ceiling(
                                         length(unique(plot_dat[, facet_by])) / 2
                                       ),
@@ -1011,7 +1015,7 @@ covid_corr_spaghetti_facets <- function(plot_dat,
                                         axis_size = 12,
                                         axis_title_size = 12,
                                         ylim,
-                                        ybreaks = 2,
+                                        ybreaks = 1,
                                         arrange_nrow = ceiling(
                                           length(unique(plot_dat[, facet_by])) / 2
                                         ),

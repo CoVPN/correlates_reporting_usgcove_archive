@@ -90,7 +90,8 @@ if (pop=="57") {
 
 # Average follow-up of vaccine recipients starting at 7 days post Day 29 visit
 tmp=round(mean(subset(dat.mock, Trt==1 & ph1, EventTimePrimary, drop=T), na.rm=T)-7)
-write(tmp, file=paste0(save.results.to, "avg_followup_"%.%study_name%.%".tex"))
+write(tmp, file=paste0(save.results.to, "avg_followup_"%.%study_name))
+print("write to avg_followup_"%.%study_name)
 
 # Number of breakthrough vaccine cases with Day 57 ID80 > 660 IU
 if(pop=="57") {

@@ -27,7 +27,7 @@ if(endpoint=="EventIndPrimaryD29")
 
 caption <- "Variables considered for risk score analysis."
 
-read.csv(here("base_riskscore", "output", "risk_vars.csv"), row.names = 1,
+tab <- read.csv(here("base_riskscore", "output", "risk_vars.csv"), row.names = 1,
          header = TRUE) %>%
   kable(
     #format = output_type,
@@ -40,9 +40,15 @@ read.csv(here("base_riskscore", "output", "risk_vars.csv"), row.names = 1,
   column_spec(4, width = "2cm") %>%
   kable_styling(latex_options = c("hold_position", "repeat_header"),
                 font_size = 9)
-# %>%
-# footnote(c("Missing values for variables not dropped from analysis were imputed."),
-#          threeparttable = TRUE)
+
+if(study_name_code=="ENSEMBLE"){
+  tab <- tab %>% 
+    footnote(c("Missing values for variables not dropped from analysis were imputed."),
+             threeparttable = TRUE)
+}
+
+tab
+  
 ```
 
 \clearpage

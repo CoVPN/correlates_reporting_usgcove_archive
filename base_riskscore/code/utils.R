@@ -259,7 +259,7 @@ run_cv_sl_once <- function(seed = 1, Y = NULL, X_mat = NULL,
 # @param risk_vars the vector of column names of risk variables
 # @return a data frame upon removal of any binary risk variables with fewer than 10 ptids that have a 0 or 1 for that variable
 drop_riskVars_with_fewer_0s_or_1s <- function(dat, risk_vars, np) {
-  #if(study_name_code == "COVE"){
+  if(study_name_code == "COVE"){
       for (i in 1:length(risk_vars)) {
         if ((dat %>% select(matches(risk_vars[i])) %>% unique() %>% dim())[1] == 2) {
           if ((dim(dat %>% filter(get(risk_vars[i]) == 1))[1] < 10) | (dim(dat %>% filter(get(risk_vars[i]) == 0))[1] < 10)){
@@ -268,18 +268,18 @@ drop_riskVars_with_fewer_0s_or_1s <- function(dat, risk_vars, np) {
           }
         }
       }
-  #}
-  # if(study_name_code == "ENSEMBLE"){
-  #     threshold = round(nrow(dat)* 5/np)
-  #     for (i in 1:length(risk_vars)) {
-  #       if ((dat %>% select(matches(risk_vars[i])) %>% unique() %>% dim())[1] == 2) {
-  #         if ((dim(dat %>% filter(get(risk_vars[i]) == 1))[1] < threshold) | (dim(dat %>% filter(get(risk_vars[i]) == 0))[1] < threshold)){
-  #           dat <- dat %>% select(-matches(risk_vars[i]))
-  #           print(paste0(risk_vars[i], " dropped from risk score analysis as it had fewer than ", threshold, " 1's or 0's."))
-  #         }
-  #       }
-  #     }
-  # }
+  }
+  if(study_name_code == "ENSEMBLE"){
+      threshold = round(nrow(dat)* 3/np)
+      for (i in 1:length(risk_vars)) {
+        if ((dat %>% select(matches(risk_vars[i])) %>% unique() %>% dim())[1] == 2) {
+          if ((dim(dat %>% filter(get(risk_vars[i]) == 1))[1] < threshold) | (dim(dat %>% filter(get(risk_vars[i]) == 0))[1] < threshold)){
+            dat <- dat %>% select(-matches(risk_vars[i]))
+            print(paste0(risk_vars[i], " dropped from risk score analysis as it had fewer than ", threshold, " 1's or 0's."))
+          }
+        }
+      }
+  }
   return(dat)
 }
 

@@ -269,7 +269,7 @@ $^2$E-values are computed for upper tertile ($s=1$) vs. lower tertile ($s=0$) bi
 Average follow-up of vaccine recipients (in the Day `r Day` correlates analyses population) starting at 7 days post Day `r Day` visit is \input{`r pathCoRoutput`/avg_followup_`r study_name`} days.
  
 
-`r if(Day=="57") paste0("Number of breakthrough vaccine cases (in the Day 57 correlates analyses population) with Day 57 ID80 > 660 IU: \\input{output/D57/num_vacc_cases_highid80_", study_name, "}.")`
+`r if(Day=="57") paste0("Number of breakthrough vaccine cases (in the Day 57 correlates analyses population) with Day 57 ID80 > 660 IU: \\input{", pathCoRoutput, "/num_vacc_cases_highid80_", study_name, "}.")`
 
 
 

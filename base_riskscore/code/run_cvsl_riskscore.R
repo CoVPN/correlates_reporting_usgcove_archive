@@ -50,6 +50,7 @@ if(study_name_code == "COVE"){
   )
   
   endpoint <- "EventIndPrimaryD57"
+  studyName_for_report <- "COVE"
 }
 
 if(study_name_code == "ENSEMBLE"){
@@ -61,6 +62,7 @@ if(study_name_code == "ENSEMBLE"){
   )
   
   endpoint <- "EventIndPrimaryD29"
+  studyName_for_report <- "ENSEMBLE"
 }
 
 ################################################
@@ -162,4 +164,4 @@ saveRDS(cvaucs, here("output", "cvsl_riskscore_cvaucs.rds"))
 save(cvfits, file = here("output", "cvsl_riskscore_cvfits.rda"))
 save(risk_placebo_ptids, file = here("output", "risk_placebo_ptids.rda"))
 save(run_prod, Y, X_riskVars, weights, inputFile, risk_vars, endpoint, maxVar,
-     V_outer, file = here("output", "objects_for_running_SL.rda"))
+     V_outer, studyName_for_report, file = here("output", "objects_for_running_SL.rda"))

@@ -22,6 +22,7 @@ cor_analysis: data_processed
 	$(MAKE) -k -C cor_graphical all
 	$(MAKE) -k -C cor_threshold all
 	$(MAKE) -k -C cor_nonlinear all
+	$(MAKE) -k -C cop_mediation all
 	$(MAKE) -k -C cor_surrogates all
 #	$(MAKE) -k -C cor_nonpar all
 
@@ -31,10 +32,10 @@ cor_report: cor_analysis
 
 ## cop_analysis           : builds Correlates of Protection analyses
 cop_analysis: data_processed
-	$(MAKE) -k -C cop_mediation all
-	$(MAKE) -k -C cop_stochastic all
 #	$(MAKE) -k -C cop_prinstrat all
 #	$(MAKE) -k -C cop_controlled all
+	$(MAKE) -k -C cop_stochastic all
+	$(MAKE) -k -C cop_mediation all
 
 ## cop_report             : builds the CoVPN correlates of protection report
 cop_report: cop_analysis

@@ -2170,7 +2170,7 @@
     },
     "xgboost": {
       "Package": "xgboost",
-      "Version": "1.1.1.1",
+      "Version": "0.90.0.2",
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "17b1f93f73844394d1578de45a681bea"

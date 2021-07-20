@@ -1,26 +1,22 @@
-#Sys.setenv(TRIAL = "janssen_pooled_mock")
-if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
+#Sys.setenv(TRIAL = "moderna_mock")
 #-----------------------------------------------
 renv::activate(here::here())
-
 # There is a bug on Windows that prevents renv from working properly. The following code provides a workaround:
 if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
-
 source(here::here("_common.R"))
 #-----------------------------------------------
 library(here)
 
+
 # load data and rename first column (ID)
-dat_proc <- read.csv(here(
-  "data_raw", data_raw_dir, data_in_file
-))
+dat_proc <- read.csv(here("data_raw", data_raw_dir, data_in_file))
 colnames(dat_proc)[1] <- "Ptid"
 
 
 ## missing values in variables that should have no missing values
 ## binary variables only take values 0/1
 variables_with_no_missing <-
-    c("Trt", "Bserostatus", "EventIndPrimaryD1", #"Age", # age is not binary
+    c("Trt", "Bserostatus", #"Age", # age is not binary
       "EthnicityHispanic", "EthnicityNotreported", "EthnicityUnknown",
       "Black", "Asian", "NatAmer", "PacIsl", "Multiracial",
       "Other", "Notreported", "Unknown",
@@ -68,4 +64,18 @@ if(has57 & has29) {
         stop(paste0("Amongst individuals who have events that qualify for both Day 29 and Day 57 ",
                     "some follow up times are *longer* for Day 57 than for Day 29."))
     }
+
+    ## consistency between event time variables for the cases
+    if (study_name != "MockCOVE") {
+        pass <- with(dat_proc, {
+            tmp = NumberdaysD1toD57 - NumberdaysD1toD29 == EventTimePrimaryD29 - EventTimePrimaryD57
+            all(tmp | is.na(tmp))
+        })
+        if(!pass){
+            stop(paste0("NumberdaysD1toD57 - NumberdaysD1toD29 == EventTimePrimaryD29 - EventTimePrimaryD57 fails for some rows"))
+        }
+    }
+
+
+
 }

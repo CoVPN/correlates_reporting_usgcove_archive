@@ -574,6 +574,21 @@ make.case.count.marker.availability.table=function() {
             tab
         })
         cnts
+    } else if (study_name_code=="ENSEMBLE") {
+        idx.trt=1:0
+        names(idx.trt)=c("vacc","plac")
+        cnts = sapply (idx.trt, simplify="array", function(trt) {
+             idx=1:1
+             tab=t(sapply (idx, function(i) {           
+                tmp.1 = with(subset(dat_proc, Trt==trt & Bserostatus==0 & if(i==2) EventIndPrimaryD57 else EventIndPrimaryD29 &   if(i==2) ph1.D57 else if(i==1) ph1.D29 else ph1.intercurrent.cases), is.na(BbindSpike)     | is.na(BbindRBD) )
+                tmp.2 = with(subset(dat_proc, Trt==trt & Bserostatus==0 & if(i==2) EventIndPrimaryD57 else EventIndPrimaryD29 &   if(i==2) ph1.D57 else if(i==1) ph1.D29 else ph1.intercurrent.cases), is.na(Day29bindSpike) | is.na(Day29bindRBD))
+                
+                c(sum(tmp.1 & tmp.2), sum(!tmp.1 & tmp.2), sum(tmp.1 & !tmp.2), sum(!tmp.1 & !tmp.2))
+             }))
+             colnames(tab)=c("--", "+-", "-+", "++")
+             tab
+        })
+        t(drop(cnts))
     } else {
         NA
     }

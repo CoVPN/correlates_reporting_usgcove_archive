@@ -328,7 +328,7 @@ for (a in assays) {
     cum.P <- round(cumsum(tmp$n.event))    
     
     cex.text <- 0.7
-    at.label=-25
+    at.label=-t0/6
     
     mtext(expression(bold("No. at risk")),side=1,outer=FALSE,line=2.5,at=-2,adj=0,cex=cex.text)
     mtext(paste0("Low:"),side=1,outer=F,line=3.4,at=at.label,adj=0,cex=cex.text);  mtext(n.risk.L,side=1,outer=FALSE,line=3.4,at=x.time,cex=cex.text)

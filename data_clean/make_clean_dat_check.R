@@ -1,16 +1,20 @@
-if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
+#Sys.setenv(TRIAL = "janssen_pooled_real")
 #-----------------------------------------------
-renv::activate(here::here())
-    
+renv::activate(here::here())    
 # There is a bug on Windows that prevents renv from working properly. The following code provides a workaround:
 if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
-    
 source(here::here("_common.R"))
 #-----------------------------------------------
 library(here)
 
 # load data and rename first column (ID)
 dat_clean <- read.csv(here("data_clean", data_name))
+#with(subset(dat_clean, Bserostatus==0 & Perprotocol==1 & ph1.immuno), hist(Day29bindN))
+#    (subset(dat_clean, Bserostatus==0 & Perprotocol==1 & ph1.immuno & Day29bindN>2))
+#subset(dat_clean, Ptid=="VAC31518COV3001-7245536")
+#sort(subset(dat_clean, Bserostatus==0 & Perprotocol==1 & ph1.immuno & !is.na(Day29bindN), Day29bindN, drop=T))
+
+
 
 # leave comments below for checks implemented in make_dat_proc.R
 ## missing markers imputed properly in each stratum

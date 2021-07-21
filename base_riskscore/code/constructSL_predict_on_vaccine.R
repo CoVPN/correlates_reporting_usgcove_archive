@@ -33,7 +33,6 @@ source(here("code", "sl_screens.R")) # set up the screen/algorithm combinations
 source(here("code", "utils.R")) # get CV-AUC for all algs
 
 ## solve cores issue
-library(RhpcBLASctl)
 #blas_get_num_procs()
 blas_set_num_threads(1)
 #print(blas_get_num_procs())
@@ -84,7 +83,10 @@ vacc <- bind_cols(
   rename(pred = V1) %>%
   # add AUC
   mutate(AUCchar = format(round(fast.auc(pred, get(endpoint)), 3), nsmall = 3),
-         risk_score = log(pred / (1 - pred)))
+         risk_score = log(pred / (1 - pred)),
+         risk_score = scale(risk_score,
+                            center = mean(risk_score, na.rm = T),
+                            scale = sd(risk_score, na.rm = T)))
 
 write.csv(vacc, here("output", "vaccine_ptids_with_riskscores.csv"), row.names = FALSE)
 

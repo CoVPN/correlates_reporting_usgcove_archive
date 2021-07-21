@@ -68,10 +68,11 @@ uloqs=sapply(tmp, function(x) unname(x["ULOQ"]))
 # as will the quantitative limits for N protein which are based on convalescent samples.
 # But the RBD and Spike quantitation ranges will be different for the Janssen partial validation than for Moderna. 
 if(study_name_code=="ENSEMBLE") {
-    uloqs["bindRBD"]=172.5755
-    uloqs["bindSpike"]=238.1165 
-    lloqs["bindRBD"]=5.0243 
     lloqs["bindSpike"]=1.8429 
+    lloqs["bindRBD"]=5.0243 
+    
+    uloqs["bindSpike"]=238.1165 
+    uloqs["bindRBD"]=172.5755    
 }
 
 
@@ -444,6 +445,3 @@ report.assay.values=function(x, assay){
     #out[!duplicated(out)] # unique strips away the names. But don't take out duplicates because 15% may be needed and because we may want the same number of values for each assay
 }
 #report.assay.values (dat.vac.seroneg[["Day57pseudoneutid80"]], "pseudoneutid80")
-
-options(bitmapType='cairo') 
-

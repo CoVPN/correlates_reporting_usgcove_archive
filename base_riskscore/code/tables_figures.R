@@ -86,7 +86,7 @@ if (run_prod) {
 tab %>% write.csv(here("output", "learner-screens.csv"))
 
 ######## SLperformance-plac ####################################################
-if(study_name_code=="MODERNA"){
+if(study_name_code=="COVE"){
   caption <- "Performance of Superlearner and all learner-screen combinations (CV-AUCs with 95\\% CIs) for risk score analyses using placebo group and EventIndPrimaryD57 as outcome. Constraint of np/20 is applied to all learners such that no more than 6 input variables were allowed in any model."
 }else if(study_name_code=="ENSEMBLE"){
   caption <- "Performance of Superlearner and all learner-screen combinations (CV-AUCs with 95\\% CIs) for risk score analyses using placebo group and EventIndPrimaryD29 as outcome. Constraint of np/20 is applied to all learners such that no more than 5 input variables were allowed in any model."

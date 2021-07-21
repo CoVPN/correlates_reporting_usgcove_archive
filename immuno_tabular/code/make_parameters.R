@@ -241,6 +241,9 @@ labels.age <- case_when(study_name_code=="COVE"~ c("Age $<$ 65", "Age $\\geq$ 65
 labels.minor <- case_when(study_name_code=="COVE"~ c("Communities of Color", "White Non-Hispanic"), 
                           study_name_code=="ENSEMBLE"~ c("URM", "Non-URM"))
 
+labels.BMI <- c("Underweight BMI < 18.5", "Normal 18.5 $\\leq$ BMI < 25", 
+                "Overweight 25 $\\leq$ BMI < 30", "Obese BMI $\\geq$ 30")
+
 labels.time <- labels.time[times]
 # hacky fix
 labels.assays.short <- labels.assays.short.tabular[assays]

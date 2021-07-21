@@ -27,12 +27,16 @@ options(survey.lonely.psu="adjust")
 # num_v are columns from ds_long;
 # cat_v are rows of `subgroup`
 
-
-num_v1 <- c("Age") # Summaries - Mean & Range
-num_v2 <- c("BMI") # Summaries - Mean & St.d
-cat_v <- c("AgeC", "SexC", "raceC", "ethnicityC", "HighRiskC", "AgeRiskC", "MinorityC")
-
-if (study_name_code=="ENSEMBLE") cat_v <- c("AgeC", "SexC", "raceC", "ethnicityC", "HighRiskC", "AgeRiskC", "URMC",  "CountryC")
+if (study_name_code=="COVE") {
+  num_v1 <- c("Age") # Summaries - Mean & Range
+  num_v2 <- c("BMI") # Summaries - Mean & St.d
+  cat_v <- c("AgeC", "SexC", "raceC", "ethnicityC", "HighRiskC", "AgeRiskC", "MinorityC")
+} else if (study_name_code=="ENSEMBLE") {
+  num_v1 <- c("Age") # Summaries - Mean & Range
+  num_v2 <- NULL # Summaries - Mean & St.d
+  cat_v <- c("AgeC", "SexC", "raceC", "ethnicityC", 
+             "HighRiskC", "AgeRiskC", "URMC",  "CountryC", "HIVC", "BMI")
+}
 
 ds_long_ttl <- ds %>%
   dplyr::filter(ph2.immuno) %>% 
@@ -86,7 +90,8 @@ char_lev <- c(labels.age, "Mean (Range)","Mean $\\pm$ SD",
               "Not reported and unknown ","At-risk","Not at-risk",
               paste(labels.age[1],"At-risk"), paste(labels.age[1], "Not at-risk"), 
               paste(labels.age[2],"At-risk"), paste(labels.age[2], "Not at-risk"),
-              paste(labels.age[2], ""), "URM", "Non-URM", labels.countries.ENSEMBLE)
+              paste(labels.age[2], ""), "URM", "Non-URM", labels.countries.ENSEMBLE,
+              "Negative", "Positive", labels.BMI)
 
 tab_dm <- bind_rows(dm_cat, dm_num) %>%
   mutate(rslt = case_when(subgroup %in% cat_v ~ rslt1,
@@ -227,7 +232,7 @@ if (study_name_code=="COVE") {
   subs <- c("All", "AgeC", "HighRiskC", "AgeRiskC", "AgeRisk1", "AgeRisk2", "SexC",
             "AgeSexC", "ethnicityC", "RaceEthC", "MinorityC", "AgeMinorC")
 } else if (study_name_code=="ENSEMBLE") {
-  subs <- c("All", "AgeC", "CountryC", "HighRiskC", "AgeRiskC", "AgeRisk1", "AgeRisk2", "SexC",
+  subs <- c("All", "AgeC", "HIVC", "CountryC", "HighRiskC", "AgeRiskC", "AgeRisk1", "AgeRisk2", "SexC",
             "AgeSexC", "ethnicityC", "RaceEthC", "URMC"[0 %in% ds$Region], "AgeURM"[0 %in% ds$Region])
 }
 
@@ -347,11 +352,13 @@ comp_lev <- c(labels.age[2:1],
               paste(labels.age[2], c("At-risk", "Not at-risk")),
               "Male", "Female",
               "Hispanic or Latino", "Not Hispanic or Latino",
-              labels.minor)
+              labels.minor,
+              "Positive", "Negative")
 
 groups <- c("AgeC", "HighRiskC", "AgeRisk1", "AgeRisk2",
             "SexC", "ethnicityC", case_when(study_name_code=="COVE"~"MinorityC",
-                                            study_name_code=="ENSEMBLE"~"URMC"))
+                                            study_name_code=="ENSEMBLE"~"URMC"),
+            "HIVC"[study_name_code=="ENSEMBLE"])
 
 
 mag_groups <- assays_col

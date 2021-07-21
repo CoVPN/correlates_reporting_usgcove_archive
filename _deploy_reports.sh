@@ -35,6 +35,11 @@ then
   ls -s $TRAVIS_BUILD_DIR/_report_cop
   cp -rf $TRAVIS_BUILD_DIR/_report_riskscore/* ./
   cp -rf $TRAVIS_BUILD_DIR/_report_cop/* ./
+elif [ "$REPORT_TYPE" == "RISK" ]
+then
+  echo "copying RISK report"
+  ls -s $TRAVIS_BUILD_DIR/_report_riskscore
+  cp -rf $TRAVIS_BUILD_DIR/_report_riskscore/* ./
 fi
 echo "Reports built with R version $TRAVIS_R_VERSION"
 

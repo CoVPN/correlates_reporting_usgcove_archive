@@ -41,7 +41,7 @@ tab <- read.csv(here("base_riskscore", "output", "risk_vars.csv"), row.names = 1
   kable_styling(latex_options = c("hold_position", "repeat_header"),
                 font_size = 9)
 
-if(study_name_code=="ENSEMBLE"){
+if(studyName_for_report=="ENSEMBLE"){
   tab <- tab %>% 
     footnote(c("Missing values for variables not dropped from analysis were imputed."),
              threeparttable = TRUE)

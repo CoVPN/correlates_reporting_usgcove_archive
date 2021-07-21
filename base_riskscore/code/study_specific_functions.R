@@ -1,9 +1,9 @@
 # Add input variable definition column and comments column to dataset
 # @param dataframe containing Variable Name of input variable used in risk score analysis
 # @return dataframe with two new columns: Definition and Comments
-get_defs_comments_riskVars <- function(dat){
+get_defs_comments_riskVars <- function(data){
   if(study_name_code == "COVE"){
-    dat %>%
+    data <- data %>%
       mutate(Definition = case_when(
         `Variable Name` == "Age" ~ "Age at enrollment in years, between 18 and 85",
         `Variable Name` == "Sex" ~ "Sex assigned at birth (1=female, 0=male)",
@@ -27,7 +27,7 @@ get_defs_comments_riskVars <- function(dat){
   }
   
   if(study_name_code == "ENSEMBLE"){
-    dat %>%
+    data <- data %>%
       mutate(Definition = case_when(
         `Variable Name` == "Age" ~ "Age at enrollment in years (integer >= 18, NA=missing). Note that the randomization strata included Age 18-59 vs. Age >= 60.",
         `Variable Name` == "Sex" ~ "Sex assigned at birth (1=female, 0=male/undifferentiated/unknown",
@@ -51,5 +51,6 @@ get_defs_comments_riskVars <- function(dat){
       ),
       Comments = "")
   }
+  return(data)
 }
 

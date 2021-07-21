@@ -36,20 +36,35 @@ source(here("code", "utils.R")) # get CV-AUC for all algs
 
 ############ SETUP INPUT #######################
 # Read in data file
-dat_cleaned <- read.csv(here::here("..", "data_clean", data_name))
-inputFile <- dat_cleaned
+inputFile <- read.csv(here::here("..", "data_clean", data_name))
 
 # Identify the risk demographic variable names that will be used to compute the risk score
-risk_vars <- c(
-  "MinorityInd", "EthnicityHispanic", "EthnicityNotreported", "EthnicityUnknown", 
-  "Black", "Asian", "NatAmer", "PacIsl", "WhiteNonHispanic", 
-  "Multiracial", "Other", 
-  "Notreported", "Unknown",
-  "HighRiskInd", "Sex", "Age", "BMI"
-)
-
 # Identify the endpoint variable
-endpoint <- "EventIndPrimaryD57"
+if(study_name_code == "COVE"){
+  risk_vars <- c(
+    "MinorityInd", "EthnicityHispanic", "EthnicityNotreported", "EthnicityUnknown", 
+    "Black", "Asian", "NatAmer", "PacIsl", "WhiteNonHispanic", 
+    "Multiracial", "Other", 
+    "Notreported", "Unknown",
+    "HighRiskInd", "Sex", "Age", "BMI"
+  )
+  
+  endpoint <- "EventIndPrimaryD57"
+  studyName_for_report <- "COVE"
+}
+
+if(study_name_code == "ENSEMBLE"){
+  risk_vars <- c(
+    "EthnicityHispanic","EthnicityNotreported", "EthnicityUnknown",
+    "Black", "Asian", "NatAmer", "PacIsl", "Multiracial", "Notreported", "Unknown",
+    "URMforsubcohortsampling", "HighRiskInd", "Sex", "Age", "BMI", "Country", 
+    "HIVinfection", "CalendarDateEnrollment"
+  )
+  
+  endpoint <- "EventIndPrimaryD29"
+  studyName_for_report <- "ENSEMBLE"
+}
+
 ################################################
 
 # Consider only placebo data for risk score analysis
@@ -60,12 +75,15 @@ dat.ph1 <- inputFile %>%
   # Drop any observation with NA values in Ptid, Trt, or endpoint!
   drop_na(Ptid, Trt, all_of(endpoint))
 
+
 # Derive maxVar: the maximum number of variables that will be allowed by SL screens in the models.
 np <- sum(dat.ph1 %>% select(matches(endpoint)))
 maxVar <- max(20, floor(np / 20))
 
 # Remove any risk_vars that are indicator variables and have fewer than 10  0's or 1's
-dat.ph1 <- drop_riskVars_with_fewer_0s_or_1s(dat.ph1, risk_vars)
+dat.ph1 <- drop_riskVars_with_fewer_0s_or_1s(dat = dat.ph1, 
+                                             risk_vars = risk_vars,
+                                             np = np)
 
 # Update risk_vars
 risk_vars <- dat.ph1 %>%
@@ -91,6 +109,9 @@ risk_placebo_ptids <- dat.ph1 %>% select(Ptid, all_of(endpoint))
 print("Make sure data is clean before conducting imputations!")
 X_covars2adjust <- impute_missing_values(X_covars2adjust, risk_vars)
 
+# # Check for missing values before and after imputation
+# sapply(X_covars2adjust, function(x) sum(is.na(x)))
+
 # Scale X_covars2adjust to have mean 0, sd 1 for all vars
 for (a in colnames(X_covars2adjust)) {
   X_covars2adjust[[a]] <- scale(X_covars2adjust[[a]],
@@ -113,10 +134,9 @@ if (np <= 30) {
 }
 
 ## solve cores issue
-library(RhpcBLASctl)
-blas_get_num_procs()
+#blas_get_num_procs()
 blas_set_num_threads(1)
-print(blas_get_num_procs())
+#print(blas_get_num_procs())
 stopifnot(blas_get_num_procs() == 1)
 
 
@@ -143,4 +163,4 @@ saveRDS(cvaucs, here("output", "cvsl_riskscore_cvaucs.rds"))
 save(cvfits, file = here("output", "cvsl_riskscore_cvfits.rda"))
 save(risk_placebo_ptids, file = here("output", "risk_placebo_ptids.rda"))
 save(run_prod, Y, X_riskVars, weights, inputFile, risk_vars, endpoint, maxVar,
-     V_outer, file = here("output", "objects_for_running_SL.rda"))
+     V_outer, studyName_for_report, file = here("output", "objects_for_running_SL.rda"))

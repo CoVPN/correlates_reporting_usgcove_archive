@@ -18,30 +18,43 @@ library(kableExtra, quietly = T)
 library(conflicted, quietly = T)
 conflicted::conflict_prefer("filter", "dplyr")
 conflict_prefer("summarise", "dplyr")
+load(here("base_riskscore", "output", "objects_for_running_SL.rda"))
+
+if(endpoint=="EventIndPrimaryD57")
+  day = "Day 57"
+if(endpoint=="EventIndPrimaryD29")
+  day = "Day 29"
 
 caption <- "Variables considered for risk score analysis."
 
-read.csv(here("base_riskscore", "output", "risk_vars.csv"), row.names = 1,
+tab <- read.csv(here("base_riskscore", "output", "risk_vars.csv"), row.names = 1,
          header = TRUE) %>%
   kable(
     #format = output_type,
     booktabs = TRUE,
     linesep = "",
-    caption = caption
+    caption = caption,
+    longtable = T
   ) %>%
-  column_spec(2, width = "3cm") %>%
-  column_spec(4, width = "3cm") %>%
-  kable_styling(latex_options = c("hold_position"),
+  column_spec(2, width = "8cm") %>%
+  column_spec(4, width = "2cm") %>%
+  kable_styling(latex_options = c("hold_position", "repeat_header"),
                 font_size = 9)
-# %>%
-# footnote(c("Missing values for variables not dropped from analysis were imputed."),
-#          threeparttable = TRUE)
+
+if(studyName_for_report=="ENSEMBLE"){
+  tab <- tab %>% 
+    footnote(c("Missing values for variables not dropped from analysis were imputed."),
+             threeparttable = TRUE)
+}
+
+tab
+  
 ```
 
 \clearpage
 
 ```{r learner-screens, warning=FALSE, echo=FALSE}
-caption <- "All learner-screen combinations (28 in total) used as input to the Superlearner."
+caption <- "All learner-screen combinations (14 in total) used as input to the Superlearner."
 
 read.csv(here::here("base_riskscore", "output", "learner-screens.csv"),
          row.names = 1, header = TRUE) %>%
@@ -70,14 +83,14 @@ read.csv(here::here("base_riskscore", "output", "learner-screens.csv"),
 
 
 
-```{r, echo=FALSE, out.width="99%", out.height="120%", fig.cap="Cross-validated AUC (95\\% CI) of algorithms for predicting COVID-19 disease status starting 7 days after Day 57."}
+```{r, echo=FALSE, out.width="99%", out.height="120%", fig.cap= paste0("Cross-validated AUC (95\\% CI) of algorithms for predicting COVID-19 disease status starting 7 days after ", day, ".")}
 knitr::include_graphics(here::here("base_riskscore", "figs", "risk_placebo_cvaucs.png"))
 ```
 
 \end{landscape}
 
 
-```{r, echo=FALSE, out.height="94%", fig.cap="CV-estimated predicted probabilities of COVID-19 disease 7 days after Day 57 by case/control status for top 2 learners, SuperLearner and Discrete SL."}
+```{r, echo=FALSE, out.height="94%", fig.cap=paste0("CV-estimated predicted probabilities of COVID-19 disease 7 days after ", day, " by case/control status for top 2 learners, SuperLearner and Discrete SL.")}
 knitr::include_graphics(here::here("base_riskscore", "figs", "predProb_riskscore_plac.png"))
 ```
 
@@ -129,7 +142,7 @@ read.csv(here("base_riskscore", "output", "SL_all_models_with_predictors.csv"),
 \end{landscape}
 
 
-```{r, echo=FALSE, out.width="100%", out.height="90%", fig.cap="Superlearner predicted probabilities of COVID-19 disease in vaccinees 7 days after Day 57 by case/control status."}
+```{r, echo=FALSE, out.width="100%", out.height="90%", fig.cap=paste0("Superlearner predicted probabilities of COVID-19 disease in vaccinees 7 days after ", day, " by case/control status.")}
 knitr::include_graphics(here::here("base_riskscore", "figs", "predProb_riskscore_vacc_onlySL.png"))
 ```
 

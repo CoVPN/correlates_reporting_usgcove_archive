@@ -66,8 +66,11 @@ assay_lim[assay_immuno %in% nAb_assays, times %in% c("Delta29overB", "Delta57ove
 
 # Quick workaround for janssen presentation report
 if(study_name_code=="ENSEMBLE") {
-  assay_lim[,,'lb'] <- -1
-  assay_lim[,,'ub'] <- 3
+  assay_lim[, times %in% c("B", "Day29", "Day57"),'lb'] <- 0
+  assay_lim[, times %in% c("B", "Day29", "Day57"),'ub'] <- 3
+  
+  assay_lim[, times %in% c("Delta29overB", "Delta57overB", "Delta57over29"),'lb'] <- -1
+  assay_lim[, times %in% c("Delta29overB", "Delta57overB", "Delta57over29"),'ub'] <- 2
 }
 
 saveRDS(assay_lim,

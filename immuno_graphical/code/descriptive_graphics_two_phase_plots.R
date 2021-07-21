@@ -236,7 +236,7 @@ for (bAb in c(0, 1)) {
                  max(assay_lim[rcdf_assays, tp, 2])),
         xbreaks = seq(min(assay_lim[rcdf_assays, tp, 1]), 
                       max(assay_lim[rcdf_assays, tp, 2]), 
-                      2),
+                      1),
         plot_title = paste0(switch(tp, Day29 = "Day 29", Day57 = "Day 57"), " Ab Markers"),
         filename = paste0(
           save.results.to, "/Marker_Rcdf_", c("nAb", "bAb")[bAb + 1], "_", tp,
@@ -263,7 +263,7 @@ for (bAb in c(0, 1)) {
                  max(assay_lim[rcdf_assays, tp, 2])),
         xbreaks = seq(min(assay_lim[rcdf_assays, tp, 1]), 
                       max(assay_lim[rcdf_assays, tp, 2]), 
-                      2),
+                      1),
         plot_title = paste0(switch(tp, Delta29overB = "Day 29", Delta57overB = "Day 57"),
                             " over Baseline Ab Markers"),
         filename = paste0(
@@ -296,7 +296,7 @@ for (bAb in c(0, 1)) {
                    max(assay_lim[rcdf_assays, tp, 2])),
           xbreaks = seq(min(assay_lim[rcdf_assays, tp, 1]), 
                         max(assay_lim[rcdf_assays, tp, 2]), 
-                        2),
+                        1),
           plot_title = paste0(
             switch(tp, Day29 = "Day 29", Day57 = "Day 57"), " Ab Markers"
           ),
@@ -325,7 +325,7 @@ for (bAb in c(0, 1)) {
                    max(assay_lim[rcdf_assays, tp, 2])),
           xbreaks = seq(min(assay_lim[rcdf_assays, tp, 1]), 
                         max(assay_lim[rcdf_assays, tp, 2]), 
-                        2),
+                        1),
           plot_title = paste0(
             switch(tp, Delta29overB = "Day 29", Delta57overB = "Day 57"),
             " Fold-rise over Baseline Ab Markers"
@@ -513,7 +513,7 @@ for (tp in tps[tps %in% times]) {
           scale_x_continuous(limits = xrange) +
           scale_y_continuous(
             labels = label_math(10^.x), limits = assay_lim[aa, tp,],
-            breaks = seq(assay_lim[aa, tp, 1], assay_lim[aa, tp, 2], by = 2)
+            breaks = seq(assay_lim[aa, tp, 1], assay_lim[aa, tp, 2], by = 1)
           ) +
           theme_pubr() +
           theme(

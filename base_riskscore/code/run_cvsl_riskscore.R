@@ -40,7 +40,7 @@ inputFile <- read.csv(here::here("..", "data_clean", data_name))
 
 # Identify the risk demographic variable names that will be used to compute the risk score
 # Identify the endpoint variable
-if(study_name_code == "MODERNA"){
+if(study_name_code == "COVE"){
   risk_vars <- c(
     "MinorityInd", "EthnicityHispanic", "EthnicityNotreported", "EthnicityUnknown", 
     "Black", "Asian", "NatAmer", "PacIsl", "WhiteNonHispanic", 
@@ -50,17 +50,19 @@ if(study_name_code == "MODERNA"){
   )
   
   endpoint <- "EventIndPrimaryD57"
+  studyName_for_report <- "COVE"
 }
 
 if(study_name_code == "ENSEMBLE"){
   risk_vars <- c(
     "EthnicityHispanic","EthnicityNotreported", "EthnicityUnknown",
     "Black", "Asian", "NatAmer", "PacIsl", "Multiracial", "Notreported", "Unknown",
-    "URMforsubcohortsampling", "HighRiskInd", "Sex", "Age", "BMI", "Country", "Region",
+    "URMforsubcohortsampling", "HighRiskInd", "Sex", "Age", "BMI", "Country", 
     "HIVinfection", "CalendarDateEnrollment"
   )
   
   endpoint <- "EventIndPrimaryD29"
+  studyName_for_report <- "ENSEMBLE"
 }
 
 ################################################
@@ -79,7 +81,9 @@ np <- sum(dat.ph1 %>% select(matches(endpoint)))
 maxVar <- max(20, floor(np / 20))
 
 # Remove any risk_vars that are indicator variables and have fewer than 10  0's or 1's
-dat.ph1 <- drop_riskVars_with_fewer_0s_or_1s(dat.ph1, risk_vars)
+dat.ph1 <- drop_riskVars_with_fewer_0s_or_1s(dat = dat.ph1, 
+                                             risk_vars = risk_vars,
+                                             np = np)
 
 # Update risk_vars
 risk_vars <- dat.ph1 %>%
@@ -130,7 +134,6 @@ if (np <= 30) {
 }
 
 ## solve cores issue
-library(RhpcBLASctl)
 #blas_get_num_procs()
 blas_set_num_threads(1)
 #print(blas_get_num_procs())
@@ -160,4 +163,4 @@ saveRDS(cvaucs, here("output", "cvsl_riskscore_cvaucs.rds"))
 save(cvfits, file = here("output", "cvsl_riskscore_cvfits.rda"))
 save(risk_placebo_ptids, file = here("output", "risk_placebo_ptids.rda"))
 save(run_prod, Y, X_riskVars, weights, inputFile, risk_vars, endpoint, maxVar,
-     V_outer, file = here("output", "objects_for_running_SL.rda"))
+     V_outer, studyName_for_report, file = here("output", "objects_for_running_SL.rda"))

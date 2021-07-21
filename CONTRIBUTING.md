@@ -146,6 +146,17 @@ applied to fairly technical:
     thorough walkthrough of some common `git` commands as well as explanations
     of what these commands do when invoked.
 
+Some basic commands:
+
+To clone the repo, 
+
+```bash
+git clone https://usr@github.com/CoVPN/correlates_reporting.git
+```
+
+
+
+
 ## Tracking the Package Environment
 
 In an effort to promote computational reporoducibility, we are making an effort
@@ -186,6 +197,10 @@ follows.
 
 ```bash
 export TRIAL=moderna_mock
+```
+
+```tcsh
+setenv TRIAL moderna_mock
 ```
 
 On Windows, replace export with set in command line prompt. This can also be achieved in an interactive `R` session as follows.

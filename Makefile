@@ -24,8 +24,6 @@ cor_analysis: data_processed
 	$(MAKE) -k -C cor_nonlinear all
 	$(MAKE) -k -C cop_mediation all
 	$(MAKE) -k -C cor_surrogates all
-# will be added to the CoR report eventually
-#	$(MAKE) -k -C cor_surrogates all
 #	$(MAKE) -k -C cor_nonpar all
 
 ## cor_report             : builds the CoVPN correlates of risk report
@@ -34,7 +32,6 @@ cor_report: cor_analysis
 
 ## cop_analysis           : builds Correlates of Protection analyses
 cop_analysis: data_processed
-# will be added to the CoP report eventually
 #	$(MAKE) -k -C cop_prinstrat all
 #	$(MAKE) -k -C cop_controlled all
 	$(MAKE) -k -C cop_stochastic all

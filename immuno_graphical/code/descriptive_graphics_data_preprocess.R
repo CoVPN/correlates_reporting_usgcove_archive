@@ -185,6 +185,12 @@ if (study_name_code == "COVE") {
   dat.long.twophase.sample$sex_label[dat.long.twophase.sample$sex_label == "Undifferentiated"] <- NA
   
   dat.long.twophase.sample$age_sex_label[endsWith(as.character(dat.long.twophase.sample$age_sex_label), "undifferentiated")] <- NA
+  
+  # Remove factor levels that aren't present in the data
+  dat.long.twophase.sample$sex_label <- droplevels.factor(dat.long.twophase.sample$sex_label)
+  
+  dat.long.twophase.sample$age_sex_label <- droplevels.factor(dat.long.twophase.sample$age_sex_label)
+  
 }
 
 dat.long.twophase.sample$ethnicity_label <-

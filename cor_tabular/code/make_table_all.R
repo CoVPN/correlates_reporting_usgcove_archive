@@ -170,7 +170,8 @@ labels.assays.long <- data.frame (purrr::imap_dfc(labels.assays.short, ~ paste0(
 rownames(labels.assays.long) <- names(labels.time)
 
 visits <- names(labels.time)[!grepl("Delta", names(labels.time))]
-assays_col <- levels(interaction(visits, assays, sep=""))
+#assays_col <- levels(interaction(visits, assays, sep="")) # interaction gives a warning about In ans * length(l) + if1 : longer object length is not a multiple of shorter object length
+assays_col <- c(outer(visits, sort(assays), paste0)) # this reproduces the results from the previous line without the warning
 
 labels.assays <- expand.grid(
   time = rownames(labels.assays.long),
@@ -525,5 +526,3 @@ print("Done with all tables")
 save(tlf, tab_dm_neg, tab_dm_pos, tab_strtm, 
      case_vacc_neg, case_vacc_pos, case_plcb_pos,
      file = here::here("output", "Tables.Rdata"))
-
-

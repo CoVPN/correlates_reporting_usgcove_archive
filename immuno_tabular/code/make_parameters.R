@@ -1,6 +1,8 @@
+#Sys.setenv(TRIAL = "janssen_pooled_real")
 ##################################################
 # obligatory to append to the top of each script #
 renv::activate(project = here::here("..")) #
+if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
 source(here::here("..", "_common.R")) #
 ##################################################
 
@@ -239,6 +241,9 @@ labels.age <- case_when(study_name_code=="COVE"~ c("Age $<$ 65", "Age $\\geq$ 65
 labels.minor <- case_when(study_name_code=="COVE"~ c("Communities of Color", "White Non-Hispanic"), 
                           study_name_code=="ENSEMBLE"~ c("URM", "Non-URM"))
 
+labels.BMI <- c("Underweight BMI < 18.5", "Normal 18.5 $\\leq$ BMI < 25", 
+                "Overweight 25 $\\leq$ BMI < 30", "Obese BMI $\\geq$ 30")
+
 labels.time <- labels.time[times]
 # hacky fix
 labels.assays.short <- labels.assays.short.tabular[assays]
@@ -282,6 +287,3 @@ labels_all <- full_join(labels.assays, resp.lb, by = c("time", "marker")) %>%
   mutate(mag_cat = colname, resp_cat = paste0(colname, ind))
 
 save.image(file = here::here("data_clean", "params.Rdata"))
-
-
-

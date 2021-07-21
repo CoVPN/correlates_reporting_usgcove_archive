@@ -18,8 +18,12 @@ tf <- list("Day57" = tf_Day57, "Day29" = tf_Day29)
 # tf should be large enough that most events are observed but small enough so that not many people are right censored. For the practice dataset, tf = 170 works.
 # Right-censoring is taken into account for  this analysis.
 
+
+# because the SAP specifies that these results depend on blinded evaluation
+# of the overlap assumption, by default the analysis does nothing.
+# As more immuno reports become available, will add in code here.
 if(study_name_code != "COVE"){
-  times <- intersect(c("Day57", "Day29"), times)
+  # times <- intersect(c("Day57", "Day29"), times)
 }else{
   times <- "Day29"
   assays <- c("pseudoneutid50", "pseudoneutid80")

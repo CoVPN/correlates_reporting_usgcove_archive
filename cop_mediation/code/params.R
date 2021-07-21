@@ -22,7 +22,7 @@ if(study_name_code != "COVE"){
   times <- intersect(c("Day57", "Day29"), times)
 }else{
   times <- "Day29"
-  assays <- "pseudoneutid80"
+  assays <- c("pseudoneutid50", "pseudoneutid80")
 }
 # Marker variables to generate results for
 # assays <- c("bindSpike", "bindRBD", "pseudoneutid80", "liveneutid80", "pseudoneutid80", "liveneutid80", "pseudoneutid50", "liveneutid50")

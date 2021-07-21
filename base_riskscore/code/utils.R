@@ -357,11 +357,12 @@ impute_missing_values <- function(X, riskVars) {
     meth[c(noimpVars)] = ""
     
     # diagnostics = FALSE , remove_collinear=F are needed to avoid errors due to collinearity
-    impX <- mice(X, method=meth, predictorMatrix=predM, m=n.imp,
+    X <- mice(X, method=meth, predictorMatrix=predM, m=n.imp,
                    printFlag = FALSE, seed=1, diagnostics = FALSE, remove_collinear = FALSE)
-    impX <- mice::complete(impX, action = 1L)
+    X <- mice::complete(X, action = 1L)
+    
   }
-  return(impX)
+  return(X)
 }
 
 

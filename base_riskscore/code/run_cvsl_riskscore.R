@@ -134,7 +134,6 @@ if (np <= 30) {
 }
 
 ## solve cores issue
-library(RhpcBLASctl)
 #blas_get_num_procs()
 blas_set_num_threads(1)
 #print(blas_get_num_procs())

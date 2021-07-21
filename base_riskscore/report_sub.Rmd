@@ -43,7 +43,8 @@ tab <- read.csv(here("base_riskscore", "output", "risk_vars.csv"), row.names = 1
 
 if(studyName_for_report=="ENSEMBLE"){
   tab <- tab %>% 
-    footnote(c("Missing values for variables not dropped from analysis were imputed."),
+    footnote(c("Variables with more than 5% missing values were dropped from analysis; missing values for other variables were imputed.", 
+               "Indicator variables not meeting the threshold, such that under the null of not a risk factor there were less than 3 cases in the subgroup with value 1 (or 0), were dropped from analysis."),
              threeparttable = TRUE)
 }
 

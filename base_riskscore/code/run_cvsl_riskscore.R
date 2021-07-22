@@ -80,7 +80,7 @@ dat.ph1 <- inputFile %>%
 np <- sum(dat.ph1 %>% select(matches(endpoint)))
 maxVar <- max(20, floor(np / 20))
 
-# Remove any risk_vars that are indicator variables and have fewer than 10  0's or 1's
+# Remove any risk_vars that are indicator variables and have fewer 0's or 1's
 dat.ph1 <- drop_riskVars_with_fewer_0s_or_1s(dat = dat.ph1, 
                                              risk_vars = risk_vars,
                                              np = np)

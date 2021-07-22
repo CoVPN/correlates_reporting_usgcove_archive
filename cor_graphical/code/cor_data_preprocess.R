@@ -1,6 +1,9 @@
+#Sys.setenv(TRIAL = "moderna_mock")
 #-----------------------------------------------
 # obligatory to append to the top of each script
 renv::activate(project = here::here(".."))
+# There is a bug on Windows that prevents renv from working properly. The following code provides a workaround:
+if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
 source(here::here("..", "_common.R"))
 #-----------------------------------------------
 
@@ -105,7 +108,7 @@ dat.long$assay <- factor(dat.long$assay, levels = assays, labels = assays)
 # subcohort, which is a stratified sample of enrolled participants. So,
 # immunogenicity analysis is always done in ppts that meet all of the criteria.
 if(has57) dat.cor.subset <- dat %>%
-  dplyr::filter(ph1.D57==1 & TwophasesampIndD57 == 1)
+  dplyr::filter(ph1.D57==1 & TwophasesampIndD57 == 1) # this subset results in dat.long.cor.subset being restricted to ptids with both Day29 and Day57 samples
 if(!has57) dat.cor.subset <- dat %>%
   dplyr::filter(ph1.D29==1 & TwophasesampIndD29 == 1)
 cor.subset.id <- dat.cor.subset$Ptid
@@ -435,4 +438,3 @@ saveRDS(as.data.frame(dat.cor.subset),
 
 saveRDS(as.data.frame(dat.longer.cor.subset),
         file = here("data_clean", "longer_cor_data.rds"))
-

@@ -111,12 +111,16 @@ digits.risk=4
 risks.all=get("risks.all.1")
 out=lapply (assays, function(a) {        
     risks=risks.all[[a]]
-    pick.out=names(risks$marker)!=""
+    #pick.out=names(risks$marker)!=""
+    pick.out=rep(T, length(risks$marker))
     tmp=10**risks$marker[pick.out]; tmp=c(round(tmp[1],1), round(tmp[-1]))
     with(risks, cbind("s"=tmp, "Estimate"=paste0(formatDouble(prob[pick.out],digits.risk), " (", formatDouble(lb[pick.out],digits.risk), ",", formatDouble(ub[pick.out],digits.risk), ")")))
 })
 tab=do.call(cbind, out)
 mytex(tab, file.name=paste0("marginalized_risks_eq", "_"%.%study_name), align="c", include.colnames = T, save2input.only=T, input.foldername=save.results.to, include.rownames = F,
+    longtable=T, caption.placement = "top", caption=paste0("Marginalized cumulative risk by Day ",t0," as functions of Day ",
+        pop," markers (=s) among baseline negative vaccine recipients with 95\\% bootstrap point-wise confidence intervals (",
+        ncol(risks.all[[1]]$boot)," replicates)."),
     col.headers=paste0("\\hline\n", concatList(paste0("\\multicolumn{2}{c}{", labels.axis[1,], "}"), "&"), "\\\\\n"))
 
 
@@ -131,7 +135,8 @@ mypdf(onefile=F, file=paste0(save.results.to, "controlled_ve_curves",ifelse(eq.g
     par(las=1, cex.axis=0.9, cex.lab=1)# axis label orientation
     out=lapply (assays, function(a) {        
         risks=get("risks.all."%.%ifelse(eq.geq==2,2,1))[[a]]        
-        pick.out=names(risks$marker)!=""
+        #pick.out=names(risks$marker)!=""
+        pick.out=rep(T, length(risks$marker))
     
         #xlim=quantile(dat.vac.seroneg[["Day"%.%pop%.%a]],if(eq.geq==1) c(.025,.975) else c(0,.95),na.rm=T)
         xlim=get.range.cor(dat.vac.seroneg, a, pop)
@@ -205,6 +210,9 @@ mypdf(onefile=F, file=paste0(save.results.to, "controlled_ve_curves",ifelse(eq.g
     if(eq.geq==1) {
         tab=do.call(cbind, out)
         mytex(tab, file.name=paste0("controlled_ve_sens_eq", "_"%.%study_name), align="c", include.colnames = T, save2input.only=T, input.foldername=save.results.to, include.rownames = F,
+            longtable=T, caption.placement = "top", caption=paste0("Controlled VE with sensitivity analysis as functions of Day ",
+                pop," markers (=s) among baseline negative vaccine recipients with 95\\% bootstrap point-wise confidence intervals (",
+                ncol(risks.all[[1]]$boot)," replicates)."),
             col.headers=paste0("\\hline\n", concatList(paste0("\\multicolumn{2}{c}{", labels.axis[1,], "}"), "&"), "\\\\\n"))
     }
 dev.off()    
@@ -215,7 +223,8 @@ digits.risk=4
 risks.all=get("risks.all.1")
 out=lapply (assays, function(a) {        
     risks=risks.all[[a]]
-    pick.out=names(risks$marker)!=""
+    #pick.out=names(risks$marker)!=""
+    pick.out=rep(T, length(risks$marker))
 
     est = 1 - risks$prob/res.plac.cont["est"]
     boot = 1 - t( t(risks$boot)/res.plac.cont[2:(1+ncol(risks$boot))] )                         
@@ -233,6 +242,9 @@ out=lapply (assays, function(a) {
 })
 tab=do.call(cbind, out)
 mytex(tab, file.name=paste0("controlled_ve_eq", "_"%.%study_name), align="c", include.colnames = T, save2input.only=T, input.foldername=save.results.to, include.rownames = F,
+    longtable=T, caption.placement = "top", caption=paste0("Controlled VE as functions of Day ",
+        pop," markers (=s) among baseline negative vaccine recipients with 95\\% bootstrap point-wise confidence intervals (",
+        ncol(risks.all[[1]]$boot)," replicates)."),
     col.headers=paste0("\\hline\n", concatList(paste0("\\multicolumn{2}{c}{", labels.axis[1,], "}"), "&"), "\\\\\n"))
 
 

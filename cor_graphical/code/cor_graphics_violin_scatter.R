@@ -1,3 +1,4 @@
+#Sys.setenv(TRIAL = "moderna_mock")
 #-----------------------------------------------
 # obligatory to append to the top of each script
 renv::activate(project = here::here(".."))
@@ -118,7 +119,7 @@ for (typ in c("line","violin")) {
     for (j in 1:length(bstatus)) {
       for (k in 1:length(trt)) {
         for (t in 1:length(times)) {
-          
+#typ="violin"; i=1; j=1; k=2; t=1
           if (study_name_code=="COVE"){
             y.breaks <- seq(ifelse(plots[i] %in% c("bindSpike","bindRBD"), -1, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 5, 4), 1)
             y.lim <- c(ifelse(plots[i] %in% c("bindSpike","bindRBD"), -1.5, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 5, 4))

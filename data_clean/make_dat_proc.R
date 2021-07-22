@@ -1,4 +1,4 @@
-#Sys.setenv(TRIAL = "janssen_pooled_real")
+#Sys.setenv(TRIAL = "janssen_pooled_mock")
 #-----------------------------------------------
 renv::activate(here::here())
 # There is a bug on Windows that prevents renv from working properly. The following code provides a workaround:
@@ -22,7 +22,7 @@ dat_proc <- read.csv(here("data_raw", data_raw_dir, data_in_file))
 #10**min(dat_proc$Day29bindSpike,na.rm=T)*.009*2
 #hist(dat_proc$Day29bindN)
 #10**min(dat_proc$Day29bindN,na.rm=T)*0.0024*2
-
+#sort(names(dat_proc))
 
 
 if(study_name=="MockENSEMBLE") dat_proc=dat_proc[, !contain(names(dat_proc), "pseudoneutid")]

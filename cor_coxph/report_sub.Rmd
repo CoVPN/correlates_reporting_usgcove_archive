@@ -234,31 +234,18 @@ $^2$E-values are computed for upper tertile ($s=1$) vs. lower tertile ($s=0$) bi
 
 
 
-\begin{table}[H]
-\caption{Marginalized cumulative risk by Day \protect\input{`r pathCoRoutput`/timepoints_cum_risk_`r study_name`} as functions of Day `r Day` markers (=s) among baseline negative vaccine recipients with 95\% bootstrap point-wise confidence intervals (\protect\input{`r pathCoRoutput`/bootstrap_replicates_`r study_name`} replicates).}
-\begin{center}
-\setlength{\tabcolsep}{.5ex}
-\input{`r pathCoRoutput`/marginalized_risks_eq_`r study_name`}
-\end{center}
-\end{table}
 
 \clearpage
+\setlength{\tabcolsep}{.5ex}
+\input{`r pathCoRoutput`/marginalized_risks_eq_`r study_name`}
 
-\begin{table}[H]
-\caption{Controlled VE as functions of Day `r Day` markers (=s) among baseline negative vaccine recipients with 95\% bootstrap point-wise confidence intervals (\protect\input{`r pathCoRoutput`/bootstrap_replicates_`r study_name`} replicates).}
-\begin{center}
+\clearpage
 \setlength{\tabcolsep}{.5ex}
 \input{`r pathCoRoutput`/controlled_ve_eq_`r study_name`}
-\end{center}
-\end{table}
 
-\begin{table}[H]
-\caption{Controlled VE with sensitivity analysis as functions of Day `r Day` markers (=s) among baseline negative vaccine recipients with 95\% bootstrap point-wise confidence intervals (\protect\input{`r pathCoRoutput`/bootstrap_replicates_`r study_name`} replicates).}
-\begin{center}
+\clearpage
 \setlength{\tabcolsep}{.5ex}
 \input{`r pathCoRoutput`/controlled_ve_sens_eq_`r study_name`}
-\end{center}
-\end{table}
 
 
 

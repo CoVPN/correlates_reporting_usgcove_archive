@@ -1,10 +1,31 @@
-#Sys.setenv(TRIAL = "janssen_pooled_mock")
+#Sys.setenv(TRIAL = "janssen_pooled_real")
 #-----------------------------------------------
 renv::activate(here::here())
 # There is a bug on Windows that prevents renv from working properly. The following code provides a workaround:
 if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
 source(here::here("_common.R"))
 #-----------------------------------------------
+
+myprint(study_name)
+myprint(study_name_code)
+
+dat_raw <- read.csv(here("data_raw", data_raw_dir, data_in_file))
+
+# some exploratory statistics
+
+summary(dat_raw)
+summary(dat_raw$Age)
+hist(dat_raw$Day29bindSpike)
+10**min(dat_raw$Day29bindSpike,na.rm=T)*.009*2
+hist(dat_raw$Day29bindN)
+10**min(dat_raw$Day29bindN,na.rm=T)*0.0024*2
+sort(names(dat_raw))
+
+summary(dat_raw$EventTimePrimaryD29[dat_raw$EventIndPrimaryD29==1])
+hist(dat_raw$EventTimePrimaryD29[dat_raw$EventIndPrimaryD29==1])
+
+
+########################################################################################################
 
 # packages and settings
 library(here)
@@ -13,17 +34,7 @@ library(Hmisc) # wtd.quantile, cut2
 library(mice)
 library(dplyr)
 
-myprint(study_name_code)
-
-dat_proc <- read.csv(here("data_raw", data_raw_dir, data_in_file))
-#summary(dat_proc)
-#summary(dat_proc$Age)
-#hist(dat_proc$Day29bindSpike)
-#10**min(dat_proc$Day29bindSpike,na.rm=T)*.009*2
-#hist(dat_proc$Day29bindN)
-#10**min(dat_proc$Day29bindN,na.rm=T)*0.0024*2
-#sort(names(dat_proc))
-
+dat_proc=dat_raw
 
 if(study_name=="MockENSEMBLE") dat_proc=dat_proc[, !contain(names(dat_proc), "pseudoneutid")]
 

@@ -19,6 +19,11 @@ dat_clean <- read.csv(here("data_clean", data_name))
 #with(dat_clean, table(1-MinorityInd, WhiteNonHispanic, useNA="ifany"))
 
 
+#sort(subset(dat_clean, EventIndPrimaryD1==1 & Trt==1, EventTimePrimaryD1, drop=T))
+#sort(subset(dat_clean, EventIndPrimaryD29==1 & Trt==1, EventTimePrimaryD29, drop=T))
+#summary(subset(dat_clean, EventIndPrimaryD29==1 & Trt==1, EventTimePrimaryD29, drop=T))
+#summary(subset(dat_clean, EventIndPrimaryD29==1 & Trt==1 & ph1.D29, EventTimePrimaryD29, drop=T))
+
 
 # leave comments below for checks implemented in make_dat_proc.R
 ## missing markers imputed properly in each stratum

@@ -14,6 +14,10 @@ dat_clean <- read.csv(here("data_clean", data_name))
 #subset(dat_clean, Ptid=="VAC31518COV3001-7245536")
 #sort(subset(dat_clean, Bserostatus==0 & Perprotocol==1 & ph1.immuno & !is.na(Day29bindN), Day29bindN, drop=T))
 
+#with(subset(dat_clean, Trt==1 & Bserostatus==0 & Perprotocol==1 & EventIndPrimaryD1==1), table(ph1.D29))
+#with(subset(dat_clean, Trt==1 & Bserostatus==0 & Perprotocol==1 & EventIndPrimaryD1==1), table(EventTimePrimaryD29>1))
+
+
 
 
 # leave comments below for checks implemented in make_dat_proc.R

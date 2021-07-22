@@ -212,7 +212,8 @@ mypdf(onefile=F, file=paste0(save.results.to, "controlled_ve_curves",ifelse(eq.g
         mytex(tab, file.name=paste0("controlled_ve_sens_eq", "_"%.%study_name), align="c", include.colnames = T, save2input.only=T, input.foldername=save.results.to, include.rownames = F,
             longtable=T, caption.placement = "top", caption=paste0("Controlled VE with sensitivity analysis as functions of Day ",
                 pop," markers (=s) among baseline negative vaccine recipients with 95\\% bootstrap point-wise confidence intervals (",
-                ncol(risks.all[[1]]$boot)," replicates)."),
+                ncol(risks.all[[1]]$boot)," replicates)."
+                ),
             col.headers=paste0("\\hline\n", concatList(paste0("\\multicolumn{2}{c}{", labels.axis[1,], "}"), "&"), "\\\\\n"))
     }
 dev.off()    
@@ -244,9 +245,11 @@ tab=do.call(cbind, out)
 mytex(tab, file.name=paste0("controlled_ve_eq", "_"%.%study_name), align="c", include.colnames = T, save2input.only=T, input.foldername=save.results.to, include.rownames = F,
     longtable=T, caption.placement = "top", caption=paste0("Controlled VE as functions of Day ",
         pop," markers (=s) among baseline negative vaccine recipients with 95\\% bootstrap point-wise confidence intervals (",
-        ncol(risks.all[[1]]$boot)," replicates)."),
+        ncol(risks.all[[1]]$boot)," replicates).", "Overall cumulative incidence from 7 to ",t0," days post Day ",pop," was ",
+        formatDouble(prev.vacc[1], 3, remove.leading0=F)," in vaccine recipients compared to ",
+        formatDouble(prev.plac[1], 3, remove.leading0=F)," in placebo recipients, with cumulative vaccine efficacy ",
+        formatDouble(overall.ve[1]*100,1),"\\% (95\\% CI ",formatDouble(overall.ve[2]*100,1)," to ",formatDouble(overall.ve[3]*100,1),"\\%)."),
     col.headers=paste0("\\hline\n", concatList(paste0("\\multicolumn{2}{c}{", labels.axis[1,], "}"), "&"), "\\\\\n"))
-
 
 
 ###################################################################################################

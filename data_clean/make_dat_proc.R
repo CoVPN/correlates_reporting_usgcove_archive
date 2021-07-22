@@ -35,9 +35,9 @@ if(study_name_code=="ENSEMBLE") {
     # set Bserostatus==0 for all ptids that have BbindN > Positivity cut-off
     # The reason for the issue/discrepancy was that Janssen used a different assay for seroconversion.   
     # The decision here is to require baseline seronegative to mean seronegative on both assays. 
-    with(dat_proc, table(10**BbindN*convf["bindN"]>pos.cutoffs["bindN"], Bserostatus))
-    dat_proc$Bserostatus=ifelse(10**dat_proc$BbindN*convf["bindN"]>pos.cutoffs["bindN"], 0, 1)
-    with(dat_proc, table(10**BbindN*convf["bindN"]>pos.cutoffs["bindN"], Bserostatus))
+    with(dat_proc, table(10**BbindN*convf["bindN"]>pos.cutoffs["bindN"], Bserostatus, useNA="ifany"))
+    dat_proc$Bserostatus[10**dat_proc$BbindN*convf["bindN"]>pos.cutoffs["bindN"]]=1
+    with(dat_proc, table(10**BbindN*convf["bindN"]>pos.cutoffs["bindN"], Bserostatus, useNA="ifany"))
 }
 
 

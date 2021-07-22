@@ -119,9 +119,9 @@ labels.ethnicity <- c(
 labels.assays.short <- c("Anti N IgG (IU/ml)", 
                          "Anti Spike IgG (IU/ml)", 
                          "Anti RBD IgG (IU/ml)", 
-                         "Pseudovirus-nAb ID50 (IU)", 
-                         "Pseudovirus-nAb ID80 (IU)", 
-                         "Live virus-nAb MN50 (IU)")
+                         "Pseudovirus-nAb cID50", 
+                         "Pseudovirus-nAb cID80", 
+                         "Live virus-nAb cMN50")
 names(labels.assays.short) <- c("bindN",
   "bindSpike",
   "bindRBD",

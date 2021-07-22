@@ -208,7 +208,7 @@ for (i in 1:length(plots)) {
           ## make another subsample datasets such that the jitter plot for each subgroup in each panel <= 25 data points
           plot.25sample2 <-  longer_cor_data_sub2 %>% 
             group_by_at(groupby_vars2) %>%
-            sample_n((ifelse(n()>=100, 100, n())), replace=F) %>% filter(time=="Day 29") %>% 
+            sample_n((ifelse(n()>=100 & cohort_event=="Non-Cases", 100, n())), replace=F) %>% filter(time=="Day 29") %>% 
             ungroup() %>%
             select(c("Ptid", groupby_vars2[!groupby_vars2 %in% "time"])) %>%
             inner_join(longer_cor_data_sub2, by=c("Ptid", groupby_vars2[!groupby_vars2 %in% "time"]))

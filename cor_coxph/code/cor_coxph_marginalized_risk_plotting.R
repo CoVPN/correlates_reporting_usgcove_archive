@@ -118,7 +118,7 @@ out=lapply (assays, function(a) {
 })
 tab=do.call(cbind, out)
 mytex(tab, file.name=paste0("marginalized_risks_eq", "_"%.%study_name), align="c", include.colnames = T, save2input.only=T, input.foldername=save.results.to, include.rownames = F,
-    longtable=T, caption.placement = "top", caption=paste0("Marginalized cumulative risk by Day ",t0," as functions of Day ",
+    longtable=T, caption.placement = "top", label=paste0("tab marginalized_risks_eq ", pop), caption=paste0("Marginalized cumulative risk by Day ",t0," as functions of Day ",
         pop," markers (=s) among baseline negative vaccine recipients with 95\\% bootstrap point-wise confidence intervals (",
         ncol(risks.all[[1]]$boot)," replicates)."),
     col.headers=paste0("\\hline\n", concatList(paste0("\\multicolumn{2}{c}{", labels.axis[1,], "}"), "&"), "\\\\\n"))
@@ -210,7 +210,7 @@ mypdf(onefile=F, file=paste0(save.results.to, "controlled_ve_curves",ifelse(eq.g
     if(eq.geq==1) {
         tab=do.call(cbind, out)
         mytex(tab, file.name=paste0("controlled_ve_sens_eq", "_"%.%study_name), align="c", include.colnames = T, save2input.only=T, input.foldername=save.results.to, include.rownames = F,
-            longtable=T, caption.placement = "top", caption=paste0("Controlled VE with sensitivity analysis as functions of Day ",
+            longtable=T, caption.placement = "top", label=paste0("tab controlled_ve_sens_eq ", pop), caption=paste0("Controlled VE with sensitivity analysis as functions of Day ",
                 pop," markers (=s) among baseline negative vaccine recipients with 95\\% bootstrap point-wise confidence intervals (",
                 ncol(risks.all[[1]]$boot)," replicates)."
                 ),
@@ -243,7 +243,7 @@ out=lapply (assays, function(a) {
 })
 tab=do.call(cbind, out)
 mytex(tab, file.name=paste0("controlled_ve_eq", "_"%.%study_name), align="c", include.colnames = T, save2input.only=T, input.foldername=save.results.to, include.rownames = F,
-    longtable=T, caption.placement = "top", caption=paste0("Controlled VE as functions of Day ",
+    longtable=T, caption.placement = "top", label=paste0("tab controlled_ve_eq ", pop), caption=paste0("Controlled VE as functions of Day ",
         pop," markers (=s) among baseline negative vaccine recipients with 95\\% bootstrap point-wise confidence intervals (",
         ncol(risks.all[[1]]$boot)," replicates).", "Overall cumulative incidence from 7 to ",t0," days post Day ",pop," was ",
         formatDouble(prev.vacc[1], 3, remove.leading0=F)," in vaccine recipients compared to ",

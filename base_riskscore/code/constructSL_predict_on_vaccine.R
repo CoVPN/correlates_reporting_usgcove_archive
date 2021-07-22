@@ -33,10 +33,9 @@ source(here("code", "sl_screens.R")) # set up the screen/algorithm combinations
 source(here("code", "utils.R")) # get CV-AUC for all algs
 
 ## solve cores issue
-library(RhpcBLASctl)
-blas_get_num_procs()
+#blas_get_num_procs()
 blas_set_num_threads(1)
-print(blas_get_num_procs())
+#print(blas_get_num_procs())
 stopifnot(blas_get_num_procs() == 1)
 
 ## construct superlearner on placebo arm-----------------------
@@ -83,15 +82,16 @@ vacc <- bind_cols(
 ) %>%
   rename(pred = V1) %>%
   # add AUC
-  mutate(
-    AUCchar = format(round(fast.auc(pred, EventIndPrimaryD57), 3), nsmall = 3),
-    risk_score = log(pred / (1 - pred))
-  )
+  mutate(AUCchar = format(round(fast.auc(pred, get(endpoint)), 3), nsmall = 3),
+         risk_score = log(pred / (1 - pred)),
+         risk_score = scale(risk_score,
+                            center = mean(risk_score, na.rm = T),
+                            scale = sd(risk_score, na.rm = T)))
 
 write.csv(vacc, here("output", "vaccine_ptids_with_riskscores.csv"), row.names = FALSE)
 
 # plot ROC curve on vaccinees
-pred.obj <- ROCR::prediction(vacc$pred, vacc$EventIndPrimaryD57)
+pred.obj <- ROCR::prediction(vacc$pred, vacc %>% pull(endpoint))
 perf.obj <- ROCR::performance(pred.obj, "tpr", "fpr")
 
 options(bitmapType = "cairo")
@@ -125,7 +125,7 @@ options(bitmapType = "cairo")
 png(file = here("figs", "predProb_riskscore_vacc_onlySL.png"),
     width = 1100, height = 700)
 vacc %>%
-  mutate(Ychar = ifelse(EventIndPrimaryD57 == 0, "Control", "Case")) %>%
+  mutate(Ychar = ifelse(get(endpoint) == 0, "Control", "Case")) %>%
   ggplot(aes(x = Ychar, y = pred, color = Ychar)) +
   geom_jitter(width = 0.015, size = 1.25) +
   geom_violin(alpha = 0.2, color = "black") +
@@ -141,3 +141,4 @@ vacc %>%
     axis.title.y = element_text(size = 30)
   )
 dev.off()
+

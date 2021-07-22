@@ -1,6 +1,9 @@
+#Sys.setenv(TRIAL = "moderna_mock")
 #-----------------------------------------------
 # obligatory to append to the top of each script
 renv::activate(project = here::here(".."))
+# There is a bug on Windows that prevents renv from working properly. The following code provides a workaround:
+if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
 source(here::here("..", "_common.R"))
 #-----------------------------------------------
 
@@ -50,6 +53,7 @@ dat.long.subject_level <- dat[, c(
   "SubcohortInd", "age.geq.65", 
   "Bstratum", "wt.D29", "race",
   "WhiteNonHispanic", "cohort_event",
+  if(study_name_code=="ENSEMBLE") c("URMforsubcohortsampling"), 
   if(has57) c("Fullvaccine", "ph1.intercurrent.cases", "ph2.intercurrent.cases", 
               "wt.intercurrent.cases","EventIndPrimaryD57", "TwophasesampIndD57", "wt.D57")
 )] %>%
@@ -104,9 +108,9 @@ dat.long$assay <- factor(dat.long$assay, levels = assays, labels = assays)
 # subcohort, which is a stratified sample of enrolled participants. So,
 # immunogenicity analysis is always done in ppts that meet all of the criteria.
 if(has57) dat.cor.subset <- dat %>%
-  dplyr::filter(TwophasesampIndD57 == 1)
+  dplyr::filter(ph1.D57==1 & TwophasesampIndD57 == 1) # this subset results in dat.long.cor.subset being restricted to ptids with both Day29 and Day57 samples
 if(!has57) dat.cor.subset <- dat %>%
-  dplyr::filter(TwophasesampIndD29 == 1)
+  dplyr::filter(ph1.D29==1 & TwophasesampIndD29 == 1)
 cor.subset.id <- dat.cor.subset$Ptid
 
 
@@ -137,15 +141,20 @@ for (t in c("B", if(has29) "Day29", "Day57") ) {
 dat.long.cor.subset$Delta29overB = dat.long.cor.subset$Day29 - dat.long.cor.subset$B
 if(has57) dat.long.cor.subset$Delta57overB = dat.long.cor.subset$Day57 - dat.long.cor.subset$B
 
+# age threshold
+if (study_name_code=="COVE") {age_thres=65; younger_age="Age < 65"; older_age="Age >= 65"
+} else {age_thres=60; younger_age="Age 18 - 59"; older_age="Age >= 60"}
+dat.long.cor.subset$age.geq.65 = as.integer(dat.long.cor.subset$Age >= age_thres)
+
 # # matrix to decide the sampling strata
 dat.long.cor.subset$demo_lab <-
   with(dat.long.cor.subset, factor(paste0(age.geq.65, HighRiskInd),
     levels = c("00", "01", "10", "11"),
     labels = c(
-      "Age < 65 not at tisk",
-      "Age < 65 at risk",
-      "Age >= 65 not at risk",
-      "Age >= 65 at risk"
+      paste(younger_age, "not at tisk"),
+      paste(younger_age, "at risk"),
+      paste(older_age, "not at risk"),
+      paste(older_age, "at risk")
     )
   ))
 
@@ -172,7 +181,7 @@ dat.long.cor.subset$age_geq_65_label <-
     dat.long.cor.subset,
     factor(age.geq.65,
            levels = c(0, 1),
-           labels = c("Age < 65", "Age >= 65")
+           labels = c(younger_age, older_age)
     )
   )
 
@@ -191,10 +200,10 @@ dat.long.cor.subset$age_risk_label <-
     factor(paste0(age.geq.65, HighRiskInd),
            levels = c("00", "01", "10", "11"),
            labels = c(
-             "Age < 65 not at risk",
-             "Age < 65 at risk",
-             "Age >= 65 not at risk",
-             "Age >= 65 at risk"
+             paste(younger_age, "not at risk"),
+             paste(younger_age, "at risk"),
+             paste(older_age, "not at risk"),
+             paste(older_age, "at risk")
            )
     )
   )
@@ -214,10 +223,10 @@ dat.long.cor.subset$age_sex_label <-
     factor(paste0(age.geq.65, Sex),
            levels = c("00", "01", "10", "11"),
            labels = c(
-             "Age < 65 male",
-             "Age < 65 female",
-             "Age >= 65 male",
-             "Age >= 65 female"
+             paste(younger_age, "male"),
+             paste(younger_age, "female"),
+             paste(older_age, "male"),
+             paste(younger_age, "female")
            )
     )
   )
@@ -236,28 +245,54 @@ dat.long.cor.subset$ethnicity_label <-
     levels = c("Hispanic or Latino", "Not Hispanic or Latino", "Not reported and unknown")
   )
 
-dat.long.cor.subset$minority_label <-
-  with(
-    dat.long.cor.subset,
-    factor(WhiteNonHispanic,
-           levels = c(1, 0),
-           labels = c("White Non-Hispanic", "Comm. of Color")
+if (study_name_code=="COVE") {
+  dat.long.cor.subset$minority_label <-
+    with(
+      dat.long.cor.subset,
+      factor(WhiteNonHispanic,
+             levels = c(1, 0),
+             labels = c("White Non-Hispanic", "Comm. of Color")
+      )
     )
-  )
 
-dat.long.cor.subset$age_minority_label <-
-  with(
-    dat.long.cor.subset,
-    factor(paste0(age.geq.65, WhiteNonHispanic),
-           levels = c("00", "01", "10", "11"),
-           labels = c(
-             "Age < 65 Comm. of Color",
-             "Age < 65 White Non-Hispanic",
-             "Age >= 65 Comm. of Color",
-             "Age >= 65 White Non-Hispanic"
-           )
+  dat.long.cor.subset$age_minority_label <-
+    with(
+      dat.long.cor.subset,
+      factor(paste0(age.geq.65, WhiteNonHispanic),
+             levels = c("00", "01", "10", "11"),
+             labels = c(
+               paste(younger_age, "Comm. of Color"),
+               paste(younger_age, "White Non-Hispanic"),
+               paste(older_age, "Comm. of Color"),
+               paste(older_age, "White Non-Hispanic")
+             )
+      )
     )
-  )
+} else {
+  dat.long.cor.subset$minority_label <-
+    with(
+      dat.long.cor.subset,
+      factor(URMforsubcohortsampling,
+             levels = c(1, 0),
+             labels = c("URM", "Non-URM")
+      )
+    )
+  dat.long.cor.subset$age_minority_label <-
+    with(
+      dat.long.cor.subset,
+      factor(paste0(age.geq.65, URMforsubcohortsampling),
+             levels = c("00", "01", "10", "11"),
+             labels = c(
+               paste(younger_age, "Non-URM"),
+               paste(younger_age, "URM"),
+               paste(older_age, "Non-URM"),
+               paste(older_age, "URM")
+             )
+      )
+    )
+}
+
+
 
 
 
@@ -317,22 +352,22 @@ if(has57) {
     mutate(num = round(sum(response * ifelse(cohort_event=="Intercurrent Cases", wt.intercurrent.cases, wt.D57)), 1),
            denom = round(sum(ifelse(cohort_event=="Intercurrent Cases", wt.intercurrent.cases, wt.D57)), 1),
            RespRate = paste0(num,"/",denom,"=",round(num/denom*100, 1),"%"),
-           min = min(value, na.rm=T),
+           min = min(value),
            q1 = quantile(value, 0.25, na.rm=T),
            median = median(value, na.rm=T),
            q3 = quantile(value, 0.75, na.rm=T),
-           max= max(value, na.rm=T))
+           max= max(value))
 } else {
   dat.longer.cor.subset.plot1 <-
     dat.longer.cor.subset %>% group_by_at(groupby_vars1) %>%
     mutate(num = round(sum(response * wt.D29), 1),
            denom = round(sum(wt.D29), 1),
            RespRate = paste0(num,"/",denom,"=",round(num/denom*100, 1),"%"),
-           min = min(value, na.rm=T),
+           min = min(value),
            q1 = quantile(value, 0.25, na.rm=T),
            median = median(value, na.rm=T),
            q3 = quantile(value, 0.75, na.rm=T),
-           max= max(value, na.rm=T))
+           max= max(value))
 }
 write.csv(dat.longer.cor.subset.plot1, file = here("data_clean", "longer_cor_data_plot1.csv"), row.names=F)
 
@@ -403,4 +438,3 @@ saveRDS(as.data.frame(dat.cor.subset),
 
 saveRDS(as.data.frame(dat.longer.cor.subset),
         file = here("data_clean", "longer_cor_data.rds"))
-

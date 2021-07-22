@@ -674,5 +674,3 @@ print("Done with all tables")
 save(tlf, tab_dm_neg, tab_dm_pos, tab_strtm1, tab_strtm2, tab_case_cnt, 
      case_vacc_neg, case_vacc_pos, case_plcb_pos,
      file = here::here("output", "Tables.Rdata"))
-
-

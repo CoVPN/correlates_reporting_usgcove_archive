@@ -63,12 +63,23 @@ if(study_name_code == "ENSEMBLE"){
   
   endpoint <- "EventIndPrimaryD29"
   studyName_for_report <- "ENSEMBLE"
+  # Add calendar time indicator variables for ENSEMBLE
+  dat.ph1 <- inputFile %>%
+    mutate(CalendarDateEnrollment.dropPause = ifelse(CalendarDateEnrollment > 32, CalendarDateEnrollment - 2, CalendarDateEnrollment),
+           CalendarDateEnroll.ind = case_when(CalendarDateEnrollment.dropPause < 28 ~ 0,
+                                              CalendarDateEnrollment.dropPause >= 28 & CalendarDateEnrollment.dropPause < 56 ~ 1,
+                                              CalendarDateEnrollment.dropPause >= 56 & CalendarDateEnrollment.dropPause < 84 ~ 2,
+                                              CalendarDateEnrollment.dropPause >= 84 & CalendarDateEnrollment.dropPause < 112 ~ 3),
+           Region.CalendarDateEnroll = interaction(Region, CalendarDateEnroll.ind))
+  # Update risk_vars
+  risk_vars <- c(risk_vars, "Region", "CalendarDateEnroll.ind", "Region.CalendarDateEnroll")
 }
 
 ################################################
 
+
 # Consider only placebo data for risk score analysis
-dat.ph1 <- inputFile %>%
+dat.ph1 <- dat.ph1 %>%
   filter(Perprotocol == 1 & Trt == 0 & Bserostatus == 0) %>%
   # Keep only variables to be included in risk score analyses
   select(Ptid, Trt, all_of(endpoint), all_of(risk_vars)) %>%

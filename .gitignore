@@ -313,3 +313,16 @@ cor_graphical/renv/activate.R
 cor_nonlinear/output/D29/bootstrap_replicates_MockCOVE
 cor_nonlinear/output/D29/marginalized.risk.gam.MockCOVE.Rdata
 cop_mediation/*.html
+data_raw/janssen/COVID_ENSEMBLE_realdata.csv
+.config.yml.swp
+cor_coxph/output/D29/d29to57_interval_summary_MockCOVE.tex
+cor_coxph/output/D29/num_vacc_cases_highid80_MockCOVE
+cor_coxph/output/D29/dose1_interval_summary_MockCOVE.tex
+cor_coxph/output/D29/avg_followup_MockCOVE
+cor_coxph/output/D29/controlled_ve_eq_MockCOVE.tex
+cor_coxph/output/D29/controlled_ve_sens_eq_MockCOVE.tex
+cor_coxph/output/D57/avg_followup_MockCOVE
+cor_coxph/output/D57/controlled_ve_eq_MockCOVE.tex
+cor_coxph/output/D57/controlled_ve_sens_eq_MockCOVE.tex
+cor_coxph/output/D57/dose1_interval_summary_MockCOVE.tex
+cor_coxph/output/D57/num_vacc_cases_highid80_MockCOVE

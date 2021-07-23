@@ -17,7 +17,7 @@ vaccinees_risk <- read_csv(here("output", "vaccine_ptids_with_riskscores.csv"))
 
 # merge risk score with cleaned data by IDs, then save updated data file
 risk_scores <- rbind(placebos_risk, vaccinees_risk) %>%
-  select(Ptid, risk_score)
+  select(Ptid, risk_score, standardized_risk_score)
 dat_with_riskscore <- merge(dat_cleaned, risk_scores, by = "Ptid")
 data_name_amended <- paste0(str_remove(data_name, ".csv"), "_with_riskscore")
 write_csv(dat_with_riskscore,

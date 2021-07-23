@@ -29,17 +29,6 @@ ggplot2::theme_set(theme_cowplot())
 load(file = here("output", "cvaucs_vacc_EventIndPrimaryD57.rda"))
 load(file = here("output", "ph2_vacc_ptids.rda"))
 
-
-# Assign weight and twophasesampind vars based off marker timepoint analyses
-if(DAY %in% c("Day57", "Both")){
-  WEIGHT = "wt.D57"
-  TWOPHASESAMPIND = "TwophasesampIndD57"
-}
-if(DAY == "Day29"){
-  WEIGHT = "wt.D29"
-  TWOPHASESAMPIND = "TwophasesampIndD29"
-}
-
 ## ----learner-screens, warning=kable_warnings--------------------------------------------------------------------------------------------------------------------------
 caption <- "All learner-screen combinations (14 in total) used as input to the Superlearner."
 
@@ -69,10 +58,18 @@ tab %>% write.csv(here("output", "learner-screens.csv"))
 ## ----All 14 variable sets --------------------------------------------------------------------------------------------------------------------
 caption <- "The 12 variable sets on which an estimated optimal surrogate was built."
 
-tab <- data.frame(`Variable Set Name` = c("1_baselineRiskFactors", 
-                                          "2_varset_bAbSpike", "3_varset_bAbRBD", "4_varset_pnabID50", "5_varset_pnabID80",  
-                                          "6_varset_bAb_pnabID50", "7_varset_bAb_pnabID80", 
-                                          "8_varset_bAb_combScores", "9_varset_allMarkers", "10_varset_allMarkers_combScores"),
+tab <- data.frame(`Variable Set Name` = c("1_baselineRiskFactors",
+                                          "2_bAbSpike_D57", "3_bAbRBD_D57", "4_pnabID50_D57", "5_pnabID80_D57", 
+                                          "6_bAb_pnabID50_D57", "7_bAb_pnabID80_D57", 
+                                          "8_bAb_combScores_D57", "9_allMarkers_D57", "10_allMarkers_combScores_D57",
+                                          
+                                          "11_bAbSpike_D29", "12_bAbRBD_D29", "13_pnabID50_D29", "14_pnabID80_D29", 
+                                          "15_bAb_pnabID50_D29", "16_bAb_pnabID80_D29", 
+                                          "17_bAb_combScores_D29", "18_allMarkers_D29", "19_allMarkers_combScores_D29",
+                                          
+                                          "20_bAbSpike_D29_D57", "21_bAbRBD_D29_D57", "22_pnabID50_D29_D57", "23_pnabID80_D29_D57", 
+                                          "24_bAb_pnabID50_D29_D57", "25_bAb_pnabID80_D29_D57", 
+                                          "26_bAb_combScores_D29_D57", "27_allMarkers_D29_D57", "28_allMarkers_combScores_D29_D57"),
                   `Variables included in the set` = c("Baseline risk factors only (Reference model)",
                                                       "Baseline risk factors + bAb anti-Spike markers",
                                                       "Baseline risk factors + bAb anti-RBD markers",

@@ -11,35 +11,37 @@
 
 5. Create a new data frame `dat.long`. In `dat.long` there is a new field `assay` that takes the string values "bindSpike", "bindRBD", "pseudoneutid50" and "pseudoneutid80", corresponding to four types of assays. Additionally, there are new fields `B`, `Day29`, `Day57`, `Delta29overB`, `Delta57overB` and `Delta57over29`, with values equal to the assay readouts at time points indicated by the field name. Each row of `dat.long` corresponds to the assay readouts of one type of assays, indicated by `assay`, at different time points or for different fold-rise comparisons. Therefore, each individual has four rows for four different types of assay readouts. Additionally, there are fields in the original data frame `dat` with the individual-level information, including `Ptid`, `Trt`, `MinorityInd`, `EthnicityHispanic`, `EthnicityNotreported`, `EthnicityUnknown`, `HighRiskInd`, `Age`, `BMI`, `Sex`, `Bserostatus`, `Fullvaccine`, `Perprotocol`, `EventIndPrimaryD29`,
   `EventIndPrimaryD57`, `SubcohortInd`, `age.geq.65`, `TwophasesampIndD57`, `ph1.D29`
-  `Bstratum`, `wt.D57`, `wt.D29`, `race`, `WhiteNonHispanic`, and `cohort_event`.
+  `Bstratum`, `wt.D57`, `wt.D29`, `race`, `WhiteNonHispanic`, and `cohort_event`. 
+  
+6. Save `dat.long` to `dat.long.cor.subset`
 
-6. In `dat.long.cor.subset`, create a new field `Dich_RaceEthnic`, which is defined as the string "Hispanic or Latino" if `EthnicityHispanic` == 1, "Not Hispanic or Latino" if `EthnicityHispanic` == 0, `EthnicityNotreported` == 0, and `EthnicityUnknown` == 0, and NA otherwise.
+7. In `dat.long.cor.subset`, create a new field `Dich_RaceEthnic`, which is defined as the string "Hispanic or Latino" if `EthnicityHispanic` == 1, "Not Hispanic or Latino" if `EthnicityHispanic` == 0, `EthnicityNotreported` == 0, and `EthnicityUnknown` == 0, and NA otherwise.
 
-7. In `dat.long.cor.subset`, create a new field `LLoD`, `LLoQ`, `pos.cutoffs` and `ULoQ`, which is defined as the log10 of the Lower Limit of Detection of the assays, the log10 of the Lower Limit of Quantification of the assays, the log10 of the positivity cutoffs for bAb assays, the log10 of the Upper Limit of Quantitation of the assays, respectively.
+8. In `dat.long.cor.subset`, create a new field `LLoD`, `LLoQ`, `pos.cutoffs` and `ULoQ`, which is defined as the log10 of the Lower Limit of Detection of the assays, the log10 of the Lower Limit of Quantification of the assays, the log10 of the positivity cutoffs for bAb assays, the log10 of the Upper Limit of Quantitation of the assays, respectively.
 
-8. In `dat.long.cor.subset`, censor values of `B`, `Day29`, `Day 57` to the `ULoQ` if above `ULoQ`.
+9. In `dat.long.cor.subset`, censor values of `B`, `Day29`, `Day 57` to the `ULoQ` if above `ULoQ`.
 
-9. In `dat.long.cor.subset`, set maximum values of `Day29` and `Day57` to be `ULoQ`, then reset `Delta29overB` = (`Day29` - `B`) and `Delta57overB` = (`Day57` - `B`) in order to make the differences between post- and pre-timepoints based on censored values.
+10. In `dat.long.cor.subset`, set maximum values of `Day29` and `Day57` to be `ULoQ`, then reset `Delta29overB` = (`Day29` - `B`) and `Delta57overB` = (`Day57` - `B`) in order to make the differences between post- and pre-timepoints based on censored values.
 
-10. In `dat.long.cor.subset`, create a new field `demo_lab`, which is defined as the cross product of `age.geq.65` and `HighRiskInd` fields converted to a factor.
+11. In `dat.long.cor.subset`, create a new field `demo_lab`, which is defined as the cross product of `age.geq.65` and `HighRiskInd` fields converted to a factor.
 
-11. In `dat.long.cor.subset`, create a new field `trt_bstatus_label`, which is defined as the cross product of `Trt` and `Bserostatus` fields converted to a factor.
+12. In `dat.long.cor.subset`, create a new field `trt_bstatus_label`, which is defined as the cross product of `Trt` and `Bserostatus` fields converted to a factor.
 
-12. In `dat.long.cor.subset`, create a new field `age_geq_65_label`, which is defined as the `age.geq.65` field converted to a factor.
+13. In `dat.long.cor.subset`, create a new field `age_geq_65_label`, which is defined as the `age.geq.65` field converted to a factor.
 
-13. In `dat.long.cor.subset`, create a new field `highrisk_label`, which is defined as the `HighRiskInd` field converted to a factor.
+14. In `dat.long.cor.subset`, create a new field `highrisk_label`, which is defined as the `HighRiskInd` field converted to a factor.
 
-14. In `dat.long.cor.subset`, create a new field `age_risk_label`, which is defined as the cross product of `age.geq.65` and `HighRiskInd` fields converted to a factor.
+15. In `dat.long.cor.subset`, create a new field `age_risk_label`, which is defined as the cross product of `age.geq.65` and `HighRiskInd` fields converted to a factor.
 
-15. In `dat.long.cor.subset`, create a new field `sex_label`, which is defined as the `Sex` field converted to a factor.
+16. In `dat.long.cor.subset`, create a new field `sex_label`, which is defined as the `Sex` field converted to a factor.
 
-16. In `dat.long.cor.subset`, create a new field `age_sex_label`, which is defined as the cross product of `age.geq.65` and `Sex` fields converted to a factor.
+17. In `dat.long.cor.subset`, create a new field `age_sex_label`, which is defined as the cross product of `age.geq.65` and `Sex` fields converted to a factor.
 
-17. In `dat.long.cor.subset`, create a new field `ethnicity_label`, which is defined as the string "Hispanic or Latino" if `EthnicityHispanic` == 1; "Not Hispanic or Latino" if `EthnicityHispanic` == 0, `EthnicityNotreported` == 0, and `EthnicityUnknown` == 0; and "Not reported and unknown" otherwise. Then convert this field to a factor.
+18. In `dat.long.cor.subset`, create a new field `ethnicity_label`, which is defined as the string "Hispanic or Latino" if `EthnicityHispanic` == 1; "Not Hispanic or Latino" if `EthnicityHispanic` == 0, `EthnicityNotreported` == 0, and `EthnicityUnknown` == 0; and "Not reported and unknown" otherwise. Then convert this field to a factor.
 
-18. In `dat.long.cor.subset`, create a new field `minority_label`, which is defined as a string "White Non-Hispanic" if `WhiteNonHispanic == 1` or "Comm. of Color" otherwise.
+19. In `dat.long.cor.subset`, create a new field `minority_label`, which is defined as a string "White Non-Hispanic" if `WhiteNonHispanic == 1` or "Comm. of Color" otherwise.
 
-19. In `dat.long.cor.subset`, create a new field `age_minority_label`, which is defined as the cross product of `age.geq.65` and `WhiteNonHispanic` fields converted to a factor.
+20. In `dat.long.cor.subset`, create a new field `age_minority_label`, which is defined as the cross product of `age.geq.65` and `WhiteNonHispanic` fields converted to a factor.
 
 20.1. Take the subset of `dat.long.cor.subset` with `ph2.D29` == 1, filter out the records if `cohort_event` %in% c("Post-Peak Cases","Non-Cases") & `ph2.D57`==0, and rename the dataset as `dat.long.cor.subset.twophase.intercurrent`, correspondingly. (These are for Yiwen's figures)
 

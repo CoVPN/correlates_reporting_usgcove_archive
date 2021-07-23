@@ -155,7 +155,10 @@ plac <- bind_cols(
   risk_placebo_ptids,
   pred %>% filter(Learner == "SL") %>% select(pred, AUCchar)
 ) %>%
-  mutate(risk_score = log(pred / (1 - pred)))
+  mutate(risk_score = log(pred / (1 - pred)),
+         standardized_risk_score = scale(risk_score,
+                                         center = mean(risk_score, na.rm = T),
+                                         scale = sd(risk_score, na.rm = T)))
 
 write.csv(plac, here("output", "placebo_ptids_with_riskscores.csv"),
           row.names = FALSE)

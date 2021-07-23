@@ -241,7 +241,7 @@ run_cv_sl_once <- function(seed = 1, Y = NULL, X_mat = NULL,
     SL.library = sl_lib,
     method = method, cvControl = cvControl,
     innerCvControl = innerCvControl,
-    verbose = TRUE
+    verbose = FALSE
   )
 
   aucs <- get_all_aucs(sl_fit = fit, scale = scale)
@@ -458,16 +458,24 @@ plot_roc_curves <- function(predict, cvaucDAT) {
 # @param pred dataframe returned by get_cv_predictions function
 # @return ggplot object containing the predicted probability plots
 plot_predicted_probabilities <- function(pred) {
+  if(study_name_code == "COVE"){
+    cases = "Post Day 57 Cases"
+  }
+  if(study_name_code == "ENSEMBLE"){
+    cases = "Post Day 29 Cases"
+  }
+  
   pred %>%
-    mutate(Ychar = ifelse(Y == 0, "Control", "Case")) %>%
+    mutate(Ychar = ifelse(Y == 0, "Non-Cases", cases)) %>%
     ggplot(aes(x = Ychar, y = pred, color = Ychar)) +
-    geom_jitter(width = 0.015, size = 0.01) +
-    geom_violin(alpha = 0.2, color = "black") +
-    geom_boxplot(alpha = 0.2, width = 0.025, color = "black", outlier.size = NA, outlier.shape = NA) +
+    geom_jitter(width = 0.06, size = 3, shape = 21, fill = "white") +
+    geom_violin(alpha = 0.05, color = "black", lwd=1.5) +
+    geom_boxplot(alpha = 0.05, width = 0.15, color = "black", outlier.size = NA, outlier.shape = NA, lwd=1.5) +
     theme_bw() +
-    scale_color_manual(values = c("#56B4E9", "#E69F00")) +
+    #scale_color_manual(values = c("#56B4E9", "#E69F00")) +
+    scale_color_manual(values = c("#00468B", "#8B0000")) +
     facet_wrap(vars(learnerScreen), ncol = 1) +
-    labs(y = "CV estimated predicted probability of COVID disease", x = "") +
+    labs(y = "CV estimated predicted probability of COVID-19 disease", x = "") +
     theme(
       legend.position = "none",
       strip.text.x = element_text(size = 25),

@@ -86,7 +86,7 @@ myplot <- function(dat,
   
   if (type=="line") {
     p <- p + geom_violin(scale="width") + 
-      geom_line(data=dat.sample, aes(group = Ptid)) + 
+      geom_line(data = dat.sample, aes(group = Ptid)) + 
       geom_point(data = dat.sample, size = pt.size, show.legend = TRUE) +
       geom_boxplot(width=0.25, lwd=1.5, alpha = 0.3, outlier.shape=NA, show.legend = FALSE)
   } else if (type=="violin") {
@@ -192,8 +192,8 @@ for (i in 1:length(plots)) {
           longer_cor_data_plot2 <- 
             longer_cor_data %>% group_by_at(groupby_vars2) %>%
             mutate(counts = n(),
-                   num = round(sum(response * ifelse(cohort_event=="Intercurrent Cases", 1, !!as.name(wt)), na.rm=T), 1), # for intercurrent cases, we don't need to adjust for the weight because all of them are from the same stratum
-                   denom = round(sum(ifelse(cohort_event=="Intercurrent Cases", 1, !!as.name(wt)), na.rm=T), 1), 
+                   num = round(sum(response * ifelse(!cohort_event %in% c("Post-Peak Cases", "Non-Cases"), 1, !!as.name(wt)), na.rm=T), 1), # for intercurrent cases, we don't need to adjust for the weight because all of them are from the same stratum
+                   denom = round(sum(ifelse(!cohort_event %in% c("Post-Peak Cases", "Non-Cases"), 1, !!as.name(wt)), na.rm=T), 1), 
                    N_RespRate = paste0(counts, "\n",round(num/denom*100, 1),"%"))
           
           # make subset for strata RaceEthnic and Dich_RaceEthnic, only present non-NA categories

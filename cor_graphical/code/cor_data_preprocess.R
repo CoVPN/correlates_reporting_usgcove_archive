@@ -49,10 +49,10 @@ dat.long.subject_level <- dat[, c(
   "Bserostatus", "Perprotocol", "EventIndPrimaryD29", "EventTimePrimaryD29", 
   "SubcohortInd", "age.geq.65", 
   "Bstratum", "wt.D29", "race",
-  "WhiteNonHispanic", "cohort_event",
+  "WhiteNonHispanic", "cohort_event", "ph1.D29", "ph2.D29",
   if(study_name_code=="ENSEMBLE") c("URMforsubcohortsampling"), 
   if(has57) c("Fullvaccine", "ph1.intercurrent.cases", "ph2.intercurrent.cases", 
-              "wt.intercurrent.cases","EventIndPrimaryD57", "TwophasesampIndD57", "wt.D57","ph1.D57")
+              "wt.intercurrent.cases","EventIndPrimaryD57", "TwophasesampIndD57", "wt.D57","ph1.D57","ph2.D57")
 )] %>%
   replicate(length(assays),., simplify = FALSE) %>%
   bind_rows()
@@ -99,17 +99,7 @@ dat.long$assay <- factor(dat.long$assay, levels = assays, labels = assays)
 
 
 
-
-# For immunogenicity characterization, complete ignore any information on cases
-# vs. non-cases.  The goal is to characterize immunogenicity in the random
-# subcohort, which is a stratified sample of enrolled participants. So,
-# immunogenicity analysis is always done in ppts that meet all of the criteria.
-dat.cor.subset <- dat %>%
-  dplyr::filter(ph1.D29==1 & TwophasesampIndD29 == 1)
-cor.subset.id <- dat.cor.subset$Ptid
-
-
-dat.long.cor.subset <- dat.long[dat.long$Ptid %in% cor.subset.id, ]
+dat.long.cor.subset <- dat.long
 # add Hispanic or Latino vs. Not Hispanic or Latino variable
 dat.long.cor.subset$Dich_RaceEthnic = with(dat.long.cor.subset,
                                            ifelse(EthnicityHispanic==1, "Hispanic or Latino",
@@ -287,23 +277,41 @@ if (study_name_code=="COVE") {
     )
 }
 
-# use dat.long.cor.subset.twophase.D29 for violin/line plots
-# in order to include intercurrent cases, only ph1.D29==1 & TwophasesampIndD29 == 1 can be applied
-dat.long.cor.subset.twophase.D29 <- dat.long.cor.subset 
+# use dat.long.cor.subset.twophase.intercurrent for violin/line plots
+# in order to include intercurrent cases, different filters apply for intercurrent and other groups
+if(has57) {
+  dat.long.cor.subset.twophase.intercurrent <- dat.long.cor.subset %>% 
+    filter(ph2.D29==1) %>%
+    filter(! (cohort_event %in% c("Post-Peak Cases","Non-Cases") & ph2.D57==0))
+} else {
+  dat.long.cor.subset.twophase.intercurrent <- dat.long.cor.subset %>%
+    filter(! (cohort_event %in% c("Post-Peak Cases","Non-Cases") & ph2.D29==0))
+}
 
-# apply this filter for Kendrick's figure
-if(has57) dat.long.cor.subset <- dat.long.cor.subset %>%
-  dplyr::filter(ph1.D57==1 & TwophasesampIndD57 == 1) 
-
+# For immunogenicity characterization, complete ignore any information on cases
+# vs. non-cases.  The goal is to characterize immunogenicity in the random
+# subcohort, which is a stratified sample of enrolled participants. So,
+# immunogenicity analysis is always done in ppts that meet all of the criteria.
+if(has57) {
+  dat.cor.subset <- dat %>%
+    dplyr::filter(ph2.D57==1)
+  dat.long.cor.subset <- dat.long.cor.subset %>%
+    dplyr::filter(ph2.D57==1)
+} else {
+  dat.cor.subset <- dat %>%
+    dplyr::filter(ph2.D29==1)
+  dat.long.cor.subset <- dat.long.cor.subset %>%
+    dplyr::filter(ph2.D29==1)
+}
 
 
 # long to longer format by time
-dat.longer.cor.subset <- dat.long.cor.subset.twophase.D29[,c("Ptid", "Trt", "Bserostatus", "EventIndPrimaryD29", 
+dat.longer.cor.subset <- dat.long.cor.subset.twophase.intercurrent[,c("Ptid", "Trt", "Bserostatus", "EventIndPrimaryD29", 
         "EventTimePrimaryD29", "Perprotocol", "cohort_event", "Age", "age_geq_65_label", 
         "highrisk_label", "age_risk_label", "sex_label", "minority_label", "Dich_RaceEthnic", "assay", 
-        "LLoD", "LLoQ", "pos.cutoffs", "ULoQ", "lb", "lbval", "lb2", "lbval2", 
+        "LLoD", "LLoQ", "pos.cutoffs", "ULoQ", "lb", "lbval", "lb2", "lbval2",
         if(has57) c("EventIndPrimaryD57", "ph1.intercurrent.cases", 
-                    "ph2.intercurrent.cases", "wt.intercurrent.cases", "wt.D57"), "wt.D29", 
+                    "ph2.intercurrent.cases", "wt.intercurrent.cases", "wt.D57", "ph2.D57"), "wt.D29", 
         "B", "Day29", "Delta29overB", if(has57) c("Day57", "Delta57overB"))] %>%
   pivot_longer(!Ptid:wt.D29, names_to = "time", values_to = "value")
 
@@ -352,8 +360,8 @@ if(has57) {wt="wt.D57"} else {wt="wt.D29"}
 dat.longer.cor.subset.plot1 <-
   dat.longer.cor.subset %>% group_by_at(groupby_vars1) %>%
   mutate(counts = n(),
-         num = round(sum(response * ifelse(cohort_event=="Intercurrent Cases", 1, !!as.name(wt)), na.rm=T), 1), # for intercurrent cases, we don't need to adjust for the weight because all of them are from the same stratum
-         denom = round(sum(ifelse(cohort_event=="Intercurrent Cases", 1, !!as.name(wt)), na.rm=T), 1),
+         num = round(sum(response * ifelse(!cohort_event %in% c("Post-Peak Cases", "Non-Cases"), 1, !!as.name(wt)), na.rm=T), 1), # for intercurrent cases, we don't need to adjust for the weight because all of them are from the same stratum
+         denom = round(sum(ifelse(!cohort_event %in% c("Post-Peak Cases", "Non-Cases"), 1, !!as.name(wt)), na.rm=T), 1),
          N_RespRate = paste0(counts, "\n",round(num/denom*100, 1),"%"),
          min = min(value),
          q1 = quantile(value, 0.25, na.rm=T),
@@ -369,6 +377,7 @@ plot.25sample1 <- dat.longer.cor.subset.plot1 %>%
   ungroup() %>%
   select(c("Ptid", groupby_vars1[!groupby_vars1 %in% "time"])) %>%
   inner_join(dat.longer.cor.subset.plot1, by=c("Ptid", groupby_vars1[!groupby_vars1 %in% "time"]))
+
 write.csv(plot.25sample1, file = here("data_clean", "plot.25sample1.csv"), row.names=F)
 saveRDS(plot.25sample1, file = here("data_clean", "plot.25sample1.rds"))
 
@@ -378,8 +387,8 @@ groupby_vars3 <- c("Trt", "Bserostatus", "cohort_event", "time", "assay", "age_g
 dat.longer.cor.subset.plot3 <-
   dat.longer.cor.subset %>% group_by_at(groupby_vars3) %>%
   mutate(counts = n(),
-         num = round(sum(response * ifelse(cohort_event=="Intercurrent Cases", 1, !!as.name(wt))), 1), # for intercurrent cases, we don't need to adjust for the weight because all of them are from the same stratum
-         denom = round(sum(ifelse(cohort_event=="Intercurrent Cases", 1, !!as.name(wt))), 1),
+         num = round(sum(response * ifelse(!cohort_event %in% c("Post-Peak Cases", "Non-Cases"), 1, !!as.name(wt))), 1), # for intercurrent cases, we don't need to adjust for the weight because all of them are from the same stratum
+         denom = round(sum(ifelse(!cohort_event %in% c("Post-Peak Cases", "Non-Cases"), 1, !!as.name(wt))), 1),
          N_RespRate = paste0(counts, "\n",round(num/denom*100, 1),"%"),)
 saveRDS(dat.longer.cor.subset.plot3, file = here("data_clean", "longer_cor_data_plot3.rds"))
 

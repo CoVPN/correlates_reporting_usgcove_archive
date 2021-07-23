@@ -125,11 +125,11 @@ for (i in 1:length(plots)) {
       for (t in 1:length(times)) {
         
         min <- ifelse(plots[i] %in% c("bindSpike","bindRBD"),
-                      min(subset(longer_cor_data_plot1, assay %in% c("bindSpike","bindRBD"))$value), 
-                      min(subset(longer_cor_data_plot1, !assay %in% c("bindSpike","bindRBD"))$value))
+                      min(subset(longer_cor_data_plot1, assay %in% c("bindSpike","bindRBD"))$value, na.rm=T), 
+                      min(subset(longer_cor_data_plot1, !assay %in% c("bindSpike","bindRBD"))$value, na.rm=T))
         max <- ifelse(plots[i] %in% c("bindSpike","bindRBD"),
-                      max(subset(longer_cor_data_plot1, assay %in% c("bindSpike","bindRBD"))$value), 
-                      max(subset(longer_cor_data_plot1, !assay %in% c("bindSpike","bindRBD"))$value))
+                      max(subset(longer_cor_data_plot1, assay %in% c("bindSpike","bindRBD"))$value, na.rm=T), 
+                      max(subset(longer_cor_data_plot1, !assay %in% c("bindSpike","bindRBD"))$value, na.rm=T))
         
         y.breaks <- seq(floor(min), ceiling(max))
         y.lim <- c(floor(min), ceiling(max))
@@ -214,11 +214,11 @@ for (i in 1:length(plots)) {
             inner_join(longer_cor_data_sub2, by=c("Ptid", groupby_vars2[!groupby_vars2 %in% "time"]))
           
           min <- ifelse(plots[i] %in% c("bindSpike","bindRBD"),
-                          min(subset(longer_cor_data_plot2, assay %in% c("bindSpike","bindRBD"))$value), 
-                          min(subset(longer_cor_data_plot2, !assay %in% c("bindSpike","bindRBD"))$value))
+                          min(subset(longer_cor_data_plot2, assay %in% c("bindSpike","bindRBD"))$value, na.rm=T), 
+                          min(subset(longer_cor_data_plot2, !assay %in% c("bindSpike","bindRBD"))$value, na.rm=T))
           max <- ifelse(plots[i] %in% c("bindSpike","bindRBD"),
-                          max(subset(longer_cor_data_plot2, assay %in% c("bindSpike","bindRBD"))$value), 
-                          max(subset(longer_cor_data_plot2, !assay %in% c("bindSpike","bindRBD"))$value))
+                          max(subset(longer_cor_data_plot2, assay %in% c("bindSpike","bindRBD"))$value, na.rm=T), 
+                          max(subset(longer_cor_data_plot2, !assay %in% c("bindSpike","bindRBD"))$value, na.rm=T))
           
           y.breaks <- seq(floor(min), ceiling(max))
           y.lim <- c(floor(min), ceiling(max)+1)
@@ -276,11 +276,11 @@ for (i in 1:length(plots)) {
       for (t in 1:length(times)) {
         
         min <- ifelse(plots[i] %in% c("bindSpike","bindRBD"),
-                      min(subset(longer_cor_data_plot3, assay %in% c("bindSpike","bindRBD"))$value), 
-                      min(subset(longer_cor_data_plot3, !assay %in% c("bindSpike","bindRBD"))$value))
+                      min(subset(longer_cor_data_plot3, assay %in% c("bindSpike","bindRBD"))$value, na.rm=T), 
+                      min(subset(longer_cor_data_plot3, !assay %in% c("bindSpike","bindRBD"))$value, na.rm=T))
         max <- ifelse(plots[i] %in% c("bindSpike","bindRBD"),
-                      max(subset(longer_cor_data_plot3, assay %in% c("bindSpike","bindRBD"))$value), 
-                      max(subset(longer_cor_data_plot3, !assay %in% c("bindSpike","bindRBD"))$value))
+                      max(subset(longer_cor_data_plot3, assay %in% c("bindSpike","bindRBD"))$value, na.rm=T), 
+                      max(subset(longer_cor_data_plot3, !assay %in% c("bindSpike","bindRBD"))$value, na.rm=T))
         
         y.breaks <- seq(floor(min), ceiling(max))
         y.lim <- c(floor(min), ceiling(max)+1.5)
@@ -346,11 +346,11 @@ for (i in 1:length(plots)) {
         y.lim <- c(ifelse(plots[i] %in% c("bindSpike","bindRBD"), -1.5, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 5, 4))
       } else {
         min <- ifelse(plots[i] %in% c("bindSpike","bindRBD"),
-                      min(subset(longer_cor_data, assay %in% c("bindSpike","bindRBD"))$value), 
-                      min(subset(longer_cor_data, !assay %in% c("bindSpike","bindRBD"))$value))
+                      min(subset(longer_cor_data, assay %in% c("bindSpike","bindRBD"))$value, na.rm=T), 
+                      min(subset(longer_cor_data, !assay %in% c("bindSpike","bindRBD"))$value, na.rm=T))
         max <- ifelse(plots[i] %in% c("bindSpike","bindRBD"),
-                      max(subset(longer_cor_data, assay %in% c("bindSpike","bindRBD"))$value), 
-                      max(subset(longer_cor_data, !assay %in% c("bindSpike","bindRBD"))$value))
+                      max(subset(longer_cor_data, assay %in% c("bindSpike","bindRBD"))$value, na.rm=T), 
+                      max(subset(longer_cor_data, !assay %in% c("bindSpike","bindRBD"))$value, na.rm=T))
         
         y.breaks <- seq(floor(min), ceiling(max))
         y.lim <- c(floor(min), ceiling(max))
@@ -400,11 +400,11 @@ for (i in 1:length(plots)) {
         y.lim <- c(ifelse(plots[i] %in% c("bindSpike","bindRBD"), -1.5, 0), ifelse(plots[i] %in% c("bindSpike","bindRBD"), 5, 4))
       } else {
         min <- ifelse(plots[i] %in% c("bindSpike","bindRBD"),
-                      min(subset(longer_cor_data, assay %in% c("bindSpike","bindRBD"))$value), 
-                      min(subset(longer_cor_data, !assay %in% c("bindSpike","bindRBD"))$value))
+                      min(subset(longer_cor_data, assay %in% c("bindSpike","bindRBD"))$value, na.rm=T), 
+                      min(subset(longer_cor_data, !assay %in% c("bindSpike","bindRBD"))$value, na.rm=T))
         max <- ifelse(plots[i] %in% c("bindSpike","bindRBD"),
-                      max(subset(longer_cor_data, assay %in% c("bindSpike","bindRBD"))$value), 
-                      max(subset(longer_cor_data, !assay %in% c("bindSpike","bindRBD"))$value))
+                      max(subset(longer_cor_data, assay %in% c("bindSpike","bindRBD"))$value, na.rm=T), 
+                      max(subset(longer_cor_data, !assay %in% c("bindSpike","bindRBD"))$value, na.rm=T))
         
         y.breaks <- seq(floor(min), ceiling(max))
         y.lim <- c(floor(min), ceiling(max))

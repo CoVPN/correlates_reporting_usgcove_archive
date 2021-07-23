@@ -13,6 +13,14 @@ dat_clean <- read.csv(here("data_clean", data_name))
 #    (subset(dat_clean, Bserostatus==0 & Perprotocol==1 & ph1.immuno & Day29bindN>2))
 #subset(dat_clean, Ptid=="VAC31518COV3001-7245536")
 #sort(subset(dat_clean, Bserostatus==0 & Perprotocol==1 & ph1.immuno & !is.na(Day29bindN), Day29bindN, drop=T))
+#with(subset(dat_clean, Trt==1 & Bserostatus==0 & Perprotocol==1 & EventIndPrimaryD1==1), table(ph1.D29))
+#with(subset(dat_clean, Trt==1 & Bserostatus==0 & Perprotocol==1 & EventIndPrimaryD1==1), table(EventTimePrimaryD29>1))
+#with(dat_clean, table(URMforsubcohortsampling, WhiteNonHispanic, useNA="ifany"))
+#with(dat_clean, table(1-MinorityInd, WhiteNonHispanic, useNA="ifany"))
+#sort(subset(dat_clean, Bserostatus==0 & Perprotocol==1 & EventIndPrimaryD1==1 & Trt==1, EventTimePrimaryD1, drop=T))
+#sort(subset(dat_clean, Bserostatus==0 & Perprotocol==1 & EventIndPrimaryD29==1 & Trt==1, EventTimePrimaryD29, drop=T))
+#summary(subset(dat_clean, EventIndPrimaryD29==1 & Trt==1, EventTimePrimaryD29, drop=T))
+#summary(subset(dat_clean, EventIndPrimaryD29==1 & Trt==1 & ph1.D29, EventTimePrimaryD29, drop=T))
 
 
 

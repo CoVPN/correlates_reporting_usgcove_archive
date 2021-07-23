@@ -121,7 +121,7 @@ for (w.wo.plac in 1:2) { # 1 with placebo lines, 2 without placebo lines. Implem
         ncases=sapply(risks$marker, function(s) sum(dat.vac.seroneg$yy[dat.vac.seroneg[["Day"%.%pop%.%a]]>=s], na.rm=T))
         
         plot(prob~marker, risks, xlab=labels.assays.short[a]%.%ifelse(ii==1," (=s)"," (>=s)"), xlim=xlim, 
-            ylab=paste0("Probability* of COVID by Day ", t0), lwd=lwd, ylim=ylim, type="n", main=paste0(labels.assays.long["Day"%.%pop,a]), xaxt="n")
+            ylab=paste0("Probability* of COVID-19 by Day ", t0), lwd=lwd, ylim=ylim, type="n", main=paste0(labels.assays.long["Day"%.%pop,a]), xaxt="n")
     
         draw.x.axis.cor(xlim, llods[a])
     

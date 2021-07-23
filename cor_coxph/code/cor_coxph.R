@@ -267,5 +267,4 @@ source(here::here("code", "cor_coxph_marginalized_risk_plotting.R"))
 # save rv
 save(rv, file=paste0(here::here("verification"), "/D", pop, ".rv."%.%study_name%.%".Rdata"))
 
-print("cor_coxph run time: ")
-print(Sys.time()-time.start)
+print("cor_coxph run time: "%.%format(Sys.time()-time.start, digits=1))

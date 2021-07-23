@@ -36,7 +36,7 @@ for (idx in 1:1) { # 1 with placebo lines, 2 without placebo lines. Implementati
         
         xlim=get.range.cor(dat.vac.seroneg, a, pop)
         
-        plot(fit, which=1, add.points=F, ylab="COVID risk", xlab=labels.assays.short[a]%.%" (=s)", xaxt="n", xlim=xlim, ylim=ylim)
+        plot(fit, which=1, add.points=F, ylab="COVID-19 risk", xlab=labels.assays.short[a]%.%" (=s)", xaxt="n", xlim=xlim, ylim=ylim)
         
         draw.x.axis.cor(xlim, llods[a])
         
@@ -72,7 +72,7 @@ for (idx in 1:1) { # 1 with placebo lines, 2 without placebo lines. Implementati
 #mypdf(oma=c(1,0,0,0), onefile=F, file=paste0(save.results.to, "segmented", "_"%.%study.name), mfrow=.mfrow)
 #for (a in assays) {
 #    fit=segmented.fits.logistic[[a]]
-#    plot(fit, which=1, add.points=F, transform=identity, ylab="logit(COVID risk)", xlab=labels.assays.short[a]%.%" (=s)", xaxt="n")
+#    plot(fit, which=1, add.points=F, transform=identity, ylab="logit(COVID-19 risk)", xlab=labels.assays.short[a]%.%" (=s)", xaxt="n")
 #    # x axis
 #    xlim=range(fit$best.fit$data[[fit$chngpt.var]])        
 #    xx=seq(floor(xlim[1]), ceiling(xlim[2]))

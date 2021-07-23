@@ -176,6 +176,9 @@ labels.age <- case_when(study_name_code=="COVE"~ c("Age $<$ 65", "Age $\\geq$ 65
 labels.minor <- case_when(study_name_code=="COVE"~ c("Communities of Color", "White Non-Hispanic"), 
                           study_name_code=="ENSEMBLE"~ c("URM", "Non-URM"))
 
+labels.BMI <- c("Underweight BMI < 18.5", "Normal 18.5 $\\leq$ BMI < 25", 
+                "Overweight 25 $\\leq$ BMI < 30", "Obese BMI $\\geq$ 30")
+
 labels.time <- labels.time[times]
 # hacky fix
 labels.assays.short <- labels.assays.short.tabular[assays]
@@ -252,8 +255,8 @@ ds_s <- dat %>%
       TRUE ~ raceC
     ),
     MinorityC = case_when(
-      WhiteNonHispanic == 0 ~ "Communities of Color",
-      WhiteNonHispanic == 1 ~ "White Non-Hispanic"
+      MinorityInd == 1 ~ "Communities of Color",
+      MinorityInd == 0 ~ "White Non-Hispanic"
     ),
     HighRiskC = ifelse(HighRiskInd == 1, "At-risk", "Not at-risk"),
     AgeC = ifelse(Senior == 1, labels.age[2], labels.age[1]),
@@ -281,17 +284,18 @@ if(study_name_code=="ENSEMBLE"){
   ds_s <- ds_s %>% 
     mutate(CountryC=labels.countries.ENSEMBLE[Country+1],
            RegionC=labels.regions.ENSEMBLE[Region+1],
-           URMC=case_when(URMforsubcohortsampling == 1 ~ "URM",
-                          URMforsubcohortsampling == 0 ~ "Non-URM"),
-           AgeURM=paste(AgeC, URMC),
-           demo.stratum.ordered=demo.stratum
-           
-           # demo.stratum.ordered=case_when(!is.na(demo.stratum) & demo.stratum > 12 ~ as.numeric(demo.stratum) + 2,
-           #                                !is.na(demo.stratum) & demo.stratum > 8 ~ as.numeric(demo.stratum) + 1,
-           #                                !is.na(demo.stratum) & demo.stratum < 9 ~ as.numeric(demo.stratum),
-           #                                Region == 0 ~ 9, 
-           #                                Region == 1 ~ 14,
-           #                                Region == 2 ~ 19)
+           URMC = case_when(URMforsubcohortsampling == 1 & Country ==0 ~ "URM",
+                            URMforsubcohortsampling == 0 & Country ==0 ~ "Non-URM", 
+                            TRUE ~ as.character(NA)),
+           AgeURM = case_when(is.na(URMC) ~ as.character(NA), 
+                              TRUE ~ paste(AgeC, URMC)),
+           demo.stratum.ordered=demo.stratum,
+           HIVC = c("Positive", "Negative")[2-HIVinfection],
+           BMI = case_when(max(BMI, na.rm=T) < 5 ~ labels.BMI[BMI],
+                           BMI>=30 ~ "Obese BMI $\\geq$ 30", 
+                           BMI>=25 ~ "Overweight 25 $\\leq$ BMI < 30",
+                           BMI>=18.5 ~ "Normal 18.5 $\\leq$ BMI < 25",
+                           BMI<18.5 ~ "Underweight BMI < 18.5")
            )
 }
 
@@ -316,8 +320,8 @@ subgrp <- c(
   AgeMinorC = "Age, Communities of color",
   URMC = "Underrepresented Minority Status in the U.S.",
   AgeURM = "Age, Underrepresented Minority Status in the U.S.",
-  CountryC = "Country"
-
+  CountryC = "Country",
+  HIVC = "HIV Infection"
 )
 
 
@@ -325,9 +329,16 @@ subgrp <- c(
 #             Generating the Tables               #
 ###################################################
 
-num_v1 <- c("Age") # Summaries - Mean & Range
-num_v2 <- c("BMI") # Summaries - Mean & St.d
-cat_v <- c("AgeC", "SexC", "raceC", "ethnicityC", "HighRiskC", "AgeRiskC", "MinorityC")
+if (study_name_code=="COVE") {
+  num_v1 <- c("Age") # Summaries - Mean & Range
+  num_v2 <- c("BMI") # Summaries - Mean & St.d
+  cat_v <- c("AgeC", "SexC", "raceC", "ethnicityC", "HighRiskC", "AgeRiskC", "MinorityC")
+} else if (study_name_code=="ENSEMBLE") {
+  num_v1 <- c("Age") # Summaries - Mean & Range
+  num_v2 <- NULL # Summaries - Mean & St.d
+  cat_v <- c("AgeC", "SexC", "raceC", "ethnicityC", 
+             "HighRiskC", "AgeRiskC", "URMC",  "CountryC", "HIVC", "BMI")
+}
 
 ds_long_ttl <- ds %>%
   dplyr::filter(ph2.immuno) %>% 
@@ -371,7 +382,7 @@ dm_num <- ds_long_ttl %>%
          subgroup=ifelse(subgroup=="Age", "AgeC", subgroup))
 
 char_lev <- c(labels.age, "Mean (Range)","Mean $\\pm$ SD",
-              "Female","Male","White","Black or African American",
+              "Female","Male", "White", "Black or African American",
               "Asian", "American Indian or Alaska Native",
               "Native Hawaiian or Other Pacific Islander", "Multiracial",
               "Other", "Not reported and unknown", 
@@ -380,7 +391,8 @@ char_lev <- c(labels.age, "Mean (Range)","Mean $\\pm$ SD",
               "Not reported and unknown ","At-risk","Not at-risk",
               paste(labels.age[1],"At-risk"), paste(labels.age[1], "Not at-risk"), 
               paste(labels.age[2],"At-risk"), paste(labels.age[2], "Not at-risk"),
-              paste(labels.age[2], ""), "URM", "Non-URM", labels.countries.ENSEMBLE)
+              paste(labels.age[2], ""), "URM", "Non-URM", labels.countries.ENSEMBLE,
+              "Negative", "Positive", labels.BMI)
 
 tab_dm <- bind_rows(dm_cat, dm_num) %>%
   mutate(rslt = case_when(subgroup %in% cat_v ~ rslt1,

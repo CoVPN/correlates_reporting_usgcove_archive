@@ -10,8 +10,8 @@
 4. Subset `dat` with only non-NA `cohort_event` values.
 
 5. Create a new data frame `dat.long`. In `dat.long` there is a new field `assay` that takes the string values "bindSpike", "bindRBD", "pseudoneutid50" and "pseudoneutid80", corresponding to four types of assays. Additionally, there are new fields `B`, `Day29`, `Day57`, `Delta29overB`, `Delta57overB` and `Delta57over29`, with values equal to the assay readouts at time points indicated by the field name. Each row of `dat.long` corresponds to the assay readouts of one type of assays, indicated by `assay`, at different time points or for different fold-rise comparisons. Therefore, each individual has four rows for four different types of assay readouts. Additionally, there are fields in the original data frame `dat` with the individual-level information, including `Ptid`, `Trt`, `MinorityInd`, `EthnicityHispanic`, `EthnicityNotreported`, `EthnicityUnknown`, `HighRiskInd`, `Age`, `BMI`, `Sex`, `Bserostatus`, `Fullvaccine`, `Perprotocol`, `EventIndPrimaryD29`,
-  `EventIndPrimaryD57`, `SubcohortInd`, `age.geq.65`, `TwophasesampIndD57`, `ph1.D29`
-  `Bstratum`, `wt.D57`, `wt.D29`, `race`, `WhiteNonHispanic`, and `cohort_event`. 
+  `EventIndPrimaryD57`, `SubcohortInd`, `age.geq.65`, `TwophasesampIndD57`, `ph1.D29`, `ph2.D29`,
+  `Bstratum`, `wt.D57`, `wt.D29`, `race`, `WhiteNonHispanic`, `cohort_event`,  `ph1.D57`, `ph2.D57`. 
   
 6. Save `dat.long` to `dat.long.cor.subset`
 
@@ -43,11 +43,11 @@
 
 20. In `dat.long.cor.subset`, create a new field `age_minority_label`, which is defined as the cross product of `age.geq.65` and `WhiteNonHispanic` fields converted to a factor.
 
-20.1. Take the subset of `dat.long.cor.subset` with `ph2.D29` == 1, filter out the records if `cohort_event` %in% c("Post-Peak Cases","Non-Cases") & `ph2.D57`==0, and rename the dataset as `dat.long.cor.subset.twophase.intercurrent`, correspondingly. (These are for Yiwen's figures)
+20.1. Take the subset of `dat.long.cor.subset` with `ph2.D29` == 1, filter out the records if `cohort_event` %in% c("Post-Peak Cases","Non-Cases") & `ph2.D57`==0, and rename the dataset as `dat.long.cor.subset.twophase.intercurrent`. (These are for Yiwen's figures)
 
 20.2. Take the subset of `dat.long.cor.subset` with `ph2.D57` == 1 and save back to `dat.long.cor.subset`. Take the subset of `dat` with `ph2.D57` == 1 and save them as `dat.cor.subset`. (These are for Kendrick's figures)
 
-21. Select fields (`Ptid`, `Trt`, `Bserostatus`, `EventIndPrimaryD29`, `EventIndPrimaryD57`, `Perprotocol`, `cohort_event`, `Age`, `age_geq_65_label`, `highrisk_label`, `age_risk_label`, `sex_label`, `minority_label`, `Dich_RaceEthnic`, `assay`, `LLoD`, `LLoQ`, `wt.D57`, `wt.D29`, `B`, `Day29`, `Day57`, `Delta29overB`, `Delta57overB`) from `dat.long.cor.subset.twophase.intercurrent`, and then transpose `dat.long.cor.subset` from wide to a new long data frame `dat.longer.cor.subset` by saving the string values "B", "Day29", "Day57", "Delta29overB", "Delta57overB" to a new field `time`, and the values of fields `B`, `Day29`, `Day57`, `Delta29overB`, `Delta57overB` to a new field `value`.
+21. Select fields (`Ptid`, `Trt`, `Bserostatus`, `EventIndPrimaryD29`, `EventIndPrimaryD57`, `Perprotocol`, `cohort_event`, `Age`, `age_geq_65_label`, `highrisk_label`, `age_risk_label`, `sex_label`, `minority_label`, `Dich_RaceEthnic`, `assay`, `LLoD`, `LLoQ`, `wt.D57`, `wt.D29`, `B`, `Day29`, `Day57`, `Delta29overB`, `Delta57overB`) from `dat.long.cor.subset.twophase.intercurrent`, and then transpose `dat.long.cor.subset.twophase.intercurrent` from wide to a new long data frame `dat.longer.cor.subset` by saving the string values "B", "Day29", "Day57", "Delta29overB", "Delta57overB" to a new field `time`, and the values of fields `B`, `Day29`, `Day57`, `Delta29overB`, `Delta57overB` to a new field `value`.
 
 22. In `dat.longer.cor.subset`, set the values ("B", "Day29", "Day57", "Delta29overB", "Delta57overB") in `time` to ("Day 1", "Day 29", "Day 57", "Delta29overB", "Delta57overB"), respectively. 
 

@@ -239,17 +239,17 @@ varset_allMarkers_combScores_D29_D57 <- create_varsets(markers, c(grep("(^((?!co
                                                                   grep("(?=.*comb)(?=.*d57_d29)", markers, value=TRUE, perl=TRUE)))
 
 varset_names <- c("1_baselineRiskFactors",
-                  "2_bAbSpike_D57", "3_bAbRBD_D57", "4_pnabID50_D57", "5_pnabID80_D57", 
-                  "6_bAb_pnabID50_D57", "7_bAb_pnabID80_D57", 
-                  "8_bAb_combScores_D57", "9_allMarkers_D57", "10_allMarkers_combScores_D57",
+                  "2_varset_bAbSpike_D57", "3_varset_bAbRBD_D57", "4_varset_pnabID50_D57", "5_varset_pnabID80_D57", 
+                  "6_varset_bAb_pnabID50_D57", "7_varset_bAb_pnabID80_D57", 
+                  "8_varset_bAb_combScores_D57", "9_varset_allMarkers_D57", "10_varset_allMarkers_combScores_D57",
                   
-                  "11_bAbSpike_D29", "12_bAbRBD_D29", "13_pnabID50_D29", "14_pnabID80_D29", 
-                  "15_bAb_pnabID50_D29", "16_bAb_pnabID80_D29", 
-                  "17_bAb_combScores_D29", "18_allMarkers_D29", "19_allMarkers_combScores_D29",
+                  "11_varset_bAbSpike_D29", "12_varset_bAbRBD_D29", "13_varset_pnabID50_D29", "14_varset_pnabID80_D29", 
+                  "15_varset_bAb_pnabID50_D29", "16_varset_bAb_pnabID80_D29", 
+                  "17_varset_bAb_combScores_D29", "18_varset_allMarkers_D29", "19_varset_allMarkers_combScores_D29",
                   
-                  "20_bAbSpike_D29_D57", "21_bAbRBD_D29_D57", "22_pnabID50_D29_D57", "23_pnabID80_D29_D57", 
-                  "24_bAb_pnabID50_D29_D57", "25_bAb_pnabID80_D29_D57", 
-                  "26_bAb_combScores_D29_D57", "27_allMarkers_D29_D57", "28_allMarkers_combScores_D29_D57")
+                  "20_varset_bAbSpike_D29_D57", "21_varset_bAbRBD_D29_D57", "22_varset_pnabID50_D29_D57", "23_varset_pnabID80_D29_D57", 
+                  "24_varset_bAb_pnabID50_D29_D57", "25_varset_bAb_pnabID80_D29_D57", 
+                  "26_varset_bAb_combScores_D29_D57", "27_varset_allMarkers_D29_D57", "28_varset_allMarkers_combScores_D29_D57")
 
 ## set up a matrix of all
 varset_matrix <- rbind(varset_baselineRiskFactors,

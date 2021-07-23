@@ -114,7 +114,7 @@ tab %>% write.csv(here("output", "varsets.csv"))
 options(bitmapType = "cairo")
 for(i in 1:length(unique(cvaucs_vacc$varset))) {
   variableSet = unique(cvaucs_vacc$varset)[i]
-  png(file = here("figs", paste0("forest_vacc_cvaucs_", variableSet, "_", DAY,".png")), width=1000, height=1100)
+  png(file = here("figs", paste0("forest_vacc_cvaucs_", variableSet, ".png")), width=1000, height=1100)
   top_learner <- make_forest_plot(cvaucs_vacc %>% filter(varset==variableSet))
   grid.arrange(top_learner$top_learner_nms_plot, top_learner$top_learner_plot, ncol=2)
   dev.off()
@@ -128,7 +128,7 @@ allSLs <- cvaucs_vacc %>% filter(Learner == "SL") %>%
   mutate(varset = fct_reorder(varset, AUC, .desc = F)) %>%
   arrange(-AUC)
 
-png(file = here("figs", paste0("forest_vacc_cvaucs_allSLs_", DAY, ".png")), width=1000, height=1100)
+png(file = here("figs", "forest_vacc_cvaucs_allSLs.png"), width=1000, height=1100)
 lowestXTick <- floor(min(allSLs$ci_ll)*10)/10
 highestXTick <- ceiling(max(allSLs$ci_ul)*10)/10
 top_learner_plot <- ggplot() +
@@ -143,7 +143,7 @@ top_learner_plot <- ggplot() +
         axis.text.x = element_text(size=16),
         axis.title.x = element_text(size=16),
         axis.text.y = element_blank(),
-        plot.margin=unit(c(1,-0.15,1,-0.15),"cm"),
+        plot.margin=unit(c(1,0.2,1,-0.15),"cm"),
         panel.border = element_blank(),
         axis.line = element_line(colour = "black"))
 
@@ -153,14 +153,14 @@ allSLs_withCoord <- allSLs %>%
   select(varset, AUCstr) %>%
   mutate(varset = as.character(varset)) %>%
   tidyr::gather("columnVal", "strDisplay") %>%
-  mutate(xcoord = case_when(columnVal=="varset" ~ 1.4,
+  mutate(xcoord = case_when(columnVal=="varset" ~ 1.5,
                             columnVal=="AUCstr" ~ 2),
          ycoord = rep(total_learnerScreen_combos:1, 2))
 
 top_learner_nms_plot <- ggplot(allSLs_withCoord, aes(x = xcoord, y = ycoord, label = strDisplay)) +
   geom_text(hjust=1, vjust=0, size=5) +
   xlim(0.7,2) +
-  theme(plot.margin=unit(c(1.7,-0.15,2.4,-0.15),"cm"),
+  theme(plot.margin=unit(c(0.3,-0.15,0.9,-0.15),"cm"),
         axis.line=element_blank(),
         axis.text.y = element_blank(),
         axis.text.x = element_text(size = 2, color = "white"),
@@ -193,20 +193,20 @@ for(i in 1:length(unique(cvaucs_vacc$varset))) {
                                          paste0(Learner, "_", Screen_fromRun))))
   
   # Get cvsl fit and extract cv predictions
-  load(file = here("output", paste0("CVSLfits_vacc_EventIndPrimaryD57_", variableSet, "_", DAY, ".rda")))
+  load(file = here("output", paste0("CVSLfits_vacc_EventIndPrimaryD57_", variableSet, ".rda")))
   pred <- get_cv_predictions(cv_fit = cvfits[[1]], cvaucDAT = top2)
   
   # plot ROC curve
   options(bitmapType = "cairo")
-  png(file = here("figs", paste0("ROCcurve_", variableSet, "_", DAY, ".png")),
+  png(file = here("figs", paste0("ROCcurve_", variableSet, ".png")),
       width = 1000, height = 1000)
-  p1 <- plot_roc_curves(predict = pred, cvaucDAT = top2, weights = ph2_vacc_ptids %>% pull(WEIGHT))
+  p1 <- plot_roc_curves(predict = pred, cvaucDAT = top2, weights = ph2_vacc_ptids %>% pull(wt.D57))
   print(p1)
   dev.off()
   
   # plot pred prob plot
   options(bitmapType = "cairo")
-  png(file = here("figs", paste0("predProb_", variableSet, "_", DAY, ".png")),
+  png(file = here("figs", paste0("predProb_", variableSet, ".png")),
       width = 1000, height = 1000)
   p2 <- plot_predicted_probabilities(pred)
   print(p2)
@@ -218,5 +218,5 @@ for(i in 1:length(unique(cvaucs_vacc$varset))) {
 cvaucs_vacc %>% arrange(-AUC) %>% 
   filter(Learner == "SL") %>%
   select(varset, AUCstr) %>%
-  write.csv(here("output", paste0("SLperformance_allvarsets_", DAY, ".csv")))
+  write.csv(here("output", "SLperformance_allvarsets.csv"))
   

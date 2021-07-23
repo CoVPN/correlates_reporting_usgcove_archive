@@ -26,7 +26,7 @@ hist(dat_raw$EventTimePrimaryD29[dat_raw$EventIndPrimaryD29==1])
 
 sort(subset(dat_raw, Bserostatus==0 & Perprotocol==1 & EventIndPrimaryD1==1 & Trt==1, EventTimePrimaryD1, drop=T))
 sort(subset(dat_raw, Bserostatus==0 & Perprotocol==1 & EventIndPrimaryD29==1 & Trt==1, EventTimePrimaryD29, drop=T))
-sort(subset(dat_raw, Bserostatus==0 & Perprotocol==1 & EventIndPrimaryIncludeNotMolecConfirmedD29==1 & Trt==1, EventTimePrimaryD29, drop=T))
+#sort(subset(dat_raw, Bserostatus==0 & Perprotocol==1 & EventIndPrimaryIncludeNotMolecConfirmedD29==1 & Trt==1, EventTimePrimaryD29, drop=T))
 
 
 ########################################################################################################

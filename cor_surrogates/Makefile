@@ -35,13 +35,7 @@ run_cvsl_varsets:
 	Rscript code/run_cvsl_varsets.R 25 && \
 	Rscript code/run_cvsl_varsets.R 26 && \
 	Rscript code/run_cvsl_varsets.R 27 && \
-	Rscript code/run_cvsl_varsets.R 28 && \
-	Rscript code/run_cvsl_varsets.R 29 && \
-	Rscript code/run_cvsl_varsets.R 30 && \
-	Rscript code/run_cvsl_varsets.R 31 && \
-	Rscript code/run_cvsl_varsets.R 32 && \
-	Rscript code/run_cvsl_varsets.R 33 && \
-	Rscript code/run_cvsl_varsets.R 34
+	Rscript code/run_cvsl_varsets.R 28 
 	
     
 ## createRDAfiles_fromSLobjects   : create RDA files from SL objects

@@ -8,9 +8,6 @@ if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/
 source(here::here("..", "_common.R"))
 #-----------------------------------------------
 
-args <- commandArgs(trailingOnly = TRUE)
-DAY <- as.character(args[1])
-
 ## ----createRDAfiles_fromSLobjects---------
 library(readr)
 require(tidyverse)
@@ -81,9 +78,8 @@ convert_SLobject_to_Slresult_dataframe <- function(dat) {
 # @param data_file RDS file containing all 10 fits from the CV.Superlearner with folds and auc information
 # @param trt string containing treatment arm (placebo or vaccine)
 # @return dataframe containing CV-AUCs
-readin_SLobjects_fromFolder <- function(data_path, file_pattern, endpoint, trt, day = DAY){
+readin_SLobjects_fromFolder <- function(data_path, file_pattern, endpoint, trt){
   dir(data_path, pattern = file_pattern) %>%
-    str_subset(pattern = day) %>%
     tibble(file = .) %>%
     mutate(listdat = lapply(paste0(data_path, "/", file), readRDS)) %>% 
     mutate(data = map(listdat, convert_SLobject_to_Slresult_dataframe)) %>%
@@ -97,12 +93,11 @@ readin_SLobjects_fromFolder <- function(data_path, file_pattern, endpoint, trt, 
 # Read CV.SL object and save relevant columns as dataframe
 # For vaccine, yd57 endpoint
 data_folder <- here("output")
-cvaucs_vacc <- readin_SLobjects_fromFolder(data_folder, file_pattern = "*.rds", endpoint = "EventIndPrimaryD57", trt = "vaccine", day = DAY) %>%
+cvaucs_vacc <- readin_SLobjects_fromFolder(data_folder, file_pattern = "*.rds", endpoint = "EventIndPrimaryD57", trt = "vaccine") %>%
   mutate(varset = str_replace(file, "CVSLaucs_vacc_EventIndPrimaryD57_", ""),
-         varset = str_replace(varset, "_Day29.rds", ""),
-         varset = str_replace(varset, "_Day57.rds", ""),
-         varset = str_replace(varset, "_Both.rds", ""),
-         timepoint = DAY) 
+         varset = str_replace(varset, "_varset", ""),
+         varsetNo = as.numeric(sapply(strsplit(varset, "_"), `[`, 1))) %>%
+  arrange(varsetNo)
 
-save(cvaucs_vacc, file = here("output", paste0("cvaucs_vacc_EventIndPrimaryD57_", DAY, ".rda")))
+save(cvaucs_vacc, file = here("output", "cvaucs_vacc_EventIndPrimaryD57.rda"))
 

@@ -8,9 +8,6 @@ if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/
 source(here::here("..", "_common.R"))
 ## ----load-all-SLobjects, message=FALSE, error=FALSE, warning=FALSE----------------------------------------------------------------------------------------------------
 
-args <- commandArgs(trailingOnly = TRUE)
-DAY <- as.character(args[1])
-
 library("cvAUC")
 library("conflicted")
 library("tidyverse")
@@ -29,8 +26,8 @@ source(here("code", "utils.R"))
 method <- "method.CC_nloglik" # since SuperLearner relies on this to be in GlobalEnv
 ggplot2::theme_set(theme_cowplot())
 
-load(file = here("output", paste0("cvaucs_vacc_EventIndPrimaryD57_", DAY, ".rda")))
-load(file = here("output", paste0("ph2_vacc_ptids_", DAY, ".rda")))
+load(file = here("output", "cvaucs_vacc_EventIndPrimaryD57.rda"))
+load(file = here("output", "ph2_vacc_ptids.rda"))
 
 
 # Assign weight and twophasesampind vars based off marker timepoint analyses

@@ -55,32 +55,55 @@ if(!grepl("Mock", study_name)){
 
 tab %>% write.csv(here("output", "learner-screens.csv"))
 
-## ----All 14 variable sets --------------------------------------------------------------------------------------------------------------------
-caption <- "The 12 variable sets on which an estimated optimal surrogate was built."
+## ----All 28 (34 if live MN50 titers included) variable sets --------------------------------------------------------------------------------------------------------------------
+caption <- "The 28 variable sets on which an estimated optimal surrogate was built."
 
 tab <- data.frame(`Variable Set Name` = c("1_baselineRiskFactors",
-                                          "2_bAbSpike_D57", "3_bAbRBD_D57", "4_pnabID50_D57", "5_pnabID80_D57", 
-                                          "6_bAb_pnabID50_D57", "7_bAb_pnabID80_D57", 
-                                          "8_bAb_combScores_D57", "9_allMarkers_D57", "10_allMarkers_combScores_D57",
                                           
-                                          "11_bAbSpike_D29", "12_bAbRBD_D29", "13_pnabID50_D29", "14_pnabID80_D29", 
-                                          "15_bAb_pnabID50_D29", "16_bAb_pnabID80_D29", 
-                                          "17_bAb_combScores_D29", "18_allMarkers_D29", "19_allMarkers_combScores_D29",
+                                          "2_bAbSpike_D57", "3_bAbRBD_D57", "4_pnabID50_D57", "5_pnabID80_D57",
+                                          "6_bAb_pnabID50_D57", "7_bAb_pnabID80_D57", "8_bAb_combScores_D57",
+                                          "9_allMarkers_D57", "10_allMarkers_combScores_D57",
                                           
-                                          "20_bAbSpike_D29_D57", "21_bAbRBD_D29_D57", "22_pnabID50_D29_D57", "23_pnabID80_D29_D57", 
-                                          "24_bAb_pnabID50_D29_D57", "25_bAb_pnabID80_D29_D57", 
-                                          "26_bAb_combScores_D29_D57", "27_allMarkers_D29_D57", "28_allMarkers_combScores_D29_D57"),
+                                          "11_bAbSpike_D29", "12_bAbRBD_D29", "13_pnabID50_D29", "14_pnabID80_D29",
+                                          "15_bAb_pnabID50_D29", "16_bAb_pnabID80_D29", "17_bAb_combScores_D29",
+                                          "18_allMarkers_D29", "19_allMarkers_combScores_D29",
+                                          
+                                          "20_bAbSpike_D29_D57", "21_bAbRBD_D29_D57", "22_pnabID50_D29_D57", "23_pnabID80_D29_D57",
+                                          "24_bAb_pnabID50_D29_D57", "25_bAb_pnabID80_D29_D57", "26_bAb_combScores_D29_D57",
+                                          "27_allMarkers_D29_D57", "28_allMarkers_combScores_D29_D57"),
                   `Variables included in the set` = c("Baseline risk factors only (Reference model)",
-                                                      "Baseline risk factors + bAb anti-Spike markers",
-                                                      "Baseline risk factors + bAb anti-RBD markers",
-                                                      "Baseline risk factors + p-nAb ID50 markers",
-                                                      "Baseline risk factors + p-nAb ID80 markers",
-                                                      "Baseline risk factors + bAb markers + p-nAb ID50 markers",
-                                                      "Baseline risk factors + bAb markers + p-nAb ID80 markers",
-                                                      "Baseline risk factors + bAb markers + combination scores across the five markers [PCA1, PCA2, FSDAM1/FSDAM2 (the first two
+                                                      "Baseline risk factors + Day 57 bAb anti-Spike markers",
+                                                      "Baseline risk factors + Day 57 bAb anti-RBD markers",
+                                                      "Baseline risk factors + Day 57 p-nAb ID50 markers",
+                                                      "Baseline risk factors + Day 57 p-nAb ID80 markers",
+                                                      "Baseline risk factors + Day 57 bAb markers and p-nAb ID50 markers",
+                                                      "Baseline risk factors + Day 57 bAb markers and p-nAb ID80 markers",
+                                                      "Baseline risk factors + Day 57 bAb markers and combination scores across the five markers [PCA1, PCA2, FSDAM1/FSDAM2 (the first two
 components of nonlinear PCA), and the maximum signal diversity score]",
-                                                      "Baseline risk factors + all individual markers",
-                                                      "Baseline risk factors + all individual markers + all combination scores (Full model)"))
+                                                      "Baseline risk factors + all individual Day 57 marker variables",
+                                                      "Baseline risk factors + all individual Day 57 marker variables and theri combination scores (Full model of Day 57 markers)",
+                                                      
+                                                      "Baseline risk factors + Day 29 bAb anti-Spike markers",
+                                                      "Baseline risk factors + Day 29 bAb anti-RBD markers",
+                                                      "Baseline risk factors + Day 29 p-nAb ID50 markers",
+                                                      "Baseline risk factors + Day 29 p-nAb ID80 markers",
+                                                      "Baseline risk factors + Day 29 bAb markers and p-nAb ID50 markers",
+                                                      "Baseline risk factors + Day 29 bAb markers and p-nAb ID80 markers",
+                                                      "Baseline risk factors + Day 29 bAb markers and combination scores across the five markers [PCA1, PCA2, FSDAM1/FSDAM2 (the first two
+components of nonlinear PCA), and the maximum signal diversity score]",
+                                                      "Baseline risk factors + all individual Day 29 marker variables",
+                                                      "Baseline risk factors + all individual Day 29 marker variables and their combination scores (Full model of Day 29 markers)",
+                                                      
+                                                      "Baseline risk factors + Day 29 and Day 57 bAb anti-Spike markers",
+                                                      "Baseline risk factors + Day 29 and Day 57 bAb anti-RBD markers",
+                                                      "Baseline risk factors + Day 29 and Day 57 p-nAb ID50 markers",
+                                                      "Baseline risk factors + Day 29 and Day 57 p-nAb ID80 markers",
+                                                      "Baseline risk factors + Day 29 and Day 57 bAb markers and p-nAb ID50 markers",
+                                                      "Baseline risk factors + Day 29 and Day 57 bAb markers and p-nAb ID80 markers",
+                                                      "Baseline risk factors + Day 29 and Day 57 bAb markers and combination scores across the ten markers [PCA1, PCA2, FSDAM1/FSDAM2 (the first two
+components of nonlinear PCA), and the maximum signal diversity score]",
+                                                      "Baseline risk factors + all individual Day 29 and Day 57 marker variables",
+                                                      "Baseline risk factors + all individual Day 29 and Day 57 marker variables and their combination scores (Full model of Day 29 and Day 57 markers)"))
 
 tab %>% write.csv(here("output", "varsets.csv"))
 

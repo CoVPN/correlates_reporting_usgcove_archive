@@ -51,8 +51,8 @@ for (i in 1:length(tlf)){
   rownames(tab) <- NULL
   colnames(tab) <- gsub("%", "\\\\%", colnames(tab))
   colnames(tab) <- gsub("Baseline SARS-CoV-2", "Baseline\nSARS\\-CoV\\-2", colnames(tab))
-  colnames(tab) <- gsub("% Greater than 2xLLOQ", "% Greater than\n2 $\\\\times$ LLOQ", colnames(tab))
-  colnames(tab) <- gsub("% Greater than 4xLLOQ", "% Greater than\n4 $\\\\times$ LLOQ", colnames(tab))
+  colnames(tab) <- gsub("% Greater than 2x", "% Greater than\n2 $\\\\times$", colnames(tab))
+  colnames(tab) <- gsub("% Greater than 4x", "% Greater than\n4 $\\\\times$", colnames(tab))
   
 
   col_name <- if ("col_name" %in% tlf_args) {
@@ -99,7 +99,7 @@ for (i in 1:length(tlf)){
           }
       
         if ("pack_row" %in% tlf_args) {
-          tabjk <- pack_rows(tabjk, index = if(is.na(loop))pack_row_ind else pack_row_ind[j])
+          tabjk <- pack_rows(tabjk, index = if(is.na(loop))pack_row_ind else pack_row_ind[j], escape = FALSE)
          }
     print(tabjk)
     cat("\n\n\\clearpage\n")

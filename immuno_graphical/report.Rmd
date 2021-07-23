@@ -25,7 +25,7 @@ minority.disclaimer <- switch(study_name_code, "COVE"="", "ENSEMBLE"="These plot
 
 neut.marker.captions <- switch(study_name_code, 
                                "COVE"="The three dashed lines in each figure are ULOQ, LLOQ, and positivity cutoffs for binding antibody assays, or ULOQ, LLOQ, and LLOD for neutralizing antibody assays, from top to bottom respectively.",
-                               "ENSEMBLE"="The three dashed lines in each figure are ULOQ, LLOQ, and positivity cutoffs for binding antibody assays.")
+                               "ENSEMBLE"="The three dashed lines in each figure are ULOQ, positivity cut-off, LLOQ from top to bottom for binding antibody assays.")
 
 ```
 

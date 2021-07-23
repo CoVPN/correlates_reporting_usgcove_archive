@@ -27,6 +27,7 @@ for (i in 1:length(tlf)) {
   loop <- if ("loop" %in% tlf_args) tlf_labels[["loop"]] else NA
 
   tab <- get(names(tlf)[i]) 
+   if (is.null(tab)) next
    if (nrow(tab) == 0) next
 
   group_table_col <- if ("group_table_col" %in% tlf_args) {
@@ -96,7 +97,7 @@ for (i in 1:length(tlf)) {
           }
       
         if ("pack_row" %in% tlf_args) {
-          tabjk <- pack_rows(tabjk, index = if(is.na(loop))pack_row_ind else pack_row_ind[j])
+          tabjk <- pack_rows(tabjk, index = if(is.na(loop))pack_row_ind else pack_row_ind[j], escape = FALSE)
          }
     print(tabjk)
     cat("\n\n\\clearpage\n")

@@ -1,10 +1,15 @@
 #Sys.setenv(TRIAL = "janssen_pooled_real")
-#-----------------------------------------------
 renv::activate(here::here())
-# There is a bug on Windows that prevents renv from working properly. The following code provides a workaround:
-if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
+    # There is a bug on Windows that prevents renv from working properly. The following code provides a workaround:
+    if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
 source(here::here("_common.R"))
 #-----------------------------------------------
+# packages and settings
+library(here)
+library(tidyverse)
+library(Hmisc) # wtd.quantile, cut2
+library(mice)
+library(dplyr)
 
 myprint(study_name)
 myprint(study_name_code)
@@ -24,15 +29,12 @@ sort(names(dat_raw))
 summary(dat_raw$EventTimePrimaryD29[dat_raw$EventIndPrimaryD29==1])
 hist(dat_raw$EventTimePrimaryD29[dat_raw$EventIndPrimaryD29==1])
 
+sort(subset(dat_clean, Bserostatus==0 & Perprotocol==1 & EventIndPrimaryD1==1 & Trt==1, EventTimePrimaryD1, drop=T))
+sort(subset(dat_clean, Bserostatus==0 & Perprotocol==1 & EventIndPrimaryD29==1 & Trt==1, EventTimePrimaryD29, drop=T))
+
 
 ########################################################################################################
 
-# packages and settings
-library(here)
-library(tidyverse)
-library(Hmisc) # wtd.quantile, cut2
-library(mice)
-library(dplyr)
 
 dat_proc=dat_raw
 

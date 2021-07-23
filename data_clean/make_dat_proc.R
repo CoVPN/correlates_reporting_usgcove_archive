@@ -1,11 +1,8 @@
 #Sys.setenv(TRIAL = "janssen_pooled_real")
-if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
 #-----------------------------------------------
 renv::activate(here::here())
 # There is a bug on Windows that prevents renv from working properly. The following code provides a workaround:
-if (.Platform$OS.type == "windows") {
-  .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
-}
+if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
 source(here::here("_common.R"))
 #-----------------------------------------------
 
@@ -18,9 +15,14 @@ library(dplyr)
 
 myprint(study_name_code)
 
-dat_proc <- read.csv(here(
-  "data_raw", data_raw_dir, data_in_file
-))
+dat_proc <- read.csv(here("data_raw", data_raw_dir, data_in_file))
+#summary(dat_proc)
+#summary(dat_proc$Age)
+#hist(dat_proc$Day29bindSpike)
+#10**min(dat_proc$Day29bindSpike,na.rm=T)*.009*2
+#hist(dat_proc$Day29bindN)
+#10**min(dat_proc$Day29bindN,na.rm=T)*0.0024*2
+
 
 
 if(study_name=="MockENSEMBLE") dat_proc=dat_proc[, !contain(names(dat_proc), "pseudoneutid")]
@@ -572,6 +574,21 @@ make.case.count.marker.availability.table=function() {
             tab
         })
         cnts
+    } else if (study_name_code=="ENSEMBLE") {
+        idx.trt=1:0
+        names(idx.trt)=c("vacc","plac")
+        cnts = sapply (idx.trt, simplify="array", function(trt) {
+             idx=1:1
+             tab=t(sapply (idx, function(i) {           
+                tmp.1 = with(subset(dat_proc, Trt==trt & Bserostatus==0 & if(i==2) EventIndPrimaryD57 else EventIndPrimaryD29 &   if(i==2) ph1.D57 else if(i==1) ph1.D29 else ph1.intercurrent.cases), is.na(BbindSpike)     | is.na(BbindRBD) )
+                tmp.2 = with(subset(dat_proc, Trt==trt & Bserostatus==0 & if(i==2) EventIndPrimaryD57 else EventIndPrimaryD29 &   if(i==2) ph1.D57 else if(i==1) ph1.D29 else ph1.intercurrent.cases), is.na(Day29bindSpike) | is.na(Day29bindRBD))
+                
+                c(sum(tmp.1 & tmp.2), sum(!tmp.1 & tmp.2), sum(tmp.1 & !tmp.2), sum(!tmp.1 & !tmp.2))
+             }))
+             colnames(tab)=c("--", "+-", "-+", "++")
+             tab
+        })
+        t(drop(cnts))
     } else {
         NA
     }

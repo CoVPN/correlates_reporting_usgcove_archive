@@ -17,6 +17,7 @@ library(here)
 conflict_prefer("filter", "dplyr")
 conflict_prefer("summarise", "dplyr")
 conflict_prefer("load", "base")
+source(here("code", "study_specific_functions.R"))
 source(here("code", "utils.R"))
 method <- "method.CC_nloglik" # since SuperLearner relies on this to be in GlobalEnv
 ggplot2::theme_set(theme_cowplot())
@@ -37,29 +38,8 @@ dat %>%
   t() %>%
   as.data.frame() %>%
   tibble::rownames_to_column(var = "Variable Name") %>%
-  mutate(
-    V1 = paste0(V1, "/", nrow(dat), " (", format(round((V1 / nrow(dat)) * 100, 1), nsmall = 1), "%)"),
-    Definition = case_when(
-      `Variable Name` == "Age" ~ "Age at enrollment in years, between 18 and 85",
-      `Variable Name` == "Sex" ~ "Sex assigned at birth (1=female, 0=male)",
-      `Variable Name` == "BMI" ~ "BMI at enrollment (kg/m^2)",
-      `Variable Name` == "MinorityInd" ~ "Baseline covariate underrepresented minority status (1=minority, 0=non-minority)",
-      `Variable Name` == "EthnicityHispanic" ~ "Indicator ethnicity = Hispanic (0 = Non-Hispanic)",
-      `Variable Name` == "EthnicityNotreported" ~ "Indicator ethnicity = Not reported (0 = Non-Hispanic)",
-      `Variable Name` == "EthnicityUnknown" ~ "Indicator ethnicity = Unknown (0 = Non-Hispanic)",
-      `Variable Name` == "Black" ~ "Indicator race = Black (0 = White)",
-      `Variable Name` == "Asian" ~ "Indicator race = Asian (0 = White)",
-      `Variable Name` == "NatAmer" ~ "Indicator race = American Indian or Alaska Native (0 = White)",
-      `Variable Name` == "PacIsl" ~ "Indicator race = Native Hawaiian or Other Pacific Islander (0 = White)",
-      `Variable Name` == "WhiteNonHispanic" ~ "Indicator race = White or Caucasian (1 = White)",
-      `Variable Name` == "Multiracial" ~ "Indicator race = Multiracial (0 = White)",
-      `Variable Name` == "Other" ~ "Indicator race = Other (0 = White)",
-      `Variable Name` == "Notreported" ~ "Indicator race = Not reported (0 = White)",
-      `Variable Name` == "Unknown" ~ "Indicator race = unknown (0 = White)",
-      `Variable Name` == "HighRiskInd" ~ "Baseline covariate high risk pre-existing condition (1=yes, 0=no)"
-    ),
-    Comments = ""
-  ) %>%
+  mutate(V1 = paste0(V1, "/", nrow(dat), " (", format(round((V1 / nrow(dat)) * 100, 1), nsmall = 1), "%)")) %>%
+  get_defs_comments_riskVars() %>%
   rename(`Total missing values` = V1) %>%
   select(`Variable Name`, Definition, `Total missing values`, Comments) %>%
   write.csv(here("output", "risk_vars.csv"))
@@ -106,8 +86,12 @@ if (run_prod) {
 tab %>% write.csv(here("output", "learner-screens.csv"))
 
 ######## SLperformance-plac ####################################################
-caption <- "Performance of Superlearner and all learner-screen combinations (CV-AUCs with 95\\% CIs) for risk score analyses using placebo group and EventIndPrimaryD57 as outcome. Constraint of np/20 is applied to all learners such that no more than 6 input variables were allowed in any model."
-
+if(study_name_code=="COVE"){
+  caption <- "Performance of Superlearner and all learner-screen combinations (CV-AUCs with 95\\% CIs) for risk score analyses using placebo group and EventIndPrimaryD57 as outcome. Constraint of np/20 is applied to all learners such that no more than 6 input variables were allowed in any model."
+}else if(study_name_code=="ENSEMBLE"){
+  caption <- "Performance of Superlearner and all learner-screen combinations (CV-AUCs with 95\\% CIs) for risk score analyses using placebo group and EventIndPrimaryD29 as outcome. Constraint of np/20 is applied to all learners such that no more than 5 input variables were allowed in any model."
+}
+  
 sl.perf <- risk_placebo_cvaucs %>%
   mutate(AUCstr = ifelse(AUC %in% tail(sort(AUC), 1), paste0(AUCstr, "*"), AUCstr)) %>%
   select(Learner, Screen, AUCstr)

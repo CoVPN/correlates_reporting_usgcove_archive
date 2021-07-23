@@ -18,10 +18,6 @@ options(dplyr.summarise.inform = FALSE)
 # Read in original data
 dat <- read.csv(here::here("..", "data_clean", data_name))
 
-if (subset_variable != "None") {
-  dat <- dat %>% dplyr::filter(!!as.name(subset_variable)==subset_value)
-  }
-
 # The stratified random cohort for immunogenicity
 
 ds_s <- dat %>%
@@ -59,11 +55,18 @@ ds_s <- dat %>%
 
 if(study_name_code=="ENSEMBLE"){
   ds_s <- ds_s %>% 
-    mutate(CountryC=labels.countries.ENSEMBLE[Country+1],
-           RegionC=labels.regions.ENSEMBLE[Region+1],
-           URMC=case_when(URMforsubcohortsampling == 1 ~ "URM",
+    mutate(CountryC = labels.countries.ENSEMBLE[Country+1],
+           RegionC = labels.regions.ENSEMBLE[Region+1],
+           URMC = case_when(URMforsubcohortsampling == 1 ~ "URM",
                           URMforsubcohortsampling == 0 ~ "Non-URM"),
-           AgeURM=paste(AgeC, URMC))
+           AgeURM = paste(AgeC, URMC),
+           HIVC = c("Positive", "Negative")[2-HIVinfection],
+           BMI = case_when(max(BMI, na.rm=T) < 5 ~ labels.BMI[BMI],
+                           BMI>=30 ~ "Obese BMI $\\geq$ 30", 
+                           BMI>=25 ~ "Overweight 25 $\\leq$ BMI < 30",
+                           BMI>=18.5 ~ "Normal 18.5 $\\leq$ BMI < 25",
+                           BMI<18.5 ~ "Underweight BMI < 18.5")
+           )
 }
 
 # Step2: Responders, % >=2FR, % >=4FR, % >=2lloq, % >=4lloq
@@ -87,7 +90,8 @@ subgrp <- c(
   AgeMinorC = "Age, Communities of color",
   URMC = "Underrepresented Minority Status in the U.S.",
   AgeURM = "Age, Underrepresented Minority Status in the U.S.",
-  CountryC = "Country"
+  CountryC = "Country",
+  HIVC = "HIV Infection"
 )
 
 grplev <- c("", labels.age, "At-risk", "Not at-risk", 
@@ -104,10 +108,11 @@ grplev <- c("", labels.age, "At-risk", "Not at-risk",
             labels.minor, 
             paste(labels.age[1], labels.minor),  
             paste(labels.age[2], labels.minor),
-            labels.countries.ENSEMBLE)
+            labels.countries.ENSEMBLE,
+            "Negative", "Positive")
 
 names(grplev) <- c("All participants", grplev[-1])
 
-save(ds, assays, assays_col, labels_all, subgrp, grplev, tlf, 
+save(ds, assays, assays_col, labels_all, subgrp, grplev, tlf,
      file = here::here("data_clean", "ds_all.Rdata"))
 

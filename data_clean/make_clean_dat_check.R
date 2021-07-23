@@ -37,6 +37,13 @@ tmp=subset(dat_clean, Bserostatus==0 & Trt==1 & Perprotocol==1 & EventIndPrimary
 with(tmp, table(EventTimePrimaryD29<7, !is.na(Day29bindSpike)))
 
 
+with(subset(dat_clean, Bserostatus==0 & Trt==1 & Perprotocol==1 & ph2.D29), table(Wstratum))
+with(subset(dat_clean, Bserostatus==0 & Trt==0 & Perprotocol==1 & ph2.D29), table(Wstratum))
+with(subset(dat_clean, Bserostatus==1 & Trt==1 & Perprotocol==1 & ph2.D29), table(Wstratum))
+with(subset(dat_clean, Bserostatus==1 & Trt==0 & Perprotocol==1 & ph2.D29), table(Wstratum))
+with(subset(dat_clean, Bserostatus==1 & Trt==0 & Perprotocol==1 & ph1.D29), table(Wstratum))
+
+
 
 # leave comments below for checks implemented in make_dat_proc.R
 ## missing markers imputed properly in each stratum

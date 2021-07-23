@@ -96,6 +96,7 @@ data_folder <- here("output")
 cvaucs_vacc <- readin_SLobjects_fromFolder(data_folder, file_pattern = "*.rds", endpoint = "EventIndPrimaryD57", trt = "vaccine") %>%
   mutate(varset = str_replace(file, "CVSLaucs_vacc_EventIndPrimaryD57_", ""),
          varset = str_replace(varset, "_varset", ""),
+         varset = str_replace(varset, ".rds", ""),
          varsetNo = as.numeric(sapply(strsplit(varset, "_"), `[`, 1))) %>%
   arrange(varsetNo)
 

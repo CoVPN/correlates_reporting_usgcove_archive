@@ -16,7 +16,7 @@ marginalized.risk.gam.boot=function(formula, marker.name, type=1, data, B, ci.ty
     
     if (type==1) {
     # conditional on S=s
-        ss=sort(c(report.assay.values(data[[marker.name]], marker.name.to.assay(marker.name)), seq(min(data[[marker.name]], na.rm=TRUE), max(data[[marker.name]], na.rm=TRUE), length=50)[-c(1,50)]))
+        ss=sort(c(seq(quantile(data[[marker.name]], 0.025, na.rm=TRUE), quantile(data[[marker.name]], 0.975, na.rm=TRUE), length=50)[-c(1,50)]))
         f1=update(form.0.logistic, as.formula(paste0("~.+s(",marker.name,")")))        
         fit.risk=mgcv::gam(f1, data=data.ph2, family=binomial, weights=wt.0)
         prob=marginalized.risk(fit.risk, marker.name, data=data.ph2, ss=ss, weights=data.ph2$wt.0, categorical.s=F)        

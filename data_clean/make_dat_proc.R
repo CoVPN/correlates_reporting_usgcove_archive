@@ -1,10 +1,35 @@
 #Sys.setenv(TRIAL = "janssen_pooled_real")
-#-----------------------------------------------
 renv::activate(here::here())
-# There is a bug on Windows that prevents renv from working properly. The following code provides a workaround:
-if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
+    # There is a bug on Windows that prevents renv from working properly. The following code provides a workaround:
+    if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
 source(here::here("_common.R"))
 #-----------------------------------------------
+
+myprint(study_name)
+myprint(study_name_code)
+
+library(here)
+dat_raw <- read.csv(here("data_raw", data_raw_dir, data_in_file))
+
+# some exploratory statistics
+
+summary(dat_raw)
+summary(dat_raw$Age)
+hist(dat_raw$Day29bindSpike)
+10**min(dat_raw$Day29bindSpike,na.rm=T)*.009*2
+hist(dat_raw$Day29bindN)
+10**min(dat_raw$Day29bindN,na.rm=T)*0.0024*2
+sort(names(dat_raw))
+
+summary(dat_raw$EventTimePrimaryD29[dat_raw$EventIndPrimaryD29==1])
+hist(dat_raw$EventTimePrimaryD29[dat_raw$EventIndPrimaryD29==1])
+
+sort(subset(dat_raw, Bserostatus==0 & Trt==1 & Perprotocol==1 & EventIndPrimaryD1==1, EventTimePrimaryD1, drop=T))
+sort(subset(dat_raw, Bserostatus==0 & Trt==1 & Perprotocol==1 & EventIndPrimaryD29==1, EventTimePrimaryD29, drop=T))
+#sort(subset(dat_raw, Bserostatus==0 & Trt==1 & Perprotocol==1 & EventIndPrimaryIncludeNotMolecConfirmedD29==1, EventTimePrimaryIncludeNotMolecConfirmedD29, drop=T))
+
+
+########################################################################################################
 
 # packages and settings
 library(here)
@@ -13,23 +38,24 @@ library(Hmisc) # wtd.quantile, cut2
 library(mice)
 library(dplyr)
 
-myprint(study_name_code)
-
-dat_proc <- read.csv(here("data_raw", data_raw_dir, data_in_file))
-#summary(dat_proc)
-#summary(dat_proc$Age)
-#hist(dat_proc$Day29bindSpike)
-#10**min(dat_proc$Day29bindSpike,na.rm=T)*.009*2
-#hist(dat_proc$Day29bindN)
-#10**min(dat_proc$Day29bindN,na.rm=T)*0.0024*2
-
-
+dat_proc=dat_raw
 
 if(study_name=="MockENSEMBLE") dat_proc=dat_proc[, !contain(names(dat_proc), "pseudoneutid")]
 
 colnames(dat_proc)[1] <- "Ptid" 
 
 dat_proc=subset(dat_proc, !is.na(Bserostatus))
+
+if(study_name_code=="ENSEMBLE") {
+    # set Bserostatus==0 for all ptids that have BbindN > Positivity cut-off
+    # The reason for the issue/discrepancy was that Janssen used a different assay for seroconversion.   
+    # The decision here is to require baseline seronegative to mean seronegative on both assays. 
+    with(dat_proc, table(10**BbindN*convf["bindN"]>pos.cutoffs["bindN"], Bserostatus, useNA="ifany"))
+    dat_proc$Bserostatus[10**dat_proc$BbindN*convf["bindN"]>pos.cutoffs["bindN"]]=1
+    with(dat_proc, table(10**BbindN*convf["bindN"]>pos.cutoffs["bindN"], Bserostatus, useNA="ifany"))
+}
+
+
 
           dat_proc=subset(dat_proc, !is.na(EventTimePrimaryD1) & !is.na(EventTimePrimaryD29))
 if(has57) dat_proc=subset(dat_proc, !is.na(EventTimePrimaryD57))

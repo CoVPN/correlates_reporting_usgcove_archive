@@ -21,7 +21,7 @@ report.ve.levels=c(.65,.9,.95)
     
 for (eq.geq in 1:2) {  # 1 conditional on s,   2 is conditional on S>=s
 for (w.wo.plac in 1:2) { # 1 with placebo lines, 2 without placebo lines. Implementation-wise, the main difference is in ylim
-# eq.geq=1; w.wo.plac=2; a=assays[3]
+# eq.geq=1; w.wo.plac=1; a=assays[1]
     
     risks.all=get("risks.all."%.%eq.geq)
     

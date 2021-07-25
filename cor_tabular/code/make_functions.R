@@ -65,12 +65,20 @@ getResponder <- function(data,
 #' 
 get_rr <- function(dat, v, subs, sub.by, strata, weights, subset){
   rpcnt <- NULL
+  dat_twophase <- dat %>% 
+    group_by_at(strata) %>% 
+    mutate(ph1cnt=n(), ph2cnt=sum(!!as.name(subset), na.rm = T)) %>% 
+    filter(ph1cnt!=0 & ph2cnt!=0) %>% 
+    select_at(gsub("`", "", c("Ptid", strata, weights, subset, sub.by, v, subs)))
+  
   design.full <- twophase(id=list(~Ptid, ~Ptid), 
                           strata=list(NULL, as.formula(sprintf("~%s", strata))),
                           weights=list(NULL, as.formula(sprintf("~%s", weights))),
                           method="simple",
                           subset=as.formula(sprintf("~%s", subset)),
-                          data=dat %>% select_at(gsub("`", "", c("Ptid", strata, weights, subset, sub.by, v, subs))))
+                          data=dat_twophase 
+                          )
+
   for (i in v){
     design.ij <- subset(design.full, eval(parse(text=sprintf("!is.na(%s)",i))))
     for (j in subs){
@@ -112,12 +120,18 @@ get_rr <- function(dat, v, subs, sub.by, strata, weights, subset){
 #' 
 get_gm <- function(dat, v, subs, sub.by, strata, weights, subset){
   rgm <- NULL
+  dat_twophase <- dat %>% 
+    group_by_at(strata) %>% 
+    mutate(ph1cnt=n(), ph2cnt=sum(!!as.name(subset), na.rm = T)) %>% 
+    filter(ph1cnt!=0 & ph2cnt!=0) %>% 
+    select_at(gsub("`", "", c("Ptid", strata, weights, subset, sub.by, v, subs)))
+  
   design.full <- twophase(id=list(~Ptid, ~Ptid), 
                           strata=list(NULL, as.formula(sprintf("~%s", strata))),
                           weights=list(NULL, as.formula(sprintf("~%s", weights))),
                           method="simple",
                           subset=as.formula(sprintf("~%s", subset)),
-                          data=dat %>% select_at(gsub("`", "", c("Ptid", strata, weights, subset, sub.by, v, subs))))
+                          data=dat_twophase)
   for (i in v){
     design.ij <- subset(design.full, eval(parse(text=sprintf("!is.na(%s)", i))))
     for (j in subs){
@@ -179,6 +193,9 @@ get_rgmt <- function(dat, v, groups, comp_lev, sub.by, strata, weights, subset){
       
       if (nrow(n.j)!=0){
         dat.ij <- dat %>% 
+          group_by_at(strata) %>% 
+          mutate(ph1cnt=n(), ph2cnt=sum(!!as.name(subset), na.rm = T)) %>% 
+          filter(ph1cnt!=0 & ph2cnt!=0) %>% 
           unite("all.sub.by", match(gsub("`", "", sub.by), names(dat)), remove=F) %>% 
           select_at(gsub("`", "",c("Ptid", strata, weights, subset, sub.by, i, j, "all.sub.by")))
         

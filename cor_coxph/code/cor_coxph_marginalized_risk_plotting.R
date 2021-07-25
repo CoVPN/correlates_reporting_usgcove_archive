@@ -53,7 +53,7 @@ for (w.wo.plac in 1:2) { # 1 with placebo lines, 2 without placebo lines. Implem
         ncases=sapply(risks$marker, function(s) sum(dat.vac.seroneg$yy[dat.vac.seroneg[["Day"%.%pop%.%a]]>=s], na.rm=T))
         
         plot(prob~marker, risks, xlab=labels.assays.short[a]%.%ifelse(eq.geq==1," (=s)"," (>=s)"), xlim=xlim, 
-            ylab=paste0("Probability* of COVID by Day ", t0), lwd=lwd, ylim=ylim, type="n", main=paste0(labels.assays.long["Day"%.%pop,a]), xaxt="n")
+            ylab=paste0("Probability* of COVID-19 by Day ", t0), lwd=lwd, ylim=ylim, type="n", main=paste0(labels.assays.long["Day"%.%pop,a]), xaxt="n")
     
         draw.x.axis.cor(xlim, llods[a])
     
@@ -118,7 +118,7 @@ out=lapply (assays, function(a) {
 })
 tab=do.call(cbind, out)
 mytex(tab, file.name=paste0("marginalized_risks_eq", "_"%.%study_name), align="c", include.colnames = T, save2input.only=T, input.foldername=save.results.to, include.rownames = F,
-    longtable=T, caption.placement = "top", caption=paste0("Marginalized cumulative risk by Day ",t0," as functions of Day ",
+    longtable=T, caption.placement = "top", label=paste0("tab marginalized_risks_eq ", pop), caption=paste0("Marginalized cumulative risk by Day ",t0," as functions of Day ",
         pop," markers (=s) among baseline negative vaccine recipients with 95\\% bootstrap point-wise confidence intervals (",
         ncol(risks.all[[1]]$boot)," replicates)."),
     col.headers=paste0("\\hline\n", concatList(paste0("\\multicolumn{2}{c}{", labels.axis[1,], "}"), "&"), "\\\\\n"))
@@ -164,7 +164,7 @@ mypdf(onefile=F, file=paste0(save.results.to, "controlled_ve_curves",ifelse(eq.g
         ret=cbind("s"=tmp, "Estimate"=paste0(formatDouble(est[pick.out],digits.risk), " (", formatDouble(ci.band[1,pick.out],digits.risk), ",", formatDouble(ci.band[2,pick.out],digits.risk), ")"))
 
         mymatplot(risks$marker[.subset], t(rbind(est, ci.band))[.subset,], type="l", lty=c(1,2,2), col=ifelse(eq.geq==1,"red","white"), lwd=lwd, make.legend=F, 
-            ylab=paste0("Controlled VE against COVID by Day ",t0), 
+            ylab=paste0("Controlled VE against COVID-19 by Day ",t0), 
             main=paste0(labels.assays.long["Day"%.%pop,a]),
             xlab=labels.assays.short[a]%.%ifelse(eq.geq==1 | eq.geq==3," (=s)"," (>=s)"), 
             ylim=ylim, xlim=xlim, yaxt="n", xaxt="n", draw.x.axis=F)
@@ -210,9 +210,10 @@ mypdf(onefile=F, file=paste0(save.results.to, "controlled_ve_curves",ifelse(eq.g
     if(eq.geq==1) {
         tab=do.call(cbind, out)
         mytex(tab, file.name=paste0("controlled_ve_sens_eq", "_"%.%study_name), align="c", include.colnames = T, save2input.only=T, input.foldername=save.results.to, include.rownames = F,
-            longtable=T, caption.placement = "top", caption=paste0("Controlled VE with sensitivity analysis as functions of Day ",
+            longtable=T, caption.placement = "top", label=paste0("tab controlled_ve_sens_eq ", pop), caption=paste0("Controlled VE with sensitivity analysis as functions of Day ",
                 pop," markers (=s) among baseline negative vaccine recipients with 95\\% bootstrap point-wise confidence intervals (",
-                ncol(risks.all[[1]]$boot)," replicates)."),
+                ncol(risks.all[[1]]$boot)," replicates)."
+                ),
             col.headers=paste0("\\hline\n", concatList(paste0("\\multicolumn{2}{c}{", labels.axis[1,], "}"), "&"), "\\\\\n"))
     }
 dev.off()    
@@ -242,11 +243,13 @@ out=lapply (assays, function(a) {
 })
 tab=do.call(cbind, out)
 mytex(tab, file.name=paste0("controlled_ve_eq", "_"%.%study_name), align="c", include.colnames = T, save2input.only=T, input.foldername=save.results.to, include.rownames = F,
-    longtable=T, caption.placement = "top", caption=paste0("Controlled VE as functions of Day ",
+    longtable=T, caption.placement = "top", label=paste0("tab controlled_ve_eq ", pop), caption=paste0("Controlled VE as functions of Day ",
         pop," markers (=s) among baseline negative vaccine recipients with 95\\% bootstrap point-wise confidence intervals (",
-        ncol(risks.all[[1]]$boot)," replicates)."),
+        ncol(risks.all[[1]]$boot)," replicates).", "Overall cumulative incidence from 7 to ",t0," days post Day ",pop," was ",
+        formatDouble(prev.vacc[1], 3, remove.leading0=F)," in vaccine recipients compared to ",
+        formatDouble(prev.plac[1], 3, remove.leading0=F)," in placebo recipients, with cumulative vaccine efficacy ",
+        formatDouble(overall.ve[1]*100,1),"\\% (95\\% CI ",formatDouble(overall.ve[2]*100,1)," to ",formatDouble(overall.ve[3]*100,1),"\\%)."),
     col.headers=paste0("\\hline\n", concatList(paste0("\\multicolumn{2}{c}{", labels.axis[1,], "}"), "&"), "\\\\\n"))
-
 
 
 ###################################################################################################
@@ -312,7 +315,7 @@ for (a in assays) {
     q.a=marker.cutpoints[[a]][["Day"%.%pop]]
     
     if(length(out)==1) empty.plot() else {
-        mymatplot(out$time, out$risk, lty=1:3, col=c("green3","green","darkgreen"), type="l", lwd=lwd, make.legend=F, ylab="Probability* of COVID by Day "%.%t0, ylim=ylim, xlab="", las=1, xlim=c(0,t0), at=x.time, xaxt="n")
+        mymatplot(out$time, out$risk, lty=1:3, col=c("green3","green","darkgreen"), type="l", lwd=lwd, make.legend=F, ylab="Probability* of COVID-19 by Day "%.%t0, ylim=ylim, xlab="", las=1, xlim=c(0,t0), at=x.time, xaxt="n")
         title(xlab="Days Since Day "%.%pop%.%" Visit", line=2)
         title(main=labels.title["Day"%.%pop,a], cex.main=.9, line=2)
         mtext(bquote(cutpoints: list(.(formatDouble(10^q.a[1]/10^floor(q.a[1]),1)) %*% 10^ .(floor(q.a[1])), .(formatDouble(10^q.a[2]/10^floor(q.a[2]),1)) %*% 10^ .(floor(q.a[2])))), line= .25, cex=.8)   
@@ -348,7 +351,7 @@ for (a in assays) {
     mtext(paste0("High:"),side=1,outer=F,line=5.2,at=at.label,adj=0,cex=cex.text); mtext(n.risk.H,side=1,outer=FALSE,line=5.2,at=x.time,cex=cex.text)
     mtext(paste0("Plac:"),side=1,outer=F,line=6.2,at=at.label,adj=0,cex=cex.text); mtext(n.risk.P,side=1,outer=FALSE,line=6.2,at=x.time,cex=cex.text)
     
-    mtext(expression(bold("Cumulative No. of COVID Endpoints")),side=1,outer=FALSE,line=7.4,at=-2,adj=0,cex=cex.text)
+    mtext(expression(bold("Cumulative No. of COVID-19 Endpoints")),side=1,outer=FALSE,line=7.4,at=-2,adj=0,cex=cex.text)
     mtext(paste0("Low:"),side=1,outer=FALSE,line=8.3,at=at.label,adj=0,cex=cex.text);  mtext(cum.L,side=1,outer=FALSE,line=8.3,at=x.time,cex=cex.text)
     mtext(paste0("Med:"),side=1,outer=FALSE,line=9.2,at=at.label,adj=0,cex=cex.text);  mtext(cum.M,side=1,outer=FALSE,line=9.2,at=x.time,cex=cex.text)
     mtext(paste0("High:"),side=1,outer=FALSE,line=10.1,at=at.label,adj=0,cex=cex.text);mtext(cum.H,side=1,outer=FALSE,line=10.1,at=x.time,cex=cex.text)

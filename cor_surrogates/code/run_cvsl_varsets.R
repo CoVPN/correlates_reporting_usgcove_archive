@@ -325,6 +325,11 @@ if (sum(dat.ph2 %>% pull(endpoint)) <= 25){
   maxVar <- floor(nv/6)
 }
 
+if (study_name_code == "COVE"){
+  V_inner <- length(Y) - 1
+  maxVar <- 5
+} 
+
 ## ---------------------------------------------------------------------------------
 ## run super learner, with leave-one-out cross-validation and all screens
 ## do 10 random starts, average over these

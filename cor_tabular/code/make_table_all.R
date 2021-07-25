@@ -236,10 +236,6 @@ labels_all <- full_join(labels.assays, resp.lb, by = c("time", "marker")) %>%
 # Read in original data
 dat <- dat_proc <- read.csv(here::here("../data_clean", data_name))
 
-if (subset_variable != "None") {
-  dat <- dat %>% dplyr::filter(!!as.name(subset_variable)==subset_value)
-}
-
 
 # The stratified random cohort for immunogenicity
 ds_s <- dat %>%

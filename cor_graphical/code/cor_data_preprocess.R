@@ -311,9 +311,9 @@ dat.longer.cor.subset <- dat.long.cor.subset.twophase.intercurrent[,c("Ptid", "T
         "highrisk_label", "age_risk_label", "sex_label", "minority_label", "Dich_RaceEthnic", "assay", 
         "LLoD", "LLoQ", "pos.cutoffs", "ULoQ", "lb", "lbval", "lb2", "lbval2",
         if(has57) c("EventIndPrimaryD57", "ph1.intercurrent.cases", 
-                    "ph2.intercurrent.cases", "wt.intercurrent.cases", "wt.D57", "ph2.D57"), "wt.D29", 
+                    "ph2.intercurrent.cases", "wt.intercurrent.cases", "wt.D57", "ph2.D57"), "wt.D29", "ph2.D29",
         "B", "Day29", "Delta29overB", if(has57) c("Day57", "Delta57overB"))] %>%
-  pivot_longer(!Ptid:wt.D29, names_to = "time", values_to = "value")
+  pivot_longer(!Ptid:ph2.D29, names_to = "time", values_to = "value")
 
 # define response rates
 dat.longer.cor.subset <- dat.longer.cor.subset %>%

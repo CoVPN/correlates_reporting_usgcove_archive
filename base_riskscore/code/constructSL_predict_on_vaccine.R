@@ -84,7 +84,7 @@ vacc <- bind_cols(
   # add AUC
   mutate(AUCchar = format(round(fast.auc(pred, get(endpoint)), 3), nsmall = 3),
          risk_score = log(pred / (1 - pred)),
-         risk_score = scale(risk_score,
+         standardized_risk_score = scale(risk_score,
                             center = mean(risk_score, na.rm = T),
                             scale = sd(risk_score, na.rm = T)))
 

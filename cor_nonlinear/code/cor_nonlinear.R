@@ -92,13 +92,18 @@ myprint(t0)
     
 # formulae
 form.s = as.formula(paste0("Surv(EventTimePrimaryD",pop,", EventIndPrimaryD",pop,") ~ 1"))
-if (endsWith(data_name, "riskscore.csv")) {
-    form.0.logistic = as.formula(paste0("EventIndPrimaryD",pop,"  ~ MinorityInd + HighRiskInd + risk_score"))
-} else {
-    form.0.logistic = as.formula(paste0("EventIndPrimaryD",pop,"  ~ MinorityInd + HighRiskInd + Age"))  
-}
-if (study_name_code=="ENSEMBLE") {
-    form.0.logistic = update (form.0.logistic, ~.+ Region) 
+if (study_name_code=="COVE") {
+    if (endsWith(data_name, "riskscore.csv")) {
+        form.0.logistic = as.formula(paste0("EventIndPrimaryD",pop,"  ~ MinorityInd + HighRiskInd + risk_score"))
+    } else {
+        form.0.logistic = as.formula(paste0("EventIndPrimaryD",pop,"  ~ MinorityInd + HighRiskInd + Age"))  
+    }
+} else if (study_name_code=="ENSEMBLE") {
+    if (endsWith(data_name, "riskscore.csv")) {
+        form.0.logistic = as.formula(paste0("EventIndPrimaryD",pop,"  ~ HighRiskInd + risk_score + Region"))
+    } else {
+        form.0.logistic = as.formula(paste0("EventIndPrimaryD",pop,"  ~ HighRiskInd + Age + Region"))  
+    }
 }
     
 # covariate length without markers

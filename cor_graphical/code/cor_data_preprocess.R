@@ -350,55 +350,63 @@ dat.longer.cor.subset$response = with(dat.longer.cor.subset, ifelse(assay %in% c
 # subsets for violin/line plots
 #### figure specific data prep
 # 1. define response rate:
-# 2. make subsample datasets such that the jitter plot for each subgroup in each panel <= 25 data points
+# 2. make subsample datasets such that the violin plot only shows <= 100 non-case data points
+
+# a function to define response rate by group
+get_resp_by_group <- function(dat=dat, group=group){
+  
+  if(has57) {wt="wt.D57"} else {wt="wt.D29"}
+  
+  dat_resp_by_group <-
+    dat %>% group_by_at(group) %>%
+    mutate(counts = n(),
+           num = round(sum(response * ifelse(!cohort_event %in% c("Post-Peak Cases", "Non-Cases"), 1, !!as.name(wt)), na.rm=T), 1), # for intercurrent cases, we don't need to adjust for the weight because all of them are from the same stratum
+           denom = round(sum(ifelse(!cohort_event %in% c("Post-Peak Cases", "Non-Cases"), 1, !!as.name(wt)), na.rm=T), 1),
+           N_RespRate = paste0(counts, "\n",round(num/denom*100, 1),"%"),
+           min = min(value),
+           q1 = quantile(value, 0.25, na.rm=T),
+           median = median(value, na.rm=T),
+           q3 = quantile(value, 0.75, na.rm=T),
+           max= max(value))
+  return(dat_resp_by_group)
+}
+
+# a function to get 1000 non-case sample by group for points & lines in line plot 
+get_sample_by_group <- function(dat.plot, group){
+
+  dat.sample <- dat.plot %>%
+    group_by_at(group) %>%
+    sample_n((ifelse(n()>=100 & cohort_event=="Non-Cases", 100, n())), replace=F) %>% filter(time=="Day 29") %>%
+    ungroup() %>%
+    select(c("Ptid", group[!group %in% "time"])) %>%
+    inner_join(dat.plot, by=c("Ptid", group[!group %in% "time"]))
+  return(dat.sample)
+} 
 
 #### for Figure 1. intercurrent vs pp, case vs non-case, (Day 1), Day 29 Day 57
 groupby_vars1=c("Trt", "Bserostatus", "cohort_event", "time", "assay")
 
-if(has57) {wt="wt.D57"} else {wt="wt.D29"}
-
-dat.longer.cor.subset.plot1 <-
-  dat.longer.cor.subset %>% group_by_at(groupby_vars1) %>%
-  mutate(counts = n(),
-         num = round(sum(response * ifelse(!cohort_event %in% c("Post-Peak Cases", "Non-Cases"), 1, !!as.name(wt)), na.rm=T), 1), # for intercurrent cases, we don't need to adjust for the weight because all of them are from the same stratum
-         denom = round(sum(ifelse(!cohort_event %in% c("Post-Peak Cases", "Non-Cases"), 1, !!as.name(wt)), na.rm=T), 1),
-         N_RespRate = paste0(counts, "\n",round(num/denom*100, 1),"%"),
-         min = min(value),
-         q1 = quantile(value, 0.25, na.rm=T),
-         median = median(value, na.rm=T),
-         q3 = quantile(value, 0.75, na.rm=T),
-         max= max(value))
+# define response rate
+dat.longer.cor.subset.plot1 <- get_resp_by_group(dat.longer.cor.subset, groupby_vars1)
 write.csv(dat.longer.cor.subset.plot1, file = here("data_clean", "longer_cor_data_plot1.csv"), row.names=F)
 saveRDS(dat.longer.cor.subset.plot1, file = here("data_clean", "longer_cor_data_plot1.rds"))
 
-plot.25sample1 <- dat.longer.cor.subset.plot1 %>%
-  group_by_at(groupby_vars1) %>%
-  sample_n((ifelse(n()>=100 & cohort_event=="Non-Cases", 100, n())), replace=F) %>% filter(time=="Day 29") %>%
-  ungroup() %>%
-  select(c("Ptid", groupby_vars1[!groupby_vars1 %in% "time"])) %>%
-  inner_join(dat.longer.cor.subset.plot1, by=c("Ptid", groupby_vars1[!groupby_vars1 %in% "time"]))
-
+# make subsample
+plot.25sample1 <- get_sample_by_group(dat.longer.cor.subset.plot1, groupby_vars1)
 write.csv(plot.25sample1, file = here("data_clean", "plot.25sample1.csv"), row.names=F)
 saveRDS(plot.25sample1, file = here("data_clean", "plot.25sample1.rds"))
 
 #### for Figure 3. intercurrent vs pp, case vs non-case, (Day 1) Day 29 Day 57, by if Age >=65 and if at risk
 groupby_vars3 <- c("Trt", "Bserostatus", "cohort_event", "time", "assay", "age_geq_65_label", "highrisk_label")
 
-dat.longer.cor.subset.plot3 <-
-  dat.longer.cor.subset %>% group_by_at(groupby_vars3) %>%
-  mutate(counts = n(),
-         num = round(sum(response * ifelse(!cohort_event %in% c("Post-Peak Cases", "Non-Cases"), 1, !!as.name(wt))), 1), # for intercurrent cases, we don't need to adjust for the weight because all of them are from the same stratum
-         denom = round(sum(ifelse(!cohort_event %in% c("Post-Peak Cases", "Non-Cases"), 1, !!as.name(wt))), 1),
-         N_RespRate = paste0(counts, "\n",round(num/denom*100, 1),"%"),)
+# define response rate
+dat.longer.cor.subset.plot3 <- get_resp_by_group(dat.longer.cor.subset, groupby_vars3)
 saveRDS(dat.longer.cor.subset.plot3, file = here("data_clean", "longer_cor_data_plot3.rds"))
 
-plot.25sample3 <- dat.longer.cor.subset.plot3 %>%
-  group_by_at(groupby_vars3) %>%
-  sample_n((ifelse(n()>=100 & cohort_event=="Non-Cases", 100, n())), replace=F) %>% filter(time=="Day 29") %>%
-  ungroup() %>%
-  select(c("Ptid", groupby_vars3[!groupby_vars3 %in% "time"])) %>%
-  inner_join(dat.longer.cor.subset.plot3, by=c("Ptid", groupby_vars3[!groupby_vars3 %in% "time"]))
+# make subsample
+plot.25sample3 <- get_sample_by_group(dat.longer.cor.subset.plot3, groupby_vars3)
 saveRDS(plot.25sample3, file = here("data_clean", "plot.25sample3.rds"))
+
 
 
 dat.long.cor.subset$Ptid <- as.character(dat.long.cor.subset$Ptid) 
@@ -406,10 +414,10 @@ dat.cor.subset$Ptid <- as.character(dat.cor.subset$Ptid)
 
 
 saveRDS(as.data.frame(dat.long.cor.subset),
-  file = here("data_clean", "long_cor_data.rds")
+        file = here("data_clean", "long_cor_data.rds")
 )
 saveRDS(as.data.frame(dat.cor.subset),
-  file = here("data_clean", "cor_data.rds")
+        file = here("data_clean", "cor_data.rds")
 )
 
 saveRDS(as.data.frame(dat.longer.cor.subset),

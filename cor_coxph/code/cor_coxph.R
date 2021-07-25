@@ -148,7 +148,7 @@ if (study_name_code=="COVE") {
         form.0 = update (form.s, ~.+ MinorityInd + HighRiskInd + Age) 
     }
     # covariate length without markers
-    p.cov=length(terms(form.0))
+    p.cov=3
 } else if (study_name_code=="ENSEMBLE") {
     if (endsWith(data_name, "riskscore.csv")) {
         form.0 = update (form.s, ~.+ HighRiskInd + risk_score + strata(Region))
@@ -156,7 +156,7 @@ if (study_name_code=="COVE") {
         form.0 = update (form.s, ~.+ HighRiskInd + Age + strata(Region)) 
     }
     # covariate length without markers
-    p.cov=length(terms(form.0)) - 1 # removing strata
+    p.cov=2
 }
 
     

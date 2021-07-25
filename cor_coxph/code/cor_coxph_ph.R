@@ -40,6 +40,7 @@ pvals.cont = sapply(fits, function(x) {
 
 fits.tri=list()
 for (a in c("Day"%.%pop%.%assays, "Delta"%.%pop%.%"overB"%.%assays)) {
+    myprint(a)
     f= update(form.0, as.formula(paste0("~.+", a, "cat")))
     fits.tri[[a]]=run.svycoxph(f, design=design.vacc.seroneg) 
 }

@@ -92,17 +92,24 @@ myprint(t0)
     
 # formulae
 form.s = as.formula(paste0("Surv(EventTimePrimaryD",pop,", EventIndPrimaryD",pop,") ~ 1"))
-if (endsWith(data_name, "riskscore.csv")) {
-    form.0.logistic = as.formula(paste0("EventIndPrimaryD",pop,"  ~ MinorityInd + HighRiskInd + risk_score"))
-} else {
-    form.0.logistic = as.formula(paste0("EventIndPrimaryD",pop,"  ~ MinorityInd + HighRiskInd + Age"))  
-}
-if (study_name_code=="ENSEMBLE") {
-    form.0.logistic = update (form.0.logistic, ~.+ Region) 
+if (study_name_code=="COVE") {
+    if (endsWith(data_name, "riskscore.csv")) {
+        form.0.logistic = as.formula(paste0("EventIndPrimaryD",pop,"  ~ MinorityInd + HighRiskInd + risk_score"))
+    } else {
+        form.0.logistic = as.formula(paste0("EventIndPrimaryD",pop,"  ~ MinorityInd + HighRiskInd + Age"))  
+    }
+    # covariate length without markers
+    p.cov=3
+} else if (study_name_code=="ENSEMBLE") {
+    if (endsWith(data_name, "riskscore.csv")) {
+        form.0.logistic = as.formula(paste0("EventIndPrimaryD",pop,"  ~ HighRiskInd + risk_score + Region"))
+    } else {
+        form.0.logistic = as.formula(paste0("EventIndPrimaryD",pop,"  ~ HighRiskInd + Age + Region"))  
+    }
+    # covariate length without markers
+    p.cov=4
 }
     
-# covariate length without markers
-p.cov=length(terms(form.0.logistic))
     
 save.results.to = paste0(here::here("output"), "/D", pop,"/");
 if (!dir.exists(save.results.to))  dir.create(save.results.to)

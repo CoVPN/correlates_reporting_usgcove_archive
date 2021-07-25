@@ -124,15 +124,22 @@ dev.off()
 options(bitmapType = "cairo")
 png(file = here("figs", "predProb_riskscore_vacc_onlySL.png"),
     width = 1100, height = 700)
+if(study_name_code == "COVE"){
+  cases = "Post Day 57 Cases"
+}
+if(study_name_code == "ENSEMBLE"){
+  cases = "Post Day 29 Cases"
+}
 vacc %>%
-  mutate(Ychar = ifelse(get(endpoint) == 0, "Control", "Case")) %>%
+  mutate(Ychar = ifelse(get(endpoint) == 0, "Non-Cases", cases)) %>%
   ggplot(aes(x = Ychar, y = pred, color = Ychar)) +
-  geom_jitter(width = 0.015, size = 1.25) +
-  geom_violin(alpha = 0.2, color = "black") +
-  geom_boxplot(alpha = 0.2, width = 0.025, color = "black", outlier.size = NA, outlier.shape = NA) +
+  geom_jitter(width = 0.06, size = 3, shape = 21, fill = "white") +
+  geom_violin(alpha = 0.05, color = "black", lwd=1.5) +
+  geom_boxplot(alpha = 0.05, width = 0.15, color = "black", outlier.size = NA, outlier.shape = NA, lwd=1.5) +
   theme_bw() +
-  scale_color_manual(values = c("#56B4E9", "#E69F00")) +
-  labs(y = "Predicted probability of COVID disease", x = "") +
+  #scale_color_manual(values = c("#56B4E9", "#E69F00")) +
+  scale_color_manual(values = c("#00468B", "#8B0000")) +
+  labs(y = "Predicted probability of COVID-19 disease", x = "") +
   theme(
     legend.position = "none",
     strip.text.x = element_text(size = 25),

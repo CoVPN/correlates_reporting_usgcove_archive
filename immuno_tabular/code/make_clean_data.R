@@ -34,8 +34,8 @@ ds_s <- dat %>%
       TRUE ~ raceC
     ),
     MinorityC = case_when(
-      WhiteNonHispanic == 0 ~ "Communities of Color",
-      WhiteNonHispanic == 1 ~ "White Non-Hispanic"
+      MinorityInd == 1 ~ "Communities of Color",
+      MinorityInd == 0 ~ "White Non-Hispanic"
     ),
     HighRiskC = ifelse(HighRiskInd == 1, "At-risk", "Not at-risk"),
     AgeC = ifelse(Senior == 1, labels.age[2], labels.age[1]),
@@ -57,9 +57,11 @@ if(study_name_code=="ENSEMBLE"){
   ds_s <- ds_s %>% 
     mutate(CountryC = labels.countries.ENSEMBLE[Country+1],
            RegionC = labels.regions.ENSEMBLE[Region+1],
-           URMC = case_when(URMforsubcohortsampling == 1 ~ "URM",
-                          URMforsubcohortsampling == 0 ~ "Non-URM"),
-           AgeURM = paste(AgeC, URMC),
+           URMC = case_when(URMforsubcohortsampling == 1 & Country ==0 ~ "URM",
+                            URMforsubcohortsampling == 0 & Country ==0 ~ "Non-URM", 
+                            TRUE ~ as.character(NA)),
+           AgeURM = case_when(is.na(URMC) ~ as.character(NA), 
+                              TRUE ~ paste(AgeC, URMC)),
            HIVC = c("Positive", "Negative")[2-HIVinfection],
            BMI = case_when(max(BMI, na.rm=T) < 5 ~ labels.BMI[BMI],
                            BMI>=30 ~ "Obese BMI $\\geq$ 30", 

@@ -188,13 +188,8 @@ for (i in 1:length(plots)) {
           # ID50/80 pseudo/live neut, a positive response: serum ID50 titer > 1:20 (log10(20)), a negative response as the complement
           groupby_vars2 <- c("Trt", "Bserostatus", "cohort_event", "time", "assay", s)
           
-          if(has57) {wt="wt.D57"} else {wt="wt.D29"}
-          longer_cor_data_plot2 <- 
-            longer_cor_data %>% group_by_at(groupby_vars2) %>%
-            mutate(counts = n(),
-                   num = round(sum(response * ifelse(!cohort_event %in% c("Post-Peak Cases", "Non-Cases"), 1, !!as.name(wt)), na.rm=T), 1), # for intercurrent cases, we don't need to adjust for the weight because all of them are from the same stratum
-                   denom = round(sum(ifelse(!cohort_event %in% c("Post-Peak Cases", "Non-Cases"), 1, !!as.name(wt)), na.rm=T), 1), 
-                   N_RespRate = paste0(counts, "\n",round(num/denom*100, 1),"%"))
+          # define response rate
+          longer_cor_data_plot2 <- get_resp_by_group(longer_cor_data, groupby_vars2)
           
           # make subset for strata RaceEthnic and Dich_RaceEthnic, only present non-NA categories
           if (s=="minority_label") {
@@ -205,13 +200,8 @@ for (i in 1:length(plots)) {
             
           } else {longer_cor_data_sub2 <- longer_cor_data_plot2}
           
-          ## make another subsample datasets such that the jitter plot for each subgroup in each panel <= 25 data points
-          plot.25sample2 <-  longer_cor_data_sub2 %>% 
-            group_by_at(groupby_vars2) %>%
-            sample_n((ifelse(n()>=100 & cohort_event=="Non-Cases", 100, n())), replace=F) %>% filter(time=="Day 29") %>% 
-            ungroup() %>%
-            select(c("Ptid", groupby_vars2[!groupby_vars2 %in% "time"])) %>%
-            inner_join(longer_cor_data_sub2, by=c("Ptid", groupby_vars2[!groupby_vars2 %in% "time"]))
+          # make subsample
+          plot.25sample2 <- get_sample_by_group(longer_cor_data_sub2, groupby_vars2)
           
           min <- ifelse(plots[i] %in% c("bindSpike","bindRBD"),
                           min(subset(longer_cor_data_plot2, assay %in% c("bindSpike","bindRBD"))$value, na.rm=T), 

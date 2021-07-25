@@ -324,30 +324,28 @@ get.maxSignalDivScore <- function(dat, day){
 }
 
 
-# get.nonlinearPCA.scores <- function(dat){
-#   ptid.vec <- dat %>% pull(Ptid)
-#   dat <- dat %>% select(-Ptid)
-# 
-#   ## scale markers to have sd 1 for all vars
-#   for (a in colnames(dat)) {
-#     dat[[a]] <- scale(dat[[a]],
-#                       scale = sd(dat[[a]], na.rm = T))
-#   }
-#   dat.scaled = data.frame(as.matrix(dat))
-#   # reticulate::py_config() # Check if pythonhome is "C:/Users/bborate/Anaconda3" ! If not, then .rs.restartR() !
-#   # .rs.restartR()
-#   # Sys.setenv(RETICULATE_PYTHON = "C:\\Users\\bborate\\Anaconda3")
-#   #reticulate::use_python(Sys.getenv("PY_VERSION"))
-# 
-#   fit=FSDAM::fsdam(dat.scaled, opt_numCode = 2)
-#   nlPCA1 <- kyotil::INT(fit$code[,1]) # the first component
-#   nlPCA2 <- kyotil::INT(fit$code[,2])
-# 
-#   # Create data frame with non-linear Principal Components
-#   nlPCA <- data.frame(Ptid = ptid.vec, nlPCA1, nlPCA2)
-# 
-#   return(nlPCA)
-# }
+get.nonlinearPCA.scores <- function(dat){
+  library(reticulate)
+  library(FSDAM)
+  ptid.vec <- dat %>% pull(Ptid)
+  dat <- dat %>% select(-Ptid)
+
+  ## scale markers to have sd 1 for all vars
+  for (a in colnames(dat)) {
+    dat[[a]] <- scale(dat[[a]],
+                      scale = sd(dat[[a]], na.rm = T))
+  }
+  dat.scaled = data.frame(as.matrix(dat))
+
+  fit=FSDAM::fsdam(dat.scaled, opt_numCode = 2)
+  nlPCA1 <- kyotil::INT(fit$code[,1]) # the first component
+  nlPCA2 <- kyotil::INT(fit$code[,2])
+
+  # Create data frame with non-linear Principal Components
+  nlPCA <- data.frame(Ptid = ptid.vec, nlPCA1, nlPCA2)
+
+  return(nlPCA)
+}
 
 
 
@@ -561,16 +559,23 @@ plot_roc_curves <- function(predict, cvaucDAT, weights) {
 # @param weights the inverse probability weights
 # @return ggplot object containing the predicted probability plots
 plot_predicted_probabilities <- function(pred, weights = rep(1, length(pred$pred))) {
+  if(study_name_code == "COVE"){
+    cases = "Post Day 57 Cases"
+  }
+  if(study_name_code == "ENSEMBLE"){
+    cases = "Post Day 29 Cases"
+  }
   pred %>%
-    mutate(Ychar = ifelse(Y == 0, "Control", "Case")) %>% 
+    mutate(Ychar = ifelse(Y == 0, "Non-Cases", cases)) %>% 
     ggplot(aes(x = Ychar, y = pred, color = Ychar)) +
-    geom_jitter(width = 0.015, size = 0.01) +
-    geom_violin(alpha = 0.2, color = "black") +
-    geom_boxplot(alpha = 0.2, width = 0.025, color = "black", outlier.size = NA, outlier.shape = NA) +
+    geom_jitter(width = 0.06, size = 3, shape = 21, fill = "white") +
+    geom_violin(alpha = 0.05, color = "black", lwd=1.0) +
+    geom_boxplot(alpha = 0.05, width = 0.15, color = "black", outlier.size = NA, outlier.shape = NA, lwd=1.0) +
     theme_bw() +
-    scale_color_manual(values = c("#56B4E9", "#E69F00")) +
+    #scale_color_manual(values = c("#56B4E9", "#E69F00")) +
+    scale_color_manual(values = c("#00468B", "#8B0000")) +
     facet_wrap(vars(learnerScreen), ncol = 1, scales = "free") +
-    labs(y = "CV estimated predicted probability of COVID disease", x = "") +
+    labs(y = "CV estimated predicted probability of COVID-19 disease", x = "") +
     theme(
       legend.position = "none",
       strip.text.x = element_text(size = 25),

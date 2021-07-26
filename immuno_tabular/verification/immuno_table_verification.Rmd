@@ -24,7 +24,7 @@ header-includes: \usepackage{caption}
   
   ## variables setting
   study_name = "ENSEMBLE"
-  study_name_code = "mockENSEMBLE"
+  study_name_code = "ENSEMBLE"
   data_in_file = "janssen_pooled_mock_data_processed.csv"
   #study_name = "COVE"
   #study_name_code = "COVE"
@@ -80,7 +80,14 @@ dat.long <- dat.long %>%
       ),
     AgeRiskC = paste(AgeC, HighRiskC),
     AgeSexC = paste(AgeC, SexC),
-    AgeMinorC = ifelse(!is.na(MinorityC), paste(AgeC, MinorityC), NA))
+    AgeMinorC = ifelse(!is.na(MinorityC), paste(AgeC, MinorityC), NA),
+    HIVinfectionC = ifelse(HIVinfection == 1, "Positive", ifelse(HIVinfection == 0, "Negative", NA)),
+    BMIC = case_when(
+      BMI < 18.5 ~ "Underweight BMI < 18.5",
+      BMI <= 25 ~ "Normal 18.5 <= BMI < 25",
+      BMI < 30 ~ "Overweight 25 <= BMI < 30",
+      BMI >=30 ~ "Obese BMI >= 30"
+    ))
 
 if (study_name == "ENSEMBLE") {
   dat.long$CountryC = labels.countries.ENSEMBLE[as.character(dat.long$Country)]
@@ -154,7 +161,8 @@ VarName_levels <- list(
   `AgeMinorC`=ifelse(study_name=="COVE", "Age, Communities of color","Age, Underrepresented Minority Status in the U.S."),
   `AgeSexC`="Age, sex",
   `Trt_lb`="Arm",
-  `Baseline`="Baseline SARS-CoV-2")
+  `Baseline`="Baseline SARS-CoV-2",
+  `HIVinfectionC`="HIV Infection")
 
 if(study_name=="ENSEMBLE") VarName_levels[["CountryC"]]="Country"
 
@@ -186,7 +194,8 @@ fig_footer <- c("This table summarises the case-cohort, which measures antibody 
 for (i in c("Positive", "Negative")){
   
   demo <- subset(dat.long, Baseline==i & immuno_ind==1)[, c("Trt_lb","Ptid","RaceEthC2", colnames(dat.long)[grepl("C$", colnames(dat.long))])] %>% 
-    mutate(MinorityC = ifelse(is.na(MinorityC), "NA", MinorityC)) %>%
+    mutate(MinorityC = ifelse(is.na(MinorityC), "NA", MinorityC),
+           HIVinfectionC = ifelse(is.na(HIVinfectionC), "NA", HIVinfectionC)) %>%
     unique()
   
   if (study_name=="COVE"){
@@ -252,6 +261,8 @@ for (i in c("Positive", "Negative")){
                              VarName=="CountryC" ~ "Country",
                              VarName=="AgeC" ~ "Age", 
                              VarName=="SexC" ~ "Sex",
+                             VarName=="BMIC" ~ "BMI",
+                             VarName=="HIVinfectionC" ~ "HIV Infection",
                              TRUE ~ VarName)) %>%
     select(VarName, Group, Placebo, Vaccine, Total)
   
@@ -612,9 +623,9 @@ if (study_name=="ENSEMBLE") {
   minortiy_grp1="URM"; minortiy_grp2="Non-URM"
 }
 
-cps=c("Age","Age, Risk for Severe Covid-19","Age, Risk for Severe Covid-19","Sex","Hispanic or Latino ethnicity", VarName_levels[["MinorityC"]], "Risk for Severe Covid-19")
-group1=c(older_age, paste(younger_age, "At-risk"), paste(older_age,  "At-risk"), "Male", "Hispanic or Latino", minortiy_grp1, "At-risk")
-group2=c(younger_age, paste(younger_age, "Not at-risk"), paste(older_age, "Not at-risk"), "Female", "Not Hispanic or Latino", minortiy_grp2, "Not at-risk")
+cps=c("Age","Age, Risk for Severe Covid-19","Age, Risk for Severe Covid-19","Sex","Hispanic or Latino ethnicity", VarName_levels[["MinorityC"]], "Risk for Severe Covid-19", "HIV Infection")
+group1=c(older_age, paste(younger_age, "At-risk"), paste(older_age,  "At-risk"), "Male", "Hispanic or Latino", minortiy_grp1, "At-risk", "Positive")
+group2=c(younger_age, paste(younger_age, "Not at-risk"), paste(older_age, "Not at-risk"), "Female", "Not Hispanic or Latino", minortiy_grp2, "Not at-risk", "Negative")
 comp=paste(group1, "vs", group2)
 
 comp_matrix<-data.frame(cps, group1, group2, comp)
@@ -722,29 +733,35 @@ if (study_name=="ENSEMBLE") {
   minortiy_grp1="URM"; minortiy_grp2="Non-URM"
 }
 
-for (cp in c("Arm","Baseline SARS-CoV-2", "Age","Age, Risk for Severe Covid-19","Age, Risk for Severe Covid-19","Sex","Hispanic or Latino ethnicity",VarName_levels[["MinorityC"]],"Risk for Severe Covid-19")){
+for (cp in c("Arm","Baseline SARS-CoV-2", "Age","Age, Risk for Severe Covid-19","Age, Risk for Severe Covid-19","Sex","Hispanic or Latino ethnicity",VarName_levels[["MinorityC"]],"Risk for Severe Covid-19","HIV Infection")){
   for (mk in c("Anti N IgG (IU/ml)","Anti RBD IgG (IU/ml)","Anti Spike IgG (IU/ml)"
                #,"Pseudovirus-nAb ID50","Pseudovirus-nAb ID80"
                )){
     for (tp in two_timepoints){
       
-    comp1 <- ifelse(cp=="Arm", "Vaccine", 
-                    ifelse(cp=="Baseline SARS-CoV-2", "Positive",
-                           ifelse(cp=="Age", older_age, 
-                                  ifelse(cp=="Risk for Severe Covid-19", "At-risk",
-                                         ifelse(cp=="Age, Risk for Severe Covid-19" & ind_comp==4, paste(younger_age,"At-risk"),
-                                                ifelse(cp=="Age, Risk for Severe Covid-19" & ind_comp==5, paste(older_age,"At-risk"),
-                                                       ifelse(cp=="Sex","Male",
-                                                              ifelse(cp=="Hispanic or Latino ethnicity","Hispanic or Latino",ifelse(cp==VarName_levels[["MinorityC"]], minortiy_grp1, NA)))))))))
+    comp1 <- case_when(
+      cp=="Arm" ~ "Vaccine",
+      cp=="Baseline SARS-CoV-2" ~ "Positive",
+      cp=="Age" ~ older_age, 
+      (cp=="Age, Risk for Severe Covid-19" & ind_comp==4) ~ paste(younger_age,"At-risk"),
+      (cp=="Age, Risk for Severe Covid-19" & ind_comp==5) ~ paste(older_age,"At-risk"),
+      cp=="Sex" ~ "Male",
+      cp=="Hispanic or Latino ethnicity" ~ "Hispanic or Latino",
+      cp==VarName_levels[["MinorityC"]] ~ minortiy_grp1,
+      cp=="Risk for Severe Covid-19" ~ "At-risk",
+      cp=="HIV Infection" ~ "Positive")
     
-    comp2 <- ifelse(cp=="Arm", "Placebo", 
-                    ifelse(cp=="Baseline SARS-CoV-2", "Negative",
-                           ifelse(cp=="Age", younger_age, 
-                                  ifelse(cp=="Risk for Severe Covid-19", "Not at-risk",
-                                         ifelse(cp=="Age, Risk for Severe Covid-19" & ind_comp==4, paste(younger_age, "Not at-risk"),
-                                                ifelse(cp=="Age, Risk for Severe Covid-19" & ind_comp==5, paste(older_age, "Not at-risk"),
-                                                       ifelse(cp=="Sex","Female",
-                                                              ifelse(cp=="Hispanic or Latino ethnicity","Not Hispanic or Latino",ifelse(cp==VarName_levels[["MinorityC"]], minortiy_grp2, NA)))))))))
+    comp2 <- case_when(
+      cp=="Arm" ~ "Placebo",
+      cp=="Baseline SARS-CoV-2" ~ "Negative",
+      cp=="Age" ~ younger_age, 
+      (cp=="Age, Risk for Severe Covid-19" & ind_comp==4) ~ paste(younger_age, "Not at-risk"),
+      (cp=="Age, Risk for Severe Covid-19" & ind_comp==5) ~ paste(older_age, "Not at-risk"),
+      cp=="Sex" ~ "Female",
+      cp=="Hispanic or Latino ethnicity" ~ "Not Hispanic or Latino",
+      cp==VarName_levels[["MinorityC"]] ~ minortiy_grp2,
+      cp=="Risk for Severe Covid-19" ~ "Not at-risk",
+      cp=="HIV Infection" ~ "Negative")
   
     letter=letters[ind]
     
@@ -770,13 +787,13 @@ for (cp in c("Arm","Baseline SARS-CoV-2", "Age","Age, Risk for Severe Covid-19",
        
        design2 <- subset(twophase(id = list(~Ptid, ~ Ptid), strata = list(NULL, ~ tps.stratum), weights = list(NULL, ~ wt.subcohort), subset=~immuno_ind, method="simple", data = immuno_design_2), Group %in% c("Hispanic or Latino", "Not Hispanic or Latino"))
                             
-     } else if (cp=="Age, Risk for Severe Covid-19" & ind_comp==2){
+     } else if (cp=="Age, Risk for Severe Covid-19" & ind_comp==4){
       
       design1 <- subset(twophase(id = list(~Ptid, ~ Ptid), strata = list(NULL, ~ tps.stratum), weights = list(NULL, ~ wt.subcohort), subset=~immuno_ind, method="simple", data = immuno_design_1), grepl(younger_age, Group))
       
       design2 <- subset(twophase(id = list(~Ptid, ~ Ptid), strata = list(NULL, ~ tps.stratum), weights = list(NULL, ~ wt.subcohort), subset=~immuno_ind, method="simple", data = immuno_design_2), grepl(younger_age, Group))
       
-    } else if (cp=="Age, Risk for Severe Covid-19" & ind_comp==3) {
+    } else if (cp=="Age, Risk for Severe Covid-19" & ind_comp==5) {
       
       design1 <- subset(twophase(id = list(~Ptid, ~ Ptid), strata = list(NULL, ~ tps.stratum), weights = list(NULL, ~ wt.subcohort), subset=~immuno_ind, method="simple", data = immuno_design_1), grepl(older_age, Group))
       
@@ -805,7 +822,7 @@ for (cp in c("Arm","Baseline SARS-CoV-2", "Age","Age, Risk for Severe Covid-19",
       left_join(mod3,
                 by=groupby_vars) %>%
       mutate(Trt_lb=ifelse(Group==Trt_lb, "-", Trt_lb)) %>%
-      mutate(Baseline=ifelse(Group==Baseline, "-", Baseline)) %>%
+      mutate(Baseline=ifelse(Group==Baseline & VarName=="Baseline SARS-CoV-2", "-", Baseline)) %>%
       pivot_wider(names_from = Group, values_from = c(response:mod3ci_u)) %>%
       rename_with(~ gsub(comp1, "comp1", gsub(comp2, "comp2", .x, fixed = TRUE))) %>%
       rowwise() %>% 

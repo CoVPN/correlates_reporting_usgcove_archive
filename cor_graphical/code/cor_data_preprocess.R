@@ -119,7 +119,7 @@ dat.long.cor.subset$lb2 = with(dat.long.cor.subset, ifelse(grepl("bind", assay),
 dat.long.cor.subset$lbval2 =  with(dat.long.cor.subset, ifelse(grepl("bind", assay), ULoQ, -99))
 
 # assign values above the uloq to the uloq
-for (t in c("B", if(has29) "Day29", "Day57") ) {
+for (t in c("B", "Day29", if(has57) "Day57") ) {
   dat.long.cor.subset[[t]] <- ifelse(dat.long.cor.subset[[t]] > dat.long.cor.subset$ULoQ, dat.long.cor.subset$ULoQ, dat.long.cor.subset[[t]])
 }
 
@@ -358,8 +358,11 @@ get_resp_by_group <- function(dat=dat, group=group){
   
   if(has57) {wt="wt.D57"} else {wt="wt.D29"}
   
+  complete <- complete.cases(dat[, group])
+  
   dat_resp_by_group <-
-    dat %>% group_by_at(group) %>%
+    dat %>% filter(complete==1) %>%
+    group_by_at(group) %>%
     mutate(counts = n(),
            num = round(sum(response * ifelse(!cohort_event %in% c("Post-Peak Cases", "Non-Cases"), 1, !!as.name(wt)), na.rm=T), 1), # for intercurrent cases, we don't need to adjust for the weight because all of them are from the same stratum
            denom = round(sum(ifelse(!cohort_event %in% c("Post-Peak Cases", "Non-Cases"), 1, !!as.name(wt)), na.rm=T), 1),
@@ -369,6 +372,7 @@ get_resp_by_group <- function(dat=dat, group=group){
            median = median(value, na.rm=T),
            q3 = quantile(value, 0.75, na.rm=T),
            max= max(value))
+    
   return(dat_resp_by_group)
 }
 

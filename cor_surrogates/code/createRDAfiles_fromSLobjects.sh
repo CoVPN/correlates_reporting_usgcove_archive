@@ -1,4 +1,4 @@
 #!/bin/bash
-ml fhR/4.0.4-foss-2020b
+ml R/4.1.0-foss-2020b
 ml jbigkit
 Rscript code/createRDAfiles_fromSLobjects.R

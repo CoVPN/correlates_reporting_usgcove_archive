@@ -1209,15 +1209,15 @@
     },
     "marginalizedRisk": {
       "Package": "marginalizedRisk",
-      "Version": "2021.2-4",
+      "Version": "2021.7-26",
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
       "RemoteRepo": "marginalizedRisk",
       "RemoteUsername": "youyifong",
       "RemoteRef": "HEAD",
-      "RemoteSha": "a33f807f9510fc299a380b7b7e898e5e055d8cff",
-      "Hash": "aca84af528655beda99bd8b942e48bbc"
+      "RemoteSha": "3376222f267d215af5fd3b1cf04a0ba282047b4f",
+      "Hash": "3c3353d26ff7fffd4a923fa086b37e63"
     },
     "markdown": {
       "Package": "markdown",

@@ -1,19 +1,7 @@
-#Sys.setenv(TRIAL = "moderna_mock")
-if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
-#----------------------------------------------- 
-# obligatory to append to the top of each script
-renv::activate(project = here::here(".."))
-    
+#Sys.setenv(TRIAL = "moderna_mock") # moderna_mock janssen_pooled_real
+renv::activate(project = here::here(".."))    
 # There is a bug on Windows that prevents renv from working properly. The following code provides a workaround:
 if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
-        
-#if (.Platform$OS.type == "windows") {
-#    options(renv.config.install.transactional = FALSE)
-#    renv::restore(library=saved.system.libPaths, prompt=FALSE) # for a quick test, add: packages="backports"
-#    .libPaths(c(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
-#} else renv::restore(prompt=FALSE)
-    
-# after updating a package, run renv::snapshot() to override the global library record with your changes
 source(here::here("..", "_common.R"))
 #-----------------------------------------------
 
@@ -26,10 +14,10 @@ library(marginalizedRisk)
 library(xtable) # this is a dependency of kyotil
     
 source(here::here("code", "params.R"))
-    
+
 # population is either 57 or 29
 Args <- commandArgs(trailingOnly=TRUE)
-if (length(Args)==0) Args=c(pop="57")
+if (length(Args)==0) Args=c(pop="29")
 pop=Args[1]; myprint(pop)
     
 if(!has29 & pop=="29") {
@@ -50,6 +38,11 @@ if (file.exists(here::here("..", "data_clean", data_name_updated))) {
 } else {
     dat.mock <- read.csv(here::here("..", "data_clean", data_name))
 }
+
+
+#dat.mock$Region.f=as.factor(dat.mock$Region)
+#dat.mock$Region1=ifelse(dat.mock$Region==1, 1, 0)
+#dat.mock$Region2=ifelse(dat.mock$Region==2, 1, 0)
     
         
 ###################################################################################################
@@ -85,6 +78,9 @@ dat.pla.seroneg=subset(dat.mock, Trt==0 & Bserostatus==0 & ph1)
 # define an alias for EventIndPrimaryDxx
 dat.vac.seroneg$yy=dat.vac.seroneg[["EventIndPrimaryD"%.%pop]]
 dat.pla.seroneg$yy=dat.pla.seroneg[["EventIndPrimaryD"%.%pop]]
+
+#hist(dat.vac.seroneg$EventTimePrimaryD29)
+#hist(dat.vac.seroneg$EventTimePrimaryD29[dat.vac.seroneg$EventIndPrimaryD29==1])
     
 # followup time for the last case
 t0=max(dat.vac.seroneg[dat.vac.seroneg[["EventIndPrimaryD"%.%pop]]==1, "EventTimePrimaryD"%.%pop])
@@ -102,9 +98,9 @@ if (study_name_code=="COVE") {
     p.cov=3
 } else if (study_name_code=="ENSEMBLE") {
     if (endsWith(data_name, "riskscore.csv")) {
-        form.0.logistic = as.formula(paste0("EventIndPrimaryD",pop,"  ~ HighRiskInd + risk_score + Region"))
+        form.0.logistic = as.formula(paste0("EventIndPrimaryD",pop,"  ~ HighRiskInd + risk_score + as.factor(Region)"))
     } else {
-        form.0.logistic = as.formula(paste0("EventIndPrimaryD",pop,"  ~ HighRiskInd + Age + Region"))  
+        form.0.logistic = as.formula(paste0("EventIndPrimaryD",pop,"  ~ HighRiskInd + Age + as.factor(Region)"))  
     }
     # covariate length without markers
     p.cov=4
@@ -139,5 +135,4 @@ if (file.exists(tmp)) load(tmp)
 # GAM
 source(here::here("code", "cor_nonlinear_gam.R"))
 
-print("cor_nonlinear run time: ")
-print(Sys.time()-time.start)
+print("cor_nonlinear run time: "%.%format(Sys.time()-time.start, digits=1))

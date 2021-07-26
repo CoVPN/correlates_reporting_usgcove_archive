@@ -325,8 +325,7 @@ get.maxSignalDivScore <- function(dat, day){
 
 
 get.nonlinearPCA.scores <- function(dat){
-  library(reticulate)
-  library(FSDAM)
+  print("running non-linear PCA")
   ptid.vec <- dat %>% pull(Ptid)
   dat <- dat %>% select(-Ptid)
 
@@ -343,7 +342,7 @@ get.nonlinearPCA.scores <- function(dat){
 
   # Create data frame with non-linear Principal Components
   nlPCA <- data.frame(Ptid = ptid.vec, nlPCA1, nlPCA2)
-
+  print("non-linear PCA done")
   return(nlPCA)
 }
 

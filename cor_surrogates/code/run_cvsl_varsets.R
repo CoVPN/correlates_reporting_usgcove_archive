@@ -13,19 +13,21 @@ job_id <- as.numeric(args[1])
 
 ## load required libraries 
 suppressPackageStartupMessages(library(tidyverse, warn.conflicts = FALSE, quietly = TRUE))
-suppressPackageStartupMessages(library(quadprog))
-suppressPackageStartupMessages(library(here))
-suppressPackageStartupMessages(library(methods))
-suppressPackageStartupMessages(library(SuperLearner))
-suppressPackageStartupMessages(library(e1071))
-suppressPackageStartupMessages(library(glmnet))
-suppressPackageStartupMessages(library(kyotil, warn.conflicts = FALSE))
-suppressPackageStartupMessages(library(argparse))
-suppressPackageStartupMessages(library(vimp))
-suppressPackageStartupMessages(library(nloptr))
-suppressPackageStartupMessages(library(RhpcBLASctl))
-# suppressPackageStartupMessages(library(reticulate))
-# suppressPackageStartupMessages(library(FSDAM))
+suppressPackageStartupMessages(library(quadprog, warn.conflicts = FALSE, quietly = TRUE))
+suppressPackageStartupMessages(library(here, warn.conflicts = FALSE, quietly = TRUE))
+suppressPackageStartupMessages(library(methods, warn.conflicts = FALSE, quietly = TRUE))
+suppressPackageStartupMessages(library(SuperLearner, warn.conflicts = FALSE, quietly = TRUE))
+suppressPackageStartupMessages(library(e1071, warn.conflicts = FALSE, quietly = TRUE))
+suppressPackageStartupMessages(library(glmnet, warn.conflicts = FALSE, quietly = TRUE))
+suppressPackageStartupMessages(library(kyotil, warn.conflicts = FALSE, quietly = TRUE))
+suppressPackageStartupMessages(library(argparse, warn.conflicts = FALSE, quietly = TRUE))
+suppressPackageStartupMessages(library(vimp, warn.conflicts = FALSE, quietly = TRUE))
+suppressPackageStartupMessages(library(nloptr, warn.conflicts = FALSE, quietly = TRUE))
+suppressPackageStartupMessages(library(RhpcBLASctl, warn.conflicts = FALSE, quietly = TRUE))
+suppressPackageStartupMessages(library(reticulate, warn.conflicts = FALSE, quietly = TRUE))
+suppressPackageStartupMessages(library(FSDAM, warn.conflicts = FALSE, quietly = TRUE))
+suppressPackageStartupMessages(library(ranger, warn.conflicts = FALSE))
+suppressPackageStartupMessages(library(xgboost, warn.conflicts = FALSE))
 suppressPackageStartupMessages(library(conflicted, warn.conflicts = FALSE))
 suppressMessages(conflicted::conflict_prefer("filter", "dplyr"))
 suppressMessages(conflict_prefer("summarise", "dplyr"))
@@ -35,6 +37,7 @@ suppressMessages(conflict_prefer("summarise", "dplyr"))
 # the demo version is simpler and runs faster!
 # the production version runs SL with a diverse set of learners
 run_prod <- !grepl("Mock", study_name)
+run_prod <- TRUE
 
 # load required files and functions 
 source(here("code", "day57or29analyses.R")) # set up analyses for markers
@@ -341,9 +344,9 @@ seeds <- round(runif(10, 1000, 10000)) # average over 10 random starts
 
 ##solve cores issue
 library(RhpcBLASctl)
-#blas_get_num_procs()
+blas_get_num_procs()
 blas_set_num_threads(1)
-#print(blas_get_num_procs())
+print(blas_get_num_procs())
 stopifnot(blas_get_num_procs()==1)
 
 fits <- parallel::mclapply(seeds, FUN = run_cv_sl_once,

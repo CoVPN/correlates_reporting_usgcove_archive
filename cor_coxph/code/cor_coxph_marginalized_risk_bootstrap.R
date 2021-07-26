@@ -5,7 +5,7 @@
 # data: ph1 data
 # t: a time point near to the time of the last observed outcome will be defined
 marginalized.risk.svycoxph.boot=function(formula, marker.name, type, data, t, B, ci.type="quantile", numCores=1) {  
-# formula=form.0; marker.name="Day"%.%pop%.%a; data=dat.vac.seroneg; t=t0; B=2; ci.type="quantile"; numCores=1; type=3
+# formula=form.0; marker.name="Day"%.%pop%.%a; data=dat.vac.seroneg; t=t0; B=2; ci.type="quantile"; numCores=1; type=1
     
     # store the current rng state 
     save.seed <- try(get(".Random.seed", .GlobalEnv), silent=TRUE) 
@@ -44,7 +44,13 @@ marginalized.risk.svycoxph.boot=function(formula, marker.name, type, data, t, B,
     
         dat.b = get.bootstrap.data.cor (data, ptids.by.stratum, seed) 
         dat.b.ph2=subset(dat.b, ph2)     
-    
+#hist(dat.b$EventTimePrimaryD29)
+#hist(dat.b$EventTimePrimaryD29[dat.b$EventIndPrimaryD29==1])
+#hist(dat.vac.seroneg$EventTimePrimaryD29)
+#hist(dat.vac.seroneg$EventTimePrimaryD29[dat.vac.seroneg$EventIndPrimaryD29==1])
+#get.marginalized.risk.no.marker(dat.b)
+#get.marginalized.risk.no.marker(dat.vac.seroneg)
+           
         if(type==1) {
         # conditional on s
             tmp.design=twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=dat.b)

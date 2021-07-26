@@ -9,6 +9,7 @@ library(here)
 
 # load data and rename first column (ID)
 dat_clean <- read.csv(here("data_clean", data_name))
+
 #with(subset(dat_clean, Bserostatus==0 & Perprotocol==1 & ph1.immuno), hist(Day29bindN))
 #    (subset(dat_clean, Bserostatus==0 & Perprotocol==1 & ph1.immuno & Day29bindN>2))
 #subset(dat_clean, Ptid=="VAC31518COV3001-7245536")
@@ -21,6 +22,26 @@ dat_clean <- read.csv(here("data_clean", data_name))
 #sort(subset(dat_clean, Bserostatus==0 & Perprotocol==1 & EventIndPrimaryD29==1 & Trt==1, EventTimePrimaryD29, drop=T))
 #summary(subset(dat_clean, EventIndPrimaryD29==1 & Trt==1, EventTimePrimaryD29, drop=T))
 #summary(subset(dat_clean, EventIndPrimaryD29==1 & Trt==1 & ph1.D29, EventTimePrimaryD29, drop=T))
+
+#sort(subset(dat_clean, Bserostatus==0 & Trt==1 & Perprotocol==1 & EventIndPrimaryD1==1, EventTimePrimaryD1, drop=T))
+#sort(subset(dat_clean, Bserostatus==0 & Trt==1 & Perprotocol==1 & EventIndPrimaryD29==1, EventTimePrimaryD29, drop=T))
+#sort(subset(dat_clean, Bserostatus==0 & Trt==1 & Perprotocol==1 & EventIndPrimaryIncludeNotMolecConfirmedD29==1, EventTimePrimaryIncludeNotMolecConfirmedD29, drop=T))
+#sort(subset(dat_clean, Bserostatus==0 & Trt==1 & Perprotocol==1 & EventIndPrimaryIncludeNotMolecConfirmedD29==1 & EventTimePrimaryIncludeNotMolecConfirmedD29>=7, EventTimePrimaryIncludeNotMolecConfirmedD29, drop=T))
+
+#subset(dat_clean, Bserostatus==0 & Trt==1 & Perprotocol==1 & EventIndPrimaryIncludeNotMolecConfirmedD29==1 & EventIndPrimaryD29==0 & EventTimePrimaryIncludeNotMolecConfirmedD29>=7)
+
+tmp=subset(dat_clean, Bserostatus==0 & Trt==1 & Perprotocol==1 & EventIndPrimaryD29==1 & EventTimePrimaryD29<7)
+table(!is.na(tmp$Day29bindSpike))
+
+tmp=subset(dat_clean, Bserostatus==0 & Trt==1 & Perprotocol==1 & EventIndPrimaryD29==1)
+with(tmp, table(EventTimePrimaryD29<7, !is.na(Day29bindSpike)))
+
+
+with(subset(dat_clean, Bserostatus==0 & Trt==1 & Perprotocol==1 & ph2.D29), table(Wstratum))
+with(subset(dat_clean, Bserostatus==0 & Trt==0 & Perprotocol==1 & ph2.D29), table(Wstratum))
+with(subset(dat_clean, Bserostatus==1 & Trt==1 & Perprotocol==1 & ph2.D29), table(Wstratum))
+with(subset(dat_clean, Bserostatus==1 & Trt==0 & Perprotocol==1 & ph2.D29), table(Wstratum))
+with(subset(dat_clean, Bserostatus==1 & Trt==0 & Perprotocol==1 & ph1.D29), table(Wstratum))
 
 
 

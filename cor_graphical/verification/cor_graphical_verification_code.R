@@ -2,7 +2,7 @@
 # File: cor_graphical_verification_code.R
 # Author: Di Lu
 # Creation Date: 2021/03/22
-# Last Edit Date: 2021/06/20
+# Last Edit Date: 2021/07/26
 # Description: Verification of the plots targeted for
 # independent double programming
 # NEWS:
@@ -27,7 +27,7 @@ library(here)
 
 
 dat <- read.csv(
-  here("cor_graphical/verification/practice_data.csv")
+  here("cor_graphical/verification/data_processed.csv")
 )
 
 
@@ -37,7 +37,7 @@ dat$wt.D29[is.na(dat$wt.D29)] <- 0
 
 dat <- dat %>% 
   mutate(cohort_event = ifelse(Perprotocol==1 & Bserostatus==0 &  EarlyendpointD29==0 & TwophasesampIndD29==1 & EventIndPrimaryD29==1 & EventTimePrimaryD29 >=7 &  EventTimePrimaryD29 <= (6 + NumberdaysD1toD57 - NumberdaysD1toD29), "Intercurrent Cases",
-                               ifelse(Perprotocol==1 & Bserostatus==0 & EarlyendpointD57==0 & TwophasesampIndD57==1 & EventIndPrimaryD57==1, "Primary Cases",
+                               ifelse(Perprotocol==1 & Bserostatus==0 & EarlyendpointD57==0 & TwophasesampIndD57==1 & EventIndPrimaryD57==1, "Post-Peak Cases",
                                       ifelse(Perprotocol==1 &  Bserostatus==0 & EarlyendpointD57==0 & TwophasesampIndD57==1 & EventIndPrimaryD1==0, "Non-Cases", NA)
                                )
   ))
@@ -136,6 +136,8 @@ dat.long <- rbind(dat1_bindSpike,dat1_bindRBD,dat1_pseudoneutid50,dat1_pseudoneu
          SubcohortInd, 
          age.geq.65, 
          TwophasesampIndD57, 
+         ph1.D29,
+         ph2.D29,
          Bstratum, 
          wt.D57,  
          wt.D29, 
@@ -143,6 +145,8 @@ dat.long <- rbind(dat1_bindSpike,dat1_bindRBD,dat1_pseudoneutid50,dat1_pseudoneu
          race, 
          WhiteNonHispanic,
          cohort_event,
+         ph1.D57, 
+         ph2.D57,
          assay,
          B,
          Day29,
@@ -151,11 +155,15 @@ dat.long <- rbind(dat1_bindSpike,dat1_bindRBD,dat1_pseudoneutid50,dat1_pseudoneu
          Delta57overB)
 
 
-dat.cor.subset <- dat %>% 
-  filter(TwophasesampIndD57 == 1)
+#dat.cor.subset <- dat %>% 
+#  filter(TwophasesampIndD57 == 1,
+#         ph1.D29 == 1)
 
-dat.long.cor.subset <- dat.long %>% 
-  filter(TwophasesampIndD57 == 1)
+#dat.long.cor.subset <- dat.long %>% 
+#  filter(TwophasesampIndD57 == 1,
+#         ph1.D29 == 1)
+
+dat.long.cor.subset <- dat.long
 
 dat.long.cor.subset <- dat.long.cor.subset %>% 
   mutate(Dich_RaceEthnic = ifelse(EthnicityHispanic == 1, "Hispanic or Latino",
@@ -219,11 +227,21 @@ dat.long.cor.subset <- dat.long.cor.subset %>%
   mutate(age_minority_label = paste(dat.long.cor.subset$age_geq_65_label, dat.long.cor.subset$minority_label, sep = " ")
   )
 
+dat.long.cor.subset.twophase.intercurrent <- dat.long.cor.subset %>% 
+  filter(ph2.D29 == 1) %>%
+  filter(!(cohort_event %in% c("Post-Peak Cases","Non-Cases") & ph2.D57==0))
 
-dat.longer.cor.subset <- dat.long.cor.subset %>% select(
+dat.long.cor.subset <- dat.long.cor.subset %>% 
+  filter(ph2.D57 == 1)
+
+dat.cor.subset <- dat %>% 
+  filter(ph2.D57 == 1)
+
+
+dat.longer.cor.subset <- dat.long.cor.subset.twophase.intercurrent %>% select(
   Ptid, Trt, Bserostatus, EventIndPrimaryD29, EventIndPrimaryD57, Perprotocol,
   cohort_event, Age, age_geq_65_label, highrisk_label, age_risk_label, sex_label,
-  minority_label, Dich_RaceEthnic, assay, LLoD,LLoQ, wt.D57, wt.D29, wt.intercurrent.cases, B, Day29, Day57, Delta29overB, Delta57overB, pos.cutoffs
+  minority_label, Dich_RaceEthnic, assay, LLoD, LLoQ, ULoQ, wt.D57, wt.D29, wt.intercurrent.cases, B, Day29, Day57, Delta29overB, Delta57overB, pos.cutoffs,ph2.D57
 )
 
 
@@ -279,9 +297,10 @@ dat.longer.cor.subset <- dat.longer.cor.subset %>%
 dat.longer.cor.subset.plot1_verification <- dat.longer.cor.subset %>% 
   
   group_by(Trt, Bserostatus, cohort_event, time, assay) %>%
-  mutate(num = round(sum(response*wt.D29.1),1),
-         denom = round(sum(wt.D29.1),1),
+  mutate(num = round(sum(response * ifelse(cohort_event == "Intercurrent Cases", 1, wt.D57)),1),
+         denom = round(sum(ifelse(cohort_event=="Intercurrent Cases", 1, wt.D57)),1),
          RespRate = paste(num,"/",denom,"=",round(num/denom*100,1),"%",sep = ""),
+         N_RespRate = paste(n(),"\n",round(num/denom*100,1),"%",sep = ""),
          min = min(value),
          q1 = quantile(value, 0.25),
          median = median(value),
@@ -333,7 +352,7 @@ id <-plot.25sample1 %>%
   filter(Trt == "Vaccine", 
          Bserostatus == "Baseline Neg", 
          assay == "bindSpike",
-         time %in% c("Day 29","Day 57")) %>%
+         time %in% c("Day 29 ","Day 57")) %>%
   select(Ptid)
 
 lineplots_neg_vaccine_bindSpike_plot.25sample1_2 <- lineplots_neg_vaccine_bindSpike_2[lineplots_neg_vaccine_bindSpike_2$Ptid %in% c(unlist(id, use.names = FALSE)),]
@@ -344,23 +363,22 @@ p <- ggplot(lineplots_neg_vaccine_bindSpike_2, aes(x = time, y = value)) +
   scale_y_continuous(breaks = c(-1,0, 1, 2, 3, 4, 5, 6, 7, 8, 9), limits = c(-1, 10)) +
   facet_wrap(~cohort_event) +
   geom_line(data=lineplots_neg_vaccine_bindSpike_plot.25sample1_2,aes(x = time, y = value, group=Ptid)) +
-  geom_hline(yintercept=lineplots_neg_vaccine_bindSpike_2$pos.cutoffs, linetype="dashed", color = "black")
+  geom_hline(yintercept=lineplots_neg_vaccine_bindSpike_2$pos.cutoffs, linetype="dashed", color = "black") +
+  geom_hline(yintercept=lineplots_neg_vaccine_bindSpike_2$ULoQ, linetype="dashed", color = "black")
 
 p
 
 lineplots_neg_vaccine_bindSpike_2 %>% 
-  select(cohort_event, time, RespRate, min, q1, median, q3, max) %>% 
+  select(cohort_event, time, RespRate, N_RespRate, min, q1, median, q3, max) %>% 
   unique()
 
 
 #lineplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm (2 timepoints)
-#The upper limit the primary programmer set for y-axis (4) which leaves the values above 4 out.
 lineplots_neg_vaccine_pseudoneutid50_2 <- dat.longer.cor.subset.plot1_verification %>% 
   filter(Trt == "Vaccine", 
          Bserostatus == "Baseline Neg", 
          assay == "pseudoneutid50",
-         time %in% c("Day 29","Day 57"),
-         value <= 4)
+         time %in% c("Day 29","Day 57"))
 
 #the subjects plotted in the line plot were randomly selected by original programmer. To verify the line plots
 #generated by the original programmer, get the list of combination of subjects and assay that were selected by original programmer.
@@ -371,7 +389,7 @@ id <-plot.25sample1 %>%
          time %in% c("Day 29","Day 57")) %>%
   select(Ptid)
 
-lineplots_neg_vaccine_pseudoneutid50_plot.25sample1_2 <- lineplots_neg_vaccine_pseudoneutid50_2[lineplots_neg_vaccine_pseudoneutid50_2$Ptid %in% c(unlist(id, use.names = FALSE)),] %>% filter(value <= 4)
+lineplots_neg_vaccine_pseudoneutid50_plot.25sample1_2 <- lineplots_neg_vaccine_pseudoneutid50_2[lineplots_neg_vaccine_pseudoneutid50_2$Ptid %in% c(unlist(id, use.names = FALSE)),]
 
 p <- ggplot(lineplots_neg_vaccine_pseudoneutid50_2, aes(x = time, y = value)) +
   geom_violin(scale = "width") +
@@ -379,12 +397,13 @@ p <- ggplot(lineplots_neg_vaccine_pseudoneutid50_2, aes(x = time, y = value)) +
   scale_y_continuous(breaks = c(0, 1, 2, 3, 4, 5, 6, 7), limits = c(0, 10)) +
   facet_wrap(~cohort_event) +
   geom_line(data=lineplots_neg_vaccine_pseudoneutid50_plot.25sample1_2,aes(x = time, y = value, group=Ptid)) +
-  geom_hline(yintercept=lineplots_neg_vaccine_pseudoneutid50_2$LLoD, linetype="dashed", color = "black")
+  geom_hline(yintercept=lineplots_neg_vaccine_pseudoneutid50_2$LLoD, linetype="dashed", color = "black") +
+  geom_hline(yintercept=lineplots_neg_vaccine_pseudoneutid50_2$ULoQ, linetype="dashed", color = "black")
 
 p
 
 lineplots_neg_vaccine_pseudoneutid50_2 %>% 
-  select(cohort_event, time, RespRate, min, q1, median, q3, max) %>% 
+  select(cohort_event, time, RespRate, N_RespRate, min, q1, median, q3, max) %>% 
   unique()
 
 
@@ -413,12 +432,13 @@ p <- ggplot(lineplots_neg_vaccine_bindSpike_3, aes(x = time, y = value)) +
   scale_y_continuous(breaks = c(0, 1, 2, 3, 4, 5, 6, 7), limits = c(-1, 10)) +
   facet_wrap(~cohort_event) +
   geom_line(data=lineplots_neg_vaccine_bindSpike_plot.25sample1_3,aes(x = time, y = value, group=Ptid)) +
-  geom_hline(yintercept=lineplots_neg_vaccine_bindSpike_3$pos.cutoffs, linetype="dashed", color = "black")
+  geom_hline(yintercept=lineplots_neg_vaccine_bindSpike_3$pos.cutoffs, linetype="dashed", color = "black") +
+  geom_hline(yintercept=lineplots_neg_vaccine_bindSpike_3$ULoQ, linetype="dashed", color = "black")
 
 p
 
 lineplots_neg_vaccine_bindSpike_3 %>% 
-  select(cohort_event, time, RespRate, min, q1, median, q3, max) %>% 
+  select(cohort_event, time, RespRate, N_RespRate, min, q1, median, q3, max) %>% 
   unique()
 
 

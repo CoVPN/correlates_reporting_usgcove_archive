@@ -37,7 +37,6 @@ suppressMessages(conflict_prefer("summarise", "dplyr"))
 # the demo version is simpler and runs faster!
 # the production version runs SL with a diverse set of learners
 run_prod <- !grepl("Mock", study_name)
-run_prod <- TRUE
 
 # load required files and functions 
 source(here("code", "day57or29analyses.R")) # set up analyses for markers
@@ -142,11 +141,6 @@ dat.ph2 <- dat.ph2 %>%
               rename(comb_PC1_d57 = PC1,
                      comb_PC2_d57 = PC2), 
             by = "Ptid") %>%
-        left_join(get.nonlinearPCA.scores(dat.ph2 %>%
-                                            select(Ptid, Day57bindSpike, Day57bindRBD, Day57pseudoneutid50, Day57pseudoneutid80)) %>%
-                    rename(nlPCA1_d57 = nlPCA1,
-                           nlPCA2_d57 = nlPCA2),
-                              by = "Ptid") %>%
   mutate(comb_maxsig.div.score_d57 = get.maxSignalDivScore(dat.ph2 %>%
                                                             select(Day57bindSpike, Day57bindRBD, Day57pseudoneutid50, Day57pseudoneutid80), "Day57")) %>%
   # generate combination scores for d29
@@ -155,11 +149,6 @@ dat.ph2 <- dat.ph2 %>%
               rename(comb_PC1_d29 = PC1,
                      comb_PC2_d29 = PC2), 
             by = "Ptid") %>%
-        left_join(get.nonlinearPCA.scores(dat.ph2 %>%
-                                            select(Ptid, Day29bindSpike, Day29bindRBD, Day29pseudoneutid50, Day29pseudoneutid80)) %>%
-                    rename(nlPCA1_d29 = nlPCA1,
-                           nlPCA2_d29 = nlPCA2),
-                  by = "Ptid") %>%
   mutate(comb_maxsig.div.score_d29 = get.maxSignalDivScore(dat.ph2 %>%
                                                             select(Day29bindSpike, Day29bindRBD, Day29pseudoneutid50, Day29pseudoneutid80), "Day29")) %>%
   # generate combination scores for both d57 and d29
@@ -169,14 +158,32 @@ dat.ph2 <- dat.ph2 %>%
               rename(comb_PC1_d57_d29 = PC1,
                      comb_PC2_d57_d29 = PC2), 
             by = "Ptid") %>%
-        left_join(get.nonlinearPCA.scores(dat.ph2 %>%
-                                            select(Ptid, Day57bindSpike, Day57bindRBD, Day57pseudoneutid50, Day57pseudoneutid80)) %>%
-                    rename(nlPCA1_d57 = nlPCA1,
-                           nlPCA2_d57 = nlPCA2),
-                  by = "Ptid") %>%
   mutate(comb_maxsig.div.score_d57_d29 = get.maxSignalDivScore(dat.ph2 %>%
                                                             select(Day57bindSpike, Day57bindRBD, Day57pseudoneutid50, Day57pseudoneutid80,
                                                                    Day29bindSpike, Day29bindRBD, Day29pseudoneutid50, Day29pseudoneutid80), "Day57_29"))
+
+if(run_prod){
+  dat.ph2 <- dat.ph2 %>%
+    # generate non-linear combination scores for d57
+    left_join(get.nonlinearPCA.scores(dat.ph2 %>%
+                                        select(Ptid, Day57bindSpike, Day57bindRBD, Day57pseudoneutid50, Day57pseudoneutid80)) %>%
+            rename(comb_nlPCA1_d57 = nlPCA1,
+                   comb_nlPCA2_d57 = nlPCA2),
+          by = "Ptid") %>%
+    # generate non-linear combination scores for d29
+    left_join(get.nonlinearPCA.scores(dat.ph2 %>%
+                                        select(Ptid, Day29bindSpike, Day29bindRBD, Day29pseudoneutid50, Day29pseudoneutid80)) %>%
+                rename(comb_nlPCA1_d29 = nlPCA1,
+                       comb_nlPCA2_d29 = nlPCA2),
+              by = "Ptid") %>%
+    # generate non-linear combination scores for both d57 and d29
+    left_join(get.nonlinearPCA.scores(dat.ph2 %>%
+                                        select(Ptid, Day57bindSpike, Day57bindRBD, Day57pseudoneutid50, Day57pseudoneutid80,
+                                               Day29bindSpike, Day29bindRBD, Day29pseudoneutid50, Day29pseudoneutid80)) %>%
+                rename(comb_nlPCA1_d57_d29 = nlPCA1,
+                       comb_nlPCA2_d57_d29 = nlPCA2),
+              by = "Ptid")
+}
 
 markers <- dat.ph2 %>%
   select(-Ptid, -Trt, -risk_score, -HighRiskInd, -MinorityInd, -EventIndPrimaryD57, -wt.D57) %>%

@@ -511,7 +511,11 @@ tab_strtm2 <- tab_strtm %>% select(Arm, name, any_of(paste0("Negative_", (strtm_
                                    any_of(paste0("Positive_", (strtm_cutoff+1):(strtm_cutoff*2))))
 
 if ((n_strtm1 <- ncol(tab_strtm1)/2-1)!=0) {
-  tlf$tab_strtm1$col_name <- c("  ", 1:n_strtm1, paste0(" ", 1:n_strtm1))
+  tlf$tab_strtm1$col_name <- colnames(tab_strtm1)[-1] %>%
+    gsub("name", " ", .) %>% 
+    gsub("Negative_", "", .) %>% 
+    gsub("Positive_"," ", .) 
+  
   tlf$tab_strtm1$header_above1 <- c(" "=1, "Baseline SARS-CoV-2 Negative" = n_strtm1, 
                                     "Baseline SARS-CoV-2 Positive" = n_strtm1)
   tab_strtm_header2 <- ncol(tab_strtm1)-1
@@ -540,7 +544,11 @@ if ((n_strtm1 <- ncol(tab_strtm1)/2-1)!=0) {
 }
 
 if ((n_strtm2 <- ncol(tab_strtm2)/2-1)!=0) {
-  tlf$tab_strtm2$col_name <- c("  ", 1:n_strtm2, paste0(" ", 1:n_strtm2))
+  tlf$tab_strtm2$col_name <- colnames(tab_strtm2)[-1] %>%
+    gsub("name", " ", .) %>% 
+    gsub("Negative_", "", .) %>% 
+    gsub("Positive_"," ", .) 
+  
   tlf$tab_strtm2$header_above1 <- c(" "=1, "Baseline SARS-CoV-2 Negative" = n_strtm2, 
                                     "Baseline SARS-CoV-2 Positive" = n_strtm2)
   tab_strtm_header2 <- ncol(tab_strtm2)-1

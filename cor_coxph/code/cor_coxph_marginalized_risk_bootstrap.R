@@ -54,10 +54,17 @@ marginalized.risk.svycoxph.boot=function(formula, marker.name, type, data, t, B,
         if(type==1) {
         # conditional on s
             tmp.design=twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=dat.b)
-            fit.risk=try(svycoxph(f1, design=tmp.design))
+            fit.risk.1=try(svycoxph(f1, design=tmp.design))
+#                    summary(survfit(fit.risk.1))
+#                    par(mfrow=c(2,2))
+#                    hist(dat.b.ph2$EventTimePrimaryD29[dat.b.ph2$Region==1])
+#                    sort(dat.b.ph2$EventTimePrimaryD29[dat.b.ph2$EventIndPrimaryD29==1 & dat.b.ph2$Region==1])
+#                    hist(data.ph2$EventTimePrimaryD29[data.ph2$Region==1])
+#                    sort(data.ph2$EventTimePrimaryD29[data.ph2$EventIndPrimaryD29==1 & data.ph2$Region==1])
+
             #fit.s=svyglm(f2, tmp.design)      
-            if ( class (fit.risk)[1] != "try-error" ) {
-                marginalized.risk(fit.risk, marker.name, dat.b.ph2, t=t, ss=ss, weights=dat.b.ph2$wt, categorical.s=F)
+            if ( class (fit.risk.1)[1] != "try-error" ) {
+                marginalized.risk(fit.risk.1, marker.name, dat.b.ph2, t=t, ss=ss, weights=dat.b.ph2$wt, categorical.s=F)
             } else {
                 rep(NA, length(ss))
             }

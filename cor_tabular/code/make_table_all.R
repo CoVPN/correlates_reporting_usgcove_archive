@@ -579,8 +579,8 @@ if (study_name_code=="COVE"){
     pivot_longer(cols = !Case,
                  names_to = c(".value", "Arm"),
                  names_pattern = "(.*)_(.*)") %>% 
-    mutate(Arm = ifelse(Arm=="vacc", "Vaccine", "Placebo")) %>%
-    arrange(desc(Arm), Case) %>% 
+    mutate(Arm = factor(ifelse(Arm=="vacc", "Vaccine", "Placebo"), levels=c("Vaccine", "Placebo"))) %>%
+    arrange(Arm, Case) %>% 
     rename_at(-c(1:2), function(x)paste0("$",x,"$"))
   } else if (study_name_code=="ENSEMBLE"){
     tab_case_cnt <- NULL

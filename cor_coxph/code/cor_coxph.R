@@ -151,12 +151,12 @@ if (study_name_code=="COVE") {
     p.cov=3
 } else if (study_name_code=="ENSEMBLE") {
     if (endsWith(data_name, "riskscore.csv")) {
-        form.0 = update (form.s, ~.+ HighRiskInd + risk_score + strata(Region))
+        form.0 = update (form.s, ~.+ risk_score + Region)
     } else {
-        form.0 = update (form.s, ~.+ HighRiskInd + Age + strata(Region)) 
+        form.0 = update (form.s, ~.+ Age + Region) 
     }
     # covariate length without markers
-    p.cov=2
+    p.cov=3
 }
 
     

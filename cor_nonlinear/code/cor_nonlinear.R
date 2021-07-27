@@ -98,12 +98,12 @@ if (study_name_code=="COVE") {
     p.cov=3
 } else if (study_name_code=="ENSEMBLE") {
     if (endsWith(data_name, "riskscore.csv")) {
-        form.0.logistic = as.formula(paste0("EventIndPrimaryD",pop,"  ~ HighRiskInd + risk_score + as.factor(Region)"))
+        form.0.logistic = as.formula(paste0("EventIndPrimaryD",pop,"  ~ risk_score + as.factor(Region)"))
     } else {
-        form.0.logistic = as.formula(paste0("EventIndPrimaryD",pop,"  ~ HighRiskInd + Age + as.factor(Region)"))  
+        form.0.logistic = as.formula(paste0("EventIndPrimaryD",pop,"  ~ Age + as.factor(Region)"))  
     }
     # covariate length without markers
-    p.cov=4
+    p.cov=3
 }
     
     

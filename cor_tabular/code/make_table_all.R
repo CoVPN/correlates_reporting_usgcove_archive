@@ -235,12 +235,12 @@ labels_all <- full_join(labels.assays, resp.lb, by = c("time", "marker")) %>%
 
 # Read in original data
 data_name_updated <- sub(".csv", "_with_riskscore.csv", data_name)
-if (file.exists(here::here("..", "data_clean", data_name_updated))) {
-  dat <- dat_proc <- read.csv(here::here("..", "data_clean", data_name_updated))
-  data_name  <- data_name_updated
-} else {
+# if (file.exists(here::here("..", "data_clean", data_name_updated))) {
+  # dat <- dat_proc <- read.csv(here::here("..", "data_clean", data_name_updated))
+  # data_name  <- data_name_updated
+# } else {
   dat <- dat_proc <- read.csv(here::here("..", "data_clean", data_name))
-}
+# }
 load(here::here("..", "data_clean/", paste0(attr(config,"config"), "_params.Rdata"))) 
 
 # The stratified random cohort for immunogenicity

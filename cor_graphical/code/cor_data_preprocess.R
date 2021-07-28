@@ -10,17 +10,7 @@ library(here)
 library(dplyr)
 library(tidyverse)
 library(stringr)
-
-# read data_clean
-data_name_updated <- sub(".csv", "_with_riskscore.csv", data_name)
-if (file.exists(here::here("..", "data_clean", data_name_updated))) {
-  dat.mock <- read.csv(here::here("..", "data_clean", data_name_updated))
-  data_name = data_name_updated
-} else {
-  dat.mock <- read.csv(here::here("..", "data_clean", data_name))
-}
-load(here::here("..", "data_clean/", paste0(attr(config,"config"), "_params.Rdata"))) 
-
+dat.mock <- read.csv(here("..", "data_clean", data_name))
 if(has57) dat.mock$wt.D57[is.na(dat.mock$wt.D57)] <- 0
 dat.mock$wt.D29[is.na(dat.mock$wt.D29)] <- 0
 

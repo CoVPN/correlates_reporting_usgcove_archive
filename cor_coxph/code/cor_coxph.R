@@ -54,8 +54,7 @@ if (file.exists(here::here("..", "data_clean", data_name_updated))) {
 } else {
     dat.mock <- read.csv(here::here("..", "data_clean", data_name))
 }
-load(here::here("..", "data_clean/", paste0(attr(config,"config"), "_params.Rdata"))) # if needed # add trial
-#summary(dat.mock$Day57bindSpike)
+load(here::here("..", "data_clean/", paste0(attr(config,"config"), "_params.Rdata"))) 
 
 
 ###################################################################################################

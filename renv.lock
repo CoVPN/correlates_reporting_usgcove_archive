@@ -37,6 +37,13 @@
       "Repository": "CRAN",
       "Hash": "56b33b77f4cffd78ff96b8e5a69eabb0"
     },
+    "FSDAM": {
+      "Package": "FSDAM",
+      "Version": "2020.11-18",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "fcb7e1f60e7fa862820a43b974ec57eb"
+    },
     "Formula": {
       "Package": "Formula",
       "Version": "1.2-4",
@@ -681,6 +688,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "77bd60a6157420d4ffa93b27cf6a58b8"
+    },
+    "findpython": {
+      "Package": "findpython",
+      "Version": "1.0.7",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "73cb09f8220dfed388bd89d180f0b922"
     },
     "forcats": {
       "Package": "forcats",
@@ -1700,6 +1714,13 @@
       "Repository": "CRAN",
       "Hash": "bb5996d0bd962d214a11140d77589917"
     },
+    "reticulate": {
+      "Package": "reticulate",
+      "Version": "1.20",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "30ab0ea8c8d3dd16a3fa06903449bbfb"
+    },
     "rex": {
       "Package": "rex",
       "Version": "1.2.0",
@@ -2173,7 +2194,7 @@
       "Version": "0.90.0.2",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "17b1f93f73844394d1578de45a681bea"
+      "Hash": "1f29db60e440a590f98511b44595f0f3"
     },
     "xml2": {
       "Package": "xml2",

@@ -22,3 +22,20 @@ dat_with_riskscore <- merge(dat_cleaned, risk_scores, by = "Ptid")
 data_name_amended <- paste0(str_remove(data_name, ".csv"), "_with_riskscore")
 write_csv(dat_with_riskscore,
           here("..", "data_clean", paste0(data_name_amended, ".csv")))
+
+
+# Create table of cases in both arms (post Risk score analyses)
+if(study_name_code == "COVE"){
+  endpoint <- "EventIndPrimaryD57"
+}
+
+if(study_name_code == "ENSEMBLE"){
+  endpoint <- "EventIndPrimaryD29"
+}
+
+tab <- dat_with_riskscore %>%
+  filter(Perprotocol == 1 & Bserostatus == 0) %>%
+  mutate(Trt = ifelse(Trt == 0, "Placebo", "Vaccine")) 
+table(tab$Trt, tab %>% pull(endpoint)) %>%
+  write.csv(file = here("output", "cases_post_riskScoreAnalysis.csv"))
+rm(tab)

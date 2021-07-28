@@ -26,7 +26,7 @@ cutoff.name <- case_when(study_name_code=="COVE" ~ "lloq",
 randomsubcohort <- case_when(study_name_code=="COVE" ~ "This table summarizes the 
       random subcohort, which was randomly sampled from the per-protocol cohort. The 
       sampling was stratified by 24 strata defined by enrollment characteristics: Assigned 
-      treatment arm $\\\\times$ Baseline SARS-CoV-2 naÃ¯ve vs. non-naÃ¯ve status 
+      treatment arm $\\\\times$ Baseline SARS-CoV-2 naïve vs. non-naïve status 
       (defined by serostatus and NAAT testing) $\\\\times$ Randomization strata 
       (Age < 65 and at-risk, Age < 65 and not at-risk, Age $\\\\geq 65)\\\\times$ 
       Communities of color (Yes/No) defined by White Non-Hispanic vs. all 
@@ -234,8 +234,14 @@ labels_all <- full_join(labels.assays, resp.lb, by = c("time", "marker")) %>%
 
 
 # Read in original data
-dat <- dat_proc <- read.csv(here::here("../data_clean", data_name))
-
+data_name_updated <- sub(".csv", "_with_riskscore.csv", data_name)
+# if (file.exists(here::here("..", "data_clean", data_name_updated))) {
+  # dat <- dat_proc <- read.csv(here::here("..", "data_clean", data_name_updated))
+  # data_name  <- data_name_updated
+# } else {
+  dat <- dat_proc <- read.csv(here::here("..", "data_clean", data_name))
+# }
+load(here::here("..", "data_clean/", paste0(attr(config,"config"), "_params.Rdata"))) 
 
 # The stratified random cohort for immunogenicity
 ds_s <- dat %>%
@@ -505,7 +511,11 @@ tab_strtm2 <- tab_strtm %>% select(Arm, name, any_of(paste0("Negative_", (strtm_
                                    any_of(paste0("Positive_", (strtm_cutoff+1):(strtm_cutoff*2))))
 
 if ((n_strtm1 <- ncol(tab_strtm1)/2-1)!=0) {
-  colnames(tab_strtm1) <- c("Arm", "  ", 1:n_strtm1, paste0(" ", 1:n_strtm1))
+  tlf$tab_strtm1$col_name <- colnames(tab_strtm1)[-1] %>%
+    gsub("name", " ", .) %>% 
+    gsub("Negative_", "", .) %>% 
+    gsub("Positive_"," ", .) 
+  
   tlf$tab_strtm1$header_above1 <- c(" "=1, "Baseline SARS-CoV-2 Negative" = n_strtm1, 
                                     "Baseline SARS-CoV-2 Positive" = n_strtm1)
   tab_strtm_header2 <- ncol(tab_strtm1)-1
@@ -534,7 +544,11 @@ if ((n_strtm1 <- ncol(tab_strtm1)/2-1)!=0) {
 }
 
 if ((n_strtm2 <- ncol(tab_strtm2)/2-1)!=0) {
-  colnames(tab_strtm2) <- c("Arm", "  ", 1:n_strtm2, paste0(" ", 1:n_strtm2))
+  tlf$tab_strtm2$col_name <- colnames(tab_strtm2)[-1] %>%
+    gsub("name", " ", .) %>% 
+    gsub("Negative_", "", .) %>% 
+    gsub("Positive_"," ", .) 
+  
   tlf$tab_strtm2$header_above1 <- c(" "=1, "Baseline SARS-CoV-2 Negative" = n_strtm2, 
                                     "Baseline SARS-CoV-2 Positive" = n_strtm2)
   tab_strtm_header2 <- ncol(tab_strtm2)-1
@@ -556,7 +570,6 @@ if ((n_strtm2 <- ncol(tab_strtm2)/2-1)!=0) {
 }
 
 # Table from Youyi
-load(here::here("..", sprintf("data_clean/%s_params.Rdata",attr(config, "config"))))
 
 if (study_name_code=="COVE"){
   tab_case_cnt <- make.case.count.marker.availability.table() %>% 
@@ -566,8 +579,8 @@ if (study_name_code=="COVE"){
     pivot_longer(cols = !Case,
                  names_to = c(".value", "Arm"),
                  names_pattern = "(.*)_(.*)") %>% 
-    mutate(Arm = ifelse(Arm=="vacc", "Vaccine", "Placebo")) %>%
-    arrange(desc(Arm), Case) %>% 
+    mutate(Arm = factor(ifelse(Arm=="vacc", "Vaccine", "Placebo"), levels=c("Vaccine", "Placebo"))) %>%
+    arrange(Arm, Case) %>% 
     rename_at(-c(1:2), function(x)paste0("$",x,"$"))
   } else if (study_name_code=="ENSEMBLE"){
     tab_case_cnt <- NULL

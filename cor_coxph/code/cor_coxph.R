@@ -1,4 +1,4 @@
-#Sys.setenv(TRIAL = "janssen_pooled_real")
+#Sys.setenv(TRIAL = "moderna_mock") # janssen_pooled_real moderna_mock
 #----------------------------------------------- 
 # obligatory to append to the top of each script
 renv::activate(project = here::here(".."))    
@@ -54,7 +54,7 @@ if (file.exists(here::here("..", "data_clean", data_name_updated))) {
 } else {
     dat.mock <- read.csv(here::here("..", "data_clean", data_name))
 }
-#load(here::here("..", "data_clean/_params.Rdata")) # if needed
+load(here::here("..", "data_clean/", paste0(attr(config,"config"), "_params.Rdata"))) # if needed # add trial
 #summary(dat.mock$Day57bindSpike)
 
 
@@ -88,6 +88,7 @@ if (pop=="57") {
 } else stop("wrong pop")
 
 
+
 # Average follow-up of vaccine recipients starting at 7 days post Day 29 visit
 tmp=round(mean(subset(dat.mock, Trt==1 & ph1, EventTimePrimary, drop=T), na.rm=T)-7)
 write(tmp, file=paste0(save.results.to, "avg_followup_"%.%study_name))
@@ -98,6 +99,8 @@ if(pop=="57") {
     res=nrow(subset(dat.mock, Trt==1 & ph1 & EventIndPrimary & Day57pseudoneutid80>log10(660)))
     write(res, file=paste0(save.results.to, "num_vacc_cases_highid80_"%.%study_name))
 }
+
+
 
 #Median and IQR and range of days from dose 1 to Day 29 visit, and from dose 1 to Day 57 visit (requested by Lindsey B).  
 #subsetting by (a) the whole immunogenicity subcohort, (2) non-cases in the immunogenicity subcohort, (3) intercurrent cases, (4) primary cases.
@@ -120,6 +123,14 @@ if (has29 & has57) {
 # the following data frame define the phase 1 ptids
 dat.vac.seroneg=subset(dat.mock, Trt==1 & Bserostatus==0 & ph1)
 dat.pla.seroneg=subset(dat.mock, Trt==0 & Bserostatus==0 & ph1)
+
+# number of cases
+nrow(subset(dat.vac.seroneg, EventIndPrimary==1))
+nrow(subset(dat.vac.seroneg, ph2 & EventIndPrimary))
+
+
+
+
 
 ## temp: experimenting with multitesting
 ## based on moderna_mock
@@ -151,12 +162,12 @@ if (study_name_code=="COVE") {
     p.cov=3
 } else if (study_name_code=="ENSEMBLE") {
     if (endsWith(data_name, "riskscore.csv")) {
-        form.0 = update (form.s, ~.+ HighRiskInd + risk_score + strata(Region))
+        form.0 = update (form.s, ~.+ risk_score + Region)
     } else {
-        form.0 = update (form.s, ~.+ HighRiskInd + Age + strata(Region)) 
+        form.0 = update (form.s, ~.+ Age + Region) 
     }
     # covariate length without markers
-    p.cov=2
+    p.cov=3
 }
 
     

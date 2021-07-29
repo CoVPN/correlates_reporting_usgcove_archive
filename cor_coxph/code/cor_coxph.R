@@ -1,4 +1,4 @@
-#Sys.setenv(TRIAL = "moderna_mock") # janssen_pooled_real moderna_mock
+#Sys.setenv(TRIAL = "janssen_pooled_mock") # janssen_pooled_real janssen_pooled_mock moderna_mock
 #----------------------------------------------- 
 # obligatory to append to the top of each script
 renv::activate(project = here::here(".."))    
@@ -54,6 +54,7 @@ if (file.exists(here::here("..", "data_clean", data_name_updated))) {
 } else {
     dat.mock <- read.csv(here::here("..", "data_clean", data_name))
 }
+myprint(data_name)
 load(here::here("..", "data_clean/", paste0(attr(config,"config"), "_params.Rdata"))) 
 
 
@@ -161,9 +162,9 @@ if (study_name_code=="COVE") {
     p.cov=3
 } else if (study_name_code=="ENSEMBLE") {
     if (endsWith(data_name, "riskscore.csv")) {
-        form.0 = update (form.s, ~.+ risk_score + Region)
+        form.0 = update (form.s, ~.+ risk_score + as.factor(Region))
     } else {
-        form.0 = update (form.s, ~.+ Age + Region) 
+        form.0 = update (form.s, ~.+ Age + as.factor(Region)) 
     }
     # covariate length without markers
     p.cov=3

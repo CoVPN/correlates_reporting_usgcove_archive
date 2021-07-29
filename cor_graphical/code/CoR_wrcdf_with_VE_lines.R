@@ -1,8 +1,14 @@
-#-----------------------------------------------
+#Sys.setenv(TRIAL = "moderna_mock") # janssen_pooled_real   janssen_pooled_mock   moderna_mock
+#----------------------------------------------- 
 # obligatory to append to the top of each script
-renv::activate(project = here::here(".."))
+renv::activate(project = here::here(".."))    
+# There is a bug on Windows that prevents renv from working properly. The following code provides a workaround:
+if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
 source(here::here("..", "_common.R"))
 #-----------------------------------------------
+myprint(study_name_code)
+
+
 source(here::here("code", "params.R"))
 source(here::here("code", "cor_wrcdf_plot_function.R"))
 library(ggpubr)
@@ -61,6 +67,21 @@ for (bstatus in 0:1) {
                                filename = paste0(save.results.to, "/RCDF_VE_Day57_trt_Vaccine_", 
                                                  bstatus.labels.2[bstatus + 1], "_", assays[aa], "_", study_name, ".png"))
     }
+
+
+    for (aa in 1:length(assays)) {
+      subdat <- subset(dat.long.cor.subset, assay == assays[aa] & Trt == "Vaccine" & Bserostatus == bstatus.labels[bstatus + 1])
+      covid_corr_rcdf_ve_lines(x = subdat$Day29,
+                               weights = subdat$wt.D29,
+                               VE = VE,
+                               VE_lb = VE_lb,
+                               VE_ub = VE_ub,
+                               xlab = labels.axis["Day29", aa],
+                               filename = paste0(save.results.to, "/RCDF_VE_Day29_trt_Vaccine_", 
+                                                 bstatus.labels.2[bstatus + 1], "_", assays[aa], "_", study_name, ".png"))
+    }
+
+
   }
 }
 saveRDS(plot_ve_curves, here::here("data_clean", "plot_ve_curves.rds"))

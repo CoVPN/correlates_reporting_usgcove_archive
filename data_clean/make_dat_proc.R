@@ -111,8 +111,8 @@ if (study_name_code=="COVE") {
       )
 }
 
-# WhiteNonHispanic=1 IF race is White AND ethnicity is not Hispanic
 dat_proc$WhiteNonHispanic <- NA
+# WhiteNonHispanic=1 IF race is White AND ethnicity is not Hispanic
 dat_proc$WhiteNonHispanic <-
   ifelse(dat_proc$race == "White" &
     dat_proc$ethnicity == "Not Hispanic or Latino", 1,

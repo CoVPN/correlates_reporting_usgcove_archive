@@ -236,8 +236,8 @@ if (study_name_code=="COVE") {
   dat.long.cor.subset$minority_label <-
     with(
       dat.long.cor.subset,
-      factor(WhiteNonHispanic,
-             levels = c(1, 0),
+      factor(MinorityInd,
+             levels = c(0, 1),
              labels = c("White Non-Hispanic", "Comm. of Color")
       )
     )
@@ -245,8 +245,8 @@ if (study_name_code=="COVE") {
   dat.long.cor.subset$age_minority_label <-
     with(
       dat.long.cor.subset,
-      factor(paste0(age.geq.65, WhiteNonHispanic),
-             levels = c("00", "01", "10", "11"),
+      factor(paste0(age.geq.65, MinorityInd),
+             levels = c("01", "00", "11", "10"),
              labels = c(
                paste(younger_age, "Comm. of Color"),
                paste(younger_age, "White Non-Hispanic"),

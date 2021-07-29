@@ -33,7 +33,7 @@ longer_cor_data_plot3 <- readRDS(here("data_clean", "longer_cor_data_plot3.rds")
 plot.25sample3 <- readRDS(here("data_clean", "plot.25sample3.rds"))
 
 ## common variables with in loop
-min_max_plot <- longer_cor_data %>% group_by(assay) %>% summarise(min=min(value), max=max(value))
+min_max_plot <- longer_cor_data %>% group_by(assay) %>% summarise(min=min(value, na.rm=T), max=max(value, na.rm=T))
 mins <- min_max_plot$min
 names(mins) <- min_max_plot$assay
 maxs <- min_max_plot$max

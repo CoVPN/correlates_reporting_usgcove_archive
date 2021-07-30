@@ -1,4 +1,4 @@
-#Sys.setenv(TRIAL = "janssen_pooled_mock") # janssen_pooled_real janssen_pooled_mock moderna_mock
+#Sys.setenv(TRIAL = "moderna_mock") # janssen_pooled_real    janssen_pooled_mock    moderna_mock
 #----------------------------------------------- 
 # obligatory to append to the top of each script
 renv::activate(project = here::here(".."))    
@@ -57,6 +57,8 @@ if (file.exists(here::here("..", "data_clean", data_name_updated))) {
 myprint(data_name)
 load(here::here("..", "data_clean/", paste0(attr(config,"config"), "_params.Rdata"))) 
 
+summary(dat.mock$risk_score)
+
 
 ###################################################################################################
 # uloq censoring
@@ -110,12 +112,12 @@ if (has29 & has57) {
             tmp = if(i==1) ph1.immuno else if(i==2) ph1.immuno & EventIndPrimary else if(i==3) idx=ph1.intercurrent.cases else if(i==4) idx=ph1.D57 & EventIndPrimaryD57
             tmp [!is.na(tmp)]
         })
-        res=c(quantile(dat.mock[idx, "NumberdaysD1toD"%.%pop], 1:3/4, na.rm=T))
-        c(res, range=unname(res[3]-res[1]))
+        res=c(quantile(dat.mock[idx, "NumberdaysD1toD"%.%pop], c(0, 1:3/4, 1), na.rm=T))
+        res
     })
     tab=t(tab)
     rownames(tab)=c("(a)","(b)","(c)","(d)")
-    colnames(tab)=c("1st quartile", "median", "3d quartile", "range")
+    colnames(tab)=c("min", "1st quartile", "median", "3d quartile", "max")
     mytex(tab, file.name="dose1_interval_summary_"%.%study_name, align="c", include.colnames = T, save2input.only=T, input.foldername=save.results.to, digits=0)
 }
 
@@ -128,6 +130,7 @@ dat.pla.seroneg=subset(dat.mock, Trt==0 & Bserostatus==0 & ph1)
 nrow(subset(dat.vac.seroneg, EventIndPrimary==1))
 nrow(subset(dat.vac.seroneg, ph2 & EventIndPrimary))
 
+summary(dat.vac.seroneg$risk_score)
 
 
 

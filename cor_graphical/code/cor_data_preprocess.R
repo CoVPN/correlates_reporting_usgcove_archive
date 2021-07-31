@@ -51,7 +51,7 @@ dat.long.subject_level <- dat[, c(
   "Bserostatus", "Perprotocol", "EventIndPrimaryD29", "EventTimePrimaryD29", 
   "SubcohortInd", "age.geq.65", 
   "Bstratum", "wt.D29", "race",
-  "WhiteNonHispanic", "cohort_event", "ph1.D29", "ph2.D29",
+  "WhiteNonHispanic", "cohort_event", "ph1.D29", "ph2.D29", "TwophasesampIndD29","Wstratum",
   if(study_name_code=="ENSEMBLE") c("URMforsubcohortsampling"), 
   if(has57) c("Fullvaccine", "ph1.intercurrent.cases", "ph2.intercurrent.cases", 
               "wt.intercurrent.cases","EventIndPrimaryD57", "TwophasesampIndD57", "wt.D57","ph1.D57","ph2.D57")
@@ -279,16 +279,8 @@ if (study_name_code=="COVE") {
     )
 }
 
-# use dat.long.cor.subset.twophase.intercurrent for violin/line plots
-# in order to include intercurrent cases, different filters apply for intercurrent and other groups
-if(has57) {
-  dat.long.cor.subset.twophase.intercurrent <- dat.long.cor.subset %>% 
-    filter(ph2.D29==1) %>%
-    filter(! (cohort_event %in% c("Post-Peak Cases","Non-Cases") & ph2.D57==0))
-} else {
-  dat.long.cor.subset.twophase.intercurrent <- dat.long.cor.subset %>%
-    filter(! (cohort_event %in% c("Post-Peak Cases","Non-Cases") & ph2.D29==0))
-}
+# save a copy of dat.long.cor.subset for longer transformation
+dat.long.cor.subset.violin <- dat.long.cor.subset
 
 # For immunogenicity characterization, complete ignore any information on cases
 # vs. non-cases.  The goal is to characterize immunogenicity in the random
@@ -308,14 +300,32 @@ if(has57) {
 
 
 # long to longer format by time
-dat.longer.cor.subset <- dat.long.cor.subset.twophase.intercurrent[,c("Ptid", "Trt", "Bserostatus", "EventIndPrimaryD29", 
+dat.longer.cor.subset <- dat.long.cor.subset.violin[,c("Ptid", "Trt", "Bserostatus", "EventIndPrimaryD29", 
         "EventTimePrimaryD29", "Perprotocol", "cohort_event", "Age", "age_geq_65_label", 
         "highrisk_label", "age_risk_label", "sex_label", "minority_label", "Dich_RaceEthnic", "assay", 
-        "LLoD", "LLoQ", "pos.cutoffs", "ULoQ", "lb", "lbval", "lb2", "lbval2",
-        if(has57) c("EventIndPrimaryD57", "ph1.intercurrent.cases", 
+        "LLoD", "LLoQ", "pos.cutoffs", "ULoQ", "lb", "lbval", "lb2", "lbval2","TwophasesampIndD29","Wstratum",
+        if(has57) c("EventIndPrimaryD57", "ph1.intercurrent.cases", "TwophasesampIndD57",
                     "ph2.intercurrent.cases", "wt.intercurrent.cases", "wt.D57", "ph2.D57"), "wt.D29", "ph2.D29",
         "B", "Day29", "Delta29overB", if(has57) c("Day57", "Delta57overB"))] %>%
   pivot_longer(!Ptid:ph2.D29, names_to = "time", values_to = "value")
+
+# phase 2 filters: 
+#    include both +++ and ++- at D29 for intercurrent cases and Post-Peak Cases
+#    include only +++ at D57 for intercurrent cases and Post-Peak Cases
+#    non-cases is defined as +++
+#    for intercurrent cases at D57, Day 2-14 Cases & Day 15-35 Cases at D29, can't use ph2.D57/ph2.D29 because they are before D57/D29
+if(has57) {
+  dat.longer.cor.subset <- dat.longer.cor.subset %>% 
+    filter( (cohort_event %in% c("Intercurrent Cases") & time == "Day57" & TwophasesampIndD57==1) |
+            (cohort_event %in% c("Post-Peak Cases", "Non-Cases") & time == "Day57" & ph2.D57==1 ) |
+            (cohort_event %in% c("Intercurrent Cases", "Post-Peak Cases", "Non-Cases") & time %in% c("Day29", "B") & ph2.D29==1 )
+            )
+} else {
+  dat.longer.cor.subset <- dat.longer.cor.subset %>%
+    filter( (cohort_event %in% c("Day 2-14 Cases", "Day 15-35 Cases") & time == "Day29" & TwophasesampIndD29==1 ) | 
+            (cohort_event %in% c("Post-Peak Cases", "Non-Cases") & time == "Day29" & ph2.D29==1 ) |
+            time == "B" & Perprotocol==1 & !is.na(Wstratum))
+}
 
 # define response rates
 dat.longer.cor.subset <- dat.longer.cor.subset %>%

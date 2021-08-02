@@ -5,7 +5,6 @@ all: clean cop_prinstrat
 clean:
 	rm -rf output/*
 
-## cop_prinstrat     : create tables and figures
 cop_prinstrat:
 ifeq ($(TRIAL), moderna_mock)
 	Rscript code/cop_cove_Run.R 57
@@ -15,6 +14,7 @@ else ifeq ($(TRIAL), moderna_real)
 	Rscript code/cop_cove_Run.R 29
 else ifeq ($(TRIAL), janssen_pooled_mock)
 	Rscript code/cop_ensemble_Run.R 29
+	Rscript code/cop_prinstrat_covariateAdjusted_condVE.R 4
 else ifeq ($(TRIAL), janssen_pooled_real)
 	Rscript code/cop_ensemble_Run.R 29
 endif

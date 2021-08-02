@@ -14,6 +14,10 @@ nAb_assays <- c("pseudoneutid50", "pseudoneutid80")
 # 
 if (!has29) {
   times <- c("B", "Day57", "Delta57overB")
+} else if (!has57) {
+  times <- c("B", "Day29", "Delta29overB")
+} else {
+  times <- c("B", "Day29", "Delta29overB", "Day57", "Delta57overB")
 }
 
 # Depends on the Incoming data

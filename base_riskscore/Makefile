@@ -6,7 +6,7 @@ all: clean run_cvsl_riskscore createRDAfiles_fromSLobjects tables_figures \
 ## clean         : delete all SL results
 clean:
 	rm -f output/*
-	rm -f results/*
+	rm -f figs/*
 
 ## run_cvsl_riskscore   : run CV-SL on placebo arm
 run_cvsl_riskscore:

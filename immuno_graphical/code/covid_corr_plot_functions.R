@@ -404,7 +404,7 @@ covid_corr_rcdf_facets <- function(plot_dat,
                                    axis_titles,
                                    axis_title_size = 12,
                                    arrange_nrow =
-                                     ceiling(nlevels(plot_dat[,facet_by]) / 2),
+                                     ceiling(length(unique(plot_dat[,facet_by])) / 2),
                                    arrange_ncol = 2,
                                    height = 3 * arrange_nrow + 0.5,
                                    width = 3 * arrange_ncol,
@@ -429,8 +429,8 @@ covid_corr_rcdf_facets <- function(plot_dat,
     }) %>% bind_rows()
 
 
-  rcdf_list <- vector("list", nlevels(plot_dat[, facet_by]))
-  for (aa in 1:nlevels(plot_dat[, facet_by])) {
+  rcdf_list <- vector("list", length(unique(plot_dat[, facet_by])))
+  for (aa in 1:length(unique(plot_dat[, facet_by]))) {
     rcdf_list[[aa]] <- ggplot(
       subset(rcdf_dat, rcdf_dat[, facet_by] ==
         levels(rcdf_dat[, facet_by])[aa]),
@@ -652,7 +652,7 @@ covid_corr_scatter_facets <- function(plot_dat,
                                       y_axis_titles,
                                       axis_title_size = 10,
                                       arrange_nrow = ceiling(
-                                        nlevels(plot_dat[, facet_by]) / 2
+                                        length(unique(plot_dat[, facet_by])) / 2
                                       ),
                                       arrange_ncol = 2,
                                       height = 3 * arrange_nrow + 0.5,
@@ -661,7 +661,7 @@ covid_corr_scatter_facets <- function(plot_dat,
                                       filename) {
   
   
-  scatterplot_list <- vector("list", length(assays))
+  scatterplot_list <- vector("list", length(unique(plot_dat[, facet_by])))
 
   ## make the plot axis limits adaptive to the data range
   if (is.null(lim) | is.null(breaks)) {
@@ -680,7 +680,7 @@ covid_corr_scatter_facets <- function(plot_dat,
     }
   }
 
-  for (aa in 1:nlevels(plot_dat[, facet_by])) {
+  for (aa in 1:length(unique(plot_dat[, facet_by]))) {
     ## correlation
     ss <- plot_dat[plot_dat[, facet_by] ==
       levels(plot_dat[, facet_by])[aa], ] %>%
@@ -817,11 +817,11 @@ covid_corr_boxplot_facets <- function(plot_dat,
                                       axis_title_size = 9,
                                       axis_titles_y,
                                       xlab_use_letters =
-                                        (nlevels(plot_dat[, x]) > 2),
+                                        (length(unique(plot_dat[, x])) > 2),
                                       ylim,
                                       ybreaks = 2,
                                       arrange_nrow = ceiling(
-                                        nlevels(plot_dat[, facet_by]) / 2
+                                        length(unique(plot_dat[, facet_by])) / 2
                                       ),
                                       arrange_ncol = 2,
                                       panel_titles,
@@ -855,11 +855,11 @@ covid_corr_boxplot_facets <- function(plot_dat,
     }) %>%
     bind_rows()
 
-  boxplot_list <- vector("list", nlevels(plot_dat[, facet_by]))
-  for (aa in 1:nlevels(plot_dat[, facet_by])) {
+  boxplot_list <- vector("list", length(unique(plot_dat[, facet_by])))
+  for (aa in 1:length(unique(plot_dat[, facet_by]))) {
     boxplot_list[[aa]] <- ggplot(
       subset(plot_dat, plot_dat[, facet_by] ==
-        levels(plot_dat[, facet_by])[aa]),
+        unique(plot_dat[, facet_by])[aa]),
       aes_string(x = x, y = y, color = color)
     ) +
       geom_boxplot(width = box_width, lwd = lwd) +
@@ -872,7 +872,7 @@ covid_corr_boxplot_facets <- function(plot_dat,
         data = subset(
           boxplot_jitter_points,
           boxplot_jitter_points[, facet_by] ==
-            levels(boxplot_jitter_points[, facet_by])[aa]
+            unique(boxplot_jitter_points[, facet_by])[aa]
         ),
         width = jitter_width, size = point_size,
         alpha = 0.4
@@ -1013,7 +1013,7 @@ covid_corr_spaghetti_facets <- function(plot_dat,
                                         ylim,
                                         ybreaks = 2,
                                         arrange_nrow = ceiling(
-                                          nlevels(plot_dat[, facet_by]) / 2
+                                          length(unique(plot_dat[, facet_by])) / 2
                                         ),
                                         arrange_ncol = 2,
                                         panel_titles,
@@ -1027,10 +1027,10 @@ covid_corr_spaghetti_facets <- function(plot_dat,
   
   plot_dat <- plot_dat[!is.na(plot_dat[, x]), ]
   
-  spaghetti_plot_list <- vector("list", nlevels(plot_dat[, facet_by]))
-  for (aa in 1:nlevels(plot_dat[, facet_by])) {
+  spaghetti_plot_list <- vector("list", length(unique(plot_dat[, facet_by])))
+  for (aa in 1:length(unique(plot_dat[, facet_by]))) {
     subdat <- subset(plot_dat, plot_dat[, facet_by] ==
-                       levels(plot_dat[, facet_by])[aa])
+                       unique(plot_dat[, facet_by])[aa])
     spaghetti_plot_list[[aa]] <- ggplot(
       subdat, aes_string(x = x, y = y, group = id, color = color, shape = color)
     ) +

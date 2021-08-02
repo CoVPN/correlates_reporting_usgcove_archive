@@ -5,7 +5,6 @@ all: clean cop_prinstrat
 clean:
 	rm -rf output/*
 
-## cop_prinstrat     : create tables and figures. 
 cop_prinstrat:
 ifeq ($(TRIAL), moderna_mock)
 	Rscript code/cop_cove_Run.R 57

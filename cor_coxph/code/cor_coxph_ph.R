@@ -146,8 +146,8 @@ pvals.adj = cbind(p.unadj=p.unadj.1, pvals.adj[match(names(p.unadj.1), rownames(
 ###################################################################################################
 # make continuous markers table
 
-p.1=formatDouble(pvals.adj["cont."%.%names(pvals.cont),"p.FWER"], 3); p.1=sub(".000","<0.001",p.1)
-p.2=formatDouble(pvals.adj["cont."%.%names(pvals.cont),"p.FDR" ], 3); p.2=sub(".000","<0.001",p.2)
+p.1=formatDouble(pvals.adj["cont."%.%names(pvals.cont),"p.FWER"], 3, remove.leading0=F); p.1=sub("0.000","<0.001",p.1)
+p.2=formatDouble(pvals.adj["cont."%.%names(pvals.cont),"p.FDR" ], 3, remove.leading0=F); p.2=sub("0.000","<0.001",p.2)
 #if (study_name_code=="COVE") {
 #    p.1[endsWith(names(p.1), "pseudoneutid50")] = "N/A"
 #    p.2[endsWith(names(p.2), "pseudoneutid50")] = "N/A"
@@ -185,8 +185,8 @@ rv$tab.1=tab.1.nop12
 #overall.p.1=formatDouble(pvals.adj.fdr[1:length(assays)+length(assays)], 3);   overall.p.1=sub(".000","<0.001",overall.p.1)
 #overall.p.2=formatDouble(pvals.adj.fdr[1:length(assays)+length(assays)], 3);   overall.p.2=sub(".000","<0.001",overall.p.2)
 # or
-overall.p.1=formatDouble(pvals.adj["tri."%.%names(pvals.cont),"p.FWER"], 3);   overall.p.1=sub(".000","<0.001",overall.p.1)
-overall.p.2=formatDouble(pvals.adj["tri."%.%names(pvals.cont),"p.FDR" ], 3);   overall.p.2=sub(".000","<0.001",overall.p.2)
+overall.p.1=formatDouble(pvals.adj["tri."%.%names(pvals.cont),"p.FWER"], 3, remove.leading0=F);   overall.p.1=sub("0.000","<0.001",overall.p.1)
+overall.p.2=formatDouble(pvals.adj["tri."%.%names(pvals.cont),"p.FDR" ], 3, remove.leading0=F);   overall.p.2=sub("0.000","<0.001",overall.p.2)
 #if (study_name_code=="COVE") {
 #    overall.p.1[endsWith(names(overall.p.1), "pseudoneutid50")] = "N/A"
 #    overall.p.2[endsWith(names(overall.p.2), "pseudoneutid50")] = "N/A"
@@ -325,8 +325,14 @@ for (i in 1:ifelse(study_name_code=="ENSEMBLE",5,4)) {
         designs[[i]][[1]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=get.dat.with.no.empty(subset(dat.vac.seroneg, HighRiskInd==1)))
         designs[[i]][[2]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=get.dat.with.no.empty(subset(dat.vac.seroneg, HighRiskInd==0)))
     } else if(i==3) {
+      # MinorityInd also makes sense for US in ensemble
+      if(study_name_code=="ENSEMBLE") {          
+        designs[[i]][[1]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=get.dat.with.no.empty(subset(dat.vac.seroneg, MinorityInd==1 & Region==0)))
+        designs[[i]][[2]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=get.dat.with.no.empty(subset(dat.vac.seroneg, MinorityInd==0 & Region==0)))
+      } else {
         designs[[i]][[1]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=get.dat.with.no.empty(subset(dat.vac.seroneg, MinorityInd==1)))
         designs[[i]][[2]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=get.dat.with.no.empty(subset(dat.vac.seroneg, MinorityInd==0)))
+      }
     } else if(i==4) {
         designs[[i]][[1]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=get.dat.with.no.empty(subset(dat.vac.seroneg, Sex==1)))
         designs[[i]][[2]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd.0, data=get.dat.with.no.empty(subset(dat.vac.seroneg, Sex==0)))
@@ -373,7 +379,8 @@ for (a in assays) {
     names(fits.all.2[[a]])=c("All Vaccine", 
                              "Age >= "%.%age.threshold, "Age < "%.%age.threshold, 
                              "At risk", "Not at risk", 
-                             "Comm. of color", "White Non-Hispanic", 
+                             if (study_name_code!="ENSEMBLE") c("Comm. of color", "White Non-Hispanic"),
+                             if (study_name_code=="ENSEMBLE") c("Comm. of color (US)", "White Non-Hispanic (US)"),
                              "Men", "Women",
                              if (study_name_code=="ENSEMBLE") c("HIV infection Yes", "HIV infection No")
     )
@@ -385,8 +392,11 @@ nevents=c(nrow(subset(dat.vac.seroneg, yy==1)),
           nrow(subset(dat.vac.seroneg, yy==1 & Senior==0)), 
           nrow(subset(dat.vac.seroneg, yy==1 & HighRiskInd==1)), 
           nrow(subset(dat.vac.seroneg, yy==1 & HighRiskInd==0)), 
-          nrow(subset(dat.vac.seroneg, yy==1 & MinorityInd==1)), 
-          nrow(subset(dat.vac.seroneg, yy==1 & MinorityInd==0)), 
+          # MinorityInd also makes sense for US in ensemble
+          if(study_name_code!="ENSEMBLE") nrow(subset(dat.vac.seroneg, yy==1 & MinorityInd==1)), 
+          if(study_name_code!="ENSEMBLE") nrow(subset(dat.vac.seroneg, yy==1 & MinorityInd==0)), 
+          if(study_name_code=="ENSEMBLE") nrow(subset(dat.vac.seroneg, yy==1 & MinorityInd==1 & Region==0)), 
+          if(study_name_code=="ENSEMBLE") nrow(subset(dat.vac.seroneg, yy==1 & MinorityInd==0 & Region==0)), 
           nrow(subset(dat.vac.seroneg, yy==1 & Sex==1)), 
           nrow(subset(dat.vac.seroneg, yy==1 & Sex==0)),
           if (study_name_code=="ENSEMBLE") { c(

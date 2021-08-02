@@ -2116,15 +2116,15 @@
     },
     "vimp": {
       "Package": "vimp",
-      "Version": "2.1.10",
+      "Version": "2.2.1",
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
       "RemoteRepo": "vimp",
       "RemoteUsername": "bdwilliamson",
-      "RemoteRef": "HEAD",
-      "RemoteSha": "0a0e89fd735edcbf32f12d6fe99190566589f5f0",
-      "Hash": "4a1bb4ee87eca9d9c46e81d3db8b0e9e"
+      "RemoteRef": "v2.2.1",
+      "RemoteSha": "cd0599fea1ccf66cec7a1013706459850be91d01",
+      "Hash": "fb0e7153a77ce8af74aaaf8459dc9bfa"
     },
     "viridis": {
       "Package": "viridis",

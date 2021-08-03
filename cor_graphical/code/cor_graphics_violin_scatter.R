@@ -305,21 +305,23 @@ for (i in 1:length(plots)) {
   for (d in 1:length(times[[2]])) {
     for (c in c("Vaccine_BaselineNeg","all")) {
       
-      ds.tmp <- subset(longer_cor_data, assay==plots[i] & !is.na(value) & time==times[[2]][d])
+      ds.tmp <- subset(longer_cor_data, assay==plots[i] & time==times[[2]][d])
       ds.tmp$size <- with(ds.tmp, ifelse(cohort_event == "Non-Cases", 2.5, 4))
       
-      # subset for vaccine baseline neg arm
-      if (c=="Vaccine_BaselineNeg"){ds.tmp <- subset(ds.tmp, Bserostatus=="Baseline Neg" & Trt=="Vaccine")}
+      if (times[[2]][d]==tail(times[[2]], n=1)) {ds.tmp <- ds.tmp %>% 
+        filter(!(time==tail(times[[2]], n=1) & cohort_event %in% c("Intercurrent Cases","Day 2-14 Cases", "Day 15-35 Cases"))) %>%
+        mutate(cohort_event = factor(cohort_event, levels = tail(levels(cohort_event), 2)))
+      }
       
       y.breaks <- seq(floor(mins[plots[i]]), ceiling(maxs[plots[i]]))
       y.lim <- c(floor(mins[plots[i]]), ceiling(maxs[plots[i]]))
       
-      p <- ggplot(ds.tmp, aes(x = Age, y = value))
-      
-      # if show all four arms, multiple panels are needed
-      if (c=="all") {p <- p + facet_wrap(~Bserostatus+Trt, nrow = 1)}
-      
-      p <- p + geom_point(alpha = 1, aes(color = cohort_event, shape = cohort_event, size = size)) + 
+      # subset for vaccine baseline neg arm
+      if (c=="Vaccine_BaselineNeg"){ds.tmp <- subset(ds.tmp, Bserostatus=="Baseline Neg" & Trt=="Vaccine")}
+
+      p <- ggplot(ds.tmp, aes(x = Age, y = value)) + 
+        facet_wrap(~Bserostatus+Trt, nrow = 1) + 
+        geom_point(alpha = 1, aes(color = cohort_event, shape = cohort_event, size = size)) + 
         geom_smooth(aes(group = cohort_event, color = cohort_event), size=1.5, method = 'loess', se= F, span = 1.15) + 
         scale_y_continuous(limits=y.lim, breaks=y.breaks, labels=math_format(10^.x)) +
         scale_x_continuous(breaks = seq(from=18, to=86, by=17)) +
@@ -342,44 +344,50 @@ for (i in 1:length(plots)) {
   }
 }
 
-#### Figure 5. Scatter plot, assay vs. days since Day 29, intercurrent vs pp, case vs non-case, (Day 1) Day 29 Day 57
+#### Figure 5. Scatter plot, assay vs. days since Day 29/Day 1, cases only, 1 panel per assay
 for (i in 1:length(plots)) {
-  for (d in 1:length(times[[2]])) {
-    for (c in c("Vaccine_BaselineNeg","all")) {
-      
-      ds.tmp <- subset(longer_cor_data, assay==plots[i] & !is.na(value) & time==times[[2]][d])
-      ds.tmp$size <- with(ds.tmp, ifelse(cohort_event == "Non-Cases", 2.5, NA))
-      
-      # subset for vaccine baseline neg arm
-      if (c=="Vaccine_BaselineNeg"){ds.tmp <- subset(ds.tmp, Bserostatus=="Baseline Neg" & Trt=="Vaccine")}
-      
-      y.breaks <- seq(floor(mins[plots[i]]), ceiling(maxs[plots[i]]))
-      y.lim <- c(floor(mins[plots[i]]), ceiling(maxs[plots[i]]))
-      
-      p <- ggplot(ds.tmp, aes(x = EventTimePrimaryD29, y = value))
-      
-      # if show all four arms, multiple panels are needed
-      if (c=="all") {p <- p + facet_wrap(~Bserostatus+Trt, nrow = 1)}
-      
-      p <- p + geom_point(alpha = 1, aes(color = cohort_event, shape = cohort_event, size = size)) + 
-        geom_smooth(aes(group = cohort_event, color = cohort_event), size=1.5, method = 'loess', se= F, span = 1.15) + 
-        scale_y_continuous(limits=y.lim, breaks=y.breaks, labels=math_format(10^.x)) +
-        scale_x_continuous(breaks = seq(from=0, to=220, by=40)) +
-        scale_color_manual(values = c("Day 2-14 Cases"="#FF5EBF","Day 15-35 Cases"="#0AB7C9", "Intercurrent Cases"="#0AB7C9","Post-Peak Cases"="#FF6F1B","Non-Cases"="#810094"), drop=F) +
-        scale_shape_manual(values = c("Day 2-14 Cases"=18, "Day 15-35 Cases"=16, "Intercurrent Cases"=16, "Post-Peak Cases"=17, "Non-Cases"=15), drop=F) +
-        guides(color = guide_legend(nrow=1),
-               size = FALSE) +
-        labs(title = paste0(plots_titles[i],": ",times[[2]][d]), x = 'Days Since the Day 29 Visit', y = plots_ytitles[i],
-             color="Category", shape="Category") +
-        theme(plot.margin = unit(c(1, 1, 1, 1), "cm"), 
-              panel.grid = element_blank(),
-              legend.title = element_text(size=22),
-              plot.title = element_text(hjust = 0.5),
-              axis.text.x = element_text(size=ifelse(c=="Vaccine_BaselineNeg", 27, 19)))
-      
-      file_name <- paste0("scatter_daysince29_",gsub("bind","",gsub("pseudoneut","pnAb_",plots[i])),"_",c,"_",gsub(" ","",times[[2]][d]),"_", study_name, ".pdf")
-      ggsave2(plot = p, filename = here("figs", file_name), width = 12.5, height = 11)
-      
-    }
+  for (c in c("Vaccine_BaselineNeg","all")) {
+    
+    timels <- c(if (!has57) "Day 1", "Day 29", if (has57) "Day 57")
+    
+    ds.tmp <- longer_cor_data %>%
+      filter(assay==plots[i]) %>%
+      filter(!(time==timels[2] & cohort_event %in% c("Intercurrent Cases","Day 2-14 Cases", "Day 15-35 Cases"))) %>%
+      filter(time %in% timels) %>%
+      filter(!cohort_event == "Non-Cases") %>% 
+      mutate(cohort_event = factor(cohort_event, levels = head(levels(cohort_event), -1)))
+    
+    y.breaks <- seq(floor(mins[plots[i]]), ceiling(maxs[plots[i]]))
+    y.lim <- c(floor(mins[plots[i]]), ceiling(maxs[plots[i]]))
+    x.breaks <- seq(from=0, to=max(ds.tmp[, xvar], na.rm=T), by=floor(max(ds.tmp[, xvar], na.rm=T)/5))
+    x.lim <- c(min(ds.tmp[, xvar], na.rm=T), max(ds.tmp[, xvar], na.rm=T))
+    
+    xvar <- ifelse(has57, "EventTimePrimaryD29", "EventTimePrimaryD1")
+    xlb <- ifelse(has57, 'Days Since the Day 29 Visit', 'Days Since the Day 1 Visit')
+    
+    # subset for vaccine baseline neg arm
+    if (c=="Vaccine_BaselineNeg"){ds.tmp <- subset(ds.tmp, Bserostatus=="Baseline Neg" & Trt=="Vaccine")}
+  
+    p <- ggplot(ds.tmp, aes(x = !!as.name(xvar), y = value, group = time)) + 
+      facet_wrap(~Bserostatus+Trt, nrow = 1) + 
+      geom_point(alpha = 1, aes(color = cohort_event, shape = cohort_event, size = 4)) + 
+      geom_line(aes(group = Ptid)) + 
+      scale_y_continuous(limits=y.lim, breaks=y.breaks, labels=math_format(10^.x)) +
+      scale_x_continuous(limits= x.lim, breaks = x.breaks) +
+      scale_color_manual(values = c("Day 2-14 Cases"="#FF5EBF","Day 15-35 Cases"="#0AB7C9", "Intercurrent Cases"="#0AB7C9","Post-Peak Cases"="#FF6F1B","Non-Cases"="#810094"), drop=F) +
+      scale_shape_manual(values = c("Day 2-14 Cases"=18, "Day 15-35 Cases"=16, "Intercurrent Cases"=16, "Post-Peak Cases"=17, "Non-Cases"=15), drop=F) +
+      guides(color = guide_legend(nrow=1),
+             size = FALSE) +
+      labs(title = plots_titles[i], x = xlb, y = plots_ytitles[i],
+           color="Category", shape="Category") +
+      theme(plot.margin = unit(c(1, 1, 1, 1), "cm"), 
+            panel.grid = element_blank(),
+            legend.title = element_text(size=22),
+            plot.title = element_text(hjust = 0.5),
+            axis.text.x = element_text(size=ifelse(c=="Vaccine_BaselineNeg", 27, 19)))
+    
+    file_name <- paste0("scatter_daysince_",gsub("bind","",gsub("pseudoneut","pnAb_",plots[i])),"_",c,"_",study_name, ".pdf")
+    ggsave2(plot = p, filename = here("figs", file_name), width = 12.5, height = 11)
+    
   }
 }

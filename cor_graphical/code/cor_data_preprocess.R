@@ -48,7 +48,7 @@ dat <- dat[!is.na(dat$cohort_event),]
 dat.long.subject_level <- dat[, c(
   "Ptid", "Trt", "MinorityInd", "EthnicityHispanic", "EthnicityNotreported",
   "EthnicityUnknown", "HighRiskInd", "Age", "BMI", "Sex",
-  "Bserostatus", "Perprotocol", "EventIndPrimaryD29", "EventTimePrimaryD29", 
+  "Bserostatus", "Perprotocol", "EventIndPrimaryD29", "EventTimePrimaryD29", "EventTimePrimaryD1", 
   "SubcohortInd", "age.geq.65", 
   "Bstratum", "wt.D29", "race",
   "WhiteNonHispanic", "cohort_event", "ph1.D29", "ph2.D29", "TwophasesampIndD29","Wstratum",
@@ -301,7 +301,7 @@ if(has57) {
 
 # long to longer format by time
 dat.longer.cor.subset <- dat.long.cor.subset.violin[,c("Ptid", "Trt", "Bserostatus", "EventIndPrimaryD29", 
-        "EventTimePrimaryD29", "Perprotocol", "cohort_event", "Age", "age_geq_65_label", 
+        "EventTimePrimaryD29", "EventTimePrimaryD1", "Perprotocol", "cohort_event", "Age", "age_geq_65_label", 
         "highrisk_label", "age_risk_label", "sex_label", "minority_label", "Dich_RaceEthnic", "assay", 
         "LLoD", "LLoQ", "pos.cutoffs", "ULoQ", "lb", "lbval", "lb2", "lbval2","TwophasesampIndD29","Wstratum",
         if(has57) c("EventIndPrimaryD57", "ph1.intercurrent.cases", "TwophasesampIndD57",

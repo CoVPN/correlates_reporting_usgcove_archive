@@ -286,17 +286,13 @@ dat.long.cor.subset.violin <- dat.long.cor.subset
 # vs. non-cases.  The goal is to characterize immunogenicity in the random
 # subcohort, which is a stratified sample of enrolled participants. So,
 # immunogenicity analysis is always done in ppts that meet all of the criteria.
-if(has57) {
-  dat.cor.subset <- dat %>%
-    dplyr::filter(ph2.D57==1)
-  dat.long.cor.subset <- dat.long.cor.subset %>%
-    dplyr::filter(ph2.D57==1)
-} else {
-  dat.cor.subset <- dat %>%
-    dplyr::filter(ph2.D29==1)
-  dat.long.cor.subset <- dat.long.cor.subset %>%
-    dplyr::filter(ph2.D29==1)
-}
+
+# Here, only filter based on ph2.D29==1. Filtering by ph2.D57 will occur downstream,
+# since it should only happen for D57-related figures.
+dat.cor.subset <- dat %>%
+  dplyr::filter(ph2.D29==1)
+dat.long.cor.subset <- dat.long.cor.subset %>%
+  dplyr::filter(ph2.D29==1)
 
 
 # long to longer format by time

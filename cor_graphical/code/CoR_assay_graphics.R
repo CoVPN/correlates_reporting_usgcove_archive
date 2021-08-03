@@ -30,7 +30,7 @@ tps <- c("Day29", "Day57", "Delta29overB", "Delta57overB")
 for (tp in tps[tps %in% times]){
   dat.long.cor.subset$TrtEvent <- paste(as.character(dat.long.cor.subset$Trt), as.character(dat.long.cor.subset$cohort_event),sep = ", ")
   if (tp %in% c("Day57", "Delta57overB")) {  ## day 57 analysis don't include intercurrent cases
-    dat.long.cor.subset <- dat.long.cor.subset %>% filter(cohort_event != "Intercurrent Cases", ph2.D57==1)
+    dat.long.cor.subset <- dat.long.cor.subset %>% filter(cohort_event != "Intercurrent Cases" & ph2.D57==1)
   }
   rcdf_list <- vector("list", 4)
   for (aa in seq_along(assays)) {
@@ -113,8 +113,8 @@ for (tp in tps[tps %in% times]){
   subdat <- dat.long.cor.subset
   subdat_jitter <- dat.sample4
   if (tp %in% c("Day57", "Delta57overB")) {
-    subdat <- dat.long.cor.subset %>% filter(cohort_event != "Intercurrent Cases", ph2.D57==1)
-    subdat_jitter <- subdat_jitter %>% filter(cohort_event != "Intercurrent Cases", ph2.D57==1)
+    subdat <- dat.long.cor.subset %>% filter(cohort_event != "Intercurrent Cases" & ph2.D57==1)
+    subdat_jitter <- subdat_jitter %>% filter(cohort_event != "Intercurrent Cases" & ph2.D57==1)
   }
   boxplot_list <- vector("list", 4)
   for (aa in seq_along(assays)) {
@@ -200,8 +200,8 @@ for (tp in tps[tps %in% times]){
   subdat <-dat.long.cor.subset
   subdat_jitter <- dat.sample5
   if (tp %in% c("Day57", "Delta57overB")) {
-    subdat <- subdat %>% filter(cohort_event != "Intercurrent Cases", ph2.D57==1)
-    subdat_jitter <- subdat_jitter %>% filter(cohort_event != "Intercurrent Cases", ph2.D57==1)
+    subdat <- subdat %>% filter(cohort_event != "Intercurrent Cases" & ph2.D57==1)
+    subdat_jitter <- subdat_jitter %>% filter(cohort_event != "Intercurrent Cases" & ph2.D57==1)
   }
   for (aa in seq_along(assays)) {
     boxplots <-  ggplot(subset(subdat, assay == assays[aa] & Trt == "Vaccine"), aes_string(x = "cohort_event", y = tp)) +

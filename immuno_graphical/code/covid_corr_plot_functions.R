@@ -810,7 +810,7 @@ covid_corr_boxplot_facets <- function(plot_dat,
                                       box_width = 0.6,
                                       errorbar_width = 0.45,
                                       jitter_width = 0.15,
-                                      njitter = 30,
+                                      njitter = 100,
                                       legend = levels(plot_dat[, x]),
                                       legend_position = "bottom",
                                       legend_nrow = ceiling(
@@ -867,6 +867,9 @@ covid_corr_boxplot_facets <- function(plot_dat,
       aes_string(x = x, y = y, color = color)
       ) +
       geom_jitter(
+        data = subset(
+          boxplot_jitter_points,
+          boxplot_jitter_points[, facet_by] == unique(boxplot_jitter_points[, facet_by])[aa]),
         width = jitter_width, size = point_size, height = 0, shape = 1,
         alpha = 0.6
       ) +
@@ -959,7 +962,6 @@ covid_corr_boxplot_facets <- function(plot_dat,
 #' @param box_width: scalar: boxplot width.
 #' @param errorbar_width: scalar: error bar with.
 #' @param jitter_width: scalar: jitter point area width.
-#' @param njitter: integer: number of jitter points.
 #' @param palette: string vector: palette that decides the colors of the RCDF
 #'  curves.
 #' @param legend: string vector of length levels(plot_by[, by]): legend labels.

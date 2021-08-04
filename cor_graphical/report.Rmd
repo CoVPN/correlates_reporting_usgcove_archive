@@ -1359,43 +1359,43 @@ include_graphics(here("cor_graphical", "figs", paste0("scatter_pnAb_id80_all_Day
 ```
 
 \clearpage
-```{r, fig.cap = paste("scatterplots of Binding Antibody to Spike vs Days Since the Day", ifelse(has57, "29", "1"), "Visit: baseline negative vaccine arm")}
+```{r, fig.cap = paste("scatterplots of Binding Antibody to Spike vs Days Since the Day", ifelse(has57, "29", "1"), "Visit: baseline negative vaccine arm", ifelse(has57, "at day 29 and day 57", "at day 1 and day 29"))}
 include_graphics(here("cor_graphical", "figs", paste0("scatter_daysince_Spike_Vaccine_BaselineNeg_", study_name, ".pdf")))
 ```
 
 \clearpage
-```{r, fig.cap = paste("scatterplots of Binding Antibody to RBD vs Days Since the Day", ifelse(has57, "29", "1"), "Visit: baseline negative vaccine arm")}
+```{r, fig.cap = paste("scatterplots of Binding Antibody to RBD vs Days Since the Day", ifelse(has57, "29", "1"), "Visit: baseline negative vaccine arm", ifelse(has57, "at day 29 and day 57", "at day 1 and day 29"))}
 include_graphics(here("cor_graphical", "figs", paste0("scatter_daysince_RBD_Vaccine_BaselineNeg_", study_name, ".pdf")))
 ```
 
 \clearpage
-```{r, fig.cap = paste("scatterplots of Pseudovirus Neutralization ID50 vs Days Since the Day", ifelse(has57, "29", "1"), "Visit: baseline negative vaccine arm")}
+```{r, fig.cap = paste("scatterplots of Pseudovirus Neutralization ID50 vs Days Since the Day", ifelse(has57, "29", "1"), "Visit: baseline negative vaccine arm", ifelse(has57, "at day 29 and day 57", "at day 1 and day 29"))}
 include_graphics(here("cor_graphical", "figs", paste0("scatter_daysince_pnAb_id50_Vaccine_BaselineNeg_", study_name, ".pdf")))
 ```
 
 \clearpage
-```{r, fig.cap = paste("scatterplots of Pseudovirus Neutralization ID80 vs Days Since the Day", ifelse(has57, "29", "1"), "Visit: baseline negative vaccine arm")}
+```{r, fig.cap = paste("scatterplots of Pseudovirus Neutralization ID80 vs Days Since the Day", ifelse(has57, "29", "1"), "Visit: baseline negative vaccine arm", ifelse(has57, "at day 29 and day 57", "at day 1 and day 29"))}
 include_graphics(here("cor_graphical", "figs", paste0("scatter_daysince_pnAb_id80_Vaccine_BaselineNeg_", study_name, ".pdf")))
 ```
 
 \clearpage
-```{r, fig.cap = paste("scatterplots of Binding Antibody to Spike vs Days Since the Day", ifelse(has57, "29", "1"), "Visit: by arm")}
+```{r, fig.cap = paste("scatterplots of Binding Antibody to Spike vs Days Since the Day", ifelse(has57, "29", "1"), "Visit: by arm", ifelse(has57, "at day 29 and day 57", "at day 1 and day 29"))}
 include_graphics(here("cor_graphical", "figs", paste0("scatter_daysince_Spike_all_", study_name, ".pdf"))
 )
 ```
 
 \clearpage
-```{r, fig.cap = paste("scatterplots of Binding Antibody to RBD vs Days Since the Day", ifelse(has57, "29", "1"), "Visit: by arm")}
+```{r, fig.cap = paste("scatterplots of Binding Antibody to RBD vs Days Since the Day", ifelse(has57, "29", "1"), "Visit: by arm", ifelse(has57, "at day 29 and day 57", "at day 1 and day 29"))}
 include_graphics(here("cor_graphical", "figs", paste0("scatter_daysince_RBD_all_", study_name, ".pdf"))
 )
 ```
 
 \clearpage
-```{r, fig.cap = paste("scatterplots of Pseudovirus Neutralization ID50 vs Days Since the Day", ifelse(has57, "29", "1"), "Visit vs Days Since the Day 29 Visit: by arm")}
+```{r, fig.cap = paste("scatterplots of Pseudovirus Neutralization ID50 vs Days Since the Day", ifelse(has57, "29", "1"), "Visit vs Days Since the Day 29 Visit: by arm", ifelse(has57, "at day 29 and day 57", "at day 1 and day 29"))}
 include_graphics(here("cor_graphical", "figs", paste0("scatter_daysince_pnAb_id50_all_", study_name, ".pdf")))
 ```
 
 \clearpage
-```{r, fig.cap = paste("scatterplots of Pseudovirus Neutralization ID80 vs Days Since the Day", ifelse(has57, "29", "1"),"Visit: by arm")}
+```{r, fig.cap = paste("scatterplots of Pseudovirus Neutralization ID80 vs Days Since the Day", ifelse(has57, "29", "1"),"Visit: by arm", ifelse(has57, "at day 29 and day 57", "at day 1 and day 29"))}
 include_graphics(here("cor_graphical", "figs", paste0("scatter_daysince_pnAb_id80_all_", study_name, ".pdf")))
 ```

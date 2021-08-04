@@ -357,13 +357,12 @@ for (i in 1:length(plots)) {
       filter(!cohort_event == "Non-Cases") %>% 
       mutate(cohort_event = factor(cohort_event, levels = head(levels(cohort_event), -1)))
     
+    xvar <- ifelse(has57, "EventTimePrimaryD29", "EventTimePrimaryD1")
+    xlb <- ifelse(has57, 'Days Since the Day 29 Visit', 'Days Since the Day 1 Visit')
     y.breaks <- seq(floor(mins[plots[i]]), ceiling(maxs[plots[i]]))
     y.lim <- c(floor(mins[plots[i]]), ceiling(maxs[plots[i]]))
     x.breaks <- seq(from=0, to=max(ds.tmp[, xvar], na.rm=T), by=floor(max(ds.tmp[, xvar], na.rm=T)/5))
     x.lim <- c(min(ds.tmp[, xvar], na.rm=T), max(ds.tmp[, xvar], na.rm=T))
-    
-    xvar <- ifelse(has57, "EventTimePrimaryD29", "EventTimePrimaryD1")
-    xlb <- ifelse(has57, 'Days Since the Day 29 Visit', 'Days Since the Day 1 Visit')
     
     # subset for vaccine baseline neg arm
     if (c=="Vaccine_BaselineNeg"){ds.tmp <- subset(ds.tmp, Bserostatus=="Baseline Neg" & Trt=="Vaccine")}
@@ -391,3 +390,4 @@ for (i in 1:length(plots)) {
     
   }
 }
+

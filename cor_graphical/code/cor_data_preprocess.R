@@ -24,14 +24,17 @@ dat <- as.data.frame(dat.mock)
 
 ## label the subjects according to their case-control status
 ## add case vs non-case indicators
-if(has57) dat$cohort_event <- factor(with(dat,
+if(has57) {dat$cohort_event <- factor(with(dat,
                                 ifelse(Perprotocol==1 & Bserostatus==0 & EarlyendpointD29==0 & TwophasesampIndD29==1 & EventIndPrimaryD29==1 & EventTimePrimaryD29 >=7 & EventTimePrimaryD29 <= (6 + NumberdaysD1toD57 - NumberdaysD1toD29), 
                                        "Intercurrent Cases",
-                                       ifelse(Perprotocol==1 & Bserostatus==0 & EarlyendpointD57==0 & TwophasesampIndD57==1 & EventIndPrimaryD57==1, "Post-Peak Cases",
+                                       ifelse(Perprotocol==1 & Bserostatus==0 & EarlyendpointD57==0 & TwophasesampIndD29==1 & EventIndPrimaryD57==1, "Post-Peak Cases", 
+                                              # definition for post-peak cases include people with and without D57 marker data for downstream plotting
+                                              # will filter out those without D57 marker data in the D57 panels
                                               ifelse(Perprotocol==1 & Bserostatus==0 & EarlyendpointD57==0 & TwophasesampIndD57==1 & EventIndPrimaryD1==0, "Non-Cases", NA)))),
                                 levels = c("Intercurrent Cases", "Post-Peak Cases", "Non-Cases"))
+}
 
-if(!has57) dat$cohort_event <- factor(with(dat,
+if(!has57)  {dat$cohort_event <- factor(with(dat,
                                            ifelse(Perprotocol==1 & Bserostatus==0 & TwophasesampIndD29==1 & EventIndPrimaryD1==1  & EventTimePrimaryD1 <= 13, 
                                                   "Day 2-14 Cases",
                                                   ifelse(Perprotocol==1 & Bserostatus==0 & TwophasesampIndD29==1 & EventIndPrimaryD1==1  & EventTimePrimaryD1 > 13
@@ -39,7 +42,12 @@ if(!has57) dat$cohort_event <- factor(with(dat,
                                                          ifelse(Perprotocol==1 & Bserostatus==0 & TwophasesampIndD29==1 & EventIndPrimaryD29==1 & EventTimePrimaryD29 >= 7, "Post-Peak Cases",
                                                                 ifelse(Perprotocol==1 & Bserostatus==0 & TwophasesampIndD29==1 & EventIndPrimaryD1==0  & EarlyendpointD29==0, "Non-Cases", NA))))),
                                       levels = c("Day 2-14 Cases", "Day 15-35 Cases", "Post-Peak Cases", "Non-Cases"))
+  
+}
+
 dat <- dat[!is.na(dat$cohort_event),]
+
+
 
 
 ## arrange the dataset in the long form, expand by assay types
@@ -48,7 +56,7 @@ dat <- dat[!is.na(dat$cohort_event),]
 dat.long.subject_level <- dat[, c(
   "Ptid", "Trt", "MinorityInd", "EthnicityHispanic", "EthnicityNotreported",
   "EthnicityUnknown", "HighRiskInd", "Age", "BMI", "Sex",
-  "Bserostatus", "Perprotocol", "EventIndPrimaryD29", "EventTimePrimaryD29", 
+  "Bserostatus", "Perprotocol", "EventIndPrimaryD29", "EventTimePrimaryD29", "EventTimePrimaryD1", 
   "SubcohortInd", "age.geq.65", 
   "Bstratum", "wt.D29", "race",
   "WhiteNonHispanic", "cohort_event", "ph1.D29", "ph2.D29", "TwophasesampIndD29","Wstratum",
@@ -297,7 +305,7 @@ dat.long.cor.subset <- dat.long.cor.subset %>%
 
 # long to longer format by time
 dat.longer.cor.subset <- dat.long.cor.subset.violin[,c("Ptid", "Trt", "Bserostatus", "EventIndPrimaryD29", 
-        "EventTimePrimaryD29", "Perprotocol", "cohort_event", "Age", "age_geq_65_label", 
+        "EventTimePrimaryD29", "EventTimePrimaryD1", "Perprotocol", "cohort_event", "Age", "age_geq_65_label", 
         "highrisk_label", "age_risk_label", "sex_label", "minority_label", "Dich_RaceEthnic", "assay", 
         "LLoD", "LLoQ", "pos.cutoffs", "ULoQ", "lb", "lbval", "lb2", "lbval2","TwophasesampIndD29","Wstratum",
         if(has57) c("EventIndPrimaryD57", "ph1.intercurrent.cases", "TwophasesampIndD57",
@@ -312,15 +320,7 @@ dat.longer.cor.subset <- dat.long.cor.subset.violin[,c("Ptid", "Trt", "Bserostat
 #    for intercurrent cases at D57, Day 2-14 Cases & Day 15-35 Cases at D29, can't use ph2.D57/ph2.D29 because they are before D57/D29
 if(has57) {
   dat.longer.cor.subset <- dat.longer.cor.subset %>% 
-    filter( (cohort_event %in% c("Intercurrent Cases") & time == "Day57" & TwophasesampIndD57==1) |
-            (cohort_event %in% c("Post-Peak Cases", "Non-Cases") & time == "Day57" & ph2.D57==1 ) |
-            (cohort_event %in% c("Intercurrent Cases", "Post-Peak Cases", "Non-Cases") & time %in% c("Day29", "B") & ph2.D29==1 )
-            )
-} else {
-  dat.longer.cor.subset <- dat.longer.cor.subset %>%
-    filter( (cohort_event %in% c("Day 2-14 Cases", "Day 15-35 Cases") & time == "Day29" & TwophasesampIndD29==1 ) | 
-            (cohort_event %in% c("Post-Peak Cases", "Non-Cases") & time == "Day29" & ph2.D29==1 ) |
-            time == "B" & Perprotocol==1 & !is.na(Wstratum))
+    filter(!(cohort_event %in% c("Intercurrent Cases", "Post-Peak Cases") & time == "Day57" & TwophasesampIndD57==0))
 }
 
 # define response rates

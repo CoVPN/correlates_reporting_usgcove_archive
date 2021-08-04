@@ -32,20 +32,6 @@ if(has57) {dat$cohort_event <- factor(with(dat,
                                               # will filter out those without D57 marker data in the D57 panels
                                               ifelse(Perprotocol==1 & Bserostatus==0 & EarlyendpointD57==0 & TwophasesampIndD57==1 & EventIndPrimaryD1==0, "Non-Cases", NA)))),
                                 levels = c("Intercurrent Cases", "Post-Peak Cases", "Non-Cases"))
-  
-  dat <- dat %>%
-    mutate(Case.D57 = case_when(
-      Perprotocol==1 & EarlyendpointD57==0 & 
-        TwophasesampIndD57==1 & EventIndPrimaryD57==1 ~ "Cases", 
-      Perprotocol==1 & EarlyendpointD57==0 & 
-        TwophasesampIndD57==1 & EventIndPrimaryD1==0 ~ "Non-Cases"), 
-      Case.D29 = case_when(
-        Perprotocol==1 & EarlyendpointD29==0 & 
-          TwophasesampIndD29==1 & EventIndPrimaryD29==1~"Cases", 
-        Perprotocol==1 & EarlyendpointD57==0 & 
-          TwophasesampIndD57==1 & EventIndPrimaryD1==0 ~"Non-Cases")
-    )
-  dat <- dat[!is.na(dat$cohort_event) | !is.na(dat$Case.D57) | !is.na(dat$Case.D29),]
 }
 
 if(!has57)  {dat$cohort_event <- factor(with(dat,
@@ -56,16 +42,10 @@ if(!has57)  {dat$cohort_event <- factor(with(dat,
                                                          ifelse(Perprotocol==1 & Bserostatus==0 & TwophasesampIndD29==1 & EventIndPrimaryD29==1 & EventTimePrimaryD29 >= 7, "Post-Peak Cases",
                                                                 ifelse(Perprotocol==1 & Bserostatus==0 & TwophasesampIndD29==1 & EventIndPrimaryD1==0  & EarlyendpointD29==0, "Non-Cases", NA))))),
                                       levels = c("Day 2-14 Cases", "Day 15-35 Cases", "Post-Peak Cases", "Non-Cases"))
-
-  dat <- dat %>%
-    mutate(Case.D29 = case_when(
-             Perprotocol==1 & Bserostatus==0 & TwophasesampIndD29==1 & 
-               EventIndPrimaryD29==1 & EventTimePrimaryD29 >= 7 ~"Cases", 
-             Perprotocol==1 & Bserostatus==0 & TwophasesampIndD29==1 & 
-               EventIndPrimaryD1==0  & EarlyendpointD29==0  ~"Non-Cases")
-    )
-  dat <- dat[!is.na(dat$cohort_event) | !is.na(dat$Case.D29),]
+  
 }
+
+dat <- dat[!is.na(dat$cohort_event),]
 
 
 

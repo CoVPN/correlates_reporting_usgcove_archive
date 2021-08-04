@@ -23,7 +23,7 @@ before_script:
 	echo "B <- 100" >> code/params.R
 	echo "numPerm <- 50" >> code/params.R
 
-test: before_script clean cor_coxph report
+test: before_script cor_coxph report
 
 
 # type 'make help' to show all make commands

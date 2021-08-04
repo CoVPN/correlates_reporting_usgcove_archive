@@ -195,14 +195,15 @@ if (study_name_code=="COVE" & pop=="57") {
         tmp.2=table(subset(dat.mock, ph1.D57 & EventIndPrimaryD57 & Trt==1 & Bserostatus==0, EventTimePrimaryD29, drop=T))
         tmp.3=table(subset(dat.mock, ph1.D57 & EventIndPrimaryD57 & Trt==1 & Bserostatus==0, EventTimePrimaryD57, drop=T))
 
-        tmp=cbinduneven(list(tmp.1, tmp.2))
+        tmp=cbinduneven(list(tmp.1, tmp.2, tmp.3))
         tmp=tmp[order(as.numeric(rownames(tmp))),]
         tmp.1=tmp[,1]; names(tmp.1)=rownames(tmp)
         tmp.2=tmp[,2]; names(tmp.2)=rownames(tmp)
+        tmp.3=tmp[,3]; names(tmp.3)=rownames(tmp)
         
-        barplot(tmp.1, main="D29 to COVID", xlab="Days", yaxt="n"); title(line=3, main="Intercurrent Cases"); axis(2, at=0:2)
-        barplot(tmp.2, main="D29 to COVID", xlab="Days", yaxt="n"); title(line=3, main="Post Day 57 Cases");  axis(2, at=0:2)
-        barplot(tmp.3, main="D57 to COVID", xlab="Days", yaxt="n"); title(line=3, main="Post Day 57 Cases");  axis(2, at=0:2)
+        barplot(tmp.1, main="D29 to COVID", xlab="Days", yaxt="n", xaxt="n"); title(line=3, main="Intercurrent Cases"); axis(2, at=0:2); axis(1, at=seq(0,200,by=10)); 
+        barplot(tmp.2, main="D29 to COVID", xlab="Days", yaxt="n", xaxt="n"); title(line=3, main="Post Day 57 Cases");  axis(2, at=0:2); axis(1, at=seq(0,200,by=10)); 
+        barplot(tmp.3, main="D57 to COVID", xlab="Days", yaxt="n", xaxt="n"); title(line=3, main="Post Day 57 Cases");  axis(2, at=0:2); axis(1, at=seq(0,200,by=10)); 
     mydev.off(file=paste0(save.results.to, "barplot_mixed"))  
 
 

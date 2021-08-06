@@ -30,7 +30,7 @@ tps <- c("Day29", "Day57", "Delta29overB", "Delta57overB")
 for (tp in tps[tps %in% times]){
   dat.long.cor.subset$TrtEvent <- paste(as.character(dat.long.cor.subset$Trt), as.character(dat.long.cor.subset$cohort_event),sep = ", ")
   if (tp %in% c("Day57", "Delta57overB")) {  ## day 57 analysis don't include intercurrent cases
-    dat.long.cor.subset <- dat.long.cor.subset %>% filter(cohort_event != "Intercurrent Cases")
+    dat.long.cor.subset <- dat.long.cor.subset %>% filter(cohort_event != "Intercurrent Cases" & ph2.D57==1)
   }
   rcdf_list <- vector("list", 4)
   for (aa in seq_along(assays)) {
@@ -82,25 +82,25 @@ for (tp in tps[tps %in% times]){
 ## make another subsample datasets such that the jitter plot for each subgroup in each panel contains no more
 ## than 50 data points
 set.seed(12345)
-dat.sample3 <- dat.long.cor.subset[, c("Trt", times, "assay", "cohort_event")] %>%
+dat.sample3 <- dat.long.cor.subset[, c("Trt", times, "assay", "cohort_event", "ph2.D57")] %>%
   filter(., .$Trt == "Vaccine") %>% 
   split(., list(.$assay, .$cohort_event)) %>%
   lapply(., function(x) {
-    if(nrow(x) <= 30) {
+    if(nrow(x) <= 100) {
       return(x)
     } else {
-      return(x[sample(1:nrow(x), size = 30),])
+      return(x[sample(1:nrow(x), size = 100),])
     }}) %>% bind_rows
 
 set.seed(12345)
-dat.sample4 <-  dat.long.cor.subset[, c("Trt", times, "assay", "cohort_event")] %>%
+dat.sample4 <-  dat.long.cor.subset[, c("Trt", times, "assay", "cohort_event", "ph2.D57")] %>%
   filter(., .$Trt == "Vaccine") %>% 
   split(., list(.$assay, .$cohort_event)) %>%
   lapply(., function(x) {
-    if(nrow(x) <= 30) {
+    if(nrow(x) <= 100) {
       return(x)
     } else {
-      return(x[sample(1:nrow(x), size = 30),])
+      return(x[sample(1:nrow(x), size = 100),])
     }}) %>% bind_rows
 ##===============================================================================================================
 ## Box plots, overlayed with boxplots and jittered sample points, for the distribution of day 57 assay readouts
@@ -113,8 +113,8 @@ for (tp in tps[tps %in% times]){
   subdat <- dat.long.cor.subset
   subdat_jitter <- dat.sample4
   if (tp %in% c("Day57", "Delta57overB")) {
-    subdat <- dat.long.cor.subset %>% filter(cohort_event != "Intercurrent Cases")
-    subdat_jitter <- subdat_jitter %>% filter(cohort_event != "Intercurrent Cases")
+    subdat <- dat.long.cor.subset %>% filter(cohort_event != "Intercurrent Cases" & ph2.D57==1)
+    subdat_jitter <- subdat_jitter %>% filter(cohort_event != "Intercurrent Cases" & ph2.D57==1)
   }
   boxplot_list <- vector("list", 4)
   for (aa in seq_along(assays)) {
@@ -184,14 +184,14 @@ for (tp in tps[tps %in% times]){
 ## stratified by the baseline serostatus, age group and risk group
 ##===============================================================================================================
 set.seed(12345)
-dat.sample5 <-  dat.long.cor.subset[, c("Trt", times, "assay", "cohort_event", "demo_lab")] %>%
+dat.sample5 <-  dat.long.cor.subset[, c("Trt", times, "assay", "cohort_event", "demo_lab", "ph2.D57")] %>%
   filter(., .$Trt == "Vaccine") %>%
   split(., list(.$assay, .$cohort_event, .$demo_lab)) %>%
   lapply(., function(x) {
-    if(nrow(x) <= 30) {
+    if(nrow(x) <= 100) {
       return(x)
     } else {
-      return(x[sample(1:nrow(x), size = 30),])
+      return(x[sample(1:nrow(x), size = 100),])
     }}) %>% bind_rows
 
 
@@ -200,8 +200,8 @@ for (tp in tps[tps %in% times]){
   subdat <-dat.long.cor.subset
   subdat_jitter <- dat.sample5
   if (tp %in% c("Day57", "Delta57overB")) {
-    subdat <- subdat %>% filter(cohort_event != "Intercurrent Cases")
-    subdat_jitter <- subdat_jitter %>% filter(cohort_event != "Intercurrent Cases")
+    subdat <- subdat %>% filter(cohort_event != "Intercurrent Cases" & ph2.D57==1)
+    subdat_jitter <- subdat_jitter %>% filter(cohort_event != "Intercurrent Cases" & ph2.D57==1)
   }
   for (aa in seq_along(assays)) {
     boxplots <-  ggplot(subset(subdat, assay == assays[aa] & Trt == "Vaccine"), aes_string(x = "cohort_event", y = tp)) +
@@ -255,25 +255,35 @@ for (tp in tps[tps %in% times]){
 ## in each baseline serostatus group, randomly select 10 placebo recipients and 20 vaccine recipients
 set.seed(12345)
 
+# First we need to restrict to ph2.D57==1 if has57==true, to remove participants without day57 ab readings
+if(has57) {
+  dat.cor.subset.spaghetti <- filter(dat.cor.subset, ph2.D57==1)
+  dat.long.cor.subset.spaghetti <- filter(dat.long.cor.subset, ph2.D57==1)
+} else {
+  dat.cor.subset.spaghetti <- dat.cor.subset
+  dat.long.cor.subset.spaghetti <- dat.long.cor.subset
+}
+
+
 var_names <- expand.grid(times = intersect(c("B", "Day29", "Day57"), times),
                          assays = assays) %>%
   mutate(var_names = paste0(times, assays)) %>%
   .[, "var_names"]
 
-spaghetti_ptid <- dat.cor.subset[, c("Ptid", "Trt", var_names, "cohort_event")] %>%
+spaghetti_ptid <- dat.cor.subset.spaghetti[, c("Ptid", "Trt", var_names, "cohort_event")] %>%
   filter(., complete.cases(.), Trt == 1) %>%
   transmute(cohort_event = cohort_event,
             Ptid = Ptid) %>%
   split(., list(.$cohort_event)) %>%
   lapply(function(xx) {
-    if (nrow(xx) <= 15) {
+    if (nrow(xx) <= 20) {
       return(xx$Ptid)
     } else {
-      return(sample(xx$Ptid, 15))
+      return(sample(xx$Ptid, 20))
     }
   }) %>% unlist %>% as.character
 
-spaghetti_dat <- dat.long.cor.subset[, c("Ptid", "cohort_event", "assay",
+spaghetti_dat <- dat.long.cor.subset.spaghetti[, c("Ptid", "cohort_event", "assay",
                                          intersect(c("B", "Day29", "Day57"), times))] %>%
   filter(Ptid %in% spaghetti_ptid) %>%
   pivot_longer(cols = intersect(c("B", "Day29", "Day57"), times),

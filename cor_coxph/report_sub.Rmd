@@ -263,7 +263,7 @@ Average follow-up of vaccine recipients (in the Day `r Day` correlates analyses 
 \else
 
 \begin{table}[H]
-\caption{Median and IQR and range of days from dose 1 to Day `r Day` visit. (a) The whole immunogenicity subcohort, (b) non-cases in the immunogenicity subcohort, (c) intercurrent cases, (d) primary cases, i.e. cases from the Day 57 correlates analysis population.
+\caption{Summary statistics for the number of days from dose 1 to Day `r Day` visit. (a) The whole immunogenicity subcohort, (b) non-cases in the immunogenicity subcohort, (c) intercurrent cases, (d) primary cases, i.e. cases from the Day 57 correlates analysis population.
 }
 \begin{center}
 \setlength{\tabcolsep}{.5ex}

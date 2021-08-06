@@ -43,7 +43,7 @@ inputFile <- read.csv(here::here("..", "data_clean", data_name))
 if(study_name_code == "COVE"){
   risk_vars <- c(
     "MinorityInd", "EthnicityHispanic", "EthnicityNotreported", "EthnicityUnknown", 
-    "Black", "Asian", "NatAmer", "PacIsl", "WhiteNonHispanic", 
+    "Black", "Asian", "NatAmer", "PacIsl",  
     "Multiracial", "Other", 
     "Notreported", "Unknown",
     "HighRiskInd", "Sex", "Age", "BMI"

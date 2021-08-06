@@ -55,8 +55,6 @@ if(study_name_code=="ENSEMBLE") {
     with(dat_proc, table(10**BbindN*convf["bindN"]>pos.cutoffs["bindN"], Bserostatus, useNA="ifany"))
 }
 
-
-
           dat_proc=subset(dat_proc, !is.na(EventTimePrimaryD1) & !is.na(EventTimePrimaryD29))
 if(has57) dat_proc=subset(dat_proc, !is.na(EventTimePrimaryD57))
 
@@ -70,7 +68,6 @@ dat_proc <- dat_proc %>%
 
 dat_proc$Senior = as.integer(dat_proc$Age>=switch(study_name_code, COVE=65, ENSEMBLE=60, stop("unknown study_name_code")))
 
-  
   
 # ethnicity labeling
 dat_proc$ethnicity <- ifelse(dat_proc$EthnicityHispanic == 1, labels.ethnicity[1], labels.ethnicity[2])
@@ -114,8 +111,8 @@ if (study_name_code=="COVE") {
       )
 }
 
-# WhiteNonHispanic=1 IF race is White AND ethnicity is not Hispanic
 dat_proc$WhiteNonHispanic <- NA
+# WhiteNonHispanic=1 IF race is White AND ethnicity is not Hispanic
 dat_proc$WhiteNonHispanic <-
   ifelse(dat_proc$race == "White" &
     dat_proc$ethnicity == "Not Hispanic or Latino", 1,
@@ -128,6 +125,8 @@ dat_proc$WhiteNonHispanic <-
     dat_proc$WhiteNonHispanic
   )
 dat_proc$MinorityInd = 1-dat_proc$WhiteNonHispanic
+# set NA to 0 in both WhiteNonHispanic and MinorityInd. This means the opposite things for how NA's are interpreted and that gave us the option to use one or the other
+dat_proc$WhiteNonHispanic[is.na(dat_proc$WhiteNonHispanic)] = 0
 dat_proc$MinorityInd[is.na(dat_proc$MinorityInd)] = 0
 # set MinorityInd to 0 for latin america and south africa
 if (study_name_code=="ENSEMBLE") {

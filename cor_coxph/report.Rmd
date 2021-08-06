@@ -35,7 +35,7 @@ pathCoRoutput <- "cor_coxph/output/D57"
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{`r pathCoRoutput`/barplot_visit_intervals_immuno}
-    \caption{Distribution of the number of days bewteen visits in the immunogenicity subcohort, vaccine arm, baseline negative.}
+    \caption{Distribution of the number of days bewteen visits in the immunogenicity subcohort, vaccine arm, baseline negative.  The median (IQR) number of days between Day 29 and Day 57 was \protect\input{`r pathCoRoutput`/quartiles_visit_intervals_immuno}.}
 \end{figure}
 
 

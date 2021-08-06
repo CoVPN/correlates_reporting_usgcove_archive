@@ -153,6 +153,10 @@ if (study_name_code=="COVE" & pop=="57") {
         barplot(tmp.2, main="D29 to D57", xlab="Days"); title(line=3, main="Immunogenicity Subcohort")
     mydev.off(file=paste0(save.results.to, "barplot_visit_intervals_immuno"))  
     
+    res=round(quantile(subset(dat.mock, ph1.immuno & Trt==1 & Bserostatus==0, NumberdaysD29toD57, drop=T), c(1/4,1/2,3/4), na.rm=T)); res
+    write(paste0(res[2], " (", res[1], "-", res[3], ")"), file=paste0(save.results.to, "quartiles_visit_intervals_immuno"))
+    
+    
     
     # For Day 29 vaccine breakthrough cases: 
     # (1) for Intercurrent cases number of days from Day 1 to Day 29, 

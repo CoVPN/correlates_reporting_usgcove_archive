@@ -7,7 +7,7 @@ for(opt in names(config)){
   eval(parse(text = paste0(names(config[opt])," <- config[[opt]]")))
 }
 names(assays)=assays # add names so that lapply results will have names
-
+study_name_code <- "COVE"
 # if this flag is true, then the N IgG binding antibody is reported 
 # in the immuno report (but is not analyzed in the cor or cop reports).
 include_bindN <- TRUE

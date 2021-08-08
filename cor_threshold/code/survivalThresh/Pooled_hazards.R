@@ -278,6 +278,7 @@ Lrnr_hal9001_custom <- R6Class(
                           basis_list = NULL,
                           cv_select = TRUE,
                           formula_hal = NULL,
+                          fit_control = list(),
                           ...) {
       params <- args_to_list()
       super$initialize(params = params, ...)
@@ -299,7 +300,7 @@ Lrnr_hal9001_custom <- R6Class(
       args$Y <- outcome_type$format(task$Y)
       args$yolo <- FALSE
       args$formula <- args$formula_hal
-      args$fit_control <- list()
+      #args$fit_control <- list()
       if (task$has_node("weights")) {
         args$fit_control$weights <- task$weights
       }

@@ -10,7 +10,7 @@ library(SuperLearner)
 library(data.table)
 library(mvtnorm)
 library(uuid)
-
+library(doMC)
 source(here::here("code", "tmleThresh.R"))
 source(here::here("code", "params.R"))
 source(here::here("code", "learners.R"))
@@ -43,16 +43,17 @@ run_threshold_analysis <- function(marker, direction = "above") {
 
     }
     print(form)
-     
-    lrnr_N <- Lrnr_hal9001_custom$new(max_degree = 2, smoothness_orders = 1, num_knots = c(10,3), reduce_basis =1e-3, formula_hal = form, fit_control = list(n_folds = 5))
-    lrnr_C <- Lrnr_hal9001_custom$new(max_degree = 2, smoothness_orders = 1, num_knots = c(9,2), reduce_basis=1e-3,  formula_hal = form, fit_control = list(n_folds = 5))
-    lrnr_A <- Lrnr_hal9001_custom$new(max_degree = 2, smoothness_orders = 1, num_knots = c(15,4), reduce_basis=1e-3, fit_control = list(n_folds = 8))
+    require(doMC)
+    registerDoMC()
+    lrnr_N <- Lrnr_hal9001_custom$new(max_degree = 2, smoothness_orders = 1, num_knots = c(12,3), reduce_basis =1e-3, formula_hal = form, fit_control = list(n_folds = 8, parallel = TRUE))
+    lrnr_C <- Lrnr_hal9001_custom$new(max_degree = 2, smoothness_orders = 1, num_knots = c(9,2), reduce_basis=1e-3,  formula_hal = form, fit_control = list(n_folds = 8, parallel = TRUE))
+    lrnr_A <- Lrnr_hal9001_custom$new(max_degree = 2, smoothness_orders = 1, num_knots = c(15,4), reduce_basis=1e-3, fit_control = list(n_folds = 8, parallel = TRUE))
     if(fast_analysis) {
         print("fast analysis")
         form <- paste0("Y~h(.) + h(t,.) + h(A, MinorityInd) + h(A, HighRiskInd)")
-        lrnr_N <- Lrnr_hal9001_custom$new(max_degree = 2, smoothness_orders = 1, num_knots = c(10,2), reduce_basis =1e-3, formula_hal = form, fit_control = list(n_folds = 5))
-        lrnr_C <- Lrnr_hal9001_custom$new(max_degree = 2, smoothness_orders = 1, num_knots = c(9,2), reduce_basis=1e-3,  formula_hal = form, fit_control = list(n_folds = 5))
-        lrnr_A <- Lrnr_hal9001_custom$new(max_degree = 2, smoothness_orders = 1, num_knots = c(12,3), reduce_basis=1e-3, fit_control = list(n_folds = 10))
+        lrnr_N <- Lrnr_hal9001_custom$new(max_degree = 2, smoothness_orders = 1, num_knots = c(10,2), reduce_basis =1e-3, formula_hal = form, fit_control = list(n_folds = 5, parallel = TRUE))
+        lrnr_C <- Lrnr_hal9001_custom$new(max_degree = 2, smoothness_orders = 1, num_knots = c(9,2), reduce_basis=1e-3,  formula_hal = form, fit_control = list(n_folds = 5, parallel = TRUE))
+        lrnr_A <- Lrnr_hal9001_custom$new(max_degree = 2, smoothness_orders = 1, num_knots = c(12,3), reduce_basis=1e-3, fit_control = list(n_folds = 10, parallel = TRUE))
     }
     
   thresholds <- read.csv(here::here("data_clean", "Thresholds_by_marker", paste0("thresholds_", marker, ".csv")))

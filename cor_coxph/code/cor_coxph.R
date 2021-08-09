@@ -103,24 +103,28 @@ if(pop=="57") {
 }
 
 
-
-#Median and IQR and range of days from dose 1 to Day 29 visit, and from dose 1 to Day 57 visit (requested by Lindsey B).  
-#subsetting by (a) the whole immunogenicity subcohort, (2) non-cases in the immunogenicity subcohort, (3) intercurrent cases, (4) primary cases.
-
-# D1 to pop
-tab=sapply(1:4, function (i) {
-    idx=with(dat.mock, {
-        tmp = (if(i==1) ph1.immuno else if(i==2) (ph1.immuno & EventIndPrimary) else if(i==3) ph1.intercurrent.cases else if(i==4) (ph1.D57 & EventIndPrimaryD57)) & Trt==1 & Bserostatus==0
-        tmp [!is.na(tmp)]
+if (has29 & has57) {
+        
+    #Median and IQR and range of days from dose 1 to Day 29 visit, and from dose 1 to Day 57 visit (requested by Lindsey B).  
+    #subsetting by (a) the whole immunogenicity subcohort, (2) non-cases in the immunogenicity subcohort, (3) intercurrent cases, (4) primary cases.
+    
+    # D1 to pop
+    tab=sapply(1:4, function (i) {
+        idx=with(dat.mock, {
+            tmp = (if(i==1) ph1.immuno else if(i==2) (ph1.immuno & EventIndPrimary) else if(i==3) ph1.intercurrent.cases else if(i==4) (ph1.D57 & EventIndPrimaryD57)) & Trt==1 & Bserostatus==0
+            tmp [!is.na(tmp)]
+        })
+        res=c(quantile(dat.mock[idx, "NumberdaysD1toD"%.%pop], c(0, 1:3/4, 1), na.rm=T))
+        res
     })
-    res=c(quantile(dat.mock[idx, "NumberdaysD1toD"%.%pop], c(0, 1:3/4, 1), na.rm=T))
-    res
-})
-tab=t(tab)
-rownames(tab)=c("(a)","(b)","(c)","(d)")
-colnames(tab)=c("min", "1st quartile", "median", "3d quartile", "max")
-# the file name is misnomer for D57
-mytex(tab, file.name="dose1_interval_summary_"%.%study_name, align="c", include.colnames = T, save2input.only=T, input.foldername=save.results.to, digits=0)
+    tab=t(tab)
+    rownames(tab)=c("(a)","(b)","(c)","(d)")
+    colnames(tab)=c("min", "1st quartile", "median", "3d quartile", "max")
+    # the file name is misnomer for D57
+    mytex(tab, file.name="dose1_interval_summary_"%.%study_name, align="c", include.colnames = T, save2input.only=T, input.foldername=save.results.to, digits=0)
+    
+}
+
     
 
 if (study_name_code=="COVE" & pop=="57") {

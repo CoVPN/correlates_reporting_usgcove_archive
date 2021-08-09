@@ -56,6 +56,19 @@ pathCoRoutput <- "output/D57"
 <!-- The following are not repeated between D29 analyses and D57 analyses -->
 
 
+\ifENSEMBLE
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{output/D29/barplot_visit_intervals_immuno}
+    \caption{Distribution of the number of days bewteen visits in the immunogenicity subcohort, vaccine arm, baseline negative.  }
+\end{figure}
+
+
+\else
+
+<!-- COVE only -->
+
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{`r pathCoRoutput`/barplot_visit_intervals_immuno}
@@ -63,10 +76,6 @@ pathCoRoutput <- "output/D57"
 \end{figure}
 
 
-\ifENSEMBLE
-\else
-
-<!-- COVE only -->
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{`r pathCoRoutput`/barplot_mixed}

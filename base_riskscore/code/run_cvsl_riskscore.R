@@ -29,6 +29,7 @@ library(mice)
 # the demo version is simpler and runs faster!
 # the production version runs SL with a diverse set of learners
 run_prod <- !grepl("Mock", study_name)
+run_prod = TRUE
 
 # get utility files
 source(here("code", "sl_screens.R")) # set up the screen/algorithm combinations
@@ -57,7 +58,8 @@ if(study_name_code == "ENSEMBLE"){
   risk_vars <- c(
     "EthnicityHispanic","EthnicityNotreported", "EthnicityUnknown",
     "Black", "Asian", "NatAmer", "PacIsl", "Multiracial", "Notreported", "Unknown",
-    "URMforsubcohortsampling", "HighRiskInd", "Sex", "Age", "BMI", "Country", 
+    "URMforsubcohortsampling", "HighRiskInd", "Sex", 
+    "Age", "BMI", "Country", 
     "HIVinfection", "CalendarDateEnrollment"
   )
   

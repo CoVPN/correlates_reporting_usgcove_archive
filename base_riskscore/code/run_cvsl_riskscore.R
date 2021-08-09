@@ -57,7 +57,8 @@ if(study_name_code == "ENSEMBLE"){
   risk_vars <- c(
     "EthnicityHispanic","EthnicityNotreported", "EthnicityUnknown",
     "Black", "Asian", "NatAmer", "PacIsl", "Multiracial", "Notreported", "Unknown",
-    "URMforsubcohortsampling", "HighRiskInd", "Sex", "Age", "BMI", "Country", 
+    "URMforsubcohortsampling", "HighRiskInd", "Sex", 
+    "Age", "BMI", "Country", 
     "HIVinfection", "CalendarDateEnrollment"
   )
   

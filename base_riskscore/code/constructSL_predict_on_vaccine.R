@@ -43,7 +43,7 @@ set.seed(20210216)
 sl_riskscore_slfits <- SuperLearner(
   Y = Y, X = X_riskVars, family = "binomial",
   SL.library = SL_library, method = "method.CC_nloglik",
-  cvControl = list(V = V_outer, stratifyCV = TRUE), verbose = FALSE
+  cvControl = list(V = V_outer, stratifyCV = TRUE), verbose = TRUE
   )
 
 save(sl_riskscore_slfits, file = here("output", "sl_riskscore_slfits.rda"))

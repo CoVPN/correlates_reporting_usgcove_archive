@@ -1,3 +1,4 @@
+# Sys.setenv(TRIAL = "janssen_pooled_mock")
 #-----------------------------------------------
 # obligatory to append to the top of each script
 renv::activate(project = here::here(".."))
@@ -24,6 +25,7 @@ library(conflicted)
 conflicted::conflict_prefer("filter", "dplyr")
 conflict_prefer("summarise", "dplyr")
 library(mice)
+library(tidymodels)
 
 # Define code version to run
 # the demo version is simpler and runs faster!
@@ -57,23 +59,72 @@ if(study_name_code == "ENSEMBLE"){
   risk_vars <- c(
     "EthnicityHispanic","EthnicityNotreported", "EthnicityUnknown",
     "Black", "Asian", "NatAmer", "PacIsl", "Multiracial", "Notreported", "Unknown",
-    "URMforsubcohortsampling", "HighRiskInd", "Sex", 
-    "Age", "BMI", "Country", 
-    "HIVinfection", "CalendarDateEnrollment"
+    "URMforsubcohortsampling", "HighRiskInd", "HIVinfection", 
+    "Sex", 
+    "Country.X1", "Country.X2", "Country.X3", "Country.X4", "Country.X5", "Country.X6", "Country.X7", 
+    "Region.X1", "Region.X2", 
+    "CalDtEnrollIND.X1", "CalDtEnrollIND.X2", "CalDtEnrollIND.X3",  
+    "Region.X1.x.CalDtEnrollIND.X1", "Region.X1.x.CalDtEnrollIND.X2", "Region.X1.x.CalDtEnrollIND.X3",
+    "Region.X2.x.CalDtEnrollIND.X1", "Region.X2.x.CalDtEnrollIND.X2", "Region.X2.x.CalDtEnrollIND.X3",
+    "Age", "BMI"
   )
   
   endpoint <- "EventIndPrimaryD29"
   studyName_for_report <- "ENSEMBLE"
   # # Add calendar time indicator variables for ENSEMBLE
-  # inputFile <- inputFile %>%
-  #   mutate(CalendarDateEnrollment.dropPause = ifelse(CalendarDateEnrollment > 32, CalendarDateEnrollment - 2, CalendarDateEnrollment),
-  #          CalendarDateEnroll.ind = case_when(CalendarDateEnrollment.dropPause < 28 ~ 0,
-  #                                             CalendarDateEnrollment.dropPause >= 28 & CalendarDateEnrollment.dropPause < 56 ~ 1,
-  #                                             CalendarDateEnrollment.dropPause >= 56 & CalendarDateEnrollment.dropPause < 84 ~ 2,
-  #                                             CalendarDateEnrollment.dropPause >= 84 & CalendarDateEnrollment.dropPause < 112 ~ 3),
-  #          Region.CalendarDateEnroll = as.numeric(interaction(Region, CalendarDateEnroll.ind)))
-  # # Update risk_vars
-  # risk_vars <- c(risk_vars, "Region", "CalendarDateEnroll.ind", "Region.CalendarDateEnroll")
+  # d1 <- inputFile %>%
+  #   mutate(Sex.rand = sample(0:1, n(), replace = TRUE),
+  #          Sex = ifelse(Sex %in% c(2, 3), Sex.rand, Sex),
+  #          Country.0 = ifelse(Country == 0, 1, 0),
+  #          Country.1 = ifelse(Country == 1, 1, 0),
+  #          Country.2 = ifelse(Country == 2, 1, 0),
+  #          Country.3 = ifelse(Country == 3, 1, 0),
+  #          Country.4 = ifelse(Country == 4, 1, 0),
+  #          Country.5 = ifelse(Country == 5, 1, 0),
+  #          Country.6 = ifelse(Country == 6, 1, 0),
+  #          Country.7 = ifelse(Country == 7, 1, 0),
+  #          Region.0 = ifelse(Region == 0, 1, 0),
+  #          Region.1 = ifelse(Region == 1, 1, 0),
+  #          Region.2 = ifelse(Region == 2, 1, 0),
+  #          #CalendarDateEnrollment.dropPause = ifelse(CalendarDateEnrollment > 32, CalendarDateEnrollment - 2, CalendarDateEnrollment),
+  #          CalendarDateEnroll.ind = case_when(CalendarDateEnrollment < 28 ~ 0,
+  #                                             CalendarDateEnrollment >= 28 & CalendarDateEnrollment < 56 ~ 1,
+  #                                             CalendarDateEnrollment >= 56 & CalendarDateEnrollment < 84 ~ 2,
+  #                                             CalendarDateEnrollment >= 84 & CalendarDateEnrollment < 112 ~ 3,
+  #                                             TRUE ~ 4),
+  #          Region.CalendarDateEnroll = as.numeric(interaction(Region, CalendarDateEnroll.ind))) %>%
+  #   select(-Sex.rand)
+  
+  # Create binary indicator variables for Country and Region
+  inputFile <- inputFile %>%
+    filter(!is.na(CalendarDateEnrollment)) %>%
+    mutate(Sex.rand = sample(0:1, n(), replace = TRUE),
+           Sex = ifelse(Sex %in% c(2, 3), Sex.rand, Sex),
+           Country = as.factor(Country),
+           Region = as.factor(Region),
+           CalDtEnrollIND = case_when(CalendarDateEnrollment < 28 ~ 0,
+                                      CalendarDateEnrollment >= 28 & CalendarDateEnrollment < 56 ~ 1,
+                                      CalendarDateEnrollment >= 56 & CalendarDateEnrollment < 84 ~ 2,
+                                      CalendarDateEnrollment >= 84 & CalendarDateEnrollment < 112 ~ 3,
+                                      CalendarDateEnrollment >= 112 & CalendarDateEnrollment < 140 ~ 4,
+                                      CalendarDateEnrollment >= 140 & CalendarDateEnrollment < 168 ~ 5),
+           CalDtEnrollIND = as.factor(CalDtEnrollIND)) %>%
+    select(-Sex.rand)
+  
+  rec <- recipe(~ Country + Region + CalDtEnrollIND, data = inputFile)
+  dummies <- rec %>%
+    step_dummy(Country, Region, CalDtEnrollIND) %>%
+    prep(training = inputFile)
+  inputFile <- inputFile %>% bind_cols(bake(dummies, new_data = NULL)) %>%
+    select(-c(Country, Region, CalDtEnrollIND))
+    
+  # Create interaction variables between Region and CalDtEnrollIND
+  rec <- recipe(EventIndPrimaryD29 ~., data = inputFile)
+  int_mod_1 <- rec %>%
+    step_interact(terms = ~ starts_with("Region"):starts_with("CalDtEnrollIND"))
+  int_mod_1 <- prep(int_mod_1, training = inputFile)
+  inputFile <- bake(int_mod_1, inputFile)
+  names(inputFile)<-gsub("\\_",".",names(inputFile))
 }
 
 ################################################

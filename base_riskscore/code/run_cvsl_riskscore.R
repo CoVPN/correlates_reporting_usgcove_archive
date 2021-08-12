@@ -71,30 +71,7 @@ if(study_name_code == "ENSEMBLE"){
   
   endpoint <- "EventIndPrimaryD29"
   studyName_for_report <- "ENSEMBLE"
-  # # Add calendar time indicator variables for ENSEMBLE
-  # d1 <- inputFile %>%
-  #   mutate(Sex.rand = sample(0:1, n(), replace = TRUE),
-  #          Sex = ifelse(Sex %in% c(2, 3), Sex.rand, Sex),
-  #          Country.0 = ifelse(Country == 0, 1, 0),
-  #          Country.1 = ifelse(Country == 1, 1, 0),
-  #          Country.2 = ifelse(Country == 2, 1, 0),
-  #          Country.3 = ifelse(Country == 3, 1, 0),
-  #          Country.4 = ifelse(Country == 4, 1, 0),
-  #          Country.5 = ifelse(Country == 5, 1, 0),
-  #          Country.6 = ifelse(Country == 6, 1, 0),
-  #          Country.7 = ifelse(Country == 7, 1, 0),
-  #          Region.0 = ifelse(Region == 0, 1, 0),
-  #          Region.1 = ifelse(Region == 1, 1, 0),
-  #          Region.2 = ifelse(Region == 2, 1, 0),
-  #          #CalendarDateEnrollment.dropPause = ifelse(CalendarDateEnrollment > 32, CalendarDateEnrollment - 2, CalendarDateEnrollment),
-  #          CalendarDateEnroll.ind = case_when(CalendarDateEnrollment < 28 ~ 0,
-  #                                             CalendarDateEnrollment >= 28 & CalendarDateEnrollment < 56 ~ 1,
-  #                                             CalendarDateEnrollment >= 56 & CalendarDateEnrollment < 84 ~ 2,
-  #                                             CalendarDateEnrollment >= 84 & CalendarDateEnrollment < 112 ~ 3,
-  #                                             TRUE ~ 4),
-  #          Region.CalendarDateEnroll = as.numeric(interaction(Region, CalendarDateEnroll.ind))) %>%
-  #   select(-Sex.rand)
-  
+
   # Create binary indicator variables for Country and Region
   inputFile <- inputFile %>%
     filter(!is.na(CalendarDateEnrollment)) %>%

@@ -1,3 +1,4 @@
+# Sys.setenv(TRIAL = "janssen_pooled_mock")
 #-----------------------------------------------
 # obligatory to append to the top of each script
 renv::activate(project = here::here(".."))
@@ -28,7 +29,7 @@ rm(Y, X_riskVars, weights, maxVar)
 load(file = here("output", "cvsl_risk_placebo_cvaucs.rda"))
 
 ######## Table of demographic variables used to derive the risk score ##########
-dat <- read.csv(here::here("..", "data_clean", data_name)) %>%
+dat <- inputFile %>%
   filter(Perprotocol == 1 & Trt == 0 & Bserostatus == 0) %>%
   select(all_of(risk_vars)) 
 

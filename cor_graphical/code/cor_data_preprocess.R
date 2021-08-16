@@ -18,35 +18,37 @@ dat.mock$wt.D29[is.na(dat.mock$wt.D29)] <- 0
 source(here("code", "params.R"))
 
 
-################################################ follow the email, change numbers and change ULOQ
 ################################################
 dat <- as.data.frame(dat.mock)
+incNotMol <- ""  #"IncludeNotMolecConfirmed"
 
 ## label the subjects according to their case-control status
 ## add case vs non-case indicators
-if(has57) {dat$cohort_event <- factor(with(dat,
-                                ifelse(Perprotocol==1 & Bserostatus==0 & EarlyendpointD29==0 & TwophasesampIndD29==1 & EventIndPrimaryD29==1 & EventTimePrimaryD29 >=7 & EventTimePrimaryD29 <= (6 + NumberdaysD1toD57 - NumberdaysD1toD29), 
-                                       "Intercurrent Cases",
-                                       ifelse(Perprotocol==1 & Bserostatus==0 & EarlyendpointD57==0 & TwophasesampIndD29==1 & EventIndPrimaryD57==1, "Post-Peak Cases", 
-                                              # definition for post-peak cases include people with and without D57 marker data for downstream plotting
-                                              # will filter out those without D57 marker data in the D57 panels
-                                              ifelse(Perprotocol==1 & Bserostatus==0 & EarlyendpointD57==0 & TwophasesampIndD57==1 & EventIndPrimaryD1==0, "Non-Cases", NA)))),
-                                levels = c("Intercurrent Cases", "Post-Peak Cases", "Non-Cases"))
+if(has57) {
+  dat <- dat %>%
+    mutate(cohort_event = factor(
+      ifelse(Perprotocol==1 & Bserostatus==0 & EarlyendpointD29==0 & TwophasesampIndD29==1 & EventIndPrimaryD29==1 & EventTimePrimaryD29 >=7 & EventTimePrimaryD29 <= (6 + NumberdaysD1toD57 - NumberdaysD1toD29), "Intercurrent Cases",
+             ifelse(Perprotocol==1 & Bserostatus==0 & EarlyendpointD57==0 & TwophasesampIndD29==1 & EventIndPrimaryD57==1, "Post-Peak Cases", 
+                    # definition for post-peak cases include people with and without D57 marker data for downstream plotting
+                    # will filter out those without D57 marker data in the D57 panels
+                    ifelse(Perprotocol==1 & Bserostatus==0 & EarlyendpointD57==0 & TwophasesampIndD57==1 & EventIndPrimaryD1==0, "Non-Cases", NA))),
+      levels = c("Intercurrent Cases", "Post-Peak Cases", "Non-Cases"))
+      )
 }
 
-if(!has57)  {dat$cohort_event <- factor(with(dat,
-                                           ifelse(Perprotocol==1 & Bserostatus==0 & TwophasesampIndD29==1 & EventIndPrimaryD1==1  & EventTimePrimaryD1 <= 13, 
-                                                  "Day 2-14 Cases",
-                                                  ifelse(Perprotocol==1 & Bserostatus==0 & TwophasesampIndD29==1 & EventIndPrimaryD1==1  & EventTimePrimaryD1 > 13
-                                                         & EventTimePrimaryD1 <= 6 + NumberdaysD1toD29, "Day 15-35 Cases",
-                                                         ifelse(Perprotocol==1 & Bserostatus==0 & TwophasesampIndD29==1 & EventIndPrimaryD29==1 & EventTimePrimaryD29 >= 7, "Post-Peak Cases",
-                                                                ifelse(Perprotocol==1 & Bserostatus==0 & TwophasesampIndD29==1 & EventIndPrimaryD1==0  & EarlyendpointD29==0, "Non-Cases", NA))))),
-                                      levels = c("Day 2-14 Cases", "Day 15-35 Cases", "Post-Peak Cases", "Non-Cases"))
+if(!has57)  {
+  dat <- dat %>%
+    mutate(cohort_event = factor(
+      ifelse(Perprotocol==1 & Bserostatus==0 & TwophasesampIndD29==1 & (!!as.name(paste0("EventIndPrimary", incNotMol, "D1")))==1  & (!!as.name(paste0("EventTimePrimary", incNotMol, "D1"))) <= 13, "Day 2-14 Cases",
+             ifelse(Perprotocol==1 & Bserostatus==0 & TwophasesampIndD29==1 & (!!as.name(paste0("EventIndPrimary", incNotMol, "D1")))==1  & (!!as.name(paste0("EventTimePrimary", incNotMol, "D1"))) > 13 & (!!as.name(paste0("EventTimePrimary", incNotMol, "D1"))) <= 6 + NumberdaysD1toD29, "Day 15-35 Cases",
+                    ifelse(Perprotocol==1 & Bserostatus==0 & TwophasesampIndD29==1 & (!!as.name(paste0("EventIndPrimary", incNotMol, "D29")))==1 & (!!as.name(paste0("EventTimePrimary", incNotMol, "D29"))) >= 7, "Post-Peak Cases",
+                           ifelse(Perprotocol==1 & Bserostatus==0 & TwophasesampIndD29==1 & (!!as.name(paste0("EventIndPrimary", incNotMol, "D1")))==0  & EarlyendpointD29==0, "Non-Cases", NA)))),
+      levels = c("Day 2-14 Cases", "Day 15-35 Cases", "Post-Peak Cases", "Non-Cases"))
+      )
   
 }
 
 dat <- dat[!is.na(dat$cohort_event),]
-
 
 
 
@@ -56,11 +58,21 @@ dat <- dat[!is.na(dat$cohort_event),]
 dat.long.subject_level <- dat[, c(
   "Ptid", "Trt", "MinorityInd", "EthnicityHispanic", "EthnicityNotreported",
   "EthnicityUnknown", "HighRiskInd", "Age", "BMI", "Sex",
-  "Bserostatus", "Perprotocol", "EventIndPrimaryD29", "EventTimePrimaryD29", "EventTimePrimaryD1", 
+  "Bserostatus", "Perprotocol", 
+  "EventIndPrimaryD29", "EventTimePrimaryD29", "EventTimePrimaryD1", 
   "SubcohortInd", "age.geq.65", 
   "Bstratum", "wt.D29", "race",
   "WhiteNonHispanic", "cohort_event", "ph1.D29", "ph2.D29", "TwophasesampIndD29","Wstratum",
-  if(study_name_code=="ENSEMBLE") c("URMforsubcohortsampling"), 
+  if(study_name_code=="ENSEMBLE") 
+    c("URMforsubcohortsampling", 
+      "EventIndPrimaryIncludeNotMolecConfirmedD1",
+      "EventTimePrimaryIncludeNotMolecConfirmedD1",
+      "EventIndPrimaryIncludeNotMolecConfirmedD29",
+      "EventTimePrimaryIncludeNotMolecConfirmedD29",
+      "SevereEventIndPrimaryD1", 
+      "SevereEventIndPrimaryD29",
+      "SevereEventIndPrimaryIncludeNotMolecConfirmedD1",
+      "SevereEventIndPrimaryIncludeNotMolecConfirmedD29"),
   if(has57) c("Fullvaccine", "ph1.intercurrent.cases", "ph2.intercurrent.cases", 
               "wt.intercurrent.cases","EventIndPrimaryD57", "TwophasesampIndD57", "wt.D57","ph1.D57","ph2.D57")
 )] %>%
@@ -308,12 +320,21 @@ if(has57) {
 
 
 # long to longer format by time
-dat.longer.cor.subset <- dat.long.cor.subset.violin[,c("Ptid", "Trt", "Bserostatus", "EventIndPrimaryD29", 
-        "EventTimePrimaryD29", "EventTimePrimaryD1", "Perprotocol", "cohort_event", "Age", "age_geq_65_label", 
+dat.longer.cor.subset <- dat.long.cor.subset.violin[,c("Ptid", "Trt", "Bserostatus",
+                                                       "EventTimePrimaryD1", "EventTimePrimaryD29",
+        if(study_name_code=="ENSEMBLE") # ENSEMBLE specific variables
+          c("SevereEventIndPrimaryD1", 
+            "SevereEventIndPrimaryD29"),
+        if(study_name_code=="ENSEMBLE" & incNotMol == "IncludeNotMolecConfirmed")
+          c("EventTimePrimaryIncludeNotMolecConfirmedD1",
+            "EventTimePrimaryIncludeNotMolecConfirmedD29",
+            "SevereEventIndPrimaryIncludeNotMolecConfirmedD1",
+            "SevereEventIndPrimaryIncludeNotMolecConfirmedD29"),
+        "Perprotocol", "cohort_event", "Age", "age_geq_65_label", 
         "highrisk_label", "age_risk_label", "sex_label", "minority_label", "Dich_RaceEthnic", "assay", 
         "LLoD", "LLoQ", "pos.cutoffs", "ULoQ", "lb", "lbval", "lb2", "lbval2","TwophasesampIndD29","Wstratum",
-        if(has57) c("EventIndPrimaryD57", "ph1.intercurrent.cases", "TwophasesampIndD57",
-                    "ph2.intercurrent.cases", "wt.intercurrent.cases", "wt.D57", "ph2.D57"), "wt.D29", "ph2.D29",
+        if(has57) c("EventIndPrimaryD57", "TwophasesampIndD57", "wt.D57", "ph2.D57"), "wt.D29", "ph2.D29",
+        
         "B", "Day29", "Delta29overB", if(has57) c("Day57", "Delta57overB"))] %>%
   pivot_longer(!Ptid:ph2.D29, names_to = "time", values_to = "value")
 
@@ -358,6 +379,16 @@ if(has57) {
 dat.longer.cor.subset$response_bind = with(dat.longer.cor.subset, ifelse(value >= pos.cutoffs, 1, 0))
 dat.longer.cor.subset$response = with(dat.longer.cor.subset, ifelse(assay %in% c("pseudoneutid50", "pseudoneutid80"), response_nab, 
                            ifelse(assay %in% c("bindSpike", "bindRBD", "bindN"), response_bind, NA)))
+
+# define severe: severe case or non-case
+if(study_name_code=="ENSEMBLE") {
+  dat.longer.cor.subset <- dat.longer.cor.subset %>%
+    mutate(severe = case_when((time=="Day 1" & cohort_event != "Non-Cases" & (!!as.name(paste0("SevereEventIndPrimary", incNotMol, "D1")))==1) ~ 1,
+                              (time=="Day 29" & cohort_event != "Non-Cases" & (!!as.name(paste0("SevereEventIndPrimary", incNotMol, "D29")))==1) ~ 1,
+                              cohort_event == "Non-Cases" ~ 1,
+                              TRUE ~ 0)
+           )
+}
 
 # subsets for violin/line plots
 #### figure specific data prep

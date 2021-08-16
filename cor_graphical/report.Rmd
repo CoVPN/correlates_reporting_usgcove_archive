@@ -80,6 +80,28 @@ include_graphics(here("cor_graphical", "figs", paste0("RCDF_VE_Day57_trt_Vaccine
 include_graphics(here("cor_graphical", "figs", paste0("RCDF_VE_Day57_trt_Vaccine_BaselineNeg_pseudoneutid80_", study_name, ".png")))
 ```
 
+
+
+\clearpage
+```{r, fig.cap = "Marker RCDF of D29 anti-Spike binding Ab: vaccine arm",eval = (plot_ve_curves[1] == 1)}
+include_graphics(here("cor_graphical", "figs", paste0("RCDF_VE_Day29_trt_Vaccine_BaselineNeg_bindSpike_", study_name, ".png")))
+```
+
+\clearpage
+```{r, fig.cap = "Marker RCDF of D29 anti-RBD binding Ab: vaccine arm", eval = (plot_ve_curves[1] == 1)}
+include_graphics(here("cor_graphical", "figs", paste0("RCDF_VE_Day29_trt_Vaccine_BaselineNeg_bindRBD_", study_name, ".png")))
+```
+
+\clearpage
+```{r, fig.cap = "Marker RCDF of D29 PsV-nAb ID50: vaccine arm", eval = (plot_ve_curves[1] == 1)}
+include_graphics(here("cor_graphical", "figs", paste0("RCDF_VE_Day29_trt_Vaccine_BaselineNeg_pseudoneutid50_", study_name, ".png")))
+```
+
+\clearpage
+```{r, fig.cap = "Marker RCDF of D29 PsV-nAb ID80: vaccine arm", eval = (plot_ve_curves[1] == 1)}
+include_graphics(here("cor_graphical", "figs", paste0("RCDF_VE_Day29_trt_Vaccine_BaselineNeg_pseudoneutid80_", study_name, ".png")))
+```
+
 \clearpage
 ## Spaghetti plots
 

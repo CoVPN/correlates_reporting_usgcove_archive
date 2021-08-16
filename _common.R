@@ -15,6 +15,7 @@ include_bindN <- TRUE
 # conversion factors
 convf=c(bindSpike=0.0090, bindRBD=0.0272, bindN=0.0024, pseudoneutid50=0.242, pseudoneutid80=1.502)
 
+# For bAb, IU and BAU are the same thing
 # limits for each assay (IU for bAb and pseudoneut, no need to convert again)
 # the following are copied from SAP to avoid any mistake (get rid of commas)
 tmp=list(
@@ -116,9 +117,9 @@ labels.ethnicity <- c(
   "Not reported and unknown"
 )
 
-labels.assays.short <- c("Anti N IgG (IU/ml)", 
-                         "Anti Spike IgG (IU/ml)", 
-                         "Anti RBD IgG (IU/ml)", 
+labels.assays.short <- c("Anti N IgG (BAU/ml)", 
+                         "Anti Spike IgG (BAU/ml)", 
+                         "Anti RBD IgG (BAU/ml)", 
                          "Pseudovirus-nAb cID50", 
                          "Pseudovirus-nAb cID80", 
                          "Live virus-nAb cMN50")

@@ -1,0 +1,191 @@
+---
+header-includes:
+  - \usepackage{float}
+output:
+  pdf_document: default
+html_document: default
+citation_package: natbib
+number_sections: true
+extra_dependencies: ["caption", "subcaption", "graphicx"]
+toc: true
+---
+
+# Baseline Risk Score (Proxy for SARS-CoV-2 Exposure) {#baseline-riskscore}
+
+```{r riskVarstable, warning=FALSE, echo=FALSE, message=FALSE}
+library(tidyverse, quietly = T)
+library(kableExtra, quietly = T)
+library(conflicted, quietly = T)
+conflicted::conflict_prefer("filter", "dplyr")
+conflict_prefer("summarise", "dplyr")
+load(here("base_riskscore", "output", "objects_for_running_SL.rda"))
+
+if(endpoint=="EventIndPrimaryD57")
+  day = "Day 57"
+if(endpoint=="EventIndPrimaryIncludeNotMolecConfirmedD29")
+  day = "Day 29"
+
+caption <- "Variables considered for risk score analysis."
+
+tab <- read.csv(here("base_riskscore", "output", "risk_vars.csv"), row.names = 1,
+         header = TRUE) %>%
+  kable(
+    #format = output_type,
+    booktabs = TRUE,
+    linesep = "",
+    caption = caption,
+    longtable = T
+  ) %>%
+  column_spec(2, width = "8cm") %>%
+  column_spec(4, width = "2cm") %>%
+  kable_styling(latex_options = c("hold_position", "repeat_header"),
+                font_size = 9)
+
+if(studyName_for_report=="ENSEMBLE"){
+  tab <- tab %>% 
+    footnote(c("Variables with more than 5% missing values were dropped from analysis; missing values for other variables were imputed.", 
+               "Indicator variables not meeting the threshold, such that under the null of not a risk factor there were less than 3 cases in the subgroup with value 1 (or 0), were dropped from analysis."),
+             threeparttable = TRUE)
+}
+
+tab
+  
+```
+
+\clearpage
+
+```{r learner-screens, warning=FALSE, echo=FALSE}
+caption <- "All learner-screen combinations (14 in total) used as input to the Superlearner."
+
+read.csv(here::here("base_riskscore", "output", "learner-screens.csv"),
+         row.names = 1, header = TRUE) %>%
+  rename(`Screen*` = `Screen.`) %>%
+  kable(
+    booktabs = TRUE,
+    linesep = "",
+    caption = caption
+  ) %>%
+  kable_styling(latex_options = c("hold_position"),
+                font_size = 9) %>%
+  column_spec(1:2, width = "5cm") %>%
+  row_spec(0,bold=TRUE) %>%
+  collapse_rows(columns = 1, valign = "top", latex_hline = "major") %>%
+  footnote(c("*Screen details:",
+             "all: includes all variables",
+             "glmnet: includes variables with non-zero coefficients in the standard implementation of SL.glmnet that optimizes the lasso tuning parameter via cross-validation",
+             "univar_logistic_pval: Wald test 2-sided p-value in a logistic regression model < 0.10",
+             "highcor_random: if pairs of quantitative variables with Spearman rank correlation > 0.90, select one of the variables at random"),
+           threeparttable = TRUE)
+
+```
+
+\begin{landscape}
+\clearpage
+
+
+
+```{r, echo=FALSE, out.width="99%", out.height="120%", fig.cap= paste0("Cross-validated AUC (95\\% CI) of algorithms for predicting COVID-19 disease status starting 7 days after ", day, ".")}
+knitr::include_graphics(here::here("base_riskscore", "figs", "risk_placebo_cvaucs.png"))
+```
+
+\end{landscape}
+
+
+```{r, echo=FALSE, out.height="94%", fig.cap=paste0("CV-estimated predicted probabilities of COVID-19 disease 7 days after ", day, " by case/control status for top 2 learners, SuperLearner and Discrete SL.")}
+knitr::include_graphics(here::here("base_riskscore", "figs", "predProb_riskscore_plac.png"))
+```
+
+\clearpage
+
+
+```{r, echo=FALSE, out.width="95%", out.height="95%", fig.cap="ROC curves based off CV-estimated predicted probabilities for the top 2 learners, Superlearner and Discrete SL."}
+knitr::include_graphics(here::here("base_riskscore", "figs", "ROCcurve_riskscore_plac.png"))
+```
+
+\clearpage
+
+```{r risk-sl-weights, warning=FALSE, echo=FALSE}
+caption <- "Weights assigned by Superlearner."
+read.csv(here("base_riskscore", "output", "SL_weights.csv"), row.names = 1,
+         header = TRUE) %>%
+  kable(
+    booktabs = TRUE,
+    linesep = "",
+    caption = caption
+  ) %>%
+  kable_styling(latex_options = c("hold_position"),
+                font_size = 9) %>%
+  row_spec(0,bold=TRUE)
+```
+
+\begin{landscape}
+\clearpage
+
+```{r SLtopmodels, warning=FALSE, echo=FALSE}
+caption <- "Predictors in learners assigned weight > 0.0 by Superlearner."
+
+read.csv(here("base_riskscore", "output", "SL_all_models_with_predictors.csv"),
+         row.names = 1, header = TRUE) %>%
+  filter(Weight > 0.0) %>%
+  mutate(across(.cols = everything(), ~gsub(" ", "", ., fixed = TRUE))) %>%
+  mutate(across(.cols = everything(), ~na_if(., "NA"))) %>%
+  select_if(~sum(!is.na(.)) > 0) %>%
+  kable(
+    longtable = T,
+    booktabs = TRUE,
+    linesep = "",
+    caption = caption
+  ) %>%
+  kable_styling(latex_options = c("hold_position", "repeat_header"),
+                font_size = 5) %>%
+  row_spec(0,bold=TRUE)
+```
+\end{landscape}
+
+
+```{r, echo=FALSE, out.width="100%", out.height="90%", fig.cap=paste0("Superlearner predicted probabilities of COVID-19 disease in vaccinees 7 days after ", day, " by case/control status.")}
+knitr::include_graphics(here::here("base_riskscore", "figs", "predProb_riskscore_vacc_onlySL.png"))
+```
+
+\clearpage
+
+
+```{r, echo=FALSE, out.width="95%", out.height="95%", fig.cap="ROC curve based off Superlearner predicted probabilities in vaccinees."}
+knitr::include_graphics(here::here("base_riskscore", "figs", "ROCcurve_riskscore_vacc_onlySL.png"))
+```
+
+\clearpage
+
+```{r cases-prior, warning=FALSE, echo=FALSE, message=FALSE}
+caption <- "Cases per treatment arm prior to risk score analysis."
+new_colnames = c("Non-Cases", paste0("Post-", day, "-Cases"))
+
+read.csv(here("base_riskscore", "output", "cases_prior_riskScoreAnalysis.csv"), row.names = 1,
+         header = TRUE) %>%
+  tibble::rownames_to_column(var = "Study-Arm") %>%
+  rename_with(~new_colnames, c("X0", "X1")) %>%
+  kable(
+    booktabs = TRUE,
+    linesep = "",
+    caption = caption) %>%
+  kable_styling(latex_options = c("hold_position"),
+                font_size = 9)
+
+```
+
+
+```{r cases-post-riskScore, warning=FALSE, echo=FALSE, message=FALSE}
+caption <- "Cases per treatment arm post risk score analysis."
+
+read.csv(here("base_riskscore", "output", "cases_post_riskScoreAnalysis.csv"), row.names = 1,
+         header = TRUE) %>%
+  tibble::rownames_to_column(var = "Study-Arm") %>%
+  rename_with(~new_colnames, c("X0", "X1")) %>%
+  kable(
+    booktabs = TRUE,
+    linesep = "",
+    caption = caption) %>%
+  kable_styling(latex_options = c("hold_position"),
+                font_size = 9)
+
+```

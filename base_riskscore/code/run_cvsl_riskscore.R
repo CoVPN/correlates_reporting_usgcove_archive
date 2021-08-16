@@ -64,8 +64,8 @@ if(study_name_code == "ENSEMBLE"){
     "Country.X1", "Country.X2", "Country.X3", "Country.X4", "Country.X5", "Country.X6", "Country.X7", 
     "Region.X1", "Region.X2", 
     "CalDtEnrollIND.X1", "CalDtEnrollIND.X2", "CalDtEnrollIND.X3",  
-    "Region.X1.x.CalDtEnrollIND.X1", "Region.X1.x.CalDtEnrollIND.X2", "Region.X1.x.CalDtEnrollIND.X3",
-    "Region.X2.x.CalDtEnrollIND.X1", "Region.X2.x.CalDtEnrollIND.X2", "Region.X2.x.CalDtEnrollIND.X3",
+    #"Region.X1.x.CalDtEnrollIND.X1", "Region.X1.x.CalDtEnrollIND.X2", "Region.X1.x.CalDtEnrollIND.X3",
+    #"Region.X2.x.CalDtEnrollIND.X1", "Region.X2.x.CalDtEnrollIND.X2", "Region.X2.x.CalDtEnrollIND.X3",
     "Age", "BMI"
   )
   

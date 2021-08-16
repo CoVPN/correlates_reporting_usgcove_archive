@@ -61,6 +61,35 @@ summary(dat.mock$risk_score)
 
 
 ###################################################################################################
+# Decile immunogenicity table
+# do this before uloq censoring
+res=lapply (0:1, function(ii) {
+    dat.immuno.seroneg=subset(dat.mock, Trt==1 & Bserostatus==ii & ph2.immuno)    
+    ww=sort(unique(dat.immuno.seroneg$demo.stratum))
+    myprint(ww)
+    stopifnot(min(ww)==1)
+    stopifnot(max(ww)==length(ww))
+    names(ww)=demo.stratum.labels
+    mysapply (c(All=0,ww), function(w) { 
+        dat.tmp= if (w==0) dat.immuno.seroneg else subset(dat.immuno.seroneg, demo.stratum==w)
+        10**wtd.quantile(dat.tmp[["Day"%.%pop%.%"pseudoneutid50"]], weights = dat.tmp$wt.subcohort, probs = 0:10/10)
+    })
+})
+tab=rbind(res[[1]], res[[2]])
+colnames(tab)[1]="min"
+colnames(tab)[ncol(tab)]="max"
+tab
+mytex(tab, file.name="cID50_deciles_"%.%study_name, align="r", include.colnames = T, save2input.only=T, input.foldername=save.results.to, digits=0,
+    add.to.row=list(list(0,nrow(res[[1]])), # insert at the beginning of table, and at the end of, say, the first table
+        c("       \n \\multicolumn{12}{l}{Baseline negative} \\\\ \n",
+          "\\hline\n \\multicolumn{12}{l}{Baseline positive} \\\\ \n"
+         )
+    )    
+)
+
+
+
+###################################################################################################
 # uloq censoring
 # note that if delta are used, delta needs to be recomputed
 for (a in intersect(assays_to_be_censored_at_uloq_cor, assays)) {
@@ -88,7 +117,6 @@ if (pop=="57") {
     dat.mock$EventIndPrimary=dat.mock$EventIndPrimaryD29
     dat.mock$EventTimePrimary=dat.mock$EventTimePrimaryD29 
 } else stop("wrong pop")
-
 
 
 # Average follow-up of vaccine recipients starting at 7 days post Day 29 visit

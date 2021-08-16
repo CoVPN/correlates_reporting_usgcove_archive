@@ -377,7 +377,7 @@ for (i in 1:length(plots)) {
       scale_shape_manual(values = c("Day 2-14 Cases"=18, "Day 15-35 Cases"=16, "Intercurrent Cases"=16, "Post-Peak Cases"=17, "Non-Cases"=15), drop=F) +
       guides(color = guide_legend(nrow=1),
              size = FALSE) +
-      labs(title = plots_titles[i], x = xlb, y = plots_ytitles[i],
+      labs(title = paste0(plots_titles[i], ": ", paste(timels, collapse=" and ")), x = xlb, y = plots_ytitles[i],
            color="Category", shape="Category") +
       theme(plot.margin = unit(c(1, 1, 1, 1), "cm"), 
             panel.grid = element_blank(),

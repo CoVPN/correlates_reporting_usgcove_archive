@@ -1,0 +1,19 @@
+---
+header-includes:
+   - \usepackage{float}
+output:
+  pdf_document: default
+  html_document: default
+  citation_package: natbib
+  number_sections: true
+  extra_dependencies: ["caption", "subcaption", "graphicx"]
+  toc: true
+---
+
+```{r, include = FALSE}
+library(here)
+here::i_am("base_riskscore/report.Rmd")
+```
+
+```{r, child=here("base_riskscore", 'report_sub.Rmd')}
+```

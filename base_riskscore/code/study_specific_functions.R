@@ -59,12 +59,12 @@ get_defs_comments_riskVars <- function(data){
         `Variable Name` == "Region.X2" ~ "Dummy indicator country = Southern Africa (1 = Southern Africa, 0 = complement)",
         `Variable Name` == "CalDtEnrollIND.X1" ~ "Dummy indicator variable representing enrollment occurring between 4-8 weeks periods of first subject enrolled (1 = Enrollment between 4-8 weeks, 0 = complement).",
         `Variable Name` == "CalDtEnrollIND.X2" ~ "Dummy indicator variable representing enrollment occurring between 8-12 weeks periods of first subject enrolled (1 = Enrollment between 8-12 weeks, 0 = complement).",
-        `Variable Name` == "CalDtEnrollIND.X3" ~ "Dummy indicator variable representing enrollment occurring between 12-16 weeks periods of first subject enrolled (1 = Enrollment between 12-16 weeks, 0 = complement).",
-        `Variable Name` == "Region.X1.x.CalDtEnrollIND.X1" ~ "Interaction term between Region.X1 and CalDtEnrollIND.X1",
-        `Variable Name` == "Region.X1.x.CalDtEnrollIND.X2" ~ "Interaction term between Region.X1 and CalDtEnrollIND.X2",
-        `Variable Name` == "Region.X1.x.CalDtEnrollIND.X3" ~ "Interaction term between Region.X1 and CalDtEnrollIND.X3",
-        `Variable Name` == "Region.X2.x.CalDtEnrollIND.X2" ~ "Interaction term between Region.X2 and CalDtEnrollIND.X2",
-        `Variable Name` == "Region.X2.x.CalDtEnrollIND.X3" ~ "Interaction term between Region.X2 and CalDtEnrollIND.X3"
+        `Variable Name` == "CalDtEnrollIND.X3" ~ "Dummy indicator variable representing enrollment occurring between 12-16 weeks periods of first subject enrolled (1 = Enrollment between 12-16 weeks, 0 = complement)."
+        #`Variable Name` == "Region.X1.x.CalDtEnrollIND.X1" ~ "Interaction term between Region.X1 and CalDtEnrollIND.X1",
+        #`Variable Name` == "Region.X1.x.CalDtEnrollIND.X2" ~ "Interaction term between Region.X1 and CalDtEnrollIND.X2",
+        #`Variable Name` == "Region.X1.x.CalDtEnrollIND.X3" ~ "Interaction term between Region.X1 and CalDtEnrollIND.X3",
+        #`Variable Name` == "Region.X2.x.CalDtEnrollIND.X2" ~ "Interaction term between Region.X2 and CalDtEnrollIND.X2",
+        #`Variable Name` == "Region.X2.x.CalDtEnrollIND.X3" ~ "Interaction term between Region.X2 and CalDtEnrollIND.X3"
       ),
       Comments = "")
   }

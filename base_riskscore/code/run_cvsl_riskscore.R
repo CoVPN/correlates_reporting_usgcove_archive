@@ -63,13 +63,18 @@ if(study_name_code == "ENSEMBLE"){
     "Sex", 
     "Country.X1", "Country.X2", "Country.X3", "Country.X4", "Country.X5", "Country.X6", "Country.X7", 
     "Region.X1", "Region.X2", 
-    "CalDtEnrollIND.X1", "CalDtEnrollIND.X2", "CalDtEnrollIND.X3",  
-    "Region.X1.x.CalDtEnrollIND.X1", "Region.X1.x.CalDtEnrollIND.X2", "Region.X1.x.CalDtEnrollIND.X3",
-    "Region.X2.x.CalDtEnrollIND.X1", "Region.X2.x.CalDtEnrollIND.X2", "Region.X2.x.CalDtEnrollIND.X3",
+    "CalDtEnrollIND.X1", 
+    #"CalDtEnrollIND.X2", "CalDtEnrollIND.X3",  
+    #"Region.X1.x.CalDtEnrollIND.X1", "Region.X1.x.CalDtEnrollIND.X2", "Region.X1.x.CalDtEnrollIND.X3",
+    #"Region.X2.x.CalDtEnrollIND.X1", "Region.X2.x.CalDtEnrollIND.X2", "Region.X2.x.CalDtEnrollIND.X3",
     "Age", "BMI"
   )
   
-  endpoint <- "EventIndPrimaryD29"
+  if(run_prod){
+    risk_vars <- append(risk_vars, c("CalDtEnrollIND.X2", "CalDtEnrollIND.X3"))
+  }
+  
+  endpoint <- "EventIndPrimaryIncludeNotMolecConfirmedD29"
   studyName_for_report <- "ENSEMBLE"
 
   # Create binary indicator variables for Country and Region
@@ -94,14 +99,15 @@ if(study_name_code == "ENSEMBLE"){
     prep(training = inputFile)
   inputFile <- inputFile %>% bind_cols(bake(dummies, new_data = NULL)) %>%
     select(-c(Country, Region, CalDtEnrollIND))
-    
-  # Create interaction variables between Region and CalDtEnrollIND
-  rec <- recipe(EventIndPrimaryD29 ~., data = inputFile)
-  int_mod_1 <- rec %>%
-    step_interact(terms = ~ starts_with("Region"):starts_with("CalDtEnrollIND"))
-  int_mod_1 <- prep(int_mod_1, training = inputFile)
-  inputFile <- bake(int_mod_1, inputFile)
   names(inputFile)<-gsub("\\_",".",names(inputFile))
+    
+  # # Create interaction variables between Region and CalDtEnrollIND
+  # rec <- recipe(EventIndPrimaryD29 ~., data = inputFile)
+  # int_mod_1 <- rec %>%
+  #   step_interact(terms = ~ starts_with("Region"):starts_with("CalDtEnrollIND"))
+  # int_mod_1 <- prep(int_mod_1, training = inputFile)
+  # inputFile <- bake(int_mod_1, inputFile)
+  # names(inputFile)<-gsub("\\_",".",names(inputFile))
 }
 
 ################################################

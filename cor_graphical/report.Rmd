@@ -1232,7 +1232,1138 @@ include_graphics(here("cor_graphical", "figs", paste0("violinbox_pnAb_id80_Place
 include_graphics(here("cor_graphical", "figs", paste0("violinbox_pnAb_id80_Vaccine_BaselineNeg_Dich_RaceEthnic_v2_", study_name, ".pdf")))
 ```
 
+
+
+
+
+
+```{r, fig.cap = "lineplots of Binding Antibody to Spike: baseline negative placebo arm, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_Spike_Placebo_BaselineNeg_severe_v1_", study_name, ".pdf")))
+```
+
 \clearpage
+```{r, fig.cap = "lineplots of Binding Antibody to Spike: baseline negative vaccine arm, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_Spike_Vaccine_BaselineNeg_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Binding Antibody to RBD: baseline negative placebo arm, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_RBD_Placebo_BaselineNeg_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Binding Antibody to RBD: baseline negative vaccine arm, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_RBD_Vaccine_BaselineNeg_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Pseudovirus Neutralization ID50: baseline negative placebo arm, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_pnAb_id50_Placebo_BaselineNeg_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_pnAb_id50_Vaccine_BaselineNeg_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Pseudovirus Neutralization ID80: baseline negative placebo arm, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_pnAb_id80_Placebo_BaselineNeg_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_pnAb_id80_Vaccine_BaselineNeg_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Binding Antibody to Spike: baseline negative placebo arm, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_Spike_Placebo_BaselineNeg_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Binding Antibody to Spike: baseline negative vaccine arm, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_Spike_Vaccine_BaselineNeg_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Binding Antibody to RBD: baseline negative placebo arm, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_RBD_Placebo_BaselineNeg_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Binding Antibody to RBD: baseline negative vaccine arm, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_RBD_Vaccine_BaselineNeg_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Pseudovirus Neutralization ID50: baseline negative placebo arm, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_pnAb_id50_Placebo_BaselineNeg_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_pnAb_id50_Vaccine_BaselineNeg_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Pseudovirus Neutralization ID80: baseline negative placebo arm, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_pnAb_id80_Placebo_BaselineNeg_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_pnAb_id80_Vaccine_BaselineNeg_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Binding Antibody to Spike: baseline negative placebo arm, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_Spike_Placebo_BaselineNeg_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Binding Antibody to Spike: baseline negative vaccine arm, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_Spike_Vaccine_BaselineNeg_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Binding Antibody to RBD: baseline negative placebo arm, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_RBD_Placebo_BaselineNeg_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Binding Antibody to RBD: baseline negative vaccine arm, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_RBD_Vaccine_BaselineNeg_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Pseudovirus Neutralization ID50: baseline negative placebo arm, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_pnAb_id50_Placebo_BaselineNeg_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_pnAb_id50_Vaccine_BaselineNeg_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Pseudovirus Neutralization ID80: baseline negative placebo arm, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_pnAb_id80_Placebo_BaselineNeg_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_pnAb_id80_Vaccine_BaselineNeg_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Binding Antibody to Spike: baseline negative placebo arm, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_Spike_Placebo_BaselineNeg_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Binding Antibody to Spike: baseline negative vaccine arm, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_Spike_Vaccine_BaselineNeg_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Binding Antibody to RBD: baseline negative placebo arm, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_RBD_Placebo_BaselineNeg_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Binding Antibody to RBD: baseline negative vaccine arm, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_RBD_Vaccine_BaselineNeg_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Pseudovirus Neutralization ID50: baseline negative placebo arm, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_pnAb_id50_Placebo_BaselineNeg_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_pnAb_id50_Vaccine_BaselineNeg_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Pseudovirus Neutralization ID80: baseline negative placebo arm, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_pnAb_id80_Placebo_BaselineNeg_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_pnAb_id80_Vaccine_BaselineNeg_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Binding Antibody to Spike: baseline negative placebo arm by age, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_Spike_Placebo_BaselineNeg_Age_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Binding Antibody to Spike: baseline negative vaccine arm by age, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_Spike_Vaccine_BaselineNeg_Age_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Binding Antibody to RBD: baseline negative placebo arm by age, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_RBD_Placebo_BaselineNeg_Age_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Binding Antibody to RBD: baseline negative vaccine arm by age, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_RBD_Vaccine_BaselineNeg_Age_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by age, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_pnAb_id50_Placebo_BaselineNeg_Age_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by age, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_pnAb_id50_Vaccine_BaselineNeg_Age_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by age, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_pnAb_id80_Placebo_BaselineNeg_Age_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by age, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_pnAb_id80_Vaccine_BaselineNeg_Age_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Binding Antibody to Spike: baseline negative placebo arm by age, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_Spike_Placebo_BaselineNeg_Age_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Binding Antibody to Spike: baseline negative vaccine arm by age, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_Spike_Vaccine_BaselineNeg_Age_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Binding Antibody to RBD: baseline negative placebo arm by age, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_RBD_Placebo_BaselineNeg_Age_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Binding Antibody to RBD: baseline negative vaccine arm by age, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_RBD_Vaccine_BaselineNeg_Age_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by age, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_pnAb_id50_Placebo_BaselineNeg_Age_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by age, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_pnAb_id50_Vaccine_BaselineNeg_Age_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by age, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_pnAb_id80_Placebo_BaselineNeg_Age_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by age, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_pnAb_id80_Vaccine_BaselineNeg_Age_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Binding Antibody to Spike: baseline negative placebo arm by age, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_Spike_Placebo_BaselineNeg_Age_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Binding Antibody to Spike: baseline negative vaccine arm by age, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_Spike_Vaccine_BaselineNeg_Age_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Binding Antibody to RBD: baseline negative placebo arm by age, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_RBD_Placebo_BaselineNeg_Age_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Binding Antibody to RBD: baseline negative vaccine arm by age, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_RBD_Vaccine_BaselineNeg_Age_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by age, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_pnAb_id50_Placebo_BaselineNeg_Age_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by age, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_pnAb_id50_Vaccine_BaselineNeg_Age_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by age, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_pnAb_id80_Placebo_BaselineNeg_Age_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by age, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_pnAb_id80_Vaccine_BaselineNeg_Age_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Binding Antibody to Spike: baseline negative placebo arm by age, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_Spike_Placebo_BaselineNeg_Age_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Binding Antibody to Spike: baseline negative vaccine arm by age, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_Spike_Vaccine_BaselineNeg_Age_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Binding Antibody to RBD: baseline negative placebo arm by age, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_RBD_Placebo_BaselineNeg_Age_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Binding Antibody to RBD: baseline negative vaccine arm by age, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_RBD_Vaccine_BaselineNeg_Age_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by age, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_pnAb_id50_Placebo_BaselineNeg_Age_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by age, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_pnAb_id50_Vaccine_BaselineNeg_Age_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by age, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_pnAb_id80_Placebo_BaselineNeg_Age_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by age, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_pnAb_id80_Vaccine_BaselineNeg_Age_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Binding Antibody to Spike: baseline negative placebo arm by risk condition, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_Spike_Placebo_BaselineNeg_Risk_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Binding Antibody to Spike: baseline negative vaccine arm by risk condition, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_Spike_Vaccine_BaselineNeg_Risk_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Binding Antibody to RBD: baseline negative placebo arm by risk condition, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_RBD_Placebo_BaselineNeg_Risk_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Binding Antibody to RBD: baseline negative vaccine arm by risk condition, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_RBD_Vaccine_BaselineNeg_Risk_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by risk condition, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_pnAb_id50_Placebo_BaselineNeg_Risk_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by risk condition, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_pnAb_id50_Vaccine_BaselineNeg_Risk_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by risk condition, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_pnAb_id80_Placebo_BaselineNeg_Risk_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by risk condition, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_pnAb_id80_Vaccine_BaselineNeg_Risk_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Binding Antibody to Spike: baseline negative placebo arm by risk condition, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_Spike_Placebo_BaselineNeg_Risk_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Binding Antibody to Spike: baseline negative vaccine arm by risk condition, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_Spike_Vaccine_BaselineNeg_Risk_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Binding Antibody to RBD: baseline negative placebo arm by risk condition, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_RBD_Placebo_BaselineNeg_Risk_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Binding Antibody to RBD: baseline negative vaccine arm by risk condition, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_RBD_Vaccine_BaselineNeg_Risk_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by risk condition, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_pnAb_id50_Placebo_BaselineNeg_Risk_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by risk condition, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_pnAb_id50_Vaccine_BaselineNeg_Risk_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by risk condition, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_pnAb_id80_Placebo_BaselineNeg_Risk_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by risk condition, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_pnAb_id80_Vaccine_BaselineNeg_Risk_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Binding Antibody to Spike: baseline negative placebo arm by risk condition, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_Spike_Placebo_BaselineNeg_Risk_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Binding Antibody to Spike: baseline negative vaccine arm by risk condition, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_Spike_Vaccine_BaselineNeg_Risk_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Binding Antibody to RBD: baseline negative placebo arm by risk condition, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_RBD_Placebo_BaselineNeg_Risk_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Binding Antibody to RBD: baseline negative vaccine arm by risk condition, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_RBD_Vaccine_BaselineNeg_Risk_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by risk condition, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_pnAb_id50_Placebo_BaselineNeg_Risk_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by risk condition, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_pnAb_id50_Vaccine_BaselineNeg_Risk_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by risk condition, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_pnAb_id80_Placebo_BaselineNeg_Risk_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by risk condition, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_pnAb_id80_Vaccine_BaselineNeg_Risk_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Binding Antibody to Spike: baseline negative placebo arm by risk condition, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_Spike_Placebo_BaselineNeg_Risk_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Binding Antibody to Spike: baseline negative vaccine arm by risk condition, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_Spike_Vaccine_BaselineNeg_Risk_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Binding Antibody to RBD: baseline negative placebo arm by risk condition, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_RBD_Placebo_BaselineNeg_Risk_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Binding Antibody to RBD: baseline negative vaccine arm by risk condition, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_RBD_Vaccine_BaselineNeg_Risk_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by risk condition, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_pnAb_id50_Placebo_BaselineNeg_Risk_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by risk condition, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_pnAb_id50_Vaccine_BaselineNeg_Risk_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by risk condition, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_pnAb_id80_Placebo_BaselineNeg_Risk_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by risk condition, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_pnAb_id80_Vaccine_BaselineNeg_Risk_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Binding Antibody to Spike: baseline negative placebo arm by age and risk condition, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_Spike_Placebo_BaselineNeg_Age_Risk_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Binding Antibody to Spike: baseline negative vaccine arm by age and risk condition, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_Spike_Vaccine_BaselineNeg_Age_Risk_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Binding Antibody to RBD: baseline negative placebo arm by age and risk condition, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_RBD_Placebo_BaselineNeg_Age_Risk_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Binding Antibody to RBD: baseline negative vaccine arm by age and risk condition, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_RBD_Vaccine_BaselineNeg_Age_Risk_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by age and risk condition, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_pnAb_id50_Placebo_BaselineNeg_Age_Risk_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by age and risk condition, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_pnAb_id50_Vaccine_BaselineNeg_Age_Risk_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by age and risk condition, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_pnAb_id80_Placebo_BaselineNeg_Age_Risk_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by age and risk condition, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_pnAb_id80_Vaccine_BaselineNeg_Age_Risk_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Binding Antibody to Spike: baseline negative placebo arm by age and risk condition, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_Spike_Placebo_BaselineNeg_Age_Risk_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Binding Antibody to Spike: baseline negative vaccine arm by age and risk condition, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_Spike_Vaccine_BaselineNeg_Age_Risk_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Binding Antibody to RBD: baseline negative placebo arm by age and risk condition, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_RBD_Placebo_BaselineNeg_Age_Risk_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Binding Antibody to RBD: baseline negative vaccine arm by age and risk condition, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_RBD_Vaccine_BaselineNeg_Age_Risk_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by age and risk condition, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_pnAb_id50_Placebo_BaselineNeg_Age_Risk_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by age and risk condition, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_pnAb_id50_Vaccine_BaselineNeg_Age_Risk_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by age and risk condition, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_pnAb_id80_Placebo_BaselineNeg_Age_Risk_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by age and risk condition, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_pnAb_id80_Vaccine_BaselineNeg_Age_Risk_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Binding Antibody to Spike: baseline negative placebo arm by age and risk condition, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_Spike_Placebo_BaselineNeg_Age_Risk_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Binding Antibody to Spike: baseline negative vaccine arm by age and risk condition, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_Spike_Vaccine_BaselineNeg_Age_Risk_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Binding Antibody to RBD: baseline negative placebo arm by age and risk condition, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_RBD_Placebo_BaselineNeg_Age_Risk_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Binding Antibody to RBD: baseline negative vaccine arm by age and risk condition, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_RBD_Vaccine_BaselineNeg_Age_Risk_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by age and risk condition, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_pnAb_id50_Placebo_BaselineNeg_Age_Risk_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by age and risk condition, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_pnAb_id50_Vaccine_BaselineNeg_Age_Risk_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by age and risk condition, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_pnAb_id80_Placebo_BaselineNeg_Age_Risk_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by age and risk condition, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_pnAb_id80_Vaccine_BaselineNeg_Age_Risk_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Binding Antibody to Spike: baseline negative placebo arm by age and risk condition, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_Spike_Placebo_BaselineNeg_Age_Risk_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Binding Antibody to Spike: baseline negative vaccine arm by age and risk condition, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_Spike_Vaccine_BaselineNeg_Age_Risk_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Binding Antibody to RBD: baseline negative placebo arm by age and risk condition, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_RBD_Placebo_BaselineNeg_Age_Risk_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Binding Antibody to RBD: baseline negative vaccine arm by age and risk condition, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_RBD_Vaccine_BaselineNeg_Age_Risk_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by age and risk condition, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_pnAb_id50_Placebo_BaselineNeg_Age_Risk_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by age and risk condition, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_pnAb_id50_Vaccine_BaselineNeg_Age_Risk_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by age and risk condition, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_pnAb_id80_Placebo_BaselineNeg_Age_Risk_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by age and risk condition, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_pnAb_id80_Vaccine_BaselineNeg_Age_Risk_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Binding Antibody to Spike: baseline negative placebo arm by sex assigned at birth, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_Spike_Placebo_BaselineNeg_Sex_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Binding Antibody to Spike: baseline negative vaccine arm by sex assigned at birth, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_Spike_Vaccine_BaselineNeg_Sex_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Binding Antibody to RBD: baseline negative placebo arm by sex assigned at birth, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_RBD_Placebo_BaselineNeg_Sex_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Binding Antibody to RBD: baseline negative vaccine arm by sex assigned at birth, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_RBD_Vaccine_BaselineNeg_Sex_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by sex assigned at birth, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_pnAb_id50_Placebo_BaselineNeg_Sex_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by sex assigned at birth, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_pnAb_id50_Vaccine_BaselineNeg_Sex_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by sex assigned at birth, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_pnAb_id80_Placebo_BaselineNeg_Sex_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by sex assigned at birth, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_pnAb_id80_Vaccine_BaselineNeg_Sex_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Binding Antibody to Spike: baseline negative placebo arm by sex assigned at birth, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_Spike_Placebo_BaselineNeg_Sex_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Binding Antibody to Spike: baseline negative vaccine arm by sex assigned at birth, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_Spike_Vaccine_BaselineNeg_Sex_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Binding Antibody to RBD: baseline negative placebo arm by sex assigned at birth, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_RBD_Placebo_BaselineNeg_Sex_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Binding Antibody to RBD: baseline negative vaccine arm by sex assigned at birth, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_RBD_Vaccine_BaselineNeg_Sex_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by sex assigned at birth, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_pnAb_id50_Placebo_BaselineNeg_Sex_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by sex assigned at birth, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_pnAb_id50_Vaccine_BaselineNeg_Sex_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by sex assigned at birth, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_pnAb_id80_Placebo_BaselineNeg_Sex_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by sex assigned at birth, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_pnAb_id80_Vaccine_BaselineNeg_Sex_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Binding Antibody to Spike: baseline negative placebo arm by sex assigned at birth, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_Spike_Placebo_BaselineNeg_Sex_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Binding Antibody to Spike: baseline negative vaccine arm by sex assigned at birth, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_Spike_Vaccine_BaselineNeg_Sex_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Binding Antibody to RBD: baseline negative placebo arm by sex assigned at birth, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_RBD_Placebo_BaselineNeg_Sex_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Binding Antibody to RBD: baseline negative vaccine arm by sex assigned at birth, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_RBD_Vaccine_BaselineNeg_Sex_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by sex assigned at birth, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_pnAb_id50_Placebo_BaselineNeg_Sex_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by sex assigned at birth, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_pnAb_id50_Vaccine_BaselineNeg_Sex_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by sex assigned at birth, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_pnAb_id80_Placebo_BaselineNeg_Sex_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by sex assigned at birth, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_pnAb_id80_Vaccine_BaselineNeg_Sex_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Binding Antibody to Spike: baseline negative placebo arm by sex assigned at birth, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_Spike_Placebo_BaselineNeg_Sex_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Binding Antibody to Spike: baseline negative vaccine arm by sex assigned at birth, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_Spike_Vaccine_BaselineNeg_Sex_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Binding Antibody to RBD: baseline negative placebo arm by sex assigned at birth, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_RBD_Placebo_BaselineNeg_Sex_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Binding Antibody to RBD: baseline negative vaccine arm by sex assigned at birth, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_RBD_Vaccine_BaselineNeg_Sex_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by sex assigned at birth, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_pnAb_id50_Placebo_BaselineNeg_Sex_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by sex assigned at birth, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_pnAb_id50_Vaccine_BaselineNeg_Sex_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by sex assigned at birth, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_pnAb_id80_Placebo_BaselineNeg_Sex_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by sex assigned at birth, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_pnAb_id80_Vaccine_BaselineNeg_Sex_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Binding Antibody to Spike: baseline negative placebo arm by race and ethnic group, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_Spike_Placebo_BaselineNeg_RaceEthnic_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Binding Antibody to Spike: baseline negative vaccine arm by race and ethnic group, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_Spike_Vaccine_BaselineNeg_RaceEthnic_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Binding Antibody to RBD: baseline negative placebo arm by race and ethnic group, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_RBD_Placebo_BaselineNeg_RaceEthnic_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Binding Antibody to RBD: baseline negative vaccine arm by race and ethnic group, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_RBD_Vaccine_BaselineNeg_RaceEthnic_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by race and ethnic group, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_pnAb_id50_Placebo_BaselineNeg_RaceEthnic_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by race and ethnic group, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_pnAb_id50_Vaccine_BaselineNeg_RaceEthnic_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by race and ethnic group, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_pnAb_id80_Placebo_BaselineNeg_RaceEthnic_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by race and ethnic group, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_pnAb_id80_Vaccine_BaselineNeg_RaceEthnic_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Binding Antibody to Spike: baseline negative placebo arm by race and ethnic group, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_Spike_Placebo_BaselineNeg_RaceEthnic_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Binding Antibody to Spike: baseline negative vaccine arm by race and ethnic group, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_Spike_Vaccine_BaselineNeg_RaceEthnic_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Binding Antibody to RBD: baseline negative placebo arm by race and ethnic group, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_RBD_Placebo_BaselineNeg_RaceEthnic_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Binding Antibody to RBD: baseline negative vaccine arm by race and ethnic group, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_RBD_Vaccine_BaselineNeg_RaceEthnic_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by race and ethnic group, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_pnAb_id50_Placebo_BaselineNeg_RaceEthnic_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by race and ethnic group, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_pnAb_id50_Vaccine_BaselineNeg_RaceEthnic_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by race and ethnic group, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_pnAb_id80_Placebo_BaselineNeg_RaceEthnic_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by race and ethnic group, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_pnAb_id80_Vaccine_BaselineNeg_RaceEthnic_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Binding Antibody to Spike: baseline negative placebo arm by race and ethnic group, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_Spike_Placebo_BaselineNeg_RaceEthnic_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Binding Antibody to Spike: baseline negative vaccine arm by race and ethnic group, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_Spike_Vaccine_BaselineNeg_RaceEthnic_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Binding Antibody to RBD: baseline negative placebo arm by race and ethnic group, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_RBD_Placebo_BaselineNeg_RaceEthnic_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Binding Antibody to RBD: baseline negative vaccine arm by race and ethnic group, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_RBD_Vaccine_BaselineNeg_RaceEthnic_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by race and ethnic group, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_pnAb_id50_Placebo_BaselineNeg_RaceEthnic_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by race and ethnic group, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_pnAb_id50_Vaccine_BaselineNeg_RaceEthnic_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by race and ethnic group, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_pnAb_id80_Placebo_BaselineNeg_RaceEthnic_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by race and ethnic group, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_pnAb_id80_Vaccine_BaselineNeg_RaceEthnic_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Binding Antibody to Spike: baseline negative placebo arm by race and ethnic group, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_Spike_Placebo_BaselineNeg_RaceEthnic_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Binding Antibody to Spike: baseline negative vaccine arm by race and ethnic group, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_Spike_Vaccine_BaselineNeg_RaceEthnic_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Binding Antibody to RBD: baseline negative placebo arm by race and ethnic group, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_RBD_Placebo_BaselineNeg_RaceEthnic_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Binding Antibody to RBD: baseline negative vaccine arm by race and ethnic group, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_RBD_Vaccine_BaselineNeg_RaceEthnic_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by race and ethnic group, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_pnAb_id50_Placebo_BaselineNeg_RaceEthnic_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by race and ethnic group, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_pnAb_id50_Vaccine_BaselineNeg_RaceEthnic_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by race and ethnic group, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_pnAb_id80_Placebo_BaselineNeg_RaceEthnic_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by race and ethnic group, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_pnAb_id80_Vaccine_BaselineNeg_RaceEthnic_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Binding Antibody to Spike: baseline negative placebo arm by dichotomous classification of race and ethnic group, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_Spike_Placebo_BaselineNeg_Dich_RaceEthnic_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Binding Antibody to Spike: baseline negative vaccine arm by dichotomous classification of race and ethnic group, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_Spike_Vaccine_BaselineNeg_Dich_RaceEthnic_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Binding Antibody to RBD: baseline negative placebo arm by dichotomous classification of race and ethnic group, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_RBD_Placebo_BaselineNeg_Dich_RaceEthnic_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Binding Antibody to RBD: baseline negative vaccine arm by dichotomous classification of race and ethnic group, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_RBD_Vaccine_BaselineNeg_Dich_RaceEthnic_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by dichotomous classification of race and ethnic group, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_pnAb_id50_Placebo_BaselineNeg_Dich_RaceEthnic_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by dichotomous classification of race and ethnic group, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_pnAb_id50_Vaccine_BaselineNeg_Dich_RaceEthnic_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by dichotomous classification of race and ethnic group, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_pnAb_id80_Placebo_BaselineNeg_Dich_RaceEthnic_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by dichotomous classification of race and ethnic group, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_pnAb_id80_Vaccine_BaselineNeg_Dich_RaceEthnic_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Binding Antibody to Spike: baseline negative placebo arm by dichotomous classification of race and ethnic group, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_Spike_Placebo_BaselineNeg_Dich_RaceEthnic_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Binding Antibody to Spike: baseline negative vaccine arm by dichotomous classification of race and ethnic group, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_Spike_Vaccine_BaselineNeg_Dich_RaceEthnic_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Binding Antibody to RBD: baseline negative placebo arm by dichotomous classification of race and ethnic group, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_RBD_Placebo_BaselineNeg_Dich_RaceEthnic_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Binding Antibody to RBD: baseline negative vaccine arm by dichotomous classification of race and ethnic group, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_RBD_Vaccine_BaselineNeg_Dich_RaceEthnic_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by dichotomous classification of race and ethnic group, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_pnAb_id50_Placebo_BaselineNeg_Dich_RaceEthnic_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by dichotomous classification of race and ethnic group, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_pnAb_id50_Vaccine_BaselineNeg_Dich_RaceEthnic_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by dichotomous classification of race and ethnic group, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_pnAb_id80_Placebo_BaselineNeg_Dich_RaceEthnic_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by dichotomous classification of race and ethnic group, severe only (version 1)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_pnAb_id80_Vaccine_BaselineNeg_Dich_RaceEthnic_severe_v1_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Binding Antibody to Spike: baseline negative placebo arm by dichotomous classification of race and ethnic group, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_Spike_Placebo_BaselineNeg_Dich_RaceEthnic_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Binding Antibody to Spike: baseline negative vaccine arm by dichotomous classification of race and ethnic group, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_Spike_Vaccine_BaselineNeg_Dich_RaceEthnic_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Binding Antibody to RBD: baseline negative placebo arm by dichotomous classification of race and ethnic group, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_RBD_Placebo_BaselineNeg_Dich_RaceEthnic_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Binding Antibody to RBD: baseline negative vaccine arm by dichotomous classification of race and ethnic group, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_RBD_Vaccine_BaselineNeg_Dich_RaceEthnic_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by dichotomous classification of race and ethnic group, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_pnAb_id50_Placebo_BaselineNeg_Dich_RaceEthnic_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by dichotomous classification of race and ethnic group, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_pnAb_id50_Vaccine_BaselineNeg_Dich_RaceEthnic_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by dichotomous classification of race and ethnic group, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_pnAb_id80_Placebo_BaselineNeg_Dich_RaceEthnic_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "lineplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by dichotomous classification of race and ethnic group, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("linebox_pnAb_id80_Vaccine_BaselineNeg_Dich_RaceEthnic_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Binding Antibody to Spike: baseline negative placebo arm by dichotomous classification of race and ethnic group, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_Spike_Placebo_BaselineNeg_Dich_RaceEthnic_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Binding Antibody to Spike: baseline negative vaccine arm by dichotomous classification of race and ethnic group, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_Spike_Vaccine_BaselineNeg_Dich_RaceEthnic_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Binding Antibody to RBD: baseline negative placebo arm by dichotomous classification of race and ethnic group, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_RBD_Placebo_BaselineNeg_Dich_RaceEthnic_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Binding Antibody to RBD: baseline negative vaccine arm by dichotomous classification of race and ethnic group, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_RBD_Vaccine_BaselineNeg_Dich_RaceEthnic_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Pseudovirus Neutralization ID50: baseline negative placebo arm by dichotomous classification of race and ethnic group, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_pnAb_id50_Placebo_BaselineNeg_Dich_RaceEthnic_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Pseudovirus Neutralization ID50: baseline negative vaccine arm by dichotomous classification of race and ethnic group, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_pnAb_id50_Vaccine_BaselineNeg_Dich_RaceEthnic_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Pseudovirus Neutralization ID80: baseline negative placebo arm by dichotomous classification of race and ethnic group, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_pnAb_id80_Placebo_BaselineNeg_Dich_RaceEthnic_severe_v2_", study_name, ".pdf")))
+```
+
+\clearpage
+```{r, fig.cap = "violinplots of Pseudovirus Neutralization ID80: baseline negative vaccine arm by dichotomous classification of race and ethnic group, severe only (version 2)", eval = (study_name_code=="ENSEMBLE")}
+include_graphics(here("cor_graphical", "figs", paste0("violinbox_pnAb_id80_Vaccine_BaselineNeg_Dich_RaceEthnic_severe_v2_", study_name, ".pdf")))
+```
+
+
+
+
+
+
+\clearpage
+## Scatter plots
+
 ```{r, fig.cap = "scatterplots of Binding Antibody to Spike vs Age: baseline negative vaccine arm at day 1"}
 include_graphics(here("cor_graphical", "figs", paste0("scatter_Spike_Vaccine_BaselineNeg_Day1_", study_name, ".pdf")))
 ```

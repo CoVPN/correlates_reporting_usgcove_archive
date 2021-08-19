@@ -45,24 +45,12 @@ if(!has29 & pop=="29") {
 time.start=Sys.time()
 
 
-###################################################################################################
-# read data_clean
-data_name_updated <- sub(".csv", "_with_riskscore.csv", data_name)
-if (file.exists(here::here("..", "data_clean", data_name_updated))) {
-    dat.mock <- read.csv(here::here("..", "data_clean", data_name_updated))
-    data_name = data_name_updated
-} else {
-    dat.mock <- read.csv(here::here("..", "data_clean", data_name))
-}
-myprint(data_name)
-load(here::here("..", "data_clean/", paste0(attr(config,"config"), "_params.Rdata"))) 
-
-summary(dat.mock$risk_score)
-
 
 ###################################################################################################
 # Decile immunogenicity table
 # do this before uloq censoring
+# use dataset without risk score so that we can get baseline pos groups as well
+dat.mock <- read.csv(here::here("..", "data_clean", data_name))
 res=lapply (0:1, function(ii) {
     dat.immuno.seroneg=subset(dat.mock, Trt==1 & Bserostatus==ii & ph2.immuno)    
     ww=sort(unique(dat.immuno.seroneg$demo.stratum))
@@ -87,6 +75,21 @@ mytex(tab, file.name="cID50_deciles_"%.%study_name, align="r", include.colnames 
     )    
 )
 
+
+
+###################################################################################################
+# read data_clean
+data_name_updated <- sub(".csv", "_with_riskscore.csv", data_name)
+if (file.exists(here::here("..", "data_clean", data_name_updated))) {
+    dat.mock <- read.csv(here::here("..", "data_clean", data_name_updated))
+    data_name = data_name_updated
+} else {
+    dat.mock <- read.csv(here::here("..", "data_clean", data_name))
+}
+myprint(data_name)
+load(here::here("..", "data_clean/", paste0(attr(config,"config"), "_params.Rdata"))) 
+
+summary(dat.mock$risk_score)
 
 
 ###################################################################################################

@@ -7,8 +7,6 @@ myprint(study_name_code)
 #-----------------------------------------------
 
 
-
-
 # population is either 57 or 29
 Args <- commandArgs(trailingOnly=TRUE)
 if (length(Args)==0) Args=c(pop="57")# has to be 29 if it is janssen
@@ -70,15 +68,11 @@ if (pop=="57") {
     dat.mock$EventTimePrimary=dat.mock$EventTimePrimaryD29 
 } else stop("wrong pop")
     
-# the following data frame define the phase 1 ptids
-dat.vac.seroneg=subset(dat.mock, Trt==1 & Bserostatus==0 & ph1)
-dat.pla.seroneg=subset(dat.mock, Trt==0 & Bserostatus==0 & ph1)
-
 
 
 ###################################################################################################
 # get some summary info about event time etc
-# run before uloq censoring
+# do this before uloq censoring
 source(here::here("code", "cor_coxph_misc.R"))
 
 
@@ -92,6 +86,10 @@ for (a in intersect(assays_to_be_censored_at_uloq_cor, assays)) {
   }
 }
 
+# the following data frame define the phase 1 ptids
+# do this after uloq censoring
+dat.vac.seroneg=subset(dat.mock, Trt==1 & Bserostatus==0 & ph1)
+dat.pla.seroneg=subset(dat.mock, Trt==0 & Bserostatus==0 & ph1)
 
 
 ## temp: experimenting with multitesting

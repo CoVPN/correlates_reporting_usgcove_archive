@@ -348,3 +348,9 @@ cor_coxph/output/D29/avg_followup_MockENSEMBLE
 cor_coxph/output/D57/dose1_dose2_interval_summary_MockCOVE.tex
 cor_coxph/output/D57/quartiles_visit_intervals_immuno
 cor_coxph/output/D57/cID50_deciles_MockCOVE.tex
+cor_coxph/output/MockCOVE/D57/avg_followup_MockCOVE
+cor_coxph/output/MockCOVE/D57/cID50_deciles_MockCOVE.tex
+cor_coxph/output/MockCOVE/D57/dose1_dose2_interval_summary_MockCOVE.tex
+cor_coxph/output/MockCOVE/D57/dose1_interval_summary_MockCOVE.tex
+cor_coxph/output/MockCOVE/D57/num_vacc_cases_highid80_MockCOVE
+cor_coxph/output/MockCOVE/D57/quartiles_visit_intervals_immuno

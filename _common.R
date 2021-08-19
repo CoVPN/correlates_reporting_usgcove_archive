@@ -406,7 +406,7 @@ get.bootstrap.data.cor = function(data, ptids.by.stratum, seed) {
     dat.b=data[match(unlist(tmp), data$Ptid),]
     
     # compute weights
-    tmp=with(dat.b, table(Wstratum, TwophasesampInd))
+    tmp=with(dat.b, table(Wstratum, ph2))
     weights=rowSums(tmp)/tmp[,2]
     dat.b$wt=weights[""%.%dat.b$Wstratum]
     # we assume data only contains ph1 ptids, thus weights is defined for every bootstrapped ptids

@@ -101,6 +101,6 @@ theforestplot <- function(cohort=NA,group,nEvents=NA,totFU=NA,rate=NA,point.esti
 # for some subpopulations, some strata may have empty ph2 
 # this function removes those strata
 get.dat.with.no.empty=function(dat.tmp) {
-    tab=with(dat.tmp, table(Wstratum, TwophasesampInd))
+    tab=with(dat.tmp, table(Wstratum, ph2))
     subset(dat.tmp, !Wstratum %in% as.integer(rownames(tab)[which(tab[,"TRUE"]==0)]))
 }

@@ -58,14 +58,12 @@ load(here::here("..", "data_clean/", paste0(attr(config,"config"), "_params.Rdat
 # set up based on whether to perform D29 or D57 analyses    
 if (pop=="57") {
     dat.mock$wt=dat.mock$wt.D57
-    dat.mock$TwophasesampInd = dat.mock$TwophasesampIndD57
     dat.mock$ph1=dat.mock$ph1.D57   
     dat.mock$ph2=dat.mock$ph2.D57   
     dat.mock$EventIndPrimary=dat.mock$EventIndPrimaryD57   
     dat.mock$EventTimePrimary=dat.mock$EventTimePrimaryD57   
 } else if (pop=="29") {
     dat.mock$wt=dat.mock$wt.D29
-    dat.mock$TwophasesampInd = dat.mock$TwophasesampIndD29 
     dat.mock$ph1=dat.mock$ph1.D29
     dat.mock$ph2=dat.mock$ph2.D29
     dat.mock$EventIndPrimary=dat.mock$EventIndPrimaryD29
@@ -183,7 +181,7 @@ for (a in assays) {
 }
     
 # survey design object
-design.vacc.seroneg<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd, data=dat.vac.seroneg)
+design.vacc.seroneg<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~ph2, data=dat.vac.seroneg)
 
 
 ###################################################################################################

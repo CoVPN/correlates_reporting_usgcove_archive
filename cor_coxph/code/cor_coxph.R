@@ -1,20 +1,12 @@
 #Sys.setenv(TRIAL = "moderna_mock") # janssen_pooled_real    janssen_pooled_mock    moderna_mock
-#----------------------------------------------- 
-# obligatory to append to the top of each script
+
 renv::activate(project = here::here(".."))    
-# There is a bug on Windows that prevents renv from working properly. The following code provides a workaround:
-if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
+if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))# There is a bug on Windows that prevents renv from working properly. The following code provides a workaround:
 source(here::here("..", "_common.R"))
-#-----------------------------------------------
 myprint(study_name_code)
+#-----------------------------------------------
 
 
-
-#if (.Platform$OS.type == "windows") {
-#    options(renv.config.install.transactional = FALSE)
-#    renv::restore(library=saved.system.libPaths, prompt=FALSE) # for a quick test, add: packages="backports"
-#    .libPaths(c(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
-#} else renv::restore(prompt=FALSE)    
 
 
 # population is either 57 or 29
@@ -22,7 +14,9 @@ Args <- commandArgs(trailingOnly=TRUE)
 if (length(Args)==0) Args=c(pop="57")# has to be 29 if it is janssen
 pop=Args[1]; myprint(pop)
 
-save.results.to = paste0(here::here("output"), "/D", pop,"/");
+save.results.to = paste0(here::here("output"), "/", study_name,"/");
+if (!dir.exists(save.results.to))  dir.create(save.results.to)
+save.results.to = paste0(save.results.to, "/D", pop,"/");
 if (!dir.exists(save.results.to))  dir.create(save.results.to)
 print(paste0("save.results.to equals ", save.results.to))
     
@@ -48,14 +42,7 @@ time.start=Sys.time()
 
 
 ###################################################################################################
-# get some summary info about event time etc
-# use data without risk score so that baseline neg and pos are both included
-source(here::here("code", "cor_coxph_misc.R"))
-
-
-
-###################################################################################################
-# read data_clean
+# read data with risk score
 data_name_updated <- sub(".csv", "_with_riskscore.csv", data_name)
 if (file.exists(here::here("..", "data_clean", data_name_updated))) {
     dat.mock <- read.csv(here::here("..", "data_clean", data_name_updated))
@@ -63,25 +50,12 @@ if (file.exists(here::here("..", "data_clean", data_name_updated))) {
 } else {
     dat.mock <- read.csv(here::here("..", "data_clean", data_name))
 }
-myprint(data_name)
 load(here::here("..", "data_clean/", paste0(attr(config,"config"), "_params.Rdata"))) 
 
-summary(dat.mock$risk_score)
 
 
 ###################################################################################################
-# uloq censoring
-# note that if delta are used, delta needs to be recomputed
-for (a in intersect(assays_to_be_censored_at_uloq_cor, assays)) {
-  for (t in c("B", if(has57) "Day57", if(has29) "Day29") ) {
-    dat.mock[[t %.% a]] <- ifelse(dat.mock[[t %.% a]] > log10(uloqs[a]), log10(uloqs[a]), dat.mock[[t %.% a]])
-  }
-}
-
-
-###################################################################################################
-# set up based on whether to perform D29 or D57 analyses
-    
+# set up based on whether to perform D29 or D57 analyses    
 if (pop=="57") {
     dat.mock$wt.0=dat.mock$wt.D57
     dat.mock$TwophasesampInd.0 = dat.mock$TwophasesampIndD57
@@ -97,19 +71,28 @@ if (pop=="57") {
     dat.mock$EventIndPrimary=dat.mock$EventIndPrimaryD29
     dat.mock$EventTimePrimary=dat.mock$EventTimePrimaryD29 
 } else stop("wrong pop")
-
-
     
 # the following data frame define the phase 1 ptids
 dat.vac.seroneg=subset(dat.mock, Trt==1 & Bserostatus==0 & ph1)
 dat.pla.seroneg=subset(dat.mock, Trt==0 & Bserostatus==0 & ph1)
 
-# number of cases
-nrow(subset(dat.vac.seroneg, EventIndPrimary==1))
-nrow(subset(dat.vac.seroneg, ph2 & EventIndPrimary))
 
-summary(dat.vac.seroneg$risk_score)
 
+###################################################################################################
+# get some summary info about event time etc
+# run before uloq censoring
+source(here::here("code", "cor_coxph_misc.R"))
+
+
+
+###################################################################################################
+# uloq censoring
+# note that if delta are used, delta needs to be recomputed
+for (a in intersect(assays_to_be_censored_at_uloq_cor, assays)) {
+  for (t in c("B", if(has57) "Day57", if(has29) "Day29") ) {
+    dat.mock[[t %.% a]] <- ifelse(dat.mock[[t %.% a]] > log10(uloqs[a]), log10(uloqs[a]), dat.mock[[t %.% a]])
+  }
+}
 
 
 

@@ -1,10 +1,10 @@
-dat.mock <- read.csv(here::here("..", "data_clean", data_name))
+dat.mock.all <- read.csv(here::here("..", "data_clean", data_name))
 
 # Decile immunogenicity table
 # do this before uloq censoring
 # use dataset without risk score so that we can get baseline pos groups as well
 res=lapply (0:1, function(ii) {
-    dat.immuno.seroneg=subset(dat.mock, Trt==1 & Bserostatus==ii & ph2.immuno)    
+    dat.immuno.seroneg=subset(dat.mock.all, Trt==1 & Bserostatus==ii & ph2.immuno)    
     ww=sort(unique(dat.immuno.seroneg$demo.stratum))
     myprint(ww)
     stopifnot(min(ww)==1)
@@ -32,7 +32,6 @@ mytex(tab, file.name="cID50_deciles_"%.%study_name, align="r", include.colnames 
 # Average follow-up of vaccine recipients starting at 7 days post Day 29 visit
 tmp=round(mean(subset(dat.mock, Trt==1 & Bserostatus==0 & ph1, EventTimePrimary, drop=T), na.rm=T)-7)
 write(tmp, file=paste0(save.results.to, "avg_followup_"%.%study_name))
-print("write to avg_followup_"%.%study_name)
 
 
 
@@ -43,11 +42,10 @@ if(pop=="57") {
 }
 
 
+#Median and IQR and range of days from dose 1 to Day 29 visit, and from dose 1 to Day 57 visit (requested by Lindsey B).  
+#subsetting by (a) the whole immunogenicity subcohort, (2) non-cases in the immunogenicity subcohort, (3) intercurrent cases, (4) primary cases.
 if (has29 & has57) {
         
-    #Median and IQR and range of days from dose 1 to Day 29 visit, and from dose 1 to Day 57 visit (requested by Lindsey B).  
-    #subsetting by (a) the whole immunogenicity subcohort, (2) non-cases in the immunogenicity subcohort, (3) intercurrent cases, (4) primary cases.
-    
     # D1 to pop
     tab=sapply(1:4, function (i) {
         idx=with(dat.mock, {
@@ -61,8 +59,7 @@ if (has29 & has57) {
     rownames(tab)=c("(a)","(b)","(c)","(d)")
     colnames(tab)=c("min", "1st quartile", "median", "3d quartile", "max")
     # the file name is misnomer for D57
-    mytex(tab, file.name="dose1_interval_summary_"%.%study_name, align="c", include.colnames = T, save2input.only=T, input.foldername=save.results.to, digits=0)
-    
+    mytex(tab, file.name="dose1_interval_summary_"%.%study_name, align="c", include.colnames = T, save2input.only=T, input.foldername=save.results.to, digits=0)    
 }
 
     

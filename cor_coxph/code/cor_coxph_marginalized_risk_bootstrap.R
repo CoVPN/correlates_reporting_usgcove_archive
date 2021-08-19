@@ -18,7 +18,7 @@ marginalized.risk.svycoxph.boot=function(formula, marker.name, type, data, t, B,
         #ss contains 1) every 5% to include s1 and s2 for sensitivity analyses, 2) lars quantiles so that to be consistent with his analyses, and 3_ equally spaced values so that the curves look good  
         ss=sort(c(report.assay.values(data[[marker.name]], marker.name.to.assay(marker.name)), seq(min(data[[marker.name]], na.rm=TRUE), max(data[[marker.name]], na.rm=TRUE), length=100)[-c(1,100)]))
         f1=update(formula, as.formula(paste0("~.+",marker.name)))        
-        tmp.design=twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd, data=data)
+        tmp.design=twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~ph2, data=data)
         fit.risk=try(svycoxph(f1, design=tmp.design)) # since we don't need se, we could use coxph, but the weights computed by svycoxph are a little different from the coxph due to fpc
         prob=marginalized.risk(fit.risk, marker.name, data=data.ph2, ss=ss, weights=data.ph2$wt, t=t, categorical.s=F)        
         
@@ -30,7 +30,7 @@ marginalized.risk.svycoxph.boot=function(formula, marker.name, type, data, t, B,
     } else if (type==3) {
     # conditional on a categorical S
         f1=update(formula, as.formula(paste0("~.+",marker.name)))        
-        tmp.design=twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd, data=data)
+        tmp.design=twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~ph2, data=data)
         fit.risk=try(svycoxph(f1, design=tmp.design)) # since we don't need se, we could use coxph, but the weights computed by svycoxph are a little different from the coxph due to fpc
         prob=marginalized.risk(fit.risk, marker.name, data=data.ph2, ss=NULL, weights=data.ph2$wt, t=t, categorical.s=T, verbose=F)        
        
@@ -53,7 +53,7 @@ marginalized.risk.svycoxph.boot=function(formula, marker.name, type, data, t, B,
            
         if(type==1) {
         # conditional on s
-            tmp.design=twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd, data=dat.b)
+            tmp.design=twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~ph2, data=dat.b)
             fit.risk.1=try(svycoxph(f1, design=tmp.design))
 #                    summary(survfit(fit.risk.1))
 #                    par(mfrow=c(2,2))
@@ -76,7 +76,7 @@ marginalized.risk.svycoxph.boot=function(formula, marker.name, type, data, t, B,
             
         } else if (type==3) {
         # conditional on a categorical S
-            tmp.design=twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~TwophasesampInd, data=dat.b)
+            tmp.design=twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~ph2, data=dat.b)
             fit.risk=try(svycoxph(f1, design=tmp.design))
             if ( class (fit.risk)[1] != "try-error" ) {
                 marginalized.risk(fit.risk, marker.name, dat.b.ph2, t=t, ss=NULL, weights=dat.b.ph2$wt, categorical.s=T)

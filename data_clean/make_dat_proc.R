@@ -252,12 +252,10 @@ decode.tps.stratum=t(sapply(tps.stratums, function(i) unlist(subset(dat_proc, tp
 # observation-level weights
 ###############################################################################
 
-#Wstratum may have NA if any variables to form strata has NA
+#Note that Wstratum may have NA if any variables to form strata has NA
 
 
-# initially TwophasesampInd just need to be in the case or subcohort and have the necessary markers
-# after defining ph1.xx, we will update TwophasesampInd to be 0 outside ph1.xx
-
+# TwophasesampInd: be in the case or subcohort and have the necessary markers
 if (has57)
 dat_proc <- dat_proc %>%
   mutate(

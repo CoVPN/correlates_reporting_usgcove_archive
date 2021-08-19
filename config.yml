@@ -12,11 +12,43 @@ moderna_real:
   study_name: COVE
   study_name_code: COVE
 
+moderna_real_D57:
+  <<: *moderna_real
+  EventIndPrimary: EventIndPrimaryD57   
+  EventTimePrimary: EventTimePrimaryD57   
+  ph1: ph1.D57
+  ph2: ph2.D57
+  wt: wt.D57
+
+moderna_real_D29:
+  <<: *moderna_real
+  EventIndPrimary: EventIndPrimaryD29  
+  EventTimePrimary: EventTimePrimaryD29
+  ph1: ph1.D29
+  ph2: ph2.D29
+  wt: wt.D29
+
 moderna_mock:
   <<: *default
   data_in_file: COVID_VEtrial_practicedata_primarystage1.csv
   study_name: MockCOVE
   study_name_code: COVE
+
+moderna_mock_D57:
+  <<: *moderna_mock
+  EventIndPrimary: EventIndPrimaryD57   
+  EventTimePrimary: EventTimePrimaryD57   
+  ph1: ph1.D57
+  ph2: ph2.D57
+  wt: wt.D57
+
+moderna_mock_D29:
+  <<: *moderna_mock
+  EventIndPrimary: EventIndPrimaryD29  
+  EventTimePrimary: EventTimePrimaryD29
+  ph1: ph1.D29
+  ph2: ph2.D29
+  wt: wt.D29
 
 
 

@@ -59,7 +59,7 @@ if(study_name_code=="ENSEMBLE") {
 if(has57) dat_proc=subset(dat_proc, !is.na(EventTimePrimaryD57))
 
           dat_proc$EarlyendpointD29 <- with(dat_proc, ifelse(EarlyinfectionD29==1 | (EventIndPrimaryD1==1 & EventTimePrimaryD1 < NumberdaysD1toD29 + 7),1,0))
-          # remember to change EarlyinfectionD29 to EarlyinfectionD29a in the next line!!!
+          # remember to change EarlyinfectionD29 to EarlyinfectionD29a in the next line when it is available!!!
           dat_proc$EarlyendpointD29a<- with(dat_proc, ifelse(EarlyinfectionD29==1| (EventIndPrimaryD1==1 & EventTimePrimaryD1 < NumberdaysD1toD29 + 1),1,0))
 if(has57) dat_proc$EarlyendpointD57 <- with(dat_proc, ifelse(EarlyinfectionD57==1 | (EventIndPrimaryD1==1 & EventTimePrimaryD1 < NumberdaysD1toD57 + 7),1,0))
 

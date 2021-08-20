@@ -34,8 +34,7 @@ at a given threshold is the expected probability of obtaining COVID disease if
 one experiences a marker/immune-response value above that threshold. The
 threshold-response function is estimated for each of the four Day 57 antibody
 markers, in each case adjusting for the baseline covariates: baseline risk
-score, high risk indicator, and underrepresented minority status. A parametric
-learner, selected via cross-validation, is used for the covariate adjustment. A
+score, high risk indicator, and underrepresented minority status. A restrictive but flexible specification of the Highly Adaptive Lasso estimator is used for the covariate adjustment. A
 number of plots and tables are reported:
 \begin{enumerate}
 \item A plot and table with risk estimates and point-wise 95\% confidence intervals
@@ -47,6 +46,8 @@ A reverse cumulative distribution function curve estimated by the IPW NPMLE of
 the marker values is superimposed on the threshold-response plots and a dashed
 red line is added to mark the threshold value after which no more events are
 observed.
+
+The blue dots on the plots represent the risk predictions at marker values where there was an observed COVID-19 case.
 
 \clearpage
 ## Plots and Tables with estimates and pointwise confidence interval for Day 57

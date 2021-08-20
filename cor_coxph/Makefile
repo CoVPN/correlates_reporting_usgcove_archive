@@ -7,11 +7,11 @@ clean:
 
 ## cor_coxph     : create tables and figures
 cor_coxph:
-	Rscript code/cor_coxph.R 29
+	Rscript code/cor_coxph.R PrimaryD29
 ifeq ($(TRIAL), moderna_mock)
-	Rscript code/cor_coxph.R 57
+	Rscript code/cor_coxph.R PrimaryD57
 else ifeq ($(TRIAL), moderna_real)
-	Rscript code/cor_coxph.R 57
+	Rscript code/cor_coxph.R PrimaryD57
 endif
 
 ## report        : create a standalone report

@@ -20,7 +20,7 @@ source(here::here("code", "params.R"))
 
 # population is either 57 or 29
 Args <- commandArgs(trailingOnly=TRUE)
-if (length(Args)==0) Args=c(COR="D57")
+if (length(Args)==0) Args=c(COR="PrimaryD57")
 COR=Args[1]; myprint(COR)
 
 config.cor <- config::get(config = COR)

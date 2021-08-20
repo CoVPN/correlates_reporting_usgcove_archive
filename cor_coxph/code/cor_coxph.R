@@ -7,18 +7,6 @@ myprint(study_name_code)
 #-----------------------------------------------
 
 
-# population is either 57 or 29
-Args <- commandArgs(trailingOnly=TRUE)
-if (length(Args)==0) Args=c(pop="57")# has to be 29 if it is janssen
-pop=Args[1]; myprint(pop)
-
-save.results.to = paste0(here::here("output"), "/", study_name,"/");
-if (!dir.exists(save.results.to))  dir.create(save.results.to)
-save.results.to = paste0(save.results.to, "/D", pop,"/");
-if (!dir.exists(save.results.to))  dir.create(save.results.to)
-print(paste0("save.results.to equals ", save.results.to))
-    
-
 library(kyotil) # p.adj.perm, getFormattedSummary
 library(marginalizedRisk)
 library(tools) # toTitleCase
@@ -29,13 +17,21 @@ library(Hmisc) # wtd.quantile, cut2
 library(xtable) # this is a dependency of kyotil
 source(here::here("code", "params.R"))
 
-if(!has29 & pop=="29") {
-    print("Quitting because there are no Day 29 markers")
-    quit()
-} else if(!has57 & pop=="57") {
-    print("Quitting because there are no Day 57 markers")
-    quit()
-}
+
+# population is either 57 or 29
+Args <- commandArgs(trailingOnly=TRUE)
+if (length(Args)==0) Args=c(COR="D57")
+COR=Args[1]; myprint(COR)
+
+config.cor <- config::get(config = COR)
+pop=paste0(config.cor$pop)
+
+save.results.to = paste0(here::here("output"), "/", study_name,"/");
+if (!dir.exists(save.results.to))  dir.create(save.results.to)
+save.results.to = paste0(save.results.to, "/D", pop,"/");
+if (!dir.exists(save.results.to))  dir.create(save.results.to)
+print(paste0("save.results.to equals ", save.results.to))
+    
 time.start=Sys.time()
 
 

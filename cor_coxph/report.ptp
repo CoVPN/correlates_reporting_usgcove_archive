@@ -1,0 +1,9 @@
+# PCTeX Project File, Version 1.1
+	name: report
+	texformat: latex
+	typesetmode: DVI
+	spellwordlist: american
+report.tex
+	wndpos: 1 -1 -1 -1 -1 30 30 1557 704
+	zorder: 0
+	edit: 0

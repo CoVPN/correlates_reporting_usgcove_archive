@@ -1,8 +1,29 @@
-# CoP: Correlates of Vaccine Efficacy {#cop-corrve}
+<!-- ```{r, echo=FALSE} -->
+<!-- here::i_am("cor_coxph/report.Rmd") -->
+<!-- ``` -->
 
-TO FILL IN
+\newif\ifENSEMBLE
+`r if (study_name_code=="ENSEMBLE") "\\ENSEMBLEtrue"` 
 
-```{r cop-corrve-setup}
-# TODO
+
+
+
+
+```{r, echo=FALSE}
+Day <- 57
+pathCoRoutput <- "cor_coxph/output/D57"
 ```
 
+```{r, child=c(here::here('cor_coxph', 'report_sub.Rmd'))}
+```
+
+\clearpage
+
+
+```{r, echo=FALSE}
+Day <- 29
+pathCoRoutput <- "cor_coxph/output/D29"
+```
+
+```{r, child=if (has29) c(here::here('cor_coxph', 'report_sub.Rmd'))}
+```

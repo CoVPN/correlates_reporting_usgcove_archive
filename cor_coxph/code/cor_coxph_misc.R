@@ -4,24 +4,17 @@ write(tmp, file=paste0(save.results.to, "avg_followup_"%.%study_name))
 
 
 
-# Number of breakthrough vaccine cases with Day 57 ID80 > 660 IU
-if(pop=="57") {
-    res=nrow(subset(dat.mock, Trt==1 & Bserostatus==0 & ph1 & EventIndPrimary & Day57pseudoneutid80>log10(660)))
-    write(res, file=paste0(save.results.to, "num_vacc_cases_highid80_"%.%study_name))
-}
-
-
 #Median and IQR and range of days from dose 1 to Day 29 visit, and from dose 1 to Day 57 visit (requested by Lindsey B).  
 #subsetting by (a) the whole immunogenicity subcohort, (2) non-cases in the immunogenicity subcohort, (3) intercurrent cases, (4) primary cases.
-if (has29 & has57) {
+if (study_name_code=="COVE") {
         
-    # D1 to pop
+    # D1 to MarkerDay
     tab=sapply(1:4, function (i) {
         idx=with(dat.mock, {
             tmp = (if(i==1) ph1.immuno else if(i==2) (ph1.immuno & EventIndPrimary) else if(i==3) ph1.intercurrent.cases else if(i==4) (ph1.D57 & EventIndPrimaryD57)) & Trt==1 & Bserostatus==0
             tmp [!is.na(tmp)]
         })
-        res=c(quantile(dat.mock[idx, "NumberdaysD1toD"%.%pop], c(0, 1:3/4, 1), na.rm=T))
+        res=c(quantile(dat.mock[idx, "NumberdaysD1toD"%.%MarkerDay], c(0, 1:3/4, 1), na.rm=T))
         res
     })
     tab=t(tab)
@@ -33,8 +26,12 @@ if (has29 & has57) {
 
     
 
-if (study_name_code=="COVE" & pop=="57") {
+if (study_name_code=="COVE" & MarkerDay=="57") {
 
+    # Number of breakthrough vaccine cases with Day 57 ID80 > 660 IU
+    res=nrow(subset(dat.mock, Trt==1 & Bserostatus==0 & ph1 & EventIndPrimary & Day57pseudoneutid80>log10(660)))
+    write(res, file=paste0(save.results.to, "num_vacc_cases_highid80_"%.%study_name))
+    
     dat.mock$NumberdaysD29toD57=dat.mock$NumberdaysD1toD57-dat.mock$NumberdaysD1toD29
     
     # D29 to D57

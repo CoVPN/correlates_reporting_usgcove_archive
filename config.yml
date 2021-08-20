@@ -84,27 +84,28 @@ janssen_sa_mock:
 
 # primary endpoint D57 markers
 PrimaryD57:
-  EventIndPrimary: EventIndPrimaryD57   
-  EventTimePrimary: EventTimePrimaryD57   
   ph1: ph1.D57
   ph2: ph2.D57
   wt: wt.D57
-  pop: 57
+  EventIndPrimary: EventIndPrimaryD57   
+  EventTimePrimary: EventTimePrimaryD57   
+  MarkerDay: 57
 
 # primary endpoint D29 markers
 PrimaryD29:
-  EventIndPrimary: EventIndPrimaryD29  
-  EventTimePrimary: EventTimePrimaryD29
   ph1: ph1.D29
   ph2: ph2.D29
   wt: wt.D29
-  pop: 29
+  EventIndPrimary: EventIndPrimaryD29  
+  EventTimePrimary: EventTimePrimaryD29
+  MarkerDay: 29
 
 # primary endpoint D29 markers, sensitivity analyses starting 1, instead of 7, day after D29 visit
 PrimaryD29a:
-  EventIndPrimary: EventIndPrimaryD29  
-  EventTimePrimary: EventTimePrimaryD29
   ph1: ph1.D29a
   ph2: ph2.D29a
   wt: wt.D29a
-  pop: 29a
+  EventIndPrimary: EventIndPrimaryD29  
+  EventTimePrimary: EventTimePrimaryD29
+  MarkerDay: 29
+  

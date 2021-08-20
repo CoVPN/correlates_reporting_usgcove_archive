@@ -745,9 +745,9 @@ plot_threshold_response <- function(output, simultaneous_CI = T, monotone = F) {
     )
     g1 <- ggplot2::ggplot(data = plot_data, aes_string("cutoffs", "est")) +
       scale_x_continuous(breaks = plot_data$cutoffs) +
-      geom_point(aes_string(x = "cutoffs", y = "est"), legend = F, colour = alpha("red")) +
-      geom_point(aes_string(x = "cutoffs", y = "lower"), legend = F, colour = alpha("red", 0.2)) +
-      geom_point(aes_string(x = "cutoffs", y = "upper"), legend = F, colour = alpha("red", 0.2)) +
+      #geom_point(aes_string(x = "cutoffs", y = "est"), legend = F, colour = alpha("red")) +
+      #geom_point(aes_string(x = "cutoffs", y = "lower"), legend = F, colour = alpha("red", 0.2)) +
+      #geom_point(aes_string(x = "cutoffs", y = "upper"), legend = F, colour = alpha("red", 0.2)) +
       geom_line() +
       geom_ribbon(aes(ymin = lower, ymax = upper), alpha = 0.3, color = NA)
 

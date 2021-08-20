@@ -23,7 +23,8 @@ moderna_mock:
 janssen_default_real: &janssen_default_real
   data_raw_dir: janssen
   times: [B, Day29, Delta29overB]
-  data_in_file: TBD.csv
+  #  data_in_file: ../../../mapping_immune_correlates/adata/COVID_ENSEMBLE_realdata.csv
+  data_in_file: COVID_ENSEMBLE_realdata.csv
   study_name: ENSEMBLE
   study_name_code: ENSEMBLE
   assays: [bindSpike, bindRBD]

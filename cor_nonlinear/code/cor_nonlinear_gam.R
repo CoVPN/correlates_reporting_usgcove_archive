@@ -16,7 +16,9 @@ marginalized.risk.gam.boot=function(formula, marker.name, type=1, data, B, ci.ty
     
     if (type==1) {
     # conditional on S=s
-        ss=sort(c(report.assay.values(data[[marker.name]], marker.name.to.assay(marker.name)), seq(min(data[[marker.name]], na.rm=TRUE), max(data[[marker.name]], na.rm=TRUE), length=50)[-c(1,50)]))
+        ss=sort(c(seq(quantile(data[[marker.name]], 0.025, na.rm=TRUE), quantile(data[[marker.name]], 0.975, na.rm=TRUE), length=50)[-c(1,50)]))        
+        #ss=sort(c(report.assay.values(data[[marker.name]], marker.name.to.assay(marker.name)), seq(min(data[[marker.name]], na.rm=TRUE), max(data[[marker.name]], na.rm=TRUE), length=100)[-c(1,100)]))
+        
         f1=update(form.0.logistic, as.formula(paste0("~.+s(",marker.name,")")))        
         fit.risk=mgcv::gam(f1, data=data.ph2, family=binomial, weights=wt.0)
         prob=marginalized.risk(fit.risk, marker.name, data=data.ph2, ss=ss, weights=data.ph2$wt.0, categorical.s=F)        
@@ -97,7 +99,7 @@ dfs=sapply (assays, function(a) {
 
 
 for (w.wo.plac in 1:2) { # 1 with placebo lines, 2 without placebo lines. Implementation-wise, only difference is in ylim
-# ii=1; w.wo.plac=1; a=assays[3]
+# ii=1; w.wo.plac=1; a=assays[2]
     
     risks.all=get("risks.all.vacc.gam")
     
@@ -121,7 +123,7 @@ for (w.wo.plac in 1:2) { # 1 with placebo lines, 2 without placebo lines. Implem
         ncases=sapply(risks$marker, function(s) sum(dat.vac.seroneg$yy[dat.vac.seroneg[["Day"%.%pop%.%a]]>=s], na.rm=T))
         
         plot(prob~marker, risks, xlab=labels.assays.short[a]%.%ifelse(ii==1," (=s)"," (>=s)"), xlim=xlim, 
-            ylab=paste0("Probability* of COVID by Day ", t0), lwd=lwd, ylim=ylim, type="n", main=paste0(labels.assays.long["Day"%.%pop,a]), xaxt="n")
+            ylab=paste0("Probability* of COVID-19 by Day ", t0), lwd=lwd, ylim=ylim, type="n", main=paste0(labels.assays.long["Day"%.%pop,a]), xaxt="n")
     
         draw.x.axis.cor(xlim, llods[a])
     
@@ -131,10 +133,13 @@ for (w.wo.plac in 1:2) { # 1 with placebo lines, 2 without placebo lines. Implem
         # risks
         if (ii==1) {
             abline(h=prev.vacc, col="gray", lty=c(1,3,3), lwd=lwd)
+            # showing bootstrap replicates
+            #for(i in 1:100) lines(risks$marker, risks$boot[,i], lwd=lwd, col="darkgray")
             # risk curve
             lines(risks$marker, risks$prob, lwd=lwd)
             lines(risks$marker, risks$lb,   lwd=lwd, lty=3)
             lines(risks$marker, risks$ub,   lwd=lwd, lty=3)    
+            
         } else {
         }
         

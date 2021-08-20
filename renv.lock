@@ -1,6 +1,6 @@
 {
   "R": {
-    "Version": "4.0.3",
+    "Version": "4.1.0",
     "Repositories": [
       {
         "Name": "CRAN",
@@ -36,6 +36,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "56b33b77f4cffd78ff96b8e5a69eabb0"
+    },
+    "FSDAM": {
+      "Package": "FSDAM",
+      "Version": "2020.11-18",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "fcb7e1f60e7fa862820a43b974ec57eb"
     },
     "Formula": {
       "Package": "Formula",
@@ -626,6 +633,14 @@
       "Repository": "CRAN",
       "Hash": "a0cbe758a531d054b537d16dff4d58a1"
     },
+    "doMC": {
+      "Package": "doMC",
+      "Version": "1.3.7",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "OS_type": "unix",
+      "Hash": "a51780731e2ec5eee714097df69ea204"
+    },
     "dplyr": {
       "Package": "dplyr",
       "Version": "1.0.5",
@@ -901,10 +916,10 @@
     },
     "gtools": {
       "Package": "gtools",
-      "Version": "3.8.2",
+      "Version": "3.9.2",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "0a749b4458d19a54acae93c64e3e7c85"
+      "Hash": "2ace6c4a06297d0b364e0444384a2b82"
     },
     "hal9001": {
       "Package": "hal9001",
@@ -1216,15 +1231,15 @@
     },
     "marginalizedRisk": {
       "Package": "marginalizedRisk",
-      "Version": "2021.2-4",
+      "Version": "2021.7-26",
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
       "RemoteRepo": "marginalizedRisk",
       "RemoteUsername": "youyifong",
       "RemoteRef": "HEAD",
-      "RemoteSha": "a33f807f9510fc299a380b7b7e898e5e055d8cff",
-      "Hash": "aca84af528655beda99bd8b942e48bbc"
+      "RemoteSha": "3376222f267d215af5fd3b1cf04a0ba282047b4f",
+      "Hash": "3c3353d26ff7fffd4a923fa086b37e63"
     },
     "markdown": {
       "Package": "markdown",
@@ -1354,8 +1369,8 @@
       "RemoteRepo": "natmed2",
       "RemoteUsername": "benkeser",
       "RemoteRef": "HEAD",
-      "RemoteSha": "28fc89ed504a111b0f21ea184bd1500cfdfeadb8",
-      "Hash": "cfc787d0e0021294aa7e6d6a8fc8aff8"
+      "RemoteSha": "158509db7e25e9b43b37f346fba29ad9df4d4ad3",
+      "Hash": "c6efffe9591b4db85d7ef315f8de3aa9"
     },
     "nleqslv": {
       "Package": "nleqslv",
@@ -1713,6 +1728,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "bb5996d0bd962d214a11140d77589917"
+    },
+    "reticulate": {
+      "Package": "reticulate",
+      "Version": "1.20",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "30ab0ea8c8d3dd16a3fa06903449bbfb"
     },
     "rex": {
       "Package": "rex",
@@ -2184,10 +2206,10 @@
     },
     "xgboost": {
       "Package": "xgboost",
-      "Version": "1.1.1.1",
+      "Version": "0.90.0.2",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "17b1f93f73844394d1578de45a681bea"
+      "Hash": "1f29db60e440a590f98511b44595f0f3"
     },
     "xml2": {
       "Package": "xml2",

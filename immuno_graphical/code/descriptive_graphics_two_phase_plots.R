@@ -1,8 +1,12 @@
+#Sys.setenv(TRIAL = "janssen_pooled_real")
 #-----------------------------------------------
 # obligatory to append to the top of each script
 renv::activate(project = here::here(".."))
+# There is a bug on Windows that prevents renv from working properly. The following code provides a workaround:
+if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
 source(here::here("..", "_common.R"))
 #-----------------------------------------------
+
 # install.packages(c("ggpubr", "GGally", "SWIM", "scales", "dummies",
 # "gridExtra", "PResiduals"))
 library(here)
@@ -19,9 +23,9 @@ library(gridExtra)
 library(PResiduals)
 
 # produce geom_statistics w/ resampling-based covariate-adjusted Spearman
+source(here("code", "params.R"))
 source(here("code", "ggally_cor_resample.R"))
 source(here("code", "covid_corr_plot_functions.R"))
-source(here("code", "params.R"))
 
 set.seed(12345)
 # load cleaned data
@@ -48,8 +52,10 @@ tps <- c("Day29", "Day57", "Delta29overB", "Delta57overB")
 #-----------------------------------------------
 print("Pair plots 1:")
 for (tp in tps[tps %in% times]) {
-  for (bserostatus in 0:1) {
-    for (trt in c(0, 1)) {
+  for (trt in 0:1) {
+    # Don't produce figures for placebo baseline negative to improve build time
+    if(trt==0) {bstatus.range <- 1} else {bstatus.range <- 0:1}
+    for (bserostatus in bstatus.range) {
       
       if(tp == "Day29"){
         tt <- 2
@@ -101,8 +107,10 @@ for (tp in tps[tps %in% times]) {
 # baseline demographic subgroups use the case-deleted data set.
 #-----------------------------------------------
 print("Pair plots 2:")
-for (bserostatus in 0:1) {
-  for (trt in 0:1) {
+for (trt in 0:1) {
+  # Don't produce figures for placebo baseline negative to improve build time
+  if(trt==0) {bstatus.range <- 1} else {bstatus.range <- 0:1}
+  for (bserostatus in bstatus.range) {
     subdat <- dat.twophase.sample %>%
       dplyr::filter(Bserostatus == bserostatus & as.numeric(Trt) == trt)
     
@@ -134,8 +142,10 @@ print("Pair plots 3:")
 
 ## pairplots of assay readouts for multiple timepoints
 ## pairplots by baseline serostatus
-for (bserostatus in 0:1) {
-  for (trt in 0:1) {
+for (trt in 0:1) {
+  # Don't produce figures for placebo baseline negative to improve build time
+  if(trt==0) {bstatus.range <- 1} else {bstatus.range <- 0:1}
+  for (bserostatus in bstatus.range) {
     subdat <- dat.twophase.sample %>%
       dplyr::filter(Bserostatus == bserostatus & Trt == trt)
     
@@ -226,7 +236,7 @@ for (bAb in c(0, 1)) {
                  max(assay_lim[rcdf_assays, tp, 2])),
         xbreaks = seq(min(assay_lim[rcdf_assays, tp, 1]), 
                       max(assay_lim[rcdf_assays, tp, 2]), 
-                      2),
+                      1),
         plot_title = paste0(switch(tp, Day29 = "Day 29", Day57 = "Day 57"), " Ab Markers"),
         filename = paste0(
           save.results.to, "/Marker_Rcdf_", c("nAb", "bAb")[bAb + 1], "_", tp,
@@ -253,7 +263,7 @@ for (bAb in c(0, 1)) {
                  max(assay_lim[rcdf_assays, tp, 2])),
         xbreaks = seq(min(assay_lim[rcdf_assays, tp, 1]), 
                       max(assay_lim[rcdf_assays, tp, 2]), 
-                      2),
+                      1),
         plot_title = paste0(switch(tp, Delta29overB = "Day 29", Delta57overB = "Day 57"),
                             " over Baseline Ab Markers"),
         filename = paste0(
@@ -286,7 +296,7 @@ for (bAb in c(0, 1)) {
                    max(assay_lim[rcdf_assays, tp, 2])),
           xbreaks = seq(min(assay_lim[rcdf_assays, tp, 1]), 
                         max(assay_lim[rcdf_assays, tp, 2]), 
-                        2),
+                        1),
           plot_title = paste0(
             switch(tp, Day29 = "Day 29", Day57 = "Day 57"), " Ab Markers"
           ),
@@ -315,7 +325,7 @@ for (bAb in c(0, 1)) {
                    max(assay_lim[rcdf_assays, tp, 2])),
           xbreaks = seq(min(assay_lim[rcdf_assays, tp, 1]), 
                         max(assay_lim[rcdf_assays, tp, 2]), 
-                        2),
+                        1),
           plot_title = paste0(
             switch(tp, Delta29overB = "Day 29", Delta57overB = "Day 57"),
             " Fold-rise over Baseline Ab Markers"
@@ -433,7 +443,7 @@ spaghetti_ptid <- dat.twophase.sample[, c("Ptid", "Bserostatus", "Trt", var_name
   split(., .$BT) %>%
   lapply(function(xx) {
     if (xx$BT[1] %in% c("10", "00")) {
-      sample(xx$Ptid, 10)  ## sample 10 placebo recipients
+      sample(xx$Ptid, 20)  ## sample 10 placebo recipients
     } else {
       sample(xx$Ptid, 20)  ## sample 20 vaccine recipients
     }
@@ -479,8 +489,10 @@ for (bstatus in 1:2) {
 print("Scatter plots:")
 tps <- c("B", "Day29", "Day57")
 for (tp in tps[tps %in% times]) {
-  for (bstatus in 1:2) {
-    for (trt in 1:2) {
+  for (trt in 1:2) {
+    # Don't produce figures for placebo baseline negative to improve build time
+    if(trt==1) {bstatus.range <- 2} else {bstatus.range <- 1:2}
+    for (bstatus in bstatus.range) {
       subdat <- dat.long.twophase.sample %>%
         filter(Bserostatus == bstatus.labels[bstatus], Trt == trt.labels[trt])
       
@@ -501,7 +513,7 @@ for (tp in tps[tps %in% times]) {
           scale_x_continuous(limits = xrange) +
           scale_y_continuous(
             labels = label_math(10^.x), limits = assay_lim[aa, tp,],
-            breaks = seq(assay_lim[aa, tp, 1], assay_lim[aa, tp, 2], by = 2)
+            breaks = seq(assay_lim[aa, tp, 1], assay_lim[aa, tp, 2], by = 1)
           ) +
           theme_pubr() +
           theme(
@@ -535,5 +547,3 @@ for (tp in tps[tps %in% times]) {
     }
   }
 }
-
-

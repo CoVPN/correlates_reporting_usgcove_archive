@@ -9,7 +9,7 @@ The main regression model is the Cox proportional hazards model. All plots are m
 \begin{center}
     \input{`r pathCoRoutput`/CoR_univariable_svycoxph_pretty_`r study_name`}\\
 \end{center}
-*Baseline covariates adjusted for: baseline risk score, meeting the protocol randomization stratification criterion for being at heightened risk of COVID (yes or no), community of color or not. Maximum failure event time \input{`r pathCoRoutput`/timepoints_cum_risk_`r study_name`} days.\\
+*Baseline covariates adjusted for: baseline risk score, `r ifelse(study_name_code=="COVE", "meeting the protocol randomization stratification criterion for being at heightened risk of COVID (yes or no), community of color or not", "region (US, South Africa, or Latin American)")`. Maximum failure event time \input{`r pathCoRoutput`/timepoints_cum_risk_`r study_name`} days.\\
 **No. at-risk = estimated number in the population for analysis: baseline negative per-protocol vaccine recipients not experiencing the COVID endpoint through 6 days post Day `r Day` visit; no. cases = number of this cohort with an observed COVID endpoint.\\
 ***q-value and FWER (family-wide error rate) are computed over the set of p-values both for quantitative markers and categorical markers `r ifelse(study_name_code=="COVE", "", "")` using the Westfall and Young permutation method (\protect\input{`r pathCoRoutput`/permutation_replicates_`r study_name`} replicates). 
 
@@ -23,7 +23,7 @@ The main regression model is the Cox proportional hazards model. All plots are m
 \setlength{\tabcolsep}{.5ex}
 \input{`r pathCoRoutput`/CoR_univariable_svycoxph_cat_pretty_`r study_name`}\\
 \end{center}
-*Baseline covariates adjusted for: baseline risk score, meeting the protocol randomization stratification criterion for being at heightened risk of COVID (yes or no), community of color or not. 
+*Baseline covariates adjusted for: baseline risk score, meeting the protocol randomization stratification criterion for being at heightened risk of COVID (yes or no), `r ifelse(study_name_code=="COVE", "community of color or not", "strata(Region)")`. 
 Maximum failure event time \protect\input{`r pathCoRoutput`/timepoints_cum_risk_`r study_name`} days.
 Cutpoints:
 %Day `r Day` cutpoints:
@@ -166,7 +166,7 @@ $\dagger$ q-value and FWER (family-wide error rate) are computed over the set of
 \end{tabular}
 \end{center}
 $^1$Conservative (upper bound) estimate assuming unmeasured confounding at level $RR_{UD}(0,1)=RR_{EU}(0,1) = 2$ and thus $B(0,1)=4/3$. \\
-$^2$E-values are computed for upper tertile ($s=1$) vs. lower tertile ($s=0$) biomarker subgroups after controlling for baseline risk score, meeting the protocol randomization stratification criterion for being at heightened risk of COVID (yes or no), community of color or not; UL = upper limit.
+$^2$E-values are computed for upper tertile ($s=1$) vs. lower tertile ($s=0$) biomarker subgroups after controlling for baseline risk score, meeting the protocol randomization stratification criterion for being at heightened risk of COVID (yes or no), `r ifelse(study_name_code=="COVE", "community of color or not", "strata(Region)")`; UL = upper limit.
 \end{table}
 
 
@@ -234,31 +234,41 @@ $^2$E-values are computed for upper tertile ($s=1$) vs. lower tertile ($s=0$) bi
 
 
 
-\begin{table}[H]
-\caption{Marginalized cumulative risk by Day \protect\input{`r pathCoRoutput`/timepoints_cum_risk_`r study_name`} as functions of Day `r Day` markers (=s) among baseline negative vaccine recipients with 95\% bootstrap point-wise confidence intervals (\protect\input{`r pathCoRoutput`/bootstrap_replicates_`r study_name`} replicates).}
-\begin{center}
+
+\clearpage
 \setlength{\tabcolsep}{.5ex}
 \input{`r pathCoRoutput`/marginalized_risks_eq_`r study_name`}
-\end{center}
-\end{table}
+
+\clearpage
+\setlength{\tabcolsep}{.5ex}
+\input{`r pathCoRoutput`/controlled_ve_eq_`r study_name`}
+
+\clearpage
+\setlength{\tabcolsep}{.5ex}
+\input{`r pathCoRoutput`/controlled_ve_sens_eq_`r study_name`}
+
+
 
 \clearpage
 
+## Misc
+
+Average follow-up of vaccine recipients (in the Day `r Day` correlates analyses population) starting at 7 days post Day `r Day` visit is \input{`r pathCoRoutput`/avg_followup_`r study_name`} days.
+ 
+
+`r if(Day=="57") paste0("Number of breakthrough vaccine cases (in the Day 57 correlates analyses population) with Day 57 ID80 > 660 IU: \\input{", pathCoRoutput, "/num_vacc_cases_highid80_", study_name, "}.")`
+
+
+\ifENSEMBLE
+\else
+
 \begin{table}[H]
-\caption{Controlled VE as functions of Day `r Day` markers (=s) among baseline negative vaccine recipients with 95\% bootstrap point-wise confidence intervals (\protect\input{`r pathCoRoutput`/bootstrap_replicates_`r study_name`} replicates).}
+\caption{Summary statistics for the number of days from dose 1 to Day `r Day` visit. (a) The whole immunogenicity subcohort, (b) non-cases in the immunogenicity subcohort, (c) intercurrent cases, (d) primary cases, i.e. cases from the Day 57 correlates analysis population.
+}
 \begin{center}
 \setlength{\tabcolsep}{.5ex}
-\input{`r pathCoRoutput`/controlled_ve_eq_`r study_name`}
+\input{`r pathCoRoutput`/dose1_interval_summary_`r study_name`}
 \end{center}
 \end{table}
 
-\begin{table}[H]
-\caption{Controlled VE with sensitivity analysis as functions of Day `r Day` markers (=s) among baseline negative vaccine recipients with 95\% bootstrap point-wise confidence intervals (\protect\input{`r pathCoRoutput`/bootstrap_replicates_`r study_name`} replicates).}
-\begin{center}
-\setlength{\tabcolsep}{.5ex}
-\input{`r pathCoRoutput`/controlled_ve_sens_eq_`r study_name`}
-\end{center}
-\end{table}
-
-
-
+\fi

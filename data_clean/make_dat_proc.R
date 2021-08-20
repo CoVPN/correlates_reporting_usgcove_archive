@@ -1,13 +1,35 @@
-#Sys.setenv(TRIAL = "janssen_pooled_mock")
-if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
-#-----------------------------------------------
+#Sys.setenv(TRIAL = "janssen_pooled_real")
 renv::activate(here::here())
-# There is a bug on Windows that prevents renv from working properly. The following code provides a workaround:
-if (.Platform$OS.type == "windows") {
-  .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
-}
+    # There is a bug on Windows that prevents renv from working properly. The following code provides a workaround:
+    if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
 source(here::here("_common.R"))
 #-----------------------------------------------
+
+myprint(study_name)
+myprint(study_name_code)
+
+library(here)
+dat_raw <- read.csv(here("data_raw", data_raw_dir, data_in_file))
+
+# some exploratory statistics
+
+summary(dat_raw)
+summary(dat_raw$Age)
+hist(dat_raw$Day29bindSpike)
+10**min(dat_raw$Day29bindSpike,na.rm=T)*.009*2
+hist(dat_raw$Day29bindN)
+10**min(dat_raw$Day29bindN,na.rm=T)*0.0024*2
+sort(names(dat_raw))
+
+summary(dat_raw$EventTimePrimaryD29[dat_raw$EventIndPrimaryD29==1])
+hist(dat_raw$EventTimePrimaryD29[dat_raw$EventIndPrimaryD29==1])
+
+sort(subset(dat_raw, Bserostatus==0 & Trt==1 & Perprotocol==1 & EventIndPrimaryD1==1, EventTimePrimaryD1, drop=T))
+sort(subset(dat_raw, Bserostatus==0 & Trt==1 & Perprotocol==1 & EventIndPrimaryD29==1, EventTimePrimaryD29, drop=T))
+#sort(subset(dat_raw, Bserostatus==0 & Trt==1 & Perprotocol==1 & EventIndPrimaryIncludeNotMolecConfirmedD29==1, EventTimePrimaryIncludeNotMolecConfirmedD29, drop=T))
+
+
+########################################################################################################
 
 # packages and settings
 library(here)
@@ -16,18 +38,22 @@ library(Hmisc) # wtd.quantile, cut2
 library(mice)
 library(dplyr)
 
-myprint(study_name_code)
-
-dat_proc <- read.csv(here(
-  "data_raw", data_raw_dir, data_in_file
-))
-
+dat_proc=dat_raw
 
 if(study_name=="MockENSEMBLE") dat_proc=dat_proc[, !contain(names(dat_proc), "pseudoneutid")]
 
 colnames(dat_proc)[1] <- "Ptid" 
 
 dat_proc=subset(dat_proc, !is.na(Bserostatus))
+
+if(study_name_code=="ENSEMBLE") {
+    # set Bserostatus==0 for all ptids that have BbindN > Positivity cut-off
+    # The reason for the issue/discrepancy was that Janssen used a different assay for seroconversion.   
+    # The decision here is to require baseline seronegative to mean seronegative on both assays. 
+    with(dat_proc, table(10**BbindN*convf["bindN"]>pos.cutoffs["bindN"], Bserostatus, useNA="ifany"))
+    dat_proc$Bserostatus[10**dat_proc$BbindN*convf["bindN"]>pos.cutoffs["bindN"]]=1
+    with(dat_proc, table(10**BbindN*convf["bindN"]>pos.cutoffs["bindN"], Bserostatus, useNA="ifany"))
+}
 
           dat_proc=subset(dat_proc, !is.na(EventTimePrimaryD1) & !is.na(EventTimePrimaryD29))
 if(has57) dat_proc=subset(dat_proc, !is.na(EventTimePrimaryD57))
@@ -42,7 +68,6 @@ dat_proc <- dat_proc %>%
 
 dat_proc$Senior = as.integer(dat_proc$Age>=switch(study_name_code, COVE=65, ENSEMBLE=60, stop("unknown study_name_code")))
 
-  
   
 # ethnicity labeling
 dat_proc$ethnicity <- ifelse(dat_proc$EthnicityHispanic == 1, labels.ethnicity[1], labels.ethnicity[2])
@@ -86,8 +111,8 @@ if (study_name_code=="COVE") {
       )
 }
 
-# WhiteNonHispanic=1 IF race is White AND ethnicity is not Hispanic
 dat_proc$WhiteNonHispanic <- NA
+# WhiteNonHispanic=1 IF race is White AND ethnicity is not Hispanic
 dat_proc$WhiteNonHispanic <-
   ifelse(dat_proc$race == "White" &
     dat_proc$ethnicity == "Not Hispanic or Latino", 1,
@@ -100,6 +125,8 @@ dat_proc$WhiteNonHispanic <-
     dat_proc$WhiteNonHispanic
   )
 dat_proc$MinorityInd = 1-dat_proc$WhiteNonHispanic
+# set NA to 0 in both WhiteNonHispanic and MinorityInd. This means the opposite things for how NA's are interpreted and that gave us the option to use one or the other
+dat_proc$WhiteNonHispanic[is.na(dat_proc$WhiteNonHispanic)] = 0
 dat_proc$MinorityInd[is.na(dat_proc$MinorityInd)] = 0
 # set MinorityInd to 0 for latin america and south africa
 if (study_name_code=="ENSEMBLE") {
@@ -235,7 +262,7 @@ if (has57)
 dat_proc <- dat_proc %>%
   mutate(
     TwophasesampIndD57 =
-      (SubcohortInd | EventIndPrimaryD29 == 1) &
+      (SubcohortInd | !(is.na(EventIndPrimaryD29) | EventIndPrimaryD29 == 0)) &
       complete.cases(cbind(
         if("bindSpike" %in% must_have_assays) BbindSpike,
         if("bindRBD" %in% must_have_assays) BbindRBD,
@@ -257,7 +284,7 @@ dat_proc <- dat_proc %>%
 if(has29) dat_proc <- dat_proc %>%
   mutate(
     TwophasesampIndD29 =
-      (SubcohortInd | EventIndPrimaryD29 == 1) &
+      (SubcohortInd | !(is.na(EventIndPrimaryD29) | EventIndPrimaryD29 == 0)) &
       complete.cases(cbind(
         if("bindSpike" %in% must_have_assays) BbindSpike, 
         if("bindRBD" %in% must_have_assays) BbindRBD, 
@@ -272,7 +299,7 @@ if(has29) dat_proc <- dat_proc %>%
   )
   
 
-# wt, for D57 correlates analyses
+# weights for D57 correlates analyses
 if (has57) {
     wts_table <- dat_proc %>% dplyr::filter(EarlyendpointD57==0 & Perprotocol==1 & EventTimePrimaryD57>=7) %>%
       with(table(Wstratum, TwophasesampIndD57))
@@ -288,6 +315,7 @@ if (has57) {
         msg = "missing wt.D57 for D57 analyses ph1 subjects")
 }
 
+# weights for D29 correlates analyses
 if(has29) {
     wts_table2 <- dat_proc %>% dplyr::filter(EarlyendpointD29==0 & Perprotocol==1 & EventTimePrimaryD29>=7) %>%
       with(table(Wstratum, TwophasesampIndD29))
@@ -302,7 +330,7 @@ if(has29) {
         msg = "missing wt.D29 for D29 analyses ph1 subjects")
 }
 
-# define weights for intercurrent cases
+# weights for intercurrent cases
 if(has29 & has57) {
     wts_table2 <- dat_proc %>%               dplyr::filter(EarlyendpointD29==0 & Perprotocol==1 & EventIndPrimaryD29==1 & EventTimePrimaryD29>=7 & EventTimePrimaryD29 <= 6 + NumberdaysD1toD57 - NumberdaysD1toD29) %>%
       with(table(Wstratum, TwophasesampIndD29))
@@ -319,7 +347,7 @@ if(has29 & has57) {
         msg = "missing wt.intercurrent.cases for intercurrent analyses ph1 subjects")
 }
 
-# wt.subcohort, for immunogenicity analyses that use subcohort only and are not enriched by cases outside subcohort
+# weights for immunogenicity analyses that use subcohort only and are not enriched by cases outside subcohort
 if (study_name_code=="COVE") {
     wts_table <- dat_proc %>%       dplyr::filter(EarlyendpointD57==0 & Perprotocol==1) %>%
       with(table(tps.stratum, TwophasesampIndD57 & SubcohortInd))
@@ -550,8 +578,52 @@ if("pseudoneutid50" %in% assays & "pseudoneutid80" %in% assays) {
     if(has57) MaxID50ID80Delta57overB = max(dat_proc[,paste0("Delta57overB", c("pseudoneutid50", "pseudoneutid80"))], na.rm=TRUE)
 }
 
+# a function to print tables of cases counts with different marker availability
+# note that D57 cases and intercurrent cases may add up to more than D29 cases because ph1.D57 requires EarlyendpointD57==0 while ph1.D29 requires EarlyendpointD29==0
+make.case.count.marker.availability.table=function(dat=NULL) {
+    if (is.null(dat)) dat=dat_proc
+    if (study_name_code=="COVE") {
+        idx.trt=1:0
+        names(idx.trt)=c("vacc","plac")
+        cnts = sapply (idx.trt, simplify="array", function(trt) {
+             idx=1:3
+             names(idx)=c("Day 29 Cases", "Day 57 Cases", "Intercurrent Cases")
+             tab=t(sapply (idx, function(i) {           
+                tmp.1 = with(subset(dat, Trt==trt & Bserostatus==0 & (if(i==2) EventIndPrimaryD57 else EventIndPrimaryD29) &   (if(i==2) ph1.D57 else if(i==1) ph1.D29 else ph1.intercurrent.cases)), is.na(BbindSpike)     | is.na(BbindRBD) )
+                tmp.2 = with(subset(dat, Trt==trt & Bserostatus==0 & (if(i==2) EventIndPrimaryD57 else EventIndPrimaryD29) &   (if(i==2) ph1.D57 else if(i==1) ph1.D29 else ph1.intercurrent.cases)), is.na(Day29bindSpike) | is.na(Day29bindRBD))
+                tmp.3 = with(subset(dat, Trt==trt & Bserostatus==0 & (if(i==2) EventIndPrimaryD57 else EventIndPrimaryD29) &   (if(i==2) ph1.D57 else if(i==1) ph1.D29 else ph1.intercurrent.cases)), is.na(Day57bindSpike) | is.na(Day57bindRBD))    
+                
+                c(sum(tmp.1 & tmp.2 & tmp.3), sum(tmp.1 & tmp.2 & !tmp.3), sum(tmp.1 & !tmp.2 & tmp.3), sum(tmp.1 & !tmp.2 & !tmp.3), 
+                  sum(!tmp.1 & tmp.2 & tmp.3), sum(!tmp.1 & tmp.2 & !tmp.3), sum(!tmp.1 & !tmp.2 & tmp.3), sum(!tmp.1 & !tmp.2 & !tmp.3))
+            }))
+            colnames(tab)=c("---", "--+", "-+-", "-++", "+--", "+-+", "++-", "+++")
+            tab
+        })
+        cnts
+    } else if (study_name_code=="ENSEMBLE") {
+        idx.trt=1:0
+        names(idx.trt)=c("vacc","plac")
+        cnts = sapply (idx.trt, simplify="array", function(trt) {
+             idx=1:1
+             tab=t(sapply (idx, function(i) {           
+                tmp.1 = with(subset(dat, Trt==trt & Bserostatus==0 & if(i==2) EventIndPrimaryD57 else EventIndPrimaryD29 &   if(i==2) ph1.D57 else if(i==1) ph1.D29 else ph1.intercurrent.cases), is.na(BbindSpike)     | is.na(BbindRBD) )
+                tmp.2 = with(subset(dat, Trt==trt & Bserostatus==0 & if(i==2) EventIndPrimaryD57 else EventIndPrimaryD29 &   if(i==2) ph1.D57 else if(i==1) ph1.D29 else ph1.intercurrent.cases), is.na(Day29bindSpike) | is.na(Day29bindRBD))
+                
+                c(sum(tmp.1 & tmp.2), sum(!tmp.1 & tmp.2), sum(tmp.1 & !tmp.2), sum(!tmp.1 & !tmp.2))
+             }))
+             colnames(tab)=c("--", "+-", "-+", "++")
+             tab
+        })
+        t(drop(cnts))
+    } else {
+        NA
+    }
+}
+#subset(dat, Trt==trt & Bserostatus==0 & EventIndPrimaryD29==1 & ph1.intercurrent.cases)
+print(make.case.count.marker.availability.table(dat_proc))
+
 save(list=c(if(has57) c("MaxbAbDay57", "MaxbAbDelta57overB", if("pseudoneutid50" %in% assays & "pseudoneutid80" %in% assays) c("MaxID50ID80Day57", "MaxID50ID80Delta57overB")), 
             if(has29) c("MaxbAbDay29", "MaxbAbDelta29overB", if("pseudoneutid50" %in% assays & "pseudoneutid80" %in% assays) c("MaxID50ID80Day29", "MaxID50ID80Delta29overB")),
-            "decode.tps.stratum"
+            "decode.tps.stratum", "make.case.count.marker.availability.table"
           ),
 file=here("data_clean", paste0(attr(config, "config"), "_params.Rdata")))

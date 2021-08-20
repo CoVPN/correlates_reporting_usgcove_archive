@@ -56,12 +56,16 @@ covid_corr_pairplots <- function(plot_dat, ## data for plotting
 
   breaks <- floor(rr[1]):ceiling(rr[2])
 
-  if (rr[2] > ceiling(rr[1])) {
-    breaks <- ceiling(rr[1]):floor(rr[2])
-  } else {
-    breaks <- floor(rr[1]):ceiling(rr[2]) ## breaks on the axis
-  }
+  # Not really sure why the below code is here
+  # if (rr[2] > ceiling(rr[1])) { 
+  #   breaks <- ceiling(rr[1]):floor(rr[2])
+  # } else {
+  #   breaks <- floor(rr[1]):ceiling(rr[2]) ## breaks on the axis
+  # }
 
+  # readjust limits to include all of the breaks
+  rr <- c(floor(rr[1]), ceiling(rr[2]))
+  
   if (max(breaks) - min(breaks) >= 6) {
     breaks <- breaks[breaks %% 2 == 0]
   }
@@ -388,7 +392,7 @@ covid_corr_rcdf_facets <- function(plot_dat,
                                    weight,
                                    lwd = 1,
                                    xlim,
-                                   xbreaks = 2,
+                                   xbreaks = 1,
                                    palette = c(
                                      "#1749FF", "#D92321", "#0AB7C9",
                                      "#FF6F1B", "#810094", "#378252",
@@ -806,7 +810,7 @@ covid_corr_boxplot_facets <- function(plot_dat,
                                       box_width = 0.6,
                                       errorbar_width = 0.45,
                                       jitter_width = 0.15,
-                                      njitter = 30,
+                                      njitter = 100,
                                       legend = levels(plot_dat[, x]),
                                       legend_position = "bottom",
                                       legend_nrow = ceiling(
@@ -819,7 +823,7 @@ covid_corr_boxplot_facets <- function(plot_dat,
                                       xlab_use_letters =
                                         (length(unique(plot_dat[, x])) > 2),
                                       ylim,
-                                      ybreaks = 2,
+                                      ybreaks = 1,
                                       arrange_nrow = ceiling(
                                         length(unique(plot_dat[, facet_by])) / 2
                                       ),
@@ -861,21 +865,19 @@ covid_corr_boxplot_facets <- function(plot_dat,
       subset(plot_dat, plot_dat[, facet_by] ==
         unique(plot_dat[, facet_by])[aa]),
       aes_string(x = x, y = y, color = color)
-    ) +
-      geom_boxplot(width = box_width, lwd = lwd) +
-      stat_boxplot(geom = "errorbar", width = errorbar_width, lwd = lwd) +
-      guides(
-        alpha = "none", fill = "none",
-        color = guide_legend(nrow = legend_nrow, byrow = TRUE)
       ) +
       geom_jitter(
         data = subset(
           boxplot_jitter_points,
-          boxplot_jitter_points[, facet_by] ==
-            unique(boxplot_jitter_points[, facet_by])[aa]
-        ),
-        width = jitter_width, size = point_size,
-        alpha = 0.4
+          boxplot_jitter_points[, facet_by] == unique(boxplot_jitter_points[, facet_by])[aa]),
+        width = jitter_width, size = point_size, height = 0, shape = 1,
+        alpha = 0.6
+      ) +
+      geom_boxplot(width = box_width, lwd = lwd, outlier.shape = NA, fill='transparent') +
+      stat_boxplot(geom = "errorbar", width = errorbar_width, lwd = lwd) +
+      guides(
+        alpha = "none", fill = "none",
+        color = guide_legend(nrow = legend_nrow, byrow = TRUE)
       ) +
       scale_x_discrete(labels = xlabels) +
       scale_y_continuous(
@@ -960,7 +962,6 @@ covid_corr_boxplot_facets <- function(plot_dat,
 #' @param box_width: scalar: boxplot width.
 #' @param errorbar_width: scalar: error bar with.
 #' @param jitter_width: scalar: jitter point area width.
-#' @param njitter: integer: number of jitter points.
 #' @param palette: string vector: palette that decides the colors of the RCDF
 #'  curves.
 #' @param legend: string vector of length levels(plot_by[, by]): legend labels.
@@ -1011,7 +1012,7 @@ covid_corr_spaghetti_facets <- function(plot_dat,
                                         axis_size = 12,
                                         axis_title_size = 12,
                                         ylim,
-                                        ybreaks = 2,
+                                        ybreaks = 1,
                                         arrange_nrow = ceiling(
                                           length(unique(plot_dat[, facet_by])) / 2
                                         ),
@@ -1022,8 +1023,6 @@ covid_corr_spaghetti_facets <- function(plot_dat,
                                         width = 2.5 * arrange_ncol,
                                         units = "in",
                                         filename) {
-  # make a subset of data with 30 sample points for the jitter in each subgroup
-  # defined by Trt:Bserostatus
   
   plot_dat <- plot_dat[!is.na(plot_dat[, x]), ]
   

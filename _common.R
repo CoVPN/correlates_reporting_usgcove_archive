@@ -64,6 +64,18 @@ lloqs=sapply(tmp, function(x) unname(x["LLOQ"]))
 uloqs=sapply(tmp, function(x) unname(x["ULOQ"]))
 
 
+# Per Sarah O'Connell, for ensemble, the positivity cut offs and LLODs will be identical, 
+# as will the quantitative limits for N protein which are based on convalescent samples.
+# But the RBD and Spike quantitation ranges will be different for the Janssen partial validation than for Moderna. 
+if(study_name_code=="ENSEMBLE") {
+    lloqs["bindSpike"]=1.8429 
+    lloqs["bindRBD"]=5.0243 
+    
+    uloqs["bindSpike"]=238.1165 
+    uloqs["bindRBD"]=172.5755    
+}
+
+
 must_have_assays <- c(
   "bindSpike", "bindRBD"
   # NOTE: the live neutralization marker will eventually be available
@@ -107,9 +119,9 @@ labels.ethnicity <- c(
 labels.assays.short <- c("Anti N IgG (IU/ml)", 
                          "Anti Spike IgG (IU/ml)", 
                          "Anti RBD IgG (IU/ml)", 
-                         "Pseudovirus-nAb ID50", 
-                         "Pseudovirus-nAb ID80", 
-                         "Live virus-nAb MN50")
+                         "Pseudovirus-nAb cID50", 
+                         "Pseudovirus-nAb cID80", 
+                         "Live virus-nAb cMN50")
 names(labels.assays.short) <- c("bindN",
   "bindSpike",
   "bindRBD",
@@ -376,7 +388,7 @@ get.ptids.by.stratum.for.bootstrap = function(data) {
     )    
     # add a pseudo-stratum for subjects with NA in tps.stratum (not part of Subcohort). 
     # we need this group because it contains some cases with missing tps.stratum
-    # if data is ph1 only, then this group is only cases because ph1 = subcohort + cases
+    # if data is ph2 only, then this group is only cases because ph2 = subcohort + cases
     tmp=list(subcohort=subset(data, is.na(tps.stratum), Ptid, drop=TRUE),               nonsubcohort=NULL)
     ptids.by.stratum=append(ptids.by.stratum, list(tmp))    
     ptids.by.stratum
@@ -424,7 +436,7 @@ data_name = paste0(attr(config, "config"), "_data_processed.csv")
 # x is the marker values
 # assay is one of assays, e.g. pseudoneutid80
 report.assay.values=function(x, assay){
-    lars.quantiles=seq(.0,1,length.out=30) [round(seq.int(1, 30, length.out = 10))]
+    lars.quantiles=seq(0,1,length.out=30) [round(seq.int(1, 30, length.out = 10))]
     sens.quantiles=c(0.15, 0.85)
     # cannot have different lengths for different assays, otherwise downstream code may break
     fixed.values = log10(c("500"=500, "1000"=1000))#, "llod/2"=unname(llods[assay]/2))) # llod/2 may not be in the observed values

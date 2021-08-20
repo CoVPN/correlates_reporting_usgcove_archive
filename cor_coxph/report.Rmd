@@ -7,19 +7,6 @@
 
 
 
-
-
-```{r, echo=FALSE}
-Day <- 57
-pathCoRoutput <- "cor_coxph/output/D57"
-```
-
-```{r, child=c(here::here('cor_coxph', 'report_sub.Rmd'))}
-```
-
-\clearpage
-
-
 ```{r, echo=FALSE}
 Day <- 29
 pathCoRoutput <- "cor_coxph/output/D29"
@@ -27,3 +14,40 @@ pathCoRoutput <- "cor_coxph/output/D29"
 
 ```{r, child=if (has29) c(here::here('cor_coxph', 'report_sub.Rmd'))}
 ```
+
+
+\clearpage
+
+
+```{r, echo=FALSE}
+Day <- 57
+pathCoRoutput <- "cor_coxph/output/D57"
+```
+
+```{r, child=if (has57) c(here::here('cor_coxph', 'report_sub.Rmd'))}
+```
+
+
+\clearpage
+<!-- The following are not repeated between D29 analyses and D57 analyses -->
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{`r pathCoRoutput`/barplot_visit_intervals_immuno}
+    \caption{Distribution of the number of days bewteen visits in the immunogenicity subcohort, vaccine arm, baseline negative.}
+\end{figure}
+
+
+\ifENSEMBLE
+\else
+
+<!-- COVE only -->
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{`r pathCoRoutput`/barplot_mixed}
+    \caption{Distribution of the number of days to COVID endpoints, vaccine arm, baseline negative.}
+\end{figure}
+
+
+\fi

@@ -241,7 +241,7 @@ run_cv_sl_once <- function(seed = 1, Y = NULL, X_mat = NULL,
     SL.library = sl_lib,
     method = method, cvControl = cvControl,
     innerCvControl = innerCvControl,
-    verbose = FALSE
+    verbose = TRUE
   )
 
   aucs <- get_all_aucs(sl_fit = fit, scale = scale)
@@ -258,13 +258,27 @@ run_cv_sl_once <- function(seed = 1, Y = NULL, X_mat = NULL,
 # @param dat the phase 1 dataset
 # @param risk_vars the vector of column names of risk variables
 # @return a data frame upon removal of any binary risk variables with fewer than 10 ptids that have a 0 or 1 for that variable
-drop_riskVars_with_fewer_0s_or_1s <- function(dat, risk_vars) {
-  for (i in 1:length(risk_vars)) {
-    if ((dat %>% select(matches(risk_vars[i])) %>% unique() %>% dim())[1] == 2) {
-      if ((dim(dat %>% filter(get(risk_vars[i]) == 1))[1] < 10) | (dim(dat %>% filter(get(risk_vars[i]) == 0))[1] < 10)){
-        dat <- dat %>% select(-matches(risk_vars[i]))
+drop_riskVars_with_fewer_0s_or_1s <- function(dat, risk_vars, np) {
+  if(study_name_code == "COVE"){
+      for (i in 1:length(risk_vars)) {
+        if ((dat %>% select(matches(risk_vars[i])) %>% unique() %>% dim())[1] == 2) {
+          if ((dim(dat %>% filter(get(risk_vars[i]) == 1))[1] < 10) | (dim(dat %>% filter(get(risk_vars[i]) == 0))[1] < 10)){
+            dat <- dat %>% select(-matches(risk_vars[i]))
+            print(paste0(risk_vars[i], " dropped from risk score analysis as it had fewer than ", threshold, " 1's or 0's."))
+          }
+        }
       }
-    }
+  }
+  if(study_name_code == "ENSEMBLE"){
+      threshold = round(nrow(dat)* 3/np)
+      for (i in 1:length(risk_vars)) {
+        if ((dat %>% select(matches(risk_vars[i])) %>% unique() %>% dim())[1] == 2) {
+          if ((dim(dat %>% filter(get(risk_vars[i]) == 1))[1] < threshold) | (dim(dat %>% filter(get(risk_vars[i]) == 0))[1] < threshold)){
+            dat <- dat %>% select(-matches(risk_vars[i]))
+            print(paste0(risk_vars[i], " dropped from risk score analysis as it had fewer than ", threshold, " 1's or 0's."))
+          }
+        }
+      }
   }
   return(dat)
 }
@@ -324,18 +338,29 @@ impute_missing_values <- function(X, riskVars) {
     print(paste("Imputing missing values in following variables: ", paste(as.character(covars), collapse = ", ")))
     n.imp <- 1
 
-    imp <- X %>% select(all_of(covars))
-
+    impVars <- X %>% select(all_of(covars))
+    
     # deal with constant variables
-    for (a in names(imp)) {
-      if (all(imp[[a]]==min(imp[[a]], na.rm=TRUE), na.rm=TRUE)) imp[[a]]=min(imp[[a]], na.rm=TRUE)
+    for (a in names(impVars)) {
+      print(a)
+      if (all(impVars[[a]]==min(impVars[[a]], na.rm=TRUE), na.rm=TRUE)) {
+        X[[a]] = min(impVars[[a]], na.rm=TRUE)
+        covars = covars[!covars %in% a]
+      }
     }
+    
+    noimpVars <- X %>% select(-all_of(covars)) %>% colnames()
 
+    init = mice(X, maxit=0) 
+    meth = init$method
+    predM = init$predictorMatrix 
+    meth[c(noimpVars)] = ""
+    
     # diagnostics = FALSE , remove_collinear=F are needed to avoid errors due to collinearity
-    imp <- imp %>%
-      mice(m = n.imp, printFlag = FALSE, seed=1, diagnostics = FALSE, remove_collinear = FALSE)
-
-    X[, covars] <- mice::complete(imp, action = 1L)
+    X <- mice(X, method=meth, predictorMatrix=predM, m=n.imp,
+                   printFlag = FALSE, seed=1, diagnostics = FALSE, remove_collinear = FALSE)
+    X <- mice::complete(X, action = 1L)
+    
   }
   return(X)
 }
@@ -433,16 +458,24 @@ plot_roc_curves <- function(predict, cvaucDAT) {
 # @param pred dataframe returned by get_cv_predictions function
 # @return ggplot object containing the predicted probability plots
 plot_predicted_probabilities <- function(pred) {
+  if(study_name_code == "COVE"){
+    cases = "Post Day 57 Cases"
+  }
+  if(study_name_code == "ENSEMBLE"){
+    cases = "Post Day 29 Cases"
+  }
+  
   pred %>%
-    mutate(Ychar = ifelse(Y == 0, "Control", "Case")) %>%
+    mutate(Ychar = ifelse(Y == 0, "Non-Cases", cases)) %>%
     ggplot(aes(x = Ychar, y = pred, color = Ychar)) +
-    geom_jitter(width = 0.015, size = 0.01) +
-    geom_violin(alpha = 0.2, color = "black") +
-    geom_boxplot(alpha = 0.2, width = 0.025, color = "black", outlier.size = NA, outlier.shape = NA) +
+    geom_jitter(width = 0.06, size = 3, shape = 21, fill = "white") +
+    geom_violin(alpha = 0.05, color = "black", lwd=1.5) +
+    geom_boxplot(alpha = 0.05, width = 0.15, color = "black", outlier.size = NA, outlier.shape = NA, lwd=1.5) +
     theme_bw() +
-    scale_color_manual(values = c("#56B4E9", "#E69F00")) +
+    #scale_color_manual(values = c("#56B4E9", "#E69F00")) +
+    scale_color_manual(values = c("#00468B", "#8B0000")) +
     facet_wrap(vars(learnerScreen), ncol = 1) +
-    labs(y = "CV estimated predicted probability of COVID disease", x = "") +
+    labs(y = "CV estimated predicted probability of COVID-19 disease", x = "") +
     theme(
       legend.position = "none",
       strip.text.x = element_text(size = 25),

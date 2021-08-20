@@ -32,7 +32,7 @@ source(here::here("..", "_common.R"), local = knitr::knit_global())
 
 ```{r, echo=FALSE}
 Day <- 29
-pathCoRoutput <- "output/D29"
+pathCoRoutput <- paste0("output/", attr(config,"config"), "/PrimaryD29")
 ```
 
 ```{r, child=if (has29) c(here::here('.', 'report_sub.Rmd'))}
@@ -43,8 +43,10 @@ pathCoRoutput <- "output/D29"
 
 
 ```{r, echo=FALSE}
-Day <- 57
-pathCoRoutput <- "output/D57"
+if (has57) {
+  Day <- 57
+  pathCoRoutput <- paste0("output/", attr(config,"config"), "/PrimaryD57")
+}
 ```
 
 ```{r, child=if (has57) c(here::here('.', 'report_sub.Rmd'))}
@@ -60,7 +62,7 @@ pathCoRoutput <- "output/D57"
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\textwidth]{output/D29/barplot_visit_intervals_immuno}
+    \includegraphics[width=1\textwidth]{`r pathCoRoutput`/barplot_visit_intervals_immuno}
     \caption{Distribution of the number of days bewteen visits in the immunogenicity subcohort, vaccine arm, baseline negative.  }
 \end{figure}
 

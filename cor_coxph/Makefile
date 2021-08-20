@@ -12,7 +12,7 @@ ifeq ($(TRIAL),$(filter $(TRIAL) ,moderna_mock moderna_real))
 	Rscript code/cor_coxph.R PrimaryD29
 else ifeq ($(TRIAL),$(filter $(TRIAL), janssen_pooled_mock janssen_pooled_real))
 	Rscript code/cor_coxph.R PrimaryD29
-	Rscript code/cor_coxph.R PrimaryD29a
+	#Rscript code/cor_coxph.R PrimaryD29a
 endif
 
 

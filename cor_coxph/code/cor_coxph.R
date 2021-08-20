@@ -1,4 +1,4 @@
-#Sys.setenv(TRIAL = "moderna_mock") # janssen_pooled_real    janssen_pooled_mock    moderna_mock
+#Sys.setenv(TRIAL = "janssen_pooled_mock") # janssen_pooled_real    janssen_pooled_mock    moderna_mock
 
 renv::activate(project = here::here(".."))    
 if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))# There is a bug on Windows that prevents renv from working properly. The following code provides a workaround:
@@ -20,7 +20,7 @@ source(here::here("code", "params.R"))
 
 # population is either 57 or 29
 Args <- commandArgs(trailingOnly=TRUE)
-if (length(Args)==0) Args=c(COR="PrimaryD57") 
+if (length(Args)==0) Args=c(COR="PrimaryD29") 
 COR=Args[1]; myprint(COR)
 
 config.cor <- config::get(config = COR)
@@ -41,29 +41,32 @@ time.start=Sys.time()
 # do this before reading data with risk score, before uloq censoring
 # use dataset without risk score so that we can get baseline pos groups as well
 dat.mock.all <- read.csv(here::here("..", "data_clean", data_name))
-res=lapply (0:1, function(ii) {
-    dat.immuno.seroneg=subset(dat.mock.all, Trt==1 & Bserostatus==ii & ph2.immuno)    
-    ww=sort(unique(dat.immuno.seroneg$demo.stratum))
-    myprint(ww)
-    stopifnot(min(ww)==1)
-    stopifnot(max(ww)==length(ww))
-    names(ww)=demo.stratum.labels
-    mysapply (c(All=0,ww), function(w) { 
-        dat.tmp= if (w==0) dat.immuno.seroneg else subset(dat.immuno.seroneg, demo.stratum==w)
-        10**wtd.quantile(dat.tmp[["Day"%.%pop%.%"pseudoneutid50"]], weights = dat.tmp$wt.subcohort, probs = 0:10/10)
+if ("Day"%.%pop%.%"pseudoneutid50" %in% names(dat.mock.all)) {    
+    res=lapply (0:1, function(ii) {
+        dat.immuno.seroneg=subset(dat.mock.all, Trt==1 & Bserostatus==ii & ph2.immuno)    
+        ww=sort(unique(dat.immuno.seroneg$demo.stratum))
+        myprint(ww)
+        stopifnot(min(ww)==1)
+        stopifnot(max(ww)==length(ww))
+        names(ww)=demo.stratum.labels
+        mysapply (c(All=0,ww), function(w) { 
+            myprint(w)
+            dat.tmp= if (w==0) dat.immuno.seroneg else subset(dat.immuno.seroneg, demo.stratum==w)
+            10**wtd.quantile(dat.tmp[["Day"%.%pop%.%"pseudoneutid50"]], weights = dat.tmp$wt.subcohort, probs = 0:10/10)
+        })
     })
-})
-tab=rbind(res[[1]], res[[2]])
-colnames(tab)[1]="min"
-colnames(tab)[ncol(tab)]="max"
-tab
-mytex(tab, file.name="cID50_deciles_"%.%study_name, align="r", include.colnames = T, save2input.only=T, input.foldername=save.results.to, digits=0,
-    add.to.row=list(list(0,nrow(res[[1]])), # insert at the beginning of table, and at the end of, say, the first table
-        c("       \n \\multicolumn{12}{l}{Baseline negative} \\\\ \n",
-          "\\hline\n \\multicolumn{12}{l}{Baseline positive} \\\\ \n"
-         )
-    )    
-)
+    tab=rbind(res[[1]], res[[2]])
+    colnames(tab)[1]="min"
+    colnames(tab)[ncol(tab)]="max"
+    tab
+    mytex(tab, file.name="cID50_deciles_"%.%study_name, align="r", include.colnames = T, save2input.only=T, input.foldername=save.results.to, digits=0,
+        add.to.row=list(list(0,nrow(res[[1]])), # insert at the beginning of table, and at the end of, say, the first table
+            c("       \n \\multicolumn{12}{l}{Baseline negative} \\\\ \n",
+              "\\hline\n \\multicolumn{12}{l}{Baseline positive} \\\\ \n"
+             )
+        )    
+    )
+}
 
 
 

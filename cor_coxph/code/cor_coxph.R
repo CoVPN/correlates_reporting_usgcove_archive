@@ -26,6 +26,7 @@ COR=Args[1]; myprint(COR)
 config.cor <- config::get(config = COR)
 pop=paste0(config.cor$pop)
 
+
 save.results.to = paste0(here::here("output"), "/", study_name,"/");
 if (!dir.exists(save.results.to))  dir.create(save.results.to)
 save.results.to = paste0(save.results.to, "/D", pop,"/");
@@ -49,20 +50,12 @@ load(here::here("..", "data_clean/", paste0(attr(config,"config"), "_params.Rdat
 
 
 ###################################################################################################
-# set up based on whether to perform D29 or D57 analyses    
-if (pop=="57") {
-    dat.mock$wt=dat.mock$wt.D57
-    dat.mock$ph1=dat.mock$ph1.D57   
-    dat.mock$ph2=dat.mock$ph2.D57   
-    dat.mock$EventIndPrimary=dat.mock$EventIndPrimaryD57   
-    dat.mock$EventTimePrimary=dat.mock$EventTimePrimaryD57   
-} else if (pop=="29") {
-    dat.mock$wt=dat.mock$wt.D29
-    dat.mock$ph1=dat.mock$ph1.D29
-    dat.mock$ph2=dat.mock$ph2.D29
-    dat.mock$EventIndPrimary=dat.mock$EventIndPrimaryD29
-    dat.mock$EventTimePrimary=dat.mock$EventTimePrimaryD29 
-} else stop("wrong pop")
+# set up basic variables using config.cor
+dat.mock$wt=dat.mock[[config.cor$wt]]
+dat.mock$ph1=dat.mock[[config.cor$ph1]]
+dat.mock$ph2=dat.mock[[config.cor$ph2]]
+dat.mock$EventIndPrimary =dat.mock[[config.cor$EventIndPrimary]]
+dat.mock$EventTimePrimary=dat.mock[[config.cor$EventTimePrimary]]
     
 
 

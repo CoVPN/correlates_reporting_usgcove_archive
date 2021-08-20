@@ -80,7 +80,7 @@ janssen_sa_mock:
 
 
 
-D57:
+PrimaryD57:
   EventIndPrimary: EventIndPrimaryD57   
   EventTimePrimary: EventTimePrimaryD57   
   ph1: ph1.D57
@@ -88,7 +88,7 @@ D57:
   wt: wt.D57
   pop: 57
 
-D29:
+PrimaryD29:
   EventIndPrimary: EventIndPrimaryD29  
   EventTimePrimary: EventTimePrimaryD29
   ph1: ph1.D29

@@ -1,34 +1,3 @@
-dat.mock.all <- read.csv(here::here("..", "data_clean", data_name))
-
-# Decile immunogenicity table
-# do this before uloq censoring
-# use dataset without risk score so that we can get baseline pos groups as well
-res=lapply (0:1, function(ii) {
-    dat.immuno.seroneg=subset(dat.mock.all, Trt==1 & Bserostatus==ii & ph2.immuno)    
-    ww=sort(unique(dat.immuno.seroneg$demo.stratum))
-    myprint(ww)
-    stopifnot(min(ww)==1)
-    stopifnot(max(ww)==length(ww))
-    names(ww)=demo.stratum.labels
-    mysapply (c(All=0,ww), function(w) { 
-        dat.tmp= if (w==0) dat.immuno.seroneg else subset(dat.immuno.seroneg, demo.stratum==w)
-        10**wtd.quantile(dat.tmp[["Day"%.%pop%.%"pseudoneutid50"]], weights = dat.tmp$wt.subcohort, probs = 0:10/10)
-    })
-})
-tab=rbind(res[[1]], res[[2]])
-colnames(tab)[1]="min"
-colnames(tab)[ncol(tab)]="max"
-tab
-mytex(tab, file.name="cID50_deciles_"%.%study_name, align="r", include.colnames = T, save2input.only=T, input.foldername=save.results.to, digits=0,
-    add.to.row=list(list(0,nrow(res[[1]])), # insert at the beginning of table, and at the end of, say, the first table
-        c("       \n \\multicolumn{12}{l}{Baseline negative} \\\\ \n",
-          "\\hline\n \\multicolumn{12}{l}{Baseline positive} \\\\ \n"
-         )
-    )    
-)
-
-
-
 # Average follow-up of vaccine recipients starting at 7 days post Day 29 visit
 tmp=round(mean(subset(dat.mock, Trt==1 & Bserostatus==0 & ph1, EventTimePrimary, drop=T), na.rm=T)-7)
 write(tmp, file=paste0(save.results.to, "avg_followup_"%.%study_name))

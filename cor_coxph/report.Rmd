@@ -9,7 +9,7 @@
 
 ```{r, echo=FALSE}
 Day <- 29
-pathCoRoutput <- "cor_coxph/output/D29"
+pathCoRoutput <- paste0("cor_coxph/output/", attr(config,"config"), "/PrimaryD29")
 ```
 
 ```{r, child=if (has29) c(here::here('cor_coxph', 'report_sub.Rmd'))}
@@ -20,8 +20,10 @@ pathCoRoutput <- "cor_coxph/output/D29"
 
 
 ```{r, echo=FALSE}
-Day <- 57
-pathCoRoutput <- "cor_coxph/output/D57"
+if (has57) {
+    Day <- 57
+    pathCoRoutput <- paste0("cor_coxph/output/", attr(config,"config"), "/PrimaryD57")
+}
 ```
 
 ```{r, child=if (has57) c(here::here('cor_coxph', 'report_sub.Rmd'))}
@@ -36,7 +38,7 @@ pathCoRoutput <- "cor_coxph/output/D57"
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\textwidth]{cor_coxph/output/D29/barplot_visit_intervals_immuno}
+    \includegraphics[width=1\textwidth]{`r pathCoRoutput`/barplot_visit_intervals_immuno}
     \caption{Distribution of the number of days bewteen visits in the immunogenicity subcohort, vaccine arm, baseline negative. }
 \end{figure}
 

@@ -319,13 +319,27 @@ if(has29) {
       with(table(Wstratum, TwophasesampIndD29))
     wts_norm2 <- rowSums(wts_table2) / wts_table2[, 2]
     dat_proc$wt.D29 <- wts_norm2[dat_proc$Wstratum %.% ""]
-    dat_proc$wt.D29 = ifelse(with(dat_proc, EarlyendpointD29==0 & Perprotocol==1 & EventTimePrimaryD29>=7), dat_proc$wt.D29, NA)
+    dat_proc$wt.D29 = ifelse(with(dat_proc,  EarlyendpointD29==0 & Perprotocol==1 & EventTimePrimaryD29>=7), dat_proc$wt.D29, NA)
     dat_proc$ph1.D29=!is.na(dat_proc$wt.D29)
     dat_proc$ph2.D29=with(dat_proc, ph1.D29 & TwophasesampIndD29)
 
     assertthat::assert_that(
-        all(!is.na(subset(dat_proc, EarlyendpointD29==0 & Perprotocol==1 & EventTimePrimaryD29>=7 & !is.na(Wstratum), select=wt.D29, drop=T))),
+        all(!is.na(subset(dat_proc,          EarlyendpointD29==0 & Perprotocol==1 & EventTimePrimaryD29>=7 & !is.na(Wstratum), select=wt.D29, drop=T))),
         msg = "missing wt.D29 for D29 analyses ph1 subjects")
+
+    
+    # sensitivity analyses. the population is changed to at risk 1 day post D29 visit
+    wts_table2 <-  dat_proc %>% dplyr::filter(EarlyendpointD29==0 & Perprotocol==1 & EventTimePrimaryD29>=1) %>%
+      with(table(Wstratum, TwophasesampIndD29))
+    wts_norm2 <- rowSums(wts_table2) / wts_table2[, 2]
+    dat_proc$wt.D29a <- wts_norm2[dat_proc$Wstratum %.% ""]
+    dat_proc$wt.D29a = ifelse(with(dat_proc,  EarlyendpointD29==0 & Perprotocol==1 & EventTimePrimaryD29>=1), dat_proc$wt.D29a, NA)
+    dat_proc$ph1.D29a=!is.na(dat_proc$wt.D29a)
+    dat_proc$ph2.D29a=with(dat_proc, ph1.D29a & TwophasesampIndD29)
+
+    assertthat::assert_that(
+        all(!is.na(subset(dat_proc,           EarlyendpointD29==0 & Perprotocol==1 & EventTimePrimaryD29>=1 & !is.na(Wstratum), select=wt.D29a, drop=T))),
+        msg = "missing wt.D29a for D29a analyses ph1 subjects")
 }
 
 # weights for intercurrent cases

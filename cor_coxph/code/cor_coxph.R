@@ -27,6 +27,9 @@ config.cor <- config::get(config = COR)
 MarkerDay=paste0(config.cor$MarkerDay)
 
 
+save.results.to = here::here("output")
+if (!dir.exists(save.results.to))  dir.create(save.results.to)
+
 save.results.to = paste0(here::here("output"), "/", attr(config,"config"));
 if (!dir.exists(save.results.to))  dir.create(save.results.to)
 save.results.to = paste0(save.results.to, "/", COR,"/");

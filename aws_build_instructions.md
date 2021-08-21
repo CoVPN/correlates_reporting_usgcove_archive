@@ -36,7 +36,7 @@ sudo apt-get install -y texlive-fonts-extra libfontconfig1-dev
 We will use the `R` package [`credentials`](https://github.com/r-lib/credentials) to set your GitHub credentials to access downloads from GitHub over https. First we need two additional libraries installed via `apt-get`.
 
 ```bash
-sudo apt-get install -y libssl-dev libcurl4-openssl-dev libxml2-dev
+sudo apt-get install -y libssl-dev libcurl4-openssl-dev libxml2-dev libfontconfig1-dev
 ```
 
 Log in to GitHub and click on your profile picture thumbnail in the upper right-hand corner. Click on Settings and in the left menu select "Developer Settings". In the new menu, select Personal access tokens. Generate a new token given it an arbitrary name. __Do not leave this page__. The access token is available only this once. Copy the access token to your clipboard.
@@ -95,14 +95,54 @@ Installing (some package) [version] ...
   OK [built from source]
 ````
 
-You now have all of the software needed to build the reports.
+### Installations for machine learning pipeline
 
+To run the machine learning pipeline, `python3` must be available and installed.
+On the Hutch servers, we are using version 3.8. If needed, this version of
+python can be installed as follows.
+
+```bash
+# add repository to install older versions of python
+sudo add-apt-repository ppa:deadsnakes/ppa
+sudo apt-get update
+# install 3.8
+sudo apt-get install -y python3.8
+# after installation check python version
+python --version
+```
+
+Next, we use `pip` to install the `pytorch` library. We are using version 1.7.1,
+without GPU acceleration. This version can be installed as follows.
+
+```bash
+# install pip if needed 
+sudo apt-get install -y python3-pip
+# install pytorch
+pip install torch==1.7.1+cpu torchvision==0.8.2+cpu torchaudio==0.7.2 -f https://download.pytorch.org/whl/torch_stable.html
+```
+
+Finally, we need to create a virtual environment in the package repository and
+install requirements.
+
+```bash
+# need to be in correlates_reporting/cor_surrogates folder
+cd cor_surrogates
+# install virtualenv if needed
+pip install virtualenv
+# create virtual environment
+virtualenv ./pytorch
+# install requirements
+pip install -r requirements.txt
+```
 
 ## Building the report
 
 ### Placing data file
 
-The pipeline expects data to be formatted according to documentation [...](https://github.com/covpn/correlates_reporting/). A data set with this format should be placed in `correlates_reporting/data_raw`.
+The pipeline expects data to be formatted according to documentation [...]
+(https://github.com/covpn/correlates_reporting/). A data set with this format
+should be placed in `correlates_reporting/data_raw/[folder]`, where `[folder]`
+is `data_raw_dir` specified in the `config.yml` file (see below).
 
 ### Workflow for building reports
 
@@ -115,21 +155,52 @@ Once an image has been built that includes the GitHub repository, the general wo
 - exit `R` and proceed to report building below.
 
 
-#### Updating `_common.R`
+#### Setting `config`
 
-The script [`correlates_reporting/_common.R`](https://github.com/CoVPN/correlates_reporting/blob/master/_common.R) is where options can be set to control the analysis. There are only a few variables defined in this file that are important. These are:
+To change certain inputs to the pipeline, the `config.yml` file can be edited.
+The head of this file is displayed below.
 
-- `data_in_file` = the file placed in the `data_raw` folder
-- `data_name` = the name of the cleaned data file that will be saved in `data_clean` after the pre-processing script is run
-- `study_name` = the name of the study, which is used in report titling and some figures/captions
-- `assays` = the immune assays used in the analysis; currently supports any combination of `"bindRBD", "pseudoneutid50", "pseudoneutid80", "liveneutmn50"`
-- `include_bindN` = `TRUE`/`FALSE` if the IgG antibodies to N protein should be included in the immunogenicity report
-- `times` = for now, this variable should not be touched; the report requires simultaneous analysis of Day 29 and Day 57 markers
-- `llods` = named LLOD for each assay
-- `lloqs` = named LLOQs for each assay
-- `uloqs` = named ULOQs for each assay
+````
+# the default analysis is moderna-like analysis
+default: &default
+  data_raw_dir: moderna
+  subset_variable: None
+  subset_value: All
+  assays: [bindSpike, bindRBD, pseudoneutid50, pseudoneutid80]
+  times: [B, Day29, Day57, Delta29overB, Delta57overB, Delta57over29]
 
-All variables defined below this are unlikely to need modification.
+moderna_real:
+  <<: *default
+  data_in_file: real_moderna_data.csv # Weiping can set
+  study_name: COVE
+  study_name_code: COVE
+ ````
+
+Here, we see several options that are set by default:
+- `data_raw_dir`: the subfolder or `data_raw` where the raw data will be placed
+- `subset_variable`: variable to subset the entire data set (e.g., by region or
+baseline serostatus). Leave as `None` to run the pipeline on the entire data
+set.
+- `subset_value`: The value of `subset_variable` to subset the data to.
+- `assays`: Names of assays to be included in the analysis pipeline.
+- `times`: Times at which assays are measured
+
+Additionally, these default options are inherited by the remaining
+configurations. For example, the `moderna_real` configuration includes
+additional variables:
+- `data_in_file`: The name of the raw data file placed in `data_raw_dir`
+- `study_name`: The name of the study to be printed in the report
+- `study_name`: The name of the study that is accessed within the code.
+
+Before running the pipeline, an environment variable needs to be set indicating
+which configuration is active. This can be done at the command line using
+`export`. For example,
+
+```bash
+export TRIAL=moderna_real
+```
+
+This makes the `moderna_real` configuration "active".
 
 #### Immunogenecity report
 

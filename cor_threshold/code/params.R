@@ -30,7 +30,7 @@ source(here::here("..", "_common.R"))
 data <- read.csv(here::here("..", "data_clean", data_name))
 
 
-print(colnames(data))
+ 
 if(has29){
     tf_Day29 <- max(data[data$EventIndPrimaryD29==1 & data$Trt == 1 & data$Bserostatus == 0 & !is.na(data$wt.D29), "EventTimePrimaryD29" ])
     tf_Day57 <- max(data[data$EventIndPrimaryD57==1 & data$Trt == 1 & data$Bserostatus == 0 & !is.na(data$wt.D57), "EventTimePrimaryD57" ])
@@ -43,10 +43,10 @@ tf <- list("Day57" = tf_Day57, "Day29" = tf_Day29)
 # tf should be large enough that most events are observed but small enough so that not many people are right censored. For the practice dataset, tf = 170 works.
 # Right-censoring is taken into account for  this analysis.
 covariate_adjusted <- TRUE #### Estimate threshold-response function with covariate adjustment
-fast_analysis <- TRUE ### Perform a fast analysis using glmnet
-include_interactions <- FALSE #### Include algorithms that model interactions between covariates
+fast_analysis <- FALSE ### Perform a fast analysis using glmnet at cost of accuracy
+include_interactions <- TRUE #  NO LONGER ACTIVE #### Include algorithms that model interactions between covariates. NO LONGER ACTIVE
 threshold_grid_size <- 30 ### Number of thresholds to estimate (equally spaced in quantiles). Should be 15 at least for the plots of the threshold-response and its inverse to be representative of the true functions.
-adjust_for_censoring <- FALSE # For now, set to FALSE. If set to TRUE, make sure you set tf well before we lose too many people to "end of study"
+adjust_for_censoring <- FALSE #  NO LONGER ACTIVE # For now, set to FALSE. If set to TRUE, make sure you set tf well before we lose too many people to "end of study"
 plotting_assay_label_generator <- function(marker, above = T) {
     if(above) {
         add <- " (>=s)"

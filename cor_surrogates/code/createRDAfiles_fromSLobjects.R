@@ -93,9 +93,12 @@ readin_SLobjects_fromFolder <- function(data_path, file_pattern, endpoint, trt){
 # Read CV.SL object and save relevant columns as dataframe
 # For vaccine, yd57 endpoint
 data_folder <- here("output")
-cvaucs_d57_vacc <- readin_SLobjects_fromFolder(data_folder, file_pattern = "*.rds", endpoint = "EventIndPrimaryD57", trt = "vaccine") %>%
+cvaucs_vacc <- readin_SLobjects_fromFolder(data_folder, file_pattern = "*.rds", endpoint = "EventIndPrimaryD57", trt = "vaccine") %>%
   mutate(varset = str_replace(file, "CVSLaucs_vacc_EventIndPrimaryD57_", ""),
-         varset = str_replace(varset, ".rds", "")) 
+         varset = str_replace(varset, "_varset", ""),
+         varset = str_replace(varset, ".rds", ""),
+         varsetNo = as.numeric(sapply(strsplit(varset, "_"), `[`, 1))) %>%
+  arrange(varsetNo)
 
-save(cvaucs_d57_vacc, file = here("output", "cvaucs_d57_vacc.rda"))
+save(cvaucs_vacc, file = here("output", "cvaucs_vacc_EventIndPrimaryD57.rda"))
 

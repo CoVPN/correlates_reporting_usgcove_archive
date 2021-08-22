@@ -38,7 +38,7 @@ dat.twophase.sample <- readRDS(here("data_clean", "twophase_data.rds"))
 
 assay_lim <- readRDS(here("data_clean", "assay_lim.rds"))
 
-tps <- c("Day29", "Day57", "Delta29overB", "Delta57overB")
+tps <- c("Day29", "Delta29overB", "Day57", "Delta57overB")
 #-----------------------------------------------
 # PAIR PLOTS
 #-----------------------------------------------

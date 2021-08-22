@@ -139,10 +139,13 @@ screen_highcor_random <- function(Y, X, family, obsWeights, id, nVar = maxVar,
       selectVar = if_else(str_detect(x[1], "mn50"), x[1], x[2]) 
     } else if((str_detect(x[1], "pseudo") & str_detect(x[2], "bind")) | (str_detect(x[2], "pseudo") & str_detect(x[1], "bind"))){
       selectVar = if_else(str_detect(x[1], "pseudo"), x[1], x[2])
+    } else if((str_detect(x[1], "Spike") & str_detect(x[2], "RBD")) | (str_detect(x[2], "Spike") & str_detect(x[1], "RBD"))){
+      selectVar = if_else(str_detect(x[1], "Spike"), x[1], x[2])
+    } else if((str_detect(x[1], "id50") & str_detect(x[2], "id80")) | (str_detect(x[2], "id50") & str_detect(x[1], "id80"))){
+      selectVar = if_else(str_detect(x[1], "id50"), x[1], x[2])
     } else {
       selectVar = sample(c(x[1], x[2]), 1, replace = TRUE)
     }
-    
     return(selectVar)
   }
   

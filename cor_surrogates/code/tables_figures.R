@@ -6,7 +6,6 @@ renv::activate(project = here::here(".."))
 if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
 
 source(here::here("..", "_common.R"))
-
 ## ----load-all-SLobjects, message=FALSE, error=FALSE, warning=FALSE----------------------------------------------------------------------------------------------------
 
 library("cvAUC")
@@ -27,13 +26,13 @@ source(here("code", "utils.R"))
 method <- "method.CC_nloglik" # since SuperLearner relies on this to be in GlobalEnv
 ggplot2::theme_set(theme_cowplot())
 
-load(file = here("output", "cvaucs_d57_vacc.rda"))
+load(file = here("output", "cvaucs_vacc_EventIndPrimaryD57.rda"))
 load(file = here("output", "ph2_vacc_ptids.rda"))
 
 ## ----learner-screens, warning=kable_warnings--------------------------------------------------------------------------------------------------------------------------
 caption <- "All learner-screen combinations (14 in total) used as input to the Superlearner."
 
-tab <- cvaucs_d57_vacc %>%
+tab <- cvaucs_vacc %>%
   filter(!Learner %in% c("SL", "Discrete SL")) %>%
   select(Learner, Screen) %>%
   mutate(Screen = fct_relevel(Screen, c("all", "glmnet", "univar_logistic_pval",
@@ -56,24 +55,55 @@ if(!grepl("Mock", study_name)){
 
 tab %>% write.csv(here("output", "learner-screens.csv"))
 
-## ----All 14 variable sets --------------------------------------------------------------------------------------------------------------------
-caption <- "The 12 variable sets on which an estimated optimal surrogate was built."
+## ----All 28 (34 if live MN50 titers included) variable sets --------------------------------------------------------------------------------------------------------------------
+caption <- "The 28 variable sets on which an estimated optimal surrogate was built."
 
-tab <- data.frame(`Variable Set Name` = c("1_baselineRiskFactors", 
-                                          "2_varset_bAbSpike", "3_varset_bAbRBD", "4_varset_pnabID50", "5_varset_pnabID80",  
-                                          "6_varset_bAb_pnabID50", "7_varset_bAb_pnabID80", 
-                                          "8_varset_bAb_combScores", "9_varset_allMarkers", "10_varset_allMarkers_combScores"),
+tab <- data.frame(`Variable Set Name` = c("1_baselineRiskFactors",
+                                          
+                                          "2_bAbSpike_D57", "3_bAbRBD_D57", "4_pnabID50_D57", "5_pnabID80_D57",
+                                          "6_bAb_pnabID50_D57", "7_bAb_pnabID80_D57", "8_bAb_combScores_D57",
+                                          "9_allMarkers_D57", "10_allMarkers_combScores_D57",
+                                          
+                                          "11_bAbSpike_D29", "12_bAbRBD_D29", "13_pnabID50_D29", "14_pnabID80_D29",
+                                          "15_bAb_pnabID50_D29", "16_bAb_pnabID80_D29", "17_bAb_combScores_D29",
+                                          "18_allMarkers_D29", "19_allMarkers_combScores_D29",
+                                          
+                                          "20_bAbSpike_D29_D57", "21_bAbRBD_D29_D57", "22_pnabID50_D29_D57", "23_pnabID80_D29_D57",
+                                          "24_bAb_pnabID50_D29_D57", "25_bAb_pnabID80_D29_D57", "26_bAb_combScores_D29_D57",
+                                          "27_allMarkers_D29_D57", "28_allMarkers_combScores_D29_D57"),
                   `Variables included in the set` = c("Baseline risk factors only (Reference model)",
-                                                      "Baseline risk factors + bAb anti-Spike markers",
-                                                      "Baseline risk factors + bAb anti-RBD markers",
-                                                      "Baseline risk factors + p-nAb ID50 markers",
-                                                      "Baseline risk factors + p-nAb ID80 markers",
-                                                      "Baseline risk factors + bAb markers + p-nAb ID50 markers",
-                                                      "Baseline risk factors + bAb markers + p-nAb ID80 markers",
-                                                      "Baseline risk factors + bAb markers + combination scores across the five markers [PCA1, PCA2, FSDAM1/FSDAM2 (the first two
+                                                      "Baseline risk factors + Day 57 bAb anti-Spike markers",
+                                                      "Baseline risk factors + Day 57 bAb anti-RBD markers",
+                                                      "Baseline risk factors + Day 57 p-nAb ID50 markers",
+                                                      "Baseline risk factors + Day 57 p-nAb ID80 markers",
+                                                      "Baseline risk factors + Day 57 bAb markers and p-nAb ID50 markers",
+                                                      "Baseline risk factors + Day 57 bAb markers and p-nAb ID80 markers",
+                                                      "Baseline risk factors + Day 57 bAb markers and combination scores across the five markers [PCA1, PCA2, FSDAM1/FSDAM2 (the first two
 components of nonlinear PCA), and the maximum signal diversity score]",
-                                                      "Baseline risk factors + all individual markers",
-                                                      "Baseline risk factors + all individual markers + all combination scores (Full model)"))
+                                                      "Baseline risk factors + all individual Day 57 marker variables",
+                                                      "Baseline risk factors + all individual Day 57 marker variables and theri combination scores (Full model of Day 57 markers)",
+                                                      
+                                                      "Baseline risk factors + Day 29 bAb anti-Spike markers",
+                                                      "Baseline risk factors + Day 29 bAb anti-RBD markers",
+                                                      "Baseline risk factors + Day 29 p-nAb ID50 markers",
+                                                      "Baseline risk factors + Day 29 p-nAb ID80 markers",
+                                                      "Baseline risk factors + Day 29 bAb markers and p-nAb ID50 markers",
+                                                      "Baseline risk factors + Day 29 bAb markers and p-nAb ID80 markers",
+                                                      "Baseline risk factors + Day 29 bAb markers and combination scores across the five markers [PCA1, PCA2, FSDAM1/FSDAM2 (the first two
+components of nonlinear PCA), and the maximum signal diversity score]",
+                                                      "Baseline risk factors + all individual Day 29 marker variables",
+                                                      "Baseline risk factors + all individual Day 29 marker variables and their combination scores (Full model of Day 29 markers)",
+                                                      
+                                                      "Baseline risk factors + Day 29 and Day 57 bAb anti-Spike markers",
+                                                      "Baseline risk factors + Day 29 and Day 57 bAb anti-RBD markers",
+                                                      "Baseline risk factors + Day 29 and Day 57 p-nAb ID50 markers",
+                                                      "Baseline risk factors + Day 29 and Day 57 p-nAb ID80 markers",
+                                                      "Baseline risk factors + Day 29 and Day 57 bAb markers and p-nAb ID50 markers",
+                                                      "Baseline risk factors + Day 29 and Day 57 bAb markers and p-nAb ID80 markers",
+                                                      "Baseline risk factors + Day 29 and Day 57 bAb markers and combination scores across the ten markers [PCA1, PCA2, FSDAM1/FSDAM2 (the first two
+components of nonlinear PCA), and the maximum signal diversity score]",
+                                                      "Baseline risk factors + all individual Day 29 and Day 57 marker variables",
+                                                      "Baseline risk factors + all individual Day 29 and Day 57 marker variables and their combination scores (Full model of Day 29 and Day 57 markers)"))
 
 tab %>% write.csv(here("output", "varsets.csv"))
 
@@ -82,23 +112,23 @@ tab %>% write.csv(here("output", "varsets.csv"))
 # Forest plots for vaccine model
 # vaccine group
 options(bitmapType = "cairo")
-for(i in 1:length(unique(cvaucs_d57_vacc$varset))) {
-  variableSet = unique(cvaucs_d57_vacc$varset)[i]
+for(i in 1:length(unique(cvaucs_vacc$varset))) {
+  variableSet = unique(cvaucs_vacc$varset)[i]
   png(file = here("figs", paste0("forest_vacc_cvaucs_", variableSet, ".png")), width=1000, height=1100)
-  top_learner <- make_forest_plot(cvaucs_d57_vacc %>% filter(varset==variableSet))
+  top_learner <- make_forest_plot(cvaucs_vacc %>% filter(varset==variableSet))
   grid.arrange(top_learner$top_learner_nms_plot, top_learner$top_learner_plot, ncol=2)
   dev.off()
 }
 
 # All 12 Superlearners
-allSLs <- cvaucs_d57_vacc %>% filter(Learner == "SL") %>%
+allSLs <- cvaucs_vacc %>% filter(Learner == "SL") %>%
   mutate(varsetNo = sapply(strsplit(varset, "_"), `[`, 1),
          varsetNo = as.numeric(varsetNo)) %>%
   arrange(varsetNo) %>% 
   mutate(varset = fct_reorder(varset, AUC, .desc = F)) %>%
   arrange(-AUC)
 
-png(file = here("figs", paste0("forest_vacc_cvaucs_allSLs.png")), width=1000, height=1100)
+png(file = here("figs", "forest_vacc_cvaucs_allSLs.png"), width=1000, height=1100)
 lowestXTick <- floor(min(allSLs$ci_ll)*10)/10
 highestXTick <- ceiling(max(allSLs$ci_ul)*10)/10
 top_learner_plot <- ggplot() +
@@ -113,7 +143,7 @@ top_learner_plot <- ggplot() +
         axis.text.x = element_text(size=16),
         axis.title.x = element_text(size=16),
         axis.text.y = element_blank(),
-        plot.margin=unit(c(1,-0.15,1,-0.15),"cm"),
+        plot.margin=unit(c(1,0.2,1,-0.15),"cm"),
         panel.border = element_blank(),
         axis.line = element_line(colour = "black"))
 
@@ -121,15 +151,16 @@ total_learnerScreen_combos = length(allSLs$LearnerScreen)
 
 allSLs_withCoord <- allSLs %>%
   select(varset, AUCstr) %>%
-  gather("columnVal", "strDisplay") %>%
-  mutate(xcoord = case_when(columnVal=="varset" ~ 1.4,
+  mutate(varset = as.character(varset)) %>%
+  tidyr::gather("columnVal", "strDisplay") %>%
+  mutate(xcoord = case_when(columnVal=="varset" ~ 1.5,
                             columnVal=="AUCstr" ~ 2),
          ycoord = rep(total_learnerScreen_combos:1, 2))
 
 top_learner_nms_plot <- ggplot(allSLs_withCoord, aes(x = xcoord, y = ycoord, label = strDisplay)) +
   geom_text(hjust=1, vjust=0, size=5) +
   xlim(0.7,2) +
-  theme(plot.margin=unit(c(1.7,-0.15,2.4,-0.15),"cm"),
+  theme(plot.margin=unit(c(0.3,-0.15,0.9,-0.15),"cm"),
         axis.line=element_blank(),
         axis.text.y = element_blank(),
         axis.text.x = element_text(size = 2, color = "white"),
@@ -143,9 +174,9 @@ dev.off()
 #################################################################################################################################
 #################################################################################################################################
 # plot ROC curve and pred.Prob with SL, Discrete SL and top 2 best-performing individual Learners for all 12 variable sets
-for(i in 1:length(unique(cvaucs_d57_vacc$varset))) {
-  variableSet = unique(cvaucs_d57_vacc$varset)[i]
-  dat <- cvaucs_d57_vacc %>% filter(varset==variableSet)
+for(i in 1:length(unique(cvaucs_vacc$varset))) {
+  variableSet = unique(cvaucs_vacc$varset)[i]
+  dat <- cvaucs_vacc %>% filter(varset==variableSet)
   
   top2 <- bind_rows(
     dat %>% 
@@ -169,7 +200,7 @@ for(i in 1:length(unique(cvaucs_d57_vacc$varset))) {
   options(bitmapType = "cairo")
   png(file = here("figs", paste0("ROCcurve_", variableSet, ".png")),
       width = 1000, height = 1000)
-  p1 <- plot_roc_curves(predict = pred, cvaucDAT = top2, weights = ph2_vacc_ptids$wt.D57)
+  p1 <- plot_roc_curves(predict = pred, cvaucDAT = top2, weights = ph2_vacc_ptids %>% pull(wt.D57))
   print(p1)
   dev.off()
   
@@ -184,7 +215,7 @@ for(i in 1:length(unique(cvaucs_d57_vacc$varset))) {
 
 
 # Get top 2 Superlearner performers
-cvaucs_d57_vacc %>% arrange(-AUC) %>% 
+cvaucs_vacc %>% arrange(-AUC) %>% 
   filter(Learner == "SL") %>%
   select(varset, AUCstr) %>%
   write.csv(here("output", "SLperformance_allvarsets.csv"))

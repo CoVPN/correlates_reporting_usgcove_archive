@@ -21,6 +21,3 @@ here::i_am("cor_surrogates/report.Rmd")
 ```{r, child=here("cor_surrogates", 'report_sub.Rmd')}
 ```
 
-
-
-

@@ -82,7 +82,7 @@ for (tp in tps[tps %in% times]){
 ## make another subsample datasets such that the jitter plot for each subgroup in each panel contains no more
 ## than 50 data points
 set.seed(12345)
-dat.sample3 <- dat.long.cor.subset[, c("Trt", times, "assay", "cohort_event", "ph2.D57")] %>%
+dat.sample3 <- dat.long.cor.subset %>%
   filter(., .$Trt == "Vaccine") %>% 
   split(., list(.$assay, .$cohort_event)) %>%
   lapply(., function(x) {
@@ -93,7 +93,7 @@ dat.sample3 <- dat.long.cor.subset[, c("Trt", times, "assay", "cohort_event", "p
     }}) %>% bind_rows
 
 set.seed(12345)
-dat.sample4 <-  dat.long.cor.subset[, c("Trt", times, "assay", "cohort_event", "ph2.D57")] %>%
+dat.sample4 <-  dat.long.cor.subset %>%
   filter(., .$Trt == "Vaccine") %>% 
   split(., list(.$assay, .$cohort_event)) %>%
   lapply(., function(x) {
@@ -184,7 +184,7 @@ for (tp in tps[tps %in% times]){
 ## stratified by the baseline serostatus, age group and risk group
 ##===============================================================================================================
 set.seed(12345)
-dat.sample5 <-  dat.long.cor.subset[, c("Trt", times, "assay", "cohort_event", "demo_lab", "ph2.D57")] %>%
+dat.sample5 <-  dat.long.cor.subset %>%
   filter(., .$Trt == "Vaccine") %>%
   split(., list(.$assay, .$cohort_event, .$demo_lab)) %>%
   lapply(., function(x) {

@@ -29,33 +29,35 @@ dat.cor.subset <- readRDS(here(
 
 plot_ve_curves <- c(1, 1)
 for (bstatus in 0:1) {
-  ve_dat <- dat.cor.subset %>%
-    filter(EventTimePrimaryD57 >= 7, Bserostatus == bstatus) %>%
-    transmute(Trt = Trt,
-              event = EventIndPrimaryD57,
-              time = EventTimePrimaryD57)
   
-  if (all(ve_dat$event == 0)) {  ## no events in the strata
-    plot_ve_curves[bstatus + 1] <- 0
-    print(paste0("No D57 events among subjects who are Baseline ", 
-                 c("Seronegative", "Seropositive")[bstatus + 1]))
-  } else {
+  if(has57) {
   
-#    if(!file.exists("../cor_coxph/output/D57/marginalized.risk.no.marker."%.%study_name%.%".Rdata")) {    
-#        # compute ve. this works IF ve_dat is properly defined for computing ve
-#        cox_results <- coxph(Surv(time, event) ~ Trt, data = ve_dat)
-#        VE <- as.numeric(1 - exp(cox_results$coefficients))
-#        VE_lb <- as.numeric(1 - exp(confint.default(cox_results)[2]))
-#        VE_ub <- as.numeric(1 - exp(confint.default(cox_results)[1]))
-#    } else {
- 
-    # use ve computed as part of cor_coxph, which is defined based on marginalized risks
-    load("../cor_coxph/output/D57/marginalized.risk.no.marker."%.%study_name%.%".Rdata")
-    VE <- overall.ve[1]
-    VE_lb <- overall.ve[2]
-    VE_ub <- overall.ve[3]        
-#    }
-        
+    ve_dat <- dat.cor.subset %>%
+      filter(EventTimePrimaryD57 >= 7, Bserostatus == bstatus) %>%
+      transmute(Trt = Trt,
+                event = EventIndPrimaryD57,
+                time = EventTimePrimaryD57)
+    
+    if (all(ve_dat$event == 0)) {  ## no events in the strata
+      plot_ve_curves[bstatus + 1] <- 0
+      print(paste0("No D57 events among subjects who are Baseline ", 
+                   c("Seronegative", "Seropositive")[bstatus + 1]))
+    } else {
+    
+#      if(!file.exists("../cor_coxph/output/D57/marginalized.risk.no.marker."%.%study_name%.%".Rdata")) {    
+#          # compute ve. this works IF ve_dat is properly defined for computing ve
+#          cox_results <- coxph(Surv(time, event) ~ Trt, data = ve_dat)
+#          VE <- as.numeric(1 - exp(cox_results$coefficients))
+#          VE_lb <- as.numeric(1 - exp(confint.default(cox_results)[2]))
+#          VE_ub <- as.numeric(1 - exp(confint.default(cox_results)[1]))
+#       } else {
+   
+      # use ve computed as part of cor_coxph, which is defined based on marginalized risks
+      load("../cor_coxph/output/D57/marginalized.risk.no.marker."%.%study_name%.%".Rdata")
+      VE <- overall.ve[1]
+      VE_lb <- overall.ve[2]
+      VE_ub <- overall.ve[3]        
+      
     for (aa in 1:length(assays)) {
       subdat <- subset(dat.long.cor.subset, assay == assays[aa] & Trt == "Vaccine" & Bserostatus == bstatus.labels[bstatus + 1])
       covid_corr_rcdf_ve_lines(x = subdat$Day57,
@@ -67,7 +69,8 @@ for (bstatus in 0:1) {
                                filename = paste0(save.results.to, "/RCDF_VE_Day57_trt_Vaccine_", 
                                                  bstatus.labels.2[bstatus + 1], "_", assays[aa], "_", study_name, ".png"))
     }
-
+    }
+  }
 
     # use ve computed as part of cor_coxph, which is defined based on marginalized risks
     load("../cor_coxph/output/D29/marginalized.risk.no.marker."%.%study_name%.%".Rdata")
@@ -87,7 +90,7 @@ for (bstatus in 0:1) {
                                                  bstatus.labels.2[bstatus + 1], "_", assays[aa], "_", study_name, ".png"))
     }
 
-
-  }
+    
+    
 }
 saveRDS(plot_ve_curves, here::here("data_clean", "plot_ve_curves.rds"))

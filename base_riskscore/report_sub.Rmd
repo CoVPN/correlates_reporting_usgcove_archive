@@ -22,7 +22,7 @@ load(here("base_riskscore", "output", "objects_for_running_SL.rda"))
 
 if(endpoint=="EventIndPrimaryD57")
   day = "Day 57"
-if(endpoint=="EventIndPrimaryD29")
+if(endpoint=="EventIndPrimaryIncludeNotMolecConfirmedD29")
   day = "Day 29"
 
 caption <- "Variables considered for risk score analysis."

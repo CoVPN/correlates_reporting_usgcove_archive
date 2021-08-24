@@ -2725,7 +2725,7 @@ include_graphics(here(
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
-    "boxplots_Day29_BaselineNeg_trt_vaccine_by_race_",
+    "boxplots_Day29_BaselineNeg_trt_Vaccine_by_race_",
     study_name, ".png"
   )
 ))
@@ -2736,7 +2736,7 @@ include_graphics(here(
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
-    "boxplots_Day57_BaselineNeg_trt_vaccine_by_race_",
+    "boxplots_Day57_BaselineNeg_trt_Vaccine_by_race_",
     study_name, ".png"
   )
 ))
@@ -2769,7 +2769,7 @@ include_graphics(here(
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
-    "boxplots_Day29_BaselineNeg_trt_vaccine_by_minority_group_",
+    "boxplots_Day29_BaselineNeg_trt_Vaccine_by_minority_group_",
     study_name, ".png"
   )
 ))
@@ -2780,7 +2780,7 @@ include_graphics(here(
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
-    "boxplots_Day57_BaselineNeg_trt_vaccine_by_minority_group_",
+    "boxplots_Day57_BaselineNeg_trt_Vaccine_by_minority_group_",
     study_name, ".png"
   )
 ))
@@ -2813,7 +2813,7 @@ include_graphics(here(
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
-    "boxplots_Day29_BaselineNeg_trt_vaccine_by_age_x_minority_",
+    "boxplots_Day29_BaselineNeg_trt_Vaccine_by_age_x_minority_",
     study_name, ".png"
   )
 ))
@@ -2824,7 +2824,7 @@ include_graphics(here(
 include_graphics(here(
   "immuno_graphical", "figs", "demographics",
   paste0(
-    "boxplots_Day57_BaselineNeg_trt_vaccine_by_age_x_minority_",
+    "boxplots_Day57_BaselineNeg_trt_Vaccine_by_age_x_minority_",
     study_name, ".png"
   )
 ))

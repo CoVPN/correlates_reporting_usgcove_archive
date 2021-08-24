@@ -355,7 +355,7 @@ for (bAb in c(0, 1)) {
 #-----------------------------------------------
 print("Boxplots 1:")
 
-tps <- c("Day29", "Day57", "Delta29overB", "Delta57overB")
+tps <- c("B", "Day29", "Day57", "Delta29overB", "Delta57overB")
 for (bstatus in 1:2) {
   for (tp in tps[tps %in% times]) {
 
@@ -392,7 +392,7 @@ for (bstatus in 1:2) {
 #   treatment groups
 # - Make seperate plots for Placebo and Vaccine arms
 #-----------------------------------------------
-tps <- c("Day29", "Day57", "Delta29overB", "Delta57overB")
+tps <- c("B", "Day29", "Day57", "Delta29overB", "Delta57overB")
 for (trt in 1:2) {
   for (tp in tps[tps %in% times]) {
     
@@ -490,9 +490,7 @@ print("Scatter plots:")
 tps <- c("B", "Day29", "Day57")
 for (tp in tps[tps %in% times]) {
   for (trt in 1:2) {
-    # Don't produce figures for placebo baseline negative to improve build time
-    if(trt==1) {bstatus.range <- 2} else {bstatus.range <- 1:2}
-    for (bstatus in bstatus.range) {
+    for (bstatus in 1:2) {
       subdat <- dat.long.twophase.sample %>%
         filter(Bserostatus == bstatus.labels[bstatus], Trt == trt.labels[trt])
       

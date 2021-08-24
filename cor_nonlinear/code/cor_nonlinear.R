@@ -120,12 +120,12 @@ dat.vacc.pop.ph2 = subset(dat.vac.seroneg, ph2)
 # there are two dependencies on cor_coxph
 
 # load prev.plac, prev.vacc
-tmp=paste0(here::here(".."), "/cor_coxph/output/D", pop,"/", "marginalized.risk.no.marker."%.%study_name%.%".Rdata")
+tmp=paste0(here::here(".."), "/cor_coxph/output/",attr(config,"config"),"/PrimaryD", pop,"/", "marginalized.risk.no.marker."%.%study_name%.%".Rdata")
 if (file.exists(tmp)) load(tmp)
 # if this does not exist, the code will throw error
 
 # load ylims.cor, which is a list of two: 1 with placebo lines, 2 without placebo lines.
-tmp=paste0(here::here(".."), "/cor_coxph/output/D", pop,"/", "ylims.cor."%.%study_name%.%".Rdata")
+tmp=paste0(here::here(".."), "/cor_coxph/output/",attr(config,"config"),"/PrimaryD", pop,"/", "ylims.cor."%.%study_name%.%".Rdata")
 if (file.exists(tmp)) load(tmp)
 # if this does not exist, the code will find alternative ylim
 

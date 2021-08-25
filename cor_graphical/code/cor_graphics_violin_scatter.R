@@ -40,7 +40,7 @@ names(mins) <- min_max_plot$assay
 maxs <- min_max_plot$max
 names(maxs) <- min_max_plot$assay
 
-#' A function to create a plot that shows violin + box or line + box figures
+#' A function to create a violin + box plot with or without lines
 #' 
 #' @param dat Dataframe with variables needed
 #' @param dat.sample Random sample of the param dat for generating dots (showing all dots may be too much)
@@ -67,7 +67,7 @@ names(maxs) <- min_max_plot$assay
 #' @param axis.text.x.cex font size for x axis text
 #' @param axis.text.y.cex font size for y axis text
 #' @param n_rate variable for counts and response rate: "N_RespRate" or "N_RespRate_severe"
-#' @return A ggplot object for violin + box with or without lines
+#' @return A ggplot object for violin + box plot with or without lines
 
 violin_box_plot <- 
   function(dat, 

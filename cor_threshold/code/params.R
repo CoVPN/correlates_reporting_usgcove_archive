@@ -33,12 +33,13 @@ tf <- list()
 if(has29){
     tf_Day29 <- max(data[data$EventIndPrimaryD29==1 & data$Trt == 1 & data$Bserostatus == 0 & !is.na(data$wt.D29), "EventTimePrimaryD29" ])
     tf$Day29 <-  tf_Day29
-} if(has57){
+} 
+if(has57){
     tf_Day57 <- max(data[data$EventIndPrimaryD57==1 & data$Trt == 1 & data$Bserostatus == 0 & !is.na(data$wt.D57), "EventTimePrimaryD57" ])
     tf$Day57 <-  tf_Day57
  }
 
-}# Reference time to perform analysis. Y = 1(T <= tf) where T is event time of Covid.
+# Reference time to perform analysis. Y = 1(T <= tf) where T is event time of Covid.
 # tf should be large enough that most events are observed but small enough so that not many people are right censored. For the practice dataset, tf = 170 works.
 # Right-censoring is taken into account for  this analysis.
 covariate_adjusted <- TRUE #### Estimate threshold-response function with covariate adjustment

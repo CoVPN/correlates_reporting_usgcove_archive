@@ -1,4 +1,4 @@
-#Sys.setenv(TRIAL = "janssen_pooled_real")
+#Sys.setenv(TRIAL = "janssen_pooled_mock")
 renv::activate(here::here())
     # There is a bug on Windows that prevents renv from working properly. The following code provides a workaround:
     if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
@@ -40,27 +40,18 @@ library(dplyr)
 
 dat_proc=dat_raw
 
+# this should be removed after we received neut data in the real data
 if(study_name=="MockENSEMBLE") dat_proc=dat_proc[, !contain(names(dat_proc), "pseudoneutid")]
 
 colnames(dat_proc)[1] <- "Ptid" 
 
 dat_proc=subset(dat_proc, !is.na(Bserostatus))
 
-if(study_name_code=="ENSEMBLE") {
-    # set Bserostatus==0 for all ptids that have BbindN > Positivity cut-off
-    # The reason for the issue/discrepancy was that Janssen used a different assay for seroconversion.   
-    # The decision here is to require baseline seronegative to mean seronegative on both assays. 
-    with(dat_proc, table(10**BbindN*convf["bindN"]>pos.cutoffs["bindN"], Bserostatus, useNA="ifany"))
-    dat_proc$Bserostatus[10**dat_proc$BbindN*convf["bindN"]>pos.cutoffs["bindN"]]=1
-    with(dat_proc, table(10**BbindN*convf["bindN"]>pos.cutoffs["bindN"], Bserostatus, useNA="ifany"))
-}
-
-          dat_proc=subset(dat_proc, !is.na(EventTimePrimaryD1) & !is.na(EventTimePrimaryD29))
+          dat_proc=subset(dat_proc, !is.na(EventTimePrimaryD29))
 if(has57) dat_proc=subset(dat_proc, !is.na(EventTimePrimaryD57))
 
           dat_proc$EarlyendpointD29 <- with(dat_proc, ifelse(EarlyinfectionD29==1 | (EventIndPrimaryD1==1 & EventTimePrimaryD1 < NumberdaysD1toD29 + 7),1,0))
-          # remember to change EarlyinfectionD29 to EarlyinfectionD29a in the next line when it is available!!!
-          dat_proc$EarlyendpointD29a<- with(dat_proc, ifelse(EarlyinfectionD29==1| (EventIndPrimaryD1==1 & EventTimePrimaryD1 < NumberdaysD1toD29 + 1),1,0))
+          dat_proc$EarlyendpointD29start1<- with(dat_proc, ifelse(EarlyinfectionD29start1==1| (EventIndPrimaryD1==1 & EventTimePrimaryD1 < NumberdaysD1toD29 + 1),1,0))
 if(has57) dat_proc$EarlyendpointD57 <- with(dat_proc, ifelse(EarlyinfectionD57==1 | (EventIndPrimaryD1==1 & EventTimePrimaryD1 < NumberdaysD1toD57 + 7),1,0))
 
 dat_proc <- dat_proc %>%
@@ -331,17 +322,17 @@ if(has29) {
 
     
     # sensitivity analyses. the population is changed to at risk 1 day post D29 visit
-    wts_table2 <-  dat_proc %>% dplyr::filter(EarlyendpointD29a==0 & Perprotocol==1 & EventTimePrimaryD29>=1) %>%
+    wts_table2 <-  dat_proc %>% dplyr::filter(EarlyendpointD29start1==0 & Perprotocol==1 & EventTimePrimaryD29>=1) %>%
       with(table(Wstratum, TwophasesampIndD29))
     wts_norm2 <- rowSums(wts_table2) / wts_table2[, 2]
-    dat_proc$wt.D29a <- wts_norm2[dat_proc$Wstratum %.% ""]
-    dat_proc$wt.D29a = ifelse(with(dat_proc,  EarlyendpointD29a==0 & Perprotocol==1 & EventTimePrimaryD29>=1), dat_proc$wt.D29a, NA)
-    dat_proc$ph1.D29a=!is.na(dat_proc$wt.D29a)
-    dat_proc$ph2.D29a=with(dat_proc, ph1.D29a & TwophasesampIndD29)
+    dat_proc$wt.D29start1 <- wts_norm2[dat_proc$Wstratum %.% ""]
+    dat_proc$wt.D29start1 = ifelse(with(dat_proc,  EarlyendpointD29start1==0 & Perprotocol==1 & EventTimePrimaryD29>=1), dat_proc$wt.D29start1, NA)
+    dat_proc$ph1.D29start1=!is.na(dat_proc$wt.D29start1)
+    dat_proc$ph2.D29start1=with(dat_proc, ph1.D29start1 & TwophasesampIndD29)
 
     assertthat::assert_that(
-        all(!is.na(subset(dat_proc,           EarlyendpointD29a==0 & Perprotocol==1 & EventTimePrimaryD29>=1 & !is.na(Wstratum), select=wt.D29a, drop=T))),
-        msg = "missing wt.D29a for D29a analyses ph1 subjects")
+        all(!is.na(subset(dat_proc,           EarlyendpointD29start1==0 & Perprotocol==1 & EventTimePrimaryD29>=1 & !is.na(Wstratum), select=wt.D29start1, drop=T))),
+        msg = "missing wt.D29start1 for D29start1 analyses ph1 subjects")
 }
 
 # weights for intercurrent cases

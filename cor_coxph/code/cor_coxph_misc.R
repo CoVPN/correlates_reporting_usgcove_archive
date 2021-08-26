@@ -8,13 +8,13 @@ write(tmp, file=paste0(save.results.to, "avg_followup_"%.%study_name))
 #subsetting by (a) the whole immunogenicity subcohort, (2) non-cases in the immunogenicity subcohort, (3) intercurrent cases, (4) primary cases.
 if (study_name_code=="COVE") {
         
-    # D1 to MarkerDay
+    # D1 to tpeak
     tab=sapply(1:4, function (i) {
         idx=with(dat.mock, {
             tmp = (if(i==1) ph1.immuno else if(i==2) (ph1.immuno & EventIndPrimary) else if(i==3) ph1.intercurrent.cases else if(i==4) (ph1.D57 & EventIndPrimaryD57)) & Trt==1 & Bserostatus==0
             tmp [!is.na(tmp)]
         })
-        res=c(quantile(dat.mock[idx, "NumberdaysD1toD"%.%MarkerDay], c(0, 1:3/4, 1), na.rm=T))
+        res=c(quantile(dat.mock[idx, "NumberdaysD1toD"%.%tpeak], c(0, 1:3/4, 1), na.rm=T))
         res
     })
     tab=t(tab)
@@ -26,7 +26,7 @@ if (study_name_code=="COVE") {
 
     
 
-if (study_name_code=="COVE" & MarkerDay=="57") {
+if (study_name_code=="COVE" & tpeak=="57") {
 
     # Number of breakthrough vaccine cases with Day 57 ID80 > 660 IU
     res=nrow(subset(dat.mock, Trt==1 & Bserostatus==0 & ph1 & EventIndPrimary & Day57pseudoneutid80>log10(660)))
@@ -48,22 +48,6 @@ if (study_name_code=="COVE" & MarkerDay=="57") {
     colnames(tab)=c("min", "1st quartile", "median", "3d quartile", "max")
     mytex(tab, file.name="dose1_dose2_interval_summary_"%.%study_name, align="c", include.colnames = T, save2input.only=T, input.foldername=save.results.to, digits=0)
 
-    # barplots for number of days from Day 1 to Day 29 , and number of days from Day 29 to Day 57 in the immunogenicity subcohort
-    myfigure (mfrow=c(1,2))    
-        tmp.1=table(subset(dat.mock, ph1.immuno & Trt==1 & Bserostatus==0, NumberdaysD1toD29,  drop=T))
-        tmp.2=table(subset(dat.mock, ph1.immuno & Trt==1 & Bserostatus==0, NumberdaysD29toD57, drop=T))
-        tmp=cbinduneven(list(tmp.1, tmp.2))
-        tmp=tmp[order(rownames(tmp)),]
-        tmp.1=tmp[,1]; names(tmp.1)=rownames(tmp)
-        tmp.2=tmp[,2]; names(tmp.2)=rownames(tmp)
-        barplot(tmp.1, main="D1 to D29",  xlab="Days"); title(line=3, main="Immunogenicity Subcohort")# , cex.names=.7
-        barplot(tmp.2, main="D29 to D57", xlab="Days"); title(line=3, main="Immunogenicity Subcohort")
-    mydev.off(file=paste0(save.results.to, "barplot_visit_intervals_immuno"))  
-    
-    res=round(quantile(subset(dat.mock, ph1.immuno & Trt==1 & Bserostatus==0, NumberdaysD29toD57, drop=T), c(1/4,1/2,3/4), na.rm=T)); res
-    write(paste0(res[2], " (", res[1], "-", res[3], ")"), file=paste0(save.results.to, "quartiles_visit_intervals_immuno"))
-    
-    
     
     # For Day 29 vaccine breakthrough cases: 
     # (1) for Intercurrent cases number of days from Day 1 to Day 29, 
@@ -118,12 +102,39 @@ if (study_name_code=="COVE" & MarkerDay=="57") {
     mydev.off(file=paste0(save.results.to, "barplot_mixed"))  
 
 
-} else if (study_name_code=="ENSEMBLE") {
+} 
+
+
+if (tpeak=="57") {
         
+    # barplots for number of days from Day 1 to Day 29, and number of days from Day 29 to Day 57 in the immunogenicity subcohort
+    myfigure (mfrow=c(1,2))    
+        tmp.1=table(subset(dat.mock, ph1.immuno & Trt==1 & Bserostatus==0, NumberdaysD1toD29,  drop=T))
+        tmp.2=table(subset(dat.mock, ph1.immuno & Trt==1 & Bserostatus==0, NumberdaysD29toD57, drop=T))
+        tmp=cbinduneven(list(tmp.1, tmp.2))
+        tmp=tmp[order(rownames(tmp)),]
+        tmp.1=tmp[,1]; names(tmp.1)=rownames(tmp)
+        tmp.2=tmp[,2]; names(tmp.2)=rownames(tmp)
+        barplot(tmp.1, main="D1 to D29",  xlab="Days"); title(line=3, main="Immunogenicity Subcohort")# , cex.names=.7
+        barplot(tmp.2, main="D29 to D57", xlab="Days"); title(line=3, main="Immunogenicity Subcohort")
+    mydev.off(file=paste0(save.results.to, "barplot_visit_intervals_immuno"))  
+    
+    #
+    res=round(quantile(subset(dat.mock, ph1.immuno & Trt==1 & Bserostatus==0, NumberdaysD1toD29, drop=T), c(1/4,1/2,3/4), na.rm=T)); res
+    write(paste0(res[2], " (", res[1], "-", res[3], ")"), file=paste0(save.results.to, "quartiles_visit_intervals_immuno_1to29"))
+    #
+    res=round(quantile(subset(dat.mock, ph1.immuno & Trt==1 & Bserostatus==0, NumberdaysD29toD57, drop=T), c(1/4,1/2,3/4), na.rm=T)); res
+    write(paste0(res[2], " (", res[1], "-", res[3], ")"), file=paste0(save.results.to, "quartiles_visit_intervals_immuno_29to57"))
+        
+} else if (tpeak=="29") {
+    
     # barplots for number of days from Day 1 to Day 29 in the immunogenicity subcohort
     myfigure (mfrow=c(1,1))    
         tmp.1=table(subset(dat.mock, ph1.immuno & Trt==1 & Bserostatus==0, NumberdaysD1toD29,  drop=T))
         barplot(tmp.1, main="D1 to D29",  xlab="Days")# , cex.names=.7
     mydev.off(file=paste0(save.results.to, "barplot_visit_intervals_immuno"))  
+    
+    res=round(quantile(subset(dat.mock, ph1.immuno & Trt==1 & Bserostatus==0, NumberdaysD1toD29, drop=T), c(1/4,1/2,3/4), na.rm=T)); res
+    write(paste0(res[2], " (", res[1], "-", res[3], ")"), file=paste0(save.results.to, "quartiles_visit_intervals_immuno_1to29"))
     
 }

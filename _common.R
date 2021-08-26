@@ -95,8 +95,9 @@ assays_to_be_censored_at_uloq_cor <- c(
 ###############################################################################
 # figure labels and titles for markers
 ###############################################################################
-has29 = "Day29" %in% times
-has57 = study_name_code=="COVE"
+#has29 = "Day29" %in% times
+has57 = study_name_code %in% c("COVE","TWOMARKERS")
+has29 = study_name_code %in% c("COVE","TWOMARKERS","ENSEMBLE")
 
 markers <- c(outer(times[which(times %in% c("B", "Day29", "Day57"))], 
                    assays, "%.%"))

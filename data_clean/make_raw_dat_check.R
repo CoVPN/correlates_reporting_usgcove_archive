@@ -21,6 +21,7 @@ variables_with_no_missing <-
       "Black", "Asian", "NatAmer", "PacIsl", "Multiracial",
       "Other", "Notreported", "Unknown",
       "SubcohortInd",
+      "EventIndPrimaryD1",  "EventTimePrimaryD1", 
       if(study_name_code=="ENSEMBLE") c("HIVinfection"))
 failed_variables_missing <- failed_variables_01 <- NULL
 for(variable in variables_with_no_missing){

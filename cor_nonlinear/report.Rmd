@@ -5,8 +5,8 @@
 
 ```{r, echo=FALSE}
 Day <- 57
-pathCoRoutput <- "cor_nonlinear/output/D57"
-pathCorcoxphOutput <- "cor_coxph/output/D57"
+pathCoRoutput <- paste0("cor_nonlinear/output/D57")
+pathCorcoxphOutput <- paste0("cor_coxph/output/", attr(config,"config"), "/PrimaryD57")
 ```
 
 ```{r, child=c(here::here('cor_nonlinear', 'report_sub.Rmd'))}
@@ -16,8 +16,8 @@ pathCorcoxphOutput <- "cor_coxph/output/D57"
 
 ```{r, echo=FALSE}
 Day <- 29
-pathCoRoutput <- "cor_nonlinear/output/D29"
-pathCorcoxphOutput <- "cor_coxph/output/D29"
+pathCoRoutput <- paste0("cor_nonlinear/output/D29")
+pathCorcoxphOutput <- paste0("cor_coxph/output/", attr(config,"config"), "/PrimaryD29")
 ```
 
 ```{r, child=c(here::here('cor_nonlinear', 'report_sub.Rmd'))}

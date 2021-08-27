@@ -367,3 +367,5 @@ cor_coxph/output/MockCOVE/D29/cutpoints_Delta29overBpseudoneutid80_MockCOVE
 cor_coxph/output/MockCOVE/D29/dose1_interval_summary_MockCOVE.tex
 cor_coxph/output/MockCOVE/D29/timepoints_cum_risk_MockCOVE
 cor_coxph/output/MockENSEMBLE/PrimaryD29a/avg_followup_MockENSEMBLE
+cor_coxph/output/janssen_pooled_mock/D29/avg_followup_MockENSEMBLE
+cor_coxph/output/janssen_pooled_mock/D29/quartiles_visit_intervals_immuno_1to29

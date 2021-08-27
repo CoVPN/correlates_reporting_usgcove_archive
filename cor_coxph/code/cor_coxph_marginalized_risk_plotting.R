@@ -40,7 +40,7 @@ for (w.wo.plac in 1:2) { # 1 with placebo lines, 2 without placebo lines. Implem
         }
         ylims.cor[[eq.geq]][[w.wo.plac]]=ylim
     }
-    myprint(ylim)
+    if(verbose) myprint(ylim)
     lwd=2
      
     mypdf(oma=c(0,0,0,0), onefile=F, file=paste0(save.results.to, "marginalized_risks", ifelse(eq.geq==1,"_eq","_geq"), ifelse(w.wo.plac==1,"","_woplacebo"), "_"%.%study_name), mfrow=.mfrow)

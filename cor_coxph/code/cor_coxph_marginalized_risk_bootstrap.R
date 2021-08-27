@@ -24,7 +24,8 @@ marginalized.risk.svycoxph.boot=function(formula, marker.name, type, data, t, B,
         
     } else if (type==2) {
     # conditional on S>=s
-        ss=quantile(data[[marker.name]], seq(0,.9,by=0.05), na.rm=TRUE); myprint(ss)
+        ss=quantile(data[[marker.name]], seq(0,.9,by=0.05), na.rm=TRUE); 
+        if(verbose) myprint(ss)
         prob=marginalized.risk.threshold (formula, marker.name, data=data.ph2, weights=data.ph2$wt, t=t, ss=ss)
        
     } else if (type==3) {
@@ -106,19 +107,19 @@ if(!file.exists(paste0(save.results.to, "marginalized.risk.",study_name,".Rdata"
     
     # vaccine arm, conditional on continuous S=s
     risks.all.1=lapply(assays, function (a) {
-        myprint(a)
+        if(verbose) myprint(a)
         marginalized.risk.svycoxph.boot(formula=form.0, marker.name="Day"%.%tpeak%.%a, type=1, data=dat.vac.seroneg, t0, B=B, ci.type="quantile", numCores=numCores)                
     })    
     
     # vaccine arm, conditional on S>=s
     risks.all.2=lapply(assays, function (a) {
-        myprint(a)
+        if(verbose) myprint(a)
         marginalized.risk.svycoxph.boot(formula=form.0, marker.name="Day"%.%tpeak%.%a, type=2, data=dat.vac.seroneg, t0, B=B, ci.type="quantile", numCores=numCores)        
     }) 
     
     # vaccine arm, conditional on categorical S
     risks.all.3=lapply(assays, function (a) {
-        myprint(a)
+        if(verbose) myprint(a)
         marginalized.risk.svycoxph.boot(formula=form.0, marker.name="Day"%.%tpeak%.%a%.%"cat", type=3, data=dat.vac.seroneg, t0, B=B, ci.type="quantile", numCores=numCores)                
     })    
     

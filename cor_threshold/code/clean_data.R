@@ -9,7 +9,11 @@ source(here::here("code", "params.R"))
 # load data
 dat.mock <- read.csv(here::here("..", "data_clean", paste0(stringr::str_match(data_name,"(.+).csv")[,2],append_data,".csv")))
 
-for (a in assays_to_be_censored_at_uloq_cor) {
+
+ 
+  
+  
+for (a in intersect(assays_to_be_censored_at_uloq_cor, assays)) {
   for (t in c(  if(has57) "Day57", if(has29) "Day29") ) {
     print(a)
     print(t)

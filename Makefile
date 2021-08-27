@@ -22,7 +22,7 @@ cor_analysis_quick: data_processed
 	$(MAKE) -k -C cor_graphical all
 	$(MAKE) -k -C cor_threshold all
 	$(MAKE) -k -C cor_nonlinear all
-	$(MAKE) -k -C cop_mediation all
+# 	$(MAKE) -k -C cop_mediation all
 # 	$(MAKE) -k -C cor_surrogates all
 #	$(MAKE) -k -C cor_nonpar all
 

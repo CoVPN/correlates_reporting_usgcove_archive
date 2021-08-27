@@ -7,7 +7,6 @@ source(here::here("..", "_common.R"))
 myprint(study_name_code)
 myprint(study_name)
 #-----------------------------------------------
-verbose=Sys.getenv("VERBOSE")=="1"
 
 
 library(kyotil) # p.adj.perm, getFormattedSummary
@@ -21,18 +20,19 @@ library(xtable) # this is a dependency of kyotil
 source(here::here("code", "params.R"))
 
 
-# population is either 57 or 29
+# COR defines the analysis to be done, e.g. D29, D57, D29start1
 Args <- commandArgs(trailingOnly=TRUE)
 if (length(Args)==0) Args=c(COR="D29") 
 COR=Args[1]; myprint(COR)
 
+# get analysis-specific parameters from config
 config.cor <- config::get(config = COR)
 tpeak=paste0(config.cor$tpeak)
 if (length(tpeak)==0) stop("config "%.%COR%.%" does not exist")
 
+# save tables and figures to analysis-specific folders
 save.results.to = here::here("output")
 if (!dir.exists(save.results.to))  dir.create(save.results.to)
-
 save.results.to = paste0(here::here("output"), "/", attr(config,"config"));
 if (!dir.exists(save.results.to))  dir.create(save.results.to)
 save.results.to = paste0(save.results.to, "/", COR,"/");
@@ -44,6 +44,7 @@ time.start=Sys.time()
 
 ###################################################################################################
 # Decile immunogenicity table
+# this is kind of standalone
 # do this before reading data with risk score, before uloq censoring
 # use dataset without risk score so that we can get baseline pos groups as well
 dat.mock.all <- read.csv(here::here("..", "data_clean", data_name))
@@ -105,7 +106,6 @@ dat.mock$EventTimePrimary=dat.mock[[config.cor$EventTimePrimary]]
 source(here::here("code", "cor_coxph_misc.R"))
 
 
-
 ###################################################################################################
 # uloq censoring
 # note that if delta are used, delta needs to be recomputed
@@ -135,9 +135,12 @@ dat.pla.seroneg=subset(dat.mock, Trt==0 & Bserostatus==0 & ph1)
 dat.vac.seroneg$yy=dat.vac.seroneg[[config.cor$EventIndPrimary]]
 dat.pla.seroneg$yy=dat.pla.seroneg[[config.cor$EventIndPrimary]]
     
+
 # followup time for the last case
 t0=max(dat.vac.seroneg[dat.vac.seroneg[[config.cor$EventIndPrimary]]==1, config.cor$EventTimePrimary])
 myprint(t0)
+write(t0, file=paste0(save.results.to, "timepoints_cum_risk_"%.%study_name))
+
     
 # formulae
 form.s = as.formula(paste0("Surv(", config.cor$EventTimePrimary, ", ", config.cor$EventIndPrimary, ") ~ 1"))
@@ -159,61 +162,13 @@ if (study_name_code=="COVE") {
     p.cov=3
 }
 
-    
 
 
 ###################################################################################################
-# define trichotomized markers and create design object
-    
-marker.cutpoints <- list()    
-for (a in assays) {
-    marker.cutpoints[[a]] <- list()    
-    for (ind.t in c("Day"%.%tpeak, "Delta"%.%tpeak%.%"overB")) {
-        myprint(a, ind.t, newline=F)
-        
-        uppercut=log10(uloqs[a])*.9999
-        if (mean(dat.vac.seroneg[[ind.t %.% a]]>uppercut, na.rm=T)>1/3 & startsWith(ind.t, "Day")) {
-            # if more than 1/3 of vaccine recipients have value > ULOQ
-            # let q.a be median among those < ULOQ and ULOQ
-            print("more than 1/3 of vaccine recipients have value > ULOQ")
-            q.a=c(  wtd.quantile(dat.vac.seroneg[[ind.t %.% a]][dat.vac.seroneg[[ind.t %.% a]]<=uppercut], weights = dat.vac.seroneg$wt[dat.vac.seroneg[[ind.t %.% a]]<=uppercut], probs = c(1/2)), 
-                    uppercut)
-        } else {
-            q.a <- wtd.quantile(dat.vac.seroneg[[ind.t %.% a]], weights = dat.vac.seroneg$wt, probs = c(1/3, 2/3))
-        }
-        tmp=try(factor(cut(dat.vac.seroneg[[ind.t %.% a]], breaks = c(-Inf, q.a, Inf))), silent=T)
- 
-        do.cut=FALSE # if TRUE, use cut function which does not use weights
-        # if there is a huge point mass, an error would occur, or it may not break into 3 groups
-        if (inherits(tmp, "try-error")) do.cut=TRUE else if(length(table(tmp)) != 3) do.cut=TRUE
-        
-        if(!do.cut) {
-            dat.vac.seroneg[[ind.t %.% a %.% "cat"]] <- tmp
-            marker.cutpoints[[a]][[ind.t]] <- q.a
-        } else {
-            myprint("\ncall cut with breaks=3!!!\n")
-            # cut is more robust but it does not incorporate weights
-            tmp=cut(dat.vac.seroneg[[ind.t %.% a]], breaks=3)
-            stopifnot(length(table(tmp))==3)
-            dat.vac.seroneg[[ind.t %.% a %.% "cat"]] = tmp
-            # extract cut points from factor level labels
-            tmpname = names(table(tmp))[2]
-            tmpname = substr(tmpname, 2, nchar(tmpname)-1)
-            marker.cutpoints[[a]][[ind.t]] <- as.numeric(strsplit(tmpname, ",")[[1]])
-        }
-        stopifnot(length(table(dat.vac.seroneg[[ind.t %.% a %.% "cat"]])) == 3)
-        if(verbose) print(table(dat.vac.seroneg[[ind.t %.% a %.% "cat"]]))
-        cat("\n")
-    }
-}
-    
-# survey design object
-design.vacc.seroneg<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~ph2, data=dat.vac.seroneg)
-
-
-###################################################################################################
-# save cutpoints and t0
-    
+# define trichotomized markers
+dat.vac.seroneg = add.trichotomized.markers (dat.vac.seroneg, tpeak, wt.col.name="wt")
+# save cutpoints
+marker.cutpoints=attr(dat.vac.seroneg, "marker.cutpoints")
 cutpoints=list()
 for (a in assays) {        
     for (t in c("Day"%.%tpeak, "Delta"%.%tpeak%.%"overB")) {
@@ -222,9 +177,13 @@ for (a in assays) {
     }
 }
     
-write(t0, file=paste0(save.results.to, "timepoints_cum_risk_"%.%study_name))
+
+###################################################################################################
+#create design object
+design.vacc.seroneg<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~ph2, data=dat.vac.seroneg)
 
 
+###################################################################################################
 # create verification object to be populated by the following scripts
 rv=list() 
 rv$marker.cutpoints=marker.cutpoints
@@ -238,13 +197,9 @@ rv$marker.cutpoints=marker.cutpoints
     
 source(here::here("code", "cor_coxph_ph.R"))
 
-###################################################################################################
-# run PH models
-###################################################################################################
-
 source(here::here("code", "cor_coxph_forestplots.R"))
 
-# sanity check against unintended consequences
+# sanity check forest plot results as a guard against unintended consequences
 if (study_name == "MockCOVE" & !endsWith(data_name, "riskscore.csv")) {
     tmp.1=c(sapply(rv$fr.2[-1], function (x) x[c("HR","p.value"),1]))
     # concatList(tmp.1, ", ")
@@ -279,6 +234,7 @@ source(here::here("code", "cor_coxph_marginalized_risk_plotting.R"))
 
 
 
+###################################################################################################
 # save rv
 save(rv, file=paste0(here::here("verification"), "/", COR, ".rv."%.%study_name%.%".Rdata"))
 

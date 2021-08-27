@@ -7,6 +7,7 @@ for(opt in names(config)){
   eval(parse(text = paste0(names(config[opt])," <- config[[opt]]")))
 }
 
+verbose=Sys.getenv("VERBOSE")=="1"
 
 names(assays)=assays # add names so that lapply results will have names
 
@@ -449,3 +450,63 @@ report.assay.values=function(x, assay){
     #out[!duplicated(out)] # unique strips away the names. But don't take out duplicates because 15% may be needed and because we may want the same number of values for each assay
 }
 #report.assay.values (dat.vac.seroneg[["Day57pseudoneutid80"]], "pseudoneutid80")
+
+
+
+
+
+###################################################################################################
+# function to define trichotomized markers 
+add.trichotomized.markers=function(dat, tpeak, wt.col.name) {
+    
+    marker.cutpoints <- list()    
+    for (a in assays) {
+        marker.cutpoints[[a]] <- list()    
+        for (ind.t in c("Day"%.%tpeak, "Delta"%.%tpeak%.%"overB")) {
+            if (verbose) myprint(a, ind.t, newline=F)
+            tmp.a=dat[[ind.t %.% a]]
+            
+            uppercut=log10(uloqs[a])*.9999
+            if (mean(tmp.a>uppercut, na.rm=T)>1/3 & startsWith(ind.t, "Day")) {
+                # if more than 1/3 of vaccine recipients have value > ULOQ
+                # let q.a be median among those < ULOQ and ULOQ
+                if (verbose) print("more than 1/3 of vaccine recipients have value > ULOQ")
+                q.a=c(  wtd.quantile(tmp.a[dat[[ind.t %.% a]]<=uppercut], 
+                           weights = dat[[wt.col.name]][tmp.a<=uppercut], probs = c(1/2)), 
+                        uppercut)
+            } else {
+                q.a <- wtd.quantile(tmp.a, weights = dat[[wt.col.name]], probs = c(1/3, 2/3))
+            }
+            tmp=try(factor(cut(tmp.a, breaks = c(-Inf, q.a, Inf))), silent=T)
+     
+            do.cut=FALSE # if TRUE, use cut function which does not use weights
+            # if there is a huge point mass, an error would occur, or it may not break into 3 groups
+            if (inherits(tmp, "try-error")) do.cut=TRUE else if(length(table(tmp)) != 3) do.cut=TRUE
+            
+            if(!do.cut) {
+                dat[[ind.t %.% a %.% "cat"]] <- tmp
+                marker.cutpoints[[a]][[ind.t]] <- q.a
+            } else {
+                myprint("\nfirst cut fails, call cut again with breaks=3 \n")
+                # cut is more robust but it does not incorporate weights
+                tmp=cut(tmp.a, breaks=3)
+                stopifnot(length(table(tmp))==3)
+                dat[[ind.t %.% a %.% "cat"]] = tmp
+                # extract cut points from factor level labels
+                tmpname = names(table(tmp))[2]
+                tmpname = substr(tmpname, 2, nchar(tmpname)-1)
+                marker.cutpoints[[a]][[ind.t]] <- as.numeric(strsplit(tmpname, ",")[[1]])
+            }
+            stopifnot(length(table(dat[[ind.t %.% a %.% "cat"]])) == 3)
+            if(verbose) {
+                print(table(dat[[ind.t %.% a %.% "cat"]]))
+                cat("\n")
+            }
+            
+        }
+    }
+    
+    attr(dat, "marker.cutpoints")=marker.cutpoints
+    dat
+    
+}

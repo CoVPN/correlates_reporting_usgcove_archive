@@ -3,16 +3,18 @@ all: clean cor_coxph
 
 ## clean         : delete saved bootstrap results
 clean:
-	rm -rf output/*
+	rm -rf output/ $(TRIAL)/*
 
 ## cor_coxph     : create tables and figures
 cor_coxph:
-	Rscript code/cor_coxph.R 29
-ifeq ($(TRIAL), moderna_mock)
-	Rscript code/cor_coxph.R 57
-else ifeq ($(TRIAL), moderna_real)
-	Rscript code/cor_coxph.R 57
+ifeq ($(TRIAL),$(filter $(TRIAL), moderna_mock moderna_real))
+	Rscript code/cor_coxph.R PrimaryD57
+	Rscript code/cor_coxph.R PrimaryD29
+else ifeq ($(TRIAL),$(filter $(TRIAL), janssen_pooled_mock janssen_pooled_real))
+	Rscript code/cor_coxph.R PrimaryD29
+	#Rscript code/cor_coxph.R PrimaryD29a
 endif
+
 
 ## report        : create a standalone report
 report:

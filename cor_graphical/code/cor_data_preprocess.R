@@ -384,7 +384,7 @@ if(study_name_code=="ENSEMBLE") {
                               cohort_event == "Non-Cases" ~ 1,
                               TRUE ~ 0)
            )
-}
+} else {dat.longer.cor.subset$severe = NA}
 
 # subsets for violin/line plots
 #### figure specific data prep

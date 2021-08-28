@@ -13,19 +13,19 @@ dat_raw <- read.csv(here("data_raw", data_raw_dir, data_in_file))
 
 # some exploratory statistics
 
-summary(dat_raw)
-summary(dat_raw$Age)
-hist(dat_raw$Day29bindSpike)
-10**min(dat_raw$Day29bindSpike,na.rm=T)*.009*2
-hist(dat_raw$Day29bindN)
-10**min(dat_raw$Day29bindN,na.rm=T)*0.0024*2
-sort(names(dat_raw))
-
-summary(dat_raw$EventTimePrimaryD29[dat_raw$EventIndPrimaryD29==1])
-hist(dat_raw$EventTimePrimaryD29[dat_raw$EventIndPrimaryD29==1])
-
-sort(subset(dat_raw, Bserostatus==0 & Trt==1 & Perprotocol==1 & EventIndPrimaryD1==1, EventTimePrimaryD1, drop=T))
-sort(subset(dat_raw, Bserostatus==0 & Trt==1 & Perprotocol==1 & EventIndPrimaryD29==1, EventTimePrimaryD29, drop=T))
+#summary(dat_raw)
+#summary(dat_raw$Age)
+#hist(dat_raw$Day29bindSpike)
+#10**min(dat_raw$Day29bindSpike,na.rm=T)*.009*2
+#hist(dat_raw$Day29bindN)
+#10**min(dat_raw$Day29bindN,na.rm=T)*0.0024*2
+#sort(names(dat_raw))
+#
+#summary(dat_raw$EventTimePrimaryD29[dat_raw$EventIndPrimaryD29==1])
+#hist(dat_raw$EventTimePrimaryD29[dat_raw$EventIndPrimaryD29==1])
+#
+#sort(subset(dat_raw, Bserostatus==0 & Trt==1 & Perprotocol==1 & EventIndPrimaryD1==1, EventTimePrimaryD1, drop=T))
+#sort(subset(dat_raw, Bserostatus==0 & Trt==1 & Perprotocol==1 & EventIndPrimaryD29==1, EventTimePrimaryD29, drop=T))
 #sort(subset(dat_raw, Bserostatus==0 & Trt==1 & Perprotocol==1 & EventIndPrimaryIncludeNotMolecConfirmedD29==1, EventTimePrimaryIncludeNotMolecConfirmedD29, drop=T))
 
 
@@ -51,7 +51,9 @@ dat_proc=subset(dat_proc, !is.na(Bserostatus))
 if(has57) dat_proc=subset(dat_proc, !is.na(EventTimePrimaryD57))
 
           dat_proc$EarlyendpointD29 <- with(dat_proc, ifelse(EarlyinfectionD29==1 | (EventIndPrimaryD1==1 & EventTimePrimaryD1 < NumberdaysD1toD29 + 7),1,0))
-          dat_proc$EarlyendpointD29start1<- with(dat_proc, ifelse(EarlyinfectionD29start1==1| (EventIndPrimaryD1==1 & EventTimePrimaryD1 < NumberdaysD1toD29 + 1),1,0))
+if(study_name_code=="ENSEMBLE") {
+     dat_proc$EarlyendpointD29start1<- with(dat_proc, ifelse(EarlyinfectionD29start1==1| (EventIndPrimaryD1==1 & EventTimePrimaryD1 < NumberdaysD1toD29 + 1),1,0))
+}          
 if(has57) dat_proc$EarlyendpointD57 <- with(dat_proc, ifelse(EarlyinfectionD57==1 | (EventIndPrimaryD1==1 & EventTimePrimaryD1 < NumberdaysD1toD57 + 7),1,0))
 
 dat_proc <- dat_proc %>%
@@ -321,6 +323,7 @@ if(has29) {
         msg = "missing wt.D29 for D29 analyses ph1 subjects")
 
     
+  if(study_name_code=="ENSEMBLE") {
     # sensitivity analyses. the population is changed to at risk 1 day post D29 visit
     wts_table2 <-  dat_proc %>% dplyr::filter(EarlyendpointD29start1==0 & Perprotocol==1 & EventTimePrimaryD29>=1) %>%
       with(table(Wstratum, TwophasesampIndD29))
@@ -333,6 +336,7 @@ if(has29) {
     assertthat::assert_that(
         all(!is.na(subset(dat_proc,           EarlyendpointD29start1==0 & Perprotocol==1 & EventTimePrimaryD29>=1 & !is.na(Wstratum), select=wt.D29start1, drop=T))),
         msg = "missing wt.D29start1 for D29start1 analyses ph1 subjects")
+  }
 }
 
 # weights for intercurrent cases

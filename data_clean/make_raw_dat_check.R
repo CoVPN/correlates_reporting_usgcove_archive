@@ -15,16 +15,16 @@ colnames(dat_proc)[1] <- "Ptid"
 
 ## missing values in variables that should have no missing values
 ## binary variables only take values 0/1
-variables_with_no_missing <-
+bin_variables_with_no_missing <-
     c("Trt", "Bserostatus", #"Age", # age is not binary
       "EthnicityHispanic", "EthnicityNotreported", "EthnicityUnknown",
       "Black", "Asian", "NatAmer", "PacIsl", "Multiracial",
       "Other", "Notreported", "Unknown",
       "SubcohortInd",
-      "EventIndPrimaryD1",  "EventTimePrimaryD1", 
+      "EventIndPrimaryD1", 
       if(study_name_code=="ENSEMBLE") c("HIVinfection"))
 failed_variables_missing <- failed_variables_01 <- NULL
-for(variable in variables_with_no_missing){
+for(variable in bin_variables_with_no_missing){
     pass <- all(!is.na(dat_proc[[variable]]))
     if(!pass){
         failed_variables_missing <- c(failed_variables_missing, variable)
@@ -34,16 +34,35 @@ for(variable in variables_with_no_missing){
         failed_variables_01 <- c(failed_variables_01, variable)
     }
 }
+if(length(failed_variables_missing) > 0){
+    stop(paste0("Unexpected missingness in: ", paste(failed_variables_missing,
+                                                     collapse = ", ")))
+}
+if(length(failed_variables_01) > 0){
+    stop(paste0("Unexpected values in: ", paste(failed_variables_01,
+                                                collapse = ", ")))
+}
 
+
+
+## missing values in variables that should have no missing values
+## binary variables only take values 0/1
+variables_with_no_missing <-
+    c("EventTimePrimaryD1", 
+      if(study_name_code=="ENSEMBLE") c("HIVinfection"))
+failed_variables_missing <- NULL
+for(variable in variables_with_no_missing){
+    pass <- all(!is.na(dat_proc[[variable]]))
+    if(!pass){
+        failed_variables_missing <- c(failed_variables_missing, variable)
+    }
+}
 if(length(failed_variables_missing) > 0){
     stop(paste0("Unexpected missingness in: ", paste(failed_variables_missing,
                                                      collapse = ", ")))
 }
 
-if(length(failed_variables_01) > 0){
-    stop(paste0("Unexpected values in: ", paste(failed_variables_01,
-                                                collapse = ", ")))
-}
+
 
 
 

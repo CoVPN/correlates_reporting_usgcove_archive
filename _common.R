@@ -458,6 +458,7 @@ report.assay.values=function(x, assay){
 ###################################################################################################
 # function to define trichotomized markers 
 add.trichotomized.markers=function(dat, tpeak, wt.col.name) {
+    if(verbose) print("add.trichotomized.markers ...")
     
     marker.cutpoints <- list()    
     for (a in assays) {

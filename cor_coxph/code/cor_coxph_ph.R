@@ -1,8 +1,9 @@
 ###################################################################################################
-# Regression for continuous markers
+if(verbose) print("Regression for continuous markers")
 
 # Report point and 95\% confidence interval estimates for the hazard ratio per 10-fold change in the antibody marker, 
 # for the entire baseline negative vaccine cohort
+
 
 fits=list()
 for (a in c("Day"%.%tpeak%.%assays, "Delta"%.%tpeak%.%"overB"%.%assays)) {
@@ -36,7 +37,7 @@ pvals.cont = sapply(fits, function(x) {
 
 
 ###################################################################################################
-# regression for trichotomized markers
+if(verbose) print("regression for trichotomized markers")
 
 fits.tri=list()
 for (a in c("Day"%.%tpeak%.%assays, "Delta"%.%tpeak%.%"overB"%.%assays)) {
@@ -61,7 +62,7 @@ overall.p.0=formatDouble(c(rbind(overall.p.tri, NA,NA)), digits=3, remove.leadin
 
 
 ###################################################################################################
-# multitesting adjustment for continuous and trichotomized markers together
+if(verbose) print("# multitesting adjustment for continuous and trichotomized markers together")
 
 p.unadj=c(cont=pvals.cont, tri=overall.p.tri)
 p.unadj.1 = p.unadj # save a copy for later use

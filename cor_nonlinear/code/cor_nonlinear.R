@@ -100,6 +100,11 @@ if (study_name_code=="COVE") {
     }
     # covariate length without markers
     p.cov=3
+
+    if (subset_variable!="None") {
+        form.0.logistic = update (form.0.logistic, ~.- as.factor(Region))
+        p.cov=1
+    }
 }
     
 

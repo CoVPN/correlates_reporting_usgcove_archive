@@ -1,17 +1,22 @@
 #!/bin/bash
 
 export TRIAL=moderna_mock
+make clean
 make test
 
 export TRIAL=janssen_pooled_mock
+make clean
 make test
 
 export TRIAL=janssen_na_mock
+make clean
 make test
 
 export TRIAL=janssen_la_mock
+make clean
 make test
 
 export TRIAL=janssen_sa_mock
+make clean
 make test
 

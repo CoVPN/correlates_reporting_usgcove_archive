@@ -1,4 +1,4 @@
-#Sys.setenv(TRIAL = "janssen_pooled_mock") # janssen_pooled_real    janssen_pooled_mock    moderna_mock
+#Sys.setenv(TRIAL = "janssen_pooled_mock") # janssen_pooled_real    janssen_pooled_mock    moderna_mock  janssen_na_mock
 #Sys.setenv(VERBOSE = 1) 
 renv::activate(project = here::here(".."))    
     # There is a bug on Windows that prevents renv from working properly. The following code provides a workaround:
@@ -110,7 +110,7 @@ source(here::here("code", "cor_coxph_misc.R"))
 # uloq censoring
 # note that if delta are used, delta needs to be recomputed
 for (a in intersect(assays_to_be_censored_at_uloq_cor, assays)) {
-  for (t in c("B", if(has57) "Day57", if(has29) "Day29") ) {
+  for (t in c("B", "Day"%.%tpeak) ) {
     dat.mock[[t %.% a]] <- ifelse(dat.mock[[t %.% a]] > log10(uloqs[a]), log10(uloqs[a]), dat.mock[[t %.% a]])
   }
 }
@@ -160,6 +160,11 @@ if (study_name_code=="COVE") {
     }
     # covariate length without markers
     p.cov=3
+    
+    if (subset_variable!="None") {
+        form.0 = update (form.0, ~.- as.factor(Region))
+        p.cov=1
+    }
 }
 
 

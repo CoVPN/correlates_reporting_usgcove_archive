@@ -5,7 +5,7 @@ if(!file.exists(paste0(save.results.to, "M111.fits.logistic.",study_name,".Rdata
     M111.fits.logistic=list()
     for (a in assays) {
         myprint(a)
-        M111.fits.logistic[[a]]=chngptm(form.0.logistic, as.formula("~Day"%.%pop%.%a), dat.vacc.pop.ph2, type="M111", family="binomial", var.type="none", weights=dat.vacc.pop.ph2$wt.0, est.method="grid")    
+        M111.fits.logistic[[a]]=chngptm(form.0.logistic, as.formula("~Day"%.%tpeak%.%a), dat.vacc.pop.ph2, type="M111", family="binomial", var.type="none", weights=dat.vacc.pop.ph2$wt, est.method="grid")    
     }
     save(M111.fits.logistic, file=paste0(save.results.to, "M111.fits.logistic.",study_name,".Rdata"))
 } else {
@@ -15,7 +15,7 @@ if(!file.exists(paste0(save.results.to, "M111.fits.logistic.",study_name,".Rdata
 
 step.fits.logistic=list()
 for (a in assays) {
-    step.fits.logistic[[a]]=chngptm(form.0.logistic, as.formula("~Day"%.%pop%.%a), dat.vacc.pop.ph2, type="step", family="binomial", var.type="none", weights=dat.vacc.pop.ph2$wt.0)    
+    step.fits.logistic[[a]]=chngptm(form.0.logistic, as.formula("~Day"%.%tpeak%.%a), dat.vacc.pop.ph2, type="step", family="binomial", var.type="none", weights=dat.vacc.pop.ph2$wt)    
 }
 
 
@@ -34,7 +34,7 @@ for (idx in 1:1) { # 1 with placebo lines, 2 without placebo lines. Implementati
     for (a in assays) {
         fit=step.fits.logistic[[a]]
         
-        xlim=get.range.cor(dat.vac.seroneg, a, pop)
+        xlim=get.range.cor(dat.vac.seroneg, a, tpeak)
         
         plot(fit, which=1, add.points=F, ylab="COVID-19 risk", xlab=labels.assays.short[a]%.%" (=s)", xaxt="n", xlim=xlim, ylim=ylim)
         
@@ -55,7 +55,7 @@ for (idx in 1:1) { # 1 with placebo lines, 2 without placebo lines. Implementati
         par(new=TRUE) 
         col <- c(col2rgb("olivedrab3")) # orange, darkgoldenrod2
         col <- rgb(col[1], col[2], col[3], alpha=255*0.4, maxColorValue=255)
-        tmp=hist(dat.vac.seroneg[["Day"%.%pop%.%a]], breaks=15, plot=F)
+        tmp=hist(dat.vac.seroneg[["Day"%.%tpeak%.%a]], breaks=15, plot=F)
         plot(tmp, col=col,axes=F,labels=F,main="",xlab="",ylab="",border=0,freq=F, xlim=xlim, ylim=c(0,max(tmp$density*1.25)))
     }
     dev.off()
@@ -65,8 +65,8 @@ for (idx in 1:1) { # 1 with placebo lines, 2 without placebo lines. Implementati
 ## segmented
 #segmented.fits.logistic=list()
 #for (a in assays) {
-#    fit.aux = glm(update(form.0.logistic, as.formula("~.+ns(Day"%.%pop%.%a%.%",3)")), dat.vacc.pop.ph2, family="binomial", weights=if(pop=="57") dat.vacc.pop.ph2$wt.D57 else dat.vacc.pop.ph2$wt.D29)
-#    segmented.fits.logistic[[a]]=chngptm(form.0.logistic, as.formula("~Day"%.%pop%.%a), dat.vacc.pop.ph2, type="segmented", family="binomial", var.type="robust", aux.fit=fit.aux, weights=if(pop=="57") dat.vacc.pop.ph2$wt.D57 else dat.vacc.pop.ph2$wt.D29)    
+#    fit.aux = glm(update(form.0.logistic, as.formula("~.+ns(Day"%.%tpeak%.%a%.%",3)")), dat.vacc.pop.ph2, family="binomial", weights=if(tpeak=="57") dat.vacc.pop.ph2$wt.D57 else dat.vacc.pop.ph2$wt.D29)
+#    segmented.fits.logistic[[a]]=chngptm(form.0.logistic, as.formula("~Day"%.%tpeak%.%a), dat.vacc.pop.ph2, type="segmented", family="binomial", var.type="robust", aux.fit=fit.aux, weights=if(tpeak=="57") dat.vacc.pop.ph2$wt.D57 else dat.vacc.pop.ph2$wt.D29)    
 #}
 #
 #mypdf(oma=c(1,0,0,0), onefile=F, file=paste0(save.results.to, "segmented", "_"%.%study.name), mfrow=.mfrow)
@@ -82,7 +82,7 @@ for (idx in 1:1) { # 1 with placebo lines, 2 without placebo lines. Implementati
 #    par(new=TRUE) 
 #    col <- c(col2rgb("olivedrab3")) # orange, darkgoldenrod2
 #    col <- rgb(col[1], col[2], col[3], alpha=255*0.4, maxColorValue=255)
-#    hist(dat.vac.seroneg[["Day"%.%pop%.%a]],col=col,axes=F,labels=F,main="",xlab="",ylab="",breaks=10,border=0,freq=F)    #,ylim=ylim    
+#    hist(dat.vac.seroneg[["Day"%.%tpeak%.%a]],col=col,axes=F,labels=F,main="",xlab="",ylab="",breaks=10,border=0,freq=F)    #,ylim=ylim    
 #}
 #dev.off()
 
@@ -90,8 +90,8 @@ for (idx in 1:1) { # 1 with placebo lines, 2 without placebo lines. Implementati
 ## this may fail because some model fits may not have confidence intervals due to singular model fits
 #tab=getFormattedSummary(segmented.fits.logistic, exp=T, robust=T)
 #tab=tab[-1,]# remove intercept
-#colnames(tab)=labels.axis["Day"%.%pop,assays]
-#rownames(tab)=gsub("Day"%.%pop%.%"bind", "Day 57"%.%pop%.%" marker", rownames(tab))
+#colnames(tab)=labels.axis["Day"%.%tpeak,assays]
+#rownames(tab)=gsub("Day"%.%tpeak%.%"bind", "Day 57"%.%tpeak%.%" marker", rownames(tab))
 ##rownames(tab)=gsub("age.geq.65", "Age>=65", rownames(tab))
 #tab
 #mytex(tab, file.name="CoR_univariable_hingelogistic", input.foldername=save.results.to, align="c")
@@ -101,7 +101,7 @@ for (idx in 1:1) { # 1 with placebo lines, 2 without placebo lines. Implementati
 #hinge.fit.coxph=list()
 #for (a in assays) {
 #    # lots of errors probably due to bootstrap scheme
-#    hinge.fit.coxph[[a]]=   chngptm(form.0, as.formula("~Day"%.%pop%.%a),          dat.mock.vacc.seroneg.ph2, type="hinge", family="coxph",    var.type="bootstrap", weights=if(pop=="57") dat.vacc.pop.ph2$wt.D57 else dat.vacc.pop.ph2$wt.D29, verbose=0, ci.bootstrap.size=B, ncpu=numCores)
+#    hinge.fit.coxph[[a]]=   chngptm(form.0, as.formula("~Day"%.%tpeak%.%a),          dat.mock.vacc.seroneg.ph2, type="hinge", family="coxph",    var.type="bootstrap", weights=if(tpeak=="57") dat.vacc.pop.ph2$wt.D57 else dat.vacc.pop.ph2$wt.D29, verbose=0, ci.bootstrap.size=B, ncpu=numCores)
 #}
 #save(hinge.fit.logistic, hinge.fit.coxph, file=paste0(save.results.to, "hinge.fits.Rdata"), save2input.only=TRUE)
 #load(file=paste0(save.results.to, "hinge.fits.Rdata"))

@@ -182,7 +182,8 @@ for (a in assays) {
 ###################################################################################################
 # forest plots for different countries and regions
 
-if (study_name_code=="ENSEMBLE" & subset_variable=="None") {
+# 0:pooled or 2:la
+if (study_name_code=="ENSEMBLE" & !subset_value %in% c(0,2)) {
 
 regions=  get("regions."  %.%study_name_code)
 countries=get("countries."%.%study_name_code)

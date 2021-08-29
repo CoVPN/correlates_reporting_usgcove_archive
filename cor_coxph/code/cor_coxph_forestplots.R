@@ -55,62 +55,75 @@ for (a in assays) {
 ###################################################################################################
 # forest plots for subpopulations
 
-designs=list()
-for (i in 1:ifelse(study_name_code=="ENSEMBLE",5,4)) {    
-    designs[[i]]=list()
-    if(i==1) {
-        designs[[i]][[1]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~ph2, data=get.dat.with.no.empty(subset(dat.vac.seroneg, Senior==1)))
-        designs[[i]][[2]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~ph2, data=get.dat.with.no.empty(subset(dat.vac.seroneg, Senior==0)))        
-    } else if(i==2) {
-        designs[[i]][[1]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~ph2, data=get.dat.with.no.empty(subset(dat.vac.seroneg, HighRiskInd==1)))
-        designs[[i]][[2]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~ph2, data=get.dat.with.no.empty(subset(dat.vac.seroneg, HighRiskInd==0)))
-    } else if(i==3) {
-      # MinorityInd also makes sense for US in ensemble
-      if(study_name_code=="ENSEMBLE") {          
-        designs[[i]][[1]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~ph2, data=get.dat.with.no.empty(subset(dat.vac.seroneg, MinorityInd==1 & Region==0)))
-        designs[[i]][[2]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~ph2, data=get.dat.with.no.empty(subset(dat.vac.seroneg, MinorityInd==0 & Region==0)))
-      } else {
-        designs[[i]][[1]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~ph2, data=get.dat.with.no.empty(subset(dat.vac.seroneg, MinorityInd==1)))
-        designs[[i]][[2]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~ph2, data=get.dat.with.no.empty(subset(dat.vac.seroneg, MinorityInd==0)))
-      }
-    } else if(i==4) {
-        designs[[i]][[1]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~ph2, data=get.dat.with.no.empty(subset(dat.vac.seroneg, Sex==1)))
-        designs[[i]][[2]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~ph2, data=get.dat.with.no.empty(subset(dat.vac.seroneg, Sex==0)))
-    } else if(i==5) {
-        designs[[i]][[1]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~ph2, data=get.dat.with.no.empty(subset(dat.vac.seroneg, HIVinfection==1)))
-        designs[[i]][[2]]<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~ph2, data=get.dat.with.no.empty(subset(dat.vac.seroneg, HIVinfection==0)))        
-    }
-}
-
-
 # different fits may use different formulae
 fits.all.2=vector("list", length(assays));names(fits.all.2)=assays
+i=1
+
+# whole population
 for (a in assays) {
     f= update(form.0, as.formula(paste0("~.+Day",tpeak, a)))
     fits.all.2[[a]]=list()        
-    fits.all.2[[a]][[1]]=run.svycoxph(f, design=design.vacc.seroneg) 
-    
+    fits.all.2[[a]][[i]]=run.svycoxph(f, design=design.vacc.seroneg) 
+}
+i=i+1
+
+# senior
+design.1<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~ph2, data=get.dat.with.no.empty(subset(dat.vac.seroneg, Senior==1)))
+design.2<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~ph2, data=get.dat.with.no.empty(subset(dat.vac.seroneg, Senior==0)))        
+for (a in assays) {
     f= update(form.0, as.formula(paste0("~.+Day",tpeak, a)))
-    fits.all.2[[a]][[2]]=run.svycoxph(f, design=designs[[1]][[1]]) 
-    fits.all.2[[a]][[3]]=run.svycoxph(f, design=designs[[1]][[2]]) 
-    
+    fits.all.2[[a]][[i]]=run.svycoxph(f, design=design.1) 
+    fits.all.2[[a]][[i+1]]=run.svycoxph(f, design=design.2) 
+}
+i=i+2
+
+# high risk
+design.1<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~ph2, data=get.dat.with.no.empty(subset(dat.vac.seroneg, HighRiskInd==1)))
+design.2<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~ph2, data=get.dat.with.no.empty(subset(dat.vac.seroneg, HighRiskInd==0)))
+for (a in assays) {
     f= update(update(form.0, ~.-HighRiskInd), as.formula(paste0("~.+Day",tpeak, a)))
-    fits.all.2[[a]][[4]]=run.svycoxph(f, design=designs[[2]][[1]]) 
-    fits.all.2[[a]][[5]]=run.svycoxph(f, design=designs[[2]][[2]]) 
-    
-    f= update(update(form.0, ~.-as.factor(Region)-MinorityInd), as.formula(paste0("~.+Day",tpeak, a)))
-    fits.all.2[[a]][[6]]=run.svycoxph(f, design=designs[[3]][[1]]) 
-    fits.all.2[[a]][[7]]=run.svycoxph(f, design=designs[[3]][[2]]) 
-    
-    f= update(form.0, as.formula(paste0("~.+Day",tpeak, a)))
-    fits.all.2[[a]][[8]]=run.svycoxph(f, design=designs[[4]][[1]]) 
-    fits.all.2[[a]][[9]]=run.svycoxph(f, design=designs[[4]][[2]]) 
-    
-    if (study_name_code=="ENSEMBLE") {
-        f= update(form.0, as.formula(paste0("~.+Day",tpeak, a)))
-        fits.all.2[[a]][[10]]=run.svycoxph(f, design=designs[[5]][[1]]) 
-        fits.all.2[[a]][[11]]=run.svycoxph(f, design=designs[[5]][[2]]) 
+    fits.all.2[[a]][[i]]=run.svycoxph(f, design=design.1) 
+    fits.all.2[[a]][[i+1]]=run.svycoxph(f, design=design.2) 
+}
+i=i+2
+
+# MinorityInd makes sense for COVE and US in ensemble
+if(study_name_code=="COVE" | study_name_code=="ENSEMBLE" & !subset_value %in% c(1,2)) {
+    if(study_name_code=="COVE") {
+        design.1<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~ph2, data=get.dat.with.no.empty(subset(dat.vac.seroneg, MinorityInd==1)))
+        design.2<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~ph2, data=get.dat.with.no.empty(subset(dat.vac.seroneg, MinorityInd==0)))
+    } else {
+        design.1<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~ph2, data=get.dat.with.no.empty(subset(dat.vac.seroneg, MinorityInd==1 & Region==0)))
+        design.2<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~ph2, data=get.dat.with.no.empty(subset(dat.vac.seroneg, MinorityInd==0 & Region==0)))
     }
+    for (a in assays) {
+        f= update(update(form.0, ~.-as.factor(Region)-MinorityInd), as.formula(paste0("~.+Day",tpeak, a)))
+        fits.all.2[[a]][[i]]=run.svycoxph(f, design=design.1) 
+        fits.all.2[[a]][[i+1]]=run.svycoxph(f, design=design.2) 
+    }
+    i=i+2
+}
+
+# gender
+design.1<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~ph2, data=get.dat.with.no.empty(subset(dat.vac.seroneg, Sex==1)))
+design.2<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~ph2, data=get.dat.with.no.empty(subset(dat.vac.seroneg, Sex==0)))
+for (a in assays) {
+    f= update(form.0, as.formula(paste0("~.+Day",tpeak, a)))
+    fits.all.2[[a]][[i]]=run.svycoxph(f, design=design.1) 
+    fits.all.2[[a]][[i+1]]=run.svycoxph(f, design=design.2) 
+}
+i=i+2
+
+# HIV infection
+if (study_name_code=="ENSEMBLE") {
+    design.1<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~ph2, data=get.dat.with.no.empty(subset(dat.vac.seroneg, HIVinfection==1)))
+    design.2<-twophase(id=list(~1,~1), strata=list(NULL,~Wstratum), subset=~ph2, data=get.dat.with.no.empty(subset(dat.vac.seroneg, HIVinfection==0)))        
+    for (a in assays) {
+        f= update(form.0, as.formula(paste0("~.+Day",tpeak, a)))
+        fits.all.2[[a]][[i]]=run.svycoxph(f, design=design.1) 
+        fits.all.2[[a]][[i+1]]=run.svycoxph(f, design=design.2) 
+    }
+    i=i+2
 }
 
 
@@ -120,7 +133,7 @@ for (a in assays) {
                              "Age >= "%.%age.threshold, "Age < "%.%age.threshold, 
                              "At risk", "Not at risk", 
                              if (study_name_code!="ENSEMBLE") c("Comm. of color", "White Non-Hispanic"),
-                             if (study_name_code=="ENSEMBLE") c("Comm. of color (US)", "White Non-Hispanic (US)"),
+                             if (study_name_code=="ENSEMBLE" & !subset_value %in% c(1,2)) c("Comm. of color (US)", "White Non-Hispanic (US)"),
                              "Men", "Women",
                              if (study_name_code=="ENSEMBLE") c("HIV infection Yes", "HIV infection No")
     )
@@ -135,8 +148,8 @@ nevents=c(nrow(subset(dat.vac.seroneg, yy==1)),
           # MinorityInd also makes sense for US in ensemble
           if(study_name_code!="ENSEMBLE") nrow(subset(dat.vac.seroneg, yy==1 & MinorityInd==1)), 
           if(study_name_code!="ENSEMBLE") nrow(subset(dat.vac.seroneg, yy==1 & MinorityInd==0)), 
-          if(study_name_code=="ENSEMBLE") nrow(subset(dat.vac.seroneg, yy==1 & MinorityInd==1 & Region==0)), 
-          if(study_name_code=="ENSEMBLE") nrow(subset(dat.vac.seroneg, yy==1 & MinorityInd==0 & Region==0)), 
+          if(study_name_code=="ENSEMBLE" & !subset_value %in% c(1,2)) nrow(subset(dat.vac.seroneg, yy==1 & MinorityInd==1 & Region==0)), 
+          if(study_name_code=="ENSEMBLE" & !subset_value %in% c(1,2)) nrow(subset(dat.vac.seroneg, yy==1 & MinorityInd==0 & Region==0)), 
           nrow(subset(dat.vac.seroneg, yy==1 & Sex==1)), 
           nrow(subset(dat.vac.seroneg, yy==1 & Sex==0)),
           if (study_name_code=="ENSEMBLE") { c(
@@ -169,7 +182,7 @@ for (a in assays) {
 ###################################################################################################
 # forest plots for different countries and regions
 
-if (study_name_code=="ENSEMBLE") {
+if (study_name_code=="ENSEMBLE" & subset_variable=="None") {
 
 regions=  get("regions."  %.%study_name_code)
 countries=get("countries."%.%study_name_code)

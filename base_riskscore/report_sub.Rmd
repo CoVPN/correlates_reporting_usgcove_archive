@@ -153,3 +153,39 @@ knitr::include_graphics(here::here("base_riskscore", "figs", "predProb_riskscore
 ```{r, echo=FALSE, out.width="95%", out.height="95%", fig.cap="ROC curve based off Superlearner predicted probabilities in vaccinees."}
 knitr::include_graphics(here::here("base_riskscore", "figs", "ROCcurve_riskscore_vacc_onlySL.png"))
 ```
+
+\clearpage
+
+```{r cases-prior, warning=FALSE, echo=FALSE, message=FALSE}
+caption <- "Cases per treatment arm prior to risk score analysis."
+new_colnames = c("Non-Cases", paste0("Post-", day, "-Cases"))
+
+read.csv(here("base_riskscore", "output", "cases_prior_riskScoreAnalysis.csv"), row.names = 1,
+         header = TRUE) %>%
+  tibble::rownames_to_column(var = "Study-Arm") %>%
+  rename_with(~new_colnames, c("X0", "X1")) %>%
+  kable(
+    booktabs = TRUE,
+    linesep = "",
+    caption = caption) %>%
+  kable_styling(latex_options = c("hold_position"),
+                font_size = 9)
+
+```
+
+
+```{r cases-post-riskScore, warning=FALSE, echo=FALSE, message=FALSE}
+caption <- "Cases per treatment arm post risk score analysis."
+
+read.csv(here("base_riskscore", "output", "cases_post_riskScoreAnalysis.csv"), row.names = 1,
+         header = TRUE) %>%
+  tibble::rownames_to_column(var = "Study-Arm") %>%
+  rename_with(~new_colnames, c("X0", "X1")) %>%
+  kable(
+    booktabs = TRUE,
+    linesep = "",
+    caption = caption) %>%
+  kable_styling(latex_options = c("hold_position"),
+                font_size = 9)
+
+```

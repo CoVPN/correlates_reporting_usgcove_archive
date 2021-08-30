@@ -6,7 +6,6 @@
 #' Assume monotone nonincreasing
 get_plot <- function(marker, simultaneous_CI = F, monotone = F, above = TRUE) {
     library(survival)
-    print("PLOTS")
   dat.mock <- read.csv(here::here("..", "data_clean", paste0(stringr::str_match(data_name,"(.+).csv")[,2],append_data,".csv")))
   data <- dat.mock
    time <- marker_to_time[[marker]]
@@ -76,9 +75,9 @@ get_plot <- function(marker, simultaneous_CI = F, monotone = F, above = TRUE) {
   col <- rgb(col[1], col[2], col[3], alpha = 255 * 0.4, maxColorValue = 255)
   # hist(na.omit(data_biased[[marker]]),col=col,axes=F,labels=F,main="",xlab="",ylab="",breaks=10,border=0,freq=F)
   # Get initial threshold-response plot with simultaneous CI
-  v <- plot_threshold_response(esttmle, simultaneous_CI = simultaneous_CI, monotone = F)
-  data_tmp <- na.omit(data[, c(marker, "Ttilde", "Delta", "wt"), drop = F])
-  max_thresh <- max(data_tmp[data_tmp[["Delta"]] == 1, marker])
+  v <- plot_threshold_response(esttmle, simultaneous_CI = simultaneous_CI, monotone = monotone)
+  data_tmp <- na.omit(data[, c(marker, "outcome", "wt"), drop = F])
+  max_thresh <- max(data_tmp[data_tmp[["outcome"]] == 1, marker])
   # out <- hist(na.omit(data_tmp[[marker]]), col=col,axes=F,labels=F,main="",xlab="",ylab="",breaks=10,border=0,freq=F)
   scale_coef <- max(v$data$upper, na.rm = T) * 1
 
@@ -100,10 +99,36 @@ get_plot <- function(marker, simultaneous_CI = F, monotone = F, above = TRUE) {
   labels_info <- get.labels.x.axis.cor(xlim, llods[a])
   xx <- labels_info$ticks
   labels <- labels_info$labels
- 
+
+  # xx=seq(floor(min(esttmle[, 1])), ceiling(max(esttmle[, 1])))
+  # xx <- as.numeric(sort(union(xx, log10(llods[a]))))
+  # labels <- sapply(xx, function(x) {
+  #   if (log10(llods[a])==x) {
+  #     labels <- "lod"
+  #     }
+  #   else if (x>=3) {
+  #       labels <- (bquote(10^.(x)))
+  #     }
+  #   else {
+  #     labels <- as.character(10^x )
+  #   }
+  #   return(labels)
+  # })
+  # labels <- unlist(labels, use.names = F, recursive = F)
+  #
   xlimits <- xlim
 
-  
+  # if(F & abs(xlimits[1] - ceiling(xlimits[1])) < 0.07 && abs(xlimits[1] - xlimits[2] )>= 1.2) {
+  #   xlimits[1] <- (xlimits[1]) - 0.075
+
+  #} else {
+  #  xlimits[1] <- floor(xlimits[1])
+  #}
+  #if(F & abs(xlimits[2] - floor(xlimits[2])) < 0.07 && abs(xlimits[1] - xlimits[2] )>= 1.2) {
+  # xlimits[2] <- (xlimits[2]) + 0.075
+  #} else {
+  # xlimits[2] <- ceiling(xlimits[2])
+  #}
 
   plot <- v + ggtitle(main) +
     stat_function(fun = RCDF, color = col, geom = "area", fill = col, alpha = 0.2) +
@@ -133,12 +158,6 @@ get_plot <- function(marker, simultaneous_CI = F, monotone = F, above = TRUE) {
      plot <- plot + geom_hline(aes(yintercept=risk_plac), alpha = 0.4, linetype = "longdash", colour = "red")
  }
   plot
-   
-  data_interp <- as.data.frame(approx(plot$data$cutoffs, plot$data$est, xout = data[data$Delta==1,marker], rule = 2  ))
-    
-  
-  plot <- plot  +geom_point(data=data_interp,aes(x=x, y=y), colour = "blue")
-   
     #+  geom_text(aes(x=max_thresh *(1.01), label="No observed events", y=0.002), colour="black", angle=90, text=element_text(size=11))
   append_end <- ""
   append_start <- "PLOT"
@@ -157,7 +176,6 @@ get_plot <- function(marker, simultaneous_CI = F, monotone = F, above = TRUE) {
   }
 
   print(folder)
-   
   ggsave(
     filename = here::here(
       "figs", folder,
@@ -165,7 +183,7 @@ get_plot <- function(marker, simultaneous_CI = F, monotone = F, above = TRUE) {
     ),
     plot = plot, height = 7, width = 9
   )
-   
+
   return(plot)
 }
 
@@ -173,7 +191,6 @@ get_plot <- function(marker, simultaneous_CI = F, monotone = F, above = TRUE) {
 #' @param marker The marker variable to generate plots for.
 #' @param num_show The number of thresholds to include in table.
 generate_tables <- function(marker, num_show = 10, monotone = F, above = T) {
-    print("TABLES")
     time <- marker_to_time[[marker]]
      
     data_secondstage <- read.csv(here::here("data_clean", paste0("data_secondstage_", time, ".csv")))

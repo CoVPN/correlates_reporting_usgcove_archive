@@ -84,6 +84,9 @@ for (i in seq_along(top_models)) {
       mutate(Learner = top_models[i])
   }
 
+  if (top_models[i] == "SL.mean_screen_all")
+	next
+
   if (i == 1) {
     all_models <- model
   } else {

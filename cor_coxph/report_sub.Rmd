@@ -9,7 +9,7 @@ The main regression model is the Cox proportional hazards model. All plots are m
 \begin{center}
     \input{`r pathCoRoutput`/CoR_univariable_svycoxph_pretty_`r study_name`}\\
 \end{center}
-*Baseline covariates adjusted for: baseline risk score, meeting the protocol randomization stratification criterion for being at heightened risk of COVID (yes or no), `r ifelse(study_name_code=="COVE", "community of color or not", "strata(Region)")`. Maximum failure event time \input{`r pathCoRoutput`/timepoints_cum_risk_`r study_name`} days.\\
+*Baseline covariates adjusted for: baseline risk score, `r ifelse(study_name_code=="COVE", "meeting the protocol randomization stratification criterion for being at heightened risk of COVID (yes or no), community of color or not", "region (US, South Africa, or Latin American)")`. Maximum failure event time \input{`r pathCoRoutput`/timepoints_cum_risk_`r study_name`} days.\\
 **No. at-risk = estimated number in the population for analysis: baseline negative per-protocol vaccine recipients not experiencing the COVID endpoint through 6 days post Day `r Day` visit; no. cases = number of this cohort with an observed COVID endpoint.\\
 ***q-value and FWER (family-wide error rate) are computed over the set of p-values both for quantitative markers and categorical markers `r ifelse(study_name_code=="COVE", "", "")` using the Westfall and Young permutation method (\protect\input{`r pathCoRoutput`/permutation_replicates_`r study_name`} replicates). 
 
@@ -263,7 +263,7 @@ Average follow-up of vaccine recipients (in the Day `r Day` correlates analyses 
 \else
 
 \begin{table}[H]
-\caption{Median and IQR and range of days from dose 1 to Day `r Day` visit. (a) The whole immunogenicity subcohort, (b) non-cases in the immunogenicity subcohort, (c) intercurrent cases, (d) primary cases, i.e. cases from the Day 57 correlates analysis population.
+\caption{Summary statistics for the number of days from dose 1 to Day `r Day` visit. (a) The whole immunogenicity subcohort, (b) non-cases in the immunogenicity subcohort, (c) intercurrent cases, (d) primary cases, i.e. cases from the Day 57 correlates analysis population.
 }
 \begin{center}
 \setlength{\tabcolsep}{.5ex}

@@ -344,3 +344,5 @@ cor_coxph/output/D29/permutation_replicates_ENSEMBLE
 cor_coxph/output/D29/pvals.perm.ENSEMBLE.Rdata
 cor_coxph/output/D29/timepoints_cum_risk_ENSEMBLE
 cor_coxph/output/D29/ylims.cor.ENSEMBLE.Rdata
+cor_coxph/output/D29/avg_followup_MockENSEMBLE
+cor_coxph/output/D57/dose1_dose2_interval_summary_MockCOVE.tex

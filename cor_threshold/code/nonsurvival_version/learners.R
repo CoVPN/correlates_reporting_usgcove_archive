@@ -32,10 +32,6 @@ get_learner <- function(fast_analysis = T, include_interactions = F, covariate_a
   if (!covariate_adjusted) {
     return(lrnr_mean)
   }
-  
-  return(Lrnr_hal9001$new(max_degree = 2, smoothness_orders = 1, num_knots = c(15,5)))
-  
-  
   if (fast_analysis) {
     if (include_interactions) {
       lrnr <- lrnr_glmnet_inter

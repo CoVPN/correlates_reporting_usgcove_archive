@@ -5,6 +5,7 @@ renv::activate(project = here::here(".."))
 source(here::here("..", "_common.R"))
 #-----------------------------------------------
 
+source(here::here("code", "cor_process_function.R"))
 library(here)
 library(dplyr)
 library(tidyverse)
@@ -23,14 +24,17 @@ dat <- as.data.frame(dat.mock)
 
 ## label the subjects according to their case-control status
 ## add case vs non-case indicators
-if(has57) dat$cohort_event <- factor(with(dat,
+if(has57) {dat$cohort_event <- factor(with(dat,
                                 ifelse(Perprotocol==1 & Bserostatus==0 & EarlyendpointD29==0 & TwophasesampIndD29==1 & EventIndPrimaryD29==1 & EventTimePrimaryD29 >=7 & EventTimePrimaryD29 <= (6 + NumberdaysD1toD57 - NumberdaysD1toD29), 
                                        "Intercurrent Cases",
-                                       ifelse(Perprotocol==1 & Bserostatus==0 & EarlyendpointD57==0 & TwophasesampIndD57==1 & EventIndPrimaryD57==1, "Post-Peak Cases",
+                                       ifelse(Perprotocol==1 & Bserostatus==0 & EarlyendpointD57==0 & TwophasesampIndD29==1 & EventIndPrimaryD57==1, "Post-Peak Cases", 
+                                              # definition for post-peak cases include people with and without D57 marker data for downstream plotting
+                                              # will filter out those without D57 marker data in the D57 panels
                                               ifelse(Perprotocol==1 & Bserostatus==0 & EarlyendpointD57==0 & TwophasesampIndD57==1 & EventIndPrimaryD1==0, "Non-Cases", NA)))),
                                 levels = c("Intercurrent Cases", "Post-Peak Cases", "Non-Cases"))
+}
 
-if(!has57) dat$cohort_event <- factor(with(dat,
+if(!has57)  {dat$cohort_event <- factor(with(dat,
                                            ifelse(Perprotocol==1 & Bserostatus==0 & TwophasesampIndD29==1 & EventIndPrimaryD1==1  & EventTimePrimaryD1 <= 13, 
                                                   "Day 2-14 Cases",
                                                   ifelse(Perprotocol==1 & Bserostatus==0 & TwophasesampIndD29==1 & EventIndPrimaryD1==1  & EventTimePrimaryD1 > 13
@@ -38,7 +42,12 @@ if(!has57) dat$cohort_event <- factor(with(dat,
                                                          ifelse(Perprotocol==1 & Bserostatus==0 & TwophasesampIndD29==1 & EventIndPrimaryD29==1 & EventTimePrimaryD29 >= 7, "Post-Peak Cases",
                                                                 ifelse(Perprotocol==1 & Bserostatus==0 & TwophasesampIndD29==1 & EventIndPrimaryD1==0  & EarlyendpointD29==0, "Non-Cases", NA))))),
                                       levels = c("Day 2-14 Cases", "Day 15-35 Cases", "Post-Peak Cases", "Non-Cases"))
+  
+}
+
 dat <- dat[!is.na(dat$cohort_event),]
+
+
 
 
 ## arrange the dataset in the long form, expand by assay types
@@ -47,10 +56,10 @@ dat <- dat[!is.na(dat$cohort_event),]
 dat.long.subject_level <- dat[, c(
   "Ptid", "Trt", "MinorityInd", "EthnicityHispanic", "EthnicityNotreported",
   "EthnicityUnknown", "HighRiskInd", "Age", "BMI", "Sex",
-  "Bserostatus", "Perprotocol", "EventIndPrimaryD29", "EventTimePrimaryD29", 
+  "Bserostatus", "Perprotocol", "EventIndPrimaryD29", "EventTimePrimaryD29", "EventTimePrimaryD1", 
   "SubcohortInd", "age.geq.65", 
   "Bstratum", "wt.D29", "race",
-  "WhiteNonHispanic", "cohort_event", "ph1.D29", "ph2.D29",
+  "WhiteNonHispanic", "cohort_event", "ph1.D29", "ph2.D29", "TwophasesampIndD29","Wstratum",
   if(study_name_code=="ENSEMBLE") c("URMforsubcohortsampling"), 
   if(has57) c("Fullvaccine", "ph1.intercurrent.cases", "ph2.intercurrent.cases", 
               "wt.intercurrent.cases","EventIndPrimaryD57", "TwophasesampIndD57", "wt.D57","ph1.D57","ph2.D57")
@@ -119,7 +128,7 @@ dat.long.cor.subset$lb2 = with(dat.long.cor.subset, ifelse(grepl("bind", assay),
 dat.long.cor.subset$lbval2 =  with(dat.long.cor.subset, ifelse(grepl("bind", assay), ULoQ, -99))
 
 # assign values above the uloq to the uloq
-for (t in c("B", if(has29) "Day29", "Day57") ) {
+for (t in c("B", "Day29", if(has57) "Day57") ) {
   dat.long.cor.subset[[t]] <- ifelse(dat.long.cor.subset[[t]] > dat.long.cor.subset$ULoQ, dat.long.cor.subset$ULoQ, dat.long.cor.subset[[t]])
 }
 
@@ -235,8 +244,8 @@ if (study_name_code=="COVE") {
   dat.long.cor.subset$minority_label <-
     with(
       dat.long.cor.subset,
-      factor(WhiteNonHispanic,
-             levels = c(1, 0),
+      factor(MinorityInd,
+             levels = c(0, 1),
              labels = c("White Non-Hispanic", "Comm. of Color")
       )
     )
@@ -244,8 +253,8 @@ if (study_name_code=="COVE") {
   dat.long.cor.subset$age_minority_label <-
     with(
       dat.long.cor.subset,
-      factor(paste0(age.geq.65, WhiteNonHispanic),
-             levels = c("00", "01", "10", "11"),
+      factor(paste0(age.geq.65, MinorityInd),
+             levels = c("01", "00", "11", "10"),
              labels = c(
                paste(younger_age, "Comm. of Color"),
                paste(younger_age, "White Non-Hispanic"),
@@ -278,43 +287,41 @@ if (study_name_code=="COVE") {
     )
 }
 
-# use dat.long.cor.subset.twophase.intercurrent for violin/line plots
-# in order to include intercurrent cases, different filters apply for intercurrent and other groups
-if(has57) {
-  dat.long.cor.subset.twophase.intercurrent <- dat.long.cor.subset %>% 
-    filter(ph2.D29==1) %>%
-    filter(! (cohort_event %in% c("Post-Peak Cases","Non-Cases") & ph2.D57==0))
-} else {
-  dat.long.cor.subset.twophase.intercurrent <- dat.long.cor.subset %>%
-    filter(! (cohort_event %in% c("Post-Peak Cases","Non-Cases") & ph2.D29==0))
-}
+# save a copy of dat.long.cor.subset for longer transformation
+dat.long.cor.subset.violin <- dat.long.cor.subset
 
 # For immunogenicity characterization, complete ignore any information on cases
 # vs. non-cases.  The goal is to characterize immunogenicity in the random
 # subcohort, which is a stratified sample of enrolled participants. So,
 # immunogenicity analysis is always done in ppts that meet all of the criteria.
-if(has57) {
-  dat.cor.subset <- dat %>%
-    dplyr::filter(ph2.D57==1)
-  dat.long.cor.subset <- dat.long.cor.subset %>%
-    dplyr::filter(ph2.D57==1)
-} else {
-  dat.cor.subset <- dat %>%
-    dplyr::filter(ph2.D29==1)
-  dat.long.cor.subset <- dat.long.cor.subset %>%
-    dplyr::filter(ph2.D29==1)
-}
+
+# Here, only filter based on ph2.D29==1. Filtering by ph2.D57 will occur downstream,
+# since it should only happen for D57-related figures.
+dat.cor.subset <- dat %>%
+  dplyr::filter(ph2.D29==1)
+dat.long.cor.subset <- dat.long.cor.subset %>%
+  dplyr::filter(ph2.D29==1)
 
 
 # long to longer format by time
-dat.longer.cor.subset <- dat.long.cor.subset.twophase.intercurrent[,c("Ptid", "Trt", "Bserostatus", "EventIndPrimaryD29", 
-        "EventTimePrimaryD29", "Perprotocol", "cohort_event", "Age", "age_geq_65_label", 
+dat.longer.cor.subset <- dat.long.cor.subset.violin[,c("Ptid", "Trt", "Bserostatus", "EventIndPrimaryD29", 
+        "EventTimePrimaryD29", "EventTimePrimaryD1", "Perprotocol", "cohort_event", "Age", "age_geq_65_label", 
         "highrisk_label", "age_risk_label", "sex_label", "minority_label", "Dich_RaceEthnic", "assay", 
-        "LLoD", "LLoQ", "pos.cutoffs", "ULoQ", "lb", "lbval", "lb2", "lbval2",
-        if(has57) c("EventIndPrimaryD57", "ph1.intercurrent.cases", 
-                    "ph2.intercurrent.cases", "wt.intercurrent.cases", "wt.D57", "ph2.D57"), "wt.D29", 
+        "LLoD", "LLoQ", "pos.cutoffs", "ULoQ", "lb", "lbval", "lb2", "lbval2","TwophasesampIndD29","Wstratum",
+        if(has57) c("EventIndPrimaryD57", "ph1.intercurrent.cases", "TwophasesampIndD57",
+                    "ph2.intercurrent.cases", "wt.intercurrent.cases", "wt.D57", "ph2.D57"), "wt.D29", "ph2.D29",
         "B", "Day29", "Delta29overB", if(has57) c("Day57", "Delta57overB"))] %>%
-  pivot_longer(!Ptid:wt.D29, names_to = "time", values_to = "value")
+  pivot_longer(!Ptid:ph2.D29, names_to = "time", values_to = "value")
+
+# phase 2 filters: 
+#    include both +++ and ++- at D29 for intercurrent cases and Post-Peak Cases
+#    include only +++ at D57 for intercurrent cases and Post-Peak Cases
+#    non-cases is defined as +++
+#    for intercurrent cases at D57, Day 2-14 Cases & Day 15-35 Cases at D29, can't use ph2.D57/ph2.D29 because they are before D57/D29
+if(has57) {
+  dat.longer.cor.subset <- dat.longer.cor.subset %>% 
+    filter(!(cohort_event %in% c("Intercurrent Cases", "Post-Peak Cases") & time == "Day57" & TwophasesampIndD57==0))
+}
 
 # define response rates
 dat.longer.cor.subset <- dat.longer.cor.subset %>%
@@ -351,55 +358,32 @@ dat.longer.cor.subset$response = with(dat.longer.cor.subset, ifelse(assay %in% c
 # subsets for violin/line plots
 #### figure specific data prep
 # 1. define response rate:
-# 2. make subsample datasets such that the jitter plot for each subgroup in each panel <= 25 data points
+# 2. make subsample datasets such that the violin plot only shows <= 100 non-case data points
 
 #### for Figure 1. intercurrent vs pp, case vs non-case, (Day 1), Day 29 Day 57
 groupby_vars1=c("Trt", "Bserostatus", "cohort_event", "time", "assay")
 
-if(has57) {wt="wt.D57"} else {wt="wt.D29"}
-
-dat.longer.cor.subset.plot1 <-
-  dat.longer.cor.subset %>% group_by_at(groupby_vars1) %>%
-  mutate(counts = n(),
-         num = round(sum(response * ifelse(!cohort_event %in% c("Post-Peak Cases", "Non-Cases"), 1, !!as.name(wt)), na.rm=T), 1), # for intercurrent cases, we don't need to adjust for the weight because all of them are from the same stratum
-         denom = round(sum(ifelse(!cohort_event %in% c("Post-Peak Cases", "Non-Cases"), 1, !!as.name(wt)), na.rm=T), 1),
-         N_RespRate = paste0(counts, "\n",round(num/denom*100, 1),"%"),
-         min = min(value),
-         q1 = quantile(value, 0.25, na.rm=T),
-         median = median(value, na.rm=T),
-         q3 = quantile(value, 0.75, na.rm=T),
-         max= max(value))
+# define response rate
+dat.longer.cor.subset.plot1 <- get_resp_by_group(dat.longer.cor.subset, groupby_vars1)
 write.csv(dat.longer.cor.subset.plot1, file = here("data_clean", "longer_cor_data_plot1.csv"), row.names=F)
 saveRDS(dat.longer.cor.subset.plot1, file = here("data_clean", "longer_cor_data_plot1.rds"))
 
-plot.25sample1 <- dat.longer.cor.subset.plot1 %>%
-  group_by_at(groupby_vars1) %>%
-  sample_n((ifelse(n()>=100 & cohort_event=="Non-Cases", 100, n())), replace=F) %>% filter(time=="Day 29") %>%
-  ungroup() %>%
-  select(c("Ptid", groupby_vars1[!groupby_vars1 %in% "time"])) %>%
-  inner_join(dat.longer.cor.subset.plot1, by=c("Ptid", groupby_vars1[!groupby_vars1 %in% "time"]))
-
+# make subsample
+plot.25sample1 <- get_sample_by_group(dat.longer.cor.subset.plot1, groupby_vars1)
 write.csv(plot.25sample1, file = here("data_clean", "plot.25sample1.csv"), row.names=F)
 saveRDS(plot.25sample1, file = here("data_clean", "plot.25sample1.rds"))
 
 #### for Figure 3. intercurrent vs pp, case vs non-case, (Day 1) Day 29 Day 57, by if Age >=65 and if at risk
 groupby_vars3 <- c("Trt", "Bserostatus", "cohort_event", "time", "assay", "age_geq_65_label", "highrisk_label")
 
-dat.longer.cor.subset.plot3 <-
-  dat.longer.cor.subset %>% group_by_at(groupby_vars3) %>%
-  mutate(counts = n(),
-         num = round(sum(response * ifelse(!cohort_event %in% c("Post-Peak Cases", "Non-Cases"), 1, !!as.name(wt))), 1), # for intercurrent cases, we don't need to adjust for the weight because all of them are from the same stratum
-         denom = round(sum(ifelse(!cohort_event %in% c("Post-Peak Cases", "Non-Cases"), 1, !!as.name(wt))), 1),
-         N_RespRate = paste0(counts, "\n",round(num/denom*100, 1),"%"),)
+# define response rate
+dat.longer.cor.subset.plot3 <- get_resp_by_group(dat.longer.cor.subset, groupby_vars3)
 saveRDS(dat.longer.cor.subset.plot3, file = here("data_clean", "longer_cor_data_plot3.rds"))
 
-plot.25sample3 <- dat.longer.cor.subset.plot3 %>%
-  group_by_at(groupby_vars3) %>%
-  sample_n((ifelse(n()>=100 & cohort_event=="Non-Cases", 100, n())), replace=F) %>% filter(time=="Day 29") %>%
-  ungroup() %>%
-  select(c("Ptid", groupby_vars3[!groupby_vars3 %in% "time"])) %>%
-  inner_join(dat.longer.cor.subset.plot3, by=c("Ptid", groupby_vars3[!groupby_vars3 %in% "time"]))
+# make subsample
+plot.25sample3 <- get_sample_by_group(dat.longer.cor.subset.plot3, groupby_vars3)
 saveRDS(plot.25sample3, file = here("data_clean", "plot.25sample3.rds"))
+
 
 
 dat.long.cor.subset$Ptid <- as.character(dat.long.cor.subset$Ptid) 
@@ -407,10 +391,10 @@ dat.cor.subset$Ptid <- as.character(dat.cor.subset$Ptid)
 
 
 saveRDS(as.data.frame(dat.long.cor.subset),
-  file = here("data_clean", "long_cor_data.rds")
+        file = here("data_clean", "long_cor_data.rds")
 )
 saveRDS(as.data.frame(dat.cor.subset),
-  file = here("data_clean", "cor_data.rds")
+        file = here("data_clean", "cor_data.rds")
 )
 
 saveRDS(as.data.frame(dat.longer.cor.subset),

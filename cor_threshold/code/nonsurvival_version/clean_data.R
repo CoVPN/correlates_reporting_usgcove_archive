@@ -29,39 +29,29 @@ for (time in times) {
     Earlyendpoint <- "EarlyendpointD29"
     
   }
-   
+  print(time)
   data <- dat.mock
-  Ttilde <-  data[[Event_Time_variable[[time]]]]
-  Ttilde <- as.numeric(Ttilde)
+  outcome <-
+    data[[Event_Ind_variable[[time]]]] == 1 & data[[Event_Time_variable[[time]]]] <= tf[[time]]
+  outcome <- as.numeric(outcome)
   # TO CHANGE
-  Delta <- data[[Event_Ind_variable[[time]]]]
-   
+
+  if(F & adjust_for_censoring) {
+    Delta <-
+      1 - (data[[Event_Ind_variable[[time]]]] == 0 &
+             data[[Event_Time_variable[[time]]]] < tf[[time]])
+  } else {
+    Delta <- rep(1, length(outcome))
+  }
   Delta <- as.numeric(Delta)
-  data$Ttilde <- Ttilde
+  data$outcome <- outcome
   data$Delta <- Delta
 
 
   data$TwophasesampInd <- as.numeric(data[[twophaseind_variable[[time]]]])
   data$wt <- data[[weight_variable[[time]]]]
   #data$grp <- data[[twophasegroup_variable[[time]]]]
-  
-   
-  ##### Discretize time grid
-  size_time_grid <- 15
-  time_grid <- unique(sort(c( tf[[time]] ,quantile(data$Ttilde[data$Ttilde <= tf[[time]] + 5 ], seq(0,1, length = size_time_grid)))))
-  time_grid[which.min(abs(time_grid - tf[[time]]))[1]] <- tf[[time]]
-  time_grid <- sort(unique(time_grid))
-  print("times")
-  print(time_grid)
-  print(diff(time_grid))
-  Ttilde_discrete <- findInterval(data$Ttilde, time_grid, all.inside = TRUE)
-  target_time <- findInterval(tf[[time]], time_grid, all.inside = TRUE)
-  data$Ttilde <- Ttilde_discrete
-  data$target_time <- target_time
-  data$J <- 1
-   
-  
-  ####
+
   # Subset data
   variables_to_keep <-
     c(
@@ -70,10 +60,8 @@ for (time in times) {
       "TwophasesampInd",
       #"grp",
       "wt",
-      "Ttilde",
-      "Delta",
-      "target_time",
-      "J"
+      "outcome",
+      "Delta"
     )
 
     #keep <- data[[Earlyendpoint]] ==0 & data$Trt == 1 & data$Bserostatus == 0 & data$Perprotocol==1 & !is.na(data$wt) & data[[Event_Time_variable[[time]]]] >=7 & !is.na(data$Wstratum)

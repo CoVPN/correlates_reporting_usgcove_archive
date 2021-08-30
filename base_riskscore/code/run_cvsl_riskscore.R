@@ -43,7 +43,7 @@ inputFile <- read.csv(here::here("..", "data_clean", data_name))
 if(study_name_code == "COVE"){
   risk_vars <- c(
     "MinorityInd", "EthnicityHispanic", "EthnicityNotreported", "EthnicityUnknown", 
-    "Black", "Asian", "NatAmer", "PacIsl", "WhiteNonHispanic", 
+    "Black", "Asian", "NatAmer", "PacIsl",  
     "Multiracial", "Other", 
     "Notreported", "Unknown",
     "HighRiskInd", "Sex", "Age", "BMI"
@@ -84,6 +84,13 @@ dat.ph1 <- inputFile %>%
   # Drop any observation with NA values in Ptid, Trt, or endpoint!
   drop_na(Ptid, Trt, all_of(endpoint))
 
+# Create table of cases in both arms (prior to Risk score analyses)
+tab <- inputFile %>%
+  filter(Perprotocol == 1 & Bserostatus == 0) %>%
+  mutate(Trt = ifelse(Trt == 0, "Placebo", "Vaccine")) 
+table(tab$Trt, tab %>% pull(endpoint)) %>%
+  write.csv(file = here("output", "cases_prior_riskScoreAnalysis.csv"))
+rm(tab)
 
 # Derive maxVar: the maximum number of variables that will be allowed by SL screens in the models.
 np <- sum(dat.ph1 %>% select(matches(endpoint)))

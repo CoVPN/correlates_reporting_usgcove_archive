@@ -60,14 +60,13 @@ if(study_name_code == "ENSEMBLE"){
     "EthnicityHispanic","EthnicityNotreported", "EthnicityUnknown",
     "Black", "Asian", "NatAmer", "PacIsl", "Multiracial", "Notreported", "Unknown",
     "URMforsubcohortsampling", "HighRiskInd", "HIVinfection", 
-    "Sex", 
+    "Sex", "Age", "BMI",
     "Country.X1", "Country.X2", "Country.X3", "Country.X4", "Country.X5", "Country.X6", "Country.X7", 
     "Region.X1", "Region.X2", 
-    "CalDtEnrollIND.X1", 
+    "CalDtEnrollIND.X1" 
     #"CalDtEnrollIND.X2", "CalDtEnrollIND.X3",  
     #"Region.X1.x.CalDtEnrollIND.X1", "Region.X1.x.CalDtEnrollIND.X2", "Region.X1.x.CalDtEnrollIND.X3",
     #"Region.X2.x.CalDtEnrollIND.X1", "Region.X2.x.CalDtEnrollIND.X2", "Region.X2.x.CalDtEnrollIND.X3",
-    "Age", "BMI"
   )
   
   if(run_prod){
@@ -102,12 +101,18 @@ if(study_name_code == "ENSEMBLE"){
   names(inputFile)<-gsub("\\_",".",names(inputFile))
     
   # # Create interaction variables between Region and CalDtEnrollIND
-  # rec <- recipe(EventIndPrimaryD29 ~., data = inputFile)
+  # rec <- recipe(EventIndPrimaryIncludeNotMolecConfirmedD29 ~., data = inputFile)
   # int_mod_1 <- rec %>%
   #   step_interact(terms = ~ starts_with("Region"):starts_with("CalDtEnrollIND"))
   # int_mod_1 <- prep(int_mod_1, training = inputFile)
   # inputFile <- bake(int_mod_1, inputFile)
   # names(inputFile)<-gsub("\\_",".",names(inputFile))
+  # if(run_prod){
+  #   risk_vars <- append(risk_vars, c("Region.X1.x.CalDtEnrollIND.X1", "Region.X1.x.CalDtEnrollIND.X2", 
+  #                                    "Region.X1.x.CalDtEnrollIND.X3", 
+  #                                    "Region.X2.x.CalDtEnrollIND.X1", "Region.X2.x.CalDtEnrollIND.X2", 
+  #                                    "Region.X2.x.CalDtEnrollIND.X3"))
+  # }
 }
 
 ################################################

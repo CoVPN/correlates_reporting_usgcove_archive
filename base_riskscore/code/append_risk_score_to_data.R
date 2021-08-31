@@ -30,7 +30,7 @@ if(study_name_code == "COVE"){
 }
 
 if(study_name_code == "ENSEMBLE"){
-  endpoint <- "EventIndPrimaryD29"
+  endpoint <- "EventIndPrimaryIncludeNotMolecConfirmedD29"
 }
 
 tab <- dat_with_riskscore %>%

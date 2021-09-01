@@ -122,7 +122,7 @@ read.csv(here("base_riskscore", "output", "SL_weights.csv"), row.names = 1,
 \clearpage
 
 ```{r SLtopmodels, warning=FALSE, echo=FALSE}
-caption <- "Predictors in learners assigned weight > 0.0 by Superlearner."
+caption <- "Learners assigned weight > 0.0 by Superlearner sorted by weight. Predictors within each learner are sorted by variable importance which is the absolute value in Coefficient (in case of learners like SL.glm, SL.gam, SL.glm.interaction), or Gain (in case of SL.xgboost) or Importance (in case of SL.ranger.imp)."
 
 read.csv(here("base_riskscore", "output", "SL_all_models_with_predictors.csv"),
          row.names = 1, header = TRUE) %>%

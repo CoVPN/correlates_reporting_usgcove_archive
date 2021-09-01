@@ -100,22 +100,26 @@ if(study_name_code == "ENSEMBLE"){
     select(-c(Country, Region, CalDtEnrollIND))
   names(inputFile)<-gsub("\\_",".",names(inputFile))
     
-  # # Create interaction variables between Region and CalDtEnrollIND
-  # rec <- recipe(EventIndPrimaryIncludeNotMolecConfirmedD29 ~., data = inputFile)
-  # int_mod_1 <- rec %>%
-  #   step_interact(terms = ~ starts_with("Region"):starts_with("CalDtEnrollIND"))
-  # int_mod_1 <- prep(int_mod_1, training = inputFile)
-  # inputFile <- bake(int_mod_1, inputFile)
-  # names(inputFile)<-gsub("\\_",".",names(inputFile))
-  # if(run_prod){
-  #   risk_vars <- append(risk_vars, c("Region.X1.x.CalDtEnrollIND.X1", "Region.X1.x.CalDtEnrollIND.X2", 
-  #                                    "Region.X1.x.CalDtEnrollIND.X3", 
-  #                                    "Region.X2.x.CalDtEnrollIND.X1", "Region.X2.x.CalDtEnrollIND.X2", 
-  #                                    "Region.X2.x.CalDtEnrollIND.X3"))
-  # }
+  # Create interaction variables between Region and CalDtEnrollIND
+  rec <- recipe(EventIndPrimaryIncludeNotMolecConfirmedD29 ~., data = inputFile)
+  int_mod_1 <- rec %>%
+    step_interact(terms = ~ starts_with("Region"):starts_with("CalDtEnrollIND"))
+  int_mod_1 <- prep(int_mod_1, training = inputFile)
+  inputFile <- bake(int_mod_1, inputFile)
+  names(inputFile)<-gsub("\\_",".",names(inputFile))
+  if(run_prod){
+    risk_vars <- append(risk_vars, c("Region.X1.x.CalDtEnrollIND.X1", "Region.X1.x.CalDtEnrollIND.X2",
+                                     "Region.X1.x.CalDtEnrollIND.X3",
+                                     "Region.X2.x.CalDtEnrollIND.X1", "Region.X2.x.CalDtEnrollIND.X2",
+                                     "Region.X2.x.CalDtEnrollIND.X3"))
+  }
 }
 
 ################################################
+# Update inputFile to correct EventIndPrimaryIncludeNotMolecConfirmedD29 such that only cases that are EventTimePrimaryIncludeNotMolecConfirmedD29>=7
+inputFile <- inputFile %>%
+  mutate(EventIndPrimaryIncludeNotMolecConfirmedD29 = ifelse(EventTimePrimaryD29 < 7, 0, EventIndPrimaryIncludeNotMolecConfirmedD29))
+
 # Consider only placebo data for risk score analysis
 dat.ph1 <- inputFile %>%
   filter(Perprotocol == 1 & Trt == 0 & Bserostatus == 0) %>%
@@ -128,6 +132,7 @@ dat.ph1 <- inputFile %>%
 tab <- inputFile %>%
   filter(Perprotocol == 1 & Bserostatus == 0) %>%
   mutate(Trt = ifelse(Trt == 0, "Placebo", "Vaccine")) 
+
 table(tab$Trt, tab %>% pull(endpoint)) %>%
   write.csv(file = here("output", "cases_prior_riskScoreAnalysis.csv"))
 rm(tab)

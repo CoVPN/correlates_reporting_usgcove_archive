@@ -633,6 +633,14 @@
       "Repository": "CRAN",
       "Hash": "a0cbe758a531d054b537d16dff4d58a1"
     },
+    "doMC": {
+      "Package": "doMC",
+      "Version": "1.3.7",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "OS_type": "unix",
+      "Hash": "a51780731e2ec5eee714097df69ea204"
+    },
     "dplyr": {
       "Package": "dplyr",
       "Version": "1.0.5",

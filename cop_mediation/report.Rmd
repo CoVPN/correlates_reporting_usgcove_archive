@@ -1,5 +1,10 @@
 # Mediators of Vaccine Efficacy {#cop-mediators}
 
+```{r, echo=FALSE}
+print("running cor_mediation report ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+```
+
+
 ```{r cop-mediator-setup, echo = FALSE, message = FALSE, warning = FALSE}
 library(here)
 # so it builds in either directory

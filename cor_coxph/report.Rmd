@@ -5,6 +5,9 @@
 \newif\ifENSEMBLE
 `r if (study_name_code=="ENSEMBLE") "\\ENSEMBLEtrue"` 
 
+```{r, echo=FALSE}
+print("running cor_coxph report ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+```
 
 
 ```{r, echo=FALSE}

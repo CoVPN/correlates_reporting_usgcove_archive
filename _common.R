@@ -384,6 +384,80 @@ get.labels.x.axis.cor=function(xlim, llod){
 }
 
 
+# bootstrap from case control studies is done by resampling cases, ph2 controls, and non-ph2 controls separately. 
+# Across bootstrap replicates, the number of cases does not stay constant, neither do the numbers of ph2 controls by demographics strata. 
+# Specifically,
+# 1) sample with replacement to get dat.b. From this dataset, take the cases and count ph2 and non-ph2 controls by strata
+# 2) sample with replacement ph2 and non-ph2 controls by strata
+bootstrap.case.control.samples=function(dat.ph1, delta.name="EventIndPrimary", strata.name="tps.stratum", ph2.name="ph2") {
+    
+    dat.tmp=data.frame(ptid=1:nrow(dat.ph1), delta=dat.ph1[,delta.name], strata=dat.ph1[,strata.name], ph2=dat.ph1[,ph2.name])
+    
+    nn.ph1=with(dat.tmp, table(strata, delta))
+    nn.ph2=with(subset(dat.tmp, ph2), table(strata, delta))
+    if(!all(rownames(nn.ph1)==rownames(nn.ph2))) stop("ph2 strata differ from ph1 strata")
+    strat=rownames(nn.ph1); names(strat)=strat
+    # ctrl.ptids is a list of lists
+    ctrl.ptids = with(subset(dat.tmp, delta==0), lapply(strat, function (i) list(ph2=ptid[strata==i & ph2], nonph2=ptid[strata==i & !ph2])))
+    
+    # 1. resample dat.ph1 to get dat.b, but only take the cases 
+    dat.b=dat.tmp[sample.int(nrow(dat.tmp), r=TRUE),]
+    nn.b=with(dat.b, table(strata, delta))
+    # if the bootstrap dataset lost a strata (both cases and controls), which is very very unlikely, we will redo the sampling
+    while(!all(rownames(nn.b)==strat)) {   
+        dat.b=dat.tmp[sample.int(nrow(dat.tmp), r=TRUE),]
+        nn.b=table(dat.b$strata, dat.b$delta)
+    }
+    # take the case ptids
+    case.ptids.b = dat.b$ptid[dat.b$delta==1]
+    
+    # 2. resample controls in dat.ph1 (numbers determined by dat.b) stratified by strata and ph2/nonph2
+    # ph2 and non-ph2 controls by strata
+    nn.ctrl.b=with(subset(dat.b, !delta), table(strata, ph2))
+    # sample the control ptids
+    ctrl.ptids.by.stratum.b=lapply(strat, function (i) {
+        c(sample(ctrl.ptids[[i]]$ph2, nn.ctrl.b[i,2], r=T),
+          sample(ctrl.ptids[[i]]$nonph2, nn.ctrl.b[i,1], r=T))
+    })
+    ctrl.ptids.b=do.call(c, ctrl.ptids.by.stratum.b)    
+    
+    # return data frame
+    dat.ph1[c(case.ptids.b, ctrl.ptids.b), ]
+}
+## testing
+#dat.b=bootstrap.case.control.samples(dat.vac.seroneg)
+#with(dat.vac.seroneg, table(ph2, tps.stratum, EventIndPrimary))
+#with(dat.b, table(ph2, tps.stratum, EventIndPrimary))
+#> with(dat.vac.seroneg, table(ph2, tps.stratum, EventIndPrimary))
+#, , EventIndPrimary = 0
+#
+#       tps.stratum
+#ph2       33   34   35   36   37   38   39   40   41   42   43   44   45   46   47   48
+#  FALSE 1483  915  759  439 1677 1138  894  591 3018 1973 1559 1051 1111  693  511  329
+#  TRUE    57   53   55   57   56   57   57   56   58   55   55   57   57   56   56   56
+#
+#, , EventIndPrimary = 1
+#
+#       tps.stratum
+#ph2       33   34   35   36   37   38   39   40   41   42   43   44   45   46   47   48
+#  FALSE    1    0    0    1    0    1    0    0    2    1    2    1    0    0    0    1
+#  TRUE     3    7    7   10    8   11    2   13   17   23   15   23    5    6    4    6
+#
+#> with(dat.b, table(ph2, tps.stratum, EventIndPrimary))
+#, , EventIndPrimary = 0
+#
+#       tps.stratum
+#ph2       33   34   35   36   37   38   39   40   41   42   43   44   45   46   47   48
+#  FALSE 1487  911  750  462 1675 1181  884  570 3058 2023 1499 1034 1094  694  487  329
+#  TRUE    47   57   65   62   50   53   50   64   55   61   65   53   64   53   54   60
+#
+#, , EventIndPrimary = 1
+#
+#       tps.stratum
+#ph2       33   34   35   36   37   38   39   40   41   42   43   44   45   46   47   48
+#  FALSE    0    0    0    0    0    2    0    0    1    1    3    3    0    0    0    2
+#  TRUE     2    6    8    5    9   13    0   11   20   26   10   20    4    3    4    5
+
 
 # for bootstrap use
 get.ptids.by.stratum.for.bootstrap = function(data) {

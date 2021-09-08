@@ -25,12 +25,12 @@ Args <- commandArgs(trailingOnly=TRUE)
 if (length(Args)==0) Args=c(COR="D29") 
 COR=Args[1]; myprint(COR)
 
-# get analysis-specific parameters from config
+# COR has a set of analysis-specific parameters defined in the config file
 config.cor <- config::get(config = COR)
 tpeak=paste0(config.cor$tpeak)
 if (length(tpeak)==0) stop("config "%.%COR%.%" does not exist")
 
-# save tables and figures to analysis-specific folders
+# path for figures and tables etc
 save.results.to = here::here("output")
 if (!dir.exists(save.results.to))  dir.create(save.results.to)
 save.results.to = paste0(here::here("output"), "/", attr(config,"config"));
@@ -87,7 +87,7 @@ if (file.exists(here::here("..", "data_clean", data_name_updated))) {
     dat.mock <- read.csv(here::here("..", "data_clean", data_name))
 }
 load(here::here("..", "data_clean/", paste0(attr(config,"config"), "_params.Rdata"))) 
-
+print(paste0("reading data from ",data_name))
 
 
 ###################################################################################################

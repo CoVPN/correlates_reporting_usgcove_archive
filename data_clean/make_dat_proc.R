@@ -56,6 +56,22 @@ if(study_name_code=="ENSEMBLE") {
 }          
 if(has57) dat_proc$EarlyendpointD57 <- with(dat_proc, ifelse(EarlyinfectionD57==1 | (EventIndPrimaryD1==1 & EventTimePrimaryD1 < NumberdaysD1toD57 + 7),1,0))
 
+
+
+# Indicator of membership in the cohort included in the analysis that defines the risk score in the placebo arm
+# for COVID-19 this require: 
+# 1. baseline SARS-CoV-2 negative, 
+# 2. per-protocol, 
+# 3. no evidence of SARS-CoV-2 infection or right-censoring up to time point tinterm (2 dose) or tpeak (1 dose)
+# 4. lack of missing data on a certain set of baseline input variables
+# no NAs allowed
+# #4 is not implemented in this script because the developer of this script need not have knowledge of risk score requirements
+dat_proc$Riskscorecohortflag <- with(dat_proc, ifelse(Bserostatus==0 & Perprotocol==1 & EarlyendpointD29==0 & EventTimePrimaryD29>=1, 1, 0))
+assertthat::assert_that(
+    all(!is.na(dat_proc$Riskscorecohortflag)),
+    msg = "missing Riskscorecohortflag")
+
+
 dat_proc <- dat_proc %>%
   mutate(
     age.geq.65 = as.integer(Age >= 65)

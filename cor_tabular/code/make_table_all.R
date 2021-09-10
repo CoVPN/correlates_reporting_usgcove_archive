@@ -62,13 +62,11 @@ tlf <-
     ),
     
     tab_strtm1 = list(
-      table_header = "Sample Sizes of Random Subcohort Strata for Measuring Antibody Markers",
       deselect = "Arm",
       pack_row = "Arm"
     ),
     
     tab_strtm2 = list(
-      table_header = "Sample Sizes of Random Subcohort Strata for Measuring Antibody Markers",
       deselect = "Arm",
       pack_row = "Arm"
     ),
@@ -232,12 +230,8 @@ labels_all <- full_join(labels.assays, resp.lb, by = c("time", "marker")) %>%
 
 # Read in original data
 data_name_updated <- sub(".csv", "_with_riskscore.csv", data_name)
-# if (file.exists(here::here("..", "data_clean", data_name_updated))) {
-  # dat <- dat_proc <- read.csv(here::here("..", "data_clean", data_name_updated))
-  # data_name  <- data_name_updated
-# } else {
-  dat <- dat_proc <- read.csv(here::here("..", "data_clean", data_name))
-# }
+
+dat <- dat_proc <- read.csv(here::here("..", "data_clean", data_name))
 load(here::here("..", "data_clean/", paste0(attr(config,"config"), "_params.Rdata"))) 
 
 # The stratified random cohort for immunogenicity
@@ -513,12 +507,15 @@ if ((n_strtm1 <- ceiling(ncol(tab_strtm1)/2-1))!=0) {
     gsub("Negative_", "", .) %>% 
     gsub("Positive_", "", .) 
   
+  tlf$tab_strtm1$table_header <- sprintf("Sample Sizes of Random Subcohort Strata Plus All Other Cases Outside the Random Subcohort %s",
+                         case_when(study_name_code=="COVE" ~ "", 
+                                   study_name_code=="ENSEMBLE" ~ "in U.S. "))
   tlf$tab_strtm1$header_above1 <- c(" "=1, "Baseline SARS-CoV-2 Negative" = sum(grepl("Negative", colnames(tab_strtm1))), 
                                     "Baseline SARS-CoV-2 Positive" = sum(grepl("Positive", colnames(tab_strtm1))))
   tab_strtm_header2 <- ncol(tab_strtm1)-1
-  names(tab_strtm_header2) <- sprintf("%sRandom Subcohort Sample Sizes (N=%s Participants) (%s Trial)", 
+  names(tab_strtm_header2) <- sprintf("Sample Sizes of Random Subcohort Strata Plus All Other Cases Outside the Random Subcohort %s\nSample Sizes (N=%s Participants) (%s Trial)", 
                                       case_when(study_name_code=="COVE" ~ "", 
-                                                study_name_code=="ENSEMBLE" ~ "U.S. "),
+                                                study_name_code=="ENSEMBLE" ~ "in U.S. "),
                                       sum(ds[ds$demo.stratum.ordered%in%1:strtm_cutoff, ]$ph2.immuno), 
                                       stringr::str_to_title(data_raw_dir))
   tlf$tab_strtm1$header_above2 <- tab_strtm_header2
@@ -546,10 +543,12 @@ if ((n_strtm2 <- ceiling(ncol(tab_strtm2)/2-1))!=0) {
     gsub("Negative_", "", .) %>% 
     gsub("Positive_", " ", .) 
   
+  tlf$tab_strtm2$table_header <- sprintf("Sample Sizes of Random Subcohort Strata Plus All Other Cases Outside the Random Subcohort in %s",
+                                         paste(c("Latin America", "South Africa")[sort(unique(ds$Region))], collapse=" and "))
   tlf$tab_strtm2$header_above1 <- c(" "=1, "Baseline SARS-CoV-2 Negative" = sum(grepl("Negative", colnames(tab_strtm2))), 
                                     "Baseline SARS-CoV-2 Positive" = sum(grepl("Positive", colnames(tab_strtm2))))
   tab_strtm_header2 <- ncol(tab_strtm2)-1
-  names(tab_strtm_header2) <- sprintf("%s Random Subcohort Sample Sizes (N=%s Participants) (%s Trial)", 
+  names(tab_strtm_header2) <- sprintf("Sample Sizes of Random Subcohort Strata Plus All Other Cases Outside the Random Subcohort in %s\nSample Sizes (N=%s Participants) (%s Trial)",
                                       paste(c("Latin America", "South Africa")[sort(unique(ds$Region))], collapse=" and "),
                                       sum(ds[ds$demo.stratum.ordered%in%(strtm_cutoff+1):(strtm_cutoff*2), ]$ph2.immuno), 
                                       stringr::str_to_title(data_raw_dir))

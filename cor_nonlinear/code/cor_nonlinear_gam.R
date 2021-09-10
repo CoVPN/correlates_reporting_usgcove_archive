@@ -6,7 +6,7 @@
 #### only supports type=1 (S=s) now
 # data is ph1 data because bootstrap needs it
 marginalized.risk.gam.boot=function(formula, marker.name, type=1, data, B, ci.type="quantile", numCores=1) {  
-#formula=form.0.logistic; marker.name="Day"%.%pop%.%a; data=dat.vac.seroneg; B=2; ci.type="quantile"; numCores=1; type=1
+#formula=form.0.logistic; marker.name="Day"%.%tpeak%.%a; data=dat.vac.seroneg; B=2; ci.type="quantile"; numCores=1; type=1
     
     # store the current rng state 
     save.seed <- try(get(".Random.seed", .GlobalEnv), silent=TRUE) 
@@ -20,8 +20,8 @@ marginalized.risk.gam.boot=function(formula, marker.name, type=1, data, B, ci.ty
         #ss=sort(c(report.assay.values(data[[marker.name]], marker.name.to.assay(marker.name)), seq(min(data[[marker.name]], na.rm=TRUE), max(data[[marker.name]], na.rm=TRUE), length=100)[-c(1,100)]))
         
         f1=update(form.0.logistic, as.formula(paste0("~.+s(",marker.name,")")))        
-        fit.risk=mgcv::gam(f1, data=data.ph2, family=binomial, weights=wt.0)
-        prob=marginalized.risk(fit.risk, marker.name, data=data.ph2, ss=ss, weights=data.ph2$wt.0, categorical.s=F)        
+        fit.risk=mgcv::gam(f1, data=data.ph2, family=binomial, weights=wt)
+        prob=marginalized.risk(fit.risk, marker.name, data=data.ph2, ss=ss, weights=data.ph2$wt, categorical.s=F)        
     
     } else if (type==2) {
     # conditional on S>=s
@@ -40,9 +40,9 @@ marginalized.risk.gam.boot=function(formula, marker.name, type=1, data, B, ci.ty
                 
         if(type==1) {
         # conditional on S=s
-            fit.risk=try(mgcv::gam(formula=f1, data=dat.b.ph2, family=binomial, weights=wt.0))
+            fit.risk=try(mgcv::gam(formula=f1, data=dat.b.ph2, family=binomial, weights=wt))
             if ( class (fit.risk)[1] != "try-error" ) {
-                marginalized.risk(fit.risk, marker.name, data=dat.b.ph2, ss=ss, weights=dat.b.ph2$wt.0, categorical.s=F)
+                marginalized.risk(fit.risk, marker.name, data=dat.b.ph2, ss=ss, weights=dat.b.ph2$wt, categorical.s=F)
             } else {
                 rep(NA, length(ss))
             }
@@ -74,7 +74,7 @@ if(!file.exists(paste0(save.results.to, "marginalized.risk.gam.",study_name,".Rd
     
     # vaccine arm, conditional on S=s
     risks.all.vacc.gam=lapply(assays, function (a) 
-        marginalized.risk.gam.boot(formula=form.0.logistic, marker.name="Day"%.%pop%.%a, type=1, data=dat.vac.seroneg, B=B, ci.type="quantile", numCores=numCores)                
+        marginalized.risk.gam.boot(formula=form.0.logistic, marker.name="Day"%.%tpeak%.%a, type=1, data=dat.vac.seroneg, B=B, ci.type="quantile", numCores=numCores)                
     )    
     
     save(risks.all.vacc.gam, file=paste0(save.results.to, "marginalized.risk.gam."%.%study_name%.%".Rdata"))
@@ -93,7 +93,7 @@ ii=1 # S=s
 
 # get dfs
 dfs=sapply (assays, function(a) {        
-    fit=mgcv::gam(update(form.0.logistic, as.formula(paste0("~.+s(","Day"%.%pop%.%a,")"))), data=dat.vacc.pop.ph2, family=binomial, weights=wt.0)
+    fit=mgcv::gam(update(form.0.logistic, as.formula(paste0("~.+s(","Day"%.%tpeak%.%a,")"))), data=dat.vacc.pop.ph2, family=binomial, weights=wt)
     sum(influence(fit))-p.cov-1 # 1 for intercept
 })
 
@@ -117,13 +117,13 @@ for (w.wo.plac in 1:2) { # 1 with placebo lines, 2 without placebo lines. Implem
     par(las=1, cex.axis=0.9, cex.lab=1)# axis label orientation
     for (a in assays) {        
         risks=risks.all[[a]]
-        xlim=get.range.cor(dat.vac.seroneg, a, pop)
+        xlim=get.range.cor(dat.vac.seroneg, a, tpeak)
         
         # for ii=2
-        ncases=sapply(risks$marker, function(s) sum(dat.vac.seroneg$yy[dat.vac.seroneg[["Day"%.%pop%.%a]]>=s], na.rm=T))
+        ncases=sapply(risks$marker, function(s) sum(dat.vac.seroneg$yy[dat.vac.seroneg[["Day"%.%tpeak%.%a]]>=s], na.rm=T))
         
         plot(prob~marker, risks, xlab=labels.assays.short[a]%.%ifelse(ii==1," (=s)"," (>=s)"), xlim=xlim, 
-            ylab=paste0("Probability* of COVID-19 by Day ", t0), lwd=lwd, ylim=ylim, type="n", main=paste0(labels.assays.long["Day"%.%pop,a]), xaxt="n")
+            ylab=paste0("Probability* of COVID-19 by Day ", t0), lwd=lwd, ylim=ylim, type="n", main=paste0(labels.assays.long["Day"%.%tpeak,a]), xaxt="n")
     
         draw.x.axis.cor(xlim, llods[a])
     
@@ -156,7 +156,7 @@ for (w.wo.plac in 1:2) { # 1 with placebo lines, 2 without placebo lines. Implem
         par(new=TRUE) 
         col <- c(col2rgb("olivedrab3")) # orange, darkgoldenrod2
         col <- rgb(col[1], col[2], col[3], alpha=255*0.4, maxColorValue=255)
-        tmp=hist(dat.vac.seroneg[["Day"%.%pop%.%a]], breaks=15, plot=F)
+        tmp=hist(dat.vac.seroneg[["Day"%.%tpeak%.%a]], breaks=15, plot=F)
         plot(tmp,col=col,axes=F,labels=F,main="",xlab="",ylab="",border=0,freq=F, xlim=xlim, ylim=c(0,max(tmp$density*1.25)))
         
         # add df

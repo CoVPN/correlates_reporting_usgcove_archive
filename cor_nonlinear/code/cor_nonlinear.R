@@ -15,15 +15,17 @@ library(xtable) # this is a dependency of kyotil
     
 source(here::here("code", "params.R"))
 
-# population is either 57 or 29
+# COR defines the analysis to be done, e.g. D29, D57, D29start1
 Args <- commandArgs(trailingOnly=TRUE)
-if (length(Args)==0) Args=c(pop="29")
-pop=Args[1]; myprint(pop)
-    
-if(!has29 & pop=="29") {
-    print("Quitting because there are no Day 29 markers")
-    quit()
-}
+if (length(Args)==0) Args=c(COR="D29") 
+COR=Args[1]; myprint(COR)
+
+
+# get analysis-specific parameters from config
+config.cor <- config::get(config = COR)
+tpeak=paste0(config.cor$tpeak)
+if (length(tpeak)==0) stop("config "%.%COR%.%" does not exist")
+
     
 time.start=Sys.time()
     
@@ -58,59 +60,63 @@ for (a in intersect(assays_to_be_censored_at_uloq_cor, assays)) {
     
 ###################################################################################################
 # set up based on whether to perform D29 or D57 analyses
+
+dat.mock$wt=dat.mock[[config.cor$wt]]
+dat.mock$ph1=dat.mock[[config.cor$ph1]]
+dat.mock$ph2=dat.mock[[config.cor$ph2]]
+dat.mock$EventIndPrimary =dat.mock[[config.cor$EventIndPrimary]]
+dat.mock$EventTimePrimary=dat.mock[[config.cor$EventTimePrimary]]
     
-if (pop=="57") {
-    dat.mock$wt.0=dat.mock$wt.D57
-    dat.mock$TwophasesampInd.0 = dat.mock$TwophasesampIndD57
-    dat.mock$ph1=dat.mock$ph1.D57   
-    dat.mock$ph2=dat.mock$ph2.D57   
-} else if (pop=="29") {
-    dat.mock$wt.0=dat.mock$wt.D29
-    dat.mock$TwophasesampInd.0 = dat.mock$TwophasesampIndD29 
-    dat.mock$ph1=dat.mock$ph1.D29
-    dat.mock$ph2=dat.mock$ph2.D29
-} else stop("wrong pop")
     
 # the following data frame define the phase 1 ptids
 dat.vac.seroneg=subset(dat.mock, Trt==1 & Bserostatus==0 & ph1)
 dat.pla.seroneg=subset(dat.mock, Trt==0 & Bserostatus==0 & ph1)
     
 # define an alias for EventIndPrimaryDxx
-dat.vac.seroneg$yy=dat.vac.seroneg[["EventIndPrimaryD"%.%pop]]
-dat.pla.seroneg$yy=dat.pla.seroneg[["EventIndPrimaryD"%.%pop]]
+dat.vac.seroneg$yy=dat.vac.seroneg[["EventIndPrimary"]]
+dat.pla.seroneg$yy=dat.pla.seroneg[["EventIndPrimary"]]
 
 #hist(dat.vac.seroneg$EventTimePrimaryD29)
 #hist(dat.vac.seroneg$EventTimePrimaryD29[dat.vac.seroneg$EventIndPrimaryD29==1])
     
 # followup time for the last case
-t0=max(dat.vac.seroneg[dat.vac.seroneg[["EventIndPrimaryD"%.%pop]]==1, "EventTimePrimaryD"%.%pop])
+t0=max(dat.vac.seroneg[dat.vac.seroneg[["EventIndPrimary"]]==1, "EventTimePrimary"])
 myprint(t0)
     
 # formulae
-form.s = as.formula(paste0("Surv(EventTimePrimaryD",pop,", EventIndPrimaryD",pop,") ~ 1"))
 if (study_name_code=="COVE") {
     if (endsWith(data_name, "riskscore.csv")) {
-        form.0.logistic = as.formula(paste0("EventIndPrimaryD",pop,"  ~ MinorityInd + HighRiskInd + risk_score"))
+        form.0.logistic = as.formula(paste0(config.cor$EventIndPrimary,"  ~ MinorityInd + HighRiskInd + risk_score"))
     } else {
-        form.0.logistic = as.formula(paste0("EventIndPrimaryD",pop,"  ~ MinorityInd + HighRiskInd + Age"))  
+        form.0.logistic = as.formula(paste0(config.cor$EventIndPrimary,"  ~ MinorityInd + HighRiskInd + Age"))  
     }
     # covariate length without markers
     p.cov=3
 } else if (study_name_code=="ENSEMBLE") {
     if (endsWith(data_name, "riskscore.csv")) {
-        form.0.logistic = as.formula(paste0("EventIndPrimaryD",pop,"  ~ risk_score + as.factor(Region)"))
+        form.0.logistic = as.formula(paste0(config.cor$EventIndPrimary,"  ~ risk_score + as.factor(Region)"))
     } else {
-        form.0.logistic = as.formula(paste0("EventIndPrimaryD",pop,"  ~ Age + as.factor(Region)"))  
+        form.0.logistic = as.formula(paste0(config.cor$EventIndPrimary,"  ~ Age + as.factor(Region)"))  
     }
     # covariate length without markers
     p.cov=3
+
+    if (subset_variable!="None") {
+        form.0.logistic = update (form.0.logistic, ~.- as.factor(Region))
+        p.cov=1
+    }
 }
     
-    
-save.results.to = paste0(here::here("output"), "/D", pop,"/");
+
+# save tables and figures to analysis-specific folders
+save.results.to = here::here("output")
+if (!dir.exists(save.results.to))  dir.create(save.results.to)
+save.results.to = paste0(here::here("output"), "/", attr(config,"config"));
+if (!dir.exists(save.results.to))  dir.create(save.results.to)
+save.results.to = paste0(save.results.to, "/", COR,"/");
 if (!dir.exists(save.results.to))  dir.create(save.results.to)
 print(paste0("save.results.to equals ", save.results.to))
-
+    
 
 
 ####################################################################################################
@@ -120,12 +126,12 @@ dat.vacc.pop.ph2 = subset(dat.vac.seroneg, ph2)
 # there are two dependencies on cor_coxph
 
 # load prev.plac, prev.vacc
-tmp=paste0(here::here(".."), "/cor_coxph/output/D", pop,"/", "marginalized.risk.no.marker."%.%study_name%.%".Rdata")
-if (file.exists(tmp)) load(tmp)
+tmp=paste0(here::here(".."), "/cor_coxph/output/",attr(config,"config"),"/", COR,"/", "marginalized.risk.no.marker."%.%study_name%.%".Rdata")
+if (file.exists(tmp)) load(tmp) else stop("")
 # if this does not exist, the code will throw error
 
 # load ylims.cor, which is a list of two: 1 with placebo lines, 2 without placebo lines.
-tmp=paste0(here::here(".."), "/cor_coxph/output/D", pop,"/", "ylims.cor."%.%study_name%.%".Rdata")
+tmp=paste0(here::here(".."), "/cor_coxph/output/",attr(config,"config"),"/", COR,"/", "ylims.cor."%.%study_name%.%".Rdata")
 if (file.exists(tmp)) load(tmp)
 # if this does not exist, the code will find alternative ylim
 

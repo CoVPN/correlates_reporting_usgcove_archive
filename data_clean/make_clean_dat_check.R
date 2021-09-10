@@ -71,7 +71,6 @@ if(length(failed_llod_check) > 1){
 ## binary variables only take values 0/1
 variables_with_no_missing <- 
     c(
-                           "EventIndPrimaryD1",  "EventTimePrimaryD1", 
       if(has57) c("ph1.D57", "ph2.D57", "EarlyendpointD57", "TwophasesampIndD57", "EarlyinfectionD57", "EventIndPrimaryD57", "EventTimePrimaryD57", "NumberdaysD1toD57"),
       if(has29) c("ph1.D29", "ph2.D29", "EarlyendpointD29", "TwophasesampIndD29", "EarlyinfectionD29", "EventIndPrimaryD29", "EventTimePrimaryD29"),
       

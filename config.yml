@@ -1,26 +1,39 @@
-# the default analysis is moderna-like analysis
 default: &default
-  data_raw_dir: moderna
+  info: correlates_reporting
+
+# the default analysis is moderna-like analysis
+trial: &trial
   subset_variable: None
   subset_value: All
   assays: [bindSpike, bindRBD, pseudoneutid50, pseudoneutid80]
   times: [B, Day29, Day57, Delta29overB, Delta57overB, Delta57over29]
 
-moderna_real:
-  <<: *default
+moderna_real: &moderna_real
+  <<: *trial
+  data_raw_dir: moderna
   data_in_file: real_moderna_data.csv # Weiping can set
   study_name: COVE
   study_name_code: COVE
 
-moderna_mock:
-  <<: *default
+moderna_mock: &moderna_mock
+  <<: *trial
+  data_raw_dir: moderna
   data_in_file: COVID_VEtrial_practicedata_primarystage1.csv
   study_name: MockCOVE
   study_name_code: COVE
 
 
 
-janssen_default_real: &janssen_default_real
+twomarkers: &twomarkers
+  <<: *trial
+  data_raw_dir: twomarkers
+  data_in_file: COVID_VEtrial_practicedata_primarystage1.csv
+  study_name: TWOMARKERS
+  study_name_code: TWOMARKERS
+
+
+
+janssen_trial_real: &janssen_trial_real
   data_raw_dir: janssen
   times: [B, Day29, Delta29overB]
   #  data_in_file: ../../../mapping_immune_correlates/adata/COVID_ENSEMBLE_realdata.csv
@@ -30,26 +43,26 @@ janssen_default_real: &janssen_default_real
   assays: [bindSpike, bindRBD]
 
 janssen_pooled_real: 
-  <<: *janssen_default_real
+  <<: *janssen_trial_real
   subset_variable: None
   subset_value: All
 
 janssen_na_real: 
-  <<: *janssen_default_real
+  <<: *janssen_trial_real
   subset_variable: Region
   subset_value: 0
 
 janssen_la_real: 
-  <<: *janssen_default_real
+  <<: *janssen_trial_real
   subset_variable: Region
   subset_value: 1
 
 janssen_sa_real: 
-  <<: *janssen_default_real
+  <<: *janssen_trial_real
   subset_variable: Region
   subset_value: 2
 
-janssen_default_mock: &janssen_default_mock
+janssen_trial_mock: &janssen_trial_mock
   data_raw_dir: janssen
   times: [B, Day29, Delta29overB]
   data_in_file: COVID_ENSEMBLE_practicedata.csv
@@ -58,21 +71,72 @@ janssen_default_mock: &janssen_default_mock
   assays: [bindSpike, bindRBD]
 
 janssen_pooled_mock:
-  <<: *janssen_default_mock
+  <<: *janssen_trial_mock
   subset_variable: None
   subset_value: All
 
 janssen_na_mock:
-  <<: *janssen_default_mock
+  <<: *janssen_trial_mock
   subset_variable: Region
   subset_value: 0
 
 janssen_la_mock:
-  <<: *janssen_default_mock
+  <<: *janssen_trial_mock
   subset_variable: Region
   subset_value: 1
 
 janssen_sa_mock:
-  <<: *janssen_default_mock
+  <<: *janssen_trial_mock
   subset_variable: Region
   subset_value: 2
+
+
+###################################################################################################
+# correlates analyses parameters
+
+# primary endpoint D57 markers
+D57:
+  ph1: ph1.D57
+  ph2: ph2.D57
+  wt: wt.D57
+  EventIndPrimary: EventIndPrimaryD57   
+  EventTimePrimary: EventTimePrimaryD57   
+  tpeak: 57
+
+# primary endpoint D29 markers
+D29:
+  ph1: ph1.D29
+  ph2: ph2.D29
+  wt: wt.D29
+  EventIndPrimary: EventIndPrimaryD29  
+  EventTimePrimary: EventTimePrimaryD29
+  tpeak: 29
+
+# sensitivity analyses for D29 markers, starting at 1, instead of 7, day after D29 visit
+D29start1:
+  ph1: ph1.D29start1
+  ph2: ph2.D29start1
+  wt: wt.D29start1
+  EventIndPrimary: EventIndPrimaryD29  
+  EventTimePrimary: EventTimePrimaryD29
+  tpeak: 29
+  
+# primary endpoint D200 markers
+D200:
+  ph1: ph1.D200
+  ph2: ph2.D200
+  wt: wt.D200
+  EventIndPrimary: EventIndPrimaryD200  
+  EventTimePrimary: EventTimePrimaryD200
+  tpeak: 200
+
+# primary endpoint D100 markers
+D100:
+  ph1: ph1.D100
+  ph2: ph2.D100
+  wt: wt.D100
+  EventIndPrimary: EventIndPrimaryD100
+  EventTimePrimary: EventTimePrimaryD100
+  tpeak: 100
+
+  

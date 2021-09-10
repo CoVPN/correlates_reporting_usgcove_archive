@@ -6,6 +6,9 @@ config <- config::get(config = Sys.getenv("TRIAL"))
 for(opt in names(config)){
   eval(parse(text = paste0(names(config[opt])," <- config[[opt]]")))
 }
+
+verbose=Sys.getenv("VERBOSE")=="1"
+
 names(assays)=assays # add names so that lapply results will have names
 
 # if this flag is true, then the N IgG binding antibody is reported 
@@ -15,6 +18,7 @@ include_bindN <- TRUE
 # conversion factors
 convf=c(bindSpike=0.0090, bindRBD=0.0272, bindN=0.0024, pseudoneutid50=0.242, pseudoneutid80=1.502)
 
+# For bAb, IU and BAU are the same thing
 # limits for each assay (IU for bAb and pseudoneut, no need to convert again)
 # the following are copied from SAP to avoid any mistake (get rid of commas)
 tmp=list(
@@ -92,8 +96,9 @@ assays_to_be_censored_at_uloq_cor <- c(
 ###############################################################################
 # figure labels and titles for markers
 ###############################################################################
-has29 = "Day29" %in% times
-has57 = study_name_code=="COVE"
+#has29 = "Day29" %in% times
+has57 = study_name_code %in% c("COVE","TWOMARKERS")
+has29 = study_name_code %in% c("COVE","TWOMARKERS","ENSEMBLE")
 
 markers <- c(outer(times[which(times %in% c("B", "Day29", "Day57"))], 
                    assays, "%.%"))
@@ -116,9 +121,9 @@ labels.ethnicity <- c(
   "Not reported and unknown"
 )
 
-labels.assays.short <- c("Anti N IgG (IU/ml)", 
-                         "Anti Spike IgG (IU/ml)", 
-                         "Anti RBD IgG (IU/ml)", 
+labels.assays.short <- c("Anti N IgG (BAU/ml)", 
+                         "Anti Spike IgG (BAU/ml)", 
+                         "Anti RBD IgG (BAU/ml)", 
                          "Pseudovirus-nAb cID50", 
                          "Pseudovirus-nAb cID80", 
                          "Live virus-nAb cMN50")
@@ -379,6 +384,80 @@ get.labels.x.axis.cor=function(xlim, llod){
 }
 
 
+# bootstrap from case control studies is done by resampling cases, ph2 controls, and non-ph2 controls separately. 
+# Across bootstrap replicates, the number of cases does not stay constant, neither do the numbers of ph2 controls by demographics strata. 
+# Specifically,
+# 1) sample with replacement to get dat.b. From this dataset, take the cases and count ph2 and non-ph2 controls by strata
+# 2) sample with replacement ph2 and non-ph2 controls by strata
+bootstrap.case.control.samples=function(dat.ph1, delta.name="EventIndPrimary", strata.name="tps.stratum", ph2.name="ph2") {
+    
+    dat.tmp=data.frame(ptid=1:nrow(dat.ph1), delta=dat.ph1[,delta.name], strata=dat.ph1[,strata.name], ph2=dat.ph1[,ph2.name])
+    
+    nn.ph1=with(dat.tmp, table(strata, delta))
+    nn.ph2=with(subset(dat.tmp, ph2), table(strata, delta))
+    if(!all(rownames(nn.ph1)==rownames(nn.ph2))) stop("ph2 strata differ from ph1 strata")
+    strat=rownames(nn.ph1); names(strat)=strat
+    # ctrl.ptids is a list of lists
+    ctrl.ptids = with(subset(dat.tmp, delta==0), lapply(strat, function (i) list(ph2=ptid[strata==i & ph2], nonph2=ptid[strata==i & !ph2])))
+    
+    # 1. resample dat.ph1 to get dat.b, but only take the cases 
+    dat.b=dat.tmp[sample.int(nrow(dat.tmp), r=TRUE),]
+    nn.b=with(dat.b, table(strata, delta))
+    # if the bootstrap dataset lost a strata (both cases and controls), which is very very unlikely, we will redo the sampling
+    while(!all(rownames(nn.b)==strat)) {   
+        dat.b=dat.tmp[sample.int(nrow(dat.tmp), r=TRUE),]
+        nn.b=table(dat.b$strata, dat.b$delta)
+    }
+    # take the case ptids
+    case.ptids.b = dat.b$ptid[dat.b$delta==1]
+    
+    # 2. resample controls in dat.ph1 (numbers determined by dat.b) stratified by strata and ph2/nonph2
+    # ph2 and non-ph2 controls by strata
+    nn.ctrl.b=with(subset(dat.b, !delta), table(strata, ph2))
+    # sample the control ptids
+    ctrl.ptids.by.stratum.b=lapply(strat, function (i) {
+        c(sample(ctrl.ptids[[i]]$ph2, nn.ctrl.b[i,2], r=T),
+          sample(ctrl.ptids[[i]]$nonph2, nn.ctrl.b[i,1], r=T))
+    })
+    ctrl.ptids.b=do.call(c, ctrl.ptids.by.stratum.b)    
+    
+    # return data frame
+    dat.ph1[c(case.ptids.b, ctrl.ptids.b), ]
+}
+## testing
+#dat.b=bootstrap.case.control.samples(dat.vac.seroneg)
+#with(dat.vac.seroneg, table(ph2, tps.stratum, EventIndPrimary))
+#with(dat.b, table(ph2, tps.stratum, EventIndPrimary))
+#> with(dat.vac.seroneg, table(ph2, tps.stratum, EventIndPrimary))
+#, , EventIndPrimary = 0
+#
+#       tps.stratum
+#ph2       33   34   35   36   37   38   39   40   41   42   43   44   45   46   47   48
+#  FALSE 1483  915  759  439 1677 1138  894  591 3018 1973 1559 1051 1111  693  511  329
+#  TRUE    57   53   55   57   56   57   57   56   58   55   55   57   57   56   56   56
+#
+#, , EventIndPrimary = 1
+#
+#       tps.stratum
+#ph2       33   34   35   36   37   38   39   40   41   42   43   44   45   46   47   48
+#  FALSE    1    0    0    1    0    1    0    0    2    1    2    1    0    0    0    1
+#  TRUE     3    7    7   10    8   11    2   13   17   23   15   23    5    6    4    6
+#
+#> with(dat.b, table(ph2, tps.stratum, EventIndPrimary))
+#, , EventIndPrimary = 0
+#
+#       tps.stratum
+#ph2       33   34   35   36   37   38   39   40   41   42   43   44   45   46   47   48
+#  FALSE 1487  911  750  462 1675 1181  884  570 3058 2023 1499 1034 1094  694  487  329
+#  TRUE    47   57   65   62   50   53   50   64   55   61   65   53   64   53   54   60
+#
+#, , EventIndPrimary = 1
+#
+#       tps.stratum
+#ph2       33   34   35   36   37   38   39   40   41   42   43   44   45   46   47   48
+#  FALSE    0    0    0    0    0    2    0    0    1    1    3    3    0    0    0    2
+#  TRUE     2    6    8    5    9   13    0   11   20   26   10   20    4    3    4    5
+
 
 # for bootstrap use
 get.ptids.by.stratum.for.bootstrap = function(data) {
@@ -405,7 +484,7 @@ get.bootstrap.data.cor = function(data, ptids.by.stratum, seed) {
     dat.b=data[match(unlist(tmp), data$Ptid),]
     
     # compute weights
-    tmp=with(dat.b, table(Wstratum, TwophasesampInd.0))
+    tmp=with(dat.b, table(Wstratum, ph2))
     weights=rowSums(tmp)/tmp[,2]
     dat.b$wt=weights[""%.%dat.b$Wstratum]
     # we assume data only contains ph1 ptids, thus weights is defined for every bootstrapped ptids
@@ -445,3 +524,64 @@ report.assay.values=function(x, assay){
     #out[!duplicated(out)] # unique strips away the names. But don't take out duplicates because 15% may be needed and because we may want the same number of values for each assay
 }
 #report.assay.values (dat.vac.seroneg[["Day57pseudoneutid80"]], "pseudoneutid80")
+
+
+
+
+
+###################################################################################################
+# function to define trichotomized markers 
+add.trichotomized.markers=function(dat, tpeak, wt.col.name) {
+    if(verbose) print("add.trichotomized.markers ...")
+    
+    marker.cutpoints <- list()    
+    for (a in assays) {
+        marker.cutpoints[[a]] <- list()    
+        for (ind.t in c("Day"%.%tpeak, "Delta"%.%tpeak%.%"overB")) {
+            if (verbose) myprint(a, ind.t, newline=F)
+            tmp.a=dat[[ind.t %.% a]]
+            
+            uppercut=log10(uloqs[a])*.9999
+            if (mean(tmp.a>uppercut, na.rm=T)>1/3 & startsWith(ind.t, "Day")) {
+                # if more than 1/3 of vaccine recipients have value > ULOQ
+                # let q.a be median among those < ULOQ and ULOQ
+                if (verbose) print("more than 1/3 of vaccine recipients have value > ULOQ")
+                q.a=c(  wtd.quantile(tmp.a[dat[[ind.t %.% a]]<=uppercut], 
+                           weights = dat[[wt.col.name]][tmp.a<=uppercut], probs = c(1/2)), 
+                        uppercut)
+            } else {
+                q.a <- wtd.quantile(tmp.a, weights = dat[[wt.col.name]], probs = c(1/3, 2/3))
+            }
+            tmp=try(factor(cut(tmp.a, breaks = c(-Inf, q.a, Inf))), silent=T)
+     
+            do.cut=FALSE # if TRUE, use cut function which does not use weights
+            # if there is a huge point mass, an error would occur, or it may not break into 3 groups
+            if (inherits(tmp, "try-error")) do.cut=TRUE else if(length(table(tmp)) != 3) do.cut=TRUE
+            
+            if(!do.cut) {
+                dat[[ind.t %.% a %.% "cat"]] <- tmp
+                marker.cutpoints[[a]][[ind.t]] <- q.a
+            } else {
+                myprint("\nfirst cut fails, call cut again with breaks=3 \n")
+                # cut is more robust but it does not incorporate weights
+                tmp=cut(tmp.a, breaks=3)
+                stopifnot(length(table(tmp))==3)
+                dat[[ind.t %.% a %.% "cat"]] = tmp
+                # extract cut points from factor level labels
+                tmpname = names(table(tmp))[2]
+                tmpname = substr(tmpname, 2, nchar(tmpname)-1)
+                marker.cutpoints[[a]][[ind.t]] <- as.numeric(strsplit(tmpname, ",")[[1]])
+            }
+            stopifnot(length(table(dat[[ind.t %.% a %.% "cat"]])) == 3)
+            if(verbose) {
+                print(table(dat[[ind.t %.% a %.% "cat"]]))
+                cat("\n")
+            }
+            
+        }
+    }
+    
+    attr(dat, "marker.cutpoints")=marker.cutpoints
+    dat
+    
+}

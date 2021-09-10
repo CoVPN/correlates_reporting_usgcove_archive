@@ -30,7 +30,7 @@ load(file = here("output", "cvsl_risk_placebo_cvaucs.rda"))
 
 ######## Table of demographic variables used to derive the risk score ##########
 dat <- inputFile %>%
-  filter(Perprotocol == 1 & Trt == 0 & Bserostatus == 0) %>%
+  filter(Riskscorecohortflag == 1 & Trt == 0) %>%
   select(all_of(risk_vars)) 
 
 dat %>%

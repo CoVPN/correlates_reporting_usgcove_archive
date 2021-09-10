@@ -63,11 +63,8 @@ if(study_name_code == "ENSEMBLE"){
     "Sex", "Age", "BMI",
     "Country.X1", "Country.X2", "Country.X3", "Country.X4", "Country.X5", "Country.X6", "Country.X7", 
     "Region.X1", "Region.X2", 
-    "CalDtEnrollIND.X1" 
-    #"CalDtEnrollIND.X2", "CalDtEnrollIND.X3",  
-    #"Region.X1.x.CalDtEnrollIND.X1", "Region.X1.x.CalDtEnrollIND.X2", "Region.X1.x.CalDtEnrollIND.X3",
-    #"Region.X2.x.CalDtEnrollIND.X1", "Region.X2.x.CalDtEnrollIND.X2", "Region.X2.x.CalDtEnrollIND.X3",
-  )
+    "CalDtEnrollIND.X1"
+    )
   
   if(run_prod){
     risk_vars <- append(risk_vars, c("CalDtEnrollIND.X2", "CalDtEnrollIND.X3"))
@@ -116,13 +113,25 @@ if(study_name_code == "ENSEMBLE"){
 }
 
 ################################################
-# Update inputFile to correct EventIndPrimaryIncludeNotMolecConfirmedD29 such that only cases that are EventTimePrimaryIncludeNotMolecConfirmedD29>=7
-inputFile <- inputFile %>%
-  mutate(EventIndPrimaryIncludeNotMolecConfirmedD29 = ifelse(EventTimePrimaryD29 < 7, 0, EventIndPrimaryIncludeNotMolecConfirmedD29))
 
 # Consider only placebo data for risk score analysis
-dat.ph1 <- inputFile %>%
-  filter(Perprotocol == 1 & Trt == 0 & Bserostatus == 0) %>%
+if("Riskscorecohortflag" %in% names(inputFile)){
+  assertthat::assert_that(
+    all(!is.na(inputFile$Riskscorecohortflag)), msg = "NA values present in Riskscorecohortflag in inputFile!"
+  )
+  dat.ph1 <- inputFile %>% filter(Riskscorecohortflag == 1 & Trt == 0)
+}else{
+  inputFile <- inputFile %>%
+    mutate(Riskscorecohortflag = ifelse(Bserostatus==0 & Perprotocol==1 & EarlyendpointD29==0 & EventTimePrimaryD29>=1, 1, 0)) 
+  
+  assertthat::assert_that(
+    all(!is.na(inputFile$Riskscorecohortflag)), msg = "NA values present in Riskscorecohortflag when created in inputFile!"
+    )
+  
+  dat.ph1 <- inputFile %>% filter(Riskscorecohortflag == 1 & Trt == 0)
+}
+
+dat.ph1 <- dat.ph1 %>%
   # Keep only variables to be included in risk score analyses
   select(Ptid, Trt, all_of(endpoint), all_of(risk_vars)) %>%
   # Drop any observation with NA values in Ptid, Trt, or endpoint!
@@ -130,7 +139,7 @@ dat.ph1 <- inputFile %>%
 
 # Create table of cases in both arms (prior to Risk score analyses)
 tab <- inputFile %>%
-  filter(Perprotocol == 1 & Bserostatus == 0) %>%
+  filter(Riskscorecohortflag == 1) %>%
   mutate(Trt = ifelse(Trt == 0, "Placebo", "Vaccine")) 
 
 table(tab$Trt, tab %>% pull(endpoint)) %>%
@@ -140,6 +149,7 @@ rm(tab)
 # Derive maxVar: the maximum number of variables that will be allowed by SL screens in the models.
 np <- sum(dat.ph1 %>% select(matches(endpoint)))
 maxVar <- max(20, floor(np / 20))
+all_risk_vars <- risk_vars
 
 # Remove any risk_vars that are indicator variables and have fewer 0's or 1's
 dat.ph1 <- drop_riskVars_with_fewer_0s_or_1s(dat = dat.ph1, 
@@ -223,5 +233,5 @@ cvfits[[1]] <- fits$cvfits
 saveRDS(cvaucs, here("output", "cvsl_riskscore_cvaucs.rds"))
 save(cvfits, file = here("output", "cvsl_riskscore_cvfits.rda"))
 save(risk_placebo_ptids, file = here("output", "risk_placebo_ptids.rda"))
-save(run_prod, Y, X_riskVars, weights, inputFile, risk_vars, endpoint, maxVar,
+save(run_prod, Y, X_riskVars, weights, inputFile, risk_vars, all_risk_vars, endpoint, maxVar,
      V_outer, studyName_for_report, file = here("output", "objects_for_running_SL.rda"))

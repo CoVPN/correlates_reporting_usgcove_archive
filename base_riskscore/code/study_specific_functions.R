@@ -44,10 +44,27 @@ get_defs_comments_riskVars <- function(data){
         `Variable Name` == "Unknown" ~ "Indicator race = unknown (1=Unknown, 0=complement)",
         `Variable Name` == "URMforsubcohortsampling" ~ "Indicator of under-represented minority (1=Yes, 0=No)",
         `Variable Name` == "HighRiskInd" ~ "Baseline covariate indicating >= 1 Co-existing conditions (1=yes, 0=no, NA=missing)",
-        `Variable Name` == "Country" ~ "Country of the study site of enrollment (0=United States, 1=Argentina,2=Brazil, 3=Chile,4=Columbia, 5=Mexico, 6=Peru, 7=South Africa)",
-        `Variable Name` == "Region" ~ "Major geographic region of the study site of enrollment (0=Northern America, 1=Latin America, 2=Southern Africa).",
+        #`Variable Name` == "Country" ~ "Country of the study site of enrollment (0=United States, 1=Argentina,2=Brazil, 3=Chile,4=Columbia, 5=Mexico, 6=Peru, 7=South Africa)",
+        #`Variable Name` == "Region" ~ "Major geographic region of the study site of enrollment (0=Northern America, 1=Latin America, 2=Southern Africa).",
         `Variable Name` == "HIVinfection" ~ "Indicator HIV infected at enrollment (1=infected, 0=not infected)",
-        `Variable Name` == "CalendarDateEnrollment" ~ "Date variable (used to control for calendar time trends in COVID incidence). Coded as number of days since first person enrolled until the ppt is enrolled."
+        #`Variable Name` == "CalendarDateEnrollment" ~ "Date variable (used to control for calendar time trends in COVID incidence). Coded as number of days since first person enrolled until the ppt is enrolled.",
+        `Variable Name` == "Country.X1" ~ "Dummy indicator country = Argentina (1 = Argentina, 0 = complement)",
+        `Variable Name` == "Country.X2" ~ "Dummy indicator country = Brazil (1 = Brazil, 0 = complement)",
+        `Variable Name` == "Country.X3" ~ "Dummy indicator country = Chile (1 = Chile, 0 = complement)",
+        `Variable Name` == "Country.X4" ~ "Dummy indicator country = Columbia (1 = Columbia, 0 = complement)",
+        `Variable Name` == "Country.X5" ~ "Dummy indicator country = Mexico (1 = Mexico, 0 = complement)",
+        `Variable Name` == "Country.X6" ~ "Dummy indicator country = Peru (1 = Peru, 0 = complement)",
+        `Variable Name` == "Country.X7" ~ "Dummy indicator country = South Africa (1 = South Africa, 0 = complement)",
+        `Variable Name` == "Region.X1" ~ "Dummy indicator region = Latin America (1 = Latin America, 0 = complement)",
+        `Variable Name` == "Region.X2" ~ "Dummy indicator country = Southern Africa (1 = Southern Africa, 0 = complement)",
+        `Variable Name` == "CalDtEnrollIND.X1" ~ "Dummy indicator variable representing enrollment occurring between 4-8 weeks periods of first subject enrolled (1 = Enrollment between 4-8 weeks, 0 = complement).",
+        `Variable Name` == "CalDtEnrollIND.X2" ~ "Dummy indicator variable representing enrollment occurring between 8-12 weeks periods of first subject enrolled (1 = Enrollment between 8-12 weeks, 0 = complement).",
+        `Variable Name` == "CalDtEnrollIND.X3" ~ "Dummy indicator variable representing enrollment occurring between 12-16 weeks periods of first subject enrolled (1 = Enrollment between 12-16 weeks, 0 = complement)."
+        #`Variable Name` == "Region.X1.x.CalDtEnrollIND.X1" ~ "Interaction term between Region.X1 and CalDtEnrollIND.X1",
+        #`Variable Name` == "Region.X1.x.CalDtEnrollIND.X2" ~ "Interaction term between Region.X1 and CalDtEnrollIND.X2",
+        #`Variable Name` == "Region.X1.x.CalDtEnrollIND.X3" ~ "Interaction term between Region.X1 and CalDtEnrollIND.X3",
+        #`Variable Name` == "Region.X2.x.CalDtEnrollIND.X2" ~ "Interaction term between Region.X2 and CalDtEnrollIND.X2",
+        #`Variable Name` == "Region.X2.x.CalDtEnrollIND.X3" ~ "Interaction term between Region.X2 and CalDtEnrollIND.X3"
       ),
       Comments = "")
   }

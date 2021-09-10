@@ -5,11 +5,14 @@
 \newif\ifENSEMBLE
 `r if (study_name_code=="ENSEMBLE") "\\ENSEMBLEtrue"` 
 
+```{r, echo=FALSE}
+print("running cor_coxph report ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+```
 
 
 ```{r, echo=FALSE}
 Day <- 29
-pathCoRoutput <- "cor_coxph/output/D29"
+pathCoRoutput <- paste0("cor_coxph/output/", attr(config,"config"), "/PrimaryD29")
 ```
 
 ```{r, child=if (has29) c(here::here('cor_coxph', 'report_sub.Rmd'))}
@@ -20,8 +23,10 @@ pathCoRoutput <- "cor_coxph/output/D29"
 
 
 ```{r, echo=FALSE}
-Day <- 57
-pathCoRoutput <- "cor_coxph/output/D57"
+if (has57) {
+    Day <- 57
+    pathCoRoutput <- paste0("cor_coxph/output/", attr(config,"config"), "/PrimaryD57")
+}
 ```
 
 ```{r, child=if (has57) c(here::here('cor_coxph', 'report_sub.Rmd'))}
@@ -32,17 +37,26 @@ pathCoRoutput <- "cor_coxph/output/D57"
 <!-- The following are not repeated between D29 analyses and D57 analyses -->
 
 
+\ifENSEMBLE
+
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{`r pathCoRoutput`/barplot_visit_intervals_immuno}
-    \caption{Distribution of the number of days bewteen visits in the immunogenicity subcohort, vaccine arm, baseline negative.}
+    \caption{Distribution of the number of days bewteen visits in the immunogenicity subcohort, vaccine arm, baseline negative. }
 \end{figure}
 
 
-\ifENSEMBLE
 \else
 
 <!-- COVE only -->
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{`r pathCoRoutput`/barplot_visit_intervals_immuno}
+    \caption{Distribution of the number of days bewteen visits in the immunogenicity subcohort, vaccine arm, baseline negative.  The median (IQR) number of days between Day 29 and Day 57 was \protect\input{`r pathCoRoutput`/quartiles_visit_intervals_immuno}.}
+\end{figure}
+
+
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{`r pathCoRoutput`/barplot_mixed}

@@ -5,6 +5,11 @@ output:
 ---
 #  Graphical Descriptions of Antibody Marker Data {#ab-grapical}
 
+```{r, echo=FALSE}
+print("running cor_graphical report ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+```
+
+
 ```{r cor-graphical-setup, echo = FALSE, message = FALSE}
 library(here)
 library(knitr)
@@ -15,12 +20,12 @@ plot_ve_curves <- readRDS(here::here("cor_graphical", "data_clean", "plot_ve_cur
 
 ## Boxplots
 
-```{r, fig.cap = "Boxplots of D57 Ab markers: vaccine arm. The three dashed lines in each figure are ULOQ, LLOQ, and LLOD, from top to bottom respectively."}
+```{r, fig.cap = "Boxplots of D57 Ab markers: vaccine arm. The three dashed lines in each figure are ULOQ, LLOQ, and LLOD, from top to bottom respectively.", eval = has57}
 include_graphics(here("cor_graphical", "figs", paste0("boxplots_Day57_trt_vaccine_x_cc_", study_name, ".png")))
 ```
 
 \clearpage
-```{r, fig.cap = "Boxplots of D57 fold-rise over D1 Ab markers: vaccine arm."}
+```{r, fig.cap = "Boxplots of D57 fold-rise over D1 Ab markers: vaccine arm.", eval = has57}
 include_graphics(here("cor_graphical", "figs", paste0("boxplots_Delta57overB_trt_vaccine_x_cc_", study_name, ".png")))
 ```
 
@@ -41,12 +46,12 @@ include_graphics(here("cor_graphical", "figs", paste0("boxplots_Delta29overB_trt
 
 
 
-```{r, fig.cap = "RCDF plots for D57 Ab markers by treatment arm."}
+```{r, fig.cap = "RCDF plots for D57 Ab markers by treatment arm.", eval = has57}
 include_graphics(here("cor_graphical", "figs", paste0("Marker_RCDF_Day57_trt_by_event_status_bstatus_", study_name, ".png")))
 ```
 
 \clearpage
-```{r, fig.cap = "RCDF plots for D57 fold-rise over D1 Ab markers by treatment arm."}
+```{r, fig.cap = "RCDF plots for D57 fold-rise over D1 Ab markers by treatment arm.", eval = has57}
 include_graphics(here("cor_graphical", "figs", paste0("Marker_RCDF_Delta57overB_trt_by_event_status_bstatus_", study_name, ".png")))
 ```
 

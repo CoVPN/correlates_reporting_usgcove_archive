@@ -6,6 +6,8 @@ config <- config::get(config = Sys.getenv("TRIAL"))
 for(opt in names(config)){
   eval(parse(text = paste0(names(config[opt])," <- config[[opt]]")))
 }
+
+
 names(assays)=assays # add names so that lapply results will have names
 
 # if this flag is true, then the N IgG binding antibody is reported 
@@ -15,6 +17,7 @@ include_bindN <- TRUE
 # conversion factors
 convf=c(bindSpike=0.0090, bindRBD=0.0272, bindN=0.0024, pseudoneutid50=0.242, pseudoneutid80=1.502)
 
+# For bAb, IU and BAU are the same thing
 # limits for each assay (IU for bAb and pseudoneut, no need to convert again)
 # the following are copied from SAP to avoid any mistake (get rid of commas)
 tmp=list(
@@ -116,9 +119,9 @@ labels.ethnicity <- c(
   "Not reported and unknown"
 )
 
-labels.assays.short <- c("Anti N IgG (IU/ml)", 
-                         "Anti Spike IgG (IU/ml)", 
-                         "Anti RBD IgG (IU/ml)", 
+labels.assays.short <- c("Anti N IgG (BAU/ml)", 
+                         "Anti Spike IgG (BAU/ml)", 
+                         "Anti RBD IgG (BAU/ml)", 
                          "Pseudovirus-nAb cID50", 
                          "Pseudovirus-nAb cID80", 
                          "Live virus-nAb cMN50")
@@ -405,7 +408,7 @@ get.bootstrap.data.cor = function(data, ptids.by.stratum, seed) {
     dat.b=data[match(unlist(tmp), data$Ptid),]
     
     # compute weights
-    tmp=with(dat.b, table(Wstratum, TwophasesampInd.0))
+    tmp=with(dat.b, table(Wstratum, ph2))
     weights=rowSums(tmp)/tmp[,2]
     dat.b$wt=weights[""%.%dat.b$Wstratum]
     # we assume data only contains ph1 ptids, thus weights is defined for every bootstrapped ptids

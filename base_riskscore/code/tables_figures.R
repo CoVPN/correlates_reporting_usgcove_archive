@@ -30,7 +30,7 @@ load(file = here("output", "cvsl_risk_placebo_cvaucs.rda"))
 
 ######## Table of demographic variables used to derive the risk score ##########
 dat <- inputFile %>%
-  filter(Perprotocol == 1 & Trt == 0 & Bserostatus == 0) %>%
+  filter(Riskscorecohortflag == 1 & Trt == 0) %>%
   select(all_of(risk_vars)) 
 
 dat %>%
@@ -90,7 +90,7 @@ tab %>% write.csv(here("output", "learner-screens.csv"))
 if(study_name_code=="COVE"){
   caption <- "Performance of Superlearner and all learner-screen combinations (CV-AUCs with 95\\% CIs) for risk score analyses using placebo group and EventIndPrimaryD57 as outcome. Constraint of np/20 is applied to all learners such that no more than 6 input variables were allowed in any model."
 }else if(study_name_code=="ENSEMBLE"){
-  caption <- "Performance of Superlearner and all learner-screen combinations (CV-AUCs with 95\\% CIs) for risk score analyses using placebo group and EventIndPrimaryD29 as outcome. Constraint of np/20 is applied to all learners such that no more than 5 input variables were allowed in any model."
+  caption <- "Performance of Superlearner and all learner-screen combinations (CV-AUCs with 95\\% CIs) for risk score analyses using placebo group and EventIndPrimaryD29 (including those cases that are not molecularly confirmed) as outcome. Constraint of np/20 is applied to all learners such that no more than 5 input variables were allowed in any model."
 }
   
 sl.perf <- risk_placebo_cvaucs %>%

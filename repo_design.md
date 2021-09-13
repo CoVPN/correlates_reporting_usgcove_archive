@@ -10,14 +10,14 @@ author: Nima Hejazi and David Benkeser
 The immune correlates analysis of the joint COVID-19 Vaccine Prevention Network
 (CoVPN) and US Government (USG) statistics team is a large-scale data science
 project, with a distributed team of collaborators, implementing the publicly
-available USG/CoVPN immune correlates statistical analysis plan
-(https://doi.org/10.6084/m9.figshare.13198595). From its inception, the project
+available USG/CoVPN immune correlates statistical analysis plan (SAP), available
+at https://doi.org/10.6084/m9.figshare.13198595. From its inception, the project
 has placed a strong emphasis on transparency, computational reproducibility,
 manual source code verification, and portability across modern computing
 infrastructures. In line with these objectives, the data analysis and reporting
 architecture adheres closely to best practices developed in the free and open
-source software community (FOSS); the unrestricted source code is publicly
-available as a single version-controlled repository on GitHub, a collaborative
+source software community; the unrestricted source code is publicly available as
+a single version-controlled repository on GitHub, a widely used collaborative
 programming platform, at https://github.com/CoVPN/correlates_reporting.
 
 The repository includes distinct modules, each mapped closely to a section of
@@ -42,9 +42,9 @@ coupled with Travis-CI (https://travis-ci.org/), a continuous integration
 service that automatically builds the reports in a small cloud computing
 environment upon proposed changes to the repository's stable source code. By
 integrating these tools into the data science team's workflow, the repository
-design ensures that the analyses are, both individually and collectively, free
-of and robust to programming errors, transparently developed, and yield reports
-with verifiable results.
+design ensures that the analyses are -- individually and collectively -- free of
+and robust to programming errors, transparently developed, and produce reports
+with verified results.
 
 The CoVPN immune correlates analysis and reporting repository represents, to our
 knowledge, the first entirely publicly developed and available data science

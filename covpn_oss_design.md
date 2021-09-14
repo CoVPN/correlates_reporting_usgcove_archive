@@ -38,9 +38,9 @@ Travis-CI (https://travis-ci.org/), a continuous integration service that
 automatically builds the reports in a small cloud computing environment upon
 proposed changes to the repository's stable source code. By integrating these
 tools into the data science team's workflow, the repository design ensures that
-the analyses are -- individually and collectively -- free of and robust to
-programming errors, transparently developed, and produce reports with verified
-results.
+the analyses are -- both individually and collectively -- free of and robust to
+programming errors, transparently developed, and readily produce analysis
+reports containing independently verified results.
 
 The CoVPN immune correlates analysis and reporting repository represents, to our
 knowledge, the first entirely publicly developed and available data science

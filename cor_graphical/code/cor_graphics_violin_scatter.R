@@ -40,7 +40,7 @@ names(mins) <- min_max_plot$assay
 maxs <- min_max_plot$max
 names(maxs) <- min_max_plot$assay
 
-#' A function to create a plot that shows violin + box or line + box figures
+#' A function to create a violin + box plot with or without lines
 #' 
 #' @param dat Dataframe with variables needed
 #' @param dat.sample Random sample of the param dat for generating dots (showing all dots may be too much)
@@ -54,7 +54,7 @@ names(maxs) <- min_max_plot$assay
 #' @param xtitle Y variable title
 #' @param xlabel X variable label
 #' @param toptitle Title for each page
-#' @param type Type of figure: "violin" or "line"
+#' @param type Type of figure: "noline" or "line"
 #' @param facetby Faceting variables to form a matrix of panels
 #' @param facetopt Faceting style: "wrap" or "grid"
 #' @param group.num Number of case/non-case groups
@@ -67,9 +67,9 @@ names(maxs) <- min_max_plot$assay
 #' @param axis.text.x.cex font size for x axis text
 #' @param axis.text.y.cex font size for y axis text
 #' @param n_rate variable for counts and response rate: "N_RespRate" or "N_RespRate_severe"
-#' @return A ggplot object for violin or line plots
+#' @return A ggplot object for violin + box plot with or without lines
 
-violin_line_plot <- 
+violin_box_plot <- 
   function(dat, 
            dat.sample,
            x="time", 
@@ -105,7 +105,7 @@ violin_line_plot <-
       geom_line(data = dat.sample, aes(group = Ptid)) + 
       geom_point(data = dat.sample, size = pt.size, show.legend = TRUE) +
       geom_boxplot(width=0.25, lwd=1.5, alpha = 0.3, outlier.shape=NA, show.legend = FALSE)
-  } else if (type=="violin") {
+  } else if (type=="noline") {
     p <- p + geom_violin(scale="width", na.rm = TRUE) +
       geom_jitter(data = dat.sample,  width = 0.1, height = 0, size = pt.size, show.legend = TRUE) +
       geom_boxplot(width=0.25, lwd=1.5, alpha = 0.3, outlier.shape=NA, show.legend = FALSE)}
@@ -132,7 +132,7 @@ violin_line_plot <-
   return (p)
 }
 
-#### Figure 1. violin/line plot, intercurrent vs pp, case vs non-case, (Day 1), Day 29 Day 57
+#### Figure 1. violin+box plot, case vs non-case, (Day 1), Day 29, and Day 57 if exists
 for (i in 1:length(plots)) {
   for (j in 1:length(bstatus)) {
     for (k in 1:length(trt)) {
@@ -146,7 +146,7 @@ for (i in 1:length(plots)) {
           ll.cex <- 8.16
           prop.cex <- 7
           
-          p <- violin_line_plot(dat=subset(longer_cor_data_plot1, assay==plots[i] & Bserostatus==bstatus[j] & Trt==trt[k] & !is.na(value) & time %in% unlist(times[t]) & eval(as.name(case_set))==1), 
+          p <- violin_box_plot(dat=subset(longer_cor_data_plot1, assay==plots[i] & Bserostatus==bstatus[j] & Trt==trt[k] & !is.na(value) & time %in% unlist(times[t]) & eval(as.name(case_set))==1), 
                                 dat.sample=subset(plot.25sample1, assay==plots[i] & Bserostatus==bstatus[j] & Trt==trt[k] & !is.na(value) & time %in% unlist(times[t]) & eval(as.name(case_set))==1), 
                                 ytitle=plots_ytitles[i],toptitle=plots_titles[i],
                                 facetby=vars(cohort_event),
@@ -166,14 +166,14 @@ for (i in 1:length(plots)) {
           file_name <- paste0("linebox_", gsub("bind","",gsub("pseudoneut","pnAb_",plots[i])), "_", trt[k], "_", gsub(" ","",bstatus[j]), "_", if(case_set=="severe") "severe_", "v",t,"_", study_name, ".pdf")
           ggsave2(plot = g, filename = here("figs", file_name), width = 16, height = 11)
           
-          p <- violin_line_plot(dat=       subset(longer_cor_data_plot1, assay==plots[i] & Bserostatus==bstatus[j] & Trt==trt[k] & !is.na(value) & time %in% unlist(times[t]) & eval(as.name(case_set))==1), 
+          p <- violin_box_plot(dat=       subset(longer_cor_data_plot1, assay==plots[i] & Bserostatus==bstatus[j] & Trt==trt[k] & !is.na(value) & time %in% unlist(times[t]) & eval(as.name(case_set))==1), 
                                 dat.sample=subset(longer_cor_data_plot1, assay==plots[i] & Bserostatus==bstatus[j] & Trt==trt[k] & !is.na(value) & time %in% unlist(times[t]) & eval(as.name(case_set))==1), 
                                 ytitle=plots_ytitles[i],toptitle=plots_titles[i],
                                 x="cohort_event",
                                 xtitle="Cohort Event",
                                 facetby=vars(time),
                                 ylim=y.lim,
-                                type="violin",
+                                type="noline",
                                 ybreaks=y.breaks,
                                 prop.cex=prop.cex,
                                 ll.cex=ll.cex,
@@ -195,7 +195,7 @@ for (i in 1:length(plots)) {
   }
 }
 
-#### Figure 2. violin/line plot, intercurrent vs pp, case vs non-case, (Day 1) Day 29 Day 57, by if Age, HighRisk, Sex, Race and Ethnic group
+#### Figure 2. violin + box plot, case vs non-case, (Day 1), Day 29, and Day 57 if exists, by Age, HighRisk, Sex, Race and Ethnic group
 for (i in 1:length(plots)) {
   for (j in 1:length(bstatus)) {
     for (k in 1:length(trt)) {
@@ -222,7 +222,7 @@ for (i in 1:length(plots)) {
             ll.cex <- 7.5
             prop.cex <- 6.6
             
-            p <- violin_line_plot(dat=subset(longer_cor_data_plot2, assay==plots[i] & Bserostatus==bstatus[j] & Trt==trt[k] & !is.na(value) & time %in% unlist(times[t]) & eval(as.name(case_set))==1), 
+            p <- violin_box_plot(dat=subset(longer_cor_data_plot2, assay==plots[i] & Bserostatus==bstatus[j] & Trt==trt[k] & !is.na(value) & time %in% unlist(times[t]) & eval(as.name(case_set))==1), 
                                   dat.sample=subset(plot.25sample2, assay==plots[i] & Bserostatus==bstatus[j] & Trt==trt[k] & !is.na(value) & time %in% unlist(times[t]) & eval(as.name(case_set))==1),  
                                   ytitle=plots_ytitles[i],toptitle=plots_titles[i],
                                   facetby=as.formula(paste("~",s,"+cohort_event")),
@@ -243,14 +243,14 @@ for (i in 1:length(plots)) {
             file_name <- paste0("linebox_", gsub("bind","",gsub("pseudoneut","pnAb_",plots[i])), "_", trt[k], "_", gsub(" ","",bstatus[j]), "_", s1, "_", if(case_set=="severe") "severe_", "v", t,"_", study_name, ".pdf")
             ggsave2(plot = g, filename = here("figs", file_name), width = 16, height = 11)
             
-            p <- violin_line_plot(dat=       subset(longer_cor_data_plot2, assay==plots[i] & Bserostatus==bstatus[j] & Trt==trt[k] & !is.na(value) & time %in% unlist(times[t]) & eval(as.name(case_set))==1), 
+            p <- violin_box_plot(dat=       subset(longer_cor_data_plot2, assay==plots[i] & Bserostatus==bstatus[j] & Trt==trt[k] & !is.na(value) & time %in% unlist(times[t]) & eval(as.name(case_set))==1), 
                                   dat.sample=subset(longer_cor_data_plot2, assay==plots[i] & Bserostatus==bstatus[j] & Trt==trt[k] & !is.na(value) & time %in% unlist(times[t]) & eval(as.name(case_set))==1), 
                                   ytitle=plots_ytitles[i],toptitle=plots_titles[i],
                                   x="cohort_event",
                                   xtitle="Cohort Event",
                                   facetby=as.formula(paste("~",s,"+time")),
                                   ylim=y.lim,
-                                  type="violin",
+                                  type="noline",
                                   ybreaks=y.breaks,
                                   prop.cex=prop.cex,
                                   ll.cex=ll.cex,
@@ -275,7 +275,7 @@ for (i in 1:length(plots)) {
 }
 
 
-#### Figure 3. violin/line plot, intercurrent vs pp, case vs non-case, (Day 1) Day 29 Day 57, by if Age >=65 and if at risk
+#### Figure 3. violin + box plot, case vs non-case, (Day 1), Day 29, and Day 57 if exists, by if Age >=65 and if at risk
 for (i in 1:length(plots)) {
   for (j in 1:length(bstatus)) {
     for (k in 1:length(trt)) {
@@ -289,7 +289,7 @@ for (i in 1:length(plots)) {
           prop.cex <- 6.9
           ll.cex <- 7.5
           
-          p <- violin_line_plot(dat=subset(longer_cor_data_plot3, assay==plots[i] & Bserostatus==bstatus[j] & Trt==trt[k] & !is.na(value) & time %in% unlist(times[t]) & eval(as.name(case_set))==1), 
+          p <- violin_box_plot(dat=subset(longer_cor_data_plot3, assay==plots[i] & Bserostatus==bstatus[j] & Trt==trt[k] & !is.na(value) & time %in% unlist(times[t]) & eval(as.name(case_set))==1), 
                                 dat.sample=subset(plot.25sample3, assay==plots[i] & Bserostatus==bstatus[j] & Trt==trt[k] & !is.na(value) & time %in% unlist(times[t]) & eval(as.name(case_set))==1),
                                 ytitle=plots_ytitles[i],toptitle=plots_titles[i],
                                 facetby=as.formula("age_risk_label~cohort_event"),
@@ -310,14 +310,14 @@ for (i in 1:length(plots)) {
           file_name <- paste0("linebox_", gsub("bind","",gsub("pseudoneut","pnAb_",plots[i])), "_", trt[k], "_", gsub(" ","",bstatus[j]), "_Age_Risk_", if(case_set=="severe") "severe_", "v", t,"_", study_name, ".pdf")
           ggsave2(plot = g, filename = here("figs", file_name), width = 16, height = 13.5)
           
-          p <- violin_line_plot(dat=       subset(longer_cor_data_plot3, assay==plots[i] & Bserostatus==bstatus[j] & Trt==trt[k] & !is.na(value) & time %in% unlist(times[t]) & eval(as.name(case_set))==1), 
+          p <- violin_box_plot(dat=       subset(longer_cor_data_plot3, assay==plots[i] & Bserostatus==bstatus[j] & Trt==trt[k] & !is.na(value) & time %in% unlist(times[t]) & eval(as.name(case_set))==1), 
                                 dat.sample=subset(longer_cor_data_plot3, assay==plots[i] & Bserostatus==bstatus[j] & Trt==trt[k] & !is.na(value) & time %in% unlist(times[t]) & eval(as.name(case_set))==1), 
                                 ytitle=plots_ytitles[i],toptitle=plots_titles[i],
                                 x="cohort_event",
                                 xtitle="Cohort Event",
                                 facetby=as.formula("age_risk_label~time"),
                                 ylim=y.lim,
-                                type="violin",
+                                type="noline",
                                 ybreaks=y.breaks,
                                 facetopt = "grid",
                                 prop.cex=prop.cex,
@@ -341,7 +341,7 @@ for (i in 1:length(plots)) {
 }
 
 
-#### Figure 4. Scatter plot, assay vs. age in years, intercurrent vs pp, case vs non-case, (Day 1) Day 29 Day 57
+#### Figure 4. Scatter plot, assay vs. age in years, case vs non-case, (Day 1), Day 29, and Day 57 if exists
 for (i in 1:length(plots)) {
   for (d in 1:length(times[[2]])) {
     for (c in c("Vaccine_BaselineNeg","all")) {

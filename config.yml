@@ -3,7 +3,6 @@ default: &default
 
 # the default analysis is moderna-like analysis
 trial: &trial
-  data_raw_dir: moderna
   subset_variable: None
   subset_value: All
   assays: [bindSpike, bindRBD, pseudoneutid50, pseudoneutid80]
@@ -11,15 +10,28 @@ trial: &trial
 
 moderna_real: &moderna_real
   <<: *trial
+  data_raw_dir: moderna
   data_in_file: real_moderna_data.csv # Weiping can set
   study_name: COVE
   study_name_code: COVE
 
 moderna_mock: &moderna_mock
   <<: *trial
+  data_raw_dir: moderna
   data_in_file: COVID_VEtrial_practicedata_primarystage1.csv
   study_name: MockCOVE
   study_name_code: COVE
+
+
+
+twomarkers: &twomarkers
+  <<: *trial
+  data_raw_dir: twomarkers
+  data_in_file: COVID_VEtrial_practicedata_primarystage1.csv
+  study_name: TWOMARKERS
+  study_name_code: TWOMARKERS
+
+
 
 janssen_trial_real: &janssen_trial_real
   data_raw_dir: janssen
@@ -83,29 +95,48 @@ janssen_sa_mock:
 # correlates analyses parameters
 
 # primary endpoint D57 markers
-PrimaryD57:
+D57:
   ph1: ph1.D57
   ph2: ph2.D57
   wt: wt.D57
   EventIndPrimary: EventIndPrimaryD57   
   EventTimePrimary: EventTimePrimaryD57   
-  MarkerDay: 57
+  tpeak: 57
 
 # primary endpoint D29 markers
-PrimaryD29:
+D29:
   ph1: ph1.D29
   ph2: ph2.D29
   wt: wt.D29
   EventIndPrimary: EventIndPrimaryD29  
   EventTimePrimary: EventTimePrimaryD29
-  MarkerDay: 29
+  tpeak: 29
 
-# primary endpoint D29 markers, sensitivity analyses starting 1, instead of 7, day after D29 visit
-PrimaryD29a:
-  ph1: ph1.D29a
-  ph2: ph2.D29a
-  wt: wt.D29a
+# sensitivity analyses for D29 markers, starting at 1, instead of 7, day after D29 visit
+D29start1:
+  ph1: ph1.D29start1
+  ph2: ph2.D29start1
+  wt: wt.D29start1
   EventIndPrimary: EventIndPrimaryD29  
   EventTimePrimary: EventTimePrimaryD29
-  MarkerDay: 29
+  tpeak: 29
+  
+# primary endpoint D200 markers
+D200:
+  ph1: ph1.D200
+  ph2: ph2.D200
+  wt: wt.D200
+  EventIndPrimary: EventIndPrimaryD200  
+  EventTimePrimary: EventTimePrimaryD200
+  tpeak: 200
+
+# primary endpoint D100 markers
+D100:
+  ph1: ph1.D100
+  ph2: ph2.D100
+  wt: wt.D100
+  EventIndPrimary: EventIndPrimaryD100
+  EventTimePrimary: EventTimePrimaryD100
+  tpeak: 100
+
   

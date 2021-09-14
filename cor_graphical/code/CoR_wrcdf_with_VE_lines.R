@@ -50,7 +50,7 @@ for (bstatus in 0:1) {
 
       # use ve computed as part of cor_coxph, which is defined based on marginalized risks
       load(paste0(here::here("..", "cor_coxph", "output"), "/",
-                  attr(config, "config"),
+                  attr(config,"config"),
                   "/D57/marginalized.risk.no.marker."%.%study_name%.%".Rdata"))
       VE <- overall.ve[1]
       VE_lb <- overall.ve[2]

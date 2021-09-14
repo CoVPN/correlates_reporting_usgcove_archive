@@ -2,6 +2,9 @@
 <!-- here::i_am("cor_nonlinear/report.Rmd") -->
 <!-- ``` -->
 
+```{r, echo=FALSE}
+print("running cor_nonlinear report ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+```
 
 ```{r, echo=FALSE}
 Day <- 57

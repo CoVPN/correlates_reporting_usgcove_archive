@@ -52,8 +52,3 @@ if (study_name_code=="ENSEMBLE") {
   }
 }
 ```
-
-
-
-
-

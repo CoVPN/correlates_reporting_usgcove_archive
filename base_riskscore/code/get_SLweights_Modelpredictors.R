@@ -94,6 +94,8 @@ for (i in seq_along(top_models)) {
   }
 }
 
+options(scipen=999)
+
 if(run_prod){
   all_models %>%
     left_join(sl_weights, by = "Learner") %>%
@@ -131,3 +133,4 @@ if(run_prod){
 
 
 rm(sl_riskscore_slfits)
+

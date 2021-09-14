@@ -9,7 +9,6 @@ source(here::here("..", "_common.R"))
 #-----------------------------------------------
 myprint(study_name_code)
 
-
 source(here::here("code", "params.R"))
 source(here::here("code", "cor_wrcdf_plot_function.R"))
 library(ggpubr)
@@ -32,7 +31,7 @@ for (bstatus in 0:1) {
       transmute(Trt = Trt,
                 event = EventIndPrimaryD57,
                 time = EventTimePrimaryD57)
-    
+
     if (all(ve_dat$event == 0)) {
       ## no events in the strata
       plot_ve_curves[bstatus + 1] <- 0
@@ -48,15 +47,15 @@ for (bstatus in 0:1) {
       #          VE_lb <- as.numeric(1 - exp(confint.default(cox_results)[2]))
       #          VE_ub <- as.numeric(1 - exp(confint.default(cox_results)[1]))
       #       } else {
-      
+
       # use ve computed as part of cor_coxph, which is defined based on marginalized risks
-      load(paste0("../cor_coxph/output/",
+      load(paste0(here::here("..", "cor_coxph", "output"), "/",
                   attr(config,"config"),
-                  "/D57/marginalized.risk.no.marker."%.%study_name%.%".Rdata"))
+                  "/PrimaryD57/marginalized.risk.no.marker."%.%study_name%.%".Rdata"))
       VE <- overall.ve[1]
       VE_lb <- overall.ve[2]
       VE_ub <- overall.ve[3]
-      
+
       for (aa in 1:length(assays)) {
         subdat <-
           subset(
@@ -83,15 +82,15 @@ for (bstatus in 0:1) {
           )
         )
       }
-      
+
       # use ve computed as part of cor_coxph, which is defined based on marginalized risks
-      load(paste0("../cor_coxph/output/",
+      load(paste0(here::here("..", "cor_coxph", "output"), "/",
                   attr(config,"config"),
-                  "/D29/marginalized.risk.no.marker."%.%study_name%.%".Rdata"))
+                  "/PrimaryD29/marginalized.risk.no.marker."%.%study_name%.%".Rdata"))
       VE <- overall.ve[1]
       VE_lb <- overall.ve[2]
       VE_ub <- overall.ve[3]
-      
+
       for (aa in 1:length(assays)) {
         subdat <-
           subset(
@@ -118,17 +117,14 @@ for (bstatus in 0:1) {
           )
         )
       }
-      
-      
     }
-    
   } else {
     ve_dat <- dat.cor.subset %>%
       filter(EventTimePrimaryD29 >= 7, Bserostatus == bstatus) %>%
       transmute(Trt = Trt,
                 event = EventIndPrimaryD29,
                 time = EventTimePrimaryD29)
-    
+
     if (all(ve_dat$event == 0)) {
       ## no events in the strata
       plot_ve_curves[bstatus + 1] <- 0
@@ -138,13 +134,13 @@ for (bstatus in 0:1) {
       ))
     } else {
       # use ve computed as part of cor_coxph, which is defined based on marginalized risks
-      load(paste0("../cor_coxph/output/",
+      load(paste0(here::here("..", "cor_coxph", "output"), "/",
                   attr(config,"config"),
-                  "/D29/marginalized.risk.no.marker."%.%study_name%.%".Rdata"))
+                  "/PrimaryD29/marginalized.risk.no.marker."%.%study_name%.%".Rdata"))
       VE <- overall.ve[1]
       VE_lb <- overall.ve[2]
       VE_ub <- overall.ve[3]
-      
+
       for (aa in 1:length(assays)) {
         subdat <-
           subset(

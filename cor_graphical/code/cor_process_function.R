@@ -32,7 +32,7 @@ get_resp_by_group <- function(dat=dat, group=group){
   return(dat_resp_by_group)
 }
 
-# a function to get 1000 non-case sample by group for points & lines in line plot 
+# a function to get 100 non-case sample by group for points & lines in line plot 
 get_sample_by_group <- function(dat.plot, group){
   
   dat.sample <- dat.plot %>%

@@ -260,9 +260,12 @@ run_cv_sl_once <- function(seed = 1, Y = NULL, X_mat = NULL,
 # @return a data frame upon removal of any binary risk variables with fewer than 10 ptids that have a 0 or 1 for that variable (COVE analysis)
 # @return a data frame upon removal of any binary risk variables with number of cases in the variable = 1 or 0 subgroup is <= 3 (ENSEMBLE analysis)
 drop_riskVars_with_fewer_0s_or_1s <- function(dat, risk_vars, np) {
-  
+
   if(study_name_code == "COVE"){
-      for (i in 1:length(risk_vars)) {
+    # delete the file drop_riskVars_with_fewer_0s_or_1s.csv
+    unlink(here("output", "drop_riskVars_with_fewer_0s_or_1s.csv"))
+    # Remove binary risk variables with fewer than 10 ptids that have a 0 or 1 for that variable
+    for (i in 1:length(risk_vars)) {
         if ((dat %>% select(matches(risk_vars[i])) %>% unique() %>% dim())[1] == 2) {
           if ((dim(dat %>% filter(get(risk_vars[i]) == 1))[1] < 10) | (dim(dat %>% filter(get(risk_vars[i]) == 0))[1] < 10)){
             dat <- dat %>% select(-matches(risk_vars[i]))

@@ -1,6 +1,6 @@
 {
   "R": {
-    "Version": "4.1.0",
+    "Version": "4.1.1",
     "Repositories": [
       {
         "Name": "CRAN",
@@ -955,8 +955,8 @@
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
-      "RemoteRepo": "hal9001",
       "RemoteUsername": "tlverse",
+      "RemoteRepo": "hal9001",
       "RemoteRef": "devel",
       "RemoteSha": "14b16305ca29cc758fdde5f40603b5a674d76afa",
       "Hash": "ba7be3ec26629d5cf3f64e742863fe8f"
@@ -966,12 +966,12 @@
       "Version": "0.1.5",
       "Source": "GitHub",
       "RemoteType": "github",
-      "Remotes": "github::tlverse/hal9001@devel",
       "RemoteHost": "api.github.com",
-      "RemoteRepo": "haldensify",
       "RemoteUsername": "nhejazi",
+      "RemoteRepo": "haldensify",
       "RemoteRef": "master",
       "RemoteSha": "16350cc39b68e61566f03a11f633e08073405355",
+      "Remotes": "github::tlverse/hal9001@devel",
       "Hash": "47c34f41535fb9c16bd44e760d61cb67"
     },
     "hardhat": {

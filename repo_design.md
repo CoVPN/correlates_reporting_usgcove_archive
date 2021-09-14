@@ -3,10 +3,6 @@ title: Open Source Design of the CoVPN Immune Correlates Reporting Repository
 author: Nima Hejazi and David Benkeser
 ---
 
-> _Prompt_: Draft a paragraph summarizing the site, its significance to the
-> COVID-19 vaccine research field, and how it helps ensure robust and unbiased
-> results
-
 The immune correlates analysis of the joint COVID-19 Vaccine Prevention Network
 (CoVPN) and US Government (USG) statistics team is a large-scale data science
 project, with a distributed team of collaborators, implementing the publicly
@@ -36,15 +32,15 @@ module-specific reports and the `bookdown` package (https://bookdown.org/) used
 to compile these reports into the larger, distributed reports, thematically
 organized around immunogenicity and correlates of risk/protection analyses. The
 dependency structure across analysis modules is encoded and controlled by GNU
-Make (https://www.gnu.org/software/make/), which facilitates and simplifies
-report building process into single commands. The GitHub repository is tightly
-coupled with Travis-CI (https://travis-ci.org/), a continuous integration
-service that automatically builds the reports in a small cloud computing
-environment upon proposed changes to the repository's stable source code. By
-integrating these tools into the data science team's workflow, the repository
-design ensures that the analyses are -- individually and collectively -- free of
-and robust to programming errors, transparently developed, and produce reports
-with verified results.
+Make (https://www.gnu.org/software/make/), which simplifies the report building
+process into single commands. The GitHub repository is tightly coupled with
+Travis-CI (https://travis-ci.org/), a continuous integration service that
+automatically builds the reports in a small cloud computing environment upon
+proposed changes to the repository's stable source code. By integrating these
+tools into the data science team's workflow, the repository design ensures that
+the analyses are -- individually and collectively -- free of and robust to
+programming errors, transparently developed, and produce reports with verified
+results.
 
 The CoVPN immune correlates analysis and reporting repository represents, to our
 knowledge, the first entirely publicly developed and available data science

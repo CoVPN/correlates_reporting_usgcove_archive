@@ -97,19 +97,19 @@ if(study_name_code == "ENSEMBLE"){
     select(-c(Country, Region, CalDtEnrollIND))
   names(inputFile)<-gsub("\\_",".",names(inputFile))
     
-  # Create interaction variables between Region and CalDtEnrollIND
-  rec <- recipe(EventIndPrimaryIncludeNotMolecConfirmedD29 ~., data = inputFile)
-  int_mod_1 <- rec %>%
-    step_interact(terms = ~ starts_with("Region"):starts_with("CalDtEnrollIND"))
-  int_mod_1 <- prep(int_mod_1, training = inputFile)
-  inputFile <- bake(int_mod_1, inputFile)
-  names(inputFile)<-gsub("\\_",".",names(inputFile))
-  if(run_prod){
-    risk_vars <- append(risk_vars, c("Region.X1.x.CalDtEnrollIND.X1", "Region.X1.x.CalDtEnrollIND.X2",
-                                     "Region.X1.x.CalDtEnrollIND.X3",
-                                     "Region.X2.x.CalDtEnrollIND.X1", "Region.X2.x.CalDtEnrollIND.X2",
-                                     "Region.X2.x.CalDtEnrollIND.X3"))
-  }
+  # # Create interaction variables between Region and CalDtEnrollIND
+  # rec <- recipe(EventIndPrimaryIncludeNotMolecConfirmedD29 ~., data = inputFile)
+  # int_mod_1 <- rec %>%
+  #   step_interact(terms = ~ starts_with("Region"):starts_with("CalDtEnrollIND"))
+  # int_mod_1 <- prep(int_mod_1, training = inputFile)
+  # inputFile <- bake(int_mod_1, inputFile)
+  # names(inputFile)<-gsub("\\_",".",names(inputFile))
+  # if(run_prod){
+  #   risk_vars <- append(risk_vars, c("Region.X1.x.CalDtEnrollIND.X1", "Region.X1.x.CalDtEnrollIND.X2",
+  #                                    "Region.X1.x.CalDtEnrollIND.X3",
+  #                                    "Region.X2.x.CalDtEnrollIND.X1", "Region.X2.x.CalDtEnrollIND.X2",
+  #                                    "Region.X2.x.CalDtEnrollIND.X3"))
+  # }
 }
 
 ################################################
@@ -140,6 +140,7 @@ dat.ph1 <- dat.ph1 %>%
 # Create table of cases in both arms (prior to Risk score analyses)
 tab <- inputFile %>%
   filter(Riskscorecohortflag == 1) %>%
+  drop_na(Ptid, Trt, all_of(endpoint)) %>%
   mutate(Trt = ifelse(Trt == 0, "Placebo", "Vaccine")) 
 
 table(tab$Trt, tab %>% pull(endpoint)) %>%
@@ -151,7 +152,7 @@ np <- sum(dat.ph1 %>% select(matches(endpoint)))
 maxVar <- max(20, floor(np / 20))
 all_risk_vars <- risk_vars
 
-# Remove any risk_vars that are indicator variables and have fewer 0's or 1's
+# Remove a variable if the number of cases in the variable = 1 subgroup is <= 3 or the number of cases in the variable = 0 subgroup is <= 3
 dat.ph1 <- drop_riskVars_with_fewer_0s_or_1s(dat = dat.ph1, 
                                              risk_vars = risk_vars,
                                              np = np)

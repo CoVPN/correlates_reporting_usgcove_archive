@@ -257,37 +257,51 @@ run_cv_sl_once <- function(seed = 1, Y = NULL, X_mat = NULL,
 # remove any binary risk variables with fewer than 10 ptids that have a 0 or 1 for that variable
 # @param dat the phase 1 dataset
 # @param risk_vars the vector of column names of risk variables
-# @return a data frame upon removal of any binary risk variables with fewer than 10 ptids that have a 0 or 1 for that variable
+# @return a data frame upon removal of any binary risk variables with fewer than 10 ptids that have a 0 or 1 for that variable (COVE analysis)
+# @return a data frame upon removal of any binary risk variables with number of cases in the variable = 1 or 0 subgroup is <= 3 (ENSEMBLE analysis)
 drop_riskVars_with_fewer_0s_or_1s <- function(dat, risk_vars, np) {
-  threshold = round(nrow(dat)* 3/np)
+
   if(study_name_code == "COVE"){
-      for (i in 1:length(risk_vars)) {
+    # delete the file drop_riskVars_with_fewer_0s_or_1s.csv
+    unlink(here("output", "drop_riskVars_with_fewer_0s_or_1s.csv"))
+    # Remove binary risk variables with fewer than 10 ptids that have a 0 or 1 for that variable
+    for (i in 1:length(risk_vars)) {
         if ((dat %>% select(matches(risk_vars[i])) %>% unique() %>% dim())[1] == 2) {
           if ((dim(dat %>% filter(get(risk_vars[i]) == 1))[1] < 10) | (dim(dat %>% filter(get(risk_vars[i]) == 0))[1] < 10)){
             dat <- dat %>% select(-matches(risk_vars[i]))
-            print(paste0(risk_vars[i], " dropped from risk score analysis as it had fewer than ", threshold, " 1's or 0's."))
-          }
-        }
-      }
-  }
-  if(study_name_code == "ENSEMBLE"){
-      # delete the file drop_riskVars_with_fewer_0s_or_1s.csv
-      unlink(here("output", "drop_riskVars_with_fewer_0s_or_1s.csv"))
-      for (i in 1:length(risk_vars)) {
-        if ((dat %>% select(matches(risk_vars[i])) %>% unique() %>% dim())[1] == 2) {
-          if ((dim(dat %>% filter(get(risk_vars[i]) == 1))[1] < threshold) | (dim(dat %>% filter(get(risk_vars[i]) == 0))[1] < threshold)){
-            dat <- dat %>% select(-matches(risk_vars[i]))
-            print(paste0(risk_vars[i], " dropped from risk score analysis as it had fewer than ", threshold, " 1's or 0's."))
+            print(paste0(risk_vars[i], " dropped from risk score analysis as it had fewer than 10 1's or 0's."))
             # Also print to file
-            paste0(risk_vars[i], " dropped from risk score analysis as it had fewer than ", threshold, " 1's or 0's.") %>%
+            paste0(risk_vars[i], " dropped from risk score analysis as it had fewer than 10 1's or 0's.") %>%
               write.table(file = here("output", "drop_riskVars_with_fewer_0s_or_1s.csv"), sep=",", append = TRUE, row.names = F, col.names = F)
           }
         }
       }
   }
   
-  if(!file.exists(here("output", "drop_riskVars_with_fewer_0s_or_1s.csv"))){
-    paste0("No binary input variable had 1's or 0's fewer than threshold of ", threshold) %>%
+  if(study_name_code == "COVE" & !file.exists(here("output", "drop_riskVars_with_fewer_0s_or_1s.csv"))){
+    paste0("No binary input variable had fewer than 10 ptids with a 0 or 1 for that variable.") %>%
+      write.table(file = here("output", "drop_riskVars_with_fewer_0s_or_1s.csv"), sep=",", append = TRUE, row.names = F, col.names = F)
+  }
+  
+  if(study_name_code == "ENSEMBLE"){
+      # delete the file drop_riskVars_with_fewer_0s_or_1s.csv
+      unlink(here("output", "drop_riskVars_with_fewer_0s_or_1s.csv"))
+      # Remove a variable if the number of cases in the variable = 1 subgroup is <= 3 or the number of cases in the variable = 0 subgroup is <= 3
+      for (i in 1:length(risk_vars)) {
+        if ((dat %>% select(matches(risk_vars[i])) %>% unique())[[1]] == c(0,1)) {
+          if (dat %>% filter(get(risk_vars[i]) == 1) %>% pull(endpoint) %>% sum() <= 3 | dat %>% filter(get(risk_vars[i]) == 0) %>% pull(endpoint) %>% sum() <= 3){
+            dat <- dat %>% select(-matches(risk_vars[i]))
+            print(paste0(risk_vars[i], " dropped from risk score analysis as the number of cases in the variable = 1 or 0 subgroup is <= 3."))
+            # Also print to file
+            paste0(risk_vars[i], " dropped from risk score analysis as the number of cases in the variable = 1 or 0 subgroup is <= 3.") %>%
+              write.table(file = here("output", "drop_riskVars_with_fewer_0s_or_1s.csv"), sep=",", append = TRUE, row.names = F, col.names = F)
+          }
+        }
+      }
+  }
+  
+  if(study_name_code == "ENSEMBLE" & !file.exists(here("output", "drop_riskVars_with_fewer_0s_or_1s.csv"))){
+    paste0("No binary input variable had number of cases in the variable = 1 or 0 subgroup <= 3") %>%
       write.table(file = here("output", "drop_riskVars_with_fewer_0s_or_1s.csv"), sep=",", append = TRUE, row.names = F, col.names = F)
   }
   

@@ -1,5 +1,6 @@
 #Sys.setenv(TRIAL = "moderna_mock")
 #-----------------------------------------------
+here::i_am("data_clean/make_raw_dat_check.R")
 renv::activate(here::here())
 # There is a bug on Windows that prevents renv from working properly. The following code provides a workaround:
 if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))

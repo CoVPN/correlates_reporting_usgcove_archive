@@ -98,7 +98,11 @@ dat.mock$ph2=dat.mock[[config.cor$ph2]]
 dat.mock$EventIndPrimary =dat.mock[[config.cor$EventIndPrimary]]
 dat.mock$EventTimePrimary=dat.mock[[config.cor$EventTimePrimary]]
     
-
+# B=1e3 and numPerm=1e4 take 10 min to run with 30 CPUS for D57 CoR
+B <-       config$num_boot_replicates 
+numPerm <- config$num_perm_replicates # number permutation replicates 1e4
+myprint(B)
+myprint(numPerm)
 
 ###################################################################################################
 # get some summary info about event time etc

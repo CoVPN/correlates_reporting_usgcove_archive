@@ -7,6 +7,8 @@ trial: &trial
   subset_value: All
   assays: [bindSpike, bindRBD, pseudoneutid50, pseudoneutid80]
   times: [B, Day29, Day57, Delta29overB, Delta57overB, Delta57over29]
+  num_boot_replicates: 1000
+  num_perm_replicates: 10000
 
 moderna_real: &moderna_real
   <<: *trial
@@ -21,6 +23,8 @@ moderna_mock: &moderna_mock
   data_in_file: COVID_VEtrial_practicedata_primarystage1.csv
   study_name: MockCOVE
   study_name_code: COVE
+  num_boot_replicates: 10
+  num_perm_replicates: 10
 
 
 
@@ -30,6 +34,8 @@ twomarkers: &twomarkers
   data_in_file: COVID_VEtrial_practicedata_primarystage1.csv
   study_name: TWOMARKERS
   study_name_code: TWOMARKERS
+  num_boot_replicates: 10
+  num_perm_replicates: 10
 
 
 
@@ -69,6 +75,8 @@ janssen_trial_mock: &janssen_trial_mock
   study_name: MockENSEMBLE
   study_name_code: ENSEMBLE
   assays: [bindSpike, bindRBD]
+  num_boot_replicates: 10
+  num_perm_replicates: 10
 
 janssen_pooled_mock:
   <<: *janssen_trial_mock

@@ -3,7 +3,8 @@
 <!-- ``` -->
 
 ```{r, echo=FALSE}
-print("running cor_nonlinear report ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+here::i_am("cor_nonlinear/report.Rmd")
+knitr::opts_knit$set(root.dir = here::here())
 ```
 
 ```{r, echo=FALSE}

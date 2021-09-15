@@ -1,8 +1,9 @@
 #Sys.setenv(TRIAL = "moderna_mock") # moderna_mock janssen_pooled_real
-renv::activate(project = here::here(".."))    
+here::i_am("cor_nonlinear/code/cor_nonlinear.R")
+renv::activate(project = here::here())    
 # There is a bug on Windows that prevents renv from working properly. The following code provides a workaround:
 if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
-source(here::here("..", "_common.R"))
+source(here::here("_common.R"))
 #-----------------------------------------------
 
 myprint(study_name_code)
@@ -13,7 +14,7 @@ library(chngpt)
 library(marginalizedRisk)
 library(xtable) # this is a dependency of kyotil
     
-source(here::here("code", "params.R"))
+source(here::here("cor_nonlinear", "code", "params.R"))
 
 # COR defines the analysis to be done, e.g. D29, D57, D29start1
 Args <- commandArgs(trailingOnly=TRUE)
@@ -34,11 +35,11 @@ time.start=Sys.time()
 # read data_clean
     
 data_name_updated <- sub(".csv", "_with_riskscore.csv", data_name)
-if (file.exists(here::here("..", "data_clean", data_name_updated))) {
-    dat.mock <- read.csv(here::here("..", "data_clean", data_name_updated))
+if (file.exists(here::here("data_clean", data_name_updated))) {
+    dat.mock <- read.csv(here::here("data_clean", data_name_updated))
     data_name = data_name_updated
 } else {
-    dat.mock <- read.csv(here::here("..", "data_clean", data_name))
+    dat.mock <- read.csv(here::here("data_clean", data_name))
 }
 
 
@@ -109,9 +110,9 @@ if (study_name_code=="COVE") {
     
 
 # save tables and figures to analysis-specific folders
-save.results.to = here::here("output")
+save.results.to = here::here("cor_nonlinear", "output")
 if (!dir.exists(save.results.to))  dir.create(save.results.to)
-save.results.to = paste0(here::here("output"), "/", attr(config,"config"));
+save.results.to = paste0(here::here("cor_nonlinear", "output"), "/", attr(config,"config"));
 if (!dir.exists(save.results.to))  dir.create(save.results.to)
 save.results.to = paste0(save.results.to, "/", COR,"/");
 if (!dir.exists(save.results.to))  dir.create(save.results.to)
@@ -126,12 +127,12 @@ dat.vacc.pop.ph2 = subset(dat.vac.seroneg, ph2)
 # there are two dependencies on cor_coxph
 
 # load prev.plac, prev.vacc
-tmp=paste0(here::here(".."), "/cor_coxph/output/",attr(config,"config"),"/", COR,"/", "marginalized.risk.no.marker."%.%study_name%.%".Rdata")
+tmp=paste0(here::here(), "/cor_coxph/output/",attr(config,"config"),"/", COR,"/", "marginalized.risk.no.marker."%.%study_name%.%".Rdata")
 if (file.exists(tmp)) load(tmp) else stop("")
 # if this does not exist, the code will throw error
 
 # load ylims.cor, which is a list of two: 1 with placebo lines, 2 without placebo lines.
-tmp=paste0(here::here(".."), "/cor_coxph/output/",attr(config,"config"),"/", COR,"/", "ylims.cor."%.%study_name%.%".Rdata")
+tmp=paste0(here::here(), "/cor_coxph/output/",attr(config,"config"),"/", COR,"/", "ylims.cor."%.%study_name%.%".Rdata")
 if (file.exists(tmp)) load(tmp)
 # if this does not exist, the code will find alternative ylim
 
@@ -139,6 +140,6 @@ if (file.exists(tmp)) load(tmp)
 
 ####################################################################################################
 # GAM
-source(here::here("code", "cor_nonlinear_gam.R"))
+source(here::here("cor_nonlinear", "code", "cor_nonlinear_gam.R"))
 
 print("cor_nonlinear run time: "%.%format(Sys.time()-time.start, digits=1))

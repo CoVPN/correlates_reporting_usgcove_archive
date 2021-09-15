@@ -1,7 +1,8 @@
 #-----------------------------------------------
 # obligatory to append to the top of each script
-renv::activate(project = here::here(".."))
-source(here::here("..", "_common.R"))
+here::i_am("cop_stochastic/code/make_analysis_data.R")
+renv::activate(project = here::here())
+source(here::here("_common.R"))
 #-----------------------------------------------
 
 # load packages
@@ -13,15 +14,15 @@ conflict_prefer("filter", "dplyr")
 # load data
 data_name_amended <- paste0(str_remove(data_name, ".csv"),
                             "_with_riskscore.csv")
-data_name_check <- file.exists(here("..", "data_clean", data_name_amended))
+data_name_check <- file.exists(here("data_clean", data_name_amended))
 if (data_name_check) {
-  full_data <- read.csv(here("..", "data_clean", data_name_amended))
+  full_data <- read.csv(here("data_clean", data_name_amended))
 } else {
-  full_data <- read.csv(here("..", "data_clean", data_name))
+  full_data <- read.csv(here("data_clean", data_name))
 }
 
 # load parameters
-source(here::here("code", "params.R"))
+source(here::here("cop_mediation", "code", "params.R"))
 if (data_name_check) {
   covariates <- c(covariates, "risk_score")
 }
@@ -85,6 +86,6 @@ for (time in times) {
   # save estimation-ready data for this analysis
   saveRDS(
     object = data_for_est,
-    file = here("data_clean", paste0("data_est_", time, ".rds"))
+    file = here("cop_mediation", "data_clean", paste0("data_est_", time, ".rds"))
   )
 }

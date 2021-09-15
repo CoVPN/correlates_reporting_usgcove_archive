@@ -11,6 +11,7 @@ header-includes:
 
 ```{r cop-stochastic-setup, echo = FALSE, message = FALSE, warning=FALSE}
 here::i_am("cop_stochastic/report.Rmd")
+knitr::opts_knit$set(root.dir = here::here())
 renv::activate(project = here::here())
 library(here)
 library(knitr)

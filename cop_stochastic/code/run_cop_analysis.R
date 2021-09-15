@@ -1,7 +1,8 @@
 #-----------------------------------------------
 # obligatory to append to the top of each script
-renv::activate(project = here::here(".."))
-source(here::here("..", "_common.R"))
+here::i_am("cop_stochastic/code/run_cop_analysis.R")
+renv::activate(project = here::here())
+source(here::here("_common.R"))
 #-----------------------------------------------
 
 # load packages
@@ -22,12 +23,12 @@ conflict_prefer("filter", "dplyr")
 # load data
 data_name_amended <- paste0(str_remove(data_name, ".csv"),
                             "_with_riskscore.csv")
-data_name_check <- file.exists(here("..", "data_clean", data_name_amended))
+data_name_check <- file.exists(here("data_clean", data_name_amended))
 
 # run helper scripts
-source(here("code", "params.R"))
-source(here("code", "sl_lrnr_libs.R"))
-source(here("code", "sve_utils.R"))
+source(here("cop_stochastic", "code", "params.R"))
+source(here("cop_stochastic", "code", "sl_lrnr_libs.R"))
+source(here("cop_stochastic", "code", "sve_utils.R"))
 
 # parallelization and progress bar specification
 plan(multicore, workers = availableCores())
@@ -60,7 +61,7 @@ with_progress({
 
     # load estimation-ready data for this timepoint
     data_full <- readRDS(
-      here("data_clean", paste0("data_est_", this_time, ".rds"))
+      here("cop_stochastic", "data_clean", paste0("data_est_", this_time, ".rds"))
     )
     data_est <- data_full %>%
       filter(Trt == 1) %>%
@@ -110,13 +111,13 @@ with_progress({
     # save CoP risk results
     saveRDS(
       object = mcop_risk_msm,
-      file = here("output", paste0("mcop_risk_", marker, ".rds"))
+      file = here("cop_stochastic", "output", paste0("mcop_risk_", marker, ".rds"))
     )
 
     # save CoP SVE results
     saveRDS(
       object = mcop_sve_msm,
-      file = here("output", paste0("mcop_sve_", marker, ".rds"))
+      file = here("cop_stochastic", "output", paste0("mcop_sve_", marker, ".rds"))
     )
   }, future.seed = TRUE, future.conditions = "message")
 })

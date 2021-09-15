@@ -1,7 +1,8 @@
 #-----------------------------------------------
 # obligatory to append to the top of each script
-renv::activate(project = here::here(".."))
-source(here::here("..", "_common.R"))
+here::i_am("cop_stochastic/code/make_sve_cop_figs.R")
+renv::activate(project = here::here())
+source(here::here("_common.R"))
 #-----------------------------------------------
 
 # load packages
@@ -11,7 +12,7 @@ library(latex2exp)
 library(txshift)
 
 # run helper scripts
-source(here("code", "params.R"))
+source(here("cop_stochastic", "code", "params.R"))
 
 # load analysis results and make sumary figures for each marker at each time
 lapply(markers, function(marker) {
@@ -22,10 +23,10 @@ lapply(markers, function(marker) {
 
   # load output data with risk-based and SVE results
   risk_results_msm <- readRDS(
-    here("output", paste0("mcop_risk_", marker, ".rds"))
+    here("cop_stochastic", "output", paste0("mcop_risk_", marker, ".rds"))
   )
   sve_results_msm <- readRDS(
-    here("output", paste0("mcop_sve_", marker, ".rds"))
+    here("cop_stochastic", "output", paste0("mcop_sve_", marker, ".rds"))
   )
 
   # plot for counterfactual infection risk in vaccinees
@@ -60,7 +61,7 @@ lapply(markers, function(marker) {
       axis.text.y = element_text(colour = "black", size = 44)
     )
   ggsave(
-    filename = here("figs", paste0("mcop_risk_", marker, ".pdf")),
+    filename = here("cop_stochastic", "figs", paste0("mcop_risk_", marker, ".pdf")),
     plot = p_risk_msm, height = 25, width = 28
   )
 
@@ -96,7 +97,7 @@ lapply(markers, function(marker) {
       axis.text.y = element_text(colour = "black", size = 44)
     )
   ggsave(
-    filename = here("figs", paste0("mcop_sve_", marker, ".pdf")),
+    filename = here("cop_stochastic", "figs", paste0("mcop_sve_", marker, ".pdf")),
     plot = p_sve_msm, height = 25, width = 28
   )
 })

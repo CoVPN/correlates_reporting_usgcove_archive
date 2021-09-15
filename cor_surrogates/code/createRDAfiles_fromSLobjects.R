@@ -1,18 +1,19 @@
 #-----------------------------------------------
 # obligatory to append to the top of each script
-renv::activate(project = here::here(".."))
+here::i_am("cor_surrogates/code/createRDAfiles_fromSLobjects.R")
+renv::activate(project = here::here())
 
 # There is a bug on Windows that prevents renv from working properly. The following code provides a workaround:
 if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
 
-source(here::here("..", "_common.R"))
+source(here::here("_common.R"))
 #-----------------------------------------------
 
 ## ----createRDAfiles_fromSLobjects---------
 library(readr)
 require(tidyverse)
 library(here)
-source(here("code", "utils.R"))
+source(here("cor_surrogates", "code", "utils.R"))
 
 # Create fancy/tidy screen names for use in tables and figures
 # @param avgs dataframe containing Screen, Learner, AUCs information as columns
@@ -92,7 +93,7 @@ readin_SLobjects_fromFolder <- function(data_path, file_pattern, endpoint, trt){
 
 # Read CV.SL object and save relevant columns as dataframe
 # For vaccine, yd57 endpoint
-data_folder <- here("output")
+data_folder <- here("cor_surrogates", "output")
 cvaucs_vacc <- readin_SLobjects_fromFolder(data_folder, file_pattern = "*.rds", endpoint = "EventIndPrimaryD57", trt = "vaccine") %>%
   mutate(varset = str_replace(file, "CVSLaucs_vacc_EventIndPrimaryD57_", ""),
          varset = str_replace(varset, "_varset", ""),
@@ -100,5 +101,5 @@ cvaucs_vacc <- readin_SLobjects_fromFolder(data_folder, file_pattern = "*.rds", 
          varsetNo = as.numeric(sapply(strsplit(varset, "_"), `[`, 1))) %>%
   arrange(varsetNo)
 
-save(cvaucs_vacc, file = here("output", "cvaucs_vacc_EventIndPrimaryD57.rda"))
+save(cvaucs_vacc, file = here("cor_surrogates", "output", "cvaucs_vacc_EventIndPrimaryD57.rda"))
 

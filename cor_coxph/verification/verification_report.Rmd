@@ -6,8 +6,9 @@ output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
-renv::activate(project = here::here(".."))
-source(here::here("..", "_common.R"))
+here::i_am("cor_coxph/verification/verification_report.Rmd")
+renv::activate(project = here::here())
+source(here::here("_common.R"))
 
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
@@ -24,16 +25,16 @@ In this document, the output of `cor_coxph.R` is compared against the output of 
 
 `cor_coxph_validation.R` was independently double programmed based on the specifications found in `specifications.html`. This script outputs its processing to \newline `verification/verification_output/cor_coxph_verification_output.csv`.
 
-The R object `verification/verification_input/D57.rv.MockCOVE.Rdata` was provided by the original programmer to the tester for verification purposes of results generated for marker data at Day 57 by `cor_coxph.R`. Its md5 hash is `r digest::digest(file = here("verification/verification_input", "D57.rv.MockCOVE.Rdata"))`. The R object `verification/verification_input/D29.rv.MockCOVE.Rdata` was provided by the original programmer to the tester for verification purposes of results generated for marker data at Day 29 by `cor_coxph.R`. Its md5 hash is `r digest::digest(file = here("verification/verification_input", "D29.rv.MockCOVE.Rdata"))`.
+The R object `verification/verification_input/D57.rv.MockCOVE.Rdata` was provided by the original programmer to the tester for verification purposes of results generated for marker data at Day 57 by `cor_coxph.R`. Its md5 hash is `r digest::digest(file = here("cor_coxph", "verification/verification_input", "D57.rv.MockCOVE.Rdata"))`. The R object `verification/verification_input/D29.rv.MockCOVE.Rdata` was provided by the original programmer to the tester for verification purposes of results generated for marker data at Day 29 by `cor_coxph.R`. Its md5 hash is `r digest::digest(file = here("cor_coxph", "verification/verification_input", "D29.rv.MockCOVE.Rdata"))`.
 
-The file `verification/verification_output/D57.mock.csv` was created by the tester for verification of results generated for marker data at Day 57 using the `cor_coxph_validation.R` script. Its md5 hash is `r digest::digest(file = here("verification/verification_output/D57.mock.csv"))`. The file `verification/verification_output/D29.mock.csv` was created by the tester for verification of results generated for marker data at Day 29 using the `cor_coxph_validation.R` script. Its md5 hash is `r digest::digest(file = here("verification/verification_output/D29.mock.csv"))`.
+The file `verification/verification_output/D57.mock.csv` was created by the tester for verification of results generated for marker data at Day 57 using the `cor_coxph_validation.R` script. Its md5 hash is `r digest::digest(file = here("cor_coxph", "verification/verification_output/D57.mock.csv"))`. The file `verification/verification_output/D29.mock.csv` was created by the tester for verification of results generated for marker data at Day 29 using the `cor_coxph_validation.R` script. Its md5 hash is `r digest::digest(file = here("cor_coxph", "verification/verification_output/D29.mock.csv"))`.
 
 
 ```{r comparison-D57}
-load(here("verification", "verification_input", "D57.rv.MockCOVE.Rdata"))
+load(here("cor_coxph", "verification", "verification_input", "D57.rv.MockCOVE.Rdata"))
 
 verification_data <- read.csv(
-  here("verification", "verification_output", "D57.mock.csv")
+  here("cor_coxph", "verification", "verification_output", "D57.mock.csv")
   )
 
 devdat <- rv$tab.1 %>%
@@ -169,10 +170,10 @@ rm(devdat, testdat)
 
 ```{r comparison-D29}
 
-load(here("verification", "verification_input", "D29.rv.MockCOVE.Rdata"))
+load(here("cor_coxph", "verification", "verification_input", "D29.rv.MockCOVE.Rdata"))
 
 verification_data_d29 <- read.csv(
-  here("verification", "verification_output", "D29.mock.csv")
+  here("cor_coxph", "verification", "verification_output", "D29.mock.csv")
   )
 
 devdat <- rv$tab.1 %>%

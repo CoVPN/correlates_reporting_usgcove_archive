@@ -1,9 +1,4 @@
-#-----------------------------------------------
-# obligatory to append to the top of each script
-renv::activate(project = here::here(".."))
-source(here::here("..", "_common.R"))
-#-----------------------------------------------
-source(here::here("code", "params.R"))
+source(here::here("cor_threshold", "code", "params.R"))
 library(sl3)
 library(SuperLearner)
 

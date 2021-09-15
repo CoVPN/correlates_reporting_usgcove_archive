@@ -10,16 +10,13 @@ output:
   toc: true
 ---
 
-```{r, echo=FALSE}
-print("running cor_threshold report ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-```
-
-
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+here::i_am("cor_threshold/report.Rmd")
+knitr::opts_knit$set(root.dir = here::here())
+
 library(here)
 library(dplyr)
-print(here::here())
 source(here::here( "_common.R"))
 times <- intersect(times, c("Day57", "Day29"))
 ```

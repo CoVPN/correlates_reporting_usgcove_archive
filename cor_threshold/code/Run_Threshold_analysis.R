@@ -1,8 +1,8 @@
-
 #-----------------------------------------------
 # obligatory to append to the top of each script
-renv::activate(project = here::here(".."))
-source(here::here("..", "_common.R"))
+here::i_am("cor_threshold/code/Run_Threshold_analysis.R")
+renv::activate(project = here::here())
+source(here::here("_common.R"))
 #-----------------------------------------------
 
 library(sl3)
@@ -11,18 +11,16 @@ library(data.table)
 library(mvtnorm)
 library(uuid)
 library(doMC)
-source(here::here("code", "tmleThresh.R"))
-source(here::here("code", "params.R"))
-source(here::here("code", "learners.R"))
-source(here::here("code", "survivalThresh", "Threshold_survivalCR.R"))
-source(here::here("code", "survivalThresh", "fitting_likelihood.R"))
-source(here::here("code", "survivalThresh", "Pooled_hazards.R"))
-source(here::here("code", "survivalThresh", "sl3_learner_helpers.R"))
-source(here::here("code", "survivalThresh", "survival_helper_functions.R"))
-source(here::here("code", "survivalThresh", "targeting_functions.R"))
-source(here::here("code", "survivalThresh", "task_generators.R"))
- 
-
+source(here::here("cor_threshold", "code", "tmleThresh.R"))
+source(here::here("cor_threshold", "code", "params.R"))
+source(here::here("cor_threshold", "code", "learners.R"))
+source(here::here("cor_threshold", "code", "survivalThresh", "Threshold_survivalCR.R"))
+source(here::here("cor_threshold", "code", "survivalThresh", "fitting_likelihood.R"))
+source(here::here("cor_threshold", "code", "survivalThresh", "Pooled_hazards.R"))
+source(here::here("cor_threshold", "code", "survivalThresh", "sl3_learner_helpers.R"))
+source(here::here("cor_threshold", "code", "survivalThresh", "survival_helper_functions.R"))
+source(here::here("cor_threshold", "code", "survivalThresh", "targeting_functions.R"))
+source(here::here("cor_threshold", "code", "survivalThresh", "task_generators.R"))
  
 
 lrnr <- get_learner(fast_analysis = fast_analysis, include_interactions = include_interactions, covariate_adjusted = covariate_adjusted)
@@ -56,10 +54,10 @@ run_threshold_analysis <- function(marker, direction = "above") {
         lrnr_A <- Lrnr_hal9001_custom$new(max_degree = 2, smoothness_orders = 1, num_knots = c(12,3), reduce_basis=1e-3, fit_control = list(n_folds = 10, parallel = TRUE))
     }
     
-  thresholds <- read.csv(here::here("data_clean", "Thresholds_by_marker", paste0("thresholds_", marker, ".csv")))
+  thresholds <- read.csv(here::here("cor_threshold", "data_clean", "Thresholds_by_marker", paste0("thresholds_", marker, ".csv")))
   thresholds <- as.vector(unlist(thresholds[, 1]))
   time <- marker_to_time[[marker]]
-  data_full <- read.csv(here::here("data_clean", paste0("data_firststage_", time, ".csv")))
+  data_full <- read.csv(here::here("cor_threshold", "data_clean", paste0("data_firststage_", time, ".csv")))
  
 
   ####################################################
@@ -90,20 +88,24 @@ run_threshold_analysis <- function(marker, direction = "above") {
   print(direction_append)
   # Save estimates and CI of threshold-response function
   save("esttmle", file = here::here(
+    "cor_threshold", 
     "output",
     paste0("tmleThresh_", marker, direction_append,".RData")
   ))
   write.csv(esttmle, file = here::here(
+    "cor_threshold", 
     "output",
     paste0("tmleThresh_", marker,direction_append, ".csv")
   ), row.names = F)
   
   esttmle <- esttmle_full[[2]]
   save("esttmle", file = here::here(
+    "cor_threshold",                                     
     "output",
     paste0("tmleThresh_monotone_", marker,direction_append, ".RData")
   ))
   write.csv(esttmle, file = here::here(
+    "cor_threshold",                                        
     "output",
     paste0("tmleThresh_monotone_", marker,direction_append, ".csv")
   ), row.names = F)

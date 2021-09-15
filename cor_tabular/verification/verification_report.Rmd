@@ -7,6 +7,7 @@ Encoding: UTF-8
 ---
 
 ```{r setup, include=FALSE}
+here::i_am("cor_tabular/verification/verification_report.Rmd")
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(testthat)
@@ -33,25 +34,25 @@ The file `verification/verification_output/cor_tab_dm_neg_v.Rdata`,\newline `ver
 
 ```{r Load-Data, message=FALSE}
 original_data <- load(
-  here("verification","verification_input","Tables_cor.Rdata")
+  here("cor_tabular", "verification","verification_input","Tables_cor.Rdata")
   )
 cor_tab_dm_neg_v <- load(
-  here("verification","verification_output","cor_tab_dm_neg_v.Rdata")
+  here("cor_tabular", "verification","verification_output","cor_tab_dm_neg_v.Rdata")
   )
 cor_tab_dm_pos_v <- load(
-  here("verification","verification_output","cor_tab_dm_pos_v.Rdata")
+  here("cor_tabular", "verification","verification_output","cor_tab_dm_pos_v.Rdata")
   )
 cor_tab_strtm_v <- load(
-  here("verification","verification_output","cor_tab_strtm_v.Rdata")
+  here("cor_tabular", "verification","verification_output","cor_tab_strtm_v.Rdata")
   )
 cor_case_vacc_neg_v <- load(
-  here("verification","verification_output","cor_case_vacc_neg_v.Rdata")
+  here("cor_tabular", "verification","verification_output","cor_case_vacc_neg_v.Rdata")
   )
 cor_case_vacc_pos_v <- load(
-  here("verification","verification_output","cor_case_vacc_pos_v.Rdata")
+  here("cor_tabular", "verification","verification_output","cor_case_vacc_pos_v.Rdata")
   )
 cor_case_plcb_pos_v <- load(
-  here("verification","verification_output","cor_case_plcb_pos_v.Rdata")
+  here("cor_tabular", "verification","verification_output","cor_case_plcb_pos_v.Rdata")
   )
 ```
 

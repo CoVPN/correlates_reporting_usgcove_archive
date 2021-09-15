@@ -1,11 +1,6 @@
-#-----------------------------------------------
-# obligatory to append to the top of each script
-source(here::here("..", "_common.R"))
-#-----------------------------------------------
-
 library(here)
 library(stringr)
-save.results.to <- here("figs")
+save.results.to <- here("cor_graphical", "figs")
 
 labels.title2 <- apply(labels.title, c(1, 2), function(st) {
   str_replace(st, ":", "\n")

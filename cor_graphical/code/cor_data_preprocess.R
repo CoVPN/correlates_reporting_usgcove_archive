@@ -1,21 +1,22 @@
 #Sys.setenv(TRIAL = "janssen_pooled_real")
 #-----------------------------------------------
 # obligatory to append to the top of each script
-renv::activate(project = here::here(".."))
-source(here::here("..", "_common.R"))
+here::i_am("cor_graphical/cod/cor_data_preprocess.R")
+renv::activate(project = here::here())
+source(here::here("_common.R"))
 #-----------------------------------------------
 
-source(here::here("code", "cor_process_function.R"))
+source(here::here("cor_graphical", "code", "cor_process_function.R"))
 library(here)
 library(dplyr)
 library(tidyverse)
 library(stringr)
-dat.mock <- read.csv(here("..", "data_clean", data_name))
+dat.mock <- read.csv(here("data_clean", data_name))
 if(has57) dat.mock$wt.D57[is.na(dat.mock$wt.D57)] <- 0
 dat.mock$wt.D29[is.na(dat.mock$wt.D29)] <- 0
 
 # load parameters
-source(here("code", "params.R"))
+source(here("cor_graphical", "code", "params.R"))
 
 
 ################################################
@@ -396,24 +397,24 @@ groupby_vars1=c("Trt", "Bserostatus", "cohort_event", "time", "assay")
 
 # define response rate
 dat.longer.cor.subset.plot1 <- get_resp_by_group(dat.longer.cor.subset, groupby_vars1)
-write.csv(dat.longer.cor.subset.plot1, file = here("data_clean", "longer_cor_data_plot1.csv"), row.names=F)
-saveRDS(dat.longer.cor.subset.plot1, file = here("data_clean", "longer_cor_data_plot1.rds"))
+write.csv(dat.longer.cor.subset.plot1, file = here("cor_graphical", "data_clean", "longer_cor_data_plot1.csv"), row.names=F)
+saveRDS(dat.longer.cor.subset.plot1, file = here("cor_graphical", "data_clean", "longer_cor_data_plot1.rds"))
 
 # make subsample
 plot.25sample1 <- get_sample_by_group(dat.longer.cor.subset.plot1, groupby_vars1)
-write.csv(plot.25sample1, file = here("data_clean", "plot.25sample1.csv"), row.names=F)
-saveRDS(plot.25sample1, file = here("data_clean", "plot.25sample1.rds"))
+write.csv(plot.25sample1, file = here("cor_graphical", "data_clean", "plot.25sample1.csv"), row.names=F)
+saveRDS(plot.25sample1, file = here("cor_graphical", "data_clean", "plot.25sample1.rds"))
 
 #### for Figure 3. intercurrent vs pp, case vs non-case, (Day 1) Day 29 Day 57, by if Age >=65 and if at risk
 groupby_vars3 <- c("Trt", "Bserostatus", "cohort_event", "time", "assay", "age_geq_65_label", "highrisk_label")
 
 # define response rate
 dat.longer.cor.subset.plot3 <- get_resp_by_group(dat.longer.cor.subset, groupby_vars3)
-saveRDS(dat.longer.cor.subset.plot3, file = here("data_clean", "longer_cor_data_plot3.rds"))
+saveRDS(dat.longer.cor.subset.plot3, file = here("cor_graphical", "data_clean", "longer_cor_data_plot3.rds"))
 
 # make subsample
 plot.25sample3 <- get_sample_by_group(dat.longer.cor.subset.plot3, groupby_vars3)
-saveRDS(plot.25sample3, file = here("data_clean", "plot.25sample3.rds"))
+saveRDS(plot.25sample3, file = here("cor_graphical", "data_clean", "plot.25sample3.rds"))
 
 
 
@@ -422,12 +423,12 @@ dat.cor.subset$Ptid <- as.character(dat.cor.subset$Ptid)
 
 
 saveRDS(as.data.frame(dat.long.cor.subset),
-        file = here("data_clean", "long_cor_data.rds")
+        file = here("cor_graphical", "data_clean", "long_cor_data.rds")
 )
 saveRDS(as.data.frame(dat.cor.subset),
-        file = here("data_clean", "cor_data.rds")
+        file = here("cor_graphical", "data_clean", "cor_data.rds")
 )
 
 saveRDS(as.data.frame(dat.longer.cor.subset),
-        file = here("data_clean", "longer_cor_data.rds"))
+        file = here("cor_graphical", "data_clean", "longer_cor_data.rds"))
 

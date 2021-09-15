@@ -12,21 +12,21 @@ make
 make report
 cd ..
 
-export TRIAL=janssen_na_mock
-cd $1
-make 
-make report
-cd ..
+#export TRIAL=janssen_na_mock
+#cd $1
+#make 
+#make report
+#cd ..
 
-export TRIAL=janssen_la_mock
-cd $1
-make 
-make report
-cd ..
+#export TRIAL=janssen_la_mock
+#cd $1
+#make 
+#make report
+#cd ..
 
-export TRIAL=janssen_sa_mock
-cd $1
-make 
-make report
-cd ..
+#export TRIAL=janssen_sa_mock
+#cd $1
+#make 
+#make report
+#cd ..
 

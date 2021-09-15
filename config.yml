@@ -7,8 +7,6 @@ trial: &trial
   subset_value: All
   assays: [bindSpike, bindRBD, pseudoneutid50, pseudoneutid80]
   times: [B, Day29, Day57, Delta29overB, Delta57overB, Delta57over29]
-  num_boot_replicates: 1000
-  num_perm_replicates: 10000
 
 moderna_real: &moderna_real
   <<: *trial
@@ -16,6 +14,8 @@ moderna_real: &moderna_real
   data_in_file: real_moderna_data.csv # Weiping can set
   study_name: COVE
   study_name_code: COVE
+  num_boot_replicates: 1000
+  num_perm_replicates: 10000
 
 moderna_mock: &moderna_mock
   <<: *trial
@@ -47,6 +47,8 @@ janssen_trial_real: &janssen_trial_real
   study_name: ENSEMBLE
   study_name_code: ENSEMBLE
   assays: [bindSpike, bindRBD]
+  num_boot_replicates: 1000
+  num_perm_replicates: 10000
 
 janssen_pooled_real: 
   <<: *janssen_trial_real
@@ -110,6 +112,8 @@ D57:
   EventIndPrimary: EventIndPrimaryD57   
   EventTimePrimary: EventTimePrimaryD57   
   tpeak: 57
+  tpeaklag: 7
+  tfinal.tpeak: 0
 
 # primary endpoint D29 markers
 D29:
@@ -119,6 +123,8 @@ D29:
   EventIndPrimary: EventIndPrimaryD29  
   EventTimePrimary: EventTimePrimaryD29
   tpeak: 29
+  tpeaklag: 7
+  tfinal.tpeak: 0
 
 # sensitivity analyses for D29 markers, starting at 1, instead of 7, day after D29 visit
 D29start1:
@@ -128,6 +134,8 @@ D29start1:
   EventIndPrimary: EventIndPrimaryD29  
   EventTimePrimary: EventTimePrimaryD29
   tpeak: 29
+  tpeaklag: 1
+  tfinal.tpeak: 0
   
 # primary endpoint D200 markers
 D200:
@@ -137,6 +145,8 @@ D200:
   EventIndPrimary: EventIndPrimaryD200  
   EventTimePrimary: EventTimePrimaryD200
   tpeak: 200
+  tpeaklag: 7
+  tfinal.tpeak: 0
 
 # primary endpoint D100 markers
 D100:
@@ -146,5 +156,7 @@ D100:
   EventIndPrimary: EventIndPrimaryD100
   EventTimePrimary: EventTimePrimaryD100
   tpeak: 100
+  tpeaklag: 7
+  tfinal.tpeak: 0
 
   

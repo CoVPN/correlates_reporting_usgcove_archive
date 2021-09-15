@@ -55,7 +55,7 @@ if (study_name_code=="COVE" & tpeak=="57") {
     # (3) for Post Day 57 cases number of days from Day 1 to Day 29, 
     # (4) for Post Day 57 cases number of days from Day 29 to Day 57, 
     # (5) for Post Day 57 cases number of days from Day 57 to COVID endpoint (e.g. with 2 panels on a first row and 3 panels on a bottom row).
-    myfigure (mfrow=c(1,2))    
+    mypdf (mfrow=c(1,2), file=paste0(save.results.to, "barplot_visit_intervals_intercurrentcases"))    
         tmp.1=table(subset(dat.mock, ph1.intercurrent.cases & Trt==1 & Bserostatus==0, NumberdaysD1toD29, drop=T))
         tmp.2=table(subset(dat.mock, ph1.intercurrent.cases & Trt==1 & Bserostatus==0, EventTimePrimaryD29, drop=T))
         
@@ -66,10 +66,10 @@ if (study_name_code=="COVE" & tpeak=="57") {
         
         barplot(tmp.1, main="D1 to D29",  xlab="Days")
         barplot(tmp.2, main="D29 to COVID", xlab="Days")
-    mydev.off(file=paste0(save.results.to, "barplot_visit_intervals_intercurrentcases"))  
+    dev.off()  
     
     
-    myfigure (mfrow=c(1,3))    
+    mypdf (mfrow=c(1,3), file=paste0(save.results.to, "barplot_visit_intervals_D57cases"))    
         tmp.1=table(subset(dat.mock, ph1.D57 & EventIndPrimaryD57 & Trt==1 & Bserostatus==0, NumberdaysD1toD29, drop=T))
         tmp.2=table(subset(dat.mock, ph1.D57 & EventIndPrimaryD57 & Trt==1 & Bserostatus==0, NumberdaysD29toD57, drop=T))
         tmp.3=table(subset(dat.mock, ph1.D57 & EventIndPrimaryD57 & Trt==1 & Bserostatus==0, EventTimePrimaryD57, drop=T))
@@ -83,9 +83,9 @@ if (study_name_code=="COVE" & tpeak=="57") {
         barplot(tmp.1, main="D1 to D29",  xlab="Days")
         barplot(tmp.2, main="D29 to D57", xlab="Days")
         barplot(tmp.3, main="D57 to COVID", xlab="Days")
-    mydev.off(file=paste0(save.results.to, "barplot_visit_intervals_D57cases"))  
+    dev.off()  
 
-    myfigure (mfrow=c(1,3))    
+    mypdf (mfrow=c(1,3), file=paste0(save.results.to, "barplot_mixed"))    
         tmp.1=table(subset(dat.mock, ph1.intercurrent.cases       & Trt==1 & Bserostatus==0, EventTimePrimaryD29, drop=T))
         tmp.2=table(subset(dat.mock, ph1.D57 & EventIndPrimaryD57 & Trt==1 & Bserostatus==0, EventTimePrimaryD29, drop=T))
         tmp.3=table(subset(dat.mock, ph1.D57 & EventIndPrimaryD57 & Trt==1 & Bserostatus==0, EventTimePrimaryD57, drop=T))
@@ -99,7 +99,7 @@ if (study_name_code=="COVE" & tpeak=="57") {
         barplot(tmp.1, main="D29 to COVID", xlab="Days", yaxt="n", xaxt="n"); title(line=3, main="Intercurrent Cases"); axis(2, at=0:10); axis(1, at=seq(0,200,by=10)); 
         barplot(tmp.2, main="D29 to COVID", xlab="Days", yaxt="n", xaxt="n"); title(line=3, main="Post Day 57 Cases");  axis(2, at=0:10); axis(1, at=seq(0,200,by=10)); 
         barplot(tmp.3, main="D57 to COVID", xlab="Days", yaxt="n", xaxt="n"); title(line=3, main="Post Day 57 Cases");  axis(2, at=0:10); axis(1, at=seq(0,200,by=10)); 
-    mydev.off(file=paste0(save.results.to, "barplot_mixed"))  
+    dev.off()  
 
 
 } 
@@ -108,7 +108,7 @@ if (study_name_code=="COVE" & tpeak=="57") {
 if (tpeak=="57") {
         
     # barplots for number of days from Day 1 to Day 29, and number of days from Day 29 to Day 57 in the immunogenicity subcohort
-    myfigure (mfrow=c(1,2))    
+    mypdf (mfrow=c(1,2), file=paste0(save.results.to, "barplot_visit_intervals_immuno"))    
         tmp.1=table(subset(dat.mock, ph1.immuno & Trt==1 & Bserostatus==0, NumberdaysD1toD29,  drop=T))
         tmp.2=table(subset(dat.mock, ph1.immuno & Trt==1 & Bserostatus==0, NumberdaysD29toD57, drop=T))
         tmp=cbinduneven(list(tmp.1, tmp.2))
@@ -117,7 +117,7 @@ if (tpeak=="57") {
         tmp.2=tmp[,2]; names(tmp.2)=rownames(tmp)
         barplot(tmp.1, main="D1 to D29",  xlab="Days"); title(line=3, main="Immunogenicity Subcohort")# , cex.names=.7
         barplot(tmp.2, main="D29 to D57", xlab="Days"); title(line=3, main="Immunogenicity Subcohort")
-    mydev.off(file=paste0(save.results.to, "barplot_visit_intervals_immuno"))  
+    dev.off()  
     
     #
     res=round(quantile(subset(dat.mock, ph1.immuno & Trt==1 & Bserostatus==0, NumberdaysD1toD29, drop=T), c(1/4,1/2,3/4), na.rm=T)); res
@@ -129,10 +129,10 @@ if (tpeak=="57") {
 } else if (tpeak=="29") {
     
     # barplots for number of days from Day 1 to Day 29 in the immunogenicity subcohort
-    myfigure (mfrow=c(1,1))    
+    mypdf (mfrow=c(1,1), file=paste0(save.results.to, "barplot_visit_intervals_immuno"))    
         tmp.1=table(subset(dat.mock, ph1.immuno & Trt==1 & Bserostatus==0, NumberdaysD1toD29,  drop=T))
         barplot(tmp.1, main="D1 to D29",  xlab="Days")# , cex.names=.7
-    mydev.off(file=paste0(save.results.to, "barplot_visit_intervals_immuno"))  
+    dev.off()  
     
     res=round(quantile(subset(dat.mock, ph1.immuno & Trt==1 & Bserostatus==0, NumberdaysD1toD29, drop=T), c(1/4,1/2,3/4), na.rm=T)); res
     write(paste0(res[2], " (", res[1], "-", res[3], ")"), file=paste0(save.results.to, "quartiles_visit_intervals_immuno_1to29"))

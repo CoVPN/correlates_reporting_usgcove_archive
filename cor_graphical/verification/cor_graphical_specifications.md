@@ -5,13 +5,13 @@
 
 2. In `dat`, set the NA's in variables `wt.D57` and `wt.D29` to be zero
 
-3. Create a new field `cohort_event`, which is defined as a string "Intercurrent Cases" if `Perprotocol`==1 & `Bserostatus`==0 & `EarlyendpointD29`==0 & `TwophasesampIndD29`==1 & `EventIndPrimaryD29`==1 & `EventTimePrimaryD29` >=7 & `EventTimePrimaryD29` <= (6 + `NumberdaysD1toD57` - `NumberdaysD1toD29`); "Post-Peak Cases" if `Perprotocol`==1 & `Bserostatus`==0 & `EarlyendpointD57`==0 & `TwophasesampIndD57`==1 & `EventIndPrimaryD57`==1; and "Non-Cases" if `Perprotocol`==1 & `Bserostatus`==0 & `EarlyendpointD57`==0 & `TwophasesampIndD57`==1 & `EventIndPrimaryD1`==0.  
+3.(has57==T) Create a new field `cohort_event`, which is defined as a string "Intercurrent Cases" if `Perprotocol`==1 & `Bserostatus`==0 & `EarlyendpointD29`==0 & `TwophasesampIndD29`==1 & `EventIndPrimaryD29`==1 & `EventTimePrimaryD29` >=7 & `EventTimePrimaryD29` <= (6 + `NumberdaysD1toD57` - `NumberdaysD1toD29`); "Post-Peak Cases" if `Perprotocol`==1 & `Bserostatus`==0 & `EarlyendpointD57`==0 & `TwophasesampIndD29`==1 & `EventIndPrimaryD57`==1; and "Non-Cases" if `Perprotocol`==1 & `Bserostatus`==0 & `EarlyendpointD57`==0 & `TwophasesampIndD57`==1 & `EventIndPrimaryD1`==0.
+
+3.(has57!=T) Create a new field `cohort_event`, which is defined as a string "Day 2-14 Cases" if `Perprotocol`==1 & `Bserostatus`==0 & `TwophasesampIndD29`==1 & `EventIndPrimaryD29`==1 & `EventTimePrimaryD29` <=13; "Day 15-35 Cases" if `Perprotocol`==1 & `Bserostatus`==0 & `TwophasesampIndD29`==1 & `EventIndPrimaryD29`==1 & `EventTimePrimaryD29` >13 & `EventTimePrimaryD29` <= 6 + `NumberdaysD1toD29`; "Post-Peak Cases" if `Perprotocol`==1 & `Bserostatus`==0 & `TwophasesampIndD29`==1 & `EventIndPrimaryD29`==1 & `EventIndPrimaryD29`>=7; and "Non-Cases" if `Perprotocol`==1 & `Bserostatus`==0 & `EarlyendpointD29`==0 & `TwophasesampIndD29`==1 & `EventIndPrimaryD1`==0.
 
 4. Subset `dat` with only non-NA `cohort_event` values.
 
-5. Create a new data frame `dat.long`. In `dat.long` there is a new field `assay` that takes the string values "bindSpike", "bindRBD", "pseudoneutid50" and "pseudoneutid80", corresponding to four types of assays. Additionally, there are new fields `B`, `Day29`, `Day57`, `Delta29overB`, `Delta57overB` and `Delta57over29`, with values equal to the assay readouts at time points indicated by the field name. Each row of `dat.long` corresponds to the assay readouts of one type of assays, indicated by `assay`, at different time points or for different fold-rise comparisons. Therefore, each individual has four rows for four different types of assay readouts. Additionally, there are fields in the original data frame `dat` with the individual-level information, including `Ptid`, `Trt`, `MinorityInd`, `EthnicityHispanic`, `EthnicityNotreported`, `EthnicityUnknown`, `HighRiskInd`, `Age`, `BMI`, `Sex`, `Bserostatus`, `Fullvaccine`, `Perprotocol`, `EventIndPrimaryD29`,
-  `EventIndPrimaryD57`, `SubcohortInd`, `age.geq.65`, `TwophasesampIndD57`, `ph1.D29`, `ph2.D29`,
-  `Bstratum`, `wt.D57`, `wt.D29`, `race`, `WhiteNonHispanic`, `cohort_event`,  `ph1.D57`, `ph2.D57`. 
+5. Create a new data frame `dat.long`. In `dat.long` there is a new field `assay` that takes the string values "bindSpike", "bindRBD", "pseudoneutid50" and "pseudoneutid80", corresponding to four types of assays. Additionally, there are new fields `B`, `Day29`, `Day57`, `Delta29overB`, `Delta57overB` and `Delta57over29`, with values equal to the assay readouts at time points indicated by the field name. Each row of `dat.long` corresponds to the assay readouts of one type of assays, indicated by `assay`, at different time points or for different fold-rise comparisons. Therefore, each individual has four rows for four different types of assay readouts. Additionally, there are fields in the original data frame `dat` with the individual-level variables.
   
 6. Save `dat.long` to `dat.long.cor.subset`
 
@@ -43,11 +43,13 @@
 
 20. In `dat.long.cor.subset`, create a new field `age_minority_label`, which is defined as the cross product of `age.geq.65` and `WhiteNonHispanic` fields converted to a factor.
 
-20.1. Take the subset of `dat.long.cor.subset` with `ph2.D29` == 1, filter out the records if `cohort_event` %in% c("Post-Peak Cases","Non-Cases") & `ph2.D57`==0, and rename the dataset as `dat.long.cor.subset.twophase.intercurrent`. (These are for Yiwen's figures)
+20.1. Save `dat.long.cor.subset` to `dat.long.cor.subset.twophase.violin`. (These are for Yiwen's figures)
 
-20.2. Take the subset of `dat.long.cor.subset` with `ph2.D57` == 1 and save back to `dat.long.cor.subset`. Take the subset of `dat` with `ph2.D57` == 1 and save them as `dat.cor.subset`. (These are for Kendrick's figures)
+20.2. Take the subset of `dat.long.cor.subset` with `ph2.D29` == 1 and save back to `dat.long.cor.subset`. Take the subset of `dat` with `ph2.D29` == 1 and save them as `dat.cor.subset`. (These are for Kendrick's figures)
 
-21. Select fields (`Ptid`, `Trt`, `Bserostatus`, `EventIndPrimaryD29`, `EventIndPrimaryD57`, `Perprotocol`, `cohort_event`, `Age`, `age_geq_65_label`, `highrisk_label`, `age_risk_label`, `sex_label`, `minority_label`, `Dich_RaceEthnic`, `assay`, `LLoD`, `LLoQ`, `wt.D57`, `wt.D29`, `B`, `Day29`, `Day57`, `Delta29overB`, `Delta57overB`) from `dat.long.cor.subset.twophase.intercurrent`, and then transpose `dat.long.cor.subset.twophase.intercurrent` from wide to a new long data frame `dat.longer.cor.subset` by saving the string values "B", "Day29", "Day57", "Delta29overB", "Delta57overB" to a new field `time`, and the values of fields `B`, `Day29`, `Day57`, `Delta29overB`, `Delta57overB` to a new field `value`.
+21.1. Select fields (`Ptid`, `Trt`, `Bserostatus`, `EventIndPrimaryD29`, `EventIndPrimaryD57`, `Perprotocol`, `cohort_event`, `Age`, `age_geq_65_label`, `highrisk_label`, `age_risk_label`, `sex_label`, `minority_label`, `Dich_RaceEthnic`, `assay`, `LLoD`, `LLoQ`, `wt.D57`, `wt.D29`, `B`, `Day29`, `Day57`, `Delta29overB`, `Delta57overB`, if(study_name_code=="EMSEMBLE) `SevereEventIndPrimaryD1`, if(study_name_code=="EMSEMBLE) `SevereEventIndPrimaryD29`) from `dat.long.cor.subset.twophase.violin`, and then transpose `dat.long.cor.subset.twophase.violin` from wide to a new long data frame `dat.longer.cor.subset` by saving the string values "B", "Day29", "Day57", "Delta29overB", "Delta57overB" to a new field `time`, and the values of fields `B`, `Day29`, `Day57`, `Delta29overB`, `Delta57overB` to a new field `value`.
+
+21.2. If (has57==T) subset `dat.longer.cor.subset` to remove records satisfying `cohort_event` %in% c("Intercurrent Cases", "Post-Peak Cases") & `time` == "Day57" & `TwophasesampIndD57`==0)
 
 22. In `dat.longer.cor.subset`, set the values ("B", "Day29", "Day57", "Delta29overB", "Delta57overB") in `time` to ("Day 1", "Day 29", "Day 57", "Delta29overB", "Delta57overB"), respectively. 
 
@@ -62,6 +64,8 @@
 27. In `dat.longer.cor.subset`, create a new field `response_bind`, which when `value` >= `pos.cutoffs` the value is 1, otherwise 0.
 
 28. In `dat.longer.cor.subset`, create a new field `response`, which when `assay` in ("bindSpike", "bindRBD", "bindN") the value is `response_bind`, when `assay` in ("pseudoneutid50", "pseudoneutid80") the value is `response_nab`, otherwise NA.
+
+29. If(study_name_code=="EMSEMBLE), in `dat.longer.cor.subset`, create a `severe` variable with value 1 if (`time`=="Day 1" & `cohort_event` != "Non-Cases" & `SevereEventIndPrimaryD1`==1) or (`time`=="Day 29" & `cohort_event` != "Non-Cases" & `SevereEventIndPrimaryD29`==1) or (`cohort_event` == "Non-cases"); 0 for otherwise.
 
 
 
@@ -96,14 +100,14 @@ bAb LLOQ = log10(20); nAb ID50 LLOQ = log10(10); nAb ID80 LLOQ = log10(10).
 
 ### Violin + Box plots and Line + Box plots
 
-Figure 1. Plots at two timepoints (Day 29 and Day 57), or at three timepoints (Day 1, Day 29 and Day 57) among baseline negative vaccine group participants, by three cases/non-cases groups (intercurrent cases vs per-protocol cases vs per-protocol non-case)
+Figure 1. Plots at two timepoints (Day 29 and Day 57 if exist), or at three timepoints (Day 1, Day 29 and Day 57 if exist) among baseline negative vaccine group participants, by cases/non-cases groups
 
 title format: (violinplots/lineplots) of (marker): (arm) (# of timepoints)  
 eg: "lineplots of Binding Antibody to RBD: baseline negative vaccine arm (3 timepoints)"  
 
 1. create a new vector `groupby_vars1` = ("Trt", "Bserostatus", "cohort_event", "time", "assay")
 
-2. In `dat.longer.cor.subset`, group by `groupby_vars1`, calculate new fields `num` = sum(`response` * ifelse(`cohort_event`=="Intercurrent Cases", 1, `wt.D57`)), `denom` = sum(ifelse(`cohort_event`=="Intercurrent Cases", 1, `wt.D57`)), and `N_RespRate` = n(), save to a new data frame `dat.longer.cor.subset.plot1`
+2. In `dat.longer.cor.subset`, group by `groupby_vars1`, calculate new fields `counts` = n(), `num` = sum(`response` * ifelse(!`cohort_event` %in% c("Post-Peak Cases", "Non-Cases"), 1, `wt.D57`)), `denom` = sum(ifelse(!`cohort_event` %in% c("Post-Peak Cases", "Non-Cases"), 1, `wt.D57`)), and `N_RespRate` = paste0(`counts`, "\n",round(`num`/`denom`*100, 1),"%"), save to a new data frame `dat.longer.cor.subset.plot1`
 
 3. In `dat.longer.cor.subset.plot1`, group by `groupby_vars1`, sample the same random 100 participants in non-cases group and keep all points in other groups at each value of `time` ("Day 1", "Day 29", and "Day 57").
 
@@ -126,13 +130,13 @@ eg: "violinplots of Binding Antibody to Spike: baseline negative placebo arm by 
 
 2. Inside all loops, create a new vector `groupby_vars2` = ("Trt", "Bserostatus", "cohort_event", "time", "assay", `s`)
 
-3. In `dat.longer.cor.subset`, group by `groupby_vars2`, calculate new fields `num` = sum(`response` * ifelse(`cohort_event`=="Intercurrent Cases", 1, `wt.D57`)), `denom` = sum(ifelse(`cohort_event`=="Intercurrent Cases", 1, `wt.D57`)), and `N_RespRate` = n(), save to a new data frame `dat.longer_cor_data_plot2`  
+3. In `dat.longer.cor.subset`, group by `groupby_vars2`, calculate new fields `counts` = n(), `num` = sum(`response` * ifelse(!`cohort_event` %in% c("Post-Peak Cases", "Non-Cases"), 1, `wt.D57`)), `denom` = sum(ifelse(!`cohort_event` %in% c("Post-Peak Cases", "Non-Cases"), 1, `wt.D57`)), and `N_RespRate` = paste0(`counts`, "\n",round(`num`/`denom`*100, 1),"%"), save to a new data frame `dat.longer.cor.subset.plot2`
 
-3. If `s` == "minority_label", subset `dat.longer_cor_data_plot2` with `minority_label` in ("White Non-Hispanic","Comm. of Color"), save to a new data frame `dat.longer_cor_data_sub2`, else if `s` == "Dich_RaceEthnic", subset `dat.longer_cor_data_plot2` with `Dich_RaceEthnic` in ("Hispanic or Latino","Not Hispanic or Latino"), save to a new data frame `dat.longer_cor_data_sub2`, else save `dat.longer_cor_data_plot2` to `dat.longer_cor_data_sub2`.
+4. If `s` == "Dich_RaceEthnic", subset `dat.longer_cor_data_plot2` with `Dich_RaceEthnic` in ("Hispanic or Latino","Not Hispanic or Latino").
 
-4. In `dat.longer.cor.subset.sub2`, group by `groupby_vars2`, sample the same random 100 participants in non-cases group and keep all points in other groups at each value of `time` ("Day 1", "Day 29", and "Day 57"), save to a new data frame `plot.25sample2`.
+5. In `dat.longer.cor.subset.sub2`, group by `groupby_vars2`, sample the same random 100 participants in non-cases group and keep all points in other groups at each value of `time` ("Day 1", "Day 29", and "Day 57"), save to a new data frame `plot.25sample2`.
 
-5. create figures with `dat.longer.cor.subset.plot2` at each round of loops, and use `plot.25sample2` for generating dots and lines.
+6. create figures with `dat.longer.cor.subset.plot2` at each round of loops, and use `plot.25sample2` for generating dots and lines.
 
 X-axis variable: `time`  
 Y-axis variable: `value`  
@@ -149,7 +153,7 @@ eg: "lineplots of Binding Antibody to Spike: baseline negative placebo arm by ag
 
 1. create a new vector `groupby_vars3`= ("Trt", "Bserostatus", "cohort_event", "time", "assay", "age_geq_65_label", "highrisk_label")
 
-2. In `dat.longer.cor.subset`, group by `groupby_vars3`, calculate new fields `num` = sum(`response` * ifelse(`cohort_event`=="Intercurrent Cases", 1, `wt.D57`)), `denom` = sum(ifelse(`cohort_event`=="Intercurrent Cases", 1, `wt.D57`)), and `N_RespRate` = n(), save to a new data frame `dat.longer.cor.subset.plot3`
+2. In `dat.longer.cor.subset`, group by `groupby_vars3`, calculate new fields `counts` = n(), `num` = sum(`response` * ifelse(!`cohort_event` %in% c("Post-Peak Cases", "Non-Cases"), 1, `wt.D57`)), `denom` = sum(ifelse(!`cohort_event` %in% c("Post-Peak Cases", "Non-Cases"), 1, `wt.D57`)), and `N_RespRate` = paste0(`counts`, "\n",round(`num`/`denom`*100, 1),"%"), save to a new data frame `dat.longer.cor.subset.plot3`
 
 3. In `dat.longer.cor.subset.plot3`, group by `groupby_vars3`, sample the same random 100 participants in non-cases group and keep all points in other groups at each value of `time` ("Day 1","Day 29", and "Day 57"), save to a new data frame `plot.25sample3`.
 
@@ -161,10 +165,10 @@ One figure for one `assay`, `Bserostatus`, `Trt`, and `time` in ("Day 29", "Day 
 One figure includes multiple panels, one for each values of `cohort_event` and `age_risk_label`  
 
 ### Scatter plots  
-Figure 4. Marker titer/concentration vs. age in years at timepoints (Day 1, Day 29 and Day 57), by three cases/non-cases groups (intercurrent cases vs per-protocol cases vs per-protocol non-case), among each of four arms (baseline negative vaccine, baseline negative placebo, baseline positive vaccine, baseline positive placebo) or among all four arms side by side
+Figure 4. Marker titer/concentration vs. age in years at timepoints (Day 1, Day 29 and Day 57), by cases/non-cases groups, among each of two arms (baseline negative vaccine, baseline negative placebo) or among two arms side by side
 
-title format: Scatterplot of (time) (marker): (arm)  
-eg: "Scatterplot of D29 fold-rise over D1 vs. D1 Ab markers: baseline positive vaccine arm"  
+title format: scatterplot of (marker) vs Age: by arm at (time)  
+eg: "scatterplots of Pseudovirus Neutralization ID80 vs Age: by arm at day 1"  
 
 
 1. Loop through `assay` in ("bindSpike", "bindRBD", "pseudoneutid50", "pseudoneutid80"), `time` in ("Day 1", "Day 29", "Day 57").  
@@ -174,6 +178,20 @@ eg: "Scatterplot of D29 fold-rise over D1 vs. D1 Ab markers: baseline positive v
 X-axis variable: `Age`  
 Y-axis variable: `value`  
 One figure for one `assay`, `time`  
-Figures for all participants include four panels, one for each combination of `Bserostatus` and `Trt`  
+
+
+Figure 5. Marker titer/concentration vs. Days Since the Day xx Visit, by cases/non-cases groups, among each of two arms (baseline negative vaccine, baseline negative placebo) or among two arms side by side
+
+title format: scatterplot of (marker) vs Days Since the Day xx Visit: baseline negative vaccine arm at day xx and day xx
+eg: "scatterplots of Pseudovirus Neutralization ID80 vs Days Since the Day29 Visit: baseline negative vaccine arm at day 29 and day 57"  
+
+
+1. Loop through `assay` in ("bindSpike", "bindRBD", "pseudoneutid50", "pseudoneutid80"), `time` in ("Day 1", "Day 29", "Day 57").  
+
+2. create figures with `dat.longer.cor.subset`, for (`Bserostatus` == "Baseline Neg" and `Trt` == "Vaccine") participants only, and for all participants in four arms side by side, respectively.
+
+X-axis variable: `EventTimePrimaryD1` or `EventTimePrimaryD29`  
+Y-axis variable: `value`  
+One figure for one `assay`, `time`
 
 

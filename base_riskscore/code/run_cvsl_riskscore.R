@@ -1,3 +1,4 @@
+# Sys.setenv(TRIAL = "janssen_pooled_mock")
 #-----------------------------------------------
 # obligatory to append to the top of each script
 renv::activate(project = here::here(".."))
@@ -24,6 +25,7 @@ library(conflicted)
 conflicted::conflict_prefer("filter", "dplyr")
 conflict_prefer("summarise", "dplyr")
 library(mice)
+library(tidymodels)
 
 # Define code version to run
 # the demo version is simpler and runs faster!
@@ -57,28 +59,79 @@ if(study_name_code == "ENSEMBLE"){
   risk_vars <- c(
     "EthnicityHispanic","EthnicityNotreported", "EthnicityUnknown",
     "Black", "Asian", "NatAmer", "PacIsl", "Multiracial", "Notreported", "Unknown",
-    "URMforsubcohortsampling", "HighRiskInd", "Sex", "Age", "BMI", "Country", 
-    "HIVinfection", "CalendarDateEnrollment"
-  )
+    "URMforsubcohortsampling", "HighRiskInd", "HIVinfection", 
+    "Sex", "Age", "BMI",
+    "Country.X1", "Country.X2", "Country.X3", "Country.X4", "Country.X5", "Country.X6", "Country.X7", 
+    "Region.X1", "Region.X2", 
+    "CalDtEnrollIND.X1"
+    )
   
-  endpoint <- "EventIndPrimaryD29"
+  if(run_prod){
+    risk_vars <- append(risk_vars, c("CalDtEnrollIND.X2", "CalDtEnrollIND.X3"))
+  }
+  
+  endpoint <- "EventIndPrimaryIncludeNotMolecConfirmedD29"
   studyName_for_report <- "ENSEMBLE"
-  # # Add calendar time indicator variables for ENSEMBLE
-  # inputFile <- inputFile %>%
-  #   mutate(CalendarDateEnrollment.dropPause = ifelse(CalendarDateEnrollment > 32, CalendarDateEnrollment - 2, CalendarDateEnrollment),
-  #          CalendarDateEnroll.ind = case_when(CalendarDateEnrollment.dropPause < 28 ~ 0,
-  #                                             CalendarDateEnrollment.dropPause >= 28 & CalendarDateEnrollment.dropPause < 56 ~ 1,
-  #                                             CalendarDateEnrollment.dropPause >= 56 & CalendarDateEnrollment.dropPause < 84 ~ 2,
-  #                                             CalendarDateEnrollment.dropPause >= 84 & CalendarDateEnrollment.dropPause < 112 ~ 3),
-  #          Region.CalendarDateEnroll = as.numeric(interaction(Region, CalendarDateEnroll.ind)))
-  # # Update risk_vars
-  # risk_vars <- c(risk_vars, "Region", "CalendarDateEnroll.ind", "Region.CalendarDateEnroll")
+
+  # Create binary indicator variables for Country and Region
+  inputFile <- inputFile %>%
+    filter(!is.na(CalendarDateEnrollment)) %>%
+    mutate(Sex.rand = sample(0:1, n(), replace = TRUE),
+           Sex = ifelse(Sex %in% c(2, 3), Sex.rand, Sex),
+           Country = as.factor(Country),
+           Region = as.factor(Region),
+           CalDtEnrollIND = case_when(CalendarDateEnrollment < 28 ~ 0,
+                                      CalendarDateEnrollment >= 28 & CalendarDateEnrollment < 56 ~ 1,
+                                      CalendarDateEnrollment >= 56 & CalendarDateEnrollment < 84 ~ 2,
+                                      CalendarDateEnrollment >= 84 & CalendarDateEnrollment < 112 ~ 3,
+                                      CalendarDateEnrollment >= 112 & CalendarDateEnrollment < 140 ~ 4,
+                                      CalendarDateEnrollment >= 140 & CalendarDateEnrollment < 168 ~ 5),
+           CalDtEnrollIND = as.factor(CalDtEnrollIND)) %>%
+    select(-Sex.rand)
+  
+  rec <- recipe(~ Country + Region + CalDtEnrollIND, data = inputFile)
+  dummies <- rec %>%
+    step_dummy(Country, Region, CalDtEnrollIND) %>%
+    prep(training = inputFile)
+  inputFile <- inputFile %>% bind_cols(bake(dummies, new_data = NULL)) %>%
+    select(-c(Country, Region, CalDtEnrollIND))
+  names(inputFile)<-gsub("\\_",".",names(inputFile))
+    
+  # # Create interaction variables between Region and CalDtEnrollIND
+  # rec <- recipe(EventIndPrimaryIncludeNotMolecConfirmedD29 ~., data = inputFile)
+  # int_mod_1 <- rec %>%
+  #   step_interact(terms = ~ starts_with("Region"):starts_with("CalDtEnrollIND"))
+  # int_mod_1 <- prep(int_mod_1, training = inputFile)
+  # inputFile <- bake(int_mod_1, inputFile)
+  # names(inputFile)<-gsub("\\_",".",names(inputFile))
+  # if(run_prod){
+  #   risk_vars <- append(risk_vars, c("Region.X1.x.CalDtEnrollIND.X1", "Region.X1.x.CalDtEnrollIND.X2",
+  #                                    "Region.X1.x.CalDtEnrollIND.X3",
+  #                                    "Region.X2.x.CalDtEnrollIND.X1", "Region.X2.x.CalDtEnrollIND.X2",
+  #                                    "Region.X2.x.CalDtEnrollIND.X3"))
+  # }
 }
 
 ################################################
+
 # Consider only placebo data for risk score analysis
-dat.ph1 <- inputFile %>%
-  filter(Perprotocol == 1 & Trt == 0 & Bserostatus == 0) %>%
+if("Riskscorecohortflag" %in% names(inputFile)){
+  assertthat::assert_that(
+    all(!is.na(inputFile$Riskscorecohortflag)), msg = "NA values present in Riskscorecohortflag in inputFile!"
+  )
+  dat.ph1 <- inputFile %>% filter(Riskscorecohortflag == 1 & Trt == 0)
+}else{
+  inputFile <- inputFile %>%
+    mutate(Riskscorecohortflag = ifelse(Bserostatus==0 & Perprotocol==1 & EarlyendpointD29==0 & EventTimePrimaryD29>=1, 1, 0)) 
+  
+  assertthat::assert_that(
+    all(!is.na(inputFile$Riskscorecohortflag)), msg = "NA values present in Riskscorecohortflag when created in inputFile!"
+    )
+  
+  dat.ph1 <- inputFile %>% filter(Riskscorecohortflag == 1 & Trt == 0)
+}
+
+dat.ph1 <- dat.ph1 %>%
   # Keep only variables to be included in risk score analyses
   select(Ptid, Trt, all_of(endpoint), all_of(risk_vars)) %>%
   # Drop any observation with NA values in Ptid, Trt, or endpoint!
@@ -86,8 +139,10 @@ dat.ph1 <- inputFile %>%
 
 # Create table of cases in both arms (prior to Risk score analyses)
 tab <- inputFile %>%
-  filter(Perprotocol == 1 & Bserostatus == 0) %>%
+  filter(Riskscorecohortflag == 1) %>%
+  drop_na(Ptid, Trt, all_of(endpoint)) %>%
   mutate(Trt = ifelse(Trt == 0, "Placebo", "Vaccine")) 
+
 table(tab$Trt, tab %>% pull(endpoint)) %>%
   write.csv(file = here("output", "cases_prior_riskScoreAnalysis.csv"))
 rm(tab)
@@ -95,8 +150,9 @@ rm(tab)
 # Derive maxVar: the maximum number of variables that will be allowed by SL screens in the models.
 np <- sum(dat.ph1 %>% select(matches(endpoint)))
 maxVar <- max(20, floor(np / 20))
+all_risk_vars <- risk_vars
 
-# Remove any risk_vars that are indicator variables and have fewer 0's or 1's
+# Remove a variable if the number of cases in the variable = 1 subgroup is <= 3 or the number of cases in the variable = 0 subgroup is <= 3
 dat.ph1 <- drop_riskVars_with_fewer_0s_or_1s(dat = dat.ph1, 
                                              risk_vars = risk_vars,
                                              np = np)
@@ -178,5 +234,5 @@ cvfits[[1]] <- fits$cvfits
 saveRDS(cvaucs, here("output", "cvsl_riskscore_cvaucs.rds"))
 save(cvfits, file = here("output", "cvsl_riskscore_cvfits.rda"))
 save(risk_placebo_ptids, file = here("output", "risk_placebo_ptids.rda"))
-save(run_prod, Y, X_riskVars, weights, inputFile, risk_vars, endpoint, maxVar,
+save(run_prod, Y, X_riskVars, weights, inputFile, risk_vars, all_risk_vars, endpoint, maxVar,
      V_outer, studyName_for_report, file = here("output", "objects_for_running_SL.rda"))

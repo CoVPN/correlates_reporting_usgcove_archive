@@ -1,12 +1,6 @@
-#-----------------------------------------------
-# obligatory to append to the top of each script
-renv::activate(project = here::here(".."))
-source(here::here("..", "_common.R"))
-#-----------------------------------------------
-
 library(here)
 library(stringr)
-save.results.to <- here("figs")
+save.results.to <- here("immuno_graphical", "figs")
 
 # Define age cutoff based on trial
 age.cutoff <- switch(study_name_code, "COVE"=65, "ENSEMBLE"=60)

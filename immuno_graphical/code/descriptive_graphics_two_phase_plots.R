@@ -1,10 +1,11 @@
 #Sys.setenv(TRIAL = "janssen_pooled_real")
 #-----------------------------------------------
 # obligatory to append to the top of each script
-renv::activate(project = here::here(".."))
+here:i_am("immuno_graphical/code/descriptive_graphics_two_phase_plots.R")
+renv::activate(project = here::here())
 # There is a bug on Windows that prevents renv from working properly. The following code provides a workaround:
 if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
-source(here::here("..", "_common.R"))
+source(here::here("_common.R"))
 #-----------------------------------------------
 
 # install.packages(c("ggpubr", "GGally", "SWIM", "scales", "dummies",
@@ -23,20 +24,21 @@ library(gridExtra)
 library(PResiduals)
 
 # produce geom_statistics w/ resampling-based covariate-adjusted Spearman
-source(here("code", "params.R"))
-source(here("code", "ggally_cor_resample.R"))
-source(here("code", "covid_corr_plot_functions.R"))
+source(here("immuno_graphical", "code", "params.R"))
+source(here("immuno_graphical", "code", "ggally_cor_resample.R"))
+source(here("immuno_graphical", "code", "covid_corr_plot_functions.R"))
 
 set.seed(12345)
 # load cleaned data
 dat.long.twophase.sample <- readRDS(here(
+  "immuno_graphical",                                         
   "data_clean",
   "long_twophase_data.rds"
 ))
 
-dat.twophase.sample <- readRDS(here("data_clean", "twophase_data.rds"))
+dat.twophase.sample <- readRDS(here("immuno_graphical", "data_clean", "twophase_data.rds"))
 
-assay_lim <- readRDS(here("data_clean", "assay_lim.rds"))
+assay_lim <- readRDS(here("immuno_graphical", "data_clean", "assay_lim.rds"))
 
 tps <- c("Day29", "Delta29overB", "Day57", "Delta57overB")
 #-----------------------------------------------

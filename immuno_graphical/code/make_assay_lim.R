@@ -1,17 +1,19 @@
 #-----------------------------------------------
 # obligatory to append to the top of each script
-renv::activate(project = here::here(".."))
-source(here::here("..", "_common.R"))
+here::i_am("immuno_graphical/code/make_assay_lim.R")
+renv::activate(project = here::here())
+source(here::here("_common.R"))
 #-----------------------------------------------
 
 library(here)
 library(dplyr)
-source(here("code", "params.R"))
+source(here("immuno_graphical", "code", "params.R"))
 
 
-load(here("..", "data_clean",paste0(attr(config, "config"), "_params.Rdata")))
+load(here("data_clean",paste0(attr(config, "config"), "_params.Rdata")))
 
 dat.long.twophase.sample <- readRDS(here(
+  "immuno_graphical", 
   "data_clean",
   "long_twophase_data.rds"
 ))
@@ -74,5 +76,5 @@ if(study_name_code=="ENSEMBLE") {
 }
 
 saveRDS(assay_lim,
-        file = here("data_clean", "assay_lim.rds")
+        file = here("immuno_graphical", "data_clean", "assay_lim.rds")
 )

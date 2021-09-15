@@ -1,11 +1,12 @@
 #-----------------------------------------------
 # obligatory to append to the top of each script
-renv::activate(project = here::here(".."))
-    
+here::i_am("base_riskscore/code/constructSL_predict_on_vaccine.R")
+renv::activate(project = here::here())
+
 # There is a bug on Windows that prevents renv from working properly. The following code provides a workaround:
 if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
     
-source(here::here("..", "_common.R"))
+source(here::here("_common.R"))
 #-----------------------------------------------
 
 # load required libraries and functions
@@ -27,10 +28,10 @@ library(gam)
 library(xgboost)
 conflict_prefer("filter", "dplyr")
 conflict_prefer("select", "dplyr")
-load(here("output", "objects_for_running_SL.rda"))
-load(here("output", "plac_top2learners_SL_discreteSL.rda"))
-source(here("code", "sl_screens.R")) # set up the screen/algorithm combinations
-source(here("code", "utils.R")) # get CV-AUC for all algs
+load(here("base_riskscore", "output", "objects_for_running_SL.rda"))
+load(here("base_riskscore", "output", "plac_top2learners_SL_discreteSL.rda"))
+source(here("base_riskscore", "code", "sl_screens.R")) # set up the screen/algorithm combinations
+source(here("base_riskscore", "code", "utils.R")) # get CV-AUC for all algs
 
 ## solve cores issue
 #blas_get_num_procs()
@@ -46,7 +47,7 @@ sl_riskscore_slfits <- SuperLearner(
   cvControl = list(V = V_outer, stratifyCV = TRUE), verbose = FALSE
   )
 
-save(sl_riskscore_slfits, file = here("output", "sl_riskscore_slfits.rda"))
+save(sl_riskscore_slfits, file = here("base_riskscore", "output", "sl_riskscore_slfits.rda"))
 
 # Predict on vaccine arm
 dat.ph1.vacc <- inputFile %>%
@@ -88,14 +89,14 @@ vacc <- bind_cols(
                             center = mean(risk_score, na.rm = T),
                             scale = sd(risk_score, na.rm = T)))
 
-write.csv(vacc, here("output", "vaccine_ptids_with_riskscores.csv"), row.names = FALSE)
+write.csv(vacc, here("base_riskscore", "output", "vaccine_ptids_with_riskscores.csv"), row.names = FALSE)
 
 # plot ROC curve on vaccinees
 pred.obj <- ROCR::prediction(vacc$pred, vacc %>% pull(endpoint))
 perf.obj <- ROCR::performance(pred.obj, "tpr", "fpr")
 
 options(bitmapType = "cairo")
-png(file = here("figs", "ROCcurve_riskscore_vacc_onlySL.png"),
+png(file = here("base_riskscore", "figs", "ROCcurve_riskscore_vacc_onlySL.png"),
     width = 1000, height = 1000)
 
 data.frame(xval = perf.obj@x.values[[1]],
@@ -122,7 +123,7 @@ dev.off()
 
 # plot pred prob plot on vaccinees
 options(bitmapType = "cairo")
-png(file = here("figs", "predProb_riskscore_vacc_onlySL.png"),
+png(file = here("base_riskscore", "figs", "predProb_riskscore_vacc_onlySL.png"),
     width = 1100, height = 700)
 if(study_name_code == "COVE"){
   cases = "Post Day 57 Cases"

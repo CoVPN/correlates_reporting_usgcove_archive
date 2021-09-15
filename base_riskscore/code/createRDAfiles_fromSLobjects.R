@@ -1,11 +1,12 @@
 #-----------------------------------------------
 # obligatory to append to the top of each script
-renv::activate(project = here::here(".."))
+here::i_am("base_riskscore/code/createRDAfiles_fromSLobjects.R")
+renv::activate(project = here::here())
 
 # There is a bug on Windows that prevents renv from working properly. The following code provides a workaround:
 if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
 
-source(here::here("..", "_common.R"))
+source(here::here("_common.R"))
 #-----------------------------------------------
 
 library(here)
@@ -87,6 +88,6 @@ readin_SLobjects_fromFolder <- function(data_file, trt) {
 
 
 # Read CV.SL object and save AUCs
-data_file <- here("output", "cvsl_riskscore_cvaucs.rds")
+data_file <- here("base_riskscore", "output", "cvsl_riskscore_cvaucs.rds")
 risk_placebo_cvaucs <- readin_SLobjects_fromFolder(data_file, trt = "placebo")
-save(risk_placebo_cvaucs, file = here("output", "cvsl_risk_placebo_cvaucs.rda"))
+save(risk_placebo_cvaucs, file = here("base_riskscore", "output", "cvsl_risk_placebo_cvaucs.rda"))

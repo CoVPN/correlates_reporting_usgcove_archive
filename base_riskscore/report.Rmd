@@ -13,6 +13,7 @@ output:
 ```{r, include = FALSE}
 library(here)
 here::i_am("base_riskscore/report.Rmd")
+knitr::opts_knit$set(root.dir = here::here())
 ```
 
 ```{r, child=here("base_riskscore", 'report_sub.Rmd')}

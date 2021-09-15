@@ -19,6 +19,9 @@
 <!-- COVE -->
 
 ```{r, echo=FALSE, results='asis'}
+here::i_am("cor_coxph/report.Rmd")
+knitr::opts_knit$set(root.dir = here::here())
+
 if (study_name_code=="COVE") {
   for (i in 1:2) {
     tpeak <- ifelse(i==1, 29, 57)

@@ -7,6 +7,7 @@ output: pdf_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+here::i_am("immuno_tabular/verification/verification_report.Rmd")
 library(tidyverse)
 library(testthat)
 library(here)

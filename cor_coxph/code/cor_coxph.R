@@ -28,6 +28,8 @@ COR=Args[1]; myprint(COR)
 # COR has a set of analysis-specific parameters defined in the config file
 config.cor <- config::get(config = COR)
 tpeak=paste0(config.cor$tpeak)
+tpeaklag=paste0(config.cor$tpeaklag)
+tfinal.tpeak=paste0(config.cor$tfinal.tpeak)
 if (length(tpeak)==0) stop("config "%.%COR%.%" does not exist")
 
 # path for figures and tables etc

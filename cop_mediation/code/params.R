@@ -1,10 +1,4 @@
-#-----------------------------------------------
-# obligatory to append to the top of each script
-renv::activate(project = here::here(".."))
-source(here::here("..", "_common.R"))
-#-----------------------------------------------
-
-full_data <- read.csv(here::here("..", "data_clean", data_name))
+full_data <- read.csv(here::here("data_clean", data_name))
 
 if(has29){
     tf_Day29 <- max(full_data[full_data$EventIndPrimaryD29==1 & full_data$Trt == 1 & full_data$Bserostatus == 0 & !is.na(full_data$wt.D29), "EventTimePrimaryD29" ])

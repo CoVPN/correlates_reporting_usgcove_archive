@@ -1,13 +1,14 @@
 #-----------------------------------------------
 # obligatory to append to the top of each script
-renv::activate(project = here::here(".."))
-source(here::here("..", "_common.R"))
+here::i_am("cop_mediation/code/run_analysis.R")
+renv::activate(project = here::here())
+source(here::here("_common.R"))
 #-----------------------------------------------
 library(here)
 library(SuperLearner)
-source(here("code", "params.R"))
-source(here("code", "sl_screen_fn.R"))
-source(here("code", "format_utils.R"))
+source(here("cop_mediation", "code", "params.R"))
+source(here("cop_mediation", "code", "sl_screen_fn.R"))
+source(here("cop_mediation", "code", "format_utils.R"))
 
 library(natmed2)
 
@@ -42,7 +43,7 @@ if(!is.null(times) & !is.null(assays)){
 	  time <- marker_to_time[[marker]]
 
 	  # quantitative marker
-	  data_full <- readRDS(here("data_clean", paste0("data_", time, ".rds")))
+	  data_full <- readRDS(here("cop_mediation", "data_clean", paste0("data_", time, ".rds")))
 	  # # check whether to perform the analysis with quantitative marker
 	  # perform_continuous_analysis <- 
 	  #   min(data_full[data_full$Trt == 1 , marker], na.rm = TRUE) < 
@@ -79,7 +80,7 @@ if(!is.null(times) & !is.null(assays)){
 		quant_result <- rbind(quant_result, this_row)
 
 		# categorical marker
-	  data_cat <- readRDS(here("data_clean", paste0("data_", time, "_cat.rds")))
+	  data_cat <- readRDS(here("cop_mediation", "data_clean", paste0("data_", time, "_cat.rds")))
 
 	  fit_cat <- natmed2(
 		    W = data_cat[, covariates, drop = FALSE],
@@ -117,6 +118,6 @@ if(!is.null(times) & !is.null(assays)){
 	row.names(full_result_cat) <- NULL
 	colnames(full_result_cat) <- c("Time", "Assay", "Direct VE", "Indirect VE", "Prop. mediated")
 
-	saveRDS(full_result, file = here("output", "full_result.rds"))
-	saveRDS(full_result_cat, file = here("output", "full_result_cat.rds"))
+	saveRDS(full_result, file = here("cop_mediation", "output", "full_result.rds"))
+	saveRDS(full_result_cat, file = here("cop_mediation", "output", "full_result_cat.rds"))
 }

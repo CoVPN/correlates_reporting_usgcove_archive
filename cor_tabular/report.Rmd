@@ -1,18 +1,14 @@
 #  Summary Tables{#cor-tabular}
 
-```{r, echo=FALSE}
-print("running cor_tabular report ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-```
-
-
 \captionsetup{justification=raggedright,singlelinecheck=false}
 ```{r knitr, echo=FALSE, message=FALSE, warning=FALSE}
 library(knitr)
 library(kableExtra)
 library(dplyr)
 here::i_am("cor_tabular/report.Rmd")
-base::load(here::here( "cor_tabular", "output", "Tables.Rdata"))
+knitr::opts_knit$set(root.dir = here::here())
 
+base::load(here::here( "cor_tabular", "output", "Tables.Rdata"))
 ```
 \captionsetup[table]{labelformat=empty}
 ```{r tabs, results="asis", echo=FALSE, message=FALSE, warning=FALSE}

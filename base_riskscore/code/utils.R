@@ -253,7 +253,7 @@ drop_riskVars_with_fewer_0s_or_1s <- function(dat, risk_vars, np) {
 
   if(study_name_code == "COVE"){
     # delete the file drop_riskVars_with_fewer_0s_or_1s.csv
-    unlink(here("output", "drop_riskVars_with_fewer_0s_or_1s.csv"))
+    unlink(here("base_riskscore", "output", "drop_riskVars_with_fewer_0s_or_1s.csv"))
     # Remove binary risk variables with fewer than 10 ptids that have a 0 or 1 for that variable
     for (i in 1:length(risk_vars)) {
         if ((dat %>% select(matches(risk_vars[i])) %>% unique() %>% dim())[1] == 2) {
@@ -262,20 +262,20 @@ drop_riskVars_with_fewer_0s_or_1s <- function(dat, risk_vars, np) {
             print(paste0(risk_vars[i], " dropped from risk score analysis as it had fewer than 10 1's or 0's."))
             # Also print to file
             paste0(risk_vars[i], " dropped from risk score analysis as it had fewer than 10 1's or 0's.") %>%
-              write.table(file = here("output", "drop_riskVars_with_fewer_0s_or_1s.csv"), sep=",", append = TRUE, row.names = F, col.names = F)
+              write.table(file = here("base_riskscore", "output", "drop_riskVars_with_fewer_0s_or_1s.csv"), sep=",", append = TRUE, row.names = F, col.names = F)
           }
         }
       }
   }
   
-  if(study_name_code == "COVE" & !file.exists(here("output", "drop_riskVars_with_fewer_0s_or_1s.csv"))){
+  if(study_name_code == "COVE" & !file.exists(here("base_riskscore", "output", "drop_riskVars_with_fewer_0s_or_1s.csv"))){
     paste0("No binary input variable had fewer than 10 ptids with a 0 or 1 for that variable.") %>%
-      write.table(file = here("output", "drop_riskVars_with_fewer_0s_or_1s.csv"), sep=",", append = TRUE, row.names = F, col.names = F)
+      write.table(file = here("base_riskscore", "output", "drop_riskVars_with_fewer_0s_or_1s.csv"), sep=",", append = TRUE, row.names = F, col.names = F)
   }
   
   if(study_name_code == "ENSEMBLE"){
       # delete the file drop_riskVars_with_fewer_0s_or_1s.csv
-      unlink(here("output", "drop_riskVars_with_fewer_0s_or_1s.csv"))
+      unlink(here("base_riskscore", "output", "drop_riskVars_with_fewer_0s_or_1s.csv"))
       # Remove a variable if the number of cases in the variable = 1 subgroup is <= 3 or the number of cases in the variable = 0 subgroup is <= 3
       for (i in 1:length(risk_vars)) {
         if ((dat %>% select(matches(risk_vars[i])) %>% unique())[[1]] == c(0,1)) {
@@ -284,15 +284,15 @@ drop_riskVars_with_fewer_0s_or_1s <- function(dat, risk_vars, np) {
             print(paste0(risk_vars[i], " dropped from risk score analysis as the number of cases in the variable = 1 or 0 subgroup is <= 3."))
             # Also print to file
             paste0(risk_vars[i], " dropped from risk score analysis as the number of cases in the variable = 1 or 0 subgroup is <= 3.") %>%
-              write.table(file = here("output", "drop_riskVars_with_fewer_0s_or_1s.csv"), sep=",", append = TRUE, row.names = F, col.names = F)
+              write.table(file = here("base_riskscore", "output", "drop_riskVars_with_fewer_0s_or_1s.csv"), sep=",", append = TRUE, row.names = F, col.names = F)
           }
         }
       }
   }
   
-  if(study_name_code == "ENSEMBLE" & !file.exists(here("output", "drop_riskVars_with_fewer_0s_or_1s.csv"))){
+  if(study_name_code == "ENSEMBLE" & !file.exists(here("base_riskscore", "output", "drop_riskVars_with_fewer_0s_or_1s.csv"))){
     paste0("No binary input variable had number of cases in the variable = 1 or 0 subgroup <= 3") %>%
-      write.table(file = here("output", "drop_riskVars_with_fewer_0s_or_1s.csv"), sep=",", append = TRUE, row.names = F, col.names = F)
+      write.table(file = here("base_riskscore", "output", "drop_riskVars_with_fewer_0s_or_1s.csv"), sep=",", append = TRUE, row.names = F, col.names = F)
   }
   
   return(dat)
@@ -306,7 +306,7 @@ drop_riskVars_with_fewer_0s_or_1s <- function(dat, risk_vars, np) {
 # @return a data frame upon removal of any binary risk variables that have more than 5% values missing
 drop_riskVars_with_high_total_missing_values <- function(X, riskVars) {
   # delete the file drop_riskVars_with_high_total_missing_values.csv
-  unlink(here("output", "drop_riskVars_with_high_total_missing_values.csv"))
+  unlink(here("base_riskscore", "output", "drop_riskVars_with_high_total_missing_values.csv"))
   covars_highNAvalues <- vector()
   for (i in 1:length(riskVars)) {
     total_NAs <- sum(is.na(X %>% pull(riskVars[i])))
@@ -316,14 +316,14 @@ drop_riskVars_with_high_total_missing_values <- function(X, riskVars) {
       print(paste0("WARNING: ", riskVars[i], " variable has more than 5% values missing! This variable will be dropped from SuperLearner analysis."))
       # Also print to file
       paste0(riskVars[i], " variable has more than 5% values missing and was dropped from risk score analysis.") %>%
-        write.table(file = here("output", "drop_riskVars_with_high_total_missing_values.csv"), sep=",", append = TRUE, row.names = F, col.names = F)
+        write.table(file = here("base_riskscore", "output", "drop_riskVars_with_high_total_missing_values.csv"), sep=",", append = TRUE, row.names = F, col.names = F)
       covars_highNAvalues <- riskVars[i]
     }
   }
   
-  if(!file.exists(here("output", "drop_riskVars_with_high_total_missing_values.csv"))){
+  if(!file.exists(here("base_riskscore", "output", "drop_riskVars_with_high_total_missing_values.csv"))){
     paste0("No variables had more than 5% values missing.") %>%
-      write.table(file = here("output", "drop_riskVars_with_high_total_missing_values.csv"), sep=",", append = TRUE, row.names = F, col.names = F)
+      write.table(file = here("base_riskscore", "output", "drop_riskVars_with_high_total_missing_values.csv"), sep=",", append = TRUE, row.names = F, col.names = F)
   }
   
   if(length(covars_highNAvalues) == 0)
@@ -339,7 +339,7 @@ drop_riskVars_with_high_total_missing_values <- function(X, riskVars) {
 # @return a data frame updated with imputations for missing values of risk variables
 impute_missing_values <- function(X, riskVars) {
   # delete the file impute_missing_values.csv
-  unlink(here("output", "impute_missing_values.csv"))
+  unlink(here("base_riskscore", "output", "impute_missing_values.csv"))
   covars <- vector()
   # First identify risk demographic variables having missing values
   for (i in 1:length(riskVars)) {
@@ -363,12 +363,12 @@ impute_missing_values <- function(X, riskVars) {
     print("No missing values to impute in any risk variables!")
     # Also print to file
     paste("Imputing missing values in following variables: None") %>%
-      write.table(file = here("output", "impute_missing_values.csv"), sep=",", append = TRUE, row.names = F, col.names = F)
+      write.table(file = here("base_riskscore", "output", "impute_missing_values.csv"), sep=",", append = TRUE, row.names = F, col.names = F)
   } else {
     print(paste("Imputing missing values in following variables: ", paste(as.character(covars), collapse = ", ")))
     # Also print to file
     paste("Missing values were imputed for the following variables:", paste(as.character(covars), collapse = ", ")) %>%
-      write.table(file = here("output", "impute_missing_values.csv"), sep=",", append = TRUE, row.names = F, col.names = F)
+      write.table(file = here("base_riskscore", "output", "impute_missing_values.csv"), sep=",", append = TRUE, row.names = F, col.names = F)
     
     n.imp <- 1
 

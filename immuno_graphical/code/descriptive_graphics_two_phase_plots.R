@@ -1,7 +1,7 @@
 #Sys.setenv(TRIAL = "janssen_pooled_real")
 #-----------------------------------------------
 # obligatory to append to the top of each script
-here:i_am("immuno_graphical/code/descriptive_graphics_two_phase_plots.R")
+here::i_am("immuno_graphical/code/descriptive_graphics_two_phase_plots.R")
 renv::activate(project = here::here())
 # There is a bug on Windows that prevents renv from working properly. The following code provides a workaround:
 if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))

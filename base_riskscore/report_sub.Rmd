@@ -19,10 +19,55 @@ library(conflicted, quietly = T)
 conflicted::conflict_prefer("filter", "dplyr")
 conflict_prefer("summarise", "dplyr")
 load(here("base_riskscore", "output", "objects_for_running_SL.rda"))
+source(here("base_riskscore", "code", "study_specific_functions.R"))
+
+study_name_code <- studyName_for_report
+
+### create footnotes ###
+dropped.riskVars.fewer.0s1s <- read.table(here("base_riskscore", "output", "drop_riskVars_with_fewer_0s_or_1s.csv")) %>%
+  separate(V1, c("droppedVars"), sep = " ") %>%
+  .$droppedVars %>%
+  paste(collapse=", ") 
+
+if(dropped.riskVars.fewer.0s1s == "No"){
+  footnote1 <- "1. All binary input variables had >3 cases in the variable = 1 or 0 subgroup."
+  eval.footnote1.table = FALSE
+}else{
+  footnote1 <- paste0("1. Binary input variable/s ", paste(unlist(strsplit(dropped.riskVars.fewer.0s1s, ",")), collapse = ", "), " had <= 3 cases in the variable = 1 or 0 subgroup and dropped from analysis.")
+  eval.footnote1.table = TRUE
+}
+
+dropped.riskVars.high.NAs <- read.table(here("base_riskscore", "output", "drop_riskVars_with_high_total_missing_values.csv")) %>%
+  separate(V1, c("droppedVars"), sep = " ") %>%
+  .$droppedVars %>%
+  paste(collapse=", ") 
+
+if(dropped.riskVars.high.NAs == "No"){
+  footnote2 <- "2. No input variable had more than 5% missing values."
+  eval.footnote2.table = FALSE
+}else{
+  footnote2 <- paste0("2. ", dropped.riskVars.high.NAs, " had more than 5% missing values and dropped from analysis.")
+  eval.footnote2.table = TRUE
+}
+  
+vars.with.imputed.values <- read.table(here("base_riskscore", "output", "impute_missing_values.csv")) %>%
+  separate(V1, c("delete", "imputedVars"), sep = ": ") %>%
+  .$imputedVars %>%
+  paste(collapse=", ") 
+  
+if(vars.with.imputed.values == "None"){
+  footnote3 <- "3. No variable had less than 5% missing values to activate imputation."
+  eval.footnote3.table = FALSE
+}else{
+  footnote3 <- paste0("3. ", vars.with.imputed.values, " had less than 5% missing values. The missing values were imputed using the mice package in R.")
+  eval.footnote3.table = TRUE
+}
+
+#########################
 
 if(endpoint=="EventIndPrimaryD57")
   day = "Day 57"
-if(endpoint=="EventIndPrimaryD29")
+if(endpoint=="EventIndPrimaryIncludeNotMolecConfirmedD29")
   day = "Day 29"
 
 caption <- "Variables considered for risk score analysis."
@@ -39,17 +84,168 @@ tab <- read.csv(here("base_riskscore", "output", "risk_vars.csv"), row.names = 1
   column_spec(2, width = "8cm") %>%
   column_spec(4, width = "2cm") %>%
   kable_styling(latex_options = c("hold_position", "repeat_header"),
-                font_size = 9)
+                font_size = 8)
 
 if(studyName_for_report=="ENSEMBLE"){
   tab <- tab %>% 
-    footnote(c("Variables with more than 5% missing values were dropped from analysis; missing values for other variables were imputed.", 
-               "Indicator variables not meeting the threshold, such that under the null of not a risk factor there were less than 3 cases in the subgroup with value 1 (or 0), were dropped from analysis."),
+    footnote(c(footnote1,
+               footnote2,
+               footnote3),
              threeparttable = TRUE)
 }
 
 tab
+rm(tab)
   
+```
+
+
+
+\clearpage
+
+```{r footnote1-table, warning=FALSE, echo=FALSE, eval = eval.footnote1.table}
+caption <- "Binary input variable/s having <= 3 cases in the variable = 1 or 0 subgroup and dropped from analysis (sorted by number of cases in Variable = 1 subgroup)."
+
+tab1 <- inputFile %>%
+  filter(Riskscorecohortflag == 1 & Trt == 0) %>%
+  select(Ptid, Trt, all_of(endpoint), all_of(all_risk_vars)) %>%
+  drop_na(Ptid, Trt, all_of(endpoint))
+
+tab2 <- tab1 %>%
+  select(all_of(all_risk_vars)) %>%
+  map(~ sum(is.na(.))) %>%
+  as.data.frame() %>%
+  t() %>%
+  as.data.frame() %>%
+  tibble::rownames_to_column(var = "Variable Name") %>%
+  get_defs_comments_riskVars() 
+
+tab3 <- inputFile %>%
+  filter(Riskscorecohortflag == 1 & Trt == 0) %>%
+  drop_na(Ptid, Trt, all_of(endpoint)) %>%
+  #select(c(Ptid, strsplit(dropped.riskVars.fewer.0s1s, ", ")[[1]], all_of(endpoint))) %>%
+  select(c(Ptid, all_of(all_risk_vars), all_of(endpoint))) %>%
+  select(-c("Age", "BMI")) %>% # keep only binary variables
+  mutate(EventIndPrimaryIncludeNotMolecConfirmedD29 = ifelse(EventIndPrimaryIncludeNotMolecConfirmedD29 == 0, "Non-Case", "Case")) %>%
+  pivot_longer(!c(Ptid, all_of(endpoint)), names_to = "Variable Name", values_to = "value") 
+
+tab4 <- tab3 %>%
+  group_by(`Variable Name`, value) %>%
+  count() %>%
+  pivot_wider(names_from = "value", values_from = "n") %>%
+  rename(`Variable = 0 subgroup` = `0`,
+         `Variable = 1 subgroup` = `1`) 
+
+tab5 <- tab3 %>%
+  group_by(`Variable Name`, value, EventIndPrimaryIncludeNotMolecConfirmedD29) %>%
+  count() %>%
+  pivot_wider(names_from = "value", values_from = "n") %>%
+  filter(EventIndPrimaryIncludeNotMolecConfirmedD29 == "Case") %>%
+  mutate(`1` = ifelse(is.na(`1`), 0, `1`)) %>%
+  rename(`Cases in variable = 0 subgroup` = `0`,
+         `Cases in variable = 1 subgroup` = `1`) %>%
+  ungroup()
+  
+tab6 <- tab4 %>% left_join(tab5 %>% select(-EventIndPrimaryIncludeNotMolecConfirmedD29), by = "Variable Name") %>%
+  mutate(`Variable = 0 subgroup N (cases)` = paste0(`Variable = 0 subgroup`, " (", `Cases in variable = 0 subgroup`, ")"),
+         `Variable = 1 subgroup N (cases)` = paste0(`Variable = 1 subgroup`, " (", `Cases in variable = 1 subgroup`, ")")) %>%
+  left_join(tab2 %>% select(`Variable Name`, Definition), by = "Variable Name") %>%
+  arrange(desc(`Cases in variable = 1 subgroup`)) %>%
+  filter(`Cases in variable = 0 subgroup` <= 3 | `Cases in variable = 1 subgroup` <= 3) %>%
+  select(`Variable Name`, Definition, `Variable = 0 subgroup N (cases)`, `Variable = 1 subgroup N (cases)`)
+  
+tab6 %>% 
+  select(`Variable Name`, Definition, everything()) %>%
+  kable(escape = F,
+    booktabs = TRUE,
+    linesep = "",
+    caption = caption,
+    col.names = linebreak(c("Variable\nName", "Definition", "Variable = 0 subgroup \n N (cases)", "Variable = 1 subgroup \n N (cases)"), align = "c")
+  ) %>%
+  kable_styling(latex_options = c("hold_position"),
+                font_size = 8) %>%
+  column_spec(1:2, width = "5cm") %>%
+  column_spec(3:4, width = "3cm") %>%
+  row_spec(0,bold=TRUE) %>%
+  collapse_rows(columns = 1, valign = "top", latex_hline = "major") 
+
+rm(tab1, tab2, tab3, tab4, tab5, tab6)
+
+```
+
+
+
+
+```{r footnote2-table, warning=FALSE, echo=FALSE, eval = eval.footnote2.table}
+caption <- "Input variable/s dropped from analysis for having more than 5% missing values."
+
+dat <- inputFile %>%
+  filter(Riskscorecohortflag == 1 & Trt == 0) %>%
+  select(all_of(all_risk_vars)) 
+
+inputFile %>%
+  filter(Riskscorecohortflag == 1 & Trt == 0) %>%
+  map(~ sum(is.na(.))) %>%
+  as.data.frame() %>%
+  t() %>%
+  as.data.frame() %>%
+  tibble::rownames_to_column(var = "Variable Name") %>%
+  mutate(V1 = paste0(V1, "/", nrow(dat), " (", format(round((V1 / nrow(dat)) * 100, 1), nsmall = 1), "%)")) %>%
+  get_defs_comments_riskVars() %>%
+  filter(`Variable Name` %in% strsplit(dropped.riskVars.high.NAs, ", ")[[1]]) %>%
+  rename(`Total missing values` = V1) %>%
+  select(`Variable Name`, Definition, `Total missing values`, Comments) %>%
+  kable(
+    booktabs = TRUE,
+    linesep = "",
+    caption = caption
+  ) %>%
+  kable_styling(latex_options = c("hold_position"),
+                font_size = 8) %>%
+  column_spec(1:2, width = "5cm") %>%
+  row_spec(0,bold=TRUE) %>%
+  collapse_rows(columns = 1, valign = "top", latex_hline = "major")
+
+rm(dat)
+
+```
+
+
+
+
+```{r footnote3-table, warning=FALSE, echo=FALSE, eval = eval.footnote3.table}
+caption <- "Input variable/s having less than 5\\% missing values. The missing values were imputed using the mice package in R."
+
+dat <- inputFile %>%
+  filter(Riskscorecohortflag == 1 & Trt == 0) %>%
+  select(all_of(all_risk_vars)) 
+
+inputFile %>%
+  filter(Riskscorecohortflag == 1 & Trt == 0) %>%
+  map(~ sum(is.na(.))) %>%
+  as.data.frame() %>%
+  t() %>%
+  as.data.frame() %>%
+  tibble::rownames_to_column(var = "Variable Name") %>%
+  mutate(V1 = paste0(V1, "/", nrow(dat), " (", format(round((V1 / nrow(dat)) * 100, 1), nsmall = 1), "%)")) %>%
+  get_defs_comments_riskVars() %>%
+  filter(`Variable Name` %in% strsplit(vars.with.imputed.values, ", ")[[1]]) %>%
+  rename(`Total missing values` = V1) %>%
+  select(`Variable Name`, Definition, `Total missing values`, Comments) %>%
+  mutate(Comments = "NA") %>%
+  kable(
+    booktabs = TRUE,
+    linesep = "",
+    caption = caption
+  ) %>%
+  kable_styling(latex_options = c("hold_position"),
+                font_size = 8) %>%
+  column_spec(1:2, width = "5cm") %>%
+  row_spec(0,bold=TRUE) %>%
+  collapse_rows(columns = 1, valign = "top", latex_hline = "major")
+
+rm(dat)
+
 ```
 
 \clearpage
@@ -84,21 +280,21 @@ read.csv(here::here("base_riskscore", "output", "learner-screens.csv"),
 
 
 
-```{r, echo=FALSE, out.width="99%", out.height="120%", fig.cap= paste0("Cross-validated AUC (95\\% CI) of algorithms for predicting COVID-19 disease status starting 7 days after ", day, ".")}
+```{r, echo=FALSE, out.width="99%", out.height="120%", fig.cap= paste0("Cross-validated AUC (95\\% CI) of algorithms for predicting COVID-19 disease status starting 7 days after ", day, ". CV-AUCs were computed using only data from the placebo arm.")}
 knitr::include_graphics(here::here("base_riskscore", "figs", "risk_placebo_cvaucs.png"))
 ```
 
 \end{landscape}
 
 
-```{r, echo=FALSE, out.height="94%", fig.cap=paste0("CV-estimated predicted probabilities of COVID-19 disease 7 days after ", day, " by case/control status for top 2 learners, SuperLearner and Discrete SL.")}
+```{r, echo=FALSE, out.height="94%", fig.cap=paste0("CV-estimated predicted probabilities of COVID-19 disease 7 days after ", day, " by case/control status for top 2 learners, SuperLearner and Discrete SL. CV-estimated predicted probabilities were computed using only data from the placebo arm.")}
 knitr::include_graphics(here::here("base_riskscore", "figs", "predProb_riskscore_plac.png"))
 ```
 
 \clearpage
 
 
-```{r, echo=FALSE, out.width="95%", out.height="95%", fig.cap="ROC curves based off CV-estimated predicted probabilities for the top 2 learners, Superlearner and Discrete SL."}
+```{r, echo=FALSE, out.width="95%", out.height="95%", fig.cap="ROC curves based off CV-estimated predicted probabilities for the top 2 learners, Superlearner and Discrete SL. CV-estimated predicted probabilities were computed using only data from the placebo arm."}
 knitr::include_graphics(here::here("base_riskscore", "figs", "ROCcurve_riskscore_plac.png"))
 ```
 
@@ -122,10 +318,17 @@ read.csv(here("base_riskscore", "output", "SL_weights.csv"), row.names = 1,
 \clearpage
 
 ```{r SLtopmodels, warning=FALSE, echo=FALSE}
-caption <- "Predictors in learners assigned weight > 0.0 by Superlearner."
+caption <- "Learners assigned weight > 0.0 by Superlearner sorted by weight. Predictors within each learner are sorted by variable importance which is the absolute value in Coefficient (in case of learners like SL.glm, SL.gam, SL.glm.interaction), or Gain (in case of SL.xgboost) or Importance (in case of SL.ranger.imp)."
 
 read.csv(here("base_riskscore", "output", "SL_all_models_with_predictors.csv"),
          row.names = 1, header = TRUE) %>%
+  mutate(Gain = if("Gain" %in% colnames(.)) as.numeric(Gain) else NULL,
+        Importance = if("Importance" %in% colnames(.)) as.numeric(Importance) else NULL,
+        Coefficient = if("Coefficient" %in% colnames(.)) as.numeric(Coefficient) else NULL) %>%
+  arrange( if("Weight" %in% colnames(.)) desc(Weight) else NULL,
+           if("Gain" %in% colnames(.)) desc(abs(Gain)) else NULL,
+           if("Importance" %in% colnames(.)) desc(abs(Importance)) else NULL,
+           if("Coefficient" %in% colnames(.)) desc(abs(Coefficient)) else NULL) %>%
   filter(Weight > 0.0) %>%
   mutate(across(.cols = everything(), ~gsub(" ", "", ., fixed = TRUE))) %>%
   mutate(across(.cols = everything(), ~na_if(., "NA"))) %>%
@@ -139,6 +342,7 @@ read.csv(here("base_riskscore", "output", "SL_all_models_with_predictors.csv"),
   kable_styling(latex_options = c("hold_position", "repeat_header"),
                 font_size = 5) %>%
   row_spec(0,bold=TRUE)
+
 ```
 \end{landscape}
 

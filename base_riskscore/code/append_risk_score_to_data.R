@@ -11,7 +11,7 @@ source(here::here("..", "_common.R"))
 # load required libraries, cleaned data, and risk score estimates
 library(here)
 library(tidyverse)
-dat_cleaned <- read.csv(here("..", "data_clean", data_name)) %>% as_tibble()
+dat_cleaned <- read.csv(here("..", "data_clean", data_name)) %>% as_tibble() 
 placebos_risk <- read_csv(here("output", "placebo_ptids_with_riskscores.csv"))
 vaccinees_risk <- read_csv(here("output", "vaccine_ptids_with_riskscores.csv"))
 
@@ -30,7 +30,7 @@ if(study_name_code == "COVE"){
 }
 
 if(study_name_code == "ENSEMBLE"){
-  endpoint <- "EventIndPrimaryD29"
+  endpoint <- "EventIndPrimaryIncludeNotMolecConfirmedD29"
 }
 
 tab <- dat_with_riskscore %>%

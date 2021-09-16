@@ -30,8 +30,8 @@ config.cor <- config::get(config = COR)
 tpeak=as.integer(paste0(config.cor$tpeak))
 tpeaklag=as.integer(paste0(config.cor$tpeaklag))
 tfinal.tpeak=as.integer(paste0(config.cor$tfinal.tpeak))
-if (length(tpeak)==0) stop("config "%.%COR%.%" does not exist")
 myprint(tpeak, tpeaklag, tfinal.tpeak)
+if (length(tpeak)==0 | length(tpeaklag)==0 | length(tfinal.tpeak)==0) stop("config "%.%COR%.%" misses some fields")
 
 
 # path for figures and tables etc
@@ -95,7 +95,7 @@ print(paste0("reading data from ",data_name))
 
 
 ###################################################################################################
-# set up basic variables using config.cor
+# set up analysis-specific variables using config.cor
 dat.mock$wt=dat.mock[[config.cor$wt]]
 dat.mock$ph1=dat.mock[[config.cor$ph1]]
 dat.mock$ph2=dat.mock[[config.cor$ph2]]
@@ -144,8 +144,8 @@ dat.vac.seroneg$yy=dat.vac.seroneg[[config.cor$EventIndPrimary]]
 dat.pla.seroneg$yy=dat.pla.seroneg[[config.cor$EventIndPrimary]]
     
 
-# followup time for the last case
 if (tfinal.tpeak==0) {
+    # followup time for the last case
     tfinal.tpeak=max(dat.vac.seroneg[dat.vac.seroneg[[config.cor$EventIndPrimary]]==1, config.cor$EventTimePrimary])    
 }
 myprint(tfinal.tpeak)

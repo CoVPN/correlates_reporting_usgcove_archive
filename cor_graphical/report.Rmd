@@ -86,7 +86,7 @@ include_graphics(here("cor_graphical", "figs", paste0("RCDF_VE_Day57_trt_Vaccine
 ```
 
 \clearpage
-```{r, fig.cap = "Marker RCDF of D57 PsV-nAb ID80: vaccine arm", eval = (plot_ve_curves[1] == 1 & has57 ("pseudoneutid80" %in% assays))}
+```{r, fig.cap = "Marker RCDF of D57 PsV-nAb ID80: vaccine arm", eval = (plot_ve_curves[1] == 1 & has57 & ("pseudoneutid80" %in% assays))}
 include_graphics(here("cor_graphical", "figs", paste0("RCDF_VE_Day57_trt_Vaccine_BaselineNeg_pseudoneutid80_", study_name, ".png")))
 ```
 

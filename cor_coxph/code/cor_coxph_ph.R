@@ -17,7 +17,7 @@ nevents=sum(dat.vac.seroneg$yy==1)
 
 # make pretty table
 fits=fits[1:length(assays)] # for now, we don't need the delta (multitesting adjustment results are affected)
-rows=1+p.cov
+rows=length(coef(fits[[1]]))
 est=getFormattedSummary(fits, exp=T, robust=T, rows=rows, type=1)
 ci= getFormattedSummary(fits, exp=T, robust=T, rows=rows, type=13)
 p=  getFormattedSummary(fits, exp=T, robust=T, rows=rows, type=10)
@@ -47,7 +47,7 @@ for (a in c("Day"%.%tpeak%.%assays, "Delta"%.%tpeak%.%"overB"%.%assays)) {
 }
 
 fits.tri=fits.tri[1:length(assays)]
-rows=1:2+p.cov
+rows=length(coef(fits.tri[[1]]))-1:0
 # get generalized Wald p values
 overall.p.tri=sapply(fits.tri, function(fit) {
     if (length(fit)==1) NA else {

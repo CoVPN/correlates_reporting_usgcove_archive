@@ -1,4 +1,4 @@
-#Sys.setenv(TRIAL = "janssen_pooled_mock") # moderna_mock  janssen_pooled_real  janssen_pooled_mock  janssen_na_mock
+#Sys.setenv(TRIAL = "janssen_na_mock") # moderna_mock  janssen_pooled_real  janssen_pooled_mock  janssen_na_mock
 #Sys.setenv(VERBOSE = 1) 
 renv::activate(project = here::here(".."))    
     # There is a bug on Windows that prevents renv from working properly. The following code provides a workaround:
@@ -154,29 +154,12 @@ write(tfinal.tpeak, file=paste0(save.results.to, "timepoints_cum_risk_"%.%study_
     
 # formulae
 form.s = as.formula(paste0("Surv(", config.cor$EventTimePrimary, ", ", config.cor$EventIndPrimary, ") ~ 1"))
-if (study_name_code=="COVE") {
-    if (endsWith(data_name, "riskscore.csv")) {
-        form.0 = update (form.s, ~.+ MinorityInd + HighRiskInd + risk_score)
-    } else {
-        form.0 = update (form.s, ~.+ MinorityInd + HighRiskInd + Age) 
-    }
-    # covariate length without markers
-    p.cov=3
-} else if (study_name_code=="ENSEMBLE") {
-    if (endsWith(data_name, "riskscore.csv")) {
-        form.0 = update (form.s, ~.+ risk_score + as.factor(Region))
-    } else {
-        form.0 = update (form.s, ~.+ Age + as.factor(Region)) 
-    }
-    # covariate length without markers
-    p.cov=3
-    
-    if (subset_variable!="None") {
-        form.0 = update (form.0, ~.- as.factor(Region))
-        p.cov=1
-    }
+if (endsWith(data_name, "riskscore.csv")) {
+    form.0 = update (form.s, as.formula(config$covariates_riskscore))
+} else {
+    form.0 = update (form.s, as.formula(config$covariates_norisksco)) 
 }
-
+print(form.0)
 
 
 ###################################################################################################

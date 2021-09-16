@@ -45,6 +45,7 @@ run_threshold_analysis <- function(marker, direction = "above") {
     print(form)
     require("doFuture")
     registerDoFuture()
+    plan(multisession, workers = future::availableCores() - 1L) 
     ngrid_A <- 20
     lrnr_N <- Lrnr_hal9001_custom$new(max_degree = 2, smoothness_orders = 1, num_knots = c(10,3), reduce_basis =1e-3, formula_hal = form, fit_control = list(n_folds = 8, parallel = TRUE))
     lrnr_C <- Lrnr_hal9001_custom$new(max_degree = 2, smoothness_orders = 1, num_knots = c(9,2), reduce_basis=1e-3,  formula_hal = form, fit_control = list(n_folds = 8, parallel = TRUE))

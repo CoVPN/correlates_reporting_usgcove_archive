@@ -1,7 +1,7 @@
 # marginalized risk without marker
 get.marginalized.risk.no.marker=function(dat){
     fit.risk = coxph(form.0, dat, model=T) # model=T is required because the type of prediction requires it, see Note on ?predict.coxph
-    dat[[config.cor$EventTimePrimary]]=t0
+    dat[[config.cor$EventTimePrimary]]=tfinal.tpeak
     risks = 1 - exp(-predict(fit.risk, newdata=dat, type="expected"))
     mean(risks)
 }
@@ -13,7 +13,7 @@ get.marginalized.risk.no.marker=function(dat){
 #prevs=sapply (c(placebo=0, vaccine=1), function(i) {
 #    dat.tmp=subset(dat.mock, Trt==i & Bserostatus==0 & ph1)
 #    fit.tmp = coxph(form.0, dat.tmp, model=T) # model=T to make predict possible
-#    dat.tmp[[config.cor$EventTimePrimary]]=t0
+#    dat.tmp[[config.cor$EventTimePrimary]]=tfinal.tpeak
 #    pred.tmp=predict(fit.tmp, newdata=dat.tmp, type="expected", se.fit=T)    
 #    sd.tmp=exp(mean(log(pred.tmp$se.fit)))
 #    prev=c(est=NA, "2.5%"=NA, "97.5%"=NA)

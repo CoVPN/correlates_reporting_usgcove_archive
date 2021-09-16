@@ -27,10 +27,12 @@ COR=Args[1]; myprint(COR)
 
 # COR has a set of analysis-specific parameters defined in the config file
 config.cor <- config::get(config = COR)
-tpeak=paste0(config.cor$tpeak)
-tpeaklag=paste0(config.cor$tpeaklag)
-tfinal.tpeak=paste0(config.cor$tfinal.tpeak)
+tpeak=as.integer(paste0(config.cor$tpeak))
+tpeaklag=as.integer(paste0(config.cor$tpeaklag))
+tfinal.tpeak=as.integer(paste0(config.cor$tfinal.tpeak))
 if (length(tpeak)==0) stop("config "%.%COR%.%" does not exist")
+myprint(tpeak, tpeaklag, tfinal.tpeak)
+
 
 # path for figures and tables etc
 save.results.to = here::here("output")
@@ -100,7 +102,7 @@ dat.mock$ph2=dat.mock[[config.cor$ph2]]
 dat.mock$EventIndPrimary =dat.mock[[config.cor$EventIndPrimary]]
 dat.mock$EventTimePrimary=dat.mock[[config.cor$EventTimePrimary]]
     
-# B=1e3 and numPerm=1e4 take 10 min to run with 30 CPUS for D57 CoR
+# B=1e3 and numPerm=1e4 take 10 min to run with 30 CPUS for one analysis
 B <-       config$num_boot_replicates 
 numPerm <- config$num_perm_replicates # number permutation replicates 1e4
 myprint(B)
@@ -143,9 +145,11 @@ dat.pla.seroneg$yy=dat.pla.seroneg[[config.cor$EventIndPrimary]]
     
 
 # followup time for the last case
-t0=max(dat.vac.seroneg[dat.vac.seroneg[[config.cor$EventIndPrimary]]==1, config.cor$EventTimePrimary])
-myprint(t0)
-write(t0, file=paste0(save.results.to, "timepoints_cum_risk_"%.%study_name))
+if (tfinal.tpeak==0) {
+    tfinal.tpeak=max(dat.vac.seroneg[dat.vac.seroneg[[config.cor$EventIndPrimary]]==1, config.cor$EventTimePrimary])    
+}
+myprint(tfinal.tpeak)
+write(tfinal.tpeak, file=paste0(save.results.to, "timepoints_cum_risk_"%.%study_name))
 
     
 # formulae

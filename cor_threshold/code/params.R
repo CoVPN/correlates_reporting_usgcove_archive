@@ -35,6 +35,7 @@ if(has57){
 # Right-censoring is taken into account for  this analysis.
 covariate_adjusted <- TRUE #### Estimate threshold-response function with covariate adjustment
 fast_analysis <- FALSE ### Perform a fast analysis using glmnet at cost of accuracy
+super_fast_analysis <- FALSE
 include_interactions <- TRUE #  NO LONGER ACTIVE #### Include algorithms that model interactions between covariates. NO LONGER ACTIVE
 threshold_grid_size <- 30 ### Number of thresholds to estimate (equally spaced in quantiles). Should be 15 at least for the plots of the threshold-response and its inverse to be representative of the true functions.
 adjust_for_censoring <- FALSE #  NO LONGER ACTIVE # For now, set to FALSE. If set to TRUE, make sure you set tf well before we lose too many people to "end of study"

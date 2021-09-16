@@ -1,6 +1,5 @@
-# Average follow-up of vaccine recipients starting at 7 days post Day 29 visit
-tmp=round(mean(subset(dat.mock, Trt==1 & Bserostatus==0 & ph1, EventTimePrimary, drop=T), na.rm=T)-7)
-write(tmp, file=paste0(save.results.to, "avg_followup_"%.%study_name))
+# Average follow-up of vaccine recipients starting at tpeaklag days post visit
+write(round(mean(subset(dat.mock, Trt==1 & Bserostatus==0 & ph1, EventTimePrimary, drop=T), na.rm=T)-tpeaklag), file=paste0(save.results.to, "avg_followup_"%.%study_name))
 
 
 

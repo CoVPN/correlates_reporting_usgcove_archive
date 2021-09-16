@@ -53,7 +53,7 @@ for (w.wo.plac in 1:2) { # 1 with placebo lines, 2 without placebo lines. Implem
         ncases=sapply(risks$marker, function(s) sum(dat.vac.seroneg$yy[dat.vac.seroneg[["Day"%.%tpeak%.%a]]>=s], na.rm=T))
         
         plot(prob~marker, risks, xlab=labels.assays.short[a]%.%ifelse(eq.geq==1," (=s)"," (>=s)"), xlim=xlim, 
-            ylab=paste0("Probability* of COVID-19 by Day ", t0), lwd=lwd, ylim=ylim, type="n", main=paste0(labels.assays.long["Day"%.%tpeak,a]), xaxt="n")
+            ylab=paste0("Probability* of COVID-19 by Day ", tfinal.tpeak), lwd=lwd, ylim=ylim, type="n", main=paste0(labels.assays.long["Day"%.%tpeak,a]), xaxt="n")
     
         draw.x.axis.cor(xlim, llods[a])
     
@@ -118,7 +118,7 @@ out=lapply (assays, function(a) {
 })
 tab=do.call(cbind, out)
 mytex(tab, file.name=paste0("marginalized_risks_eq", "_"%.%study_name), align="c", include.colnames = T, save2input.only=T, input.foldername=save.results.to, include.rownames = F,
-    longtable=T, caption.placement = "top", label=paste0("tab marginalized_risks_eq ", COR), caption=paste0("Marginalized cumulative risk by Day ",t0," as functions of Day ",
+    longtable=T, caption.placement = "top", label=paste0("tab marginalized_risks_eq ", COR), caption=paste0("Marginalized cumulative risk by Day ",tfinal.tpeak," as functions of Day ",
         tpeak," markers (=s) among baseline negative vaccine recipients with 95\\% bootstrap point-wise confidence intervals (",
         ncol(risks.all[[1]]$boot)," replicates)."),
     col.headers=paste0("\\hline\n", concatList(paste0("\\multicolumn{2}{c}{", labels.axis[1,], "}"), "&"), "\\\\\n"))
@@ -164,7 +164,7 @@ mypdf(onefile=F, file=paste0(save.results.to, "controlled_ve_curves",ifelse(eq.g
         ret=cbind("s"=tmp, "Estimate"=paste0(formatDouble(est[pick.out],digits.risk), " (", formatDouble(ci.band[1,pick.out],digits.risk), ",", formatDouble(ci.band[2,pick.out],digits.risk), ")"))
 
         mymatplot(risks$marker[.subset], t(rbind(est, ci.band))[.subset,], type="l", lty=c(1,2,2), col=ifelse(eq.geq==1,"red","white"), lwd=lwd, make.legend=F, 
-            ylab=paste0("Controlled VE against COVID-19 by Day ",t0), 
+            ylab=paste0("Controlled VE against COVID-19 by Day ",tfinal.tpeak), 
             main=paste0(labels.assays.long["Day"%.%tpeak,a]),
             xlab=labels.assays.short[a]%.%ifelse(eq.geq==1 | eq.geq==3," (=s)"," (>=s)"), 
             ylim=ylim, xlim=xlim, yaxt="n", xaxt="n", draw.x.axis=F)
@@ -245,7 +245,7 @@ tab=do.call(cbind, out)
 mytex(tab, file.name=paste0("controlled_ve_eq", "_"%.%study_name), align="c", include.colnames = T, save2input.only=T, input.foldername=save.results.to, include.rownames = F,
     longtable=T, caption.placement = "top", label=paste0("tab controlled_ve_eq ", COR), caption=paste0("Controlled VE as functions of Day ",
         tpeak," markers (=s) among baseline negative vaccine recipients with 95\\% bootstrap point-wise confidence intervals (",
-        ncol(risks.all[[1]]$boot)," replicates).", "Overall cumulative incidence from ", ifelse(endsWith(COR,"start1"),1,7), " to ",t0," days post Day ",tpeak," was ",
+        ncol(risks.all[[1]]$boot)," replicates).", "Overall cumulative incidence from ", tpeaklag, " to ",tfinal.tpeak," days post Day ",tpeak," was ",
         formatDouble(prev.vacc[1], 3, remove.leading0=F)," in vaccine recipients compared to ",
         formatDouble(prev.plac[1], 3, remove.leading0=F)," in placebo recipients, with cumulative vaccine efficacy ",
         formatDouble(overall.ve[1]*100,1),"\\% (95\\% CI ",formatDouble(overall.ve[2]*100,1)," to ",formatDouble(overall.ve[3]*100,1),"\\%)."),
@@ -302,7 +302,7 @@ time.0= dat.pla.seroneg[[config.cor$EventTimePrimary]]
     
 lwd=2
 ylim=c(0,max(risk.0))
-x.time<-seq(0,t0,by=30); if(t0-last(x.time)>15) x.time=c(x.time, t0) else x.time[length(x.time)]=t0
+x.time<-seq(0,tfinal.tpeak,by=30); if(tfinal.tpeak-last(x.time)>15) x.time=c(x.time, tfinal.tpeak) else x.time[length(x.time)]=tfinal.tpeak
 #
 if(.mfrow[1]==1)  height=7.5/2*1.5 else height=7.5/2*.mfrow[1]*1.3
 mypdf(oma=c(1,0,0,0), onefile=F, file=paste0(save.results.to, "marginalized_risks_cat_", study_name), mfrow=.mfrow, width=9.1, height = height*1.1, mar=c(12,4,5,2))
@@ -315,7 +315,7 @@ for (a in assays) {
     q.a=marker.cutpoints[[a]][["Day"%.%tpeak]]
     
     if(length(out)==1) empty.plot() else {
-        mymatplot(out$time, out$risk, lty=1:3, col=c("green3","green","darkgreen"), type="l", lwd=lwd, make.legend=F, ylab="Probability* of COVID-19 by Day "%.%t0, ylim=ylim, xlab="", las=1, xlim=c(0,t0), at=x.time, xaxt="n")
+        mymatplot(out$time, out$risk, lty=1:3, col=c("green3","green","darkgreen"), type="l", lwd=lwd, make.legend=F, ylab="Probability* of COVID-19 by Day "%.%tfinal.tpeak, ylim=ylim, xlab="", las=1, xlim=c(0,tfinal.tpeak), at=x.time, xaxt="n")
         title(xlab="Days Since Day "%.%tpeak%.%" Visit", line=2)
         title(main=labels.title["Day"%.%tpeak,a], cex.main=.9, line=2)
         mtext(bquote(cutpoints: list(.(formatDouble(10^q.a[1]/10^floor(q.a[1]),1)) %*% 10^ .(floor(q.a[1])), .(formatDouble(10^q.a[2]/10^floor(q.a[2]),1)) %*% 10^ .(floor(q.a[2])))), line= .25, cex=.8)   
@@ -343,7 +343,7 @@ for (a in assays) {
     cum.P <- round(cumsum(tmp$n.event))    
     
     cex.text <- 0.7
-    at.label=-t0/6
+    at.label=-tfinal.tpeak/6
     
     mtext(expression(bold("No. at risk")),side=1,outer=FALSE,line=2.5,at=-2,adj=0,cex=cex.text)
     mtext(paste0("Low:"),side=1,outer=F,line=3.4,at=at.label,adj=0,cex=cex.text);  mtext(n.risk.L,side=1,outer=FALSE,line=3.4,at=x.time,cex=cex.text)

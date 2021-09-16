@@ -14,6 +14,8 @@ moderna_real: &moderna_real
   data_in_file: real_moderna_data.csv # Weiping can set
   study_name: COVE
   study_name_code: COVE
+  num_boot_replicates: 1000
+  num_perm_replicates: 10000
 
 moderna_mock: &moderna_mock
   <<: *trial
@@ -21,6 +23,8 @@ moderna_mock: &moderna_mock
   data_in_file: COVID_VEtrial_practicedata_primarystage1.csv
   study_name: MockCOVE
   study_name_code: COVE
+  num_boot_replicates: 10
+  num_perm_replicates: 10
 
 
 
@@ -30,6 +34,8 @@ twomarkers: &twomarkers
   data_in_file: COVID_VEtrial_practicedata_primarystage1.csv
   study_name: TWOMARKERS
   study_name_code: TWOMARKERS
+  num_boot_replicates: 10
+  num_perm_replicates: 10
 
 
 
@@ -41,6 +47,8 @@ janssen_trial_real: &janssen_trial_real
   study_name: ENSEMBLE
   study_name_code: ENSEMBLE
   assays: [bindSpike, bindRBD]
+  num_boot_replicates: 1000
+  num_perm_replicates: 10000
 
 janssen_pooled_real: 
   <<: *janssen_trial_real
@@ -69,6 +77,8 @@ janssen_trial_mock: &janssen_trial_mock
   study_name: MockENSEMBLE
   study_name_code: ENSEMBLE
   assays: [bindSpike, bindRBD]
+  num_boot_replicates: 10
+  num_perm_replicates: 10
 
 janssen_pooled_mock:
   <<: *janssen_trial_mock
@@ -102,6 +112,8 @@ D57:
   EventIndPrimary: EventIndPrimaryD57   
   EventTimePrimary: EventTimePrimaryD57   
   tpeak: 57
+  tpeaklag: 7
+  tfinal.tpeak: 0
 
 # primary endpoint D29 markers
 D29:
@@ -111,6 +123,8 @@ D29:
   EventIndPrimary: EventIndPrimaryD29  
   EventTimePrimary: EventTimePrimaryD29
   tpeak: 29
+  tpeaklag: 7
+  tfinal.tpeak: 0
 
 # sensitivity analyses for D29 markers, starting at 1, instead of 7, day after D29 visit
 D29start1:
@@ -120,6 +134,8 @@ D29start1:
   EventIndPrimary: EventIndPrimaryD29  
   EventTimePrimary: EventTimePrimaryD29
   tpeak: 29
+  tpeaklag: 1
+  tfinal.tpeak: 0
   
 # primary endpoint D200 markers
 D200:
@@ -129,6 +145,8 @@ D200:
   EventIndPrimary: EventIndPrimaryD200  
   EventTimePrimary: EventTimePrimaryD200
   tpeak: 200
+  tpeaklag: 7
+  tfinal.tpeak: 0
 
 # primary endpoint D100 markers
 D100:
@@ -138,5 +156,7 @@ D100:
   EventIndPrimary: EventIndPrimaryD100
   EventTimePrimary: EventTimePrimaryD100
   tpeak: 100
+  tpeaklag: 7
+  tfinal.tpeak: 0
 
   

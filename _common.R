@@ -334,15 +334,13 @@ ggsave_custom <- function(filename = default_name(plot),
 
 
 
-get.range.cor=function(dat, assay=c("bindSpike", "bindRBD", "pseudoneutid50", "pseudoneutid80"), time=c("57","29")) {
+get.range.cor=function(dat, assay=c("bindSpike", "bindRBD", "pseudoneutid50", "pseudoneutid80"), time) {
     assay<-match.arg(assay)
-    a <- assay # Fixes bug
-    time<-match.arg(time)        
     if(assay %in% c("bindSpike", "bindRBD")) {
         ret=range(dat[["Day"%.%time%.%"bindSpike"]], dat[["Day"%.%time%.%"bindRBD"]], log10(llods[c("bindSpike","bindRBD")]/2), na.rm=T)
         ret[2]=ceiling(ret[2]) # round up
     } else if(assay %in% c("pseudoneutid50", "pseudoneutid80")) {
-        ret=range(dat[["Day"%.%time%.%a]], log10(llods[c("pseudoneutid50","pseudoneutid80")]/2), log10(uloqs[c("pseudoneutid50","pseudoneutid80")]), na.rm=T)
+        ret=range(dat[["Day"%.%time%.%assay]], log10(llods[c("pseudoneutid50","pseudoneutid80")]/2), log10(uloqs[c("pseudoneutid50","pseudoneutid80")]), na.rm=T)
         ret[2]=ceiling(ret[2]) # round up
     }  
     delta=(ret[2]-ret[1])/20     

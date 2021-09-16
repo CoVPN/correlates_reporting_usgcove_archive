@@ -78,15 +78,15 @@ jobs:
       script:
         - echo "Building risk score report"
         - make risk_report
-    # - name: Janssen Pooled Correlates Report
-    #   env:
-    #     - REPORT_TYPE=COR
-    #     - TRIAL=janssen_pooled_mock
-    #   script:
-    #     - echo "Building correlates of risk report"
-    #     - make data_processed
-    #     - make risk_report
-    #     - make cor_report
+    - name: Janssen Pooled Correlates Report
+      env:
+        - REPORT_TYPE=COR
+        - TRIAL=janssen_pooled_mock
+      script:
+        - echo "Building correlates of risk report"
+        - make data_processed
+        - make risk_report
+        - make cor_report
 
 apt_packages:
   - libxml2-dev

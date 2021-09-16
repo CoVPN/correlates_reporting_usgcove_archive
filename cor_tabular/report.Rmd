@@ -1,4 +1,10 @@
 #  Summary Tables{#cor-tabular}
+
+```{r, echo=FALSE}
+print("running cor_tabular report ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+```
+
+
 \captionsetup{justification=raggedright,singlelinecheck=false}
 ```{r knitr, echo=FALSE, message=FALSE, warning=FALSE}
 library(knitr)

@@ -114,6 +114,13 @@
       "Repository": "CRAN",
       "Hash": "40a55bd0b44719941d103291ac5e9d74"
     },
+    "OpenMPController": {
+      "Package": "OpenMPController",
+      "Version": "0.2-5",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "26dc8a1d8693b6d0b7f2f7b410adf4f1"
+    },
     "PResiduals": {
       "Package": "PResiduals",
       "Version": "1.0-0",
@@ -955,8 +962,8 @@
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
-      "RemoteUsername": "tlverse",
       "RemoteRepo": "hal9001",
+      "RemoteUsername": "tlverse",
       "RemoteRef": "devel",
       "RemoteSha": "14b16305ca29cc758fdde5f40603b5a674d76afa",
       "Hash": "ba7be3ec26629d5cf3f64e742863fe8f"
@@ -966,12 +973,12 @@
       "Version": "0.1.5",
       "Source": "GitHub",
       "RemoteType": "github",
+      "Remotes": "github::tlverse/hal9001@devel",
       "RemoteHost": "api.github.com",
-      "RemoteUsername": "nhejazi",
       "RemoteRepo": "haldensify",
+      "RemoteUsername": "nhejazi",
       "RemoteRef": "master",
       "RemoteSha": "16350cc39b68e61566f03a11f633e08073405355",
-      "Remotes": "github::tlverse/hal9001@devel",
       "Hash": "47c34f41535fb9c16bd44e760d61cb67"
     },
     "hardhat": {

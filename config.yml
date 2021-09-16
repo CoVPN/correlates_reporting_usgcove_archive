@@ -8,21 +8,26 @@ trial: &trial
   assays: [bindSpike, bindRBD, pseudoneutid50, pseudoneutid80]
   times: [B, Day29, Day57, Delta29overB, Delta57overB, Delta57over29]
 
-moderna_real: &moderna_real
+
+
+moderna_trial: &moderna_trial
   <<: *trial
   data_raw_dir: moderna
+  study_name: COVE
+  covariates_riskscore: ~.+ MinorityInd + HighRiskInd + risk_score
+  covariates_norisksco: ~.+ MinorityInd + HighRiskInd + age
+
+moderna_real: &moderna_real
+  <<: *moderna_trial
   data_in_file: real_moderna_data.csv # Weiping can set
   study_name: COVE
-  study_name_code: COVE
   num_boot_replicates: 1000
   num_perm_replicates: 10000
 
 moderna_mock: &moderna_mock
-  <<: *trial
-  data_raw_dir: moderna
+  <<: *moderna_trial
   data_in_file: COVID_VEtrial_practicedata_primarystage1.csv
   study_name: MockCOVE
-  study_name_code: COVE
   num_boot_replicates: 10
   num_perm_replicates: 10
 

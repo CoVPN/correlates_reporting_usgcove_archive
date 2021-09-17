@@ -16,7 +16,7 @@ blas_set_num_threads(1)
 stopifnot(blas_get_num_procs()==1)
 
 #openMP
-library(OpenMPController)
+#library(OpenMPController)
 omp_set_num_threads(1)
 
 

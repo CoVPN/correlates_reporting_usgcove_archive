@@ -1,7 +1,7 @@
 #Sys.setenv(TRIAL = "janssen_pooled_real")
 #-----------------------------------------------
 # obligatory to append to the top of each script
-here::i_am("cor_graphical/cod/cor_data_preprocess.R")
+here::i_am("cor_graphical/code/cor_data_preprocess.R")
 renv::activate(project = here::here())
 source(here::here("_common.R"))
 #-----------------------------------------------

@@ -29,6 +29,9 @@ style:
 	Rscript -e "styler::style_file('report.Rmd')"
 	Rscript -e "styler::style_dir('code')"
 
+## report        : create a standalone report
+report:
+
 # type 'make help' to show all make commands
 help: Makefile
 	@sed -n 's/^##//p' $<

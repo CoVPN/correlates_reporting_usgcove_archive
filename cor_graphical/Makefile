@@ -20,6 +20,9 @@ fig_code: code/cor_graphics_violin_scatter.R \
 clean:
 	rm -f data_clean/* && rm -f output/*
 
+## report        : create a standalone report
+report:
+
 # type 'make help' to show all make commands
 help: Makefile
 	@sed -n 's/^##//p' $<

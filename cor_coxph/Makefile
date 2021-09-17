@@ -20,13 +20,6 @@ endif
 report:
 	Rscript -e "rmarkdown::render('cor_coxph_report.Rmd', output_file='cor_coxph_report_$(TRIAL).pdf')"
 
-# turn down number of bootstraps and permutations in CoR for faster builds
-before_script:
-	echo "B <- 100" >> code/params.R
-	echo "numPerm <- 50" >> code/params.R
-
-test: before_script cor_coxph report
-
 
 # type 'make help' to show all make commands
 help: Makefile

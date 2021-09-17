@@ -1,6 +1,8 @@
 ## all              : run threshold analysis and get plots
 all: clean params data threshold plot
 
+allbutclean: params data threshold plot
+
 ## threshold        : run threshold analysis 
 threshold: code/Run_Threshold_analysis.R \
   params  

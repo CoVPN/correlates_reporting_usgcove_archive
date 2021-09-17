@@ -1,11 +1,6 @@
-# Average follow-up of vaccine recipients starting at tpeaklag days post visit
-write(round(mean(subset(dat.mock, Trt==1 & Bserostatus==0 & ph1, EventTimePrimary, drop=T), na.rm=T)-tpeaklag), file=paste0(save.results.to, "avg_followup_"%.%study_name))
-
-
-
 #Median and IQR and range of days from dose 1 to Day 29 visit, and from dose 1 to Day 57 visit (requested by Lindsey B).  
 #subsetting by (a) the whole immunogenicity subcohort, (2) non-cases in the immunogenicity subcohort, (3) intercurrent cases, (4) primary cases.
-if (study_name_code=="COVE") {
+if (study_name=="COVE" | study_name=="MockCOVE") {
         
     # D1 to tpeak
     tab=sapply(1:4, function (i) {
@@ -25,7 +20,7 @@ if (study_name_code=="COVE") {
 
     
 
-if (study_name_code=="COVE" & tpeak=="57") {
+if ((study_name=="COVE" | study_name=="MockCOVE") & tpeak=="57") {
 
     # Number of breakthrough vaccine cases with Day 57 ID80 > 660 IU
     res=nrow(subset(dat.mock, Trt==1 & Bserostatus==0 & ph1 & EventIndPrimary & Day57pseudoneutid80>log10(660)))

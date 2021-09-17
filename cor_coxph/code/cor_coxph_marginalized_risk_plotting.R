@@ -150,7 +150,7 @@ mypdf(onefile=F, file=paste0(save.results.to, "controlled_ve_curves",ifelse(eq.g
         Bias=controlled.risk.bias.factor(ss=risks$marker, s.cent=s.ref, s1=risks$marker[s1], s2=risks$marker[s2], RRud) 
         if (is.nan(Bias[1])) Bias=rep(1,length(Bias))
     
-        ylim=if(eq.geq==1 | eq.geq==3) c(0, 1) else c(ifelse(study_name_code=="COVE", 0.8, 0.5), 1)
+        ylim=if(eq.geq==1 | eq.geq==3) c(0, 1) else c(ifelse(study_name=="COVE" | study_name=="MockCOVE", 0.8, 0.5), 1)
         
         ncases=sapply(risks$marker, function(s) sum(dat.vac.seroneg$yy[dat.vac.seroneg[["Day"%.%tpeak%.%a]]>=s], na.rm=T))        
         .subset=if(eq.geq==1 | eq.geq==3) rep(T, length(risks$marker)) else ncases>=5

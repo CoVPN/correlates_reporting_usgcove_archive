@@ -205,11 +205,11 @@ if (np <= 30) {
   V_inner <- 5
 }
 
-## solve cores issue
-#blas_get_num_procs()
-blas_set_num_threads(1)
-#print(blas_get_num_procs())
-stopifnot(blas_get_num_procs() == 1)
+### solve cores issue
+##blas_get_num_procs()
+#blas_set_num_threads(1)
+##print(blas_get_num_procs())
+#stopifnot(blas_get_num_procs() == 1)
 
 
 # run super learner ensemble

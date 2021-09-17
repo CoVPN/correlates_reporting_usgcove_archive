@@ -1,4 +1,4 @@
-#Sys.setenv(TRIAL = "janssen_pooled_mock") # moderna_mock  janssen_pooled_real  janssen_pooled_mock  janssen_na_mock
+#Sys.setenv(TRIAL = "janssen_na_mock") # moderna_mock  janssen_pooled_real  janssen_pooled_mock  janssen_na_mock
 #Sys.setenv(VERBOSE = 1) 
 renv::activate(project = here::here(".."))    
     # There is a bug on Windows that prevents renv from working properly. The following code provides a workaround:
@@ -30,8 +30,8 @@ config.cor <- config::get(config = COR)
 tpeak=as.integer(paste0(config.cor$tpeak))
 tpeaklag=as.integer(paste0(config.cor$tpeaklag))
 tfinal.tpeak=as.integer(paste0(config.cor$tfinal.tpeak))
-if (length(tpeak)==0) stop("config "%.%COR%.%" does not exist")
 myprint(tpeak, tpeaklag, tfinal.tpeak)
+if (length(tpeak)==0 | length(tpeaklag)==0 | length(tfinal.tpeak)==0) stop("config "%.%COR%.%" misses some fields")
 
 
 # path for figures and tables etc
@@ -95,7 +95,7 @@ print(paste0("reading data from ",data_name))
 
 
 ###################################################################################################
-# set up basic variables using config.cor
+# set up analysis-specific variables using config.cor
 dat.mock$wt=dat.mock[[config.cor$wt]]
 dat.mock$ph1=dat.mock[[config.cor$ph1]]
 dat.mock$ph2=dat.mock[[config.cor$ph2]]
@@ -144,8 +144,8 @@ dat.vac.seroneg$yy=dat.vac.seroneg[[config.cor$EventIndPrimary]]
 dat.pla.seroneg$yy=dat.pla.seroneg[[config.cor$EventIndPrimary]]
     
 
-# followup time for the last case
 if (tfinal.tpeak==0) {
+    # followup time for the last case
     tfinal.tpeak=max(dat.vac.seroneg[dat.vac.seroneg[[config.cor$EventIndPrimary]]==1, config.cor$EventTimePrimary])    
 }
 myprint(tfinal.tpeak)
@@ -154,29 +154,12 @@ write(tfinal.tpeak, file=paste0(save.results.to, "timepoints_cum_risk_"%.%study_
     
 # formulae
 form.s = as.formula(paste0("Surv(", config.cor$EventTimePrimary, ", ", config.cor$EventIndPrimary, ") ~ 1"))
-if (study_name_code=="COVE") {
-    if (endsWith(data_name, "riskscore.csv")) {
-        form.0 = update (form.s, ~.+ MinorityInd + HighRiskInd + risk_score)
-    } else {
-        form.0 = update (form.s, ~.+ MinorityInd + HighRiskInd + Age) 
-    }
-    # covariate length without markers
-    p.cov=3
-} else if (study_name_code=="ENSEMBLE") {
-    if (endsWith(data_name, "riskscore.csv")) {
-        form.0 = update (form.s, ~.+ risk_score + as.factor(Region))
-    } else {
-        form.0 = update (form.s, ~.+ Age + as.factor(Region)) 
-    }
-    # covariate length without markers
-    p.cov=3
-    
-    if (subset_variable!="None") {
-        form.0 = update (form.0, ~.- as.factor(Region))
-        p.cov=1
-    }
+if (endsWith(data_name, "riskscore.csv")) {
+    form.0 = update (form.s, as.formula(config$covariates_riskscore))
+} else {
+    form.0 = update (form.s, as.formula(config$covariates_norisksco)) 
 }
-
+print(form.0)
 
 
 ###################################################################################################

@@ -24,6 +24,7 @@ library(RhpcBLASctl)
 library(conflicted)
 conflicted::conflict_prefer("filter", "dplyr")
 conflict_prefer("summarise", "dplyr")
+conflict_prefer("omp_set_num_threads", "RhpcBLASctl")
 library(mice)
 library(tidymodels)
 

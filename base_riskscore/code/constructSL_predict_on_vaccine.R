@@ -32,11 +32,11 @@ load(here("output", "plac_top2learners_SL_discreteSL.rda"))
 source(here("code", "sl_screens.R")) # set up the screen/algorithm combinations
 source(here("code", "utils.R")) # get CV-AUC for all algs
 
-## solve cores issue
-#blas_get_num_procs()
-blas_set_num_threads(1)
-#print(blas_get_num_procs())
-stopifnot(blas_get_num_procs() == 1)
+### solve cores issue
+##blas_get_num_procs()
+#blas_set_num_threads(1)
+##print(blas_get_num_procs())
+#stopifnot(blas_get_num_procs() == 1)
 
 ## construct superlearner on placebo arm-----------------------
 set.seed(20210216)
@@ -148,4 +148,3 @@ vacc %>%
     axis.title.y = element_text(size = 30)
   )
 dev.off()
-

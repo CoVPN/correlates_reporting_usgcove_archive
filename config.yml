@@ -1,8 +1,31 @@
 default: &default
   info: correlates_reporting
 
+ows_trial: &ows_trial
+  forestplot_script: cor_coxph_forestplots_ows.R
+  is_ows_trial: yes
+
+
+
+twomarkers_trial: &twomarkers_trial
+  is_ows_trial: no
+  data_raw_dir: twomarkers
+  data_in_file: two_markers_VEtrial_primarystage_mock_data.csv
+  study_name: TWOMARKERS
+  assays: [bindSpike, bindRBD, pseudoneutid50, pseudoneutid80]
+  times: [B, Day100, Day200, Delta100overB, Delta200overB, Delta200over100]
+  covariates_riskscore: ~.+ BMI + risk_score
+  covariates_norisksco: ~.+ BMI + Age
+  num_boot_replicates: 10
+  num_perm_replicates: 10
+
+
+
+
+
 
 moderna_trial: &moderna_trial
+  <<: *ows_trial
   subset_variable: None
   subset_value: All
   assays: [bindSpike, bindRBD, pseudoneutid50, pseudoneutid80]
@@ -28,6 +51,7 @@ moderna_mock: &moderna_mock
 
 
 janssen_trial: &janssen_trial
+  <<: *ows_trial
   assays: [bindSpike, bindRBD]
   times: [B, Day29, Delta29overB]
   data_raw_dir: janssen
@@ -102,18 +126,6 @@ janssen_sa_mock:
   subset_value: 2
   covariates_riskscore: ~.+ risk_score
   covariates_norisksco: ~.+ Age
-
-
-
-twomarkers: &twomarkers
-  data_raw_dir: twomarkers
-  data_in_file: COVID_VEtrial_practicedata_primarystage1.csv
-  study_name: TWOMARKERS
-  study_name_code: TWOMARKERS
-  num_boot_replicates: 10
-  num_perm_replicates: 10
-
-
 
 
 ###################################################################################################

@@ -1,11 +1,9 @@
-#Sys.setenv(TRIAL = "janssen_pooled_mock") # moderna_mock  janssen_pooled_real  janssen_pooled_mock  janssen_na_mock
+#Sys.setenv(TRIAL = "moderna_mock") # moderna_mock  janssen_pooled_real  janssen_pooled_mock  janssen_na_mock
 #Sys.setenv(VERBOSE = 1) 
 renv::activate(project = here::here(".."))    
     # There is a bug on Windows that prevents renv from working properly. The following code provides a workaround:
     if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
 source(here::here("..", "_common.R"))
-myprint(study_name_code)
-myprint(study_name)
 #-----------------------------------------------
 
 
@@ -19,6 +17,8 @@ library(Hmisc) # wtd.quantile, cut2
 library(xtable) # this is a dependency of kyotil
 source(here::here("code", "params.R"))
 
+myprint(study_name)
+myprint(verbose)
 
 # COR defines the analysis to be done, e.g. D29, D57, D29start1
 Args <- commandArgs(trailingOnly=TRUE)
@@ -30,8 +30,8 @@ config.cor <- config::get(config = COR)
 tpeak=as.integer(paste0(config.cor$tpeak))
 tpeaklag=as.integer(paste0(config.cor$tpeaklag))
 tfinal.tpeak=as.integer(paste0(config.cor$tfinal.tpeak))
-if (length(tpeak)==0) stop("config "%.%COR%.%" does not exist")
 myprint(tpeak, tpeaklag, tfinal.tpeak)
+if (length(tpeak)==0 | length(tpeaklag)==0 | length(tfinal.tpeak)==0) stop("config "%.%COR%.%" misses some fields")
 
 
 # path for figures and tables etc
@@ -51,32 +51,36 @@ time.start=Sys.time()
 # this is kind of standalone
 # do this before reading data with risk score, before uloq censoring
 # use dataset without risk score so that we can get baseline pos groups as well
-dat.mock.all <- read.csv(here::here("..", "data_clean", data_name))
-if ("Day"%.%tpeak%.%"pseudoneutid50" %in% names(dat.mock.all)) {    
-    res=lapply (0:1, function(ii) {
-        dat.immuno.seroneg=subset(dat.mock.all, Trt==1 & Bserostatus==ii & ph2.immuno)    
-        ww=sort(unique(dat.immuno.seroneg$demo.stratum))
-        myprint(ww)
-        stopifnot(min(ww)==1)
-        stopifnot(max(ww)==length(ww))
-        names(ww)=demo.stratum.labels
-        mysapply (c(All=0,ww), function(w) { 
-            if(verbose) myprint(w)
-            dat.tmp= if (w==0) dat.immuno.seroneg else subset(dat.immuno.seroneg, demo.stratum==w)
-            10**wtd.quantile(dat.tmp[["Day"%.%tpeak%.%"pseudoneutid50"]], weights = dat.tmp$wt.subcohort, probs = 0:10/10)
+if (config$is_ows_trial) {
+    
+    dat.mock.all <- read.csv(here::here("..", "data_clean", data_name))
+    if ("Day"%.%tpeak%.%"pseudoneutid50" %in% names(dat.mock.all)) {    
+        res=lapply (0:1, function(ii) {
+            dat.immuno.seroneg=subset(dat.mock.all, Trt==1 & Bserostatus==ii & ph2.immuno)    
+            ww=sort(unique(dat.immuno.seroneg$demo.stratum))
+            myprint(ww)
+            stopifnot(min(ww)==1)
+            stopifnot(max(ww)==length(ww))
+            names(ww)=demo.stratum.labels
+            mysapply (c(All=0,ww), function(w) { 
+                if(verbose) myprint(w)
+                dat.tmp= if (w==0) dat.immuno.seroneg else subset(dat.immuno.seroneg, demo.stratum==w)
+                10**wtd.quantile(dat.tmp[["Day"%.%tpeak%.%"pseudoneutid50"]], weights = dat.tmp$wt.subcohort, probs = 0:10/10)
+            })
         })
-    })
-    tab=rbind(res[[1]], res[[2]])
-    colnames(tab)[1]="min"
-    colnames(tab)[ncol(tab)]="max"
-    tab
-    mytex(tab, file.name="cID50_deciles_"%.%study_name, align="r", include.colnames = T, save2input.only=T, input.foldername=save.results.to, digits=0,
-        add.to.row=list(list(0,nrow(res[[1]])), # insert at the beginning of table, and at the end of, say, the first table
-            c("       \n \\multicolumn{12}{l}{Baseline negative} \\\\ \n",
-              "\\hline\n \\multicolumn{12}{l}{Baseline positive} \\\\ \n"
-             )
-        )    
-    )
+        tab=rbind(res[[1]], res[[2]])
+        colnames(tab)[1]="min"
+        colnames(tab)[ncol(tab)]="max"
+        tab
+        mytex(tab, file.name="cID50_deciles_"%.%study_name, align="r", include.colnames = T, save2input.only=T, input.foldername=save.results.to, digits=0,
+            add.to.row=list(list(0,nrow(res[[1]])), # insert at the beginning of table, and at the end of, say, the first table
+                c("       \n \\multicolumn{12}{l}{Baseline negative} \\\\ \n",
+                  "\\hline\n \\multicolumn{12}{l}{Baseline positive} \\\\ \n"
+                 )
+            )    
+        )
+    }
+        
 }
 
 
@@ -95,7 +99,7 @@ print(paste0("reading data from ",data_name))
 
 
 ###################################################################################################
-# set up basic variables using config.cor
+# set up analysis-specific variables using config.cor
 dat.mock$wt=dat.mock[[config.cor$wt]]
 dat.mock$ph1=dat.mock[[config.cor$ph1]]
 dat.mock$ph2=dat.mock[[config.cor$ph2]]
@@ -108,26 +112,40 @@ numPerm <- config$num_perm_replicates # number permutation replicates 1e4
 myprint(B)
 myprint(numPerm)
 
+
 ###################################################################################################
 # get some summary info about event time etc
 # do this before uloq censoring
-source(here::here("code", "cor_coxph_misc.R"))
+
+# Average follow-up of vaccine recipients starting at tpeaklag days post visit
+write(round(mean(subset(dat.mock, Trt==1 & Bserostatus==0 & ph1, EventTimePrimary, drop=T), na.rm=T)-tpeaklag), file=paste0(save.results.to, "avg_followup_"%.%study_name))
+
+if (config$is_ows_trial) source(here::here("code", "cor_coxph_misc.R"))
 
 
 ###################################################################################################
 # uloq censoring
 # note that if delta are used, delta needs to be recomputed
-for (a in intersect(assays_to_be_censored_at_uloq_cor, assays)) {
-  for (t in c("B", "Day"%.%tpeak) ) {
-    dat.mock[[t %.% a]] <- ifelse(dat.mock[[t %.% a]] > log10(uloqs[a]), log10(uloqs[a]), dat.mock[[t %.% a]])
-  }
+
+if (config$is_ows_trial) {
+
+    for (a in intersect(assays_to_be_censored_at_uloq_cor, assays)) {
+      for (t in c("B", "Day"%.%tpeak) ) {
+        dat.mock[[t %.% a]] <- ifelse(dat.mock[[t %.% a]] > log10(uloqs[a]), log10(uloqs[a]), dat.mock[[t %.% a]])
+      }
+    }
+    
 }
 
 # the following data frame define the phase 1 ptids
 # do this after uloq censoring
-dat.vac.seroneg=subset(dat.mock, Trt==1 & Bserostatus==0 & ph1)
-dat.pla.seroneg=subset(dat.mock, Trt==0 & Bserostatus==0 & ph1)
-
+if (config$is_ows_trial) {
+    dat.vac.seroneg=subset(dat.mock, Trt==1 & Bserostatus==0 & ph1)
+    dat.pla.seroneg=subset(dat.mock, Trt==0 & Bserostatus==0 & ph1)
+} else {
+    dat.vac.seroneg=subset(dat.mock, Trt==1 & ph1)
+    dat.pla.seroneg=subset(dat.mock, Trt==0 & ph1)
+}
 
 ## temp: experimenting with multitesting
 ## based on moderna_mock
@@ -144,8 +162,8 @@ dat.vac.seroneg$yy=dat.vac.seroneg[[config.cor$EventIndPrimary]]
 dat.pla.seroneg$yy=dat.pla.seroneg[[config.cor$EventIndPrimary]]
     
 
-# followup time for the last case
 if (tfinal.tpeak==0) {
+    # followup time for the last case
     tfinal.tpeak=max(dat.vac.seroneg[dat.vac.seroneg[[config.cor$EventIndPrimary]]==1, config.cor$EventTimePrimary])    
 }
 myprint(tfinal.tpeak)
@@ -154,29 +172,12 @@ write(tfinal.tpeak, file=paste0(save.results.to, "timepoints_cum_risk_"%.%study_
     
 # formulae
 form.s = as.formula(paste0("Surv(", config.cor$EventTimePrimary, ", ", config.cor$EventIndPrimary, ") ~ 1"))
-if (study_name_code=="COVE") {
-    if (endsWith(data_name, "riskscore.csv")) {
-        form.0 = update (form.s, ~.+ MinorityInd + HighRiskInd + risk_score)
-    } else {
-        form.0 = update (form.s, ~.+ MinorityInd + HighRiskInd + Age) 
-    }
-    # covariate length without markers
-    p.cov=3
-} else if (study_name_code=="ENSEMBLE") {
-    if (endsWith(data_name, "riskscore.csv")) {
-        form.0 = update (form.s, ~.+ risk_score + as.factor(Region))
-    } else {
-        form.0 = update (form.s, ~.+ Age + as.factor(Region)) 
-    }
-    # covariate length without markers
-    p.cov=3
-    
-    if (subset_variable!="None") {
-        form.0 = update (form.0, ~.- as.factor(Region))
-        p.cov=1
-    }
+if (endsWith(data_name, "riskscore.csv")) {
+    form.0 = update (form.s, as.formula(config$covariates_riskscore))
+} else {
+    form.0 = update (form.s, as.formula(config$covariates_norisksco)) 
 }
-
+print(form.0)
 
 
 ###################################################################################################
@@ -212,7 +213,10 @@ rv$marker.cutpoints=marker.cutpoints
     
 source(here::here("code", "cor_coxph_ph.R"))
 
-source(here::here("code", "cor_coxph_forestplots.R"))
+if(length(config$forestplot_script)==1) {
+    tmp=here::here("code", config$forestplot_script)
+    if (file.exists(tmp)) source(tmp)
+}
 
 # sanity check forest plot results as a guard against unintended consequences
 if (study_name == "MockCOVE" & !endsWith(data_name, "riskscore.csv")) {
@@ -237,7 +241,7 @@ if (study_name == "MockCOVE" & !endsWith(data_name, "riskscore.csv")) {
 ###################################################################################################
     
 # load ylims.cor[[1]] from D29 analyses, which is a list of two: 1 with placebo lines, 2 without placebo lines.
-tmp=paste0(here::here(), "/output/D29/ylims.cor."%.%study_name%.%".Rdata")
+tmp=paste0(here::here(), paste0("/output/", attr(config,"config"), "/", COR, "/ylims.cor.", study_name, ".Rdata"))
 if (file.exists(tmp)) load(tmp)
 # if this does not exist, the code will find alternative ylim
 
@@ -250,7 +254,7 @@ source(here::here("code", "cor_coxph_marginalized_risk_plotting.R"))
 
 
 ###################################################################################################
-# save rv
+# save verification object rv
 save(rv, file=paste0(here::here("verification"), "/", COR, ".rv."%.%study_name%.%".Rdata"))
 
 print("cor_coxph run time: "%.%format(Sys.time()-time.start, digits=1))

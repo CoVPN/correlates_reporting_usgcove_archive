@@ -375,3 +375,4 @@ cor_coxph/output/janssen_pooled_mock/D29/cutpoints_Delta29overBbindRBD_MockENSEM
 cor_coxph/output/janssen_pooled_mock/D29/cutpoints_Delta29overBbindSpike_MockENSEMBLE
 cor_coxph/output/janssen_pooled_mock/D29/timepoints_cum_risk_MockENSEMBLE
 *.swp
+covpn_correlates_cor_moderna_mock.tex

@@ -374,3 +374,4 @@ cor_coxph/output/janssen_pooled_mock/D29/cutpoints_Day29bindSpike_MockENSEMBLE
 cor_coxph/output/janssen_pooled_mock/D29/cutpoints_Delta29overBbindRBD_MockENSEMBLE
 cor_coxph/output/janssen_pooled_mock/D29/cutpoints_Delta29overBbindSpike_MockENSEMBLE
 cor_coxph/output/janssen_pooled_mock/D29/timepoints_cum_risk_MockENSEMBLE
+*.swp

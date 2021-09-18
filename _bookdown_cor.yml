@@ -14,14 +14,14 @@ language:
 rmd_files: [
   "index_cor.Rmd",
   "cor_tabular/report.Rmd",
-  "cor_graphical/report.Rmd",
-  "cor_coxph/report.Rmd",
-  "cor_threshold/report.Rmd",
-  "cor_nonlinear/report.Rmd",
+  #  "cor_graphical/report.Rmd",
+  #"cor_coxph/report.Rmd",
+  #"cor_threshold/report.Rmd",
+  #"cor_nonlinear/report.Rmd",
   # "cop_mediation/report.Rmd",
   # "cor_surrogates/report.Rmd",
-  "references.Rmd",
-  "appendix.Rmd"
+  #"references.Rmd",
+  #"appendix.Rmd"
 ]
 
 # # full cor report

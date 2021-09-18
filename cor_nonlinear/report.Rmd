@@ -26,6 +26,7 @@ if (study_name_code=="COVE") {
     special.note = ""
     pathCoRoutput <- paste0("output/", attr(config,"config"), "/", COR)
     pathCoRoutput <- paste0("cor_nonlinear/", pathCoRoutput)
+    pathCorcoxphOutput <- paste0("cor_coxph/output/", attr(config,"config"), "/", COR)
     res = knitr::knit_child(c(here::here('cor_nonlinear', 'report_sub.Rmd')), quiet = TRUE)
     cat(res, sep = '\n')
     cat("\\clearpage", sep = '\n')
@@ -46,6 +47,7 @@ if (study_name_code=="ENSEMBLE") {
     special.note = paste0("$\\ddagger$ Count cases starting ", ifelse(i==1,7,1), " days post Day 29.")
     pathCoRoutput <- paste0("output/", attr(config,"config"), "/", COR)
     pathCoRoutput <- paste0("cor_nonlinear/", pathCoRoutput)
+    pathCorcoxphOutput <- paste0("cor_coxph/output/", attr(config,"config"), "/", COR)
     res = knitr::knit_child(c(here::here('cor_nonlinear', 'report_sub.Rmd')), quiet = TRUE)
     cat(res, sep = '\n')
     cat("\\clearpage", sep = '\n')

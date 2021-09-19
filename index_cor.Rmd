@@ -32,15 +32,13 @@ knitr::asis_output("\\AddToShipoutPictureFG{
       \\scalebox{10}{\\texttransparent{0.3}{MOCK}}}}}}")
 ```
 
-<!-- Comment out the disclaimer for now, as the wording may evolve.  -->
+## Disclaimers
+
+
+The data presented in the analysis are provided to NIAID in accordance with Clinical Trial Agreement between the parties. The study was funded in part by BARDA under Government Contract No. 75A50120C00034.
+
 
 <!-- `r if ( !( grepl("moderna", attr(config::get(config = Sys.getenv("TRIAL")), "config") ) ) )'<!--'` -->
-
-<!-- Not to make it a section so that cor_tabular is always the first chapter -->
-
-<!-- \begin{center} -->
-<!--     \Large{Disclaimer} -->
-<!-- \end{center} -->
 
 
 <!-- * The data presented in the analysis originated from the Moderna Sponsored mRNA-1273-P301 clinical study and are provided to NIAID in accordance with Clinical Trial Agreement between the parties. The study was funded in part by BARDA under Government Contract No. 75A50120C00034 -->

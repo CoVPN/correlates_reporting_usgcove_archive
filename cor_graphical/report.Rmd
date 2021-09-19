@@ -5,8 +5,8 @@ output:
 ---
 #  Graphical Descriptions of Antibody Marker Data {#ab-grapical}
 
-```{r, echo=FALSE}
-print("running cor_graphical report ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+```{r, echo=FALSE, message=FALSE}
+message("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ running cor_graphical report ~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 ```
 
 

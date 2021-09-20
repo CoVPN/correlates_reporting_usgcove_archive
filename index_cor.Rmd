@@ -20,6 +20,11 @@ header-includes:
    - \usepackage[margin=1in]{geometry}
 ---
 
+\counterwithin{table}{section}
+\counterwithin{figure}{section}
+
+
+
 ```{r, include = knitr::is_latex_output() & startsWith(study_name, "Mock")}
 knitr::asis_output("\\AddToShipoutPictureFG{
   \\AtPageCenter{
@@ -27,34 +32,38 @@ knitr::asis_output("\\AddToShipoutPictureFG{
       \\scalebox{10}{\\texttransparent{0.3}{MOCK}}}}}}")
 ```
 
-`r if ( !( grepl("moderna", attr(config::get(config = Sys.getenv("TRIAL")), "config") ) ) )'<!--'`
-
-# Disclaimers
-
-* The data presented in the analysis originated from the Moderna Sponsored mRNA-1273-P301 clinical study and are provided to NIAID in accordance with Clinical Trial Agreement between the parties. The study was funded in part by BARDA under Government Contract No. 75A50120C00034
- 
-* The preliminary immunogenicity data presented here do not reflect the Sponsors statistical analysis plan and therefore should not be interpreted as a protocol defined read-out of the clinical study.
- 
-* These data are not to be disclosed without written permission of Moderna.
+## Disclaimers
 
 
-`r if ( !( grepl("moderna", attr(config::get(config = Sys.getenv("TRIAL")), "config") ) ) ) '-->'`
+The data presented in the analysis are provided to NIAID in accordance with Clinical Trial Agreement between the parties. The study was funded in part by BARDA under Government Contract No. 75A50120C00034.
 
 
-`r if (knitr::is_latex_output()) '<!--'`
+<!-- `r if ( !( grepl("moderna", attr(config::get(config = Sys.getenv("TRIAL")), "config") ) ) )'<!--'` -->
 
-# CoVPN Correlates Analysis Report {-}
 
-<img style="float: center; margin-right: 1%; margin-bottom: 0.01em"
-     src="covpn_logo.png" width="40%" height="40%">
-<p style="clear: both;">
-<br>
+<!-- * The data presented in the analysis originated from the Moderna Sponsored mRNA-1273-P301 clinical study and are provided to NIAID in accordance with Clinical Trial Agreement between the parties. The study was funded in part by BARDA under Government Contract No. 75A50120C00034 -->
 
-## Statistical Analysis Plan {-}
+<!-- * The preliminary immunogenicity data presented here do not reflect the Sponsors statistical analysis plan and therefore should not be interpreted as a protocol defined read-out of the clinical study. -->
+
+<!-- * These data are not to be disclosed without written permission of Moderna. -->
+
+
+<!-- `r if ( !( grepl("moderna", attr(config::get(config = Sys.getenv("TRIAL")), "config") ) ) ) '-->'` -->
+
+
+
+
+<!-- <img style="float: center; margin-right: 1%; margin-bottom: 0.01em" -->
+<!--      src="covpn_logo.png" width="40%" height="40%"> -->
+<!-- <p style="clear: both;"> -->
+<!-- <br> -->
+
+\clearpage
+\textbf{Statistical Analysis Plan}
 
 The SAP is available at https://doi.org/10.6084/m9.figshare.13198595
 
-## Reproducibility Notice {-}
+\textbf{Reproducibility Notice}
 
 This project integrates the virtual environments framework provided by [the
 `renv` package](https://rstudio.github.io/renv/) for computational
@@ -80,4 +89,4 @@ To get started with using this project and its `renv` package library, we
 first recommend briefly reviewing the [`renv` collaboration
 guide](https://rstudio.github.io/renv/articles/collaborating.html).
 
-`r if (knitr::is_latex_output()) '-->'`
+

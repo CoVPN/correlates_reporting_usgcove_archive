@@ -10,8 +10,8 @@ output:
   toc: true
 ---
 
-```{r, echo=FALSE}
-print("running cor_threshold report ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+```{r, echo=FALSE, message=FALSE}
+message("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ running cor_threshold report ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 ```
 
 
@@ -66,10 +66,10 @@ key <- "bindSpike"
 day <- 57
 ci <- "pointwise"
 monotone <- F
-
+include_eval <- "Day57" %in% times && key %in% markers
 ```
 
-```{r, include = "Day57" %in% times, eval = "Day57" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -80,9 +80,10 @@ key <- "bindRBD"
 day <- 57
 ci <- "pointwise"
 monotone <- F
+include_eval <- "Day57" %in% times && key %in% markers
 ```
 
-```{r, include = "Day57" %in% times, eval = "Day57" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -93,9 +94,10 @@ key <- "pseudoneutid50"
 day <- 57
 ci <- "pointwise"
 monotone <- F
+include_eval <- "Day57" %in% times && key %in% markers
 ```
 
-```{r, include = "Day57" %in% times, eval = "Day57" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -106,9 +108,10 @@ key <- "pseudoneutid80"
 day <- 57
 ci <- "pointwise"
 monotone <- F
+include_eval <- "Day57" %in% times && key %in% markers
 ```
 
-```{r, include = "Day57" %in% times, eval = "Day57" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -122,9 +125,10 @@ key <- "bindSpike"
 day <- 29
 ci <- "pointwise"
 monotone <- F
+include_eval <- "Day29" %in% times && key %in% markers
 ```
 
-```{r, include = "Day29" %in% times, eval = "Day29" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -136,9 +140,10 @@ key <- "bindRBD"
 day <- 29
 ci <- "pointwise"
 monotone <- F
+include_eval <- "Day29" %in% times && key %in% markers
 ```
 
-```{r, include = "Day29" %in% times, eval = "Day29" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -149,9 +154,10 @@ key <- "pseudoneutid50"
 day <- 29
 ci <- "pointwise"
 monotone <- F
+include_eval <- "Day29" %in% times && key %in% markers
 ```
 
-```{r, include = "Day29" %in% times, eval = "Day29" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -162,9 +168,10 @@ key <- "pseudoneutid80"
 day <- 29
 ci <- "pointwise"
 monotone <- F
+include_eval <- "Day29" %in% times && key %in% markers
 ```
 
-```{r, include = "Day29" %in% times, eval = "Day29" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -177,10 +184,10 @@ key <- "bindSpike"
 day <- 57
 ci <- "pointwise"
 monotone <- T
-
+include_eval <- "Day57" %in% times && key %in% markers
 ```
 
-```{r, include = "Day57" %in% times, eval = "Day57" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -191,9 +198,10 @@ key <- "bindRBD"
 day <- 57
 ci <- "pointwise"
 monotone <- T
+include_eval <- "Day57" %in% times && key %in% markers
 ```
 
-```{r, include = "Day57" %in% times, eval = "Day57" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -204,9 +212,10 @@ key <- "pseudoneutid50"
 day <- 57
 ci <- "pointwise"
 monotone <- T
+include_eval <- "Day57" %in% times && key %in% markers
 ```
 
-```{r, include = "Day57" %in% times, eval = "Day57" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -217,9 +226,10 @@ key <- "pseudoneutid80"
 day <- 57
 ci <- "pointwise"
 monotone <- T
+include_eval <- "Day57" %in% times && key %in% markers
 ```
 
-```{r, include = "Day57" %in% times, eval = "Day57" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -233,9 +243,10 @@ key <- "bindSpike"
 day <- 29
 ci <- "pointwise"
 monotone <- T
+include_eval <- "Day29" %in% times && key %in% markers
 ```
 
-```{r, include = "Day29" %in% times, eval = "Day29" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -246,9 +257,10 @@ key <- "bindRBD"
 day <- 29
 ci <- "pointwise"
 monotone <- T
+include_eval <- "Day29" %in% times && key %in% markers
 ```
 
-```{r, include = "Day29" %in% times, eval = "Day29" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -259,9 +271,10 @@ key <- "pseudoneutid50"
 day <- 29
 ci <- "pointwise"
 monotone <- T
+include_eval <- "Day29" %in% times && key %in% markers
 ```
 
-```{r, include = "Day29" %in% times, eval = "Day29" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -272,9 +285,10 @@ key <- "pseudoneutid80"
 day <- 29
 ci <- "pointwise"
 monotone <- T
+include_eval <- "Day29" %in% times && key %in% markers
 ```
 
-```{r, include = "Day29" %in% times, eval = "Day29" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -287,9 +301,10 @@ key <- "bindSpike"
 day <- 57
 ci <- "simultaneous"
 monotone <- F
+include_eval <- "Day57" %in% times && key %in% markers
 ```
 
-```{r, include = "Day57" %in% times, eval = "Day57" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -300,9 +315,10 @@ key <- "bindRBD"
 day <- 57
 ci <- "simultaneous"
 monotone <- F
+include_eval <- "Day57" %in% times && key %in% markers
 ```
 
-```{r, include = "Day57" %in% times, eval = "Day57" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -313,9 +329,10 @@ key <- "pseudoneutid50"
 day <- 57
 ci <- "simultaneous"
 monotone <- F
+include_eval <- "Day57" %in% times && key %in% markers
 ```
 
-```{r, include = "Day57" %in% times, eval = "Day57" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -326,9 +343,10 @@ key <- "pseudoneutid80"
 day <- 57
 ci <- "simultaneous"
 monotone <- F
+include_eval <- "Day57" %in% times && key %in% markers
 ```
 
-```{r, include = "Day57" %in% times, eval = "Day57" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -342,9 +360,10 @@ key <- "bindSpike"
 day <- 29
 ci <- "simultaneous"
 monotone <- F
+include_eval <- "Day29" %in% times && key %in% markers
 ```
 
-```{r, include = "Day29" %in% times, eval = "Day29" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -355,9 +374,10 @@ key <- "bindRBD"
 day <- 29
 ci <- "simultaneous"
 monotone <- F
+include_eval <- "Day29" %in% times && key %in% markers
 ```
 
-```{r, include = "Day29" %in% times, eval = "Day29" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -368,9 +388,10 @@ key <- "pseudoneutid50"
 day <- 29
 ci <- "simultaneous"
 monotone <- F
+include_eval <- "Day29" %in% times && key %in% markers
 ```
 
-```{r, include = "Day29" %in% times, eval = "Day29" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -381,9 +402,10 @@ key <- "pseudoneutid80"
 day <- 29
 ci <- "simultaneous"
 monotone <- F
+include_eval <- "Day29" %in% times && key %in% markers
 ```
 
-```{r, include = "Day29" %in% times, eval = "Day29" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -396,9 +418,10 @@ key <- "bindSpike"
 day <- 57
 ci <- "simultaneous"
 monotone <- T
+include_eval <- paste0("Day",day) %in% times && key %in% markers
 ```
 
-```{r, include = "Day57" %in% times, eval = "Day57" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -409,9 +432,10 @@ key <- "bindRBD"
 day <- 57
 ci <- "simultaneous"
 monotone <- T
+include_eval <- paste0("Day",day) %in% times && key %in% markers
 ```
 
-```{r, include = "Day57" %in% times, eval = "Day57" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -422,9 +446,10 @@ key <- "pseudoneutid50"
 day <- 57
 ci <- "simultaneous"
 monotone <- T
+include_eval <- paste0("Day",day) %in% times && key %in% markers
 ```
 
-```{r, include = "Day57" %in% times, eval = "Day57" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -435,9 +460,10 @@ key <- "pseudoneutid80"
 day <- 57
 ci <- "simultaneous"
 monotone <- T
+include_eval <- paste0("Day",day) %in% times && key %in% markers
 ```
 
-```{r, include = "Day57" %in% times, eval = "Day57" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -451,9 +477,10 @@ key <- "bindSpike"
 day <- 29
 ci <- "simultaneous"
 monotone <- T
+include_eval <- paste0("Day",day) %in% times && key %in% markers
 ```
 
-```{r, include = "Day29" %in% times, eval = "Day29" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -464,9 +491,10 @@ key <- "bindRBD"
 day <- 29
 ci <- "simultaneous"
 monotone <- T
+include_eval <- paste0("Day",day) %in% times && key %in% markers
 ```
 
-```{r, include = "Day29" %in% times, eval = "Day29" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -477,9 +505,10 @@ key <- "pseudoneutid50"
 day <- 29
 ci <- "simultaneous"
 monotone <- T
+include_eval <- paste0("Day",day) %in% times && key %in% markers
 ```
 
-```{r, include = "Day29" %in% times, eval = "Day29" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -490,9 +519,10 @@ key <- "pseudoneutid80"
 day <- 29
 ci <- "simultaneous"
 monotone <- T
+include_eval <- paste0("Day",day) %in% times && key %in% markers
 ```
 
-```{r, include = "Day29" %in% times, eval = "Day29" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -509,7 +539,7 @@ The same methodology as the previous section is apply to estimate the "below" th
 
 ## Plots and Tables with estimates and pointwise confidence interval for Day 57
 ```{r, include = FALSE}
-above <- F
+above <- FALSE
 ```
 
 ```{r, include = FALSE}
@@ -518,10 +548,10 @@ key <- "bindSpike"
 day <- 57
 ci <- "pointwise"
 monotone <- F
-
+include_eval <- "Day57" %in% times && key %in% markers
 ```
 
-```{r, include = "Day57" %in% times, eval = "Day57" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -532,9 +562,10 @@ key <- "bindRBD"
 day <- 57
 ci <- "pointwise"
 monotone <- F
+include_eval <- "Day57" %in% times && key %in% markers
 ```
 
-```{r, include = "Day57" %in% times, eval = "Day57" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -545,9 +576,10 @@ key <- "pseudoneutid50"
 day <- 57
 ci <- "pointwise"
 monotone <- F
+include_eval <- "Day57" %in% times && key %in% markers
 ```
 
-```{r, include = "Day57" %in% times, eval = "Day57" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -558,9 +590,10 @@ key <- "pseudoneutid80"
 day <- 57
 ci <- "pointwise"
 monotone <- F
+include_eval <- "Day57" %in% times && key %in% markers
 ```
 
-```{r, include = "Day57" %in% times, eval = "Day57" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -574,9 +607,10 @@ key <- "bindSpike"
 day <- 29
 ci <- "pointwise"
 monotone <- F
+include_eval <- "Day29" %in% times && key %in% markers
 ```
 
-```{r, include = "Day29" %in% times, eval = "Day29" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -588,9 +622,10 @@ key <- "bindRBD"
 day <- 29
 ci <- "pointwise"
 monotone <- F
+include_eval <- "Day29" %in% times && key %in% markers
 ```
 
-```{r, include = "Day29" %in% times, eval = "Day29" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -601,9 +636,10 @@ key <- "pseudoneutid50"
 day <- 29
 ci <- "pointwise"
 monotone <- F
+include_eval <- "Day29" %in% times && key %in% markers
 ```
 
-```{r, include = "Day29" %in% times, eval = "Day29" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -614,9 +650,10 @@ key <- "pseudoneutid80"
 day <- 29
 ci <- "pointwise"
 monotone <- F
+include_eval <- "Day29" %in% times && key %in% markers
 ```
 
-```{r, include = "Day29" %in% times, eval = "Day29" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -629,10 +666,10 @@ key <- "bindSpike"
 day <- 57
 ci <- "pointwise"
 monotone <- T
-
+include_eval <- "Day57" %in% times && key %in% markers
 ```
 
-```{r, include = "Day57" %in% times, eval = "Day57" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -643,9 +680,10 @@ key <- "bindRBD"
 day <- 57
 ci <- "pointwise"
 monotone <- T
+include_eval <- "Day57" %in% times && key %in% markers
 ```
 
-```{r, include = "Day57" %in% times, eval = "Day57" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -656,9 +694,10 @@ key <- "pseudoneutid50"
 day <- 57
 ci <- "pointwise"
 monotone <- T
+include_eval <- "Day57" %in% times && key %in% markers
 ```
 
-```{r, include = "Day57" %in% times, eval = "Day57" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -669,9 +708,10 @@ key <- "pseudoneutid80"
 day <- 57
 ci <- "pointwise"
 monotone <- T
+include_eval <- "Day57" %in% times && key %in% markers
 ```
 
-```{r, include = "Day57" %in% times, eval = "Day57" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -685,9 +725,10 @@ key <- "bindSpike"
 day <- 29
 ci <- "pointwise"
 monotone <- T
+include_eval <- "Day29" %in% times && key %in% markers
 ```
 
-```{r, include = "Day29" %in% times, eval = "Day29" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -698,9 +739,10 @@ key <- "bindRBD"
 day <- 29
 ci <- "pointwise"
 monotone <- T
+include_eval <- "Day29" %in% times && key %in% markers
 ```
 
-```{r, include = "Day29" %in% times, eval = "Day29" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -711,9 +753,10 @@ key <- "pseudoneutid50"
 day <- 29
 ci <- "pointwise"
 monotone <- T
+include_eval <- "Day29" %in% times && key %in% markers
 ```
 
-```{r, include = "Day29" %in% times, eval = "Day29" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -724,9 +767,10 @@ key <- "pseudoneutid80"
 day <- 29
 ci <- "pointwise"
 monotone <- T
+include_eval <- "Day29" %in% times && key %in% markers
 ```
 
-```{r, include = "Day29" %in% times, eval = "Day29" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -739,9 +783,10 @@ key <- "bindSpike"
 day <- 57
 ci <- "simultaneous"
 monotone <- F
+include_eval <- "Day57" %in% times && key %in% markers
 ```
 
-```{r, include = "Day57" %in% times, eval = "Day57" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -752,9 +797,10 @@ key <- "bindRBD"
 day <- 57
 ci <- "simultaneous"
 monotone <- F
+include_eval <- "Day57" %in% times && key %in% markers
 ```
 
-```{r, include = "Day57" %in% times, eval = "Day57" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -765,9 +811,10 @@ key <- "pseudoneutid50"
 day <- 57
 ci <- "simultaneous"
 monotone <- F
+include_eval <- "Day57" %in% times && key %in% markers
 ```
 
-```{r, include = "Day57" %in% times, eval = "Day57" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -778,9 +825,10 @@ key <- "pseudoneutid80"
 day <- 57
 ci <- "simultaneous"
 monotone <- F
+include_eval <- "Day57" %in% times && key %in% markers
 ```
 
-```{r, include = "Day57" %in% times, eval = "Day57" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -794,9 +842,10 @@ key <- "bindSpike"
 day <- 29
 ci <- "simultaneous"
 monotone <- F
+include_eval <- "Day29" %in% times && key %in% markers
 ```
 
-```{r, include = "Day29" %in% times, eval = "Day29" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -807,9 +856,10 @@ key <- "bindRBD"
 day <- 29
 ci <- "simultaneous"
 monotone <- F
+include_eval <- "Day29" %in% times && key %in% markers
 ```
 
-```{r, include = "Day29" %in% times, eval = "Day29" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -820,9 +870,10 @@ key <- "pseudoneutid50"
 day <- 29
 ci <- "simultaneous"
 monotone <- F
+include_eval <- "Day29" %in% times && key %in% markers
 ```
 
-```{r, include = "Day29" %in% times, eval = "Day29" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -833,9 +884,10 @@ key <- "pseudoneutid80"
 day <- 29
 ci <- "simultaneous"
 monotone <- F
+include_eval <- "Day29" %in% times && key %in% markers
 ```
 
-```{r, include = "Day29" %in% times, eval = "Day29" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -848,9 +900,10 @@ key <- "bindSpike"
 day <- 57
 ci <- "simultaneous"
 monotone <- T
+include_eval <- paste0("Day",day) %in% times && key %in% markers
 ```
 
-```{r, include = "Day57" %in% times, eval = "Day57" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -861,9 +914,10 @@ key <- "bindRBD"
 day <- 57
 ci <- "simultaneous"
 monotone <- T
+include_eval <- paste0("Day",day) %in% times && key %in% markers
 ```
 
-```{r, include = "Day57" %in% times, eval = "Day57" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -874,9 +928,10 @@ key <- "pseudoneutid50"
 day <- 57
 ci <- "simultaneous"
 monotone <- T
+include_eval <- paste0("Day",day) %in% times && key %in% markers
 ```
 
-```{r, include = "Day57" %in% times, eval = "Day57" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -887,9 +942,10 @@ key <- "pseudoneutid80"
 day <- 57
 ci <- "simultaneous"
 monotone <- T
+include_eval <- paste0("Day",day) %in% times && key %in% markers
 ```
 
-```{r, include = "Day57" %in% times, eval = "Day57" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -903,9 +959,10 @@ key <- "bindSpike"
 day <- 29
 ci <- "simultaneous"
 monotone <- T
+include_eval <- paste0("Day",day) %in% times && key %in% markers
 ```
 
-```{r, include = "Day29" %in% times, eval = "Day29" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -916,9 +973,10 @@ key <- "bindRBD"
 day <- 29
 ci <- "simultaneous"
 monotone <- T
+include_eval <- paste0("Day",day) %in% times && key %in% markers
 ```
 
-```{r, include = "Day29" %in% times, eval = "Day29" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -929,9 +987,10 @@ key <- "pseudoneutid50"
 day <- 29
 ci <- "simultaneous"
 monotone <- T
+include_eval <- paste0("Day",day) %in% times && key %in% markers
 ```
 
-```{r, include = "Day29" %in% times, eval = "Day29" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -942,8 +1001,14 @@ key <- "pseudoneutid80"
 day <- 29
 ci <- "simultaneous"
 monotone <- T
+include_eval <- paste0("Day",day) %in% times && key %in% markers
 ```
 
-```{r, include = "Day29" %in% times, eval = "Day29" %in% times , child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
+
+
+
+
+

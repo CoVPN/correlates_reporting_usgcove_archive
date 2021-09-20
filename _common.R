@@ -7,6 +7,20 @@ for(opt in names(config)){
   eval(parse(text = paste0(names(config[opt])," <- config[[opt]]")))
 }
 
+# disabling lower level parallelization in favor of higher level of parallelization
+
+#openblas 
+library(RhpcBLASctl)
+blas_get_num_procs()
+blas_set_num_threads(1)
+stopifnot(blas_get_num_procs()==1)
+
+#openMP
+#library(OpenMPController)
+omp_set_num_threads(1)
+
+
+
 verbose=Sys.getenv("VERBOSE")=="1"
 
 names(assays)=assays # add names so that lapply results will have names
@@ -71,7 +85,7 @@ uloqs=sapply(tmp, function(x) unname(x["ULOQ"]))
 # Per Sarah O'Connell, for ensemble, the positivity cut offs and LLODs will be identical, 
 # as will the quantitative limits for N protein which are based on convalescent samples.
 # But the RBD and Spike quantitation ranges will be different for the Janssen partial validation than for Moderna. 
-if(study_name_code=="ENSEMBLE") {
+if(study_name=="ENSEMBLE" | study_name=="MockENSEMBLE") {
     lloqs["bindSpike"]=1.8429 
     lloqs["bindRBD"]=5.0243 
     
@@ -97,8 +111,8 @@ assays_to_be_censored_at_uloq_cor <- c(
 # figure labels and titles for markers
 ###############################################################################
 #has29 = "Day29" %in% times
-has57 = study_name_code %in% c("COVE","TWOMARKERS")
-has29 = study_name_code %in% c("COVE","TWOMARKERS","ENSEMBLE")
+has57 = study_name %in% c("COVE","MockCOVE")
+has29 = study_name %in% c("COVE","ENSEMBLE", "MockCOVE","MockENSEMBLE")
 
 markers <- c(outer(times[which(times %in% c("B", "Day29", "Day57"))], 
                    assays, "%.%"))
@@ -108,10 +122,10 @@ labels.race <- c(
   "White", 
   "Black or African American",
   "Asian", 
-  if (study_name_code=="ENSEMBLE" & startsWith(attr(config, "config"),"janssen_la")) "Indigenous South American" else "American Indian or Alaska Native",
+  if ((study_name=="ENSEMBLE" | study_name=="MockENSEMBLE") & startsWith(attr(config, "config"),"janssen_la")) "Indigenous South American" else "American Indian or Alaska Native",
   "Native Hawaiian or Other Pacific Islander", 
   "Multiracial",
-  if (study_name_code=="COVE") "Other", 
+  if ((study_name=="COVE" | study_name=="MockCOVE")) "Other", 
   "Not reported and unknown"
 )
 
@@ -195,7 +209,7 @@ Bstratum.labels <- c(
 )
 
 # baseline stratum labeling
-if (study_name_code=="COVE") {
+if ((study_name=="COVE" | study_name=="MockCOVE")) {
     demo.stratum.labels <- c(
       "Age >= 65, URM",
       "Age < 65, At risk, URM",
@@ -204,7 +218,7 @@ if (study_name_code=="COVE") {
       "Age < 65, At risk, White non-Hisp",
       "Age < 65, Not at risk, White non-Hisp"
     )
-} else if (study_name_code=="ENSEMBLE") {
+} else if ((study_name=="ENSEMBLE" | study_name=="MockENSEMBLE")) {
     demo.stratum.labels <- c(
       "US URM, Age 18-59, Not at risk",
       "US URM, Age 18-59, At risk",

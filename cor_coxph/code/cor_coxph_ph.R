@@ -17,7 +17,7 @@ nevents=sum(dat.vac.seroneg$yy==1)
 
 # make pretty table
 fits=fits[1:length(assays)] # for now, we don't need the delta (multitesting adjustment results are affected)
-rows=1+p.cov
+rows=length(coef(fits[[1]]))
 est=getFormattedSummary(fits, exp=T, robust=T, rows=rows, type=1)
 ci= getFormattedSummary(fits, exp=T, robust=T, rows=rows, type=13)
 p=  getFormattedSummary(fits, exp=T, robust=T, rows=rows, type=10)
@@ -47,7 +47,7 @@ for (a in c("Day"%.%tpeak%.%assays, "Delta"%.%tpeak%.%"overB"%.%assays)) {
 }
 
 fits.tri=fits.tri[1:length(assays)]
-rows=1:2+p.cov
+rows=length(coef(fits.tri[[1]]))-1:0
 # get generalized Wald p values
 overall.p.tri=sapply(fits.tri, function(fit) {
     if (length(fit)==1) NA else {
@@ -67,7 +67,7 @@ if(verbose) print("# multitesting adjustment for continuous and trichotomized ma
 p.unadj=c(cont=pvals.cont, tri=overall.p.tri)
 p.unadj.1 = p.unadj # save a copy for later use
 ## we may only keep ID80 and bindSpike in multitesting adjustment because ID50 and ID80 are highly correlated, bindSpike and bindRBD are highly correlated
-#if (study_name_code=="COVE") {
+#if (study_name=="COVE" | study_name=="MockCOVE") {
 #    p.unadj = p.unadj[endsWith(names(p.unadj), "pseudoneutid80") | endsWith(names(p.unadj), "bindSpike")]
 #}
 
@@ -150,7 +150,7 @@ pvals.adj = cbind(p.unadj=p.unadj.1, pvals.adj[match(names(p.unadj.1), rownames(
 
 p.1=formatDouble(pvals.adj["cont."%.%names(pvals.cont),"p.FWER"], 3, remove.leading0=F); p.1=sub("0.000","<0.001",p.1)
 p.2=formatDouble(pvals.adj["cont."%.%names(pvals.cont),"p.FDR" ], 3, remove.leading0=F); p.2=sub("0.000","<0.001",p.2)
-#if (study_name_code=="COVE") {
+#if (study_name=="COVE" | study_name=="MockCOVE") {
 #    p.1[endsWith(names(p.1), "pseudoneutid50")] = "N/A"
 #    p.2[endsWith(names(p.2), "pseudoneutid50")] = "N/A"
 #    p.1[endsWith(names(p.1), "bindRBD")] = "N/A"
@@ -189,7 +189,7 @@ rv$tab.1=tab.1.nop12
 # or
 overall.p.1=formatDouble(pvals.adj["tri."%.%names(pvals.cont),"p.FWER"], 3, remove.leading0=F);   overall.p.1=sub("0.000","<0.001",overall.p.1)
 overall.p.2=formatDouble(pvals.adj["tri."%.%names(pvals.cont),"p.FDR" ], 3, remove.leading0=F);   overall.p.2=sub("0.000","<0.001",overall.p.2)
-#if (study_name_code=="COVE") {
+#if (study_name=="COVE" | study_name=="MockCOVE") {
 #    overall.p.1[endsWith(names(overall.p.1), "pseudoneutid50")] = "N/A"
 #    overall.p.2[endsWith(names(overall.p.2), "pseudoneutid50")] = "N/A"
 #    overall.p.1[endsWith(names(overall.p.1), "bindRBD")] = "N/A"

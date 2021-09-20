@@ -120,17 +120,22 @@ if("Riskscorecohortflag" %in% names(inputFile)){
   assertthat::assert_that(
     all(!is.na(inputFile$Riskscorecohortflag)), msg = "NA values present in Riskscorecohortflag in inputFile!"
   )
-  dat.ph1 <- inputFile %>% filter(Riskscorecohortflag == 1 & Trt == 0)
 }else{
-  inputFile <- inputFile %>%
-    mutate(Riskscorecohortflag = ifelse(Bserostatus==0 & Perprotocol==1 & EarlyendpointD29==0 & EventTimePrimaryD29>=1, 1, 0)) 
+  if(study_name_code == "COVE"){
+    inputFile <- inputFile %>%
+      mutate(Riskscorecohortflag = ifelse(Bserostatus == 0 & Perprotocol == 1, 1, 0))
+  }
+  if(study_name_code == "ENSEMBLE"){
+    inputFile <- inputFile %>%
+      mutate(Riskscorecohortflag = ifelse(Bserostatus==0 & Perprotocol==1 & EarlyendpointD29==0 & EventTimePrimaryD29>=1, 1, 0)) 
+  }
   
   assertthat::assert_that(
     all(!is.na(inputFile$Riskscorecohortflag)), msg = "NA values present in Riskscorecohortflag when created in inputFile!"
     )
-  
-  dat.ph1 <- inputFile %>% filter(Riskscorecohortflag == 1 & Trt == 0)
 }
+
+dat.ph1 <- inputFile %>% filter(Riskscorecohortflag == 1 & Trt == 0)
 
 dat.ph1 <- dat.ph1 %>%
   # Keep only variables to be included in risk score analyses
@@ -206,11 +211,11 @@ if (np <= 30) {
   V_inner <- 5
 }
 
-## solve cores issue
-#blas_get_num_procs()
-blas_set_num_threads(1)
-#print(blas_get_num_procs())
-stopifnot(blas_get_num_procs() == 1)
+### solve cores issue
+##blas_get_num_procs()
+#blas_set_num_threads(1)
+##print(blas_get_num_procs())
+#stopifnot(blas_get_num_procs() == 1)
 
 
 # run super learner ensemble

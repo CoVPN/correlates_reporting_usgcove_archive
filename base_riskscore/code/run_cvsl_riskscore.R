@@ -1,12 +1,13 @@
 # Sys.setenv(TRIAL = "janssen_pooled_mock")
 #-----------------------------------------------
 # obligatory to append to the top of each script
-renv::activate(project = here::here(".."))
+here::i_am("base_riskscore/code/run_cvsl_riskscore.R")
+renv::activate(project = here::here())
     
 # There is a bug on Windows that prevents renv from working properly. The following code provides a workaround:
 if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
     
-source(here::here("..", "_common.R"))
+source(here::here("_common.R"))
 #-----------------------------------------------
 
 # load required libraries and functions
@@ -33,12 +34,12 @@ library(tidymodels)
 run_prod <- !grepl("Mock", study_name)
 
 # get utility files
-source(here("code", "sl_screens.R")) # set up the screen/algorithm combinations
-source(here("code", "utils.R")) # get CV-AUC for all algs
+source(here("base_riskscore", "code", "sl_screens.R")) # set up the screen/algorithm combinations
+source(here("base_riskscore", "code", "utils.R")) # get CV-AUC for all algs
 
 ############ SETUP INPUT #######################
 # Read in data file
-inputFile <- read.csv(here::here("..", "data_clean", data_name))
+inputFile <- read.csv(here("data_clean", data_name))
 
 # Identify the risk demographic variable names that will be used to compute the risk score
 # Identify the endpoint variable
@@ -149,7 +150,7 @@ tab <- inputFile %>%
   mutate(Trt = ifelse(Trt == 0, "Placebo", "Vaccine")) 
 
 table(tab$Trt, tab %>% pull(endpoint)) %>%
-  write.csv(file = here("output", "cases_prior_riskScoreAnalysis.csv"))
+  write.csv(file = here("base_riskscore", "output", "cases_prior_riskScoreAnalysis.csv"))
 rm(tab)
 
 # Derive maxVar: the maximum number of variables that will be allowed by SL screens in the models.
@@ -236,8 +237,8 @@ cvaucs[[1]] <- fits$cvaucs
 cvfits <- list()
 cvfits[[1]] <- fits$cvfits
 
-saveRDS(cvaucs, here("output", "cvsl_riskscore_cvaucs.rds"))
-save(cvfits, file = here("output", "cvsl_riskscore_cvfits.rda"))
-save(risk_placebo_ptids, file = here("output", "risk_placebo_ptids.rda"))
+saveRDS(cvaucs, here("base_riskscore", "output", "cvsl_riskscore_cvaucs.rds"))
+save(cvfits, file = here("base_riskscore", "output", "cvsl_riskscore_cvfits.rda"))
+save(risk_placebo_ptids, file = here("base_riskscore", "output", "risk_placebo_ptids.rda"))
 save(run_prod, Y, X_riskVars, weights, inputFile, risk_vars, all_risk_vars, endpoint, maxVar,
-     V_outer, studyName_for_report, file = here("output", "objects_for_running_SL.rda"))
+     V_outer, studyName_for_report, file = here("base_riskscore", "output", "objects_for_running_SL.rda"))

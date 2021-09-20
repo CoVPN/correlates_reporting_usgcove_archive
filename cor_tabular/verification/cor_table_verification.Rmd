@@ -21,15 +21,16 @@ library(survey)
 library(rlang)
 options(scipen=999) # Turn off scientific notation
 options(survey.lonely.psu="adjust") 
-renv::activate(project = here::here(".."))
-source(here::here("..", "_common.R"))
+here::i_am("cor_tabular/verification/cor_table_verification.Rmd")
+renv::activate(project = here::here())
+source(here::here("_common.R"))
 
 ```
 
 ```{r dataio, echo=FALSE}
 
 # read in practice data
-dat.mock <- read.csv(here("verification","verification_input","practice_data.csv"), stringsAsFactors = F)
+dat.mock <- read.csv(here("cor_tabular", "verification","verification_input","practice_data.csv"), stringsAsFactors = F)
 dat <- dat.mock
 
 dat$immuno_ind <- with(dat, ifelse(Perprotocol==1 & SubcohortInd==1 & TwophasesampIndD57==1 & EarlyendpointD57==0 & !is.na(wt.subcohort), 1, 0))
@@ -139,7 +140,7 @@ decimal_f <- function(x, d) { # rounding values
 }
 
 # load all immuno tabs from Chenchen
-load(here("verification","verification_input","Tables_cor.Rdata"), verbose=T)
+load(here("cor_tabular", "verification","verification_input","Tables_cor.Rdata"), verbose=T)
 ```
 
 \captionsetup[table]{labelformat=empty}
@@ -234,8 +235,8 @@ for (i in c("Negative", "Positive")){
 
 }
 
-save(tab_dm_neg_v, file = here::here("verification", "verification_output", "cor_tab_dm_neg_v.Rdata"))
-save(tab_dm_pos_v, file = here::here("verification", "verification_output", "cor_tab_dm_pos_v.Rdata"))
+save(tab_dm_neg_v, file = here::here("cor_tabular", "verification", "verification_output", "cor_tab_dm_neg_v.Rdata"))
+save(tab_dm_pos_v, file = here::here("cor_tabular", "verification", "verification_output", "cor_tab_dm_pos_v.Rdata"))
 ```
 
 \clearpage
@@ -264,7 +265,7 @@ colnames(tab_strtm_v) <- colnames(tab_strtm)
   
 testthat::expect_equal(tab_strtm_v, tab_strtm)
 
-save(tab_strtm_v, file = here::here("verification", "verification_output", "cor_tab_strtm_v.Rdata"))
+save(tab_strtm_v, file = here::here("cor_tabular", "verification", "verification_output", "cor_tab_strtm_v.Rdata"))
 
 ```
 
@@ -481,9 +482,9 @@ testthat::expect_equal(case_vacc_neg, case_vacc_neg_v)
 testthat::expect_equal(case_vacc_pos, case_vacc_pos_v)
 testthat::expect_equal(case_plcb_pos, case_plcb_pos_v)
 
-save(case_vacc_neg_v, file = here::here("verification", "verification_output", "cor_case_vacc_neg_v.Rdata"))
+save(case_vacc_neg_v, file = here::here("cor_tabular", "verification", "verification_output", "cor_case_vacc_neg_v.Rdata"))
 
-save(case_vacc_pos_v, file = here::here("verification", "verification_output", "cor_case_vacc_pos_v.Rdata"))
+save(case_vacc_pos_v, file = here::here("cor_tabular", "verification", "verification_output", "cor_case_vacc_pos_v.Rdata"))
 
-save(case_plcb_pos_v, file = here::here("verification", "verification_output", "cor_case_plcb_pos_v.Rdata"))
+save(case_plcb_pos_v, file = here::here("cor_tabular", "verification", "verification_output", "cor_case_plcb_pos_v.Rdata"))
 ```

@@ -1,7 +1,8 @@
 #-----------------------------------------------
 # obligatory to append to the top of each script
-renv::activate(project = here::here(".."))
-source(here::here("..", "_common.R"))
+here::i_am("cor_threshold/code/plotting.R")
+renv::activate(project = here::here())
+source(here::here("_common.R"))
 #-----------------------------------------------
 library(cowplot)
 library(scales)
@@ -9,10 +10,10 @@ library(knitr)
 library(dplyr)
 library(magrittr)
 library(ggplot2)
-source(here::here("code", "params.R"))
-source(here::here("code", "learners.R"))
-source(here::here("code", "tmleThresh.R"))
-source(here::here("code", "plotting_helpers.R"))
+source(here::here("cor_threshold", "code", "params.R"))
+source(here::here("cor_threshold", "code", "learners.R"))
+source(here::here("cor_threshold", "code", "tmleThresh.R"))
+source(here::here("cor_threshold", "code", "plotting_helpers.R"))
 ident <- function(x) x
 
 # Plotting arguments

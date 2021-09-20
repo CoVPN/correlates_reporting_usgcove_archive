@@ -1,26 +1,27 @@
 #Sys.setenv(TRIAL = "moderna_mock") # janssen_pooled_real   janssen_pooled_mock   moderna_mock
 #-----------------------------------------------
 # obligatory to append to the top of each script
-renv::activate(project = here::here(".."))
+here::i_am("cor_graphical/code/CoR_wrcdf_with_VE_lines.R")
+renv::activate(project = here::here())
 # There is a bug on Windows that prevents renv from working properly. The following code provides a workaround:
 if (.Platform$OS.type == "windows")
   .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
-source(here::here("..", "_common.R"))
+source(here::here("_common.R"))
 #-----------------------------------------------
 myprint(study_name_code)
 
-source(here::here("code", "params.R"))
-source(here::here("code", "cor_wrcdf_plot_function.R"))
+source(here::here("cor_graphical", "code", "params.R"))
+source(here::here("cor_graphical", "code", "cor_wrcdf_plot_function.R"))
 library(ggpubr)
 library(scales)
 library(survival)
 ## get a crude estimate of VE and upper/lower bound of 95% CI
 ## using an unadjusted Cox model
 
-dat.long.cor.subset <- readRDS(here("data_clean",
+dat.long.cor.subset <- readRDS(here("cor_graphical", "data_clean",
                                     "long_cor_data.rds"))
 
-dat.cor.subset <- readRDS(here("data_clean",
+dat.cor.subset <- readRDS(here("cor_graphical", "data_clean",
                                "cor_data.rds"))
 
 plot_ve_curves <- c(1, 1)
@@ -49,7 +50,7 @@ for (bstatus in 0:1) {
       #       } else {
 
       # use ve computed as part of cor_coxph, which is defined based on marginalized risks
-      load(paste0(here::here("..", "cor_coxph", "output"), "/",
+      load(paste0(here::here("cor_coxph", "output"), "/",
                   attr(config,"config"),
                   "/D57/marginalized.risk.no.marker."%.%study_name%.%".Rdata"))
       VE <- overall.ve[1]
@@ -84,7 +85,7 @@ for (bstatus in 0:1) {
       }
 
       # use ve computed as part of cor_coxph, which is defined based on marginalized risks
-      load(paste0(here::here("..", "cor_coxph", "output"), "/",
+      load(paste0(here::here("cor_coxph", "output"), "/",
                   attr(config, "config"),
                   "/D29/marginalized.risk.no.marker."%.%study_name%.%".Rdata"))
       VE <- overall.ve[1]
@@ -134,7 +135,7 @@ for (bstatus in 0:1) {
       ))
     } else {
       # use ve computed as part of cor_coxph, which is defined based on marginalized risks
-      load(paste0(here::here("..", "cor_coxph", "output"), "/",
+      load(paste0(here::here("cor_coxph", "output"), "/",
                   attr(config, "config"),
                   "/D29/marginalized.risk.no.marker."%.%study_name%.%".Rdata"))
       VE <- overall.ve[1]
@@ -172,4 +173,4 @@ for (bstatus in 0:1) {
 }
 
 saveRDS(plot_ve_curves,
-        here::here("data_clean", "plot_ve_curves.rds"))
+        here::here("cor_graphical", "data_clean", "plot_ve_curves.rds"))

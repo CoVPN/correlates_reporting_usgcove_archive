@@ -1,15 +1,16 @@
 ##################################################
 # obligatory to append to the top of each script #
-renv::activate(project = here::here("..")) #
-source(here::here("..", "_common.R")) #
+here::i_am("immuno_tabular/code/make_table_all.R")
+renv::activate(project = here::here()) #
+source(here::here("_common.R")) #
 ##################################################
 
 # Immunogenicity Tables
 
 # Reload clean_data
-base::load(here::here("data_clean", "params.Rdata"))
-base::load(here::here("data_clean", "ds_all.Rdata"))
-source(here::here("code", "make_functions.R"))
+base::load(here::here("immuno_tabular", "data_clean", "params.Rdata"))
+base::load(here::here("immuno_tabular", "data_clean", "ds_all.Rdata"))
+source(here::here("immuno_tabular", "code", "make_functions.R"))
 library(survey)
 library(tidyverse)
 library(dplyr, warn.conflicts = FALSE)
@@ -516,6 +517,6 @@ print("Done with all tables")
 
 save(tlf, tab_dm_pos, tab_dm_neg, tab_strtm1, tab_strtm2, tab_bind1, tab_bind2, tab_pseudo, tab_wt, tab_gm,
      tab_gmr, tab_rgmt, tab_rrdiff, tab_neg, tab_pos, tab_vacc, tab_plcb,
-     file = here::here("output", "Tables.Rdata"))
+     file = here::here("immuno_tabular", "output", "Tables.Rdata"))
 
 

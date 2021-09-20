@@ -2,8 +2,10 @@
 <!-- here::i_am("cor_nonlinear/report.Rmd") -->
 <!-- ``` -->
 
-<!-- The only difference between this Rmd and the standalone Rmd is  -->
-<!-- pathCoRoutput <- paste0("cor_nonlinear/", pathCoRoutput) -->
+```{r, echo=FALSE}
+here::i_am("cor_nonlinear/report.Rmd")
+knitr::opts_knit$set(root.dir = here::here())
+```
 
 
 \counterwithin{table}{section}

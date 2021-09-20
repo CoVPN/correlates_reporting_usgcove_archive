@@ -1,17 +1,11 @@
 # Mediators of Vaccine Efficacy {#cop-mediators}
 
-```{r, echo=FALSE}
-print("running cor_mediation report ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-```
-
-
 ```{r cop-mediator-setup, echo = FALSE, message = FALSE, warning = FALSE}
 library(here)
-# so it builds in either directory
-wd <- here()
-root_dir <- gsub("/cop_mediation*", "", wd)
-renv::activate(root_dir)
-source(paste0(root_dir, "/_common.R"))
+here::i_am("cop_mediation/report.Rmd")
+knitr::opts_knit$set(root.dir = here::here())
+renv::activate()
+source(here::here("_common.R"))
 analysis_ran <- file.exists(paste0(root_dir, "/cop_mediation/output/full_result.rds"))
 if(analysis_ran){
 	full_result <- readRDS(paste0(root_dir, "/cop_mediation/output/full_result.rds"))

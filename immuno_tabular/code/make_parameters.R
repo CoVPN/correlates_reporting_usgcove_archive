@@ -1,9 +1,10 @@
 #Sys.setenv(TRIAL = "janssen_pooled_real")
 ##################################################
 # obligatory to append to the top of each script #
-renv::activate(project = here::here("..")) #
+here::i_am("immuno_tabular/code/make_parameters.R")
+renv::activate(project = here::here()) #
 if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
-source(here::here("..", "_common.R")) #
+source(here::here("_common.R")) #
 ##################################################
 
 library(tidyverse)
@@ -286,4 +287,4 @@ resp.lb <- expand.grid(
 labels_all <- full_join(labels.assays, resp.lb, by = c("time", "marker")) %>% 
   mutate(mag_cat = colname, resp_cat = paste0(colname, ind))
 
-save.image(file = here::here("data_clean", "params.Rdata"))
+save.image(file = here::here("immuno_tabular", "data_clean", "params.Rdata"))

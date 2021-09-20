@@ -1,11 +1,12 @@
 #-----------------------------------------------
 # obligatory to append to the top of each script
-renv::activate(project = here::here(".."))
+here::i_am("base_riskscore/code/get_SLweights_Modelpredictors.R")
+renv::activate(project = here::here())
     
 # There is a bug on Windows that prevents renv from working properly. The following code provides a workaround:
 if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
     
-source(here::here("..", "_common.R"))
+source(here::here("_common.R"))
 #-----------------------------------------------
 
 library(tidyverse)
@@ -16,11 +17,11 @@ library(xgboost)
 library(ranger)
 conflict_prefer("filter", "dplyr")
 
-load(file = here("output", "objects_for_running_SL.rda"))
+load(file = here("base_riskscore", "output", "objects_for_running_SL.rda"))
 rm(Y, X_riskVars, weights, maxVar)
 
 # Get Superlearner weights
-load(file = here("output", "sl_riskscore_slfits.rda"))
+load(file = here("base_riskscore", "output", "sl_riskscore_slfits.rda"))
 sl_weights <- sl_riskscore_slfits$coef %>%
   as.data.frame() %>%
   tibble::rownames_to_column(var = "Learner") %>%
@@ -34,7 +35,7 @@ sl_weights %>%
     Learner = sapply(strsplit(Learner, "_screen"), `[`, 1)
   ) %>%
   select(Learner, Screen, Weight) %>%
-  write.csv(here("output", "SL_weights.csv"))
+  write.csv(here("base_riskscore", "output", "SL_weights.csv"))
 
 top_models <- sl_weights %>%
   .$Learner
@@ -114,7 +115,7 @@ if(run_prod){
     ) %>%
     select(Learner, Screen, Weight, Predictors, Coefficient, `Odds Ratio`,
            Importance, Feature, Gain, Cover, Frequency) %>%
-    write.csv(here("output", "SL_all_models_with_predictors.csv"))
+    write.csv(here("base_riskscore", "output", "SL_all_models_with_predictors.csv"))
 }else{
   all_models %>%
     left_join(sl_weights, by = "Learner") %>%
@@ -128,7 +129,7 @@ if(run_prod){
       Learner = sapply(strsplit(Learner, "_screen"), `[`, 1)
     ) %>%
     select(Learner, Screen, Weight, Predictors, Coefficient, `Odds Ratio`) %>%
-    write.csv(here("output", "SL_all_models_with_predictors.csv"))
+    write.csv(here("base_riskscore", "output", "SL_all_models_with_predictors.csv"))
 }
 
 

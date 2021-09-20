@@ -1,11 +1,12 @@
 #-----------------------------------------------
 # obligatory to append to the top of each script
-renv::activate(project = here::here(".."))
+here::i_am("cor_surrogates/code/tables_figures.R")
+renv::activate(project = here::here())
 
 # There is a bug on Windows that prevents renv from working properly. The following code provides a workaround:
 if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
 
-source(here::here("..", "_common.R"))
+source(here::here("_common.R"))
 ## ----load-all-SLobjects, message=FALSE, error=FALSE, warning=FALSE----------------------------------------------------------------------------------------------------
 
 library("cvAUC")
@@ -22,12 +23,12 @@ library(here)
 # filter() is used in both dplyr and stats, so need to set the preference to dplyr
 conflict_prefer("filter", "dplyr")
 conflict_prefer("summarise", "dplyr")
-source(here("code", "utils.R"))
+source(here("cor_surrogates", "code", "utils.R"))
 method <- "method.CC_nloglik" # since SuperLearner relies on this to be in GlobalEnv
 ggplot2::theme_set(theme_cowplot())
 
-load(file = here("output", "cvaucs_vacc_EventIndPrimaryD57.rda"))
-load(file = here("output", "ph2_vacc_ptids.rda"))
+load(file = here("cor_surrogates", "output", "cvaucs_vacc_EventIndPrimaryD57.rda"))
+load(file = here("cor_surrogates", "output", "ph2_vacc_ptids.rda"))
 
 ## ----learner-screens, warning=kable_warnings--------------------------------------------------------------------------------------------------------------------------
 caption <- "All learner-screen combinations (14 in total) used as input to the Superlearner."
@@ -53,7 +54,7 @@ if(!grepl("Mock", study_name)){
     arrange(Learner, `Screen*`)
 }
 
-tab %>% write.csv(here("output", "learner-screens.csv"))
+tab %>% write.csv(here("cor_surrogates", "output", "learner-screens.csv"))
 
 ## ----All 28 (34 if live MN50 titers included) variable sets --------------------------------------------------------------------------------------------------------------------
 caption <- "The 28 variable sets on which an estimated optimal surrogate was built."
@@ -105,7 +106,7 @@ components of nonlinear PCA), and the maximum signal diversity score]",
                                                       "Baseline risk factors + all individual Day 29 and Day 57 marker variables",
                                                       "Baseline risk factors + all individual Day 29 and Day 57 marker variables and their combination scores (Full model of Day 29 and Day 57 markers)"))
 
-tab %>% write.csv(here("output", "varsets.csv"))
+tab %>% write.csv(here("cor_surrogates", "output", "varsets.csv"))
 
 ##############################################################################################################################
 ##############################################################################################################################
@@ -114,7 +115,7 @@ tab %>% write.csv(here("output", "varsets.csv"))
 options(bitmapType = "cairo")
 for(i in 1:length(unique(cvaucs_vacc$varset))) {
   variableSet = unique(cvaucs_vacc$varset)[i]
-  png(file = here("figs", paste0("forest_vacc_cvaucs_", variableSet, ".png")), width=1000, height=1100)
+  png(file = here("cor_surrogates", "figs", paste0("forest_vacc_cvaucs_", variableSet, ".png")), width=1000, height=1100)
   top_learner <- make_forest_plot(cvaucs_vacc %>% filter(varset==variableSet))
   grid.arrange(top_learner$top_learner_nms_plot, top_learner$top_learner_plot, ncol=2)
   dev.off()
@@ -128,7 +129,7 @@ allSLs <- cvaucs_vacc %>% filter(Learner == "SL") %>%
   mutate(varset = fct_reorder(varset, AUC, .desc = F)) %>%
   arrange(-AUC)
 
-png(file = here("figs", "forest_vacc_cvaucs_allSLs.png"), width=1000, height=1100)
+png(file = here("cor_surrogates", "figs", "forest_vacc_cvaucs_allSLs.png"), width=1000, height=1100)
 lowestXTick <- floor(min(allSLs$ci_ll)*10)/10
 highestXTick <- ceiling(max(allSLs$ci_ul)*10)/10
 top_learner_plot <- ggplot() +
@@ -193,12 +194,12 @@ for(i in 1:length(unique(cvaucs_vacc$varset))) {
                                          paste0(Learner, "_", Screen_fromRun))))
   
   # Get cvsl fit and extract cv predictions
-  load(file = here("output", paste0("CVSLfits_vacc_EventIndPrimaryD57_", variableSet, ".rda")))
+  load(file = here("cor_surrogates", "output", paste0("CVSLfits_vacc_EventIndPrimaryD57_", variableSet, ".rda")))
   pred <- get_cv_predictions(cv_fit = cvfits[[1]], cvaucDAT = top2)
   
   # plot ROC curve
   options(bitmapType = "cairo")
-  png(file = here("figs", paste0("ROCcurve_", variableSet, ".png")),
+  png(file = here("cor_surrogates", "figs", paste0("ROCcurve_", variableSet, ".png")),
       width = 1000, height = 1000)
   p1 <- plot_roc_curves(predict = pred, cvaucDAT = top2, weights = ph2_vacc_ptids %>% pull(wt.D57))
   print(p1)
@@ -206,7 +207,7 @@ for(i in 1:length(unique(cvaucs_vacc$varset))) {
   
   # plot pred prob plot
   options(bitmapType = "cairo")
-  png(file = here("figs", paste0("predProb_", variableSet, ".png")),
+  png(file = here("cor_surrogates", "figs", paste0("predProb_", variableSet, ".png")),
       width = 1000, height = 1000)
   p2 <- plot_predicted_probabilities(pred)
   print(p2)
@@ -218,5 +219,5 @@ for(i in 1:length(unique(cvaucs_vacc$varset))) {
 cvaucs_vacc %>% arrange(-AUC) %>% 
   filter(Learner == "SL") %>%
   select(varset, AUCstr) %>%
-  write.csv(here("output", "SLperformance_allvarsets.csv"))
+  write.csv(here("cor_surrogates", "output", "SLperformance_allvarsets.csv"))
   

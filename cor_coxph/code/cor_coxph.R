@@ -1,9 +1,12 @@
 #Sys.setenv(TRIAL = "moderna_mock") # moderna_mock  janssen_pooled_real  janssen_pooled_mock  janssen_na_mock
 #Sys.setenv(VERBOSE = 1) 
-renv::activate(project = here::here(".."))    
+here::i_am("cor_coxph/code/cor_coxph.R")
+renv::activate(project = here::here())    
     # There is a bug on Windows that prevents renv from working properly. The following code provides a workaround:
     if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
-source(here::here("..", "_common.R"))
+source(here::here("_common.R"))
+myprint(study_name_code)
+myprint(study_name)
 #-----------------------------------------------
 
 
@@ -15,7 +18,7 @@ library(parallel)
 library(forestplot)
 library(Hmisc) # wtd.quantile, cut2
 library(xtable) # this is a dependency of kyotil
-source(here::here("code", "params.R"))
+source(here::here("cor_coxph", "code", "params.R"))
 
 myprint(study_name)
 myprint(verbose)
@@ -35,9 +38,9 @@ if (length(tpeak)==0 | length(tpeaklag)==0 | length(tfinal.tpeak)==0) stop("conf
 
 
 # path for figures and tables etc
-save.results.to = here::here("output")
+save.results.to = here::here("cor_coxph", "output")
 if (!dir.exists(save.results.to))  dir.create(save.results.to)
-save.results.to = paste0(here::here("output"), "/", attr(config,"config"));
+save.results.to = paste0(here::here("cor_coxph", "output"), "/", attr(config,"config"));
 if (!dir.exists(save.results.to))  dir.create(save.results.to)
 save.results.to = paste0(save.results.to, "/", COR,"/");
 if (!dir.exists(save.results.to))  dir.create(save.results.to)
@@ -53,7 +56,7 @@ time.start=Sys.time()
 # use dataset without risk score so that we can get baseline pos groups as well
 if (config$is_ows_trial) {
     
-    dat.mock.all <- read.csv(here::here("..", "data_clean", data_name))
+    dat.mock.all <- read.csv(here::here("data_clean", data_name))
     if ("Day"%.%tpeak%.%"pseudoneutid50" %in% names(dat.mock.all)) {    
         res=lapply (0:1, function(ii) {
             dat.immuno.seroneg=subset(dat.mock.all, Trt==1 & Bserostatus==ii & ph2.immuno)    
@@ -88,13 +91,13 @@ if (config$is_ows_trial) {
 ###################################################################################################
 # read data with risk score
 data_name_updated <- sub(".csv", "_with_riskscore.csv", data_name)
-if (file.exists(here::here("..", "data_clean", data_name_updated))) {
-    dat.mock <- read.csv(here::here("..", "data_clean", data_name_updated))
+if (file.exists(here::here("data_clean", data_name_updated))) {
+    dat.mock <- read.csv(here::here("data_clean", data_name_updated))
     data_name = data_name_updated
 } else {
-    dat.mock <- read.csv(here::here("..", "data_clean", data_name))
+    dat.mock <- read.csv(here::here("data_clean", data_name))
 }
-load(here::here("..", "data_clean/", paste0(attr(config,"config"), "_params.Rdata"))) 
+load(here::here("data_clean/", paste0(attr(config,"config"), "_params.Rdata"))) 
 print(paste0("reading data from ",data_name))
 
 
@@ -116,11 +119,10 @@ myprint(numPerm)
 ###################################################################################################
 # get some summary info about event time etc
 # do this before uloq censoring
-
 # Average follow-up of vaccine recipients starting at tpeaklag days post visit
 write(round(mean(subset(dat.mock, Trt==1 & Bserostatus==0 & ph1, EventTimePrimary, drop=T), na.rm=T)-tpeaklag), file=paste0(save.results.to, "avg_followup_"%.%study_name))
 
-if (config$is_ows_trial) source(here::here("code", "cor_coxph_misc.R"))
+if (config$is_ows_trial) source(here::here("cor_coxph", "code", "cor_coxph_misc.R"))
 
 
 ###################################################################################################
@@ -211,10 +213,10 @@ rv$marker.cutpoints=marker.cutpoints
 # run PH models
 ###################################################################################################
     
-source(here::here("code", "cor_coxph_ph.R"))
+source(here::here("cor_coxph", "code", "cor_coxph_ph.R"))
 
 if(length(config$forestplot_script)==1) {
-    tmp=here::here("code", config$forestplot_script)
+    tmp=here::here("cor_coxph", "code", config$forestplot_script)
     if (file.exists(tmp)) source(tmp)
 }
 
@@ -241,13 +243,13 @@ if (study_name == "MockCOVE" & !endsWith(data_name, "riskscore.csv")) {
 ###################################################################################################
     
 # load ylims.cor[[1]] from D29 analyses, which is a list of two: 1 with placebo lines, 2 without placebo lines.
-tmp=paste0(here::here(), paste0("/output/", attr(config,"config"), "/", COR, "/ylims.cor.", study_name, ".Rdata"))
+tmp=paste0(here::here("cor_coxph"), paste0("/output/", attr(config,"config"), "/", COR, "/ylims.cor.", study_name, ".Rdata"))
 if (file.exists(tmp)) load(tmp)
 # if this does not exist, the code will find alternative ylim
 
-source(here::here("code", "cor_coxph_marginalized_risk_no_marker.R"))
-source(here::here("code", "cor_coxph_marginalized_risk_bootstrap.R"))
-source(here::here("code", "cor_coxph_marginalized_risk_plotting.R"))
+source(here::here("cor_coxph", "code", "cor_coxph_marginalized_risk_no_marker.R"))
+source(here::here("cor_coxph", "code", "cor_coxph_marginalized_risk_bootstrap.R"))
+source(here::here("cor_coxph", "code", "cor_coxph_marginalized_risk_plotting.R"))
 
 
 
@@ -255,6 +257,7 @@ source(here::here("code", "cor_coxph_marginalized_risk_plotting.R"))
 
 ###################################################################################################
 # save verification object rv
-save(rv, file=paste0(here::here("verification"), "/", COR, ".rv."%.%study_name%.%".Rdata"))
+save(rv, file=paste0(here::here("cor_coxph", "verification"), "/", COR, ".rv."%.%study_name%.%".Rdata"))
+
 
 print("cor_coxph run time: "%.%format(Sys.time()-time.start, digits=1))

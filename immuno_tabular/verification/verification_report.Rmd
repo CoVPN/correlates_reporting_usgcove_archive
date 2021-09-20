@@ -7,6 +7,7 @@ output: pdf_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+here::i_am("immuno_tabular/verification/verification_report.Rmd")
 library(tidyverse)
 library(testthat)
 library(here)
@@ -32,7 +33,7 @@ In this document, the output of `make_table_all.R` is compared against the outpu
 `verification/verification_output/immuno_tab_plcb_v.Rdata`.
 
 The file `verification/verification_input/practice_data.csv` and \newline  `verification/verification_input/Tables_immuno.Rdata` were provided by the original programmer to the tester for verification purposes of `make_table_all.R` when all time points are available.
-Their md5 hash are `r digest::digest(file = here("verification/verification_input","practice_data.csv"))`, `r digest::digest(file = here("verification/verification_input","Tables_immuno.Rdata"))`.
+Their md5 hash are `r digest::digest(file = here("immuno_tabular", "verification/verification_input","practice_data.csv"))`, `r digest::digest(file = here("immuno_tabular", "verification/verification_input","Tables_immuno.Rdata"))`.
 
 The file \newline 
 `verification/verification_output/immuno_tab_dm_pos_v.Rdata`,\newline  `verification/verification_output/immuno_tab_dm_neg_v.Rdata`,\newline 
@@ -47,70 +48,70 @@ The file \newline
 `verification/verification_output/immuno_tab_vacc_v.Rdata`,\newline 
 `verification/verification_output/immuno_tab_plcb_v.Rdata`\newline 
 were created by the tester for verification using the `immuno_table_verification.Rmd` script and using all time points available.
-Their md5 hash are `r digest::digest(file = here("verification/verification_output/immuno_tab_dm_pos_v.Rdata"))`,
+Their md5 hash are `r digest::digest(file = here("immuno_tabular", "verification/verification_output/immuno_tab_dm_pos_v.Rdata"))`,
 \newline 
-`r digest::digest(file = here("verification/verification_output/immuno_tab_dm_neg_v.Rdata"))`,
+`r digest::digest(file = here("immuno_tabular", "verification/verification_output/immuno_tab_dm_neg_v.Rdata"))`,
 \newline 
-`r digest::digest(file = here("verification/verification_output/immuno_tab_bind1_v.Rdata"))`,
+`r digest::digest(file = here("immuno_tabular", "verification/verification_output/immuno_tab_bind1_v.Rdata"))`,
 \newline 
-`r digest::digest(file = here("verification/verification_output/immuno_tab_bind2_v.Rdata"))`, \newline 
-`r digest::digest(file = here("verification/verification_output/immuno_tab_pseudo_v.Rdata"))`, \newline 
-`r digest::digest(file = here("verification/verification_output/immuno_tab_gm_v.Rdata"))`, \newline 
-`r digest::digest(file = here("verification/verification_output/immuno_tab_gmr_v.Rdata"))`, \newline 
-`r digest::digest(file = here("verification/verification_output/immuno_tab_rgmt_v.Rdata"))`, \newline 
-`r digest::digest(file = here("verification/verification_output/immuno_tab_rrdiff_v.Rdata"))`, \newline 
-`r digest::digest(file = here("verification/verification_output/immuno_tab_neg_v.Rdata"))`, \newline 
-`r digest::digest(file = here("verification/verification_output/immuno_tab_pos_v.Rdata"))`, \newline 
-`r digest::digest(file = here("verification/verification_output/immuno_tab_vacc_v.Rdata"))`, \newline 
-`r digest::digest(file = here("verification/verification_output/immuno_tab_plcb_v.Rdata"))`.
+`r digest::digest(file = here("immuno_tabular", "verification/verification_output/immuno_tab_bind2_v.Rdata"))`, \newline 
+`r digest::digest(file = here("immuno_tabular", "verification/verification_output/immuno_tab_pseudo_v.Rdata"))`, \newline 
+`r digest::digest(file = here("immuno_tabular", "verification/verification_output/immuno_tab_gm_v.Rdata"))`, \newline 
+`r digest::digest(file = here("immuno_tabular", "verification/verification_output/immuno_tab_gmr_v.Rdata"))`, \newline 
+`r digest::digest(file = here("immuno_tabular", "verification/verification_output/immuno_tab_rgmt_v.Rdata"))`, \newline 
+`r digest::digest(file = here("immuno_tabular", "verification/verification_output/immuno_tab_rrdiff_v.Rdata"))`, \newline 
+`r digest::digest(file = here("immuno_tabular", "verification/verification_output/immuno_tab_neg_v.Rdata"))`, \newline 
+`r digest::digest(file = here("immuno_tabular", "verification/verification_output/immuno_tab_pos_v.Rdata"))`, \newline 
+`r digest::digest(file = here("immuno_tabular", "verification/verification_output/immuno_tab_vacc_v.Rdata"))`, \newline 
+`r digest::digest(file = here("immuno_tabular", "verification/verification_output/immuno_tab_plcb_v.Rdata"))`.
 
 ### Load Data
 
 ```{r Load-Data, message=FALSE}
 original_data <- load(
-  here("verification","verification_input","Tables_immuno.Rdata")
+  here("immuno_tabular", "verification","verification_input","Tables_immuno.Rdata")
   )
 immuno_tab_dm_pos_v <- load(
-  here("verification","verification_output","immuno_tab_dm_pos_v.Rdata")
+  here("immuno_tabular", "verification","verification_output","immuno_tab_dm_pos_v.Rdata")
   )
 immuno_tab_dm_neg_v <- load(
-  here("verification","verification_output","immuno_tab_dm_neg_v.Rdata")
+  here("immuno_tabular", "verification","verification_output","immuno_tab_dm_neg_v.Rdata")
   )
 immuno_tab_strtm_v <- load(
-  here("verification","verification_output","immuno_tab_strtm_v.Rdata")
+  here("immuno_tabular", "verification","verification_output","immuno_tab_strtm_v.Rdata")
   )
 immuno_tab_bind1_v <- load(
-  here("verification","verification_output","immuno_tab_bind1_v.Rdata")
+  here("immuno_tabular", "verification","verification_output","immuno_tab_bind1_v.Rdata")
   )
 immuno_tab_bind2_v<- load(
-  here("verification","verification_output","immuno_tab_bind2_v.Rdata")
+  here("immuno_tabular", "verification","verification_output","immuno_tab_bind2_v.Rdata")
   )
 immuno_tab_pseudo_v <- load(
-  here("verification","verification_output","immuno_tab_pseudo_v.Rdata")
+  here("immuno_tabular", "verification","verification_output","immuno_tab_pseudo_v.Rdata")
   )
 immuno_tab_gm_v <- load(
-  here("verification","verification_output","immuno_tab_gm_v.Rdata")
+  here("immuno_tabular", "verification","verification_output","immuno_tab_gm_v.Rdata")
   )
 immuno_tab_gmr_v <- load(
-  here("verification","verification_output","immuno_tab_gmr_v.Rdata")
+  here("immuno_tabular", "verification","verification_output","immuno_tab_gmr_v.Rdata")
   )
 immuno_tab_rgmt_v <- load(
-  here("verification","verification_output","immuno_tab_rgmt_v.Rdata")
+  here("immuno_tabular", "verification","verification_output","immuno_tab_rgmt_v.Rdata")
   )
 immuno_tab_rrdiff_v <- load(
-  here("verification","verification_output","immuno_tab_rrdiff_v.Rdata")
+  here("immuno_tabular", "verification","verification_output","immuno_tab_rrdiff_v.Rdata")
   )
 immuno_tab_neg_v<- load(
-  here("verification","verification_output","immuno_tab_neg_v.Rdata")
+  here("immuno_tabular", "verification","verification_output","immuno_tab_neg_v.Rdata")
   )
 immuno_tab_pos_v <- load(
-  here("verification","verification_output","immuno_tab_pos_v.Rdata")
+  here("immuno_tabular", "verification","verification_output","immuno_tab_pos_v.Rdata")
   )
 immuno_tab_vacc_v <- load(
-  here("verification","verification_output","immuno_tab_vacc_v.Rdata")
+  here("immuno_tabular", "verification","verification_output","immuno_tab_vacc_v.Rdata")
   )
 immuno_tab_plcb_v <- load(
-  here("verification","verification_output","immuno_tab_plcb_v.Rdata")
+  here("immuno_tabular", "verification","verification_output","immuno_tab_plcb_v.Rdata")
   )
 ```
 

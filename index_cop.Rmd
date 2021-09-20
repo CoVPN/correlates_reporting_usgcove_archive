@@ -20,6 +20,11 @@ header-includes:
    - \usepackage[margin=1in]{geometry}
 ---
 
+```{r, include = FALSE}
+here::i_am("index_cop.Rmd")
+knitr::opts_knit$set(root.dir = here::here())
+```
+
 ```{r, include = knitr::is_latex_output() & startsWith(study_name, "Mock")}
 knitr::asis_output("\\AddToShipoutPictureFG{
   \\AtPageCenter{

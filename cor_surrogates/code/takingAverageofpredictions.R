@@ -18,7 +18,7 @@ for(i in 1:length(unique(cvaucs_d57_vacc$varset))) {
                                          paste0(Learner, "_", Screen_fromRun))))
   
   # Get cvsl fit and extract cv predictions
-  load(file = here("output", paste0("CVSLfits_vacc_EventIndPrimaryD57_", variableSet, ".rda")))
+  load(file = here("cor_surrogates", "output", paste0("CVSLfits_vacc_EventIndPrimaryD57_", variableSet, ".rda")))
   ####################################################
   # take mean of predictions for individual learners
   lib_preds <- vector(mode = "list", length = length(cvfits))
@@ -51,7 +51,7 @@ for(i in 1:length(unique(cvaucs_d57_vacc$varset))) {
   
   # plot ROC curve
   options(bitmapType = "cairo")
-  png(file = here("figs", paste0("ROCcurve_", variableSet, ".png")),
+  png(file = here("cor_surrogates", "figs", paste0("ROCcurve_", variableSet, ".png")),
       width = 1000, height = 1000)
   p1 <- plot_roc_curves(pred, cvaucDAT = top2)
   print(p1)
@@ -59,7 +59,7 @@ for(i in 1:length(unique(cvaucs_d57_vacc$varset))) {
   
   # plot pred prob plot
   options(bitmapType = "cairo")
-  png(file = here("figs", paste0("predProb_", variableSet, ".png")),
+  png(file = here("cor_surrogates", "figs", paste0("predProb_", variableSet, ".png")),
       width = 1000, height = 1000)
   p2 <- plot_predicted_probabilities(pred)
   print(p2)

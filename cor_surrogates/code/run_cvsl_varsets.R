@@ -1,12 +1,13 @@
 # Sys.setenv(TRIAL = "moderna_mock")
 #-----------------------------------------------
 # obligatory to append to the top of each script
-renv::activate(project = here::here(".."))
+here::i_am("cor_surrogates/code/run_cvsl_varsets.R")
+renv::activate(project = here::here())
 
 # There is a bug on Windows that prevents renv from working properly. The following code provides a workaround:
 if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
 
-source(here::here("..", "_common.R"))
+source(here::here("_common.R"))
 #-----------------------------------------------
 
 args <- commandArgs(trailingOnly = TRUE)
@@ -40,9 +41,9 @@ suppressMessages(conflict_prefer("summarise", "dplyr"))
 run_prod <- !grepl("Mock", study_name)
 
 # load required files and functions 
-source(here("code", "day57or29analyses.R")) # set up analyses for markers
-source(here("code", "sl_screens.R")) # set up the screen/algorithm combinations
-source(here("code", "utils.R")) # get CV-AUC for all algs
+source(here("cor_surrogates", "code", "day57or29analyses.R")) # set up analyses for markers
+source(here("cor_surrogates", "code", "sl_screens.R")) # set up the screen/algorithm combinations
+source(here("cor_surrogates", "code", "utils.R")) # get CV-AUC for all algs
 
 # SL optimal surrogate analysis: Superlearner code requires computing environment with more than 10 cores!
 num_cores <- parallel::detectCores()
@@ -51,11 +52,11 @@ num_cores <- parallel::detectCores()
 ############ SETUP INPUT #######################
 # Read data_clean
 data_name_updated <- sub(".csv", "_with_riskscore.csv", data_name)
-if (file.exists(here::here("..", "data_clean", data_name_updated))) {
-  dat.mock <- read.csv(here::here("..", "data_clean", data_name_updated))
+if (file.exists(here::here("data_clean", data_name_updated))) {
+  dat.mock <- read.csv(here::here("data_clean", data_name_updated))
   data_name = data_name_updated
 } else {
-  dat.mock <- read.csv(here::here("..", "data_clean", data_name))
+  dat.mock <- read.csv(here::here("data_clean", data_name))
 }
 
 briskfactors <- c("risk_score", "HighRiskInd", "MinorityInd")
@@ -385,9 +386,9 @@ for(i in 1:length(seeds)) {
   cvfits[[i]] = fits[[i]]$cvfits
 }
 
-saveRDS(cvaucs, file = here("output", paste0("CVSLaucs_vacc_", endpoint, "_", varset_names[job_id], ".rds")))
-save(cvfits, file = here("output", paste0("CVSLfits_vacc_", endpoint, "_", varset_names[job_id], ".rda")))
-save(ph2_vacc_ptids, file = here("output", "ph2_vacc_ptids.rda"))
+saveRDS(cvaucs, file = here("cor_surrogates", "output", paste0("CVSLaucs_vacc_", endpoint, "_", varset_names[job_id], ".rds")))
+save(cvfits, file = here("cor_surrogates", "output", paste0("CVSLfits_vacc_", endpoint, "_", varset_names[job_id], ".rda")))
+save(ph2_vacc_ptids, file = here("cor_surrogates", "output", "ph2_vacc_ptids.rda"))
 save(run_prod, Y, dat.ph1, dat.ph2, weights, dat.mock, briskfactors, endpoint, maxVar,
-     V_outer, file = here("output", "objects_for_running_SL.rda"))
+     V_outer, file = here("cor_surrogates", "output", "objects_for_running_SL.rda"))
 

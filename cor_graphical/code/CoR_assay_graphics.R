@@ -1,21 +1,24 @@
 #-----------------------------------------------
 # obligatory to append to the top of each script
-renv::activate(project = here::here(".."))
-source(here::here("..", "_common.R"))
+here::i_am("cor_graphical/code/CoR_assay_graphics.R")
+renv::activate(project = here::here())
+source(here::here("_common.R"))
 #-----------------------------------------------
-source(here::here("code", "params.R"))
-source(here::here("code", "covid_corr_plot_functions.R"))
+source(here::here("cor_graphical", "code", "params.R"))
+source(here::here("cor_graphical", "code", "covid_corr_plot_functions.R"))
 library(ggpubr)
 library(scales)
 library(ggplot2)
 library(tidyr)
 
 dat.long.cor.subset <- readRDS(here(
+  "cor_graphical", 
   "data_clean",
   "long_cor_data.rds"
 ))
 
 dat.cor.subset <- readRDS(here(
+  "cor_graphical", 
   "data_clean",
   "cor_data.rds"
 ))

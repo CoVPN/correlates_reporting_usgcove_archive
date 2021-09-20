@@ -1,15 +1,16 @@
 #-----------------------------------------------
 # obligatory to append to the top of each script
-renv::activate(project = here::here(".."))
+here::i_am("cor_graphical/code/cor_graphics_violin_scatter.R")
+renv::activate(project = here::here())
     
 # There is a bug on Windows that prevents renv from working properly. The following code provides a workaround:
 if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
     
-source(here::here("..", "_common.R"))
+source(here::here("_common.R"))
 incNotMol <- ""  #"IncludeNotMolecConfirmed"
 #-----------------------------------------------
 
-source(here::here("code", "cor_process_function.R"))
+source(here::here("cor_graphical", "code", "cor_process_function.R"))
 library(scales)
 library(tidyverse)
 library(here)
@@ -27,11 +28,11 @@ if(!has57) labels.time <- labels.time[!grepl("Day 57|D57", labels.time)]
 times <- list(labels.time[!grepl("Day 1|fold-rise", labels.time)], labels.time[!grepl("fold-rise", labels.time)])
 
 ## load data 
-longer_cor_data <- readRDS(here("data_clean", "longer_cor_data.rds"))
-longer_cor_data_plot1 <- readRDS(here("data_clean", "longer_cor_data_plot1.rds"))
-plot.25sample1 <- readRDS(here("data_clean", "plot.25sample1.rds"))
-longer_cor_data_plot3 <- readRDS(here("data_clean", "longer_cor_data_plot3.rds"))
-plot.25sample3 <- readRDS(here("data_clean", "plot.25sample3.rds"))
+longer_cor_data <- readRDS(here("cor_graphical", "data_clean", "longer_cor_data.rds"))
+longer_cor_data_plot1 <- readRDS(here("cor_graphical", "data_clean", "longer_cor_data_plot1.rds"))
+plot.25sample1 <- readRDS(here("cor_graphical", "data_clean", "plot.25sample1.rds"))
+longer_cor_data_plot3 <- readRDS(here("cor_graphical", "data_clean", "longer_cor_data_plot3.rds"))
+plot.25sample3 <- readRDS(here("cor_graphical", "data_clean", "plot.25sample3.rds"))
 
 ## common variables with in loop
 min_max_plot <- longer_cor_data %>% group_by(assay) %>% summarise(min=min(value, na.rm=T), max=max(value, na.rm=T))
@@ -164,7 +165,7 @@ for (i in 1:length(plots)) {
                                 )
           g <- grid.arrange(p, bottom = textGrob("All data points for cases are shown. Non-Case data points are shown for all eligible participants or for a random sample of 100 eligible participants, whichever is larger", x = 1, hjust = 1, gp = gpar(fontsize = 15)))
           file_name <- paste0("linebox_", gsub("bind","",gsub("pseudoneut","pnAb_",plots[i])), "_", trt[k], "_", gsub(" ","",bstatus[j]), "_", if(case_set=="severe") "severe_", "v",t,"_", study_name, ".pdf")
-          ggsave2(plot = g, filename = here("figs", file_name), width = 16, height = 11)
+          ggsave2(plot = g, filename = here("cor_graphical", "figs", file_name), width = 16, height = 11)
           
           p <- violin_box_plot(dat=       subset(longer_cor_data_plot1, assay==plots[i] & Bserostatus==bstatus[j] & Trt==trt[k] & !is.na(value) & time %in% unlist(times[t]) & eval(as.name(case_set))==1), 
                                 dat.sample=subset(longer_cor_data_plot1, assay==plots[i] & Bserostatus==bstatus[j] & Trt==trt[k] & !is.na(value) & time %in% unlist(times[t]) & eval(as.name(case_set))==1), 
@@ -188,7 +189,7 @@ for (i in 1:length(plots)) {
                                               "Day 2-14 Cases"="Day 2-14\nCases", "Day 15-35 Cases"="Day 15-35\nCases", "Post-Peak Cases"="Post-Peak\nCases", "Non-Cases"="Non-Cases"))
                                 )
           file_name <- paste0("violinbox_", gsub("bind","",gsub("pseudoneut","pnAb_",plots[i])), "_", trt[k], "_", gsub(" ","",bstatus[j]), "_", if(case_set=="severe") "severe_", "v",t,"_", study_name, ".pdf")
-          ggsave2(plot = p, filename = here("figs", file_name), width = 16, height = 11)
+          ggsave2(plot = p, filename = here("cor_graphical", "figs", file_name), width = 16, height = 11)
         }
       }
     }
@@ -241,7 +242,7 @@ for (i in 1:length(plots)) {
             g <- grid.arrange(p, bottom = textGrob("All data points for cases are shown. Non-Case data points are shown for all eligible participants or for a random sample of 100 eligible participants, whichever is larger", x = 1, hjust = 1, gp = gpar(fontsize = 15)))
             s1 <- ifelse(s=="age_geq_65_label", "Age", ifelse(s=="highrisk_label", "Risk", ifelse(s=="sex_label","Sex", ifelse(s=="minority_label","RaceEthnic", ifelse(s=="Dich_RaceEthnic","Dich_RaceEthnic",NA)))))
             file_name <- paste0("linebox_", gsub("bind","",gsub("pseudoneut","pnAb_",plots[i])), "_", trt[k], "_", gsub(" ","",bstatus[j]), "_", s1, "_", if(case_set=="severe") "severe_", "v", t,"_", study_name, ".pdf")
-            ggsave2(plot = g, filename = here("figs", file_name), width = 16, height = 11)
+            ggsave2(plot = g, filename = here("cor_graphical", "figs", file_name), width = 16, height = 11)
             
             p <- violin_box_plot(dat=       subset(longer_cor_data_plot2, assay==plots[i] & Bserostatus==bstatus[j] & Trt==trt[k] & !is.na(value) & time %in% unlist(times[t]) & eval(as.name(case_set))==1), 
                                   dat.sample=subset(longer_cor_data_plot2, assay==plots[i] & Bserostatus==bstatus[j] & Trt==trt[k] & !is.na(value) & time %in% unlist(times[t]) & eval(as.name(case_set))==1), 
@@ -265,7 +266,7 @@ for (i in 1:length(plots)) {
                                                 "Day 2-14 Cases"="Day 2-14\nCases", "Day 15-35 Cases"="Day 15-35\nCases", "Post-Peak Cases"="Post-Peak\nCases", "Non-Cases"="Non-Cases"))
                                   )
             file_name <- paste0("violinbox_", gsub("bind","",gsub("pseudoneut","pnAb_",plots[i])), "_", trt[k], "_", gsub(" ","",bstatus[j]), "_", s1, "_", if(case_set=="severe") "severe_", "v", t,"_", study_name, ".pdf")
-            ggsave2(plot = p, filename = here("figs", file_name), width = 16, height = 11)
+            ggsave2(plot = p, filename = here("cor_graphical", "figs", file_name), width = 16, height = 11)
             
           }
         }
@@ -308,7 +309,7 @@ for (i in 1:length(plots)) {
                                 )
           g <- grid.arrange(p, bottom = textGrob("All data points for cases are shown. Non-Case data points are shown for all eligible participants or for a random sample of 100 eligible participants, whichever is larger", x = 1, hjust = 1, gp = gpar(fontsize = 15)))
           file_name <- paste0("linebox_", gsub("bind","",gsub("pseudoneut","pnAb_",plots[i])), "_", trt[k], "_", gsub(" ","",bstatus[j]), "_Age_Risk_", if(case_set=="severe") "severe_", "v", t,"_", study_name, ".pdf")
-          ggsave2(plot = g, filename = here("figs", file_name), width = 16, height = 13.5)
+          ggsave2(plot = g, filename = here("cor_graphical", "figs", file_name), width = 16, height = 13.5)
           
           p <- violin_box_plot(dat=       subset(longer_cor_data_plot3, assay==plots[i] & Bserostatus==bstatus[j] & Trt==trt[k] & !is.na(value) & time %in% unlist(times[t]) & eval(as.name(case_set))==1), 
                                 dat.sample=subset(longer_cor_data_plot3, assay==plots[i] & Bserostatus==bstatus[j] & Trt==trt[k] & !is.na(value) & time %in% unlist(times[t]) & eval(as.name(case_set))==1), 
@@ -333,7 +334,7 @@ for (i in 1:length(plots)) {
                                               "Day 2-14 Cases"="Day 2-14\nCases", "Day 15-35 Cases"="Day 15-35\nCases", "Post-Peak Cases"="Post-Peak\nCases", "Non-Cases"="Non-Cases"))
                                 )
           file_name <- paste0("violinbox_", gsub("bind","",gsub("pseudoneut","pnAb_",plots[i])), "_", trt[k], "_", gsub(" ","",bstatus[j]), "_Age_Risk_", if(case_set=="severe") "severe_", "v", t,"_", study_name, ".pdf")
-          ggsave2(plot = p, filename = here("figs", file_name), width = 16, height = 13.5)
+          ggsave2(plot = p, filename = here("cor_graphical", "figs", file_name), width = 16, height = 13.5)
         }
       }
     }
@@ -378,7 +379,7 @@ for (i in 1:length(plots)) {
               axis.text.x = element_text(size=ifelse(c=="Vaccine_BaselineNeg", 27, 19)))
       
       file_name <- paste0("scatter_",gsub("bind","",gsub("pseudoneut","pnAb_",plots[i])),"_",c,"_",gsub(" ","",times[[2]][d]),"_", study_name, ".pdf")
-      ggsave2(plot = p, filename = here("figs", file_name), width = 12.5, height = 11)
+      ggsave2(plot = p, filename = here("cor_graphical", "figs", file_name), width = 12.5, height = 11)
       
     }
   }
@@ -427,7 +428,7 @@ for (i in 1:length(plots)) {
             axis.text.x = element_text(size=ifelse(c=="Vaccine_BaselineNeg", 27, 19)))
     
     file_name <- paste0("scatter_daysince_",gsub("bind","",gsub("pseudoneut","pnAb_",plots[i])),"_",c,"_",study_name, ".pdf")
-    ggsave2(plot = p, filename = here("figs", file_name), width = 12.5, height = 11)
+    ggsave2(plot = p, filename = here("cor_graphical", "figs", file_name), width = 12.5, height = 11)
     
   }
 }

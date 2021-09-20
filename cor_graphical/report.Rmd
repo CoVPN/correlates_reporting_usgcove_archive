@@ -5,16 +5,12 @@ output:
 ---
 #  Graphical Descriptions of Antibody Marker Data {#ab-grapical}
 
-```{r, echo=FALSE}
-print("running cor_graphical report ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-```
-
-
 ```{r cor-graphical-setup, echo = FALSE, message = FALSE}
 library(here)
 library(knitr)
 library(latex2exp)
 here::i_am("cor_graphical/report.Rmd")
+knitr::opts_knit$set(root.dir = here::here())
 plot_ve_curves <- readRDS(here::here("cor_graphical", "data_clean", "plot_ve_curves.rds"))
 ```
 

@@ -1,13 +1,14 @@
 #-----------------------------------------------
 # obligatory to append to the top of each script
-renv::activate(project = here::here(".."))
-source(here::here("..", "_common.R"))
+here::i_am("cop_mediation/code/clean_data.R")
+renv::activate(project = here::here())
+source(here::here("_common.R"))
 #-----------------------------------------------
 # load parameters
-source(here::here("code", "params.R"))
+source(here::here("cop_mediation", "code", "params.R"))
 
 # load data
-full_data <- read.csv(here::here("..", "data_clean", data_name_updated))
+full_data <- read.csv(here::here("data_clean", data_name_updated))
 
 # define trichotomized markers
 #   adding 1e-6 to the first cut point helps avoid an error when 33% is the minimial value
@@ -75,7 +76,7 @@ if(!is.null(times)){
     data_keep <- data[keep, variables_to_keep]
 
     saveRDS(data_keep,
-      file = here::here("data_clean", paste0("data_", time, ".rds"))
+      file = here::here("cop_mediation", "data_clean", paste0("data_", time, ".rds"))
     )
 
     # swap out categorical markers
@@ -93,7 +94,7 @@ if(!is.null(times)){
     data_keep_cat <- data[keep, variables_to_keep_cat]
 
     saveRDS(data_keep_cat,
-      file = here::here("data_clean", paste0("data_", time, "_cat.rds"))
+      file = here::here("cop_mediation", "data_clean", paste0("data_", time, "_cat.rds"))
     )
   }
 }

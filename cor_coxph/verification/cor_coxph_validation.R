@@ -1,7 +1,8 @@
 #-----------------------------------------------
 # obligatory to append to the top of each script
-renv::activate(project = here::here(".."))
-source(here::here("..", "_common.R")) 
+here::i_am("cor_coxph/verification/cor_coxph_validation.R")
+renv::activate(project = here::here())
+source(here::here("_common.R")) 
 #-----------------------------------------------
 
 # load required libraries and functions
@@ -20,7 +21,7 @@ library(xtable)
 library(broom)
 
 # Read in data file
-inputFile <- read.csv(here::here("verification", "verification_input", "moderna_mock_data_processed_with_riskscore.csv")) %>%
+inputFile <- read.csv(here::here("cor_coxph", "verification", "verification_input", "moderna_mock_data_processed_with_riskscore.csv")) %>%
   mutate(Day57bindSpike = ifelse(Day57bindSpike > log10(uloqs[["bindSpike"]]), log10(uloqs[["bindSpike"]]), Day57bindSpike), 
          Day57bindRBD = ifelse(Day57bindRBD > log10(uloqs[["bindRBD"]]), log10(uloqs[["bindRBD"]]), Day57bindRBD),
          Day57pseudoneutid50 = ifelse(Day57pseudoneutid50 > log10(uloqs[["pseudoneutid50"]]), log10(uloqs[["pseudoneutid50"]]), Day57pseudoneutid50),
@@ -222,7 +223,7 @@ tab <- get_results_in_df_D57(dat = inputFile %>% filter(Trt == 1 & Bserostatus =
             get_results_in_df_D57(dat = inputFile %>% filter(Trt == 1 & Bserostatus == 0 & Sex == 0), group = "Women"))
 
 tab %>% 
-  write.csv(here("verification", "verification_output", "D57.mock.csv"))
+  write.csv(here("cor_coxph", "verification", "verification_output", "D57.mock.csv"))
 
 tab <- tab %>% select(marker, cases, atRisk, estimate, conf.low, conf.high, p.value)
 
@@ -421,4 +422,4 @@ tab <- get_results_in_df_D29(dat = inputFile %>% filter(Trt == 1 & Bserostatus =
             get_results_in_df_D29(dat = inputFile %>% filter(Trt == 1 & Bserostatus == 0 & Sex == 0), group = "Women"))
 
 tab %>% 
-  write.csv(here("verification", "verification_output", "D29.mock.csv"))
+  write.csv(here("cor_coxph", "verification", "verification_output", "D29.mock.csv"))

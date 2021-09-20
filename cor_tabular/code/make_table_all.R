@@ -1,7 +1,8 @@
 ##################################################
 # obligatory to append to the top of each script #
-renv::activate(project = here::here("..")) #
-source(here::here("..", "_common.R")) #
+here::i_am("cor_tabular/code/make_table_all.R")
+renv::activate(project = here::here()) #
+source(here::here("_common.R")) #
 ##################################################
 
 library(survey)
@@ -11,7 +12,7 @@ library(dplyr, warn.conflicts = FALSE)
 options(dplyr.summarise.inform = FALSE)
 # For stratum with 1 ppt
 options(survey.lonely.psu="adjust")
-source(here::here("code", "make_functions.R"))
+source(here::here("cor_tabular", "code", "make_functions.R"))
 
 
 ###################################################
@@ -231,8 +232,8 @@ labels_all <- full_join(labels.assays, resp.lb, by = c("time", "marker")) %>%
 # Read in original data
 data_name_updated <- sub(".csv", "_with_riskscore.csv", data_name)
 
-dat <- dat_proc <- read.csv(here::here("..", "data_clean", data_name))
-load(here::here("..", "data_clean/", paste0(attr(config,"config"), "_params.Rdata"))) 
+dat <- dat_proc <- read.csv(here::here("data_clean", data_name))
+load(here::here("data_clean", paste0(attr(config,"config"), "_params.Rdata")))
 
 # The stratified random cohort for immunogenicity
 ds_s <- dat %>%
@@ -690,4 +691,4 @@ print("Done with all tables")
 
 save(tlf, tab_dm_neg, tab_dm_pos, tab_strtm1, tab_strtm2, tab_case_cnt, 
      case_vacc_neg, case_vacc_pos, case_plcb_pos,
-     file = here::here("output", "Tables.Rdata"))
+     file = here::here("cor_tabular", "output", "Tables.Rdata"))

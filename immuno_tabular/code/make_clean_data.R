@@ -1,14 +1,15 @@
 ##################################################
 # obligatory to append to the top of each script #
-renv::activate(project = here::here("..")) #
-source(here::here("..", "_common.R")) #
+here::i_am("immuno_tabular/code/make_clean_data.R")
+renv::activate(project = here::here()) #
+source(here::here("_common.R")) #
 ##################################################
 
 # Immunogenicity Tables
 
 # Reload clean_data
-base::load(here::here("data_clean", "params.Rdata"))
-source(here::here("code", "make_functions.R"))
+base::load(here::here("immuno_tabular", "data_clean", "params.Rdata"))
+source(here::here("immuno_tabular", "code", "make_functions.R"))
 
 library(tidyverse)
 library(dplyr, warn.conflicts = FALSE)
@@ -16,7 +17,7 @@ library(dplyr, warn.conflicts = FALSE)
 options(dplyr.summarise.inform = FALSE)
 
 # Read in original data
-dat <- read.csv(here::here("..", "data_clean", data_name))
+dat <- read.csv(here::here("data_clean", data_name))
 
 # The stratified random cohort for immunogenicity
 
@@ -116,5 +117,5 @@ grplev <- c("", labels.age, "At-risk", "Not at-risk",
 names(grplev) <- c("All participants", grplev[-1])
 
 save(ds, assays, assays_col, labels_all, subgrp, grplev, tlf,
-     file = here::here("data_clean", "ds_all.Rdata"))
+     file = here::here("immuno_tabular", "data_clean", "ds_all.Rdata"))
 

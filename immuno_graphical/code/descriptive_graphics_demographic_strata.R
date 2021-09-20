@@ -1,7 +1,8 @@
 #-----------------------------------------------
 # obligatory to append to the top of each script
-renv::activate(project = here::here(".."))
-source(here::here("..", "_common.R"))
+here::i_am("immuno_graphical/code/descriptive_graphics_demographic_strata.R")
+renv::activate(project = here::here())
+source(here::here("_common.R"))
 #-----------------------------------------------
 
 library(here)
@@ -15,20 +16,21 @@ library(scales)
 
 set.seed(12345)
 # load helper scripts and parameters
-source(here("code", "ggally_cor_resample.R"))
-source(here("code", "covid_corr_plot_functions.R"))
-source(here("code", "params.R"))
+source(here("immuno_graphical", "code", "ggally_cor_resample.R"))
+source(here("immuno_graphical", "code", "covid_corr_plot_functions.R"))
+source(here("immuno_graphical", "code", "params.R"))
 
 
 
 # load cleaned data
 dat.long.twophase.sample <- readRDS(here(
+  "immuno_graphical",                                         
   "data_clean",
   "long_twophase_data.rds"
 ))
-dat.twophase.sample <- readRDS(here("data_clean", "twophase_data.rds"))
+dat.twophase.sample <- readRDS(here("immuno_graphical", "data_clean", "twophase_data.rds"))
 
-assay_lim <- readRDS(here("data_clean", "assay_lim.rds"))
+assay_lim <- readRDS(here("immuno_graphical", "data_clean", "assay_lim.rds"))
 ## ============================================================================
 ## boxplots and weighted rcdf plots of assay readouts at time points versus
 ##  (1)  age >= 65 or age < 65

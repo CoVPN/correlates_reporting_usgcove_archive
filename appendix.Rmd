@@ -1,6 +1,7 @@
 # Appendix
 
 ```{r, echo = FALSE, message = FALSE, warning = FALSE}
+here::i_am("appendix.Rmd")
 quiet <- capture.output({
   renv::activate(project = here::here())
   source(here::here("_common.R"))

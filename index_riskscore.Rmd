@@ -19,6 +19,10 @@ header-includes:
    - \usepackage{eso-pic,graphicx,transparent,titling} # keep titling last!
 ---
 
+```{r, include = FALSE}
+here::i_am("index_riskscore.Rmd")
+knitr::opts_knit$set(root.dir = here::here())
+```
 
 ```{r, include = knitr::is_latex_output() & startsWith(study_name, "Mock")}
 knitr::asis_output("\\AddToShipoutPictureFG{

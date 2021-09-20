@@ -4,9 +4,10 @@ library(tidyr)
 library(ROCR)
 library(ggplot2)
 library(cowplot)
-load(file = "../output/cvsl_riskscore_cvfits.rda")
-load("../output/cvsl_risk_placebo_cvaucs.rda")
-load("../output/objects_for_running_SL.rda")
+library(here)
+load(file = here("base_riskscore", "output" , "cvsl_riskscore_cvfits.rda"))
+load(file = here("base_riskscore", "output" , "cvsl_risk_placebo_cvaucs.rda")
+load(file = here("base_riskscore", "output" , "objects_for_running_SL.rda"))
 cv_fit = cvfits[[1]]
 predict = bind_cols(cv_fit[["SL.predict"]] %>% as.data.frame() %>% `colnames<-`(c("pred")),
                     cv_fit[["Y"]] %>% as.data.frame() %>% `colnames<-`(c("Y")))
@@ -75,12 +76,12 @@ plot_roc_curves <- function(predict){
 
 
 
-png(file = "../figs/ROCcurve_riskscore.png",
+png(file = here("base_riskscore", "figs", "ROCcurve_riskscore.png"),
     width = 2000, height = 1000)
 p1 <- plot_roc_curves(predict)
 
 # plot ROC curve on vaccine group
-vacc <- read.csv("../output/vaccine_ptids_with_riskscores.csv")
+vacc <- read.csv(here("base_riskscore", "output", "vaccine_ptids_with_riskscores.csv"))
 pred.obj <- ROCR::prediction(vacc$pred, vacc$EventIndPrimaryD57)
 perf.obj <- ROCR::performance(pred.obj, "tpr", "fpr")
 AUC = format(round(unique(vacc$AUCchar), 3), nsmall=3)

@@ -5,6 +5,8 @@ library(knitr)
 library(kableExtra)
 library(dplyr)
 here::i_am("immuno_tabular/report.Rmd")
+knitr::opts_knit$set(root.dir = here::here())
+
 base::load(here::here( "immuno_tabular", "output", "Tables.Rdata"))
 
 ```

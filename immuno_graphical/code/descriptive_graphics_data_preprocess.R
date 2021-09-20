@@ -1,16 +1,17 @@
 #-----------------------------------------------
 # obligatory to append to the top of each script
-renv::activate(project = here::here(".."))
-source(here::here("..", "_common.R"))
+here::i_am("immuno_graphical/code/descriptive_graphics_data_preprocess.R")
+renv::activate(project = here::here())
+source(here::here("_common.R"))
 #-----------------------------------------------
 
 library(here)
 library(dplyr)
 library(stringr)
-dat.mock <- read.csv(here("..", "data_clean", data_name), header = TRUE)
+dat.mock <- read.csv(here("data_clean", data_name), header = TRUE)
 
 # load parameters
-source(here("code", "params.R"))
+source(here("immuno_graphical", "code", "params.R"))
 dat <- dat.mock
 
 print("Data preprocess")
@@ -257,8 +258,8 @@ dat.long.twophase.sample <- filter(dat.long.twophase.sample, assay %in% assay_im
 
 
 saveRDS(as.data.frame(dat.long.twophase.sample),
-  file = here("data_clean", "long_twophase_data.rds")
+  file = here("immuno_graphical", "data_clean", "long_twophase_data.rds")
 )
 saveRDS(as.data.frame(dat.twophase.sample),
-  file = here("data_clean", "twophase_data.rds")
+  file = here("immuno_graphical", "data_clean", "twophase_data.rds")
 )

@@ -1,13 +1,14 @@
 #-----------------------------------------------
 # obligatory to append to the top of each script
-renv::activate(project = here::here(".."))
-source(here::here("..", "_common.R"))
+here::i_am("cor_threshold/code/clean_data.R")
+renv::activate(project = here::here())
+source(here::here("_common.R"))
 #-----------------------------------------------
 # load parameters
-source(here::here("code", "params.R"))
+source(here::here("cor_threshold", "code", "params.R"))
 
 # load data
-dat.mock <- read.csv(here::here("..", "data_clean", paste0(stringr::str_match(data_name,"(.+).csv")[,2],append_data,".csv")))
+dat.mock <- read.csv(here::here("data_clean", paste0(stringr::str_match(data_name,"(.+).csv")[,2],append_data,".csv")))
 
 
  
@@ -90,11 +91,11 @@ for (time in times) {
   data_secondstage <- na.omit(data_firststage[data_firststage$TwophasesampInd == 1, ])
 
   write.csv(data_firststage,
-            here::here("data_clean", paste0("data_firststage_", time, ".csv")),
+            here::here("cor_threshold", "data_clean", paste0("data_firststage_", time, ".csv")),
             row.names = F
   )
   write.csv(data_secondstage,
-            here::here("data_clean", paste0("data_secondstage_", time, ".csv")),
+            here::here("cor_threshold", "data_clean", paste0("data_secondstage_", time, ".csv")),
             row.names = F
   )
 
@@ -123,7 +124,7 @@ for (time in times) {
     }
      
 
-    write.csv(data.frame(thresh = thresh_grid), here::here("data_clean", "Thresholds_by_marker", paste0("thresholds_", marker, ".csv")), row.names = F)
+    write.csv(data.frame(thresh = thresh_grid), here::here("cor_threshold", "data_clean", "Thresholds_by_marker", paste0("thresholds_", marker, ".csv")), row.names = F)
 
     thresholds_list[[marker]] <- thresh_grid
   }

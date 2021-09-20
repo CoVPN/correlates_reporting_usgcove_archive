@@ -1,7 +1,7 @@
 #  Summary Tables{#cor-tabular}
 
-```{r, echo=FALSE}
-print("running cor_tabular report ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+```{r, echo=FALSE, message=FALSE}
+message("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ running cor_tabular report ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 ```
 
 

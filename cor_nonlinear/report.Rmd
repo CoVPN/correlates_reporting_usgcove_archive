@@ -5,9 +5,10 @@
 <!-- The only difference between this Rmd and the standalone Rmd is  -->
 <!-- pathCoRoutput <- paste0("cor_nonlinear/", pathCoRoutput) -->
 
+```{r, echo=FALSE, message=FALSE}
+message("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ running cor_nonlinear report ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+```
 
-\counterwithin{table}{section}
-\counterwithin{figure}{section}
 
 
 <!-- these latex variables are used in report_sub -->

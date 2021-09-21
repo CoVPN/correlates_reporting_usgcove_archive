@@ -40,7 +40,7 @@ names(mins) <- min_max_plot$assay
 maxs <- min_max_plot$max
 names(maxs) <- min_max_plot$assay
 
-#' A function to create a violin + box plot with or without lines
+#' A ggplot object for violin box plot with or without lines
 #' 
 #' @param dat Dataframe with variables needed
 #' @param dat.sample Random sample of the param dat for generating dots (showing all dots may be too much)
@@ -101,9 +101,10 @@ violin_box_plot <-
   p <- ggplot(data=dat, aes_string(x=x, y=y, color=colby, shape=shaby))
   
   if (type=="line") {
-    p <- p + geom_violin(scale="width", na.rm = TRUE) + 
-      geom_line(data = dat.sample, aes(group = Ptid)) + 
-      geom_point(data = dat.sample, size = pt.size, show.legend = TRUE) +
+    p <- p + geom_violin(scale="width", na.rm = TRUE)
+      if (length(unique(dat.sample$time))!=1) p <- p + geom_line(data = dat.sample, aes(group = Ptid))
+      # only draw line if there are multiple time points
+      p <- p + geom_point(data = dat.sample, size = pt.size, show.legend = TRUE) +
       geom_boxplot(width=0.25, lwd=1.5, alpha = 0.3, outlier.shape=NA, show.legend = FALSE)
   } else if (type=="noline") {
     p <- p + geom_violin(scale="width", na.rm = TRUE) +
@@ -129,6 +130,7 @@ violin_box_plot <-
           plot.title = element_text(hjust = 0.5),
           axis.text.x = element_text(size=axis.text.x.cex),
           axis.text.y = element_text(size=axis.text.y.cex))
+
   return (p)
 }
 
@@ -137,7 +139,7 @@ for (i in 1:length(plots)) {
   for (j in 1:length(bstatus)) {
     for (k in 1:length(trt)) {
       for (t in 1:length(times)) {
-        for (case_set in c(if(study_name_code=="ENSEMBLE") "severe", "Perprotocol")){
+        for (case_set in c(if(study_name=="ENSEMBLE" | study_name=="MockENSEMBLE") "severe", "Perprotocol")){
         
           y.breaks <- seq(floor(mins[plots[i]]), ceiling(maxs[plots[i]]))
           y.lim <- c(floor(mins[plots[i]]), ceiling(maxs[plots[i]]))
@@ -188,7 +190,7 @@ for (i in 1:length(plots)) {
                                               "Day 2-14 Cases"="Day 2-14\nCases", "Day 15-35 Cases"="Day 15-35\nCases", "Post-Peak Cases"="Post-Peak\nCases", "Non-Cases"="Non-Cases"))
                                 )
           file_name <- paste0("violinbox_", gsub("bind","",gsub("pseudoneut","pnAb_",plots[i])), "_", trt[k], "_", gsub(" ","",bstatus[j]), "_", if(case_set=="severe") "severe_", "v",t,"_", study_name, ".pdf")
-          ggsave2(plot = p, filename = here("figs", file_name), width = 16, height = 11)
+          suppressWarnings(ggsave2(plot = p, filename = here("figs", file_name), width = 16, height = 11))
         }
       }
     }
@@ -200,7 +202,7 @@ for (i in 1:length(plots)) {
   for (j in 1:length(bstatus)) {
     for (k in 1:length(trt)) {
       for (t in 1:length(times)) {
-        for (case_set in c(if(study_name_code=="ENSEMBLE") "severe", "Perprotocol")){
+        for (case_set in c(if(study_name=="ENSEMBLE" | study_name=="MockENSEMBLE") "severe", "Perprotocol")){
           for (s in c("age_geq_65_label","highrisk_label","sex_label","minority_label","Dich_RaceEthnic")) {
             
             groupby_vars2 <- c("Trt", "Bserostatus", "cohort_event", "time", "assay", s)
@@ -265,7 +267,7 @@ for (i in 1:length(plots)) {
                                                 "Day 2-14 Cases"="Day 2-14\nCases", "Day 15-35 Cases"="Day 15-35\nCases", "Post-Peak Cases"="Post-Peak\nCases", "Non-Cases"="Non-Cases"))
                                   )
             file_name <- paste0("violinbox_", gsub("bind","",gsub("pseudoneut","pnAb_",plots[i])), "_", trt[k], "_", gsub(" ","",bstatus[j]), "_", s1, "_", if(case_set=="severe") "severe_", "v", t,"_", study_name, ".pdf")
-            ggsave2(plot = p, filename = here("figs", file_name), width = 16, height = 11)
+            suppressWarnings(ggsave2(plot = p, filename = here("figs", file_name), width = 16, height = 11))
             
           }
         }
@@ -280,7 +282,7 @@ for (i in 1:length(plots)) {
   for (j in 1:length(bstatus)) {
     for (k in 1:length(trt)) {
       for (t in 1:length(times)) {
-        for (case_set in c(if(study_name_code=="ENSEMBLE") "severe", "Perprotocol")){
+        for (case_set in c(if(study_name=="ENSEMBLE" | study_name=="MockENSEMBLE") "severe", "Perprotocol")){
   
           y.breaks <- seq(floor(mins[plots[i]]), ceiling(maxs[plots[i]]))
           y.lim <- c(floor(mins[plots[i]]), ceiling(maxs[plots[i]]) + 1.5)
@@ -308,7 +310,7 @@ for (i in 1:length(plots)) {
                                 )
           g <- grid.arrange(p, bottom = textGrob("All data points for cases are shown. Non-Case data points are shown for all eligible participants or for a random sample of 100 eligible participants, whichever is larger", x = 1, hjust = 1, gp = gpar(fontsize = 15)))
           file_name <- paste0("linebox_", gsub("bind","",gsub("pseudoneut","pnAb_",plots[i])), "_", trt[k], "_", gsub(" ","",bstatus[j]), "_Age_Risk_", if(case_set=="severe") "severe_", "v", t,"_", study_name, ".pdf")
-          ggsave2(plot = g, filename = here("figs", file_name), width = 16, height = 13.5)
+          suppressWarnings(ggsave2(plot = g, filename = here("figs", file_name), width = 16, height = 13.5))
           
           p <- violin_box_plot(dat=       subset(longer_cor_data_plot3, assay==plots[i] & Bserostatus==bstatus[j] & Trt==trt[k] & !is.na(value) & time %in% unlist(times[t]) & eval(as.name(case_set))==1), 
                                 dat.sample=subset(longer_cor_data_plot3, assay==plots[i] & Bserostatus==bstatus[j] & Trt==trt[k] & !is.na(value) & time %in% unlist(times[t]) & eval(as.name(case_set))==1), 
@@ -333,7 +335,7 @@ for (i in 1:length(plots)) {
                                               "Day 2-14 Cases"="Day 2-14\nCases", "Day 15-35 Cases"="Day 15-35\nCases", "Post-Peak Cases"="Post-Peak\nCases", "Non-Cases"="Non-Cases"))
                                 )
           file_name <- paste0("violinbox_", gsub("bind","",gsub("pseudoneut","pnAb_",plots[i])), "_", trt[k], "_", gsub(" ","",bstatus[j]), "_Age_Risk_", if(case_set=="severe") "severe_", "v", t,"_", study_name, ".pdf")
-          ggsave2(plot = p, filename = here("figs", file_name), width = 16, height = 13.5)
+          suppressWarnings(ggsave2(plot = p, filename = here("figs", file_name), width = 16, height = 13.5))
         }
       }
     }
@@ -378,7 +380,7 @@ for (i in 1:length(plots)) {
               axis.text.x = element_text(size=ifelse(c=="Vaccine_BaselineNeg", 27, 19)))
       
       file_name <- paste0("scatter_",gsub("bind","",gsub("pseudoneut","pnAb_",plots[i])),"_",c,"_",gsub(" ","",times[[2]][d]),"_", study_name, ".pdf")
-      ggsave2(plot = p, filename = here("figs", file_name), width = 12.5, height = 11)
+      suppressMessages(ggsave2(plot = p, filename = here("figs", file_name), width = 12.5, height = 11))
       
     }
   }
@@ -427,7 +429,7 @@ for (i in 1:length(plots)) {
             axis.text.x = element_text(size=ifelse(c=="Vaccine_BaselineNeg", 27, 19)))
     
     file_name <- paste0("scatter_daysince_",gsub("bind","",gsub("pseudoneut","pnAb_",plots[i])),"_",c,"_",study_name, ".pdf")
-    ggsave2(plot = p, filename = here("figs", file_name), width = 12.5, height = 11)
+    suppressMessages(ggsave2(plot = p, filename = here("figs", file_name), width = 12.5, height = 11))
     
   }
 }

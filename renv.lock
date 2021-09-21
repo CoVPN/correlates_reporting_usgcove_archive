@@ -200,7 +200,7 @@
     },
     "RhpcBLASctl": {
       "Package": "RhpcBLASctl",
-      "Version": "0.20-137",
+      "Version": "0.21-247",
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "fb135751ed3f00f33890826823ebe332"

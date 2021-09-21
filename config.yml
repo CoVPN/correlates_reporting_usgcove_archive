@@ -187,3 +187,10 @@ D100:
   tfinal.tpeak: 0
 
   
+####################
+# two time points 
+
+D29D57:
+  tinterm: 29
+  tpeak: 57
+  tpeaklag: 7

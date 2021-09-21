@@ -1,32 +1,14 @@
 #!/bin/bash
 
-export TRIAL=moderna_mock
-cd $1
-make 
-make report
-cd ..
-
-export TRIAL=janssen_pooled_mock
-cd $1
-make 
-make report
-cd ..
-
-#export TRIAL=janssen_na_mock
-#cd $1
-#make 
-#make report
-#cd ..
-
-#export TRIAL=janssen_la_mock
-#cd $1
-#make 
-#make report
-#cd ..
-
-#export TRIAL=janssen_sa_mock
-#cd $1
-#make 
-#make report
-#cd ..
-
+for T in moderna_mock janssen_pooled_mock # janssen_pooled_real  janssen_pooled_mock  janssen_na_mock
+do
+	export TRIAL=$T	
+	echo $TRIAL
+	if [[ "$1" == "cor_coxph" ]] 
+	then
+		make -k -C $1 cor_coxph # save some time
+	else
+		make -k -C $1 all
+	fi
+	bash ./_build_chapter.sh $1
+done

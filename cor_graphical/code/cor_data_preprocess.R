@@ -53,13 +53,15 @@ if(has57) {
 
 if(!has57)  {
   
+  intcur2 <- paste0("Day 15-", 28+tpeaklag, " Cases")
+  
   dat <- dat %>%
     mutate(cohort_event = factor(
       ifelse(Perprotocol==1 & Bserostatus==0 & TwophasesampIndD29==1 & (!!as.name(paste0("EventIndPrimary", incNotMol, "D1")))==1  & (!!as.name(paste0("EventTimePrimary", incNotMol, "D1"))) <= 13, "Day 2-14 Cases",
-             ifelse(Perprotocol==1 & Bserostatus==0 & TwophasesampIndD29==1 & (!!as.name(paste0("EventIndPrimary", incNotMol, "D1")))==1  & (!!as.name(paste0("EventTimePrimary", incNotMol, "D1"))) > 13 & (!!as.name(paste0("EventTimePrimary", incNotMol, "D1"))) <= tpeaklag-1 + NumberdaysD1toD29, "Day 15-35 Cases",
+             ifelse(Perprotocol==1 & Bserostatus==0 & TwophasesampIndD29==1 & (!!as.name(paste0("EventIndPrimary", incNotMol, "D1")))==1  & (!!as.name(paste0("EventTimePrimary", incNotMol, "D1"))) > 13 & (!!as.name(paste0("EventTimePrimary", incNotMol, "D1"))) <= tpeaklag-1 + NumberdaysD1toD29, intcur2,
                     ifelse(Perprotocol==1 & Bserostatus==0 & TwophasesampIndD29==1 & (!!as.name(paste0("EventIndPrimary", incNotMol, "D29")))==1 & (!!as.name(paste0("EventTimePrimary", incNotMol, "D29"))) >= tpeaklag, "Post-Peak Cases",
                            ifelse(Perprotocol==1 & Bserostatus==0 & TwophasesampIndD29==1 & (!!as.name(paste0("EventIndPrimary", incNotMol, "D1")))==0  & EarlyendpointD29==0, "Non-Cases", NA)))),
-      levels = c("Day 2-14 Cases", "Day 15-35 Cases", "Post-Peak Cases", "Non-Cases"))
+      levels = c("Day 2-14 Cases", intcur2, "Post-Peak Cases", "Non-Cases"))
       )
 }
 

@@ -1,6 +1,8 @@
-```{r, echo=FALSE}
-print("running references ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+```{r, echo=FALSE, message=FALSE}
+message("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ running references ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 ```
+
+
 
 `r if (knitr::is_html_output()) '
 # References {-}

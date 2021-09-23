@@ -122,7 +122,6 @@ write(round(mean(subset(dat.mock, Trt==1 & Bserostatus==0 & ph1, EventTimePrimar
 
 if (config$is_ows_trial) source(here::here("code", "cor_coxph_misc.R"))
 
-
 ###################################################################################################
 # uloq censoring
 # note that if delta are used, delta needs to be recomputed

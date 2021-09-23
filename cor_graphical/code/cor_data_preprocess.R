@@ -246,52 +246,12 @@ dat.long$ethnicity_label <-
     levels = c("Hispanic or Latino", "Not Hispanic or Latino", "Not reported and unknown")
   )
 
-if (study_name=="COVE" | study_name=="MockCOVE") {
-  dat.long$minority_label <-
-    with(
-      dat.long,
-      factor(MinorityInd,
-             levels = c(0, 1),
-             labels = c("White Non-Hispanic", "Comm. of Color")
-      )
+if (study_name=="ENSEMBLE" | study_name=="MockENSEMBLE") {minor_var = "URMforsubcohortsampling"} else {minor_var = "MinorityInd"}
+dat.long$minority_label <-
+    factor(dat.long[, minor_var],
+           levels = c(0, 1),
+           labels = c("White Non-Hispanic", "Comm. of Color")
     )
-
-  dat.long$age_minority_label <-
-    with(
-      dat.long,
-      factor(paste0(age.geq.65, MinorityInd),
-             levels = c("01", "00", "11", "10"),
-             labels = c(
-               paste(younger_age, "Comm. of Color"),
-               paste(younger_age, "White Non-Hispanic"),
-               paste(older_age, "Comm. of Color"),
-               paste(older_age, "White Non-Hispanic")
-             )
-      )
-    )
-} else {
-  dat.long$minority_label <-
-    with(
-      dat.long,
-      factor(URMforsubcohortsampling,
-             levels = c(1, 0),
-             labels = c("URM", "Non-URM")
-      )
-    )
-  dat.long$age_minority_label <-
-    with(
-      dat.long,
-      factor(paste0(age.geq.65, URMforsubcohortsampling),
-             levels = c("00", "01", "10", "11"),
-             labels = c(
-               paste(younger_age, "Non-URM"),
-               paste(younger_age, "URM"),
-               paste(older_age, "Non-URM"),
-               paste(older_age, "URM")
-             )
-      )
-    )
-}
 
 # save a copy of dat.long.cor.subset for longer transformation
 dat.long.cor.subset.violin <- dat.long

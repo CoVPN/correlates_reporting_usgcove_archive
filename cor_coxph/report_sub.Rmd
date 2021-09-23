@@ -246,13 +246,6 @@ Average follow-up of vaccine recipients (in the `r COR` correlates analyses popu
 \end{figure}
 
 
-`r if(tpeak=="57") paste0("
-\\begin{figure}[H]
-    \\centering
-    \\includegraphics[width=1\\textwidth]{", pathCoRoutput, "/barplot_mixed}
-    \\caption{Distribution of the number of days to COVID endpoints, vaccine arm, baseline negative. ", special.note, "}
-\\end{figure}
-")`
 
 
 \ifENSEMBLE

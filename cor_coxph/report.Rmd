@@ -2,13 +2,27 @@
 <!-- here::i_am("cor_coxph/report.Rmd") -->
 <!-- ``` -->
 
-<!-- The only difference between this Rmd and the standalone Rmd is  -->
-<!-- pathCoRoutput <- paste0("cor_coxph/", pathCoRoutput) -->
-
 
 ```{r, echo=FALSE, message=FALSE}
 message("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ running cor_coxph report ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 ```
+
+
+# Graphical Descriptions of Time to Event Data {#cor-graphical-time-to-event}
+
+`r if (study_name=="COVE" | study_name=="MockCOVE") { paste0("
+\\begin{figure}[H]
+    \\centering
+    \\includegraphics[width=1\\textwidth]{", paste0("cor_coxph/output/", attr(config,"config"), "/D29D57"), "/barplot_mixed}
+    \\caption{Distribution of the number of days to COVID endpoints, vaccine arm, baseline negative.}
+\\end{figure}
+")}`
+
+
+`r if (study_name=="ENSEMBLE" | study_name=="MockENSEMBLE") { paste0("
+This page is empty.
+")}`
+
 
 
 <!-- these latex variables are used in report_sub -->
@@ -17,16 +31,18 @@ message("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ running cor_coxph report ~~~~~~~~~~~~~~~
 `r paste0("\\", study_name_code, "true")` 
 
 
+
+<!-- handle cove and ensemble differently because they include different analyses -->
+
 <!-- COVE -->
 
 ```{r, echo=FALSE, results='asis'}
-if (study_name_code=="COVE") {
+if (study_name=="COVE" | study_name=="MockCOVE") {
   for (i in 1:2) {
     tpeak <- ifelse(i==1, 29, 57)
     COR <- paste0("D", tpeak)
     special.note = ""
-    pathCoRoutput <- paste0("output/", attr(config,"config"), "/", COR)
-    pathCoRoutput <- paste0("cor_coxph/", pathCoRoutput)
+    pathCoRoutput <- paste0("cor_coxph/output/", attr(config,"config"), "/", COR)
     res = knitr::knit_child(c(here::here('cor_coxph', 'report_sub.Rmd')), quiet = TRUE)
     cat(res, sep = '\n')
     cat("\\clearpage", sep = '\n')
@@ -35,18 +51,15 @@ if (study_name_code=="COVE") {
 ```
 
 
-
-
 <!-- ENSEMBLE -->
 
 ```{r, echo=FALSE, results='asis'}
-if (study_name_code=="ENSEMBLE") {
+if (study_name=="MockENSEMBLE" | study_name=="ENSEMBLE") {
   for (i in 1:2) {
     tpeak <- 29
     COR <- ifelse(i==1, "D29", "D29start1")
     special.note = paste0("$\\ddagger$ Count cases starting ", ifelse(i==1,7,1), " days post Day 29.")
-    pathCoRoutput <- paste0("output/", attr(config,"config"), "/", COR)
-    pathCoRoutput <- paste0("cor_coxph/", pathCoRoutput)
+    pathCoRoutput <- paste0("cor_coxph/output/", attr(config,"config"), "/", COR)
     res = knitr::knit_child(c(here::here('cor_coxph', 'report_sub.Rmd')), quiet = TRUE)
     cat(res, sep = '\n')
     cat("\\clearpage", sep = '\n')

@@ -23,7 +23,7 @@ bstatus <- c("Baseline Neg")
 trt <- c("Placebo","Vaccine")
 plots_ytitles <- labels.assays.short
 plots_titles <- labels.assays[names(labels.assays) %in% names(labels.assays.short)]
-if(!has57) labels.time <- labels.time[!grepl("Day 57|D57", labels.time)]
+if(study_name=="ENSEMBLE" | study_name=="MockENSEMBLE") {labels.time <- labels.time[!grepl("Day 57|D57", labels.time)]}
 times <- list(labels.time[!grepl("Day 1|fold-rise", labels.time)], labels.time[!grepl("fold-rise", labels.time)])
 
 ## load data 
@@ -379,7 +379,7 @@ for (i in 1:length(plots)) {
 for (i in 1:length(plots)) {
   for (c in c("Vaccine_BaselineNeg","all")) {
     
-    timels <- c(if (!has57) "Day 1", "Day 29", if (has57) "Day 57")
+    timels <- ifelse(study_name=="ENSEMBLE" | study_name=="MockENSEMBLE", c("Day 1", "Day 29"), c("Day 29", "Day 57"))
     
     ds.tmp <- longer_cor_data %>%
       filter(assay==plots[i]) %>%
@@ -389,9 +389,9 @@ for (i in 1:length(plots)) {
       filter(!cohort_event == "Non-Cases") %>% 
       mutate(cohort_event = factor(cohort_event, levels = head(levels(cohort_event), -1)))
     
-    xvar <- ifelse(has57, "EventTimePrimaryD29",
+    xvar <- ifelse(!(study_name=="ENSEMBLE" | study_name=="MockENSEMBLE"), "EventTimePrimaryD29",
                    ifelse(incNotMol=="IncludeNotMolecConfirmed", "EventTimePrimaryIncludeNotMolecConfirmedD1", "EventTimePrimaryD1"))
-    xlb <- ifelse(has57, 'Days Since the Day 29 Visit', 'Days Since the Day 1 Visit')
+    xlb <- ifelse(!(study_name=="ENSEMBLE" | study_name=="MockENSEMBLE"), 'Days Since the Day 29 Visit', 'Days Since the Day 1 Visit')
     y.breaks <- seq(floor(mins[plots[i]]), ceiling(maxs[plots[i]]))
     y.lim <- c(floor(mins[plots[i]]), ceiling(maxs[plots[i]]))
     x.breaks <- seq(from=0, to=max(ds.tmp[, xvar], na.rm=T), by=floor(max(ds.tmp[, xvar], na.rm=T)/5))

@@ -14,16 +14,15 @@ dat.mock <- read.csv(here("..", "data_clean", data_name))
 
 # COR defines the analysis to be done, e.g. D29, D57, D29start1
 Args <- commandArgs(trailingOnly=TRUE)
-if (length(Args)==0) Args=c(COR="D29") 
+if (length(Args)==0) Args=c(COR="D29D57") 
 COR=Args[1]; myprint(COR)
 
 # COR has a set of analysis-specific parameters defined in the config file
 config.cor <- config::get(config = COR)
 tpeak=as.integer(paste0(config.cor$tpeak))
 tpeaklag=as.integer(paste0(config.cor$tpeaklag))
-tfinal.tpeak=as.integer(paste0(config.cor$tfinal.tpeak))
-myprint(tpeak, tpeaklag, tfinal.tpeak)
-if (length(tpeak)==0 | length(tpeaklag)==0 | length(tfinal.tpeak)==0) stop("config "%.%COR%.%" misses some fields")
+myprint(tpeak, tpeaklag)
+if (length(tpeak)==0 | length(tpeaklag)==0) stop("config "%.%COR%.%" misses some fields")
 
 # set wt.DXX missingness to 0
 wt.vars <- colnames(dat.mock)[grepl("wt.D", colnames(dat.mock))]
@@ -39,19 +38,7 @@ incNotMol <- ""  #"IncludeNotMolecConfirmed"
 
 ## label the subjects according to their case-control status
 ## add case vs non-case indicators
-if(has57) {
-  dat <- dat %>%
-    mutate(cohort_event = factor(
-      ifelse(Perprotocol==1 & Bserostatus==0 & EarlyendpointD29==0 & TwophasesampIndD29==1 & EventIndPrimaryD29==1 & EventTimePrimaryD29 >=7 & EventTimePrimaryD29 <= (6 + NumberdaysD1toD57 - NumberdaysD1toD29), "Intercurrent Cases",
-             ifelse(Perprotocol==1 & Bserostatus==0 & EarlyendpointD57==0 & TwophasesampIndD29==1 & EventIndPrimaryD57==1, "Post-Peak Cases", 
-                    # definition for post-peak cases include people with and without D57 marker data for downstream plotting
-                    # will filter out those without D57 marker data in the D57 panels
-                    ifelse(Perprotocol==1 & Bserostatus==0 & EarlyendpointD57==0 & TwophasesampIndD57==1 & EventIndPrimaryD1==0, "Non-Cases", NA))),
-      levels = c("Intercurrent Cases", "Post-Peak Cases", "Non-Cases"))
-      )
-}
-
-if(!has57)  {
+if(study_name=="ENSEMBLE" | study_name=="MockENSEMBLE")  {
   
   intcur2 <- paste0("Day 15-", 28+tpeaklag, " Cases")
   
@@ -62,6 +49,16 @@ if(!has57)  {
                     ifelse(Perprotocol==1 & Bserostatus==0 & TwophasesampIndD29==1 & (!!as.name(paste0("EventIndPrimary", incNotMol, "D29")))==1 & (!!as.name(paste0("EventTimePrimary", incNotMol, "D29"))) >= tpeaklag, "Post-Peak Cases",
                            ifelse(Perprotocol==1 & Bserostatus==0 & TwophasesampIndD29==1 & (!!as.name(paste0("EventIndPrimary", incNotMol, "D1")))==0  & EarlyendpointD29==0, "Non-Cases", NA)))),
       levels = c("Day 2-14 Cases", intcur2, "Post-Peak Cases", "Non-Cases"))
+    )
+} else {
+  dat <- dat %>%
+    mutate(cohort_event = factor(
+      ifelse(Perprotocol==1 & Bserostatus==0 & EarlyendpointD29==0 & TwophasesampIndD29==1 & EventIndPrimaryD29==1 & EventTimePrimaryD29 >=7 & EventTimePrimaryD29 <= (6 + NumberdaysD1toD57 - NumberdaysD1toD29), "Intercurrent Cases",
+             ifelse(Perprotocol==1 & Bserostatus==0 & EarlyendpointD57==0 & TwophasesampIndD29==1 & EventIndPrimaryD57==1, "Post-Peak Cases", 
+                    # definition for post-peak cases include people with and without D57 marker data for downstream plotting
+                    # will filter out those without D57 marker data in the D57 panels
+                    ifelse(Perprotocol==1 & Bserostatus==0 & EarlyendpointD57==0 & TwophasesampIndD57==1 & EventIndPrimaryD1==0, "Non-Cases", NA))),
+      levels = c("Intercurrent Cases", "Post-Peak Cases", "Non-Cases"))
       )
 }
 
@@ -137,13 +134,13 @@ dat.long$lb2 = with(dat.long, ifelse(grepl("bind", assay), "ULoQ", ""))
 dat.long$lbval2 =  with(dat.long, ifelse(grepl("bind", assay), ULoQ, -99))
 
 # assign values above the uloq to the uloq
-for (t in c("B", "Day29", if(has57) "Day57") ) {
+for (t in times[!grepl("Delta", times)]) {
   dat.long[[t]] <- ifelse(dat.long[[t]] > dat.long$ULoQ, dat.long$ULoQ, dat.long[[t]])
 }
 
 # reset Delta29overB & Delta57overB for response call later using LLoD & ULoQ truncated data at Day 1, Day 29, Day 57
 dat.long$Delta29overB = with(dat.long, Day29 - B)
-if(has57) dat.long$Delta57overB = with(dat.long, Day57 - B)
+if(!(study_name=="ENSEMBLE" | study_name=="MockENSEMBLE")) dat.long$Delta57overB = with(dat.long, Day57 - B)
 
 # age threshold
 if (study_name=="COVE" | study_name=="MockCOVE") {age_thres=65; younger_age="Age < 65"; older_age="Age >= 65"
@@ -326,17 +323,17 @@ dat.longer.cor.subset <- dat.long.cor.subset.violin[,c("Ptid", "Trt", "Bserostat
         "Perprotocol", "cohort_event", "Age", "age_geq_65_label", 
         "highrisk_label", "age_risk_label", "sex_label", "minority_label", "Dich_RaceEthnic", "assay", 
         "LLoD", "LLoQ", "pos.cutoffs", "ULoQ", "lb", "lbval", "lb2", "lbval2","TwophasesampIndD29","Wstratum",
-        if(has57) c("EventIndPrimaryD57", "TwophasesampIndD57", "wt.D57", "ph2.D57"), "wt.D29", "ph2.D29",
+        if(!(study_name=="ENSEMBLE" | study_name=="MockENSEMBLE")) c("EventIndPrimaryD57", "TwophasesampIndD57", "wt.D57", "ph2.D57"), "wt.D29", "ph2.D29",
         
-        "B", "Day29", "Delta29overB", if(has57) c("Day57", "Delta57overB"))] %>%
-  pivot_longer(cols = all_of(c("B", "Day29", "Delta29overB", if(has57) c("Day57", "Delta57overB"))), names_to = "time", values_to = "value")
+        times)] %>%
+  pivot_longer(cols = all_of(times), names_to = "time", values_to = "value")
 
 # phase 2 filters: 
 #    include both +++ and ++- at D29 for intercurrent cases and Post-Peak Cases
 #    include only +++ at D57 for intercurrent cases and Post-Peak Cases
 #    non-cases is defined as +++
 #    for intercurrent cases at D57, Day 2-14 Cases & Day 15-35 Cases at D29, can't use ph2.D57/ph2.D29 because they are before D57/D29
-if(has57) {
+if(!(study_name=="ENSEMBLE" | study_name=="MockENSEMBLE")) {
   dat.longer.cor.subset <- dat.longer.cor.subset %>% 
     filter(!(cohort_event %in% c("Intercurrent Cases", "Post-Peak Cases") & time == "Day57" & TwophasesampIndD57==0))
 }
@@ -353,9 +350,9 @@ dat.longer.cor.subset <- dat.longer.cor.subset %>%
          increase_4F_D29_ptid=max(increase_4F_D29),
          increase_4F_D57_ptid=max(increase_4F_D57)) %>%
   ungroup() %>%
-  filter(time %in% c("Day 1","Day 29",if(has57) "Day 57"))
+  filter(!grepl("Delta", time))
 
-if(has57) {
+if(!(study_name=="ENSEMBLE" | study_name=="MockENSEMBLE")) {
   dat.longer.cor.subset$response_nab = with(dat.longer.cor.subset, 
           ifelse(baseline_lt_thres_ptid == 0 & value >= LLoQ, 1,
                  ifelse(baseline_lt_thres_ptid == 1 & time == "Day 1", 1,

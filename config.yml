@@ -9,6 +9,7 @@ ows_trial: &ows_trial
 
 twomarkers_trial: &twomarkers_trial
   is_ows_trial: no
+  two_marker_timepoints: no
   data_raw_dir: twomarkers
   data_in_file: two_markers_VEtrial_primarystage_mock_data.csv
   study_name: TWOMARKERS
@@ -26,6 +27,8 @@ twomarkers_trial: &twomarkers_trial
 
 moderna_trial: &moderna_trial
   <<: *ows_trial
+  two_marker_timepoints: yes
+  timepoints: [29, 57]
   subset_variable: None
   subset_value: All
   assays: [bindSpike, bindRBD, pseudoneutid50, pseudoneutid80]
@@ -52,6 +55,8 @@ moderna_mock: &moderna_mock
 
 janssen_trial: &janssen_trial
   <<: *ows_trial
+  two_marker_timepoints: no
+  timepoints: [29]
   assays: [bindSpike, bindRBD]
   times: [B, Day29, Delta29overB]
   data_raw_dir: janssen

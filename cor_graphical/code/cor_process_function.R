@@ -8,7 +8,7 @@ library(tidyverse)
 # a function to define response rate by group
 get_resp_by_group <- function(dat=dat, group=group){
   
-  if(has57) {wt="wt.D57"} else {wt="wt.D29"}
+  if(study_name=="ENSEMBLE" | study_name=="MockENSEMBLE") {wt="wt.D29"} else {wt="wt.D57"}
   
   complete <- complete.cases(dat[, group])
   

@@ -23,8 +23,8 @@ bstatus <- c("Baseline Neg")
 trt <- c("Placebo","Vaccine")
 plots_ytitles <- labels.assays.short
 plots_titles <- labels.assays[names(labels.assays) %in% names(labels.assays.short)]
-labels.time.no.fold <- labels.time[(names(labels.time) %in% times) & !grepl("fold-rise", labels.time)]
-timesls <- list(labels.time.no.fold[-1], labels.time.no.fold)
+timesls <- list(labels.time[(names(labels.time) %in% times) & !grepl("fold-rise", labels.time)][-1], 
+                labels.time[(names(labels.time) %in% times) & !grepl("fold-rise", labels.time)])
 
 ## load data 
 longer_cor_data <- readRDS(here("data_clean", "longer_cor_data.rds"))
@@ -379,7 +379,9 @@ for (i in 1:length(plots)) {
 for (i in 1:length(plots)) {
   for (c in c("Vaccine_BaselineNeg","all")) {
     
-    timesince <- ifelse(study_name=="ENSEMBLE" | study_name=="MockENSEMBLE", labels.time.no.fold, labels.time.no.fold[-1])
+    if(study_name=="ENSEMBLE" | study_name=="MockENSEMBLE") {
+      timesince <- labels.time[(names(labels.time) %in% times) & !grepl("fold-rise", labels.time)] 
+    } else {timesince <- labels.time[(names(labels.time) %in% times) & !grepl("fold-rise", labels.time)][-1]}
     
     ds.tmp <- longer_cor_data %>%
       filter(assay==plots[i]) %>%

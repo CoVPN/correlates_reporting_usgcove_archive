@@ -5,40 +5,33 @@ The main regression model is the Cox proportional hazards model. All plots are m
 ## Hazard ratios
 
 \begin{table}[H]
-\caption{Inference for Day `r tpeak` antibody marker covariate-adjusted correlates of risk of COVID in the vaccine group: Hazard ratios per 10-fold increment in the marker*}
+\caption{Inference for Day `r tpeak` antibody marker covariate-adjusted correlates of risk of `r txt.endpoint` in the vaccine group: Hazard ratios per 10-fold increment in the marker*}
 \begin{center}
     \input{`r pathCoRoutput`/CoR_univariable_svycoxph_pretty_`r study_name`}\\
 \end{center}
-*Baseline covariates adjusted for: baseline risk score, `r ifelse(study_name_code=="COVE", "meeting the protocol randomization stratification criterion for being at heightened risk of COVID (yes or no), community of color or not", "region (US, South Africa, or Latin American)")`. Maximum failure event time \input{`r pathCoRoutput`/timepoints_cum_risk_`r study_name`} days.\\
-**No. at-risk = estimated number in the population for analysis: baseline negative per-protocol vaccine recipients not experiencing the COVID endpoint `r if(!endsWith(COR,"start1")) "through 6 days post" else "through"` Day `r tpeak` visit; no. cases = number of this cohort with an observed COVID endpoint.\\
-***q-value and FWER (family-wide error rate) are computed over the set of p-values both for quantitative markers and categorical markers `r ifelse(study_name_code=="COVE", "", "")` using the Westfall and Young permutation method (\protect\input{`r pathCoRoutput`/permutation_replicates_`r study_name`} replicates). \\
+*Baseline covariates adjusted for: `r covariates_adjusted`. Maximum failure event time \input{`r pathCoRoutput`/timepoints_cum_risk_`r study_name`} days.\\
+**`r txt.coxph.note2`\\
+***q-value and FWER (family-wide error rate) are computed over the set of p-values both for quantitative markers and categorical markers using the Westfall and Young permutation method (\protect\input{`r pathCoRoutput`/permutation_replicates_`r study_name`} replicates). \\
 `r special.note`
     %\label{tab:CoR_univariable_svycoxph_pretty_`r study_name`}
 \end{table}
 
 
 \begin{table}[H]
-\caption{Inference for Day `r tpeak` antibody marker covariate-adjusted correlates of risk of COVID in the vaccine group: Hazard ratios for Middle vs. Upper tertile vs. Lower tertile*}
+\caption{Inference for Day `r tpeak` antibody marker covariate-adjusted correlates of risk of `r txt.endpoint` in the vaccine group: Hazard ratios for Middle vs. Upper tertile vs. Lower tertile*}
 \begin{center}
 \setlength{\tabcolsep}{.5ex}
 \input{`r pathCoRoutput`/CoR_univariable_svycoxph_cat_pretty_`r study_name`}\\
 \end{center}
-*Baseline covariates adjusted for: baseline risk score, meeting the protocol randomization stratification criterion for being at heightened risk of COVID (yes or no), `r ifelse(study_name_code=="COVE", "community of color or not", "strata(Region)")`. 
-Maximum failure event time \protect\input{`r pathCoRoutput`/timepoints_cum_risk_`r study_name`} days.
-Cutpoints:
+*Baseline covariates adjusted for: `r covariates_adjusted`. Maximum failure event time \input{`r pathCoRoutput`/timepoints_cum_risk_`r study_name`} days. Cutpoints:
 %Day `r tpeak` cutpoints:
 \input{`r pathCoRoutput`/cutpoints_Day`r tpeak`bindSpike_`r study_name`},  
 \input{`r pathCoRoutput`/cutpoints_Day`r tpeak`bindRBD_`r study_name`},  
 `r if(study_name_code!="ENSEMBLE") paste0("\\input{", pathCoRoutput, "/cutpoints_Day", tpeak, "pseudoneutid50_", study_name, "},")`
 `r if(study_name_code!="ENSEMBLE") paste0("\\input{", pathCoRoutput, "/cutpoints_Day", tpeak, "pseudoneutid80_", study_name, "},")`
 all on the log10 scale.
-%fold-rise cutpoints:
-%\input{`r pathCoRoutput`/cutpoints_Delta`r tpeak`overBbindSpike_`r study_name`},  
-%\input{`r pathCoRoutput`/cutpoints_Delta`r tpeak`overBbindRBD_`r study_name`},  
-%\input{`r pathCoRoutput`/cutpoints_Delta`r tpeak`overBpseudoneutid50_`r study_name`},  
-%\input{`r pathCoRoutput`/cutpoints_Delta`r tpeak`overBpseudoneutid80_`r study_name`}.  
 \\
-**No. at-risk = estimated number in the population for analysis: baseline negative per-protocol vaccine recipients not experiencing the COVID endpoint `r if(!endsWith(COR,"start1")) "through 6 days post" else "through"` Day `r tpeak` visit; no. cases = number of this cohort with an observed COVID endpoint.\\
+**`r txt.coxph.note2`\\
 ***Generalized Wald-test p-value of the null hypothesis that the hazard rate is constant across the Lower, Middle, and Upper tertile groups.\\
 $\dagger$ q-value and FWER (family-wide error rate) are computed over the set of p-values both for quantitative markers and categorical markers `r ifelse(study_name_code=="COVE", "", "")` using the Westfall and Young permutation method (\protect\input{`r pathCoRoutput`/permutation_replicates_`r study_name`} replicates). \\
 `r special.note`
@@ -48,105 +41,17 @@ $\dagger$ q-value and FWER (family-wide error rate) are computed over the set of
 
 \clearpage
 
-`r if(study_name_code!="ENSEMBLE") paste0("
-\\begin{figure}[H]
-    \\includegraphics[width=1\\textwidth]{", pathCoRoutput, "/hr_forest_bindSpike_", study_name, "}
-    \\includegraphics[width=1\\textwidth]{", pathCoRoutput, "/hr_forest_bindRBD_",   study_name, "}
-    \\includegraphics[width=1\\textwidth]{", pathCoRoutput, "/hr_forest_pseudoneutid50_",  study_name, "}
-    \\includegraphics[width=1\\textwidth]{", pathCoRoutput, "/hr_forest_pseudoneutid80_",  study_name, "}
-    \\caption{Forest plots of hazard ratios per 10-fold increase in the marker among baseline negative vaccine recipients and subgroups with 95\\% point-wise confidence intervals.", special.note, "}
-\\end{figure}
-\\clearpage
-")`
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=1\textwidth]{`r pathCoRoutput`/hr_forest_marginal_bindSpike_`r study_name`}
-    \caption{Forest plots of hazard ratios per 10-fold increase in the Day `r tpeak` binding Ab to spike markers among baseline negative vaccine recipients (top row) and different subpopulations with 95\% point-wise confidence intervals. `r special.note`}
-\end{figure}
+<!-- Forest plots -->
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=1\textwidth]{`r pathCoRoutput`/hr_forest_marginal_bindRBD_`r study_name`}
-    \caption{Forest plots of hazard ratios per 10-fold increase in the  Day `r tpeak` binding Ab to RBD markers among baseline negative vaccine recipients (top row) and different subpopulations with 95\% point-wise confidence intervals. `r special.note`}
-\end{figure}
+```{r, echo=FALSE, results='asis'}
 
-\ifENSEMBLE
-\else
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=1\textwidth]{`r pathCoRoutput`/hr_forest_marginal_pseudoneutid50_`r study_name`}
-    \caption{Forest plots of hazard ratios per 10-fold increase in the  Day `r tpeak` pseudo neut ID50 markers among baseline negative vaccine recipients (top row) and different subpopulations with 95\% point-wise confidence intervals. `r special.note`}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=1\textwidth]{`r pathCoRoutput`/hr_forest_marginal_pseudoneutid80_`r study_name`}
-    \caption{Forest plots of hazard ratios per 10-fold increase in the  Day `r tpeak` pseudo neut ID80 markers among baseline negative vaccine recipients (top row) and different subpopulations with 95\% point-wise confidence intervals. `r special.note`}
-\end{figure}
-
-\fi
-
-
-
-\clearpage
-
-
-\newif\ifShowCountry
-`r if (study_name_code=="ENSEMBLE" & (config$subset_variable=="None" | config$subset_value==1)) "\\ShowCountrytrue"` 
-
-\ifShowCountry
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=1\textwidth]{`r pathCoRoutput`/hr_forest_countries_bindSpike_`r study_name`}
-    \caption{Forest plots of hazard ratios per 10-fold increase in the Day `r tpeak` binding Ab to spike markers among baseline negative vaccine recipients (top row) and different subpopulations with 95\% point-wise confidence intervals. `r special.note`}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=1\textwidth]{`r pathCoRoutput`/hr_forest_countries_bindRBD_`r study_name`}
-    \caption{Forest plots of hazard ratios per 10-fold increase in the  Day `r tpeak` binding Ab to RBD markers among baseline negative vaccine recipients (top row) and different subpopulations with 95\% point-wise confidence intervals. `r special.note`}
-\end{figure}
-
-\fi
-
-
-
-<!-- \begin{table}[H] -->
-<!--     \setlength{\tabcolsep}{.5ex} -->
-<!-- \scriptsize{ -->
-<!--     \input{`r pathCoRoutput`/CoR_univariable_svycoxph_`r study_name`} -->
-<!-- } -->
-<!-- \caption{CoR models among baseline negative vaccine recipients. Each column corresponds to one Cox model fitted by survey::svycoxph.} -->
-<!--     \label{tab:CoR_univariable_svycoxph_`r study_name`} -->
-<!-- \end{table} -->
-<!-- \begin{table}[H] -->
-<!--     \setlength{\tabcolsep}{.5ex} -->
-<!--     \input{`r pathCoRoutput`/CoR_pseudoneutid80_sens_noCases_`r study_name`} -->
-<!-- \caption{CoR models for Day `r tpeak` pseudo neut ID80 among baseline negative vaccine recipients. Each row corresponds to one Cox model fitted by survey::svycoxph.For each model, a different dataset that keeps a random subset of the cases is used. The original dataset has 66 cases.} -->
-<!--     \label{tab:CoR_Day`r tpeak`pseudoneutid80_sens_noCases_`r study_name`} -->
-<!-- \end{table} -->
-<!-- \begin{table}[H] -->
-<!--     \setlength{\tabcolsep}{.5ex} -->
-<!--     \input{`r pathCoRoutput`/CoR_pseudoneutid80_5cases_`r study_name`} -->
-<!-- \caption{CoR models for Day `r tpeak` pseudo neut ID80 among baseline negative vaccine recipients. Each row corresponds to one Cox model fitted by survey::svycoxph.For each model, a different dataset that keeps a random subset of 5 cases is used.} -->
-<!--     \label{tab:CoR_Day`r tpeak`pseudoneutid80_5cases_`r study_name`} -->
-<!-- \end{table} -->
-<!-- \begin{table}[H] -->
-<!--     \input{`r pathCoRoutput`/CoR_univariable_tps} -->
-<!--     \caption{CoR models among baseline negative vaccine recipients. Each column corresponds to one logistic regression model fitted by osDesign::tps. } -->
-<!--     \label{tab:CoR_univariable_tps} -->
-<!-- \end{table} -->
-<!-- \begin{table}[H] -->
-<!--     \input{`r pathCoRoutput`/CoR_univariable_hingelogistic} -->
-<!--     \caption{CoR models among baseline negative vaccine recipients. Each column corresponds to one logistic regression model with hinge fitted by chgnpt::chngptm. } -->
-<!--     \label{tab:CoR_univariable_hingelogistic} -->
-<!-- \end{table} -->
-
-
-
+if(file.exists(here::here('cor_coxph', paste0('forestplots_', tolower(study_name), '.Rmd')))) {
+  message ("forest plots")
+  res = knitr::knit_child(c(here::here('cor_coxph', paste0('forestplots_', tolower(study_name), '.Rmd'))), quiet = TRUE)
+  cat(res, sep = '\n')
+}
+```
 
 
 ## Marginalized risk and controlled vaccine efficacy plots
@@ -163,11 +68,9 @@ $\dagger$ q-value and FWER (family-wide error rate) are computed over the set of
 \end{tabular}
 \end{center}
 $^1$Conservative (upper bound) estimate assuming unmeasured confounding at level $RR_{UD}(0,1)=RR_{EU}(0,1) = 2$ and thus $B(0,1)=4/3$. \\
-$^2$E-values are computed for upper tertile ($s=1$) vs. lower tertile ($s=0$) biomarker subgroups after controlling for baseline risk score, meeting the protocol randomization stratification criterion for being at heightened risk of COVID (yes or no), `r ifelse(study_name_code=="COVE", "community of color or not", "strata(Region)")`; UL = upper limit.\\
+$^2$E-values are computed for upper tertile ($s=1$) vs. lower tertile ($s=0$) biomarker subgroups after controlling for baseline risk score, meeting the protocol randomization stratification criterion for being at heightened risk of `r txt.endpoint` (yes or no), `r ifelse(study_name_code=="COVE", "community of color or not", "strata(Region)")`; UL = upper limit.\\
 `r special.note`
 \end{table}
-
-
 
 
 \begin{figure}[H]
@@ -211,9 +114,7 @@ $^2$E-values are computed for upper tertile ($s=1$) vs. lower tertile ($s=0$) bi
 \end{figure}
 
 
-
-
-
+<!-- long tables -->
 
 \clearpage
 \setlength{\tabcolsep}{.5ex}
@@ -227,45 +128,3 @@ $^2$E-values are computed for upper tertile ($s=1$) vs. lower tertile ($s=0$) bi
 \setlength{\tabcolsep}{.5ex}
 \input{`r pathCoRoutput`/controlled_ve_sens_eq_`r study_name`}
 
-
-
-\clearpage
-
-## Misc
-
-Average follow-up of vaccine recipients (in the `r COR` correlates analyses population) starting at 7 days post Day `r tpeak` visit (not counting the 7 days) is \input{`r pathCoRoutput`/avg_followup_`r study_name`} days.
- 
-
-`r if(tpeak=="57") paste0("Number of breakthrough vaccine cases (in the Day 57 correlates analyses population) with Day 57 ID80 > 660 IU: \\input{", pathCoRoutput, "/num_vacc_cases_highid80_", study_name, "}.")`
-
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=1\textwidth]{`r pathCoRoutput`/barplot_visit_intervals_immuno}
-    \caption{Distribution of the number of days between visits in the per-protocol immunogenicity subcohort, vaccine arm, baseline negative. `r paste0("The median (IQR) number of days between Day 1 and Day 29 was \\protect\\input{", pathCoRoutput, "/quartiles_visit_intervals_immuno_1to29}.")` `r if(tpeak=="57") paste0("The median (IQR) number of days between Day 29 and Day 57 was \\protect\\input{", pathCoRoutput, "/quartiles_visit_intervals_immuno_29to57}.")`  `r special.note`}
-\end{figure}
-
-
-
-
-\ifENSEMBLE
-\else
-
-\begin{table}[H]
-\caption{Deciles of Day `r tpeak` cID50 titer for the immunogenicity subcohort in the vaccine arm.}
-\begin{center}
-\setlength{\tabcolsep}{.5ex}
-\input{`r pathCoRoutput`/cID50_deciles_`r study_name`}
-\end{center}
-\end{table}
-
-
-\begin{table}[H]
-\caption{Summary statistics for the number of days from dose 1 to Day `r tpeak` visit. (a) The whole immunogenicity subcohort, (b) non-cases in the immunogenicity subcohort, (c) intercurrent cases, (d) primary cases, i.e. cases from the Day 57 correlates analysis population.  `r special.note`}
-\begin{center}
-\setlength{\tabcolsep}{.5ex}
-\input{`r pathCoRoutput`/dose1_interval_summary_`r study_name`}
-\end{center}
-\end{table}
-
-\fi

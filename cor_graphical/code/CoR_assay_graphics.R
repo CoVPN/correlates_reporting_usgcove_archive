@@ -158,14 +158,15 @@ for (tp in tps[tps %in% times]){
     
   }
   
-  ggsave(ggarrange(plotlist = boxplot_list, 
+  # Suppress hline warnings
+  suppressWarnings(ggsave(ggarrange(plotlist = boxplot_list, 
                    ncol = 2, nrow = 2, 
                    common.legend = TRUE, legend = "bottom",
                    align = "h") + 
            theme(plot.title = element_text(hjust = 0.5, size = 10)),
          filename = paste0(save.results.to, "/boxplots_", tp, "_trt_vaccine_x_cc_",
                            study_name, ".png"),
-         height = 9, width = 8)
+         height = 9, width = 8))
   
 }
 

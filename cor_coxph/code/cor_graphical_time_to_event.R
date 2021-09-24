@@ -41,13 +41,15 @@ dat.mock <- read.csv(here::here("..", "data_clean", data_name))
 
 print(paste0("reading data from ",data_name))
 
+# PROPOSED CHANGE
+if (config$is_ows_trial) dat.mock=subset(dat.mock, Bserostatus==0)
 
 
 mypdf (mfrow=c(1,3), file=paste0(save.results.to, "barplot_mixed"))     
-    tmp.1=table(subset(dat.mock, ph1.intercurrent.cases       & Trt==1 & Bserostatus==0, "EventTimePrimaryD"%.%tinterm, drop=T))
-    tmp.1=table(subset(dat.mock, ph1.intercurrent.cases       & Trt==1 & Bserostatus==0, "EventTimePrimaryD"%.%tinterm, drop=T))
-    tmp.2=table(subset(dat.mock, dat.mock[["ph1.D"%.%tpeak]] & dat.mock[["EventIndPrimaryD"%.%tpeak]] & Trt==1 & Bserostatus==0, "EventTimePrimaryD"%.%tinterm, drop=T))
-    tmp.3=table(subset(dat.mock, dat.mock[["ph1.D"%.%tpeak]] & dat.mock[["EventIndPrimaryD"%.%tpeak]] & Trt==1 & Bserostatus==0, "EventTimePrimaryD"%.%tpeak  , drop=T))
+    tmp.1=table(subset(dat.mock, ph1.intercurrent.cases       & Trt==1, "EventTimePrimaryD"%.%tinterm, drop=T))
+    tmp.1=table(subset(dat.mock, ph1.intercurrent.cases       & Trt==1, "EventTimePrimaryD"%.%tinterm, drop=T))
+    tmp.2=table(subset(dat.mock, dat.mock[["ph1.D"%.%tpeak]] & dat.mock[["EventIndPrimaryD"%.%tpeak]] & Trt==1, "EventTimePrimaryD"%.%tinterm, drop=T))
+    tmp.3=table(subset(dat.mock, dat.mock[["ph1.D"%.%tpeak]] & dat.mock[["EventIndPrimaryD"%.%tpeak]] & Trt==1, "EventTimePrimaryD"%.%tpeak  , drop=T))
     
     tmp=cbinduneven(list(tmp.1, tmp.2, tmp.3))
     tmp=tmp[order(as.numeric(rownames(tmp))),]

@@ -270,22 +270,7 @@ dat.long.cor.subset <- dat.long %>%
 
 
 # long to longer format by time
-dat.longer.cor.subset <- dat.long.cor.subset.violin[,c("Ptid", "Trt", "Bserostatus",
-                                                       "EventTimePrimaryD1", "EventTimePrimaryD29",
-        if(study_name=="ENSEMBLE" | study_name=="MockENSEMBLE") # ENSEMBLE specific variables
-          c("SevereEventIndPrimaryD1", 
-            "SevereEventIndPrimaryD29"),
-        if((study_name=="ENSEMBLE" | study_name=="MockENSEMBLE") & incNotMol == "IncludeNotMolecConfirmed")
-          c("EventTimePrimaryIncludeNotMolecConfirmedD1",
-            "EventTimePrimaryIncludeNotMolecConfirmedD29",
-            "SevereEventIndPrimaryIncludeNotMolecConfirmedD1",
-            "SevereEventIndPrimaryIncludeNotMolecConfirmedD29"),
-        "Perprotocol", "cohort_event", "Age", "age_geq_65_label", 
-        "highrisk_label", "age_risk_label", "sex_label", "minority_label", "Dich_RaceEthnic", "assay", 
-        "LLoD", "LLoQ", "pos.cutoffs", "ULoQ", "lb", "lbval", "lb2", "lbval2","TwophasesampIndD29","Wstratum",
-        if(!(study_name=="ENSEMBLE" | study_name=="MockENSEMBLE")) c("EventIndPrimaryD57", "TwophasesampIndD57", "wt.D57", "ph2.D57"), "wt.D29", "ph2.D29",
-        
-        times)] %>%
+dat.longer.cor.subset <- dat.long.cor.subset.violin %>%
   pivot_longer(cols = all_of(times), names_to = "time", values_to = "value")
 
 # phase 2 filters: 

@@ -11,6 +11,5 @@
     pathCoRoutput <- paste0("cor_coxph/output/", attr(config,"config"), "/", COR)
     res = knitr::knit_child(c(here::here('cor_coxph', 'report_sub.Rmd')), quiet = TRUE)
     cat(res, sep = '\n')
-    cat("\\clearpage", sep = '\n')
   }
 ```

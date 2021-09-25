@@ -37,6 +37,7 @@ if (two_marker_timepoints) {
 data_name_updated <- sub(".csv", "_with_riskscore.csv", data_name)
 covariates_adjusted = ifelse (file.exists(here::here("data_clean", data_name_updated)), covariates_riskscore, covariates_norisksco)
 covariates_adjusted = sub("\\~\\.\\+","",covariates_adjusted)
+covariates_adjusted = sub("_","",covariates_adjusted)
 
 if(file.exists(here::here('cor_coxph', paste0('report_', tolower(study_name), '.Rmd')))) {
   

@@ -7,6 +7,8 @@ for(opt in names(config)){
   eval(parse(text = paste0(names(config[opt])," <- config[[opt]]")))
 }
 
+study_name <- "ENSEMBLE"
+study_name_code <- "ENSEMBLE"
 # disabling lower level parallelization in favor of higher level of parallelization
 
 #openblas 

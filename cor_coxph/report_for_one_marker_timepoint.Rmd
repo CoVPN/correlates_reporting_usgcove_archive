@@ -8,11 +8,14 @@ message("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ running cor_coxph report ~~~~~~~~~~~~~~~
 ```
 
 
+```{r, echo=FALSE, results='asis'}
+config.cor <- config::get(config = COR)
+```
+
 # Graphical Descriptions of Time to Event Data {#cor-graphical-time-to-event}
 
-`r 
-tt=timepoints
-if (two_marker_timepoints) { 
+`r if (config.cor$two_marker_timepoints) { 
+  tt=config.cor$timepoints
   paste0("
 \\begin{figure}[H]
     \\centering
@@ -32,18 +35,14 @@ if (two_marker_timepoints) {
 
 
 
+<!-- handle cove and ensemble differently because they include different analyses -->
+
+<!-- COVE -->
+
 ```{r, echo=FALSE, results='asis'}
-
-if(file.exists(here::here('cor_coxph', paste0('report_', tolower(study_name), '.Rmd')))) {
-  
-  message ("study specific rmd found")
-  res = knitr::knit_child(c(here::here('cor_coxph', paste0('report_', tolower(study_name), '.Rmd'))), quiet = TRUE)
-  cat(res, sep = '\n')
-  cat("\\clearpage", sep = '\n')
-
-} else {
-
-  for (tpeak in tt) {
+if (study_name=="COVE" | study_name=="MockCOVE") {
+  for (i in 1:2) {
+    tpeak <- tt[i]
     COR <- paste0("D", tpeak)
     special.note = ""
     pathCoRoutput <- paste0("cor_coxph/output/", attr(config,"config"), "/", COR)
@@ -51,6 +50,22 @@ if(file.exists(here::here('cor_coxph', paste0('report_', tolower(study_name), '.
     cat(res, sep = '\n')
     cat("\\clearpage", sep = '\n')
   }
+}
+```
 
+
+<!-- D29start1 is ENSEMBLE specific -->
+
+```{r, echo=FALSE, results='asis'}
+if (study_name=="MockENSEMBLE" | study_name=="ENSEMBLE") {
+  for (i in 1:2) {
+    tpeak <- tt[1]
+    COR <- ifelse(i==1, "D29", "D29start1")
+    special.note = paste0("$\\ddagger$ Count cases starting ", ifelse(i==1,7,1), " days post Day 29.")
+    pathCoRoutput <- paste0("cor_coxph/output/", attr(config,"config"), "/", COR)
+    res = knitr::knit_child(c(here::here('cor_coxph', 'report_sub.Rmd')), quiet = TRUE)
+    cat(res, sep = '\n')
+    cat("\\clearpage", sep = '\n')
+  }
 }
 ```

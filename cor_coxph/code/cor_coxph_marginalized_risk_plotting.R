@@ -43,9 +43,9 @@ for (w.wo.plac in 1:2) { # 1 with placebo lines, 2 without placebo lines. Implem
     if(verbose) myprint(ylim)
     lwd=2
      
-    mypdf(oma=c(0,0,0,0), onefile=F, file=paste0(save.results.to, "marginalized_risks", ifelse(eq.geq==1,"_eq","_geq"), ifelse(w.wo.plac==1,"","_woplacebo"), "_"%.%study_name), mfrow=.mfrow)
-    par(las=1, cex.axis=0.9, cex.lab=1)# axis label orientation
     for (a in assays) {        
+    mypdf(oma=c(0,0,0,0), onefile=F, file=paste0(save.results.to, a, "_marginalized_risks", ifelse(eq.geq==1,"_eq","_geq"), ifelse(w.wo.plac==1,"","_woplacebo"), "_"%.%study_name), mfrow=.mfrow)
+    par(las=1, cex.axis=0.9, cex.lab=1)# axis label orientation
         risks=risks.all[[a]]
         xlim=get.range.cor(dat.vac.seroneg, a, tpeak)
         #xlim=quantile(dat.vac.seroneg[["Day"%.%tpeak%.%a]],if(eq.geq==1) c(.025,.975) else c(0,.95), na.rm=T) 
@@ -99,9 +99,9 @@ for (w.wo.plac in 1:2) { # 1 with placebo lines, 2 without placebo lines. Implem
         #axis(side=4, at=axTicks(side=4)[1:5])
         #mtext("Density", side=4, las=0, line=2, cex=1, at=.3)  
         #mylegend(x=6, fill=col, border=col, legend="Vaccine Group", bty="n", cex=0.7)      
-    }
     #mtext(toTitleCase(study_name), side = 1, line = 0, outer = T, at = NA, adj = NA, padj = NA, cex = NA, col = NA, font = NA)
     dev.off()    
+    }
 }
 }
 save(ylims.cor, file=paste0(save.results.to, "ylims.cor."%.%study_name%.%".Rdata"))
@@ -130,10 +130,10 @@ mytex(tab, file.name=paste0("marginalized_risks_eq", "_"%.%study_name), align="c
     
 for (eq.geq in 1:3) {  # 1 conditional on s, 2 is conditional on S>=s, 3 is same as 1 except that no sens curve is shown
 # eq.geq=1
-mypdf(onefile=F, file=paste0(save.results.to, "controlled_ve_curves",ifelse(eq.geq==1,"_eq",ifelse(eq.geq==2,"_geq","_eq_manus")),"_"%.%study_name), mfrow=.mfrow, oma=c(0,0,0,0))
+    out=lapply (assays, function(a) {        
+    mypdf(onefile=F, file=paste0(save.results.to, a, "_controlled_ve_curves",ifelse(eq.geq==1,"_eq",ifelse(eq.geq==2,"_geq","_eq_manus")),"_"%.%study_name), mfrow=.mfrow, oma=c(0,0,0,0))
     lwd=2.5
     par(las=1, cex.axis=0.9, cex.lab=1)# axis label orientation
-    out=lapply (assays, function(a) {        
         risks=get("risks.all."%.%ifelse(eq.geq==2,2,1))[[a]]        
         #pick.out=names(risks$marker)!=""
         pick.out=rep(T, length(risks$marker))
@@ -204,6 +204,7 @@ mypdf(onefile=F, file=paste0(save.results.to, "controlled_ve_curves",ifelse(eq.g
         #tmp=hist(dat.vac.seroneg[["Day"%.%tpeak%.%a]],breaks=seq(min(dat.vac.seroneg[["Day"%.%tpeak%.%a]],na.rm=T), max(dat.vac.seroneg[["Day"%.%tpeak%.%a]],na.rm=T), len = 15),plot=F)
         plot(tmp,col=col,axes=F,labels=F,main="",xlab="",ylab="",border=0,freq=F,xlim=xlim, ylim=c(0,max(tmp$density*1.25))) 
         
+    dev.off()    
         ret        
     })
     
@@ -216,7 +217,6 @@ mypdf(onefile=F, file=paste0(save.results.to, "controlled_ve_curves",ifelse(eq.g
                 ),
             col.headers=paste0("\\hline\n", concatList(paste0("\\multicolumn{2}{c}{", labels.axis[1,], "}"), "&"), "\\\\\n"))
     }
-dev.off()    
 }
     
 # show tables of controlled ve without sensitivity at select assay values
@@ -305,8 +305,8 @@ ylim=c(0,max(risk.0))
 x.time<-seq(0,tfinal.tpeak,by=30); if(tfinal.tpeak-last(x.time)>15) x.time=c(x.time, tfinal.tpeak) else x.time[length(x.time)]=tfinal.tpeak
 #
 if(.mfrow[1]==1)  height=7.5/2*1.5 else height=7.5/2*.mfrow[1]*1.3
-mypdf(oma=c(1,0,0,0), onefile=F, file=paste0(save.results.to, "marginalized_risks_cat_", study_name), mfrow=.mfrow, width=9.1, height = height*1.1, mar=c(12,4,5,2))
 for (a in assays) {        
+    mypdf(oma=c(1,0,0,0), onefile=F, file=paste0(save.results.to, a, "_marginalized_risks_cat_", study_name), mfrow=.mfrow, width=9.1, height = height*1.1, mar=c(12,4,5,2))
     par(las=1, cex.axis=0.9, cex.lab=1)# axis label 
     marker.name="Day"%.%tpeak%.%a%.%"cat"    
     
@@ -357,9 +357,9 @@ for (a in assays) {
     mtext(paste0("High:"),side=1,outer=FALSE,line=10.1,at=at.label,adj=0,cex=cex.text);mtext(cum.H,side=1,outer=FALSE,line=10.1,at=x.time,cex=cex.text)
     mtext(paste0("Plac:"),side=1,outer=FALSE,line=11.1,at=at.label,adj=0,cex=cex.text);mtext(cum.P,side=1,outer=FALSE,line=11.1,at=x.time,cex=cex.text)
     
-}
-mtext(toTitleCase(study_name), side = 1, line = 2, outer = T, at = NA, adj = NA, padj = NA, cex = .8, col = NA, font = NA)
 dev.off()    
+}
+#mtext(toTitleCase(study_name), side = 1, line = 2, outer = T, at = NA, adj = NA, padj = NA, cex = .8, col = NA, font = NA)
 #
 cumsum(summary(survfit(form.s, subset(dat.vac.seroneg, ph2==1)), times=x.time)$n.event)
 table(subset(dat.vac.seroneg, yy==1)[["Day"%.%tpeak%.%"pseudoneutid80cat"]])

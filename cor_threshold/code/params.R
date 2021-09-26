@@ -92,7 +92,7 @@ for(assay in assays) {
 if(study_name=="ENSEMBLE" | study_name=="MockENSEMBLE") {
 keep <- grep("start", keys)
 tmp <- keys[keep]
-keys <- keys[-tmp]
+keys <- keys[-keep]
 keys <- c(keys, tmp)
 }
  

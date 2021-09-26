@@ -1,0 +1,39 @@
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{`r paste0(pathCoRoutput, "/", a, "_")`marginalized_risks_cat_`r study_name`}
+    \caption{Marginalized cumulative incidence rate curves for trichotomized Day `r tpeak` markers among baseline negative vaccine recipients. The gray line is the overall cumulative incidence rate curve in the placebo arm. `r special.note`}
+\end{figure}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{`r paste0(pathCoRoutput, "/", a, "_")`marginalized_risks_eq_`r study_name`}
+    \caption{Marginalized cumulative risk by Day \protect\input{`r pathCoRoutput`/timepoints_cum_risk_`r study_name`} as functions of Day `r tpeak` markers (=s) among baseline negative vaccine recipients with 95\% bootstrap point-wise confidence bands (\protect\input{`r pathCoRoutput`/bootstrap_replicates_`r study_name`} replicates). The horizontal lines indicate the overall cumulative risk of the placebo and vaccine arms by Day \protect\input{`r pathCoRoutput`/timepoints_cum_risk_`r study_name`} and its 95\% point-wise confidence interval. Histograms of the immunological markers in the vaccine arm are overlaid. lod =`r if ("bindSpike" %in% assays) paste0(" ", round(llods["bindSpike"],1), " for bAb Spike,")``r if ("bindRBD" %in% assays) paste0(" ", round(llods["bindRBD"],1), " for bAb RBD,")``r if ("pseudoneutid50" %in% assays) paste0(" ", round(llods["pseudoneutid50"],1), " for PsV nAb ID50,")``r if ("pseudoneutid80" %in% assays) paste0(" ", round(llods["pseudoneutid80"],1), " for PsV nAb ID80,")` respectively. `r special.note`}
+\end{figure}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{`r paste0(pathCoRoutput, "/", a, "_")`controlled_ve_curves_eq_manus_`r study_name`}
+    \caption{Controlled VE with sensitivity analysis as functions of Day `r tpeak` markers (=s) among baseline negative vaccine recipients with 95\% bootstrap point-wise confidence bands (\protect\input{`r pathCoRoutput`/bootstrap_replicates_`r study_name`} replicates). Histograms of the immunological markers in the vaccine arm are overlaid. lod =`r if ("bindSpike" %in% assays) paste0(" ", round(llods["bindSpike"],1), " for bAb Spike,")``r if ("bindRBD" %in% assays) paste0(" ", round(llods["bindRBD"],1), " for bAb RBD,")``r if ("pseudoneutid50" %in% assays) paste0(" ", round(llods["pseudoneutid50"],1), " for PsV nAb ID50,")``r if ("pseudoneutid80" %in% assays) paste0(" ", round(llods["pseudoneutid80"],1), " for PsV nAb ID80,")` respectively. `r special.note`}
+\end{figure}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{`r paste0(pathCoRoutput, "/", a, "_")`controlled_ve_curves_eq_`r study_name`}
+    \caption{Controlled VE with sensitivity analysis as functions of Day `r tpeak` markers (=s) among baseline negative vaccine recipients with 95\% bootstrap point-wise confidence bands (\protect\input{`r pathCoRoutput`/bootstrap_replicates_`r study_name`} replicates). Histograms of the immunological markers in the vaccine arm are overlaid. lod =`r if ("bindSpike" %in% assays) paste0(" ", round(llods["bindSpike"],1), " for bAb Spike,")``r if ("bindRBD" %in% assays) paste0(" ", round(llods["bindRBD"],1), " for bAb RBD,")``r if ("pseudoneutid50" %in% assays) paste0(" ", round(llods["pseudoneutid50"],1), " for PsV nAb ID50,")``r if ("pseudoneutid80" %in% assays) paste0(" ", round(llods["pseudoneutid80"],1), " for PsV nAb ID80,")` respectively. `r special.note`}
+\end{figure}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{`r paste0(pathCoRoutput, "/", a, "_")`marginalized_risks_geq_woplacebo_`r study_name`}
+    \caption{Marginalized cumulative risk by Day \protect\input{`r pathCoRoutput`/timepoints_cum_risk_`r study_name`} post Day `r tpeak` visit as functions of Day `r tpeak` markers above a threshold ($\geq s$) among baseline negative vaccine recipients with 95\% bootstrap point-wise confidence bands (at least 5 cases are required, \protect\input{`r pathCoRoutput`/bootstrap_replicates_`r study_name`} replicates). The horizontal lines indicate the overall cumulative risk of the vaccine arm by Day \protect\input{`r pathCoRoutput`/timepoints_cum_risk_`r study_name`} and its 95\% point-wise confidence interval. Histograms of the immunological markers in the vaccine arm are overlaid. lod =`r if ("bindSpike" %in% assays) paste0(" ", round(llods["bindSpike"],1), " for bAb Spike,")``r if ("bindRBD" %in% assays) paste0(" ", round(llods["bindRBD"],1), " for bAb RBD,")``r if ("pseudoneutid50" %in% assays) paste0(" ", round(llods["pseudoneutid50"],1), " for PsV nAb ID50,")``r if ("pseudoneutid80" %in% assays) paste0(" ", round(llods["pseudoneutid80"],1), " for PsV nAb ID80,")` respectively. `r special.note`}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{`r paste0(pathCoRoutput, "/", a, "_")`controlled_ve_curves_geq_`r study_name`}
+    \caption{Controlled VE as functions of Day `r tpeak` markers (>=s) among baseline negative vaccine recipients with 95\% bootstrap point-wise confidence bands (\protect\input{`r pathCoRoutput`/bootstrap_replicates_`r study_name`} replicates). Histograms of the immunological markers in the vaccine arm are overlaid. lod =`r if ("bindSpike" %in% assays) paste0(" ", round(llods["bindSpike"],1), " for bAb Spike,")``r if ("bindRBD" %in% assays) paste0(" ", round(llods["bindRBD"],1), " for bAb RBD,")``r if ("pseudoneutid50" %in% assays) paste0(" ", round(llods["pseudoneutid50"],1), " for PsV nAb ID50,")``r if ("pseudoneutid80" %in% assays) paste0(" ", round(llods["pseudoneutid80"],1), " for PsV nAb ID80,")` respectively. `r special.note`}
+\end{figure}

@@ -17,11 +17,61 @@ message("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ running cor_threshold report ~~~~~~~~~~~
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+#setwd("/Users/larsvanderlaan/correlates_reporting_forks/correlates_reporting")
 library(here)
 library(dplyr)
 print(here::here())
 source(here::here( "_common.R"))
-times <- intersect(times, c("Day57", "Day29"))
+ 
+times <- intersect(c("Day57", "Day29"), times)
+keys_short <- times
+if(study_name=="ENSEMBLE" | study_name=="MockENSEMBLE") {
+  keys_short <- c(keys_short, "Day29start1")
+}
+keys <- c()
+markers <- markers
+markers <- unlist(sapply(times, function(v) grep(v, markers, value = T))) # Remove the baseline markers
+for(assay in assays) {
+  keys <- c(keys, paste0(keys_short, assay))
+}
+
+if(study_name=="ENSEMBLE" | study_name=="MockENSEMBLE") {
+keep <- grep("start", keys)
+tmp <- keys[keep]
+keys <- keys[-keep]
+keys <- c(keys, tmp)
+}
+ 
+key_to_markers <- markers
+names(key_to_markers) <- markers
+
+
+marker_to_time <- sapply(markers, function(v) {
+  times[stringr::str_detect(v, times)]
+})
+marker_to_assay <- sapply(markers, function(v) {
+  unname(assays[stringr::str_detect(v, assays)])
+})
+
+
+key_to_time <- sapply(keys, function(v) {
+  times[stringr::str_detect(v, times)]
+})
+key_to_assay <- sapply(keys, function(v) {
+  unname(assays[stringr::str_detect(v, assays)])
+})
+key_to_markers <- paste0(key_to_time, key_to_assay )
+names(key_to_markers) <- keys
+key_to_markers
+key_to_short <- sapply(keys, function(v) {
+  tmp <- setdiff(keys_short, "Day29start1")
+  if(stringr::str_detect(v, "Day29start1")) {
+    return("Day29start1")
+  } else {
+    return(unname(tmp[stringr::str_detect(v, tmp)]))
+  }
+   
+})
 ```
 
 # Univariate CoR: Nonparametric Threshold Modeling (>=s)
@@ -54,475 +104,166 @@ observed.
 
 The blue dots on the plots represent the risk predictions at marker values where there was an observed COVID-19 case.
 
-\clearpage
-## Plots and Tables with estimates and pointwise confidence interval for Day 57
-```{r, include = FALSE}
-above <- T
+
+```{r, echo = F, include = F}
+short_keys <- unique(key_to_short)
+
 ```
 
-```{r, include = FALSE}
-marker <- "Spike protein binding antibody"
-key <- "bindSpike"
-day <- 57
+\newpage
+
+```{r, echo = F, include = F}
+days <- c()
+if(has57) {
+  days <- c(days, 57)
+}
+if(has29) {
+  days <- c(days, 29)
+}
+
 ci <- "pointwise"
-monotone <- F
-include_eval <- "Day57" %in% times && key %in% markers
-```
-
-```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
+above = TRUE
+monotone <- FALSE
 
 ```
 
-\clearpage
-```{r, include = FALSE}
-marker <- "RBD binding antibody"
-key <- "bindRBD"
-day <- 57
-ci <- "pointwise"
-monotone <- F
-include_eval <- "Day57" %in% times && key %in% markers
-```
 
-```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, results="asis", echo = F }
+ 
+for(key in short_keys){
+  countAfter1 <- FALSE
+  if((stringr::str_detect(key,"start"))>0) {
+    countAfter1 <- TRUE
+  }
+  
+  day <- gsub("Day", "", key)
+  day <- gsub("start1", "", day)
+  title <- paste0("Plots and Tables with estimates and ", ci, " confidence intervals"," for Day ", day)
+  if(monotone) {
+    title <- paste0(title, " (monotone-corrected)")
+  }
+  if(countAfter1) {
+    title <- paste0(title, " (events after 1 day post dose)")
+  }
+  cat("##", title, "\n")
+  key_short <- key
+  for(assay in assays) {
+    
+   key <- paste0(key_short, assay)
+    marker <- key_to_markers[key]
+   
+    
+    res = knitr::knit_child(c(here::here('cor_threshold', 'sub_report.Rmd')), quiet = TRUE)
+    
+    cat(res, sep = '\n')
+    cat("\\clearpage", sep = '\n')
+  }
+ 
+key <- key_short
 
-```
+monotone <- TRUE
+ 
+  countAfter1 <- FALSE
+  if((stringr::str_detect(key,"start"))>0) {
+    countAfter1 <- TRUE
+  }
+  
+  day <- gsub("Day", "", key)
+  day <- gsub("start1", "", day)
+  title <- paste0("Plots and Tables with estimates and ", ci, " confidence intervals"," for Day ", day)
+  if(monotone) {
+    title <- paste0(title, " (monotone-corrected)")
+  }
+  if(countAfter1) {
+    title <- paste0(title, " (counting events after 1 day post dose)")
+  }
+  cat("##", title, "\n")
+  key_short <- key
+  for(assay in assays) {
+    
+   key <- paste0(key_short, assay)
+    marker <- key_to_markers[key]
+   
+    
+    res = knitr::knit_child(c(here::here('cor_threshold', 'sub_report.Rmd')), quiet = TRUE)
+    
+    cat(res, sep = '\n')
+    cat("\\clearpage", sep = '\n')
+  }
+}
 
-\clearpage
-```{r, include=FALSE}
-marker <- "Pseudo virus-neutralizing antibody (50\\% titer)"
-key <- "pseudoneutid50"
-day <- 57
-ci <- "pointwise"
-monotone <- F
-include_eval <- "Day57" %in% times && key %in% markers
-```
 
-```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
-```
-
-\clearpage
-```{r, include=FALSE}
-marker <- "Pseudo virus-neutralizing antibody (80\\% titer)"
-key <- "pseudoneutid80"
-day <- 57
-ci <- "pointwise"
-monotone <- F
-include_eval <- "Day57" %in% times && key %in% markers
-```
-
-```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
-
-```
-
-\clearpage
-##  Plots and Tables with estimates and pointwise confidence intervals for Day 29
-
-```{r, include = FALSE}
-# DAY 29
-marker <- "Spike protein antibody"
-key <- "bindSpike"
-day <- 29
-ci <- "pointwise"
-monotone <- F
-include_eval <- "Day29" %in% times && key %in% markers
-```
-
-```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
-
-```
-
-\clearpage
-```{r, include = FALSE}
-
-marker <- "RBD binding antibody"
-key <- "bindRBD"
-day <- 29
-ci <- "pointwise"
-monotone <- F
-include_eval <- "Day29" %in% times && key %in% markers
-```
-
-```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
-\clearpage
-```{r, include = FALSE}
-marker <- "Pseudo virus-neutralizing antibody (50\\% titer)"
-key <- "pseudoneutid50"
-day <- 29
-ci <- "pointwise"
-monotone <- F
-include_eval <- "Day29" %in% times && key %in% markers
-```
 
-```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
-```
-
-\clearpage
-```{r, include = FALSE}
-marker <- "Pseudo virus-neutralizing antibody (80\\% titer)"
-key <- "pseudoneutid80"
-day <- 29
-ci <- "pointwise"
-monotone <- F
-include_eval <- "Day29" %in% times && key %in% markers
-```
-
-```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
-
-```
-
-\clearpage
-## Plots and Tables with estimates and pointwise confidence interval for Day 57 (monotone-corrected)
-
-```{r, include = FALSE}
-marker <- "Spike protein binding antibody"
-key <- "bindSpike"
-day <- 57
-ci <- "pointwise"
-monotone <- T
-include_eval <- "Day57" %in% times && key %in% markers
-```
-
-```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
-
-```
-
-\clearpage
-```{r, include = FALSE}
-marker <- "RBD binding antibody"
-key <- "bindRBD"
-day <- 57
-ci <- "pointwise"
-monotone <- T
-include_eval <- "Day57" %in% times && key %in% markers
-```
-
-```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
-
-```
-
-\clearpage
-```{r, include=FALSE}
-marker <- "Pseudo virus-neutralizing antibody (50\\% titer)"
-key <- "pseudoneutid50"
-day <- 57
-ci <- "pointwise"
-monotone <- T
-include_eval <- "Day57" %in% times && key %in% markers
-```
-
-```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
-
-```
-
-\clearpage
-```{r, include=FALSE}
-marker <- "Pseudo virus-neutralizing antibody (80\\% titer)"
-key <- "pseudoneutid80"
-day <- 57
-ci <- "pointwise"
-monotone <- T
-include_eval <- "Day57" %in% times && key %in% markers
-```
-
-```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
-
-```
-
-\clearpage
-##  Plots and Tables with estimates and pointwise confidence intervals for Day 29 (monotone-corrected)
-
-```{r, include = FALSE}
-# DAY 29
-marker <- "Spike protein antibody"
-key <- "bindSpike"
-day <- 29
-ci <- "pointwise"
-monotone <- T
-include_eval <- "Day29" %in% times && key %in% markers
-```
-
-```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
-
-```
-
-\clearpage
-```{r, include = FALSE}
-marker <- "RBD binding antibody"
-key <- "bindRBD"
-day <- 29
-ci <- "pointwise"
-monotone <- T
-include_eval <- "Day29" %in% times && key %in% markers
-```
-
-```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
-
-```
-
-\clearpage
-```{r, include = FALSE}
-marker <- "Pseudo virus-neutralizing antibody (50\\% titer)"
-key <- "pseudoneutid50"
-day <- 29
-ci <- "pointwise"
-monotone <- T
-include_eval <- "Day29" %in% times && key %in% markers
-```
-
-```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
-
-```
-
-\clearpage
-```{r, include = FALSE}
-marker <- "Pseudo virus-neutralizing antibody (80\\% titer)"
-key <- "pseudoneutid80"
-day <- 29
-ci <- "pointwise"
-monotone <- T
-include_eval <- "Day29" %in% times && key %in% markers
-```
-
-```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
-
-```
-
-\clearpage
-## Plots and Tables with estimates and simultaneous confidence bands for Day 57
-
-```{r, include = FALSE}
-marker <- "Spike protein binding antibody"
-key <- "bindSpike"
-day <- 57
+```{r, echo = F , results = "asis" }
 ci <- "simultaneous"
-monotone <- F
-include_eval <- "Day57" %in% times && key %in% markers
-```
 
-```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
+for(key in short_keys){
+  countAfter1 <- FALSE
+  if((stringr::str_detect(key,"start"))>0) {
+    countAfter1 <- TRUE
+  }
+  
+  day <- gsub("Day", "", key)
+  day <- gsub("start1", "", day)
+  title <- paste0("Plots and Tables with estimates and ", ci, " confidence intervals"," for Day ", day)
+  if(monotone) {
+    title <- paste0(title, " (monotone-corrected)")
+  }
+  if(countAfter1) {
+    title <- paste0(title, " (counting events after 1 day post dose)")
+  }
+  cat("##", title, "\n")
+  key_short <- key
+  for(assay in assays) {
+    
+   key <- paste0(key_short, assay)
+    marker <- key_to_markers[key]
+   
+    
+    res = knitr::knit_child(c(here::here('cor_threshold', 'sub_report.Rmd')), quiet = TRUE)
+    
+    cat(res, sep = '\n')
+    cat("\\clearpage", sep = '\n')
+  }
+ 
 
-```
+key <- key_short
+monotone <- TRUE
+ 
+  countAfter1 <- FALSE
+  if((stringr::str_detect(key,"start"))>0) {
+    countAfter1 <- TRUE
+  }
+  
+  day <- gsub("Day", "", key)
+  day <- gsub("start1", "", day)
+  title <- paste0("Plots and Tables with estimates and ", ci, " confidence intervals"," for Day ", day)
+  if(monotone) {
+    title <- paste0(title, " (monotone-corrected)")
+  }
+  if(countAfter1) {
+    title <- paste0(title, " (counting events after 1 day post dose)")
+  }
+  cat("##", title, "\n")
+  key_short <- key
+  for(assay in assays) {
+    
+   key <- paste0(key_short, assay)
+    marker <- key_to_markers[key]
+   
+    
+    res = knitr::knit_child(c(here::here('cor_threshold', 'sub_report.Rmd')), quiet = TRUE)
+    
+    cat(res, sep = '\n')
+    cat("\\clearpage", sep = '\n')
+  }
+}
 
-\clearpage
-```{r, include = FALSE}
-marker <- "RBD binding antibody"
-key <- "bindRBD"
-day <- 57
-ci <- "simultaneous"
-monotone <- F
-include_eval <- "Day57" %in% times && key %in% markers
-```
-
-```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
-
-```
-
-\clearpage
-```{r, include=FALSE}
-marker <- "Pseudo virus-neutralizing antibody (50\\% titer)"
-key <- "pseudoneutid50"
-day <- 57
-ci <- "simultaneous"
-monotone <- F
-include_eval <- "Day57" %in% times && key %in% markers
-```
-
-```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
-
-```
-
-\clearpage
-```{r, include=FALSE}
-marker <- "Pseudo virus-neutralizing antibody (80\\% titer)"
-key <- "pseudoneutid80"
-day <- 57
-ci <- "simultaneous"
-monotone <- F
-include_eval <- "Day57" %in% times && key %in% markers
-```
-
-```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
-
-```
-
-\clearpage
-##  Plots and Tables with estimates and simultaneous confidence bands for Day 29
-
-```{r, include = FALSE}
-# DAY 29
-marker <- "Spike protein antibody"
-key <- "bindSpike"
-day <- 29
-ci <- "simultaneous"
-monotone <- F
-include_eval <- "Day29" %in% times && key %in% markers
-```
-
-```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
-
-```
-
-\clearpage
-```{r, include = FALSE}
-marker <- "RBD binding antibody"
-key <- "bindRBD"
-day <- 29
-ci <- "simultaneous"
-monotone <- F
-include_eval <- "Day29" %in% times && key %in% markers
-```
-
-```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
-
-```
-
-\clearpage
-```{r, include = FALSE}
-marker <- "Pseudo virus-neutralizing antibody (50\\% titer)"
-key <- "pseudoneutid50"
-day <- 29
-ci <- "simultaneous"
-monotone <- F
-include_eval <- "Day29" %in% times && key %in% markers
-```
-
-```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
-
-```
-
-\clearpage
-```{r, include = FALSE}
-marker <- "Pseudo virus-neutralizing antibody (80\\% titer)"
-key <- "pseudoneutid80"
-day <- 29
-ci <- "simultaneous"
-monotone <- F
-include_eval <- "Day29" %in% times && key %in% markers
-```
-
-```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
-
-```
-
-\clearpage
-## Plots and Tables with estimates and pointwise confidence interval for Day 57 (monotone-corrected)
-
-```{r, include = FALSE}
-marker <- "Spike protein binding antibody"
-key <- "bindSpike"
-day <- 57
-ci <- "simultaneous"
-monotone <- T
-include_eval <- paste0("Day",day) %in% times && key %in% markers
-```
-
-```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
-
-```
-
-\clearpage
-```{r, include = FALSE}
-marker <- "RBD binding antibody"
-key <- "bindRBD"
-day <- 57
-ci <- "simultaneous"
-monotone <- T
-include_eval <- paste0("Day",day) %in% times && key %in% markers
-```
-
-```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
-
-```
-
-\clearpage
-```{r, include=FALSE}
-marker <- "Pseudo virus-neutralizing antibody (50\\% titer)"
-key <- "pseudoneutid50"
-day <- 57
-ci <- "simultaneous"
-monotone <- T
-include_eval <- paste0("Day",day) %in% times && key %in% markers
-```
-
-```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
-
-```
-
-\clearpage
-```{r, include=FALSE}
-marker <- "Pseudo virus-neutralizing antibody (80\\% titer)"
-key <- "pseudoneutid80"
-day <- 57
-ci <- "simultaneous"
-monotone <- T
-include_eval <- paste0("Day",day) %in% times && key %in% markers
-```
-
-```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
-
-```
-
-\clearpage
-##  Plots and Tables with estimates and pointwise confidence intervals for Day 29 (monotone-corrected)
-
-```{r, include = FALSE}
-# DAY 29
-marker <- "Spike protein antibody"
-key <- "bindSpike"
-day <- 29
-ci <- "simultaneous"
-monotone <- T
-include_eval <- paste0("Day",day) %in% times && key %in% markers
-```
-
-```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
-
-```
-
-\clearpage
-```{r, include = FALSE}
-marker <- "RBD binding antibody"
-key <- "bindRBD"
-day <- 29
-ci <- "simultaneous"
-monotone <- T
-include_eval <- paste0("Day",day) %in% times && key %in% markers
-```
-
-```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
-
-```
-
-\clearpage
-```{r, include = FALSE}
-marker <- "Pseudo virus-neutralizing antibody (50\\% titer)"
-key <- "pseudoneutid50"
-day <- 29
-ci <- "simultaneous"
-monotone <- T
-include_eval <- paste0("Day",day) %in% times && key %in% markers
-```
-
-```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
-
-```
-
-\clearpage
-```{r, include = FALSE}
-marker <- "Pseudo virus-neutralizing antibody (80\\% titer)"
-key <- "pseudoneutid80"
-day <- 29
-ci <- "simultaneous"
-monotone <- T
-include_eval <- paste0("Day",day) %in% times && key %in% markers
-```
-
-```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
@@ -531,484 +272,162 @@ include_eval <- paste0("Day",day) %in% times && key %in% markers
 
 
 
+\newpage
 
 
 # Univariate CoR: Nonparametric Threshold Modeling (<=s)
 
 The same methodology as the previous section is apply to estimate the "below" threshold-response function $E_WE[Y=1|A=1,X,S \leq s].$
 
-## Plots and Tables with estimates and pointwise confidence interval for Day 57
-```{r, include = FALSE}
-above <- FALSE
-```
 
-```{r, include = FALSE}
-marker <- "Spike protein binding antibody"
-key <- "bindSpike"
-day <- 57
+
+```{r, echo = F, include = F, eval = F}
+ 
 ci <- "pointwise"
-monotone <- F
-include_eval <- "Day57" %in% times && key %in% markers
-```
-
-```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
+above = FALSE
+monotone <- FALSE
 
 ```
 
-\clearpage
-```{r, include = FALSE}
-marker <- "RBD binding antibody"
-key <- "bindRBD"
-day <- 57
-ci <- "pointwise"
-monotone <- F
-include_eval <- "Day57" %in% times && key %in% markers
-```
 
-```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
+```{r, results="asis", echo = F, eval = F}
+setwd("/Users/larsvanderlaan/correlates_reporting_forks/correlates_reporting")
+for(key in short_keys){
+  countAfter1 <- FALSE
+  if((stringr::str_detect(key,"start"))>0) {
+    countAfter1 <- TRUE
+  }
+  
+  day <- gsub("Day", "", key)
+  day <- gsub("start1", "", day)
+  title <- paste0("Plots and Tables with estimates and ", ci, " confidence intervals"," for Day ", day)
+  if(monotone) {
+    title <- paste0(title, " (monotone-corrected)")
+  }
+  if(countAfter1) {
+    title <- paste0(title, " (counting events after 1 day post dose)")
+  }
+  cat("##", title, "\n")
+  key_short <- key
+  for(assay in assays) {
+    
+   key <- paste0(key_short, assay)
+    marker <- key_to_markers[key]
+   
+    
+    res = knitr::knit_child(c(here::here('cor_threshold', 'sub_report.Rmd')), quiet = TRUE)
+    
+    cat(res, sep = '\n')
+    cat("\\clearpage", sep = '\n')
+  }
+ 
 
-```
 
-\clearpage
-```{r, include=FALSE}
-marker <- "Pseudo virus-neutralizing antibody (50\\% titer)"
-key <- "pseudoneutid50"
-day <- 57
-ci <- "pointwise"
-monotone <- F
-include_eval <- "Day57" %in% times && key %in% markers
-```
+key <- key_short
+monotone <- TRUE
+ 
+  countAfter1 <- FALSE
+  if((stringr::str_detect(key,"start"))>0) {
+    countAfter1 <- TRUE
+  }
+  
+  day <- gsub("Day", "", key)
+  day <- gsub("start1", "", day)
+  title <- paste0("Plots and Tables with estimates and ", ci, " confidence intervals"," for Day ", day)
+  if(monotone) {
+    title <- paste0(title, " (monotone-corrected)")
+  }
+  if(countAfter1) {
+    title <- paste0(title, " (counting events after 1 day post dose)")
+  }
+  cat("##", title, "\n")
+  key_short <- key
+  for(assay in assays) {
+    
+   key <- paste0(key_short, assay)
+    marker <- key_to_markers[key]
+   
+    
+    res = knitr::knit_child(c(here::here('cor_threshold', 'sub_report.Rmd')), quiet = TRUE)
+    
+    cat(res, sep = '\n')
+    cat("\\clearpage", sep = '\n')
+  }
+}
 
-```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
-```
-
-\clearpage
-```{r, include=FALSE}
-marker <- "Pseudo virus-neutralizing antibody (80\\% titer)"
-key <- "pseudoneutid80"
-day <- 57
-ci <- "pointwise"
-monotone <- F
-include_eval <- "Day57" %in% times && key %in% markers
-```
-
-```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
-
-```
-
-\clearpage
-##  Plots and Tables with estimates and pointwise confidence intervals for Day 29
-
-```{r, include = FALSE}
-# DAY 29
-marker <- "Spike protein antibody"
-key <- "bindSpike"
-day <- 29
-ci <- "pointwise"
-monotone <- F
-include_eval <- "Day29" %in% times && key %in% markers
-```
-
-```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
-
-```
-
-\clearpage
-```{r, include = FALSE}
-
-marker <- "RBD binding antibody"
-key <- "bindRBD"
-day <- 29
-ci <- "pointwise"
-monotone <- F
-include_eval <- "Day29" %in% times && key %in% markers
-```
-
-```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
 
-\clearpage
-```{r, include = FALSE}
-marker <- "Pseudo virus-neutralizing antibody (50\\% titer)"
-key <- "pseudoneutid50"
-day <- 29
-ci <- "pointwise"
-monotone <- F
-include_eval <- "Day29" %in% times && key %in% markers
-```
 
-```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
-```
-
-\clearpage
-```{r, include = FALSE}
-marker <- "Pseudo virus-neutralizing antibody (80\\% titer)"
-key <- "pseudoneutid80"
-day <- 29
-ci <- "pointwise"
-monotone <- F
-include_eval <- "Day29" %in% times && key %in% markers
-```
-
-```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
-
-```
-
-\clearpage
-## Plots and Tables with estimates and pointwise confidence interval for Day 57 (monotone-corrected)
-
-```{r, include = FALSE}
-marker <- "Spike protein binding antibody"
-key <- "bindSpike"
-day <- 57
-ci <- "pointwise"
-monotone <- T
-include_eval <- "Day57" %in% times && key %in% markers
-```
-
-```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
-
-```
-
-\clearpage
-```{r, include = FALSE}
-marker <- "RBD binding antibody"
-key <- "bindRBD"
-day <- 57
-ci <- "pointwise"
-monotone <- T
-include_eval <- "Day57" %in% times && key %in% markers
-```
-
-```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
-
-```
-
-\clearpage
-```{r, include=FALSE}
-marker <- "Pseudo virus-neutralizing antibody (50\\% titer)"
-key <- "pseudoneutid50"
-day <- 57
-ci <- "pointwise"
-monotone <- T
-include_eval <- "Day57" %in% times && key %in% markers
-```
-
-```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
-
-```
-
-\clearpage
-```{r, include=FALSE}
-marker <- "Pseudo virus-neutralizing antibody (80\\% titer)"
-key <- "pseudoneutid80"
-day <- 57
-ci <- "pointwise"
-monotone <- T
-include_eval <- "Day57" %in% times && key %in% markers
-```
-
-```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
-
-```
-
-\clearpage
-##  Plots and Tables with estimates and pointwise confidence intervals for Day 29 (monotone-corrected)
-
-```{r, include = FALSE}
-# DAY 29
-marker <- "Spike protein antibody"
-key <- "bindSpike"
-day <- 29
-ci <- "pointwise"
-monotone <- T
-include_eval <- "Day29" %in% times && key %in% markers
-```
-
-```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
-
-```
-
-\clearpage
-```{r, include = FALSE}
-marker <- "RBD binding antibody"
-key <- "bindRBD"
-day <- 29
-ci <- "pointwise"
-monotone <- T
-include_eval <- "Day29" %in% times && key %in% markers
-```
-
-```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
-
-```
-
-\clearpage
-```{r, include = FALSE}
-marker <- "Pseudo virus-neutralizing antibody (50\\% titer)"
-key <- "pseudoneutid50"
-day <- 29
-ci <- "pointwise"
-monotone <- T
-include_eval <- "Day29" %in% times && key %in% markers
-```
-
-```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
-
-```
-
-\clearpage
-```{r, include = FALSE}
-marker <- "Pseudo virus-neutralizing antibody (80\\% titer)"
-key <- "pseudoneutid80"
-day <- 29
-ci <- "pointwise"
-monotone <- T
-include_eval <- "Day29" %in% times && key %in% markers
-```
-
-```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
-
-```
-
-\clearpage
-## Plots and Tables with estimates and simultaneous confidence bands for Day 57
-
-```{r, include = FALSE}
-marker <- "Spike protein binding antibody"
-key <- "bindSpike"
-day <- 57
+```{r, echo = F , results = "asis", eval = F}
 ci <- "simultaneous"
-monotone <- F
-include_eval <- "Day57" %in% times && key %in% markers
-```
 
-```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
+for(key in short_keys){
+  countAfter1 <- FALSE
+  if((stringr::str_detect(key,"start"))>0) {
+    countAfter1 <- TRUE
+  }
+  
+  day <- gsub("Day", "", key)
+  day <- gsub("start1", "", day)
+  title <- paste0("Plots and Tables with estimates and ", ci, " confidence intervals"," for Day ", day)
+  if(monotone) {
+    title <- paste0(title, " (monotone-corrected)")
+  }
+  if(countAfter1) {
+    title <- paste0(title, " (counting events after 1 day post dose)")
+  }
+  cat("##", title, "\n")
+  key_short <- key
+  for(assay in assays) {
+    
+   key <- paste0(key_short, assay)
+    marker <- key_to_markers[key]
+   
+    
+    res = knitr::knit_child(c(here::here('cor_threshold', 'sub_report.Rmd')), quiet = TRUE)
+    
+    cat(res, sep = '\n')
+    cat("\\clearpage", sep = '\n')
+  }
+ 
 
-```
+key <- key_short
+monotone <- TRUE
+ 
+  countAfter1 <- FALSE
+  if((stringr::str_detect(key,"start"))>0) {
+    countAfter1 <- TRUE
+  }
+  
+  day <- gsub("Day", "", key)
+  day <- gsub("start1", "", day)
+  title <- paste0("Plots and Tables with estimates and ", ci, " confidence intervals"," for Day ", day)
+  if(monotone) {
+    title <- paste0(title, " (monotone-corrected)")
+  }
+  if(countAfter1) {
+    title <- paste0(title, " (counting events after 1 day post dose)")
+  }
+  cat("##", title, "\n")
+  key_short <- key
+  for(assay in assays) {
+    
+   key <- paste0(key_short, assay)
+    marker <- key_to_markers[key]
+   
+    
+    res = knitr::knit_child(c(here::here('cor_threshold', 'sub_report.Rmd')), quiet = TRUE)
+    
+    cat(res, sep = '\n')
+    cat("\\clearpage", sep = '\n')
+  }
+}
 
-\clearpage
-```{r, include = FALSE}
-marker <- "RBD binding antibody"
-key <- "bindRBD"
-day <- 57
-ci <- "simultaneous"
-monotone <- F
-include_eval <- "Day57" %in% times && key %in% markers
-```
-
-```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
-
-```
-
-\clearpage
-```{r, include=FALSE}
-marker <- "Pseudo virus-neutralizing antibody (50\\% titer)"
-key <- "pseudoneutid50"
-day <- 57
-ci <- "simultaneous"
-monotone <- F
-include_eval <- "Day57" %in% times && key %in% markers
-```
-
-```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
-
-```
-
-\clearpage
-```{r, include=FALSE}
-marker <- "Pseudo virus-neutralizing antibody (80\\% titer)"
-key <- "pseudoneutid80"
-day <- 57
-ci <- "simultaneous"
-monotone <- F
-include_eval <- "Day57" %in% times && key %in% markers
-```
-
-```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
-
-```
-
-\clearpage
-##  Plots and Tables with estimates and simultaneous confidence bands for Day 29
-
-```{r, include = FALSE}
-# DAY 29
-marker <- "Spike protein antibody"
-key <- "bindSpike"
-day <- 29
-ci <- "simultaneous"
-monotone <- F
-include_eval <- "Day29" %in% times && key %in% markers
-```
-
-```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
-
-```
-
-\clearpage
-```{r, include = FALSE}
-marker <- "RBD binding antibody"
-key <- "bindRBD"
-day <- 29
-ci <- "simultaneous"
-monotone <- F
-include_eval <- "Day29" %in% times && key %in% markers
-```
-
-```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
 
 ```
-
-\clearpage
-```{r, include = FALSE}
-marker <- "Pseudo virus-neutralizing antibody (50\\% titer)"
-key <- "pseudoneutid50"
-day <- 29
-ci <- "simultaneous"
-monotone <- F
-include_eval <- "Day29" %in% times && key %in% markers
-```
-
-```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
-
-```
-
-\clearpage
-```{r, include = FALSE}
-marker <- "Pseudo virus-neutralizing antibody (80\\% titer)"
-key <- "pseudoneutid80"
-day <- 29
-ci <- "simultaneous"
-monotone <- F
-include_eval <- "Day29" %in% times && key %in% markers
-```
-
-```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
-
-```
-
-\clearpage
-## Plots and Tables with estimates and pointwise confidence interval for Day 57 (monotone-corrected)
-
-```{r, include = FALSE}
-marker <- "Spike protein binding antibody"
-key <- "bindSpike"
-day <- 57
-ci <- "simultaneous"
-monotone <- T
-include_eval <- paste0("Day",day) %in% times && key %in% markers
-```
-
-```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
-
-```
-
-\clearpage
-```{r, include = FALSE}
-marker <- "RBD binding antibody"
-key <- "bindRBD"
-day <- 57
-ci <- "simultaneous"
-monotone <- T
-include_eval <- paste0("Day",day) %in% times && key %in% markers
-```
-
-```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
-
-```
-
-\clearpage
-```{r, include=FALSE}
-marker <- "Pseudo virus-neutralizing antibody (50\\% titer)"
-key <- "pseudoneutid50"
-day <- 57
-ci <- "simultaneous"
-monotone <- T
-include_eval <- paste0("Day",day) %in% times && key %in% markers
-```
-
-```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
-
-```
-
-\clearpage
-```{r, include=FALSE}
-marker <- "Pseudo virus-neutralizing antibody (80\\% titer)"
-key <- "pseudoneutid80"
-day <- 57
-ci <- "simultaneous"
-monotone <- T
-include_eval <- paste0("Day",day) %in% times && key %in% markers
-```
-
-```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
-
-```
-
-\clearpage
-##  Plots and Tables with estimates and pointwise confidence intervals for Day 29 (monotone-corrected)
-
-```{r, include = FALSE}
-# DAY 29
-marker <- "Spike protein antibody"
-key <- "bindSpike"
-day <- 29
-ci <- "simultaneous"
-monotone <- T
-include_eval <- paste0("Day",day) %in% times && key %in% markers
-```
-
-```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
-
-```
-
-\clearpage
-```{r, include = FALSE}
-marker <- "RBD binding antibody"
-key <- "bindRBD"
-day <- 29
-ci <- "simultaneous"
-monotone <- T
-include_eval <- paste0("Day",day) %in% times && key %in% markers
-```
-
-```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
-
-```
-
-\clearpage
-```{r, include = FALSE}
-marker <- "Pseudo virus-neutralizing antibody (50\\% titer)"
-key <- "pseudoneutid50"
-day <- 29
-ci <- "simultaneous"
-monotone <- T
-include_eval <- paste0("Day",day) %in% times && key %in% markers
-```
-
-```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
-
-```
-
-\clearpage
-```{r, include = FALSE}
-marker <- "Pseudo virus-neutralizing antibody (80\\% titer)"
-key <- "pseudoneutid80"
-day <- 29
-ci <- "simultaneous"
-monotone <- T
-include_eval <- paste0("Day",day) %in% times && key %in% markers
-```
-
-```{r, include = include_eval, eval =  include_eval, child=here::here('cor_threshold','sub_report.Rmd')}
-
-```
-
-
 
 
 

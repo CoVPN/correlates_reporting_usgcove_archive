@@ -58,8 +58,9 @@ get_plot <- function(key, simultaneous_CI = F, monotone = F, above = TRUE) {
   data <- read.csv(here::here("data_clean", paste0("data_secondstage_", short_key, ".csv")))
   main <- plotting_assay_title_generator(marker)
   if(length(grep("start", key)) > 0) {
-    main <- paste0(main , " (counting events 1 day after dose)")
+    main <- paste0(main , " (1-day-post)")
   }
+  print(main)
     #paste0("Cumulative Risk of COVID by Day ", tf[time])
 
   ident <- function(x) x

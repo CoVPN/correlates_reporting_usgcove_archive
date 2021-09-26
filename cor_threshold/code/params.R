@@ -89,9 +89,12 @@ markers <- unlist(sapply(times, function(v) grep(v, markers, value = T))) # Remo
 for(assay in assays) {
   keys <- c(keys, paste0(keys_short, assay))
 }
-# Marker variables to generate results for
-# assays <- c("bindSpike", "bindRBD", "pseudoneutid80", "liveneutid80", "pseudoneutid80", "liveneutid80", "pseudoneutid50", "liveneutid50")
-# assays <- paste0("Day57", assays) # Quick way to switch between days
+if(study_name=="ENSEMBLE" | study_name=="MockENSEMBLE") {
+keep <- grep("start", keys)
+tmp <- keys[keep]
+keys <- keys[-tmp]
+keys <- c(keys, tmp)
+}
  
 key_to_markers <- markers
 names(key_to_markers) <- markers

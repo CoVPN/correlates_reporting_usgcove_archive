@@ -4,30 +4,23 @@
 #' @param simultaneous_CI True if simultaneous CI should be plotted. Otherwise if False pointwise CI are plotted.
 #' @param monotone True if monotone correction should be done on estimates. Otherwise no monotone correction. This should be done if one expects monotonicity.
 #' Assume monotone nonincreasing
-get_plot <- function(marker, simultaneous_CI = F, monotone = F, above = TRUE) {
-    library(survival)
+get_plot <- function(key, simultaneous_CI = F, monotone = F, above = TRUE) {
+    
+  library(survival)
     print("PLOTS")
+    print(key)
   dat.mock <- read.csv(here::here("..", "data_clean", paste0(stringr::str_match(data_name,"(.+).csv")[,2],append_data,".csv")))
   data <- dat.mock
-   time <- marker_to_time[[marker]]
-   if(time == "Day57") {
-     Earlyendpoint <- "EarlyendpointD57"
-   } else if(time == "Day29") {
-     Earlyendpoint <- "EarlyendpointD29"
-     
-   }
+   short_key <- key_to_short[[key]]
+   marker <- key_to_markers[key]
+   
    #keep <- data[[Earlyendpoint]] ==0 & data$Trt == 0 & data$Bserostatus == 0 & data$Perprotocol==1  & data[[Event_Time_variable[[time]]]] >=7 & !is.na(data$Wstratum)
-  keep <- data[[ph1_id_list[[time]]]]==1  & data$Trt == 0 & data$Bserostatus == 0
+  keep <- data[[ph1_id_list[[short_key]]]]==1  & data$Trt == 0 & data$Bserostatus == 0
   #keep <-   data$Trt == 0 & data$Bserostatus == 0   & !is.na(data[[weight_variable[[time]]]])
   tmp <- dat.mock[keep,]
-  print(time)
-  print(ph1_id_list[[time]])
-  print(dim(tmp))
-  #dat.mock <- read.csv(here::here( "data_clean", data_name))
-  #tmp <- dat.mock[dat.mock$Perprotocol==1 & dat.mock$Bserostatus == 0,]
   
-  tmp$time <-  as.numeric(tmp[[Event_Time_variable[[time]]]])
-  tmp$Delta <-  as.numeric(tmp[[Event_Ind_variable[[time]]]])
+  tmp$time <-  as.numeric(tmp[[Event_Time_variable[[short_key]]]])
+  tmp$Delta <-  as.numeric(tmp[[Event_Ind_variable[[short_key]]]])
   data <- tmp
  
   form.s = as.formula(paste0("Surv( time, Delta) ~ 1"))
@@ -39,18 +32,13 @@ get_plot <- function(marker, simultaneous_CI = F, monotone = F, above = TRUE) {
  
  
   fit.risk = coxph(form.0, data = tmp, model=T) # model=T is required because the type of prediction requires it, see Note on ?predict.coxph
-  tmp[["time"]] <-  as.numeric(tf[time])
+  tmp[["time"]] <-  as.numeric(tf[short_key])
  
   
  
   risks = 1 - exp(-predict(fit.risk, newdata=tmp, type="expected"))
   risk_plac <- round(mean(risks),3)
-  
-  
-  #fit <- summary(survival::survfit(survival::Surv(time, Delta) ~ 1, data = tmp[tmp$Trt==1,]), times = tf[[time]] )
-  #risk_vac <- round(mean(1-fit$surv),4)
-  #fit <- summary(survival::survfit(survival::Surv(time, Delta) ~ 1, data = #tmp[tmp$Trt==0,]), times = tf[[time]] )
-  #risk_plac <-  round(mean(1-fit$surv),3)
+ 
 
   if(above){
       append <- ""
@@ -58,17 +46,20 @@ get_plot <- function(marker, simultaneous_CI = F, monotone = F, above = TRUE) {
       append <- "_below"
   }
   if(monotone) {
-    load(file = here::here("output", paste0("tmleThresh_monotone_", marker,append, ".RData")))
+    load(file = here::here("output", paste0("tmleThresh_monotone_", key,append, ".RData")))
   } else {
-    load(file = here::here("output", paste0("tmleThresh_", marker,append, ".RData")))
+    load(file = here::here("output", paste0("tmleThresh_", key,append, ".RData")))
   }
-  time <- marker_to_time[[marker]]
+  time <- key_to_time[[key]]
   day <- ""
-  laby <- paste0("Probability of COVID by Day ",tf[time])
+  laby <- paste0("Probability of COVID by Day ",tf[short_key])
   labx <- plotting_assay_label_generator(marker, above)
   # subtitle_main <- "Nonparametric estimate of Threshold-response function"
-  data <- read.csv(here::here("data_clean", paste0("data_secondstage_", time, ".csv")))
+  data <- read.csv(here::here("data_clean", paste0("data_secondstage_", short_key, ".csv")))
   main <- plotting_assay_title_generator(marker)
+  if(length(grep("start", key)) > 0) {
+    main <- paste0(main , " (counting events 1 day after dose)")
+  }
     #paste0("Cumulative Risk of COVID by Day ", tf[time])
 
   ident <- function(x) x
@@ -121,12 +112,7 @@ get_plot <- function(marker, simultaneous_CI = F, monotone = F, above = TRUE) {
     #trans_format("ident", math_format(10^.x)),
   #limits = c(min(esttmle[, 1]) - 0.1, max(esttmle[, 1]) + 0.1)
  )
- print(above)
- print(uloqs)
- print(uloqs[a])
- print(a)
- print(v$data$upper)
- print(risk_plac)
+  
  if(above  && max_thresh < log10(uloqs[a]) - 0.05) {
      plot <- plot + geom_vline(xintercept = max_thresh, colour = "red", linetype = "longdash")
  } else if(!above && risk_plac<= max(v$data$upper, na.rm = T)) {
@@ -161,7 +147,7 @@ get_plot <- function(marker, simultaneous_CI = F, monotone = F, above = TRUE) {
   ggsave(
     filename = here::here(
       "figs", folder,
-      paste0(append_start, marker, append_end, ".pdf")
+      paste0(append_start, key, append_end, ".pdf")
     ),
     plot = plot, height = 7, width = 9
   )
@@ -172,11 +158,12 @@ get_plot <- function(marker, simultaneous_CI = F, monotone = F, above = TRUE) {
 # Generates tables (both pointwise CI and simultaneous CI) for Threshold-response function estimates
 #' @param marker The marker variable to generate plots for.
 #' @param num_show The number of thresholds to include in table.
-generate_tables <- function(marker, num_show = 10, monotone = F, above = T) {
+generate_tables <- function(key, num_show = 10, monotone = F, above = T) {
     print("TABLES")
-    time <- marker_to_time[[marker]]
+  short_key <- key_to_short[[key]]
+  marker <- key_to_markers[key]
      
-    data_secondstage <- read.csv(here::here("data_clean", paste0("data_secondstage_", time, ".csv")))
+    data_secondstage <- read.csv(here::here("data_clean", paste0("data_secondstage_", short_key, ".csv")))
      
     if(above){
         append <- ""
@@ -184,9 +171,9 @@ generate_tables <- function(marker, num_show = 10, monotone = F, above = T) {
         append <- "_below"
     }
   if(monotone) {
-    load(file = here::here("output", paste0("tmleThresh_monotone_", marker,append, ".RData")))
+    load(file = here::here("output", paste0("tmleThresh_monotone_", key,append, ".RData")))
   } else {
-    load(file = here::here("output", paste0("tmleThresh_", marker,append, ".RData")))
+    load(file = here::here("output", paste0("tmleThresh_", key,append, ".RData")))
   }
   esttmle_table <- esttmle
   esttmle_table[, 1] <- round(esttmle_table[, 1], 3)
@@ -211,99 +198,19 @@ generate_tables <- function(marker, num_show = 10, monotone = F, above = T) {
   ptwise_tab_guts <- esttmle_table[index_to_show, c(1, 2, 3, 4, 5)]
 
   if(monotone) {
-    key <- paste0(append,"monotone_")
+    aadd1 <- paste0(append,"monotone_")
   } else {
-    key <- append
+    aadd1 <- append
   }
   saveRDS(ptwise_tab_guts, file = here::here(
       "figs", "pointwise_CI",
-      paste0("TABLE_",key, marker, "_pointwiseCI.rds")
+      paste0("TABLE_",aadd1, key, "_pointwiseCI.rds")
     ))
   simul_tab_guts <- esttmle_table[index_to_show, c(1, 2, 3, 6, 7)]
 
   saveRDS(simul_tab_guts, file = here::here(
       "figs", "simultaneous_CI",
-      paste0("TABLE_", key, marker, "_simultCI.rds")
+      paste0("TABLE_", aadd1, key, "_simultCI.rds")
     ))
   return(list(pointwise = esttmle_table[index_to_show, c(1, 2, 3, 4, 5)], simult = esttmle_table[index_to_show, c(1, 2, 3, 6, 7)]))
-}
-#' Generate plot and table of inverse threshold response. ASSUMES MONOTONICITY.
-#' WEIRD BEHAVIOR IF INITIAL ESTIMATES DEVIATE GREATLY FROM MONOTONE NONINCREASING.
-#' @param marker The marker variable to generate plots for.
-#' @param simultaneous_CI True if simultaneous CI should be plotted. Otherwise if False pointwise CI are plotted.
-
-get_inverse_plot <- function(marker, simultaneous_CI = F) {
-  if (simultaneous_CI) {
-    folder <- "simultaneous_CI"
-  } else {
-    folder <- "pointwise_CI"
-  }
-  load(file = here::here("output", paste0("tmleThresh_monotone_", marker, ".RData")))
-  main <- paste0("Cumulative Risk of COVID by Day ", tf[marker_to_time[[marker]]])
-  risks <- risks_to_estimate_thresh_of_protection
-  if (is.null(risks)) {
-    risks <- unique(round(seq(max(min(esttmle[esttmle[, 2] > 0.0005, 2]), 0.001), max(esttmle[, 2]), length.out = 15), 4))
-  }
-  if (length(risks) == 1) {
-    risks <- c(risks, risks * 2)
-  }
-  append <- ""
-  if (simultaneous_CI) {
-    append <- "simultCI"
-  } else {
-    append <- "pointwiseCI"
-  }
-  plot <- plot_inverse_threshold_response(esttmle, risks = risks, simultaneous_CI = simultaneous_CI)
-  # Save csv file with threshold of protection estimates and CI
-  write.csv(plot$inv_estimates, here::here(
-    "output",
-    paste0("tmleThresh_inverse_", marker, "_", append, ".csv")
-  ))
-
-  inv_est <- plot$inv_estimates
-  inv_est[, c(2, 3, 4)] <- round(inv_est[, c(2, 3, 4)], 2)
-  inv_est[, c(1)] <- round(inv_est[, c(1)], 4)
-  # inv_est
-
-
-
-  tmp1 <- gsub("e\\+0", "*10^", format(10^inv_est[, 2], scientific = T, digits = 3))
-  tmp2 <- gsub("e\\+0", "*10^", format(10^inv_est[, 4], scientific = T, digits = 3))
-  tmp3 <- gsub("e\\+0", "*10^", format(10^inv_est[, 3], scientific = T, digits = 3))
-  inv_est[, 2] <- tmp1
-  inv_est[, 4] <- tmp2
-
-  inv_est <- data.frame(inv_est, tmp3)
-
-  # inv_est <- data.frame(inv_est, paste0("10^", round(inv_est[,3],1) ))
-  inv_est <- inv_est[, c(1, 3, 5, 2, 4)]
-
-  colnames(inv_est) <- c("Risk", "log10-est.", "Threshold est.", "CI left", "CI right")
-  inv_est <- inv_est[, c(1, 3, 4, 5)]
-
-  # Nice latex table
-  kable(inv_est, format = "latex", booktabs = TRUE) %>%
-    kable_styling(latex_options = c("scaled_down", "striped")) %>%
-    save_kable(file = here::here(
-      "figs", folder,
-      paste0("TABLE_INVERSE_", marker, "_", append, ".pdf")
-    ))
-  day <- ""
-  laby <- plotting_assay_label_generator(marker)
-
-
-  # Save plot of inverse threshold response function
-
-  plot <- plot$plot + scale_y_continuous(
-    labels = trans_format("ident", math_format(10^.x))
-  ) + scale_x_continuous(n.breaks = 7) + xlab(main) + theme(axis.text.x = element_text(angle = 45, hjust = 1)) + ylab(laby) + theme(plot.title = element_text(size = 16))
-
-  ggsave(
-    filename = here::here(
-      "figs", folder,
-      paste0("PLOT_INVERSE_", marker, "_", append, ".pdf")
-    ),
-    plot = plot, height = 7, width = 9
-  )
-  return(plot)
-}
+} 

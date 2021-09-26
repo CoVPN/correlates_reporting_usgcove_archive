@@ -37,14 +37,19 @@ if(has29){
 if(has57){
     tf_Day57 <- max(data[data$EventIndPrimaryD57==1 & data$Trt == 1 & data$Bserostatus == 0 & !is.na(data$wt.D57), "EventTimePrimaryD57" ])
     tf$Day57 <-  tf_Day57
- }
+}
+
+try({
+  tf_Day29start1 <- max(data[data$EventIndPrimaryD29==1 & data$Trt == 1 & data$Bserostatus == 0 & !is.na(data$wt.D29start1), "EventTimePrimaryD29" ])
+  tf$Day29start1 <-  tf_Day29start1
+})
 
 # Reference time to perform analysis. Y = 1(T <= tf) where T is event time of Covid.
 # tf should be large enough that most events are observed but small enough so that not many people are right censored. For the practice dataset, tf = 170 works.
 # Right-censoring is taken into account for  this analysis.
 covariate_adjusted <- TRUE #### Estimate threshold-response function with covariate adjustment
 fast_analysis <- FALSE ### Perform a fast analysis using glmnet at cost of accuracy
-super_fast_analysis <- FALSE
+super_fast_analysis <- TRUE
 include_interactions <- TRUE #  NO LONGER ACTIVE #### Include algorithms that model interactions between covariates. NO LONGER ACTIVE
 threshold_grid_size <- 30 ### Number of thresholds to estimate (equally spaced in quantiles). Should be 15 at least for the plots of the threshold-response and its inverse to be representative of the true functions.
 adjust_for_censoring <- FALSE #  NO LONGER ACTIVE # For now, set to FALSE. If set to TRUE, make sure you set tf well before we lose too many people to "end of study"
@@ -74,18 +79,51 @@ plotting_assay_title_generator <- function(marker) {
 }
 
 times <- intersect(c("Day57", "Day29"), times)
+keys_short <- times
+if(study_name=="ENSEMBLE" | study_name=="MockENSEMBLE") {
+  keys_short <- c(keys_short, "Day29start1")
+}
+keys <- c()
+markers <- markers
+markers <- unlist(sapply(times, function(v) grep(v, markers, value = T))) # Remove the baseline markers
+for(assay in assays) {
+  keys <- c(keys, paste0(keys_short, assay))
+}
 # Marker variables to generate results for
 # assays <- c("bindSpike", "bindRBD", "pseudoneutid80", "liveneutid80", "pseudoneutid80", "liveneutid80", "pseudoneutid50", "liveneutid50")
 # assays <- paste0("Day57", assays) # Quick way to switch between days
-markers <- markers
-markers <- unlist(sapply(times, function(v) grep(v, markers, value = T))) # Remove the baseline markers
-markers
+ 
+key_to_markers <- markers
+names(key_to_markers) <- markers
+
+
 marker_to_time <- sapply(markers, function(v) {
   times[stringr::str_detect(v, times)]
 })
 marker_to_assay <- sapply(markers, function(v) {
   unname(assays[stringr::str_detect(v, assays)])
 })
+
+
+key_to_time <- sapply(keys, function(v) {
+  times[stringr::str_detect(v, times)]
+})
+key_to_assay <- sapply(keys, function(v) {
+  unname(assays[stringr::str_detect(v, assays)])
+})
+key_to_markers <- paste0(key_to_time, key_to_assay )
+names(key_to_markers) <- keys
+key_to_markers
+key_to_short <- sapply(keys, function(v) {
+  tmp <- setdiff(keys_short, "Day29start1")
+  if(stringr::str_detect(v, "Day29start1")) {
+    return("Day29start1")
+  } else {
+    return(unname(tmp[stringr::str_detect(v, tmp)]))
+  }
+   
+})
+ 
 
 # Covariates to adjust for. SHOULD BE AT LEAST TWO VARIABLES OR GLMNET WILL ERROR
 data_name_updated <- sub(".csv", "_with_riskscore.csv", data_name)
@@ -106,17 +144,17 @@ if (file.exists(here::here("..", "data_clean", data_name_updated))) {
 }
 
 # Indicator variable for whether an event was observed (0 is censored or end of study, 1 is COVID endpoint)
-Event_Ind_variable <- list("Day57" = "EventIndPrimaryD57", "Day29" = "EventIndPrimaryD29") # "B" = "EventIndPrimaryD57")
+Event_Ind_variable <- list("Day57" = "EventIndPrimaryD57", "Day29" = "EventIndPrimaryD29", "Day29start1" = "EventIndPrimaryD29") # "B" = "EventIndPrimaryD57")
 # Time until event (censoring, end of study, or COVID infection)
-Event_Time_variable <- list("Day57" = "EventTimePrimaryD57", "Day29" = "EventTimePrimaryD29")
+Event_Time_variable <- list("Day57" = "EventTimePrimaryD57", "Day29" = "EventTimePrimaryD29", "Day29start1" = "EventTimePrimaryD29")
 # Variable containing the two stage sampling weights
-weight_variable <- list("Day57" = "wt.D57", "Day29" = "wt.D29")
+weight_variable <- list("Day57" = "wt.D57", "Day29" = "wt.D29", "Day29start1" = "wt.D29start1")
 # Indicator variable that is 1 if selected for second stage
-twophaseind_variable <- list("Day57" = "TwophasesampIndD57", "Day29" = "TwophasesampIndD29")
+twophaseind_variable <- list("Day57" = "TwophasesampIndD57", "Day29" = "TwophasesampIndD29", "Day29start1" = "TwophasesampIndD29")
 # The stratum over which stratified two stage sampling is performed
 twophasegroup_variable <- "Wstratum"
-ph1_id_list <-list("Day57" = "ph1.D57", "Day29" = "ph1.D29")
-ph2_id_list <-list("Day57" = "ph2.D57", "Day29" = "ph2.D29")
+ph1_id_list <-list("Day57" = "ph1.D57", "Day29" = "ph1.D29", "Day29start1" = "ph1.D29start1")
+ph2_id_list <-list("Day57" = "ph2.D57", "Day29" = "ph2.D29", "Day29start1" = "ph2.D29start1")
 
 ####################
 #### Internal variables

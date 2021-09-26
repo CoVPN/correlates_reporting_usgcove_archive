@@ -113,12 +113,18 @@ target_N <- function(data, likelihoods, fits, node_list, target_times, n_full_sa
   if(is.null(n_full_sample)) {
     n_full_sample <- n
   }
+  #print(apply(matrix(as.vector(likelihoods$N), ncol = nt), 2, function(v) {print(quantile(v))}))
+  
+  #print(quantile(likelihoods$N))
   survs <- compute_survival_functions(likelihoods, nt)
   surv_C <- hazard_to_survival(likelihoods$C, nt = nt, left = T)
   Ft <- survs$Ft
-  St <- pmax(survs$St,0.0025)
-
-
+  St <-  survs$St 
+ # print("St")
+  #print(quantile(St))
+  #print("Ft")
+  #print(quantile(Ft))
+  #stop("hi")
   Ft <- lapply(1:ncol(Ft), function(i) {
     v <- Ft[,i]
     v <- matrix(v, ncol = nt)
@@ -131,11 +137,16 @@ target_N <- function(data, likelihoods, fits, node_list, target_times, n_full_sa
     return(do.call(cbind, Hv))
   })
   Ft <- do.call(cbind, Ft)
+  #print("Ft")
+  #print(quantile(Ft))
   H <-  Ft /surv_C
-
+  #print("C")
+  #print(quantile(surv_C))
   H_list <- list()
   for(i in 1:ncol(likelihoods$outcomes_A)) {
     g <- pmax(likelihoods$A[[i]],0.0025)
+    #print("g")
+    #print(quantile(g))
     H_list[[i]] <- H*(likelihoods$outcomes_A[[i]]/g)
   }
   H <- as.matrix(do.call(cbind,H_list))
@@ -170,6 +181,7 @@ target_N <- function(data, likelihoods, fits, node_list, target_times, n_full_sa
 
   #print(direction*D_weights)
   norm <- sqrt(sum((direction*D_weights)^2)/length(direction))
+  print(norm)
   if(norm == 0){
       norm <- 1
   }
@@ -222,6 +234,7 @@ target_N <- function(data, likelihoods, fits, node_list, target_times, n_full_sa
     method = "Brent"
   )
   epsilon <- optim_fit$par
+  #print(epsilon)
   if(is.null(epsilon) || is.na(epsilon) || is.nan(epsilon) || !is.numeric(epsilon)) {
       epsilon <- 0
   }
@@ -233,10 +246,8 @@ target_N <- function(data, likelihoods, fits, node_list, target_times, n_full_sa
   # }
 
   likelihoods$N <- plogis(qlogis(bound(likelihoods$N, 0.00001)) + as.vector(H) * epsilon )
-  #print("epsilon")
-  #print(epsilon)
-  #print("direction")
-  #print(direction)
+ # print(quantile(likelihoods$N))
+  #print(quantile(H))
   full_epsilon <- epsilon * direction
   fits$epsilons_N <-c(fits$epsilons_N, list(full_epsilon))
   return(list(fits = fits, likelihoods = likelihoods, converged = F))

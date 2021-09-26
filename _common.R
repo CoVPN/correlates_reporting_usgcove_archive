@@ -7,14 +7,7 @@ for(opt in names(config)){
   eval(parse(text = paste0(names(config[opt])," <- config[[opt]]")))
 }
 
-times <- "Day29"
-has29 <- TRUE
-data_raw_dir <- "janssen"
-data_in_file <- "COVID_ENSEMBLE_practicedata.csv"
-study_name <- "ENSEMBLE"
-study_name_code <- "ENSEMBLE"
-assays <- c("bindRBD", "pseudoneutid50", "bindSpike")
-subset_value <- "All"
+ 
 # disabling lower level parallelization in favor of higher level of parallelization
 
 # set parallelization in openBLAS and openMP

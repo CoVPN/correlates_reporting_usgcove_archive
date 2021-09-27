@@ -1,0 +1,56 @@
+\begin{figure}
+\center
+
+\subfloat[][Marginalized cumulative incidence rate curves for trichotomized Day `r tpeak` markers among vaccine recipients. The gray line is the overall cumulative incidence rate curve in the placebo arm.]{\includegraphics
+[height=3.5in,width=3.5in]{`r paste0(pathCoRoutput, "/", a, "_")`marginalized_risks_cat_`r study_name`}}
+
+\subfloat[][Marginalized cumulative risk by Day \protect\input{`r pathCoRoutput`/timepoints_cum_risk_`r study_name`} as functions of Day `r tpeak` markers (=s) among vaccine recipients with 95\% bootstrap point-wise confidence bands (\protect\input{`r pathCoRoutput`/bootstrap_replicates_`r study_name`} replicates). The horizontal lines indicate the overall cumulative risk of the placebo and vaccine arms by Day \protect\input{`r pathCoRoutput`/timepoints_cum_risk_`r study_name`} and its 95\% point-wise confidence interval. Histograms of the immunological markers in the vaccine arm are overlaid. lod =`r round(llods[a],1)`.]{\includegraphics
+[height=3.5in,width=3.5in]{`r paste0(pathCoRoutput, "/", a, "_")`marginalized_risks_eq_`r study_name`}}
+
+
+\caption{Marginalized cumulative risk curves (=s). `r special.note`}
+\end{figure}
+
+
+\begin{figure}
+\center
+
+\subfloat[][Controlled VE with sensitivity analysis as functions of Day `r tpeak` markers (=s) among vaccine recipients with 95\% bootstrap point-wise confidence bands (\protect\input{`r pathCoRoutput`/bootstrap_replicates_`r study_name`} replicates). Histograms of the immunological markers in the vaccine arm are overlaid. lod =`r round(llods[a],1)`.]{\includegraphics
+[height=3.5in,width=3.5in]{`r paste0(pathCoRoutput, "/", a, "_")`controlled_ve_curves_eq_manus_`r study_name`}}
+
+\subfloat[][Controlled VE with sensitivity analysis as functions of Day `r tpeak` markers (=s) among vaccine recipients with 95\% bootstrap point-wise confidence bands (\protect\input{`r pathCoRoutput`/bootstrap_replicates_`r study_name`} replicates). Histograms of the immunological markers in the vaccine arm are overlaid. lod =`r round(llods[a],1)`.]{\includegraphics
+[height=3.5in,width=3.5in]{`r paste0(pathCoRoutput, "/", a, "_")`controlled_ve_curves_eq_`r study_name`}}
+
+\caption{Controlled VE curves (=s). `r special.note`}
+\end{figure}
+
+
+\begin{figure}
+\center
+
+\subfloat[][Marginalized cumulative risk by Day \protect\input{`r pathCoRoutput`/timepoints_cum_risk_`r study_name`} post Day `r tpeak` visit as functions of Day `r tpeak` markers above a threshold ($\geq s$) among vaccine recipients with 95\% bootstrap point-wise confidence bands (at least 5 cases are required, \protect\input{`r pathCoRoutput`/bootstrap_replicates_`r study_name`} replicates). The horizontal lines indicate the overall cumulative risk of the vaccine arm by Day \protect\input{`r pathCoRoutput`/timepoints_cum_risk_`r study_name`} and its 95\% point-wise confidence interval. Histograms of the immunological markers in the vaccine arm are overlaid. lod =`r round(llods[a],1)`.]{\includegraphics
+[height=3.5in,width=3.5in]{`r paste0(pathCoRoutput, "/", a, "_")`marginalized_risks_geq_woplacebo_`r study_name`}}
+
+\subfloat[][Controlled VE as functions of Day `r tpeak` markers (>=s) among vaccine recipients with 95\% bootstrap point-wise confidence bands (\protect\input{`r pathCoRoutput`/bootstrap_replicates_`r study_name`} replicates). Histograms of the immunological markers in the vaccine arm are overlaid. lod =`r round(llods[a],1)`.]{\includegraphics
+[height=3.5in,width=3.5in]{`r paste0(pathCoRoutput, "/", a, "_")`controlled_ve_curves_geq_`r study_name`}}
+
+\caption{Marginalized cumulative risk curves and controlled VE curves (>=s). `r special.note`}
+\end{figure}
+
+
+
+\clearpage
+\setlength{\tabcolsep}{.5ex}
+\input{`r paste0(pathCoRoutput, "/", a, "_")`marginalized_risks_eq_`r study_name`}
+
+
+\clearpage
+\setlength{\tabcolsep}{.5ex}
+\input{`r paste0(pathCoRoutput, "/", a, "_")`controlled_ve_eq_`r study_name`}
+
+\clearpage
+\setlength{\tabcolsep}{.5ex}
+\input{`r paste0(pathCoRoutput, "/", a, "_")`controlled_ve_sens_eq_`r study_name`}
+
+
+\clearpage

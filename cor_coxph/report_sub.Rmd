@@ -72,6 +72,8 @@ $^2$E-values are computed for upper tertile ($s=1$) vs. lower tertile ($s=0$) bi
 `r special.note`
 \end{table}
 
+\clearpage
+
 
 ```{r, echo=FALSE, results='asis'}
   for (a in assays) {
@@ -79,8 +81,6 @@ $^2$E-values are computed for upper tertile ($s=1$) vs. lower tertile ($s=0$) bi
     cat(res, sep = '\n')
   }
 ```
-
-
 
 
 
@@ -94,7 +94,7 @@ $^2$E-values are computed for upper tertile ($s=1$) vs. lower tertile ($s=0$) bi
 \setlength{\tabcolsep}{.5ex}
 \input{`r pathCoRoutput`/controlled_ve_eq_`r study_name`}
 
-<!-- \clearpage -->
-<!-- \setlength{\tabcolsep}{.5ex} -->
-<!-- \input{`r pathCoRoutput`/controlled_ve_sens_eq_`r study_name`} -->
+\clearpage
+\setlength{\tabcolsep}{.5ex}
+\input{`r pathCoRoutput`/controlled_ve_sens_eq_`r study_name`}
 

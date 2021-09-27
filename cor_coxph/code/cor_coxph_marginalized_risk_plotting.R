@@ -306,7 +306,7 @@ x.time<-seq(0,tfinal.tpeak,by=30); if(tfinal.tpeak-last(x.time)>15) x.time=c(x.t
 #
 if(.mfrow[1]==1)  height=7.5/2*1.5 else height=7.5/2*.mfrow[1]*1.3
 for (a in assays) {        
-    mypdf(oma=c(1,0,0,0), onefile=F, file=paste0(save.results.to, a, "_marginalized_risks_cat_", study_name), mfrow=.mfrow, width=9.1, height = height*1.1, mar=c(12,4,5,2))
+    mypdf(oma=c(1,0,0,0), onefile=F, file=paste0(save.results.to, a, "_marginalized_risks_cat_", study_name), mfrow=.mfrow, mar=c(12,4,5,2))
     par(las=1, cex.axis=0.9, cex.lab=1)# axis label 
     marker.name="Day"%.%tpeak%.%a%.%"cat"    
     

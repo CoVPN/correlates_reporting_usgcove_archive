@@ -19,7 +19,6 @@ header-includes:
    - \usepackage{eso-pic,graphicx,transparent,caption,pdflscape,titling} # keep titling last!
    - \usepackage[margin=1in]{geometry}
    - \usepackage{float}
-   - \usepackage{subfig}
 ---
 
 

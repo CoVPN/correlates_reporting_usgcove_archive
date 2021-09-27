@@ -25,6 +25,8 @@ clean:
 	rm -f data_clean/Thresholds_by_marker/*.csv
 	rm -f figs/simultaneous_CI/*.pdf
 	rm -f figs/pointwise_CI/*.pdf
+	rm -f figs/pointwise_CI/*.rds
+	rm -f figs/simultaneous_CI/*.rds
 
 ## style            : enforce R code styling conventions automatically
 style:

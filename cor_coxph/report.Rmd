@@ -3,6 +3,7 @@
 <!-- ``` -->
 
 
+
 ```{r, echo=FALSE, message=FALSE}
 message("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ running cor_coxph report ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 ```
@@ -25,31 +26,36 @@ if (two_marker_timepoints) {
 `
 
 
-<!-- these latex variables are used in report_sub -->
-\newif\ifCOVE
-\newif\ifENSEMBLE
-`r paste0("\\", study_name_code, "true")` 
+<!-- latex variables that may be used in report_sub -->
+<!-- \newif\ifCOVE -->
+<!-- \newif\ifENSEMBLE -->
+<!-- `r paste0("\\", study_name_code, "true")`  -->
 
 
 
 ```{r, echo=FALSE, results='asis'}
 
+data_name_updated <- sub(".csv", "_with_riskscore.csv", data_name)
+covariates_adjusted = ifelse (file.exists(here::here("data_clean", data_name_updated)), covariates_riskscore, covariates_norisksco)
+covariates_adjusted = sub("\\~\\.\\+","",covariates_adjusted)
+covariates_adjusted = sub("_","",covariates_adjusted)
+
 if(file.exists(here::here('cor_coxph', paste0('report_', tolower(study_name), '.Rmd')))) {
   
-  message ("study specific rmd found")
+  message ("trial-specific report rmd found")
   res = knitr::knit_child(c(here::here('cor_coxph', paste0('report_', tolower(study_name), '.Rmd'))), quiet = TRUE)
   cat(res, sep = '\n')
-  cat("\\clearpage", sep = '\n')
 
 } else {
 
   for (tpeak in tt) {
     COR <- paste0("D", tpeak)
+    config.cor <- config::get(config = COR)
+    for(opt in names(config.cor)) eval(parse(text = paste0(names(config.cor[opt])," <- config.cor[[opt]]")))
     special.note = ""
     pathCoRoutput <- paste0("cor_coxph/output/", attr(config,"config"), "/", COR)
     res = knitr::knit_child(c(here::here('cor_coxph', 'report_sub.Rmd')), quiet = TRUE)
     cat(res, sep = '\n')
-    cat("\\clearpage", sep = '\n')
   }
 
 }

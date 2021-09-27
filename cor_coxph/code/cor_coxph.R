@@ -1,4 +1,4 @@
-#Sys.setenv(TRIAL = "moderna_mock") # moderna_mock  janssen_pooled_real  janssen_pooled_mock  janssen_na_mock
+#Sys.setenv(TRIAL = "moderna_mock") # moderna_mock  janssen_pooled_mock  janssen_pooled_real  janssen_na_mock
 #Sys.setenv(VERBOSE = 1) 
 renv::activate(project = here::here(".."))    
     # There is a bug on Windows that prevents renv from working properly. The following code provides a workaround:
@@ -22,7 +22,7 @@ myprint(verbose)
 
 # COR defines the analysis to be done, e.g. D29, D57, D29start1
 Args <- commandArgs(trailingOnly=TRUE)
-if (length(Args)==0) Args=c(COR="D29") 
+if (length(Args)==0) Args=c(COR="D57") 
 COR=Args[1]; myprint(COR)
 
 # COR has a set of analysis-specific parameters defined in the config file
@@ -212,25 +212,30 @@ rv$marker.cutpoints=marker.cutpoints
     
 source(here::here("code", "cor_coxph_ph.R"))
 
+
+# optional forest plots
 if(length(config$forestplot_script)==1) {
     tmp=here::here("code", config$forestplot_script)
     if (file.exists(tmp)) source(tmp)
+
+    # sanity check forest plot results as a guard against unintended consequences
+    if (study_name == "MockCOVE" & !endsWith(data_name, "riskscore.csv")) {
+        tmp.1=c(sapply(rv$fr.2[-1], function (x) x[c("HR","p.value"),1]))
+        # concatList(tmp.1, ", ")
+        if (tpeak=="29") {
+            tmp.2=c(2.89108e-01,1.86059e-05,4.91460e-01,7.62402e-03,4.22427e-01,1.35351e-02,3.43234e-01,1.30351e-03)
+#            tmp.2=c(1.99318e-01,6.61894e-07,4.47758e-01,4.39862e-03,2.62992e-01,6.71887e-04,2.27514e-01,1.04158e-05)
+        } else if (tpeak=="57") {
+            tmp.2=c(1.97396e-01,5.06030e-08,4.14723e-01,1.70766e-03,3.23171e-01,2.99022e-04,3.32166e-01,4.92577e-04)
+#            tmp.2=c(1.16696e-01,3.61471e-09,4.68585e-01,6.71056e-04,2.72765e-01,3.06337e-05,1.95776e-01,1.07521e-05)
+        }
+        assertthat::assert_that(
+            max(abs(tmp.1-tmp.2)/abs(tmp.2))<1e-5,
+            msg = "failed sanity check")    
+        print("Passed sanity check")    
+    }
 }
 
-# sanity check forest plot results as a guard against unintended consequences
-if (study_name == "MockCOVE" & !endsWith(data_name, "riskscore.csv")) {
-    tmp.1=c(sapply(rv$fr.2[-1], function (x) x[c("HR","p.value"),1]))
-    # concatList(tmp.1, ", ")
-    if (tpeak=="29") {
-        tmp.2=c(2.89108e-01,1.86059e-05,4.91460e-01,7.62402e-03,4.22427e-01,1.35351e-02,3.43234e-01,1.30351e-03)
-    } else if (tpeak=="57") {
-        tmp.2=c(1.97396e-01,5.06030e-08,4.14723e-01,1.70766e-03,3.23171e-01,2.99022e-04,3.32166e-01,4.92577e-04)
-    }
-    assertthat::assert_that(
-        max(abs(tmp.1-tmp.2)/abs(tmp.2))<1e-5,
-        msg = "failed sanity check")    
-    print("Passed sanity check")    
-}
 
 
 

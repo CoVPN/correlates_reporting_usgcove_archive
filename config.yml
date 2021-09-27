@@ -1,28 +1,12 @@
+###################################################################################################
+# trials
+
 default: &default
   info: correlates_reporting
 
 ows_trial: &ows_trial
   forestplot_script: cor_coxph_forestplots_ows.R
   is_ows_trial: yes
-
-
-
-twomarkers_trial: &twomarkers_trial
-  is_ows_trial: no
-  two_marker_timepoints: no
-  data_raw_dir: twomarkers
-  data_in_file: two_markers_VEtrial_primarystage_mock_data.csv
-  study_name: TWOMARKERS
-  assays: [bindSpike, bindRBD, pseudoneutid50, pseudoneutid80]
-  times: [B, Day100, Day200, Delta100overB, Delta200overB, Delta200over100]
-  covariates_riskscore: ~.+ BMI + risk_score
-  covariates_norisksco: ~.+ BMI + Age
-  num_boot_replicates: 10
-  num_perm_replicates: 10
-
-
-
-
 
 
 moderna_trial: &moderna_trial
@@ -40,7 +24,7 @@ moderna_trial: &moderna_trial
 
 moderna_real: &moderna_real
   <<: *moderna_trial
-  data_in_file: real_moderna_data.csv # Weiping can set
+  data_in_file: immune1.csv 
   study_name: COVE
   num_boot_replicates: 1000
   num_perm_replicates: 10000
@@ -134,7 +118,7 @@ janssen_sa_mock:
 
 
 ###################################################################################################
-# correlates analyses parameters
+# correlates analyses
 
 # primary endpoint D57 markers
 D57:
@@ -146,6 +130,8 @@ D57:
   tpeak: 57
   tpeaklag: 7
   tfinal.tpeak: 0
+  txt.endpoint: COVID
+  txt.coxph.note2: No. at-risk = estimated number in the population for analysis, i.e. baseline negative per-protocol vaccine recipients not experiencing the COVID endpoint through 6 days post Day 57 visit; no. cases = number of this cohort with an observed COVID endpoint.
 
 # primary endpoint D29 markers
 D29:
@@ -157,6 +143,8 @@ D29:
   tpeak: 29
   tpeaklag: 7
   tfinal.tpeak: 0
+  txt.endpoint: COVID
+  txt.coxph.note2: No. at-risk = estimated number in the population for analysis, i.e. baseline negative per-protocol vaccine recipients not experiencing the COVID endpoint through 6 days post Day 29 visit; no. cases = number of this cohort with an observed COVID endpoint.
 
 # sensitivity analyses for D29 markers, starting at 1, instead of 7, day after D29 visit
 D29start1:
@@ -168,29 +156,9 @@ D29start1:
   tpeak: 29
   tpeaklag: 1
   tfinal.tpeak: 0
+  txt.endpoint: COVID
+  txt.coxph.note2: No. at-risk = estimated number in the population for analysis, i.e. baseline negative per-protocol vaccine recipients not experiencing the COVID endpoint through Day 29 visit; no. cases = number of this cohort with an observed COVID endpoint.
   
-# primary endpoint D200 markers
-D200:
-  ph1: ph1.D200
-  ph2: ph2.D200
-  wt: wt.D200
-  EventIndPrimary: EventIndPrimaryD200  
-  EventTimePrimary: EventTimePrimaryD200
-  tpeak: 200
-  tpeaklag: 7
-  tfinal.tpeak: 0
-
-# primary endpoint D100 markers
-D100:
-  ph1: ph1.D100
-  ph2: ph2.D100
-  wt: wt.D100
-  EventIndPrimary: EventIndPrimaryD100
-  EventTimePrimary: EventTimePrimaryD100
-  tpeak: 100
-  tpeaklag: 7
-  tfinal.tpeak: 0
-
   
 ####################
 # two time points 
@@ -199,3 +167,4 @@ D29D57:
   tinterm: 29
   tpeak: 57
   tpeaklag: 7
+  txt.endpoint: COVID

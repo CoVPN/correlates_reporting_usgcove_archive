@@ -45,10 +45,10 @@ marginalized.risk.svycoxph.boot=function(formula, marker.name, type, data, t, B,
     
         dat.b = get.bootstrap.data.cor (data, ptids.by.stratum, seed) 
         dat.b.ph2=subset(dat.b, ph2)     
-#hist(dat.b$EventTimePrimaryD29)
-#hist(dat.b$EventTimePrimaryD29[dat.b$EventIndPrimaryD29==1])
-#hist(dat.vac.seroneg$EventTimePrimaryD29)
-#hist(dat.vac.seroneg$EventTimePrimaryD29[dat.vac.seroneg$EventIndPrimaryD29==1])
+#hist(dat.b$EventTimePrimaryD14)
+#hist(dat.b$EventTimePrimaryD14[dat.b$EventIndPrimaryD14==1])
+#hist(dat.vac.seroneg$EventTimePrimaryD14)
+#hist(dat.vac.seroneg$EventTimePrimaryD14[dat.vac.seroneg$EventIndPrimaryD14==1])
 #get.marginalized.risk.no.marker(dat.b)
 #get.marginalized.risk.no.marker(dat.vac.seroneg)
            
@@ -58,10 +58,10 @@ marginalized.risk.svycoxph.boot=function(formula, marker.name, type, data, t, B,
             fit.risk.1=try(svycoxph(f1, design=tmp.design))
 #                    summary(survfit(fit.risk.1))
 #                    par(mfrow=c(2,2))
-#                    hist(dat.b.ph2$EventTimePrimaryD29[dat.b.ph2$Region==1])
-#                    sort(dat.b.ph2$EventTimePrimaryD29[dat.b.ph2$EventIndPrimaryD29==1 & dat.b.ph2$Region==1])
-#                    hist(data.ph2$EventTimePrimaryD29[data.ph2$Region==1])
-#                    sort(data.ph2$EventTimePrimaryD29[data.ph2$EventIndPrimaryD29==1 & data.ph2$Region==1])
+#                    hist(dat.b.ph2$EventTimePrimaryD14[dat.b.ph2$Region==1])
+#                    sort(dat.b.ph2$EventTimePrimaryD14[dat.b.ph2$EventIndPrimaryD14==1 & dat.b.ph2$Region==1])
+#                    hist(data.ph2$EventTimePrimaryD14[data.ph2$Region==1])
+#                    sort(data.ph2$EventTimePrimaryD14[data.ph2$EventIndPrimaryD14==1 & data.ph2$Region==1])
 
             #fit.s=svyglm(f2, tmp.design)      
             if ( class (fit.risk.1)[1] != "try-error" ) {

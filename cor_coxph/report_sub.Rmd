@@ -84,17 +84,4 @@ $^2$E-values are computed for upper tertile ($s=1$) vs. lower tertile ($s=0$) bi
 
 
 
-<!-- long tables -->
-
-\clearpage
-\setlength{\tabcolsep}{.5ex}
-\input{`r pathCoRoutput`/marginalized_risks_eq_`r study_name`}
-
-\clearpage
-\setlength{\tabcolsep}{.5ex}
-\input{`r pathCoRoutput`/controlled_ve_eq_`r study_name`}
-
-\clearpage
-\setlength{\tabcolsep}{.5ex}
-\input{`r pathCoRoutput`/controlled_ve_sens_eq_`r study_name`}
 

@@ -101,7 +101,7 @@ for (w.wo.plac in 1:2) { # 1 with placebo lines, 2 without placebo lines. Implem
         #mylegend(x=6, fill=col, border=col, legend="Vaccine Group", bty="n", cex=0.7)      
     #mtext(toTitleCase(study_name), side = 1, line = 0, outer = T, at = NA, adj = NA, padj = NA, cex = NA, col = NA, font = NA)
     dev.off()    
-    }
+    } # end assays
 }
 }
 save(ylims.cor, file=paste0(save.results.to, "ylims.cor."%.%study_name%.%".Rdata"))
@@ -109,19 +109,22 @@ save(ylims.cor, file=paste0(save.results.to, "ylims.cor."%.%study_name%.%".Rdata
 # show the results at select assay values
 digits.risk=4
 risks.all=get("risks.all.1")
-out=lapply (assays, function(a) {        
+for (a in assays) {
     risks=risks.all[[a]]
     #pick.out=names(risks$marker)!=""
     pick.out=rep(T, length(risks$marker))
     tmp=10**risks$marker[pick.out]; tmp=c(round(tmp[1],1), round(tmp[-1]))
-    with(risks, cbind("s"=tmp, "Estimate"=paste0(formatDouble(prob[pick.out],digits.risk), " (", formatDouble(lb[pick.out],digits.risk), ",", formatDouble(ub[pick.out],digits.risk), ")")))
-})
-tab=do.call(cbind, out)
-mytex(tab, file.name=paste0("marginalized_risks_eq", "_"%.%study_name), align="c", include.colnames = T, save2input.only=T, input.foldername=save.results.to, include.rownames = F,
-    longtable=T, caption.placement = "top", label=paste0("tab marginalized_risks_eq ", COR), caption=paste0("Marginalized cumulative risk by Day ",tfinal.tpeak," as functions of Day ",
-        tpeak," markers (=s) among baseline negative vaccine recipients with 95\\% bootstrap point-wise confidence intervals (",
-        ncol(risks.all[[1]]$boot)," replicates)."),
-    col.headers=paste0("\\hline\n", concatList(paste0("\\multicolumn{2}{c}{", labels.axis[1,], "}"), "&"), "\\\\\n"))
+    out=with(risks, cbind("s"=tmp, "Estimate"=paste0(formatDouble(prob[pick.out],digits.risk), " (", formatDouble(lb[pick.out],digits.risk), ",", formatDouble(ub[pick.out],digits.risk), ")")))
+    while (nrow(out)%%4!=0) out=rbind(out, c("s"="", "Estimate"=""))
+    tab=cbind(out[1:(nrow(out)/4), ], out[1:(nrow(out)/4)+(nrow(out)/4), ], out[1:(nrow(out)/4)+(nrow(out)/4*2), ], out[1:(nrow(out)/4)+(nrow(out)/4*3), ])
+    mytex(tab, file.name=paste0(a, "_marginalized_risks_eq", "_"%.%study_name), align="c", include.colnames = T, save2input.only=T, input.foldername=save.results.to, include.rownames = F,
+        longtable=T, caption.placement = "top", label=paste0("tab marginalized_risks_eq ", COR), caption=paste0("Marginalized cumulative risk by Day ",tfinal.tpeak," as functions of Day ",
+            tpeak," markers (=s) among baseline negative vaccine recipients with 95\\% bootstrap point-wise confidence intervals (",
+            ncol(risks.all[[1]]$boot)," replicates).")
+        #, col.headers=paste0("\\hline\n", concatList(paste0("\\multicolumn{2}{c}{", labels.axis[1,], "}"), "&"), "\\\\\n")
+        )
+}
+
 
 
 
@@ -130,99 +133,107 @@ mytex(tab, file.name=paste0("marginalized_risks_eq", "_"%.%study_name), align="c
     
 for (eq.geq in 1:3) {  # 1 conditional on s, 2 is conditional on S>=s, 3 is same as 1 except that no sens curve is shown
 # eq.geq=1
-    out=lapply (assays, function(a) {        
-    mypdf(onefile=F, file=paste0(save.results.to, a, "_controlled_ve_curves",ifelse(eq.geq==1,"_eq",ifelse(eq.geq==2,"_geq","_eq_manus")),"_"%.%study_name), mfrow=.mfrow, oma=c(0,0,0,0))
-    lwd=2.5
-    par(las=1, cex.axis=0.9, cex.lab=1)# axis label orientation
-        risks=get("risks.all."%.%ifelse(eq.geq==2,2,1))[[a]]        
-        #pick.out=names(risks$marker)!=""
-        pick.out=rep(T, length(risks$marker))
-    
-        #xlim=quantile(dat.vac.seroneg[["Day"%.%tpeak%.%a]],if(eq.geq==1) c(.025,.975) else c(0,.95),na.rm=T)
-        xlim=get.range.cor(dat.vac.seroneg, a, tpeak)
-        
-        # compute Bias as a vector, which is a function of s
-        # choose a reference marker value
-        tmp=subset(dat.vac.seroneg, select=yy, drop=T)    
-        mean(tmp)
-        which=which.min(abs(risks$prob-mean(tmp)))
-        s.ref=risks$marker[which]
-        Bias=controlled.risk.bias.factor(ss=risks$marker, s.cent=s.ref, s1=risks$marker[s1], s2=risks$marker[s2], RRud) 
-        if (is.nan(Bias[1])) Bias=rep(1,length(Bias))
-    
-        ylim=if(eq.geq==1 | eq.geq==3) c(0, 1) else c(ifelse(study_name=="COVE" | study_name=="MockCOVE", 0.8, 0.5), 1)
-        
-        ncases=sapply(risks$marker, function(s) sum(dat.vac.seroneg$yy[dat.vac.seroneg[["Day"%.%tpeak%.%a]]>=s], na.rm=T))        
-        .subset=if(eq.geq==1 | eq.geq==3) rep(T, length(risks$marker)) else ncases>=5
-        
-        # CVE with sensitivity analysis
-        est = 1 - risks$prob*Bias/res.plac.cont["est"]
-        boot = 1 - t( t(risks$boot*Bias)/res.plac.cont[2:(1+ncol(risks$boot))] ) # res.plac.cont may have more bootstrap replicates than risks$boot
-        ci.band=apply(boot, 1, function (x) quantile(x, c(.025,.975)))
-        # for table
-        tmp=10**risks$marker[pick.out]; tmp=c(round(tmp[1],1), round(tmp[-1]))
-        ret=cbind("s"=tmp, "Estimate"=paste0(formatDouble(est[pick.out],digits.risk), " (", formatDouble(ci.band[1,pick.out],digits.risk), ",", formatDouble(ci.band[2,pick.out],digits.risk), ")"))
-
-        mymatplot(risks$marker[.subset], t(rbind(est, ci.band))[.subset,], type="l", lty=c(1,2,2), col=ifelse(eq.geq==1,"red","white"), lwd=lwd, make.legend=F, 
-            ylab=paste0("Controlled VE against COVID-19 by Day ",tfinal.tpeak), 
-            main=paste0(labels.assays.long["Day"%.%tpeak,a]),
-            xlab=labels.assays.short[a]%.%ifelse(eq.geq==1 | eq.geq==3," (=s)"," (>=s)"), 
-            ylim=ylim, xlim=xlim, yaxt="n", xaxt="n", draw.x.axis=F)
-        # labels
-        yat=seq(.0,1,by=.1)
-        axis(side=2,at=yat,labels=(yat*100)%.%"%")
-    
-        # overall controlled VE
-        abline(h=overall.ve, col="gray", lwd=2, lty=c(1,3,3))
-        #text(x=par("usr")[1], y=overall.ve[1]+(overall.ve[1]-overall.ve[2])/2,     "overall VE "%.%round(overall.ve[1]*100)%.%"%", adj=0)
-    
-        # x axis
-        draw.x.axis.cor(xlim, llods[a])
+    outs=lapply (assays, function(a) {        
+        mypdf(onefile=F, file=paste0(save.results.to, a, "_controlled_ve_curves",ifelse(eq.geq==1,"_eq",ifelse(eq.geq==2,"_geq","_eq_manus")),"_"%.%study_name), mfrow=.mfrow, oma=c(0,0,0,0))
+            lwd=2.5
+            par(las=1, cex.axis=0.9, cex.lab=1)# axis label orientation
             
-        # CVE
-        est = 1 - risks$prob/res.plac.cont["est"]
-        boot = 1 - t( t(risks$boot)/res.plac.cont[2:(1+ncol(risks$boot))] )                         
-        ci.band=apply(boot, 1, function (x) quantile(x, c(.025,.975)))        
-        mymatplot(risks$marker[.subset], t(rbind(est, ci.band))[.subset,], type="l", lty=c(1,2,2), col=if(eq.geq==3) "black" else "pink", lwd=lwd, make.legend=F, add=T)
-        # find marker values under specific VE
-        tmpind=sapply(report.ve.levels, function (x) ifelse (x>min(est)-0.01 & x<max(est)+0.01, which.min(abs(est-x)), NA))
-        tmp=10**risks$marker[tmpind]; tmp=c(round(tmp[1],1), round(tmp[-1]))
-        ret=rbind(ret, cbind("s"=tmp, "Estimate"=paste0(formatDouble(est[tmpind],digits.risk), " (", formatDouble(ci.band[1,tmpind],digits.risk), ",", formatDouble(ci.band[2,tmpind],digits.risk), ")")))
+            risks=get("risks.all."%.%ifelse(eq.geq==2,2,1))[[a]]        
+            #pick.out=names(risks$marker)!=""
+            pick.out=rep(T, length(risks$marker))
         
+            #xlim=quantile(dat.vac.seroneg[["Day"%.%tpeak%.%a]],if(eq.geq==1) c(.025,.975) else c(0,.95),na.rm=T)
+            xlim=get.range.cor(dat.vac.seroneg, a, tpeak)
+            
+            # compute Bias as a vector, which is a function of s
+            # choose a reference marker value
+            tmp=subset(dat.vac.seroneg, select=yy, drop=T)    
+            mean(tmp)
+            which=which.min(abs(risks$prob-mean(tmp)))
+            s.ref=risks$marker[which]
+            Bias=controlled.risk.bias.factor(ss=risks$marker, s.cent=s.ref, s1=risks$marker[s1], s2=risks$marker[s2], RRud) 
+            if (is.nan(Bias[1])) Bias=rep(1,length(Bias))
         
-        # legend
-        tmp=formatDouble(overall.ve*100,1)%.%"%"        
-        mylegend(x=9,legend=c(paste0("Overall VE ",tmp[1]," (",tmp[2],", ",tmp[3],")"), "Controlled VE",                   if(eq.geq==1) "Controlled VE Sens. Analysis"), 
-                        col=c("white",                                                  if(eq.geq==3) "black" else "pink", if(eq.geq==1) "red"                         ), 
-            lty=1, lwd=2, cex=.8)
+            ylim=if(eq.geq==1 | eq.geq==3) c(0, 1) else c(ifelse(study_name=="COVE" | study_name=="MockCOVE", 0.8, 0.5), 1)
+            
+            ncases=sapply(risks$marker, function(s) sum(dat.vac.seroneg$yy[dat.vac.seroneg[["Day"%.%tpeak%.%a]]>=s], na.rm=T))        
+            .subset=if(eq.geq==1 | eq.geq==3) rep(T, length(risks$marker)) else ncases>=5
+            
+            # CVE with sensitivity analysis
+            est = 1 - risks$prob*Bias/res.plac.cont["est"]
+            boot = 1 - t( t(risks$boot*Bias)/res.plac.cont[2:(1+ncol(risks$boot))] ) # res.plac.cont may have more bootstrap replicates than risks$boot
+            ci.band=apply(boot, 1, function (x) quantile(x, c(.025,.975)))
+            # for table
+            tmp=10**risks$marker[pick.out]; tmp=c(round(tmp[1],1), round(tmp[-1]))
+            ret=cbind("s"=tmp, "Estimate"=paste0(formatDouble(est[pick.out],digits.risk), " (", formatDouble(ci.band[1,pick.out],digits.risk), ",", formatDouble(ci.band[2,pick.out],digits.risk), ")"))
     
-        # add histogram
-        par(new=TRUE) 
-        col <- c(col2rgb("olivedrab3")) # orange, darkgoldenrod2
-        col <- rgb(col[1], col[2], col[3], alpha=255*0.4, maxColorValue=255)
-        tmp=hist(dat.vac.seroneg[["Day"%.%tpeak%.%a]],breaks=15,plot=F) # 15 is treated as a suggestion and the actual number of breaks is determined by pretty()
-        #tmp=hist(dat.vac.seroneg[["Day"%.%tpeak%.%a]],breaks=seq(min(dat.vac.seroneg[["Day"%.%tpeak%.%a]],na.rm=T), max(dat.vac.seroneg[["Day"%.%tpeak%.%a]],na.rm=T), len = 15),plot=F)
-        plot(tmp,col=col,axes=F,labels=F,main="",xlab="",ylab="",border=0,freq=F,xlim=xlim, ylim=c(0,max(tmp$density*1.25))) 
+            mymatplot(risks$marker[.subset], t(rbind(est, ci.band))[.subset,], type="l", lty=c(1,2,2), col=ifelse(eq.geq==1,"red","white"), lwd=lwd, make.legend=F, 
+                ylab=paste0("Controlled VE against COVID-19 by Day ",tfinal.tpeak), 
+                main=paste0(labels.assays.long["Day"%.%tpeak,a]),
+                xlab=labels.assays.short[a]%.%ifelse(eq.geq==1 | eq.geq==3," (=s)"," (>=s)"), 
+                ylim=ylim, xlim=xlim, yaxt="n", xaxt="n", draw.x.axis=F)
+            # labels
+            yat=seq(.0,1,by=.1)
+            axis(side=2,at=yat,labels=(yat*100)%.%"%")
         
-    dev.off()    
+            # overall controlled VE
+            abline(h=overall.ve, col="gray", lwd=2, lty=c(1,3,3))
+            #text(x=par("usr")[1], y=overall.ve[1]+(overall.ve[1]-overall.ve[2])/2,     "overall VE "%.%round(overall.ve[1]*100)%.%"%", adj=0)
+        
+            # x axis
+            draw.x.axis.cor(xlim, llods[a])
+                
+            # CVE
+            est = 1 - risks$prob/res.plac.cont["est"]
+            boot = 1 - t( t(risks$boot)/res.plac.cont[2:(1+ncol(risks$boot))] )                         
+            ci.band=apply(boot, 1, function (x) quantile(x, c(.025,.975)))        
+            mymatplot(risks$marker[.subset], t(rbind(est, ci.band))[.subset,], type="l", lty=c(1,2,2), col=if(eq.geq==3) "black" else "pink", lwd=lwd, make.legend=F, add=T)
+            # find marker values under specific VE
+            tmpind=sapply(report.ve.levels, function (x) ifelse (x>min(est)-0.01 & x<max(est)+0.01, which.min(abs(est-x)), NA))
+            tmp=10**risks$marker[tmpind]; tmp=c(round(tmp[1],1), round(tmp[-1]))
+            ret=rbind(ret, cbind("s"=tmp, "Estimate"=paste0(formatDouble(est[tmpind],digits.risk), " (", formatDouble(ci.band[1,tmpind],digits.risk), ",", formatDouble(ci.band[2,tmpind],digits.risk), ")")))            
+            
+            # legend
+            tmp=formatDouble(overall.ve*100,1)%.%"%"        
+            mylegend(x=9,legend=c(paste0("Overall VE ",tmp[1]," (",tmp[2],", ",tmp[3],")"), "Controlled VE",                   if(eq.geq==1) "Controlled VE Sens. Analysis"), 
+                            col=c("white",                                                  if(eq.geq==3) "black" else "pink", if(eq.geq==1) "red"                         ), 
+                lty=1, lwd=2, cex=.8)
+        
+            # add histogram
+            par(new=TRUE) 
+            col <- c(col2rgb("olivedrab3")) # orange, darkgoldenrod2
+            col <- rgb(col[1], col[2], col[3], alpha=255*0.4, maxColorValue=255)
+            tmp=hist(dat.vac.seroneg[["Day"%.%tpeak%.%a]],breaks=15,plot=F) # 15 is treated as a suggestion and the actual number of breaks is determined by pretty()
+            #tmp=hist(dat.vac.seroneg[["Day"%.%tpeak%.%a]],breaks=seq(min(dat.vac.seroneg[["Day"%.%tpeak%.%a]],na.rm=T), max(dat.vac.seroneg[["Day"%.%tpeak%.%a]],na.rm=T), len = 15),plot=F)
+            plot(tmp,col=col,axes=F,labels=F,main="",xlab="",ylab="",border=0,freq=F,xlim=xlim, ylim=c(0,max(tmp$density*1.25))) 
+            
+        dev.off()    
+            
         ret        
     })
     
+
     if(eq.geq==1) {
-        tab=do.call(cbind, out)
-        mytex(tab, file.name=paste0("controlled_ve_sens_eq", "_"%.%study_name), align="c", include.colnames = T, save2input.only=T, input.foldername=save.results.to, include.rownames = F,
-            longtable=T, caption.placement = "top", label=paste0("tab controlled_ve_sens_eq ", COR), caption=paste0("Controlled VE with sensitivity analysis as functions of Day ",
-                tpeak," markers (=s) among baseline negative vaccine recipients with 95\\% bootstrap point-wise confidence intervals (",
-                ncol(risks.all[[1]]$boot)," replicates)."
-                ),
-            col.headers=paste0("\\hline\n", concatList(paste0("\\multicolumn{2}{c}{", labels.axis[1,], "}"), "&"), "\\\\\n"))
+        # show the results at select assay values
+        for (a in assays) { 
+            out=outs[[a]]
+            while (nrow(out)%%4!=0) out=rbind(out, c("s"="", "Estimate"=""))
+            tab=cbind(out[1:(nrow(out)/4), ], out[1:(nrow(out)/4)+(nrow(out)/4), ], out[1:(nrow(out)/4)+(nrow(out)/4*2), ], out[1:(nrow(out)/4)+(nrow(out)/4*3), ])        
+            mytex(tab, file.name=paste0(a, "_controlled_ve_sens_eq", "_"%.%study_name), align="c", include.colnames = T, save2input.only=T, input.foldername=save.results.to, include.rownames = F,
+                longtable=T, caption.placement = "top", label=paste0("tab controlled_ve_sens_eq ", COR), caption=paste0("Controlled VE with sensitivity analysis as functions of Day ",
+                    tpeak," markers (=s) among baseline negative vaccine recipients with 95\\% bootstrap point-wise confidence intervals (",
+                    ncol(risks.all[[1]]$boot)," replicates)."
+                    )
+                #, col.headers=paste0("\\hline\n", concatList(paste0("\\multicolumn{2}{c}{", labels.axis[1,], "}"), "&"), "\\\\\n")
+                )
+        }
     }
 }
     
 # show tables of controlled ve without sensitivity at select assay values
 digits.risk=4
 risks.all=get("risks.all.1")
-out=lapply (assays, function(a) {        
+for(a in assays) {        
     risks=risks.all[[a]]
     #pick.out=names(risks$marker)!=""
     pick.out=rep(T, length(risks$marker))
@@ -237,19 +248,22 @@ out=lapply (assays, function(a) {
     # find marker values under specific VE
     tmpind=sapply(report.ve.levels, function (x) ifelse (x>min(est)-0.01 & x<max(est)+0.01, which.min(abs(est-x)), NA))
     tmp=10**risks$marker[tmpind]; tmp=c(round(tmp[1],1), round(tmp[-1]))
-    ret=rbind(ret, cbind("s"=tmp, "Estimate"=paste0(formatDouble(est[tmpind],digits.risk), " (", formatDouble(ci.band[1,tmpind],digits.risk), ",", formatDouble(ci.band[2,tmpind],digits.risk), ")")))
+    out=rbind(ret, cbind("s"=tmp, "Estimate"=paste0(formatDouble(est[tmpind],digits.risk), " (", formatDouble(ci.band[1,tmpind],digits.risk), ",", formatDouble(ci.band[2,tmpind],digits.risk), ")")))
     
-    ret
-})
-tab=do.call(cbind, out)
-mytex(tab, file.name=paste0("controlled_ve_eq", "_"%.%study_name), align="c", include.colnames = T, save2input.only=T, input.foldername=save.results.to, include.rownames = F,
-    longtable=T, caption.placement = "top", label=paste0("tab controlled_ve_eq ", COR), caption=paste0("Controlled VE as functions of Day ",
-        tpeak," markers (=s) among baseline negative vaccine recipients with 95\\% bootstrap point-wise confidence intervals (",
-        ncol(risks.all[[1]]$boot)," replicates).", "Overall cumulative incidence from ", tpeaklag, " to ",tfinal.tpeak," days post Day ",tpeak," was ",
-        formatDouble(prev.vacc[1], 3, remove.leading0=F)," in vaccine recipients compared to ",
-        formatDouble(prev.plac[1], 3, remove.leading0=F)," in placebo recipients, with cumulative vaccine efficacy ",
-        formatDouble(overall.ve[1]*100,1),"\\% (95\\% CI ",formatDouble(overall.ve[2]*100,1)," to ",formatDouble(overall.ve[3]*100,1),"\\%)."),
-    col.headers=paste0("\\hline\n", concatList(paste0("\\multicolumn{2}{c}{", labels.axis[1,], "}"), "&"), "\\\\\n"))
+    while (nrow(out)%%4!=0) out=rbind(out, c("s"="", "Estimate"=""))
+    tab=cbind(out[1:(nrow(out)/4), ], out[1:(nrow(out)/4)+(nrow(out)/4), ], out[1:(nrow(out)/4)+(nrow(out)/4*2), ], out[1:(nrow(out)/4)+(nrow(out)/4*3), ])
+
+    mytex(tab, file.name=paste0(a, "_controlled_ve_eq", "_"%.%study_name), align="c", include.colnames = T, save2input.only=T, input.foldername=save.results.to, include.rownames = F,
+        longtable=T, caption.placement = "top", label=paste0("tab controlled_ve_eq ", COR), caption=paste0("Controlled VE as functions of Day ",
+            tpeak," markers (=s) among baseline negative vaccine recipients with 95\\% bootstrap point-wise confidence intervals (",
+            ncol(risks.all[[1]]$boot)," replicates).", "Overall cumulative incidence from ", tpeaklag, " to ",tfinal.tpeak," days post Day ",tpeak," was ",
+            formatDouble(prev.vacc[1], 3, remove.leading0=F)," in vaccine recipients compared to ",
+            formatDouble(prev.plac[1], 3, remove.leading0=F)," in placebo recipients, with cumulative vaccine efficacy ",
+            formatDouble(overall.ve[1]*100,1),"\\% (95\\% CI ",formatDouble(overall.ve[2]*100,1)," to ",formatDouble(overall.ve[3]*100,1),"\\%).")
+        #, col.headers=paste0("\\hline\n", concatList(paste0("\\multicolumn{2}{c}{", labels.axis[1,], "}"), "&"), "\\\\\n")
+        )
+
+}
 
 
 ###################################################################################################

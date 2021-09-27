@@ -25,7 +25,7 @@
 #' @param max_iter
 #' @param verbose
 #' @export
-survivalThresh <- function(data, covariates, trt = "A", Ttilde = "Ttilde", Delta = "Delta", J = "J", biased_sampling_indicator = NULL,  biased_sampling_group = NULL, weights_var = NULL, cutoffs_A, cutoffs_J, target_times, lrnr = Lrnr_glmnet$new(), lrnr_A = lrnr, lrnr_C = lrnr, lrnr_N = lrnr, lrnr_J = lrnr, ngrid_A = 25, type_J = c("above", "below", "equal"), max_eps = 0.15, max_iter = 50,  verbose = TRUE, monotone_decreasing = T) {
+survivalThresh <- function(data, covariates, trt = "A", Ttilde = "Ttilde", Delta = "Delta", J = "J", biased_sampling_indicator = NULL,  biased_sampling_group = NULL, weights_var = NULL, cutoffs_A, cutoffs_J, target_times, lrnr = Lrnr_glmnet$new(), lrnr_A = lrnr, lrnr_C = lrnr, lrnr_N = lrnr, lrnr_J = lrnr, ngrid_A = 25, type_J = c("above", "below", "equal"), max_eps = 0.25, max_iter = 50,  verbose = TRUE, monotone_decreasing = T) {
   type_A <- "above"
   weights <- weights_var
   data <- as.data.table(data)

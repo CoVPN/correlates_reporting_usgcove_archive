@@ -39,20 +39,26 @@ if(ci == "simultaneous") {
 ci_label <- paste0(ci, " ")
  
 ```
+ 
+```{r}
+ addsss <- ""
+if(countAfter1) {
+  addsss <- "(counting events after 1 day post dose)"
+}
 
-
-
+```
 \clearpage
-### Day `r day` `r marker`
+### Day `r day` `r assay` `r addsss`
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.75\textwidth]{`r here::here("cor_threshold", "figs", paste0(ci,"_CI"), paste0("PLOT_",key0, "Day", day, key, "_", ci_key, "CI", dir_term, ".pdf"))`}
+\includegraphics[width=0.75\textwidth]{`r here::here("cor_threshold", "figs", paste0(ci,"_CI"), paste0("PLOT_",key0,   key, "_", ci_key, "CI", dir_term, ".pdf"))`}
 \caption{Adjusted threshold-response function for a range of thresholds of the
   Day `r day` `r marker` levels with `r ci` 95\% confidence intervals. `r dashed_line` `r add_line`}
 \end{figure}
-```{r, output = "asis", echo = FALSE}
-ptwise_tab_guts <- readRDS(here::here("cor_threshold",  "figs", paste0(ci,"_CI"), paste0("TABLE_", dir_term, key0, "Day", day, key, "_", ci_key, "CI.rds")))
+```{r, output = "asis", echo = FALSE, eval = T}
+ 
+ptwise_tab_guts <- readRDS(here::here("cor_threshold",   "figs", paste0(ci,"_CI"), paste0("TABLE_", dir_term, key0,   key, "_", ci_key, "CI", dir_term, ".rds")))
 knitr::kable(ptwise_tab_guts, format = "latex", row.names = F, booktabs = TRUE, escape = FALSE,
             caption = paste0("Table of ", add_term,"risk estimates for a range of thresholds of Day ", day, " ", marker, " levels with ", ci_label,"95\\% confidence intervals."),
               linesep = "") %>%

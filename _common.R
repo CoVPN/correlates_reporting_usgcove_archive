@@ -7,6 +7,7 @@ for(opt in names(config)){
   eval(parse(text = paste0(names(config[opt])," <- config[[opt]]")))
 }
 
+ 
 # disabling lower level parallelization in favor of higher level of parallelization
 
 # set parallelization in openBLAS and openMP

@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <title>report.utf8</title>
+
+  
+  <!-- JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.2"></script>
+  <script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script>
+    <script src="libs/jquery-3.5.1/jquery-3.5.1.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <link href="libs/bootstrap-4.6.0/bootstrap.min.css" rel="stylesheet" />
+  <script src="libs/bootstrap-4.6.0/bootstrap.bundle.min.js"></script>
+  <script src="libs/bs3compat-0.2.4.9002/tabs.js"></script>
+  <script src="libs/bs3compat-0.2.4.9002/bs3compat.js"></script>
+  <link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet" />
+  <script src="libs/bs4_book-1.0.0/bs4_book.js"></script>
+    <script src="https://cdn.jsdelivr.net/autocomplete.js/0/autocomplete.jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mark.js@8.11.1/dist/mark.min.js"></script>
+
+  <!-- CSS -->
+    
+</head>
+
+<body data-spy="scroll" data-target="#toc">
+
+<div class="container-fluid">
+<!--bookdown:title:start-->
+<!--bookdown:title:end-->
+
+<!--bookdown:toc:start-->
+<div class="row">
+  <header class="col-sm-12 col-lg-3 sidebar sidebar-book">
+    <a class="sr-only sr-only-focusable" href="#content">Skip to main content</a>
+
+    <div class="d-flex align-items-start justify-content-between">
+      <h1>
+        <a href="index.html" title=""></a>
+      </h1>
+      <button class="btn btn-outline-primary d-lg-none ml-2 mt-1" type="button" data-toggle="collapse" data-target="#main-nav" aria-expanded="true" aria-controls="main-nav"><i class="fas fa-bars"></i><span class="sr-only">Show table of contents</span></button>
+    </div>
+
+    <div id="main-nav" class="collapse-lg">
+      <form role="search">
+        <input id="search" class="form-control" type="search" placeholder="Search" aria-label="Search">
+      </form>
+
+      <nav aria-label="Table of contents">
+        <h2>Table of contents</h2>
+        <div id="book-toc"></div>
+
+        <div class="book-extra">
+          <p><a id="book-repo" href="#">View book source <i class="fab fa-github"></i></a></li></p>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main class="col-sm-12 col-md-9 col-lg-7" id="content">
+<!--bookdown:toc:end-->
+<!--bookdown:body:start-->
+<div id="univariate-cor-nonparametric-threshold-modeling-s" class="section level1">
+<h1><span class="header-section-number">1</span> Univariate CoR: Nonparametric Threshold Modeling (&gt;=s)</h1>
+An extension of the unadjusted nonparametric threshold-searching approach
+developed in <span class="citation">@Donovan</span>, the covariate-adjusted TMLE-based approach developed by
+van der Laan, Zhang, Gilbert (submitted) is used to estimate the so-called
+threshold-response function <span class="math inline">\(E_X[ E[Y \mid S \geq s, X, A = 1] \mid A=1]\)</span> for a
+range of thresholds <span class="math inline">\(s\)</span>.Here, <span class="math inline">\(X\)</span> is a set of baseline characteristics, <span class="math inline">\(A=1\)</span>
+represents the vaccine group, <span class="math inline">\(S\)</span> is the biomarker/immune-response/correlate of
+interest, and <span class="math inline">\(Y\)</span> is the indicator of COVID disease before some time point
+<span class="math inline">\(t_f\)</span>. This parameter can be viewed as a causal/covariate-adjusted version of
+the parameter <span class="math inline">\(P(Y=1 \mid S \geq s, A=1)\)</span>. Intuitively, the threshold-response
+at a given threshold is the expected probability of obtaining COVID disease if
+one experiences a marker/immune-response value above that threshold. The
+threshold-response function is estimated for each of the four Day 57 antibody
+markers, in each case adjusting for the baseline covariates: baseline risk
+score, high risk indicator, and underrepresented minority status. A restrictive but flexible specification of the Highly Adaptive Lasso estimator is used for the covariate adjustment. A
+number of plots and tables are reported:
+
+<p>A reverse cumulative distribution function curve estimated by the IPW NPMLE of
+the marker values is superimposed on the threshold-response plots and a dashed
+red line is added to mark the threshold value after which no more events are
+observed.</p>
+<p>The blue dots on the plots represent the risk predictions at marker values where there was an observed COVID-19 case.</p>
+<div id="plots-and-tables-with-estimates-and-pointwise-confidence-intervals-for-day-day29-counting-events-after-1-day-post-dose" class="section level2">
+<h2><span class="header-section-number">1.1</span> Plots and Tables with estimates and pointwise confidence intervals for Day Day29 (counting events after 1 day post dose)</h2>
+<p>Day29bindRBD Day29start1bindRBD
+
+Day29pseudoneutid50 Day29start1pseudoneutid50
+
+Day29bindSpike Day29start1bindSpike
+
+## Plots and Tables with estimates and pointwise confidence intervals for Day Day29 (counting events after 1 day post dose)
+Day29bindRBD Day29start1bindRBD
+
+Day29pseudoneutid50 Day29start1pseudoneutid50
+
+Day29bindSpike Day29start1bindSpike
+
+## Plots and Tables with estimates and pointwise confidence intervals for Day Day29 (monotone-corrected) (counting events after 1 day post dose)
+Day29bindRBD Day29start1bindRBD
+
+Day29pseudoneutid50 Day29start1pseudoneutid50
+
+Day29bindSpike Day29start1bindSpike
+
+## Plots and Tables with estimates and pointwise confidence intervals for Day Day29 (monotone-corrected) (counting events after 1 day post dose)
+Day29bindRBD Day29start1bindRBD
+
+Day29pseudoneutid50 Day29start1pseudoneutid50
+
+Day29bindSpike Day29start1bindSpike
+</p>
+</div>
+</div>
+<div id="univariate-cor-nonparametric-threshold-modeling-s-1" class="section level1">
+<h1><span class="header-section-number">2</span> Univariate CoR: Nonparametric Threshold Modeling (&lt;=s)</h1>
+<p>The same methodology as the previous section is apply to estimate the “below” threshold-response function <span class="math inline">\(E_WE[Y=1|A=1,X,S \leq s].\)</span></p>
+</div>
+<!--bookdown:body:end-->
+  </main>
+
+  <div class="col-md-3 col-lg-2 d-none d-md-block sidebar sidebar-chapter">
+    <nav id="toc" data-toggle="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <div id="book-on-this-page"></div>
+
+      <div class="book-extra">
+        <ul class="list-unstyled">
+          <li><a id="book-source" href="#">View source <i class="fab fa-github"></i></a></li>
+          <li><a id="book-edit" href="#">Edit this page <i class="fab fa-github"></i></a></li>
+        </ul>
+      </div>
+    </nav>
+  </div>
+
+</div>
+</div> <!-- .container -->
+
+<footer class="bg-primary text-light mt-5">
+  <div class="container"><div class="row">
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>"<strong></strong>" was written by . </p>
+  </div>
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>This book was built by the <a class="text-light" href="https://bookdown.org">bookdown</a> R package.</p>
+  </div>
+
+</div></div>
+</footer>
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

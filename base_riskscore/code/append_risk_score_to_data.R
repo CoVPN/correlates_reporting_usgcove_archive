@@ -12,8 +12,8 @@ source(here::here("..", "_common.R"))
 library(here)
 library(tidyverse)
 dat_cleaned <- read.csv(here("..", "data_clean", data_name)) %>% as_tibble() 
-placebos_risk <- read_csv(here("output", "placebo_ptids_with_riskscores.csv"))
-vaccinees_risk <- read_csv(here("output", "vaccine_ptids_with_riskscores.csv"))
+placebos_risk <- read.csv(here("output", "placebo_ptids_with_riskscores.csv"))
+vaccinees_risk <- read.csv(here("output", "vaccine_ptids_with_riskscores.csv"))
 
 # merge risk score with cleaned data by IDs, then save updated data file
 risk_scores <- rbind(placebos_risk, vaccinees_risk) %>%

@@ -68,7 +68,7 @@ if(file.exists(here::here('cor_coxph', paste0('forestplots_', tolower(study_name
 \end{tabular}
 \end{center}
 $^1$Conservative (upper bound) estimate assuming unmeasured confounding at level $RR_{UD}(0,1)=RR_{EU}(0,1) = 2$ and thus $B(0,1)=4/3$. \\
-$^2$E-values are computed for upper tertile ($s=1$) vs. lower tertile ($s=0$) biomarker subgroups after controlling for baseline risk score, meeting the protocol randomization stratification criterion for being at heightened risk of `r txt.endpoint` (yes or no), `r ifelse(study_name_code=="COVE", "community of color or not", "strata(Region)")`; UL = upper limit.\\
+$^2$E-values are computed for upper tertile ($s=1$) vs. lower tertile ($s=0$) biomarker subgroups after controlling for `r covariates_adjusted`; UL = upper limit.\\
 `r special.note`
 \end{table}
 

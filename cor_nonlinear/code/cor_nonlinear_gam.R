@@ -91,10 +91,11 @@ print(paste0("bootstrap replicates: ", ncol(risks.all.vacc.gam[[1]]$boot)))
 
 ii=1 # S=s
 
+
 # get dfs
 dfs=sapply (assays, function(a) {        
     fit=mgcv::gam(update(form.0.logistic, as.formula(paste0("~.+s(","Day"%.%tpeak%.%a,")"))), data=dat.vacc.pop.ph2, family=binomial, weights=wt)
-    sum(influence(fit))-p.cov-1 # 1 for intercept
+    sum(influence(fit))-fit$nsdf #nsdf is the df for non-s
 })
 
 
@@ -113,9 +114,9 @@ for (w.wo.plac in 1:2) { # 1 with placebo lines, 2 without placebo lines. Implem
     myprint(ylim)
     lwd=2
      
-    mypdf(oma=c(0,0,0,0), onefile=F, file=paste0(save.results.to, "marginalized_risks_gam", ifelse(w.wo.plac==1,"","_woplacebo"), "_"%.%study_name), mfrow=.mfrow)
-    par(las=1, cex.axis=0.9, cex.lab=1)# axis label orientation
     for (a in assays) {        
+    mypdf(oma=c(0,0,0,0), onefile=F, file=paste0(save.results.to, a, "_marginalized_risks_gam", ifelse(w.wo.plac==1,"","_woplacebo"), "_"%.%study_name), mfrow=.mfrow)
+    par(las=1, cex.axis=0.9, cex.lab=1)# axis label orientation
         risks=risks.all[[a]]
         xlim=get.range.cor(dat.vac.seroneg, a, tpeak)
         
@@ -123,7 +124,7 @@ for (w.wo.plac in 1:2) { # 1 with placebo lines, 2 without placebo lines. Implem
         ncases=sapply(risks$marker, function(s) sum(dat.vac.seroneg$yy[dat.vac.seroneg[["Day"%.%tpeak%.%a]]>=s], na.rm=T))
         
         plot(prob~marker, risks, xlab=labels.assays.short[a]%.%ifelse(ii==1," (=s)"," (>=s)"), xlim=xlim, 
-            ylab=paste0("Probability* of COVID-19 by Day ", t0), lwd=lwd, ylim=ylim, type="n", main=paste0(labels.assays.long["Day"%.%tpeak,a]), xaxt="n")
+            ylab=paste0("Probability* of COVID-19 by Day ", tfinal.tpeak), lwd=lwd, ylim=ylim, type="n", main=paste0(labels.assays.long["Day"%.%tpeak,a]), xaxt="n")
     
         draw.x.axis.cor(xlim, llods[a])
     
@@ -161,6 +162,6 @@ for (w.wo.plac in 1:2) { # 1 with placebo lines, 2 without placebo lines. Implem
         
         # add df
         title(sub=paste0("estimated df: ", formatDouble(dfs[a],1)))
-    }
     dev.off()    
+    }
 }

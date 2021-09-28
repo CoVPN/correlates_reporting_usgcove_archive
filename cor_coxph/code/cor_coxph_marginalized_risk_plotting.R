@@ -26,7 +26,7 @@ for (w.wo.plac in 1:2) { # 1 with placebo lines, 2 without placebo lines. Implem
     risks.all=get("risks.all."%.%eq.geq)
     
     if (!create.ylims.cor) {
-        ylim=ylims.cor[[eq.geq]][[w.wo.plac]] # use D29 values
+        ylim=ylims.cor[[eq.geq]][[w.wo.plac]] # use D14 values
     } else {
         print("no ylims.cor found")        
         if (eq.geq==2 & w.wo.plac==2) {

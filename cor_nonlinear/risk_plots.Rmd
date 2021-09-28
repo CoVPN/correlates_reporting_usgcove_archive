@@ -1,0 +1,8 @@
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{`r paste0(pathCoRoutput, "/", a, "_")`marginalized_risks_gam_`r study_name`}
+    \caption{Marginalized risk as functions of Day `r tpeak` markers (=s) among vaccine recipients with 95\% bootstrap point-wise confidence bands (\protect\input{`r pathCoRoutput`/bootstrap_replicates_`r study_name`} replicates) as modeled by GAM with automatic smoothness estimation. 
+Baseline covariates adjusted for: `r covariates_adjusted`. 
+The horizontal lines indicate the overall cumulative risk of the vaccine and placebo arms by Day \protect\input{`r pathCorcoxphOutput`/timepoints_cum_risk_`r study_name`} and its 95\% point-wise confidence interval. Histograms of the immunological markers in the vaccine arm are overlaid. lod = `r round(llods[a],1)`. `r special.note`}
+\end{figure}
+

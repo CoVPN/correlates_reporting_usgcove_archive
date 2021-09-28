@@ -9,10 +9,13 @@ message("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ running cor_coxph report ~~~~~~~~~~~~~~~
 ```
 
 
+`r 
+tt=timepoints
+`
+
 # Graphical Descriptions of Time to Event Data {#cor-graphical-time-to-event}
 
 `r 
-tt=timepoints
 if (two_marker_timepoints) { 
   paste0("
 \\begin{figure}[H]

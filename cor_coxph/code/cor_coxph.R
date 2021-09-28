@@ -20,7 +20,7 @@ source(here::here("code", "params.R"))
 myprint(study_name)
 myprint(verbose)
 
-# COR defines the analysis to be done, e.g. D29, D57, D29start1
+# COR defines the analysis to be done, e.g. D14
 Args <- commandArgs(trailingOnly=TRUE)
 if (length(Args)==0) Args=c(COR="D57") 
 COR=Args[1]; myprint(COR)

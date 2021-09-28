@@ -24,7 +24,6 @@ myprint(verbose)
 Args <- commandArgs(trailingOnly=TRUE)
 if (length(Args)==0) Args=c(COR="D57") 
 COR=Args[1]; myprint(COR)
-
 # COR has a set of analysis-specific parameters defined in the config file
 config.cor <- config::get(config = COR)
 tpeak=as.integer(paste0(config.cor$tpeak))
@@ -127,13 +126,11 @@ if (config$is_ows_trial) source(here::here("code", "cor_coxph_misc.R"))
 # note that if delta are used, delta needs to be recomputed
 
 if (config$is_ows_trial) {
-
     for (a in intersect(assays_to_be_censored_at_uloq_cor, assays)) {
       for (t in c("B", "Day"%.%tpeak) ) {
         dat.mock[[t %.% a]] <- ifelse(dat.mock[[t %.% a]] > log10(uloqs[a]), log10(uloqs[a]), dat.mock[[t %.% a]])
       }
-    }
-    
+    }    
 }
 
 # the following data frame define the phase 1 ptids

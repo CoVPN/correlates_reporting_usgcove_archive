@@ -1,0 +1,16 @@
+
+<!-- D29start1 is ENSEMBLE specific -->
+
+```{r, echo=FALSE, results='asis'}
+  for (i in 1:2) {
+    tpeak <- tt[1]
+    COR <- ifelse(i==1, "D29", "D29start1")
+    config.cor <- config::get(config = COR)
+    for(opt in names(config.cor)) eval(parse(text = paste0(names(config.cor[opt])," <- config.cor[[opt]]")))
+    special.note = paste0("$\\ddagger$ Count cases starting ", ifelse(i==1,7,1), " days post Day 29.")
+    pathCoRoutput <- paste0("cor_nonlinear/output/", attr(config,"config"), "/", COR)
+    pathCorcoxphOutput <- paste0("cor_coxph/output/", attr(config,"config"), "/", COR)
+    res = knitr::knit_child(c(here::here('cor_nonlinear', 'report_sub.Rmd')), quiet = TRUE)
+    cat(res, sep = '\n')
+  }
+```

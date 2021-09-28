@@ -4,11 +4,12 @@
 To explore nonlinear association and threshold modeling, we fit smoothing spline models with degrees of freedom selected by cross-validation using the mgcv R package.
 <!-- and two-phase models using the chngpt R package. -->
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=1\textwidth]{`r pathCoRoutput`/marginalized_risks_gam_`r study_name`}
-    \caption{Marginalized risk as functions of Day `r tpeak` markers (=s) among baseline seronegative vaccine recipients with 95\% bootstrap point-wise confidence bands (\protect\input{`r pathCoRoutput`/bootstrap_replicates_`r study_name`} replicates) as modeled by GAM with automatic smoothness estimation. 
-Baseline covariates adjusted for: baseline risk score, `r ifelse(study_name_code=="COVE", "meeting the protocol randomization stratification criterion for being at heightened risk of COVID (yes or no), community of color or not", "Region (US, South Africa, Latin America)")`. 
-The horizontal lines indicate the overall cumulative risk of the vaccine and placebo arms by Day \protect\input{`r pathCorcoxphOutput`/timepoints_cum_risk_`r study_name`} and its 95\% point-wise confidence interval. Histograms of the immunological markers in the vaccine arm are overlaid. lod = `r round(llods["bindSpike"],1)`, `r round(llods["bindRBD"],1)`, `r round(llods["pseudoneutid50"],1)`, `r round(llods["pseudoneutid80"],1)` for bAb Spike, bAb RBD, PsV nAb ID50, PsV nAb ID80, respectively. `r special.note`}
-\end{figure}
+
+```{r, echo=FALSE, results='asis'}
+  for (a in assays) {
+    res = knitr::knit_child(c(here::here('cor_nonlinear', 'risk_plots.Rmd')), quiet = TRUE)
+    cat(res, sep = '\n')
+  }
+```
+
 

@@ -114,13 +114,6 @@
       "Repository": "CRAN",
       "Hash": "40a55bd0b44719941d103291ac5e9d74"
     },
-    "OpenMPController": {
-      "Package": "OpenMPController",
-      "Version": "0.2-5",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "26dc8a1d8693b6d0b7f2f7b410adf4f1"
-    },
     "PResiduals": {
       "Package": "PResiduals",
       "Version": "1.0-0",
@@ -172,10 +165,10 @@
     },
     "Rcpp": {
       "Package": "Rcpp",
-      "Version": "1.0.6",
+      "Version": "1.0.7",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "dbb5e436998a7eba5a9d682060533338"
+      "Hash": "dab19adae4440ae55aa8a9d238b246bb"
     },
     "RcppArmadillo": {
       "Package": "RcppArmadillo",
@@ -200,10 +193,10 @@
     },
     "RhpcBLASctl": {
       "Package": "RhpcBLASctl",
-      "Version": "0.21-247",
+      "Version": "0.20-137",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "fb135751ed3f00f33890826823ebe332"
+      "Hash": "d6379398b203d672a0f79d4782a51ceb"
     },
     "Rsolnp": {
       "Package": "Rsolnp",
@@ -656,10 +649,10 @@
     },
     "digest": {
       "Package": "digest",
-      "Version": "0.6.27",
+      "Version": "0.6.28",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "a0cbe758a531d054b537d16dff4d58a1"
+      "Hash": "49b5c6e230bfec487b8917d5a0c77cca"
     },
     "doMC": {
       "Package": "doMC",
@@ -776,17 +769,17 @@
     },
     "future": {
       "Package": "future",
-      "Version": "1.21.0",
+      "Version": "1.22.1",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "f25fad6bee82b7ab01f055e2d813b96f"
+      "Hash": "9c56382c3e53f0b4fc0fc16d88fc3974"
     },
     "future.apply": {
       "Package": "future.apply",
-      "Version": "1.7.0",
+      "Version": "1.8.1",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "7fb0dc1961807da107ab2078366052bd"
+      "Hash": "f568ce73d3d59582b0f7babd0eb33d07"
     },
     "gam": {
       "Package": "gam",
@@ -895,10 +888,10 @@
     },
     "glmnet": {
       "Package": "glmnet",
-      "Version": "4.1-1",
+      "Version": "4.1-2",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "18482cb4790abf3ed27cafa2381d6175"
+      "Hash": "ef1d343eb8c6f1a6341288652bbbed0e"
     },
     "globals": {
       "Package": "globals",
@@ -964,21 +957,21 @@
       "RemoteHost": "api.github.com",
       "RemoteRepo": "hal9001",
       "RemoteUsername": "tlverse",
-      "RemoteRef": "devel",
-      "RemoteSha": "14b16305ca29cc758fdde5f40603b5a674d76afa",
-      "Hash": "ba7be3ec26629d5cf3f64e742863fe8f"
+      "RemoteRef": "covpn",
+      "RemoteSha": "b41ed5dc421e78376d57594243c3d0a42fa5122a",
+      "Hash": "8f0f1d49d951c808c408b43a897a6942"
     },
     "haldensify": {
       "Package": "haldensify",
       "Version": "0.1.5",
       "Source": "GitHub",
       "RemoteType": "github",
-      "Remotes": "github::tlverse/hal9001@devel",
       "RemoteHost": "api.github.com",
-      "RemoteRepo": "haldensify",
       "RemoteUsername": "nhejazi",
+      "RemoteRepo": "haldensify",
       "RemoteRef": "master",
       "RemoteSha": "16350cc39b68e61566f03a11f633e08073405355",
+      "Remotes": "github::tlverse/hal9001@devel",
       "Hash": "47c34f41535fb9c16bd44e760d61cb67"
     },
     "hardhat": {
@@ -1500,10 +1493,10 @@
     },
     "parallelly": {
       "Package": "parallelly",
-      "Version": "1.25.0",
+      "Version": "1.28.1",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "bc53006c11a08ba955ccbf85b586875f"
+      "Hash": "5300c9fc71841550bdca64d39e82af0e"
     },
     "parsnip": {
       "Package": "parsnip",
@@ -1759,10 +1752,8 @@
     },
     "renv": {
       "Package": "renv",
-      "Version": "0.13.2",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "079cb1f03ff972b30401ed05623cbe92"
+      "Version": "0.14.0",
+      "Source": "Repository"
     },
     "repr": {
       "Package": "repr",
@@ -1945,10 +1936,10 @@
     },
     "shape": {
       "Package": "shape",
-      "Version": "1.4.5",
+      "Version": "1.4.6",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "58510f25472de6fd363d76698d29709e"
+      "Hash": "9067f962730f58b14d8ae54ca885509f"
     },
     "skimr": {
       "Package": "skimr",
@@ -2041,10 +2032,10 @@
     },
     "stringi": {
       "Package": "stringi",
-      "Version": "1.5.3",
+      "Version": "1.7.4",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "a063ebea753c92910a4cca7b18bc1f05"
+      "Hash": "ebaccb577da50829a3bb1b8296f318a5"
     },
     "stringr": {
       "Package": "stringr",

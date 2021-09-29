@@ -34,8 +34,10 @@ lrnr <- get_learner(fast_analysis = fast_analysis, include_interactions = includ
 
 # Runs threshold analysis and saves raw results.
 #' @param marker Marker to run threshold analysis for
-run_threshold_analysis <- function(marker, direction = "above") {
-     
+run_threshold_analysis <- function(key, direction = "above") {
+  print(key)
+  short_key <- key_to_short[key]
+   marker <- key_to_markers[key]
     if("risk_score" %in% covariates) {
         form <- paste0("Y~h(.) + h(t,.) + h(MinorityInd, HighRiskInd) + h(MinorityInd, risk_score) + h(A, MinorityInd) + h(A, HighRiskInd)")
     } else {
@@ -46,30 +48,30 @@ run_threshold_analysis <- function(marker, direction = "above") {
     require(doMC)
     registerDoMC()
     ngrid_A <- 20
-    lrnr_N <- Lrnr_hal9001_custom$new(max_degree = 2, smoothness_orders = 1, num_knots = c(10,3), reduce_basis =1e-3, formula_hal = form, fit_control = list(n_folds = 8, parallel = TRUE))
-    lrnr_C <- Lrnr_hal9001_custom$new(max_degree = 2, smoothness_orders = 1, num_knots = c(9,2), reduce_basis=1e-3,  formula_hal = form, fit_control = list(n_folds = 8, parallel = TRUE))
-    lrnr_A <- Lrnr_hal9001_custom$new(max_degree = 2, smoothness_orders = 1, num_knots = c(10,4), reduce_basis=1e-3, fit_control = list(n_folds = 8, parallel = TRUE))
+    lrnr_N <- Lrnr_hal9001_custom$new(max_degree = 2, smoothness_orders = 0, num_knots = c(15,3), reduce_basis =1e-3, formula_hal = form, fit_control = list(n_folds = 8, parallel = TRUE))
+    lrnr_C <- Lrnr_hal9001_custom$new(max_degree = 2, smoothness_orders = 0, num_knots = c(10,2), reduce_basis=1e-3,  formula_hal = form, fit_control = list(n_folds = 8, parallel = TRUE))
+    lrnr_A <- Lrnr_hal9001_custom$new(max_degree = 2, smoothness_orders = 0, num_knots = c(10,4), reduce_basis=1e-3, fit_control = list(n_folds = 8, parallel = TRUE))
     if(fast_analysis) {
      ngrid_A <- 15
         print("fast analysis")
         form <- paste0("Y~h(.) + h(t,.) + h(A, MinorityInd) + h(A, HighRiskInd)")
-        lrnr_N <- Lrnr_hal9001_custom$new(max_degree = 2, smoothness_orders = 1, num_knots = c(10,2), reduce_basis =1e-3, formula_hal = form, fit_control = list(n_folds = 5, parallel = TRUE))
-        lrnr_C <- Lrnr_hal9001_custom$new(max_degree = 2, smoothness_orders = 1, num_knots = c(9,2), reduce_basis=1e-3,  formula_hal = form, fit_control = list(n_folds = 5, parallel = TRUE))
-        lrnr_A <- Lrnr_hal9001_custom$new(max_degree = 2, smoothness_orders = 1, num_knots = c(10,3), reduce_basis=1e-3, fit_control = list(n_folds = 10, parallel = TRUE))
+        lrnr_N <- Lrnr_hal9001_custom$new(max_degree = 2, smoothness_orders = 0, num_knots = c(10,2), reduce_basis =1e-4, formula_hal = form, fit_control = list(n_folds = 5, parallel = TRUE))
+        lrnr_C <- Lrnr_hal9001_custom$new(max_degree = 2, smoothness_orders = 0, num_knots = c(9,2), reduce_basis=1e-4,  formula_hal = form, fit_control = list(n_folds = 5, parallel = TRUE))
+        lrnr_A <- Lrnr_hal9001_custom$new(max_degree = 2, smoothness_orders = 0, num_knots = c(10,3), reduce_basis=1e-4, fit_control = list(n_folds = 10, parallel = TRUE))
     }
  if(super_fast_analysis) {
   ngrid_A <- 10
         print("super fast analysis")
         form <- paste0("Y~h(.) + h(t,.) + h(A, MinorityInd) + h(A, HighRiskInd)")
-        lrnr_N <- Lrnr_hal9001_custom$new(max_degree = 2, smoothness_orders = 1, num_knots = c(3,1), reduce_basis =1e-3, formula_hal = form, fit_control = list(n_folds = 5, parallel = TRUE))
-        lrnr_C <- Lrnr_hal9001_custom$new(max_degree = 2, smoothness_orders = 1, num_knots = c(3,1), reduce_basis=1e-3,  formula_hal = form, fit_control = list(n_folds = 5, parallel = TRUE))
-        lrnr_A <- Lrnr_hal9001_custom$new(max_degree = 2, smoothness_orders = 1, num_knots = c(3,1), reduce_basis=1e-3, fit_control = list(n_folds = 10, parallel = TRUE))
+        lrnr_N <- Lrnr_hal9001_custom$new(max_degree = 2, smoothness_orders = 0, num_knots = c(3,1), reduce_basis =1e-4, formula_hal = form, fit_control = list(n_folds = 5, parallel = TRUE))
+        lrnr_C <- Lrnr_hal9001_custom$new(max_degree = 2, smoothness_orders = 0, num_knots = c(3,1), reduce_basis=1e-4,  formula_hal = form, fit_control = list(n_folds = 5, parallel = TRUE))
+        lrnr_A <- Lrnr_hal9001_custom$new(max_degree = 2, smoothness_orders = 0, num_knots = c(3,1), reduce_basis=1e-4, fit_control = list(n_folds = 10, parallel = TRUE))
   }
     
   thresholds <- read.csv(here::here("data_clean", "Thresholds_by_marker", paste0("thresholds_", marker, ".csv")))
   thresholds <- as.vector(unlist(thresholds[, 1]))
-  time <- marker_to_time[[marker]]
-  data_full <- read.csv(here::here("data_clean", paste0("data_firststage_", time, ".csv")))
+  #time <- marker_to_time[[marker]]
+  data_full <- read.csv(here::here("data_clean", paste0("data_firststage_", short_key, ".csv")))
  
 
   ####################################################
@@ -101,34 +103,34 @@ run_threshold_analysis <- function(marker, direction = "above") {
   # Save estimates and CI of threshold-response function
   save("esttmle", file = here::here(
     "output",
-    paste0("tmleThresh_", marker, direction_append,".RData")
+    paste0("tmleThresh_",  key, direction_append,".RData")
   ))
   write.csv(esttmle, file = here::here(
     "output",
-    paste0("tmleThresh_", marker,direction_append, ".csv")
+    paste0("tmleThresh_", key,direction_append, ".csv")
   ), row.names = F)
   
   esttmle <- esttmle_full[[2]]
   save("esttmle", file = here::here(
     "output",
-    paste0("tmleThresh_monotone_", marker,direction_append, ".RData")
+    paste0("tmleThresh_monotone_", key,direction_append, ".RData")
   ))
   write.csv(esttmle, file = here::here(
     "output",
-    paste0("tmleThresh_monotone_", marker,direction_append, ".csv")
+    paste0("tmleThresh_monotone_", key,direction_append, ".csv")
   ), row.names = F)
 
   return(esttmle)
 }
 
-for (marker in markers) {
-  print(marker)
-   v <- run_threshold_analysis(marker, "below")
+for (key in keys) {
+  print(key)
+    v <- run_threshold_analysis(key, "below")
 }
 
 
-for (marker in markers) {
+for (key in keys) {
      
-  print(marker)
-  v <- run_threshold_analysis(marker, "above")
+  print(key)
+  v <- run_threshold_analysis(key, "above")
 }

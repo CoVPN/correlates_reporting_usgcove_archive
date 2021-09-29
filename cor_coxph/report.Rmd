@@ -2,8 +2,6 @@
 <!-- here::i_am("cor_coxph/report.Rmd") -->
 <!-- ``` -->
 
-<!-- The only difference between this Rmd and the standalone Rmd is  -->
-<!-- pathCoRoutput <- paste0("cor_coxph/", pathCoRoutput) -->
 
 
 ```{r, echo=FALSE, message=FALSE}
@@ -11,45 +9,57 @@ message("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ running cor_coxph report ~~~~~~~~~~~~~~~
 ```
 
 
-<!-- these latex variables are used in report_sub -->
-\newif\ifCOVE
-\newif\ifENSEMBLE
-`r paste0("\\", study_name_code, "true")` 
+`r 
+tt=timepoints
+`
 
+# Graphical Descriptions of Time to Event Data {#cor-graphical-time-to-event}
 
-<!-- COVE -->
-
-```{r, echo=FALSE, results='asis'}
-if (study_name_code=="COVE") {
-  for (i in 1:2) {
-    tpeak <- ifelse(i==1, 29, 57)
-    COR <- paste0("D", tpeak)
-    special.note = ""
-    pathCoRoutput <- paste0("output/", attr(config,"config"), "/", COR)
-    pathCoRoutput <- paste0("cor_coxph/", pathCoRoutput)
-    res = knitr::knit_child(c(here::here('cor_coxph', 'report_sub.Rmd')), quiet = TRUE)
-    cat(res, sep = '\n')
-    cat("\\clearpage", sep = '\n')
-  }
+`r 
+if (two_marker_timepoints) { 
+  paste0("
+\\begin{figure}[H]
+    \\centering
+    \\includegraphics[width=1\\textwidth]{", paste0("cor_coxph/output/", attr(config,"config"), "/D", tt[1], "D", tt[2]), "/barplot_mixed}
+    \\caption{Distribution of the number of days to COVID endpoints, vaccine arm, baseline negative.}
+\\end{figure}
+")} else {
+  paste0("This page is empty.")
 }
-```
+`
 
 
+<!-- latex variables that may be used in report_sub -->
+<!-- \newif\ifCOVE -->
+<!-- \newif\ifENSEMBLE -->
+<!-- `r paste0("\\", study_name_code, "true")`  -->
 
 
-<!-- ENSEMBLE -->
 
 ```{r, echo=FALSE, results='asis'}
-if (study_name_code=="ENSEMBLE") {
-  for (i in 1:2) {
-    tpeak <- 29
-    COR <- ifelse(i==1, "D29", "D29start1")
-    special.note = paste0("$\\ddagger$ Count cases starting ", ifelse(i==1,7,1), " days post Day 29.")
-    pathCoRoutput <- paste0("output/", attr(config,"config"), "/", COR)
-    pathCoRoutput <- paste0("cor_coxph/", pathCoRoutput)
+
+data_name_updated <- sub(".csv", "_with_riskscore.csv", data_name)
+covariates_adjusted = ifelse (file.exists(here::here("data_clean", data_name_updated)), covariates_riskscore, covariates_norisksco)
+covariates_adjusted = sub("\\~\\.\\+","",covariates_adjusted)
+covariates_adjusted = sub("_","",covariates_adjusted)
+
+if(file.exists(here::here('cor_coxph', paste0('report_', tolower(study_name), '.Rmd')))) {
+  
+  message ("trial-specific report rmd found")
+  res = knitr::knit_child(c(here::here('cor_coxph', paste0('report_', tolower(study_name), '.Rmd'))), quiet = TRUE)
+  cat(res, sep = '\n')
+
+} else {
+
+  for (tpeak in tt) {
+    COR <- paste0("D", tpeak)
+    config.cor <- config::get(config = COR)
+    for(opt in names(config.cor)) eval(parse(text = paste0(names(config.cor[opt])," <- config.cor[[opt]]")))
+    special.note = ""
+    pathCoRoutput <- paste0("cor_coxph/output/", attr(config,"config"), "/", COR)
     res = knitr::knit_child(c(here::here('cor_coxph', 'report_sub.Rmd')), quiet = TRUE)
     cat(res, sep = '\n')
-    cat("\\clearpage", sep = '\n')
   }
+
 }
 ```

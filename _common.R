@@ -7,18 +7,15 @@ for(opt in names(config)){
   eval(parse(text = paste0(names(config[opt])," <- config[[opt]]")))
 }
 
+ 
 # disabling lower level parallelization in favor of higher level of parallelization
 
-#openblas 
+# set parallelization in openBLAS and openMP
 library(RhpcBLASctl)
 blas_get_num_procs()
-blas_set_num_threads(1)
-stopifnot(blas_get_num_procs()==1)
-
-#openMP
-#library(OpenMPController)
-omp_set_num_threads(1)
-
+blas_set_num_threads(1L)
+stopifnot(blas_get_num_procs() == 1L)
+omp_set_num_threads(1L)
 
 
 verbose=Sys.getenv("VERBOSE")=="1"

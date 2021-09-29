@@ -1,0 +1,1149 @@
+\PassOptionsToPackage{unicode=true}{hyperref} % options for packages loaded elsewhere
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provides euro and other symbols
+\else % if luatex or xelatex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage[]{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\usepackage{hyperref}
+\hypersetup{
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+% set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+\usepackage{makecell}
+\usepackage{xcolor}
+
+\author{}
+\date{\vspace{-2.5em}}
+
+\begin{document}
+
+\hypertarget{univariate-cor-nonparametric-threshold-modeling-s}{%
+\section{Univariate CoR: Nonparametric Threshold Modeling
+(\textgreater{}=s)}\label{univariate-cor-nonparametric-threshold-modeling-s}}
+
+An extension of the unadjusted nonparametric threshold-searching
+approach developed in @Donovan, the covariate-adjusted TMLE-based
+approach developed by van der Laan, Zhang, Gilbert (submitted) is used
+to estimate the so-called threshold-response function
+\(E_X[ E[Y \mid S \geq s, X, A = 1] \mid A=1]\) for a range of
+thresholds \(s\).Here, \(X\) is a set of baseline characteristics,
+\(A=1\) represents the vaccine group, \(S\) is the
+biomarker/immune-response/correlate of interest, and \(Y\) is the
+indicator of COVID disease before some time point \(t_f\). This
+parameter can be viewed as a causal/covariate-adjusted version of the
+parameter \(P(Y=1 \mid S \geq s, A=1)\). Intuitively, the
+threshold-response at a given threshold is the expected probability of
+obtaining COVID disease if one experiences a marker/immune-response
+value above that threshold. The threshold-response function is estimated
+for each of the four Day 57 antibody markers, in each case adjusting for
+the baseline covariates: baseline risk score, high risk indicator, and
+underrepresented minority status. A restrictive but flexible
+specification of the Highly Adaptive Lasso estimator is used for the
+covariate adjustment. A number of plots and tables are reported:
+
+\begin{enumerate}
+\item A plot and table with risk estimates and point-wise 95\% confidence intervals
+\item A plot and table with risk estimates and simultaneous 95\% confidence bands
+\item Monotone-corrected versions of 1 and 2.
+\end{enumerate}
+
+A reverse cumulative distribution function curve estimated by the IPW
+NPMLE of the marker values is superimposed on the threshold-response
+plots and a dashed red line is added to mark the threshold value after
+which no more events are observed.
+
+The blue dots on the plots represent the risk predictions at marker
+values where there was an observed COVID-19 case.
+
+\newpage
+
+\hypertarget{plots-and-tables-with-estimates-and-pointwise-confidence-intervals-for-day-29}{%
+\subsection{Plots and Tables with estimates and pointwise confidence
+intervals for Day
+29}\label{plots-and-tables-with-estimates-and-pointwise-confidence-intervals-for-day-29}}
+
+\clearpage
+
+\hypertarget{day-29-bindrbd}{%
+\subsubsection{Day 29 bindRBD}\label{day-29-bindrbd}}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{/Users/larsvanderlaan/correlates_reporting_forks/correlates_reporting/cor_threshold/figs/pointwise_CI/PLOT_Day29bindRBD_pointwiseCI.pdf}
+\caption{Adjusted threshold-response function for a range of thresholds of the
+  Day 29 Day29bindRBD levels with pointwise 95\% confidence intervals. The dashed red line marks the threshold after which no more COVID events are observed. }
+\end{figure}
+\begin{table}[!h]
+
+\caption{\label{tab:unnamed-chunk-11}Table of risk estimates for a range of thresholds of Day 29 Day29bindRBD levels with pointwise 95\% confidence intervals.}
+\centering
+\begin{tabular}[t]{rlrrr}
+\toprule
+log$_{10}$-Threshold & Threshold & Risk estimate & CI left & CI right\\
+\midrule
+\cellcolor{gray!6}{-0.099} & \cellcolor{gray!6}{7.96 * 10$^{1}$} & \cellcolor{gray!6}{0.00856} & \cellcolor{gray!6}{0.00655} & \cellcolor{gray!6}{0.01057}\\
+0.437 & 2.74 * 10$^{0}$ & 0.00832 & 0.00620 & 0.01043\\
+\cellcolor{gray!6}{0.585} & \cellcolor{gray!6}{3.85 * 10$^{0}$} & \cellcolor{gray!6}{0.00837} & \cellcolor{gray!6}{0.00612} & \cellcolor{gray!6}{0.01062}\\
+0.741 & 5.51 * 10$^{0}$ & 0.00792 & 0.00560 & 0.01024\\
+\cellcolor{gray!6}{1.000} & \cellcolor{gray!6}{1.00 * 10$^{1}$} & \cellcolor{gray!6}{0.00756} & \cellcolor{gray!6}{0.00515} & \cellcolor{gray!6}{0.00998}\\
+1.190 & 1.55 * 10$^{1}$ & 0.00700 & 0.00413 & 0.00988\\
+\cellcolor{gray!6}{1.371} & \cellcolor{gray!6}{2.35 * 10$^{1}$} & \cellcolor{gray!6}{0.00636} & \cellcolor{gray!6}{0.00315} & \cellcolor{gray!6}{0.00956}\\
+1.563 & 3.66 * 10$^{1}$ & 0.00592 & 0.00219 & 0.00964\\
+\cellcolor{gray!6}{1.852} & \cellcolor{gray!6}{7.11 * 10$^{1}$} & \cellcolor{gray!6}{0.00606} & \cellcolor{gray!6}{0.00177} & \cellcolor{gray!6}{0.01035}\\
+1.956 & 9.04 * 10$^{1}$ & 0.00489 & 0.00115 & 0.00863\\
+\cellcolor{gray!6}{2.083} & \cellcolor{gray!6}{1.21 * 10$^{2}$} & \cellcolor{gray!6}{0.00523} & \cellcolor{gray!6}{0.00000} & \cellcolor{gray!6}{0.01592}\\
+2.237 & 1.73 * 10$^{2}$ & 0.00523 & 0.00000 & 0.01592\\
+\cellcolor{gray!6}{2.699} & \cellcolor{gray!6}{5.00 * 10$^{2}$} & \cellcolor{gray!6}{0.00000} & \cellcolor{gray!6}{NA} & \cellcolor{gray!6}{NA}\\
+3.000 & 1.00 * 10$^{3}$ & 0.00000 & NA & NA\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\clearpage
+\clearpage
+
+\clearpage
+
+\hypertarget{day-29-pseudoneutid50}{%
+\subsubsection{Day 29 pseudoneutid50}\label{day-29-pseudoneutid50}}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{/Users/larsvanderlaan/correlates_reporting_forks/correlates_reporting/cor_threshold/figs/pointwise_CI/PLOT_Day29pseudoneutid50_pointwiseCI.pdf}
+\caption{Adjusted threshold-response function for a range of thresholds of the
+  Day 29 Day29pseudoneutid50 levels with pointwise 95\% confidence intervals. The dashed red line marks the threshold after which no more COVID events are observed. }
+\end{figure}
+\begin{table}[!h]
+
+\caption{\label{tab:unnamed-chunk-14}Table of risk estimates for a range of thresholds of Day 29 Day29pseudoneutid50 levels with pointwise 95\% confidence intervals.}
+\centering
+\begin{tabular}[t]{rlrrr}
+\toprule
+log$_{10}$-Threshold & Threshold & Risk estimate & CI left & CI right\\
+\midrule
+\cellcolor{gray!6}{0.083} & \cellcolor{gray!6}{1.21 * 10$^{0}$} & \cellcolor{gray!6}{0.00855} & \cellcolor{gray!6}{0.00654} & \cellcolor{gray!6}{0.01056}\\
+1.130 & 1.35 * 10$^{1}$ & 0.00822 & 0.00610 & 0.01034\\
+\cellcolor{gray!6}{1.204} & \cellcolor{gray!6}{1.60 * 10$^{1}$} & \cellcolor{gray!6}{0.00816} & \cellcolor{gray!6}{0.00601} & \cellcolor{gray!6}{0.01031}\\
+1.282 & 1.91 * 10$^{1}$ & 0.00780 & 0.00556 & 0.01004\\
+\cellcolor{gray!6}{1.423} & \cellcolor{gray!6}{2.65 * 10$^{1}$} & \cellcolor{gray!6}{0.00655} & \cellcolor{gray!6}{0.00439} & \cellcolor{gray!6}{0.00872}\\
+1.521 & 3.32 * 10$^{1}$ & 0.00612 & 0.00352 & 0.00873\\
+\cellcolor{gray!6}{1.613} & \cellcolor{gray!6}{4.10 * 10$^{1}$} & \cellcolor{gray!6}{0.00547} & \cellcolor{gray!6}{0.00251} & \cellcolor{gray!6}{0.00844}\\
+1.720 & 5.25 * 10$^{1}$ & 0.00421 & 0.00108 & 0.00734\\
+\cellcolor{gray!6}{1.891} & \cellcolor{gray!6}{7.78 * 10$^{1}$} & \cellcolor{gray!6}{0.00359} & \cellcolor{gray!6}{0.00011} & \cellcolor{gray!6}{0.00708}\\
+1.958 & 9.08 * 10$^{1}$ & 0.00251 & 0.00000 & 0.00517\\
+\cellcolor{gray!6}{2.047} & \cellcolor{gray!6}{1.11 * 10$^{2}$} & \cellcolor{gray!6}{0.00194} & \cellcolor{gray!6}{0.00000} & \cellcolor{gray!6}{0.00402}\\
+2.699 & 5.00 * 10$^{2}$ & 0.00000 & NA & NA\\
+\cellcolor{gray!6}{2.828} & \cellcolor{gray!6}{6.73 * 10$^{2}$} & \cellcolor{gray!6}{0.00000} & \cellcolor{gray!6}{NA} & \cellcolor{gray!6}{NA}\\
+3.000 & 1.00 * 10$^{3}$ & 0.00000 & NA & NA\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\clearpage
+\clearpage
+
+\clearpage
+
+\hypertarget{day-29-bindspike}{%
+\subsubsection{Day 29 bindSpike}\label{day-29-bindspike}}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{/Users/larsvanderlaan/correlates_reporting_forks/correlates_reporting/cor_threshold/figs/pointwise_CI/PLOT_Day29bindSpike_pointwiseCI.pdf}
+\caption{Adjusted threshold-response function for a range of thresholds of the
+  Day 29 Day29bindSpike levels with pointwise 95\% confidence intervals. The dashed red line marks the threshold after which no more COVID events are observed. }
+\end{figure}
+\begin{table}[!h]
+
+\caption{\label{tab:unnamed-chunk-17}Table of risk estimates for a range of thresholds of Day 29 Day29bindSpike levels with pointwise 95\% confidence intervals.}
+\centering
+\begin{tabular}[t]{rlrrr}
+\toprule
+log$_{10}$-Threshold & Threshold & Risk estimate & CI left & CI right\\
+\midrule
+\cellcolor{gray!6}{-0.813} & \cellcolor{gray!6}{1.54 * 10$^{1}$} & \cellcolor{gray!6}{0.00855} & \cellcolor{gray!6}{0.00654} & \cellcolor{gray!6}{0.01056}\\
+0.189 & 1.55 * 10$^{0}$ & 0.00814 & 0.00601 & 0.01028\\
+\cellcolor{gray!6}{0.341} & \cellcolor{gray!6}{2.19 * 10$^{0}$} & \cellcolor{gray!6}{0.00797} & \cellcolor{gray!6}{0.00584} & \cellcolor{gray!6}{0.01009}\\
+0.513 & 3.26 * 10$^{0}$ & 0.00737 & 0.00525 & 0.00950\\
+\cellcolor{gray!6}{0.792} & \cellcolor{gray!6}{6.19 * 10$^{0}$} & \cellcolor{gray!6}{0.00727} & \cellcolor{gray!6}{0.00487} & \cellcolor{gray!6}{0.00967}\\
+0.959 & 9.10 * 10$^{0}$ & 0.00692 & 0.00399 & 0.00984\\
+\cellcolor{gray!6}{1.113} & \cellcolor{gray!6}{1.30 * 10$^{1}$} & \cellcolor{gray!6}{0.00613} & \cellcolor{gray!6}{0.00277} & \cellcolor{gray!6}{0.00948}\\
+1.263 & 1.83 * 10$^{1}$ & 0.00544 & 0.00195 & 0.00894\\
+\cellcolor{gray!6}{1.491} & \cellcolor{gray!6}{3.10 * 10$^{1}$} & \cellcolor{gray!6}{0.00401} & \cellcolor{gray!6}{0.00054} & \cellcolor{gray!6}{0.00748}\\
+1.611 & 4.08 * 10$^{1}$ & 0.00456 & 0.00061 & 0.00850\\
+\cellcolor{gray!6}{1.729} & \cellcolor{gray!6}{5.36 * 10$^{1}$} & \cellcolor{gray!6}{0.00348} & \cellcolor{gray!6}{0.00039} & \cellcolor{gray!6}{0.00658}\\
+2.377 & 2.38 * 10$^{2}$ & 0.00000 & NA & NA\\
+\cellcolor{gray!6}{2.699} & \cellcolor{gray!6}{5.00 * 10$^{2}$} & \cellcolor{gray!6}{0.00000} & \cellcolor{gray!6}{NA} & \cellcolor{gray!6}{NA}\\
+3.000 & 1.00 * 10$^{3}$ & 0.00000 & NA & NA\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\clearpage
+\clearpage
+
+\hypertarget{plots-and-tables-with-estimates-and-pointwise-confidence-intervals-for-day-29-monotone-corrected}{%
+\subsection{Plots and Tables with estimates and pointwise confidence
+intervals for Day 29
+(monotone-corrected)}\label{plots-and-tables-with-estimates-and-pointwise-confidence-intervals-for-day-29-monotone-corrected}}
+
+\clearpage
+
+\hypertarget{day-29-bindrbd-1}{%
+\subsubsection{Day 29 bindRBD}\label{day-29-bindrbd-1}}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{/Users/larsvanderlaan/correlates_reporting_forks/correlates_reporting/cor_threshold/figs/pointwise_CI/PLOT_monotone_Day29bindRBD_pointwiseCI.pdf}
+\caption{Adjusted threshold-response function for a range of thresholds of the
+  Day 29 Day29bindRBD levels with pointwise 95\% confidence intervals. The dashed red line marks the threshold after which no more COVID events are observed. The estimates and confidence intervals are adjusted using the assumption that the true threshold-response is nonincreasing.}
+\end{figure}
+\begin{table}[!h]
+
+\caption{\label{tab:unnamed-chunk-20}Table of monotone-corrected risk estimates for a range of thresholds of Day 29 Day29bindRBD levels with pointwise 95\% confidence intervals.}
+\centering
+\begin{tabular}[t]{rlrrr}
+\toprule
+log$_{10}$-Threshold & Threshold & Risk estimate & CI left & CI right\\
+\midrule
+\cellcolor{gray!6}{-0.099} & \cellcolor{gray!6}{7.96 * 10$^{1}$} & \cellcolor{gray!6}{0.00856} & \cellcolor{gray!6}{0.00655} & \cellcolor{gray!6}{0.01057}\\
+0.437 & 2.74 * 10$^{0}$ & 0.00832 & 0.00621 & 0.01044\\
+\cellcolor{gray!6}{0.585} & \cellcolor{gray!6}{3.85 * 10$^{0}$} & \cellcolor{gray!6}{0.00832} & \cellcolor{gray!6}{0.00607} & \cellcolor{gray!6}{0.01057}\\
+0.741 & 5.51 * 10$^{0}$ & 0.00792 & 0.00560 & 0.01024\\
+\cellcolor{gray!6}{1.000} & \cellcolor{gray!6}{1.00 * 10$^{1}$} & \cellcolor{gray!6}{0.00756} & \cellcolor{gray!6}{0.00515} & \cellcolor{gray!6}{0.00997}\\
+1.190 & 1.55 * 10$^{1}$ & 0.00700 & 0.00413 & 0.00988\\
+\cellcolor{gray!6}{1.371} & \cellcolor{gray!6}{2.35 * 10$^{1}$} & \cellcolor{gray!6}{0.00636} & \cellcolor{gray!6}{0.00315} & \cellcolor{gray!6}{0.00956}\\
+1.563 & 3.66 * 10$^{1}$ & 0.00592 & 0.00220 & 0.00964\\
+\cellcolor{gray!6}{1.852} & \cellcolor{gray!6}{7.11 * 10$^{1}$} & \cellcolor{gray!6}{0.00587} & \cellcolor{gray!6}{0.00158} & \cellcolor{gray!6}{0.01016}\\
+1.956 & 9.04 * 10$^{1}$ & 0.00506 & 0.00132 & 0.00880\\
+\cellcolor{gray!6}{2.083} & \cellcolor{gray!6}{1.21 * 10$^{2}$} & \cellcolor{gray!6}{0.00506} & \cellcolor{gray!6}{0.00000} & \cellcolor{gray!6}{0.01575}\\
+2.237 & 1.73 * 10$^{2}$ & 0.00506 & 0.00000 & 0.01575\\
+\cellcolor{gray!6}{2.699} & \cellcolor{gray!6}{5.00 * 10$^{2}$} & \cellcolor{gray!6}{0.00000} & \cellcolor{gray!6}{NA} & \cellcolor{gray!6}{NA}\\
+3.000 & 1.00 * 10$^{3}$ & 0.00000 & NA & NA\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\clearpage
+\clearpage
+
+\clearpage
+
+\hypertarget{day-29-pseudoneutid50-1}{%
+\subsubsection{Day 29 pseudoneutid50}\label{day-29-pseudoneutid50-1}}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{/Users/larsvanderlaan/correlates_reporting_forks/correlates_reporting/cor_threshold/figs/pointwise_CI/PLOT_monotone_Day29pseudoneutid50_pointwiseCI.pdf}
+\caption{Adjusted threshold-response function for a range of thresholds of the
+  Day 29 Day29pseudoneutid50 levels with pointwise 95\% confidence intervals. The dashed red line marks the threshold after which no more COVID events are observed. The estimates and confidence intervals are adjusted using the assumption that the true threshold-response is nonincreasing.}
+\end{figure}
+\begin{table}[!h]
+
+\caption{\label{tab:unnamed-chunk-23}Table of monotone-corrected risk estimates for a range of thresholds of Day 29 Day29pseudoneutid50 levels with pointwise 95\% confidence intervals.}
+\centering
+\begin{tabular}[t]{rlrrr}
+\toprule
+log$_{10}$-Threshold & Threshold & Risk estimate & CI left & CI right\\
+\midrule
+\cellcolor{gray!6}{0.083} & \cellcolor{gray!6}{1.21 * 10$^{0}$} & \cellcolor{gray!6}{0.00855} & \cellcolor{gray!6}{0.00654} & \cellcolor{gray!6}{0.01056}\\
+1.130 & 1.35 * 10$^{1}$ & 0.00816 & 0.00604 & 0.01028\\
+\cellcolor{gray!6}{1.204} & \cellcolor{gray!6}{1.60 * 10$^{1}$} & \cellcolor{gray!6}{0.00816} & \cellcolor{gray!6}{0.00601} & \cellcolor{gray!6}{0.01031}\\
+1.282 & 1.91 * 10$^{1}$ & 0.00780 & 0.00556 & 0.01004\\
+\cellcolor{gray!6}{1.423} & \cellcolor{gray!6}{2.65 * 10$^{1}$} & \cellcolor{gray!6}{0.00655} & \cellcolor{gray!6}{0.00439} & \cellcolor{gray!6}{0.00872}\\
+1.521 & 3.32 * 10$^{1}$ & 0.00612 & 0.00352 & 0.00873\\
+\cellcolor{gray!6}{1.613} & \cellcolor{gray!6}{4.10 * 10$^{1}$} & \cellcolor{gray!6}{0.00547} & \cellcolor{gray!6}{0.00251} & \cellcolor{gray!6}{0.00844}\\
+1.720 & 5.25 * 10$^{1}$ & 0.00428 & 0.00115 & 0.00742\\
+\cellcolor{gray!6}{1.891} & \cellcolor{gray!6}{7.78 * 10$^{1}$} & \cellcolor{gray!6}{0.00354} & \cellcolor{gray!6}{0.00006} & \cellcolor{gray!6}{0.00702}\\
+1.958 & 9.08 * 10$^{1}$ & 0.00251 & 0.00000 & 0.00517\\
+\cellcolor{gray!6}{2.047} & \cellcolor{gray!6}{1.11 * 10$^{2}$} & \cellcolor{gray!6}{0.00247} & \cellcolor{gray!6}{0.00039} & \cellcolor{gray!6}{0.00456}\\
+2.699 & 5.00 * 10$^{2}$ & 0.00000 & NA & NA\\
+\cellcolor{gray!6}{2.828} & \cellcolor{gray!6}{6.73 * 10$^{2}$} & \cellcolor{gray!6}{0.00000} & \cellcolor{gray!6}{NA} & \cellcolor{gray!6}{NA}\\
+3.000 & 1.00 * 10$^{3}$ & 0.00000 & NA & NA\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\clearpage
+\clearpage
+
+\clearpage
+
+\hypertarget{day-29-bindspike-1}{%
+\subsubsection{Day 29 bindSpike}\label{day-29-bindspike-1}}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{/Users/larsvanderlaan/correlates_reporting_forks/correlates_reporting/cor_threshold/figs/pointwise_CI/PLOT_monotone_Day29bindSpike_pointwiseCI.pdf}
+\caption{Adjusted threshold-response function for a range of thresholds of the
+  Day 29 Day29bindSpike levels with pointwise 95\% confidence intervals. The dashed red line marks the threshold after which no more COVID events are observed. The estimates and confidence intervals are adjusted using the assumption that the true threshold-response is nonincreasing.}
+\end{figure}
+\begin{table}[!h]
+
+\caption{\label{tab:unnamed-chunk-26}Table of monotone-corrected risk estimates for a range of thresholds of Day 29 Day29bindSpike levels with pointwise 95\% confidence intervals.}
+\centering
+\begin{tabular}[t]{rlrrr}
+\toprule
+log$_{10}$-Threshold & Threshold & Risk estimate & CI left & CI right\\
+\midrule
+\cellcolor{gray!6}{-0.813} & \cellcolor{gray!6}{1.54 * 10$^{1}$} & \cellcolor{gray!6}{0.00857} & \cellcolor{gray!6}{0.00656} & \cellcolor{gray!6}{0.01058}\\
+0.189 & 1.55 * 10$^{0}$ & 0.00814 & 0.00601 & 0.01028\\
+\cellcolor{gray!6}{0.341} & \cellcolor{gray!6}{2.19 * 10$^{0}$} & \cellcolor{gray!6}{0.00797} & \cellcolor{gray!6}{0.00584} & \cellcolor{gray!6}{0.01009}\\
+0.513 & 3.26 * 10$^{0}$ & 0.00737 & 0.00525 & 0.00950\\
+\cellcolor{gray!6}{0.792} & \cellcolor{gray!6}{6.19 * 10$^{0}$} & \cellcolor{gray!6}{0.00723} & \cellcolor{gray!6}{0.00483} & \cellcolor{gray!6}{0.00963}\\
+0.959 & 9.10 * 10$^{0}$ & 0.00692 & 0.00399 & 0.00984\\
+\cellcolor{gray!6}{1.113} & \cellcolor{gray!6}{1.30 * 10$^{1}$} & \cellcolor{gray!6}{0.00613} & \cellcolor{gray!6}{0.00277} & \cellcolor{gray!6}{0.00948}\\
+1.263 & 1.83 * 10$^{1}$ & 0.00544 & 0.00195 & 0.00894\\
+\cellcolor{gray!6}{1.491} & \cellcolor{gray!6}{3.10 * 10$^{1}$} & \cellcolor{gray!6}{0.00426} & \cellcolor{gray!6}{0.00080} & \cellcolor{gray!6}{0.00773}\\
+1.611 & 4.08 * 10$^{1}$ & 0.00426 & 0.00032 & 0.00821\\
+\cellcolor{gray!6}{1.729} & \cellcolor{gray!6}{5.36 * 10$^{1}$} & \cellcolor{gray!6}{0.00348} & \cellcolor{gray!6}{0.00039} & \cellcolor{gray!6}{0.00658}\\
+2.377 & 2.38 * 10$^{2}$ & 0.00000 & NA & NA\\
+\cellcolor{gray!6}{2.699} & \cellcolor{gray!6}{5.00 * 10$^{2}$} & \cellcolor{gray!6}{0.00000} & \cellcolor{gray!6}{NA} & \cellcolor{gray!6}{NA}\\
+3.000 & 1.00 * 10$^{3}$ & 0.00000 & NA & NA\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\clearpage
+\clearpage
+
+\hypertarget{plots-and-tables-with-estimates-and-pointwise-confidence-intervals-for-day-29-monotone-corrected-events-after-1-day-post-dose}{%
+\subsection{Plots and Tables with estimates and pointwise confidence
+intervals for Day 29 (monotone-corrected) (events after 1 day post
+dose)}\label{plots-and-tables-with-estimates-and-pointwise-confidence-intervals-for-day-29-monotone-corrected-events-after-1-day-post-dose}}
+
+\clearpage
+
+\hypertarget{day-29-bindrbd-counting-events-after-1-day-post-dose}{%
+\subsubsection{Day 29 bindRBD (counting events after 1 day post
+dose)}\label{day-29-bindrbd-counting-events-after-1-day-post-dose}}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{/Users/larsvanderlaan/correlates_reporting_forks/correlates_reporting/cor_threshold/figs/pointwise_CI/PLOT_monotone_Day29start1bindRBD_pointwiseCI.pdf}
+\caption{Adjusted threshold-response function for a range of thresholds of the
+  Day 29 Day29bindRBD levels with pointwise 95\% confidence intervals. The dashed red line marks the threshold after which no more COVID events are observed. The estimates and confidence intervals are adjusted using the assumption that the true threshold-response is nonincreasing.}
+\end{figure}
+\begin{table}[!h]
+
+\caption{\label{tab:unnamed-chunk-29}Table of monotone-corrected risk estimates for a range of thresholds of Day 29 Day29bindRBD levels with pointwise 95\% confidence intervals.}
+\centering
+\begin{tabular}[t]{rlrrr}
+\toprule
+log$_{10}$-Threshold & Threshold & Risk estimate & CI left & CI right\\
+\midrule
+\cellcolor{gray!6}{-0.099} & \cellcolor{gray!6}{7.96 * 10$^{1}$} & \cellcolor{gray!6}{0.00876} & \cellcolor{gray!6}{0.00674} & \cellcolor{gray!6}{0.01078}\\
+0.437 & 2.74 * 10$^{0}$ & 0.00857 & 0.00644 & 0.01069\\
+\cellcolor{gray!6}{0.585} & \cellcolor{gray!6}{3.85 * 10$^{0}$} & \cellcolor{gray!6}{0.00857} & \cellcolor{gray!6}{0.00630} & \cellcolor{gray!6}{0.01083}\\
+0.741 & 5.51 * 10$^{0}$ & 0.00819 & 0.00585 & 0.01054\\
+\cellcolor{gray!6}{1.000} & \cellcolor{gray!6}{1.00 * 10$^{1}$} & \cellcolor{gray!6}{0.00788} & \cellcolor{gray!6}{0.00543} & \cellcolor{gray!6}{0.01033}\\
+1.190 & 1.55 * 10$^{1}$ & 0.00729 & 0.00436 & 0.01022\\
+\cellcolor{gray!6}{1.371} & \cellcolor{gray!6}{2.35 * 10$^{1}$} & \cellcolor{gray!6}{0.00671} & \cellcolor{gray!6}{0.00343} & \cellcolor{gray!6}{0.00998}\\
+1.563 & 3.66 * 10$^{1}$ & 0.00627 & 0.00244 & 0.01010\\
+\cellcolor{gray!6}{1.852} & \cellcolor{gray!6}{7.11 * 10$^{1}$} & \cellcolor{gray!6}{0.00621} & \cellcolor{gray!6}{0.00179} & \cellcolor{gray!6}{0.01063}\\
+1.956 & 9.04 * 10$^{1}$ & 0.00554 & 0.00163 & 0.00945\\
+\cellcolor{gray!6}{2.083} & \cellcolor{gray!6}{1.21 * 10$^{2}$} & \cellcolor{gray!6}{0.00554} & \cellcolor{gray!6}{0.00000} & \cellcolor{gray!6}{0.01678}\\
+2.237 & 1.73 * 10$^{2}$ & 0.00554 & 0.00000 & 0.01678\\
+\cellcolor{gray!6}{2.699} & \cellcolor{gray!6}{5.00 * 10$^{2}$} & \cellcolor{gray!6}{0.00000} & \cellcolor{gray!6}{NA} & \cellcolor{gray!6}{NA}\\
+3.000 & 1.00 * 10$^{3}$ & 0.00000 & NA & NA\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\clearpage
+\clearpage
+
+\clearpage
+
+\hypertarget{day-29-pseudoneutid50-counting-events-after-1-day-post-dose}{%
+\subsubsection{Day 29 pseudoneutid50 (counting events after 1 day post
+dose)}\label{day-29-pseudoneutid50-counting-events-after-1-day-post-dose}}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{/Users/larsvanderlaan/correlates_reporting_forks/correlates_reporting/cor_threshold/figs/pointwise_CI/PLOT_monotone_Day29start1pseudoneutid50_pointwiseCI.pdf}
+\caption{Adjusted threshold-response function for a range of thresholds of the
+  Day 29 Day29pseudoneutid50 levels with pointwise 95\% confidence intervals. The dashed red line marks the threshold after which no more COVID events are observed. The estimates and confidence intervals are adjusted using the assumption that the true threshold-response is nonincreasing.}
+\end{figure}
+\begin{table}[!h]
+
+\caption{\label{tab:unnamed-chunk-32}Table of monotone-corrected risk estimates for a range of thresholds of Day 29 Day29pseudoneutid50 levels with pointwise 95\% confidence intervals.}
+\centering
+\begin{tabular}[t]{rlrrr}
+\toprule
+log$_{10}$-Threshold & Threshold & Risk estimate & CI left & CI right\\
+\midrule
+\cellcolor{gray!6}{0.083} & \cellcolor{gray!6}{1.21 * 10$^{0}$} & \cellcolor{gray!6}{0.00875} & \cellcolor{gray!6}{0.00673} & \cellcolor{gray!6}{0.01077}\\
+1.130 & 1.35 * 10$^{1}$ & 0.00838 & 0.00625 & 0.01051\\
+\cellcolor{gray!6}{1.204} & \cellcolor{gray!6}{1.60 * 10$^{1}$} & \cellcolor{gray!6}{0.00838} & \cellcolor{gray!6}{0.00622} & \cellcolor{gray!6}{0.01054}\\
+1.282 & 1.91 * 10$^{1}$ & 0.00804 & 0.00586 & 0.01022\\
+\cellcolor{gray!6}{1.423} & \cellcolor{gray!6}{2.65 * 10$^{1}$} & \cellcolor{gray!6}{0.00678} & \cellcolor{gray!6}{0.00460} & \cellcolor{gray!6}{0.00897}\\
+1.521 & 3.32 * 10$^{1}$ & 0.00640 & 0.00376 & 0.00903\\
+\cellcolor{gray!6}{1.613} & \cellcolor{gray!6}{4.10 * 10$^{1}$} & \cellcolor{gray!6}{0.00579} & \cellcolor{gray!6}{0.00277} & \cellcolor{gray!6}{0.00881}\\
+1.720 & 5.25 * 10$^{1}$ & 0.00470 & 0.00147 & 0.00793\\
+\cellcolor{gray!6}{1.891} & \cellcolor{gray!6}{7.78 * 10$^{1}$} & \cellcolor{gray!6}{0.00403} & \cellcolor{gray!6}{0.00043} & \cellcolor{gray!6}{0.00763}\\
+1.958 & 9.08 * 10$^{1}$ & 0.00317 & 0.00028 & 0.00606\\
+\cellcolor{gray!6}{2.047} & \cellcolor{gray!6}{1.11 * 10$^{2}$} & \cellcolor{gray!6}{0.00287} & \cellcolor{gray!6}{0.00061} & \cellcolor{gray!6}{0.00513}\\
+2.699 & 5.00 * 10$^{2}$ & 0.00000 & NA & NA\\
+\cellcolor{gray!6}{2.828} & \cellcolor{gray!6}{6.73 * 10$^{2}$} & \cellcolor{gray!6}{0.00000} & \cellcolor{gray!6}{NA} & \cellcolor{gray!6}{NA}\\
+3.000 & 1.00 * 10$^{3}$ & 0.00000 & NA & NA\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\clearpage
+\clearpage
+
+\clearpage
+
+\hypertarget{day-29-bindspike-counting-events-after-1-day-post-dose}{%
+\subsubsection{Day 29 bindSpike (counting events after 1 day post
+dose)}\label{day-29-bindspike-counting-events-after-1-day-post-dose}}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{/Users/larsvanderlaan/correlates_reporting_forks/correlates_reporting/cor_threshold/figs/pointwise_CI/PLOT_monotone_Day29start1bindSpike_pointwiseCI.pdf}
+\caption{Adjusted threshold-response function for a range of thresholds of the
+  Day 29 Day29bindSpike levels with pointwise 95\% confidence intervals. The dashed red line marks the threshold after which no more COVID events are observed. The estimates and confidence intervals are adjusted using the assumption that the true threshold-response is nonincreasing.}
+\end{figure}
+\begin{table}[!h]
+
+\caption{\label{tab:unnamed-chunk-35}Table of monotone-corrected risk estimates for a range of thresholds of Day 29 Day29bindSpike levels with pointwise 95\% confidence intervals.}
+\centering
+\begin{tabular}[t]{rlrrr}
+\toprule
+log$_{10}$-Threshold & Threshold & Risk estimate & CI left & CI right\\
+\midrule
+\cellcolor{gray!6}{-0.813} & \cellcolor{gray!6}{1.54 * 10$^{1}$} & \cellcolor{gray!6}{0.00878} & \cellcolor{gray!6}{0.00676} & \cellcolor{gray!6}{0.01080}\\
+0.189 & 1.55 * 10$^{0}$ & 0.00837 & 0.00621 & 0.01052\\
+\cellcolor{gray!6}{0.341} & \cellcolor{gray!6}{2.19 * 10$^{0}$} & \cellcolor{gray!6}{0.00820} & \cellcolor{gray!6}{0.00605} & \cellcolor{gray!6}{0.01034}\\
+0.513 & 3.26 * 10$^{0}$ & 0.00762 & 0.00547 & 0.00977\\
+\cellcolor{gray!6}{0.792} & \cellcolor{gray!6}{6.19 * 10$^{0}$} & \cellcolor{gray!6}{0.00749} & \cellcolor{gray!6}{0.00506} & \cellcolor{gray!6}{0.00993}\\
+0.959 & 9.10 * 10$^{0}$ & 0.00720 & 0.00423 & 0.01017\\
+\cellcolor{gray!6}{1.113} & \cellcolor{gray!6}{1.30 * 10$^{1}$} & \cellcolor{gray!6}{0.00639} & \cellcolor{gray!6}{0.00297} & \cellcolor{gray!6}{0.00981}\\
+1.263 & 1.83 * 10$^{1}$ & 0.00565 & 0.00209 & 0.00920\\
+\cellcolor{gray!6}{1.491} & \cellcolor{gray!6}{3.10 * 10$^{1}$} & \cellcolor{gray!6}{0.00460} & \cellcolor{gray!6}{0.00103} & \cellcolor{gray!6}{0.00818}\\
+1.611 & 4.08 * 10$^{1}$ & 0.00460 & 0.00049 & 0.00871\\
+\cellcolor{gray!6}{1.729} & \cellcolor{gray!6}{5.36 * 10$^{1}$} & \cellcolor{gray!6}{0.00397} & \cellcolor{gray!6}{0.00068} & \cellcolor{gray!6}{0.00726}\\
+2.377 & 2.38 * 10$^{2}$ & 0.00000 & NA & NA\\
+\cellcolor{gray!6}{2.699} & \cellcolor{gray!6}{5.00 * 10$^{2}$} & \cellcolor{gray!6}{0.00000} & \cellcolor{gray!6}{NA} & \cellcolor{gray!6}{NA}\\
+3.000 & 1.00 * 10$^{3}$ & 0.00000 & NA & NA\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\clearpage
+\clearpage
+
+\hypertarget{plots-and-tables-with-estimates-and-pointwise-confidence-intervals-for-day-29-monotone-corrected-counting-events-after-1-day-post-dose}{%
+\subsection{Plots and Tables with estimates and pointwise confidence
+intervals for Day 29 (monotone-corrected) (counting events after 1 day
+post
+dose)}\label{plots-and-tables-with-estimates-and-pointwise-confidence-intervals-for-day-29-monotone-corrected-counting-events-after-1-day-post-dose}}
+
+\clearpage
+
+\hypertarget{day-29-bindrbd-counting-events-after-1-day-post-dose-1}{%
+\subsubsection{Day 29 bindRBD (counting events after 1 day post
+dose)}\label{day-29-bindrbd-counting-events-after-1-day-post-dose-1}}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{/Users/larsvanderlaan/correlates_reporting_forks/correlates_reporting/cor_threshold/figs/pointwise_CI/PLOT_monotone_Day29start1bindRBD_pointwiseCI.pdf}
+\caption{Adjusted threshold-response function for a range of thresholds of the
+  Day 29 Day29bindRBD levels with pointwise 95\% confidence intervals. The dashed red line marks the threshold after which no more COVID events are observed. The estimates and confidence intervals are adjusted using the assumption that the true threshold-response is nonincreasing.}
+\end{figure}
+\begin{table}[!h]
+
+\caption{\label{tab:unnamed-chunk-38}Table of monotone-corrected risk estimates for a range of thresholds of Day 29 Day29bindRBD levels with pointwise 95\% confidence intervals.}
+\centering
+\begin{tabular}[t]{rlrrr}
+\toprule
+log$_{10}$-Threshold & Threshold & Risk estimate & CI left & CI right\\
+\midrule
+\cellcolor{gray!6}{-0.099} & \cellcolor{gray!6}{7.96 * 10$^{1}$} & \cellcolor{gray!6}{0.00876} & \cellcolor{gray!6}{0.00674} & \cellcolor{gray!6}{0.01078}\\
+0.437 & 2.74 * 10$^{0}$ & 0.00857 & 0.00644 & 0.01069\\
+\cellcolor{gray!6}{0.585} & \cellcolor{gray!6}{3.85 * 10$^{0}$} & \cellcolor{gray!6}{0.00857} & \cellcolor{gray!6}{0.00630} & \cellcolor{gray!6}{0.01083}\\
+0.741 & 5.51 * 10$^{0}$ & 0.00819 & 0.00585 & 0.01054\\
+\cellcolor{gray!6}{1.000} & \cellcolor{gray!6}{1.00 * 10$^{1}$} & \cellcolor{gray!6}{0.00788} & \cellcolor{gray!6}{0.00543} & \cellcolor{gray!6}{0.01033}\\
+1.190 & 1.55 * 10$^{1}$ & 0.00729 & 0.00436 & 0.01022\\
+\cellcolor{gray!6}{1.371} & \cellcolor{gray!6}{2.35 * 10$^{1}$} & \cellcolor{gray!6}{0.00671} & \cellcolor{gray!6}{0.00343} & \cellcolor{gray!6}{0.00998}\\
+1.563 & 3.66 * 10$^{1}$ & 0.00627 & 0.00244 & 0.01010\\
+\cellcolor{gray!6}{1.852} & \cellcolor{gray!6}{7.11 * 10$^{1}$} & \cellcolor{gray!6}{0.00621} & \cellcolor{gray!6}{0.00179} & \cellcolor{gray!6}{0.01063}\\
+1.956 & 9.04 * 10$^{1}$ & 0.00554 & 0.00163 & 0.00945\\
+\cellcolor{gray!6}{2.083} & \cellcolor{gray!6}{1.21 * 10$^{2}$} & \cellcolor{gray!6}{0.00554} & \cellcolor{gray!6}{0.00000} & \cellcolor{gray!6}{0.01678}\\
+2.237 & 1.73 * 10$^{2}$ & 0.00554 & 0.00000 & 0.01678\\
+\cellcolor{gray!6}{2.699} & \cellcolor{gray!6}{5.00 * 10$^{2}$} & \cellcolor{gray!6}{0.00000} & \cellcolor{gray!6}{NA} & \cellcolor{gray!6}{NA}\\
+3.000 & 1.00 * 10$^{3}$ & 0.00000 & NA & NA\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\clearpage
+\clearpage
+
+\clearpage
+
+\hypertarget{day-29-pseudoneutid50-counting-events-after-1-day-post-dose-1}{%
+\subsubsection{Day 29 pseudoneutid50 (counting events after 1 day post
+dose)}\label{day-29-pseudoneutid50-counting-events-after-1-day-post-dose-1}}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{/Users/larsvanderlaan/correlates_reporting_forks/correlates_reporting/cor_threshold/figs/pointwise_CI/PLOT_monotone_Day29start1pseudoneutid50_pointwiseCI.pdf}
+\caption{Adjusted threshold-response function for a range of thresholds of the
+  Day 29 Day29pseudoneutid50 levels with pointwise 95\% confidence intervals. The dashed red line marks the threshold after which no more COVID events are observed. The estimates and confidence intervals are adjusted using the assumption that the true threshold-response is nonincreasing.}
+\end{figure}
+\begin{table}[!h]
+
+\caption{\label{tab:unnamed-chunk-41}Table of monotone-corrected risk estimates for a range of thresholds of Day 29 Day29pseudoneutid50 levels with pointwise 95\% confidence intervals.}
+\centering
+\begin{tabular}[t]{rlrrr}
+\toprule
+log$_{10}$-Threshold & Threshold & Risk estimate & CI left & CI right\\
+\midrule
+\cellcolor{gray!6}{0.083} & \cellcolor{gray!6}{1.21 * 10$^{0}$} & \cellcolor{gray!6}{0.00875} & \cellcolor{gray!6}{0.00673} & \cellcolor{gray!6}{0.01077}\\
+1.130 & 1.35 * 10$^{1}$ & 0.00838 & 0.00625 & 0.01051\\
+\cellcolor{gray!6}{1.204} & \cellcolor{gray!6}{1.60 * 10$^{1}$} & \cellcolor{gray!6}{0.00838} & \cellcolor{gray!6}{0.00622} & \cellcolor{gray!6}{0.01054}\\
+1.282 & 1.91 * 10$^{1}$ & 0.00804 & 0.00586 & 0.01022\\
+\cellcolor{gray!6}{1.423} & \cellcolor{gray!6}{2.65 * 10$^{1}$} & \cellcolor{gray!6}{0.00678} & \cellcolor{gray!6}{0.00460} & \cellcolor{gray!6}{0.00897}\\
+1.521 & 3.32 * 10$^{1}$ & 0.00640 & 0.00376 & 0.00903\\
+\cellcolor{gray!6}{1.613} & \cellcolor{gray!6}{4.10 * 10$^{1}$} & \cellcolor{gray!6}{0.00579} & \cellcolor{gray!6}{0.00277} & \cellcolor{gray!6}{0.00881}\\
+1.720 & 5.25 * 10$^{1}$ & 0.00470 & 0.00147 & 0.00793\\
+\cellcolor{gray!6}{1.891} & \cellcolor{gray!6}{7.78 * 10$^{1}$} & \cellcolor{gray!6}{0.00403} & \cellcolor{gray!6}{0.00043} & \cellcolor{gray!6}{0.00763}\\
+1.958 & 9.08 * 10$^{1}$ & 0.00317 & 0.00028 & 0.00606\\
+\cellcolor{gray!6}{2.047} & \cellcolor{gray!6}{1.11 * 10$^{2}$} & \cellcolor{gray!6}{0.00287} & \cellcolor{gray!6}{0.00061} & \cellcolor{gray!6}{0.00513}\\
+2.699 & 5.00 * 10$^{2}$ & 0.00000 & NA & NA\\
+\cellcolor{gray!6}{2.828} & \cellcolor{gray!6}{6.73 * 10$^{2}$} & \cellcolor{gray!6}{0.00000} & \cellcolor{gray!6}{NA} & \cellcolor{gray!6}{NA}\\
+3.000 & 1.00 * 10$^{3}$ & 0.00000 & NA & NA\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\clearpage
+\clearpage
+
+\clearpage
+
+\hypertarget{day-29-bindspike-counting-events-after-1-day-post-dose-1}{%
+\subsubsection{Day 29 bindSpike (counting events after 1 day post
+dose)}\label{day-29-bindspike-counting-events-after-1-day-post-dose-1}}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{/Users/larsvanderlaan/correlates_reporting_forks/correlates_reporting/cor_threshold/figs/pointwise_CI/PLOT_monotone_Day29start1bindSpike_pointwiseCI.pdf}
+\caption{Adjusted threshold-response function for a range of thresholds of the
+  Day 29 Day29bindSpike levels with pointwise 95\% confidence intervals. The dashed red line marks the threshold after which no more COVID events are observed. The estimates and confidence intervals are adjusted using the assumption that the true threshold-response is nonincreasing.}
+\end{figure}
+\begin{table}[!h]
+
+\caption{\label{tab:unnamed-chunk-44}Table of monotone-corrected risk estimates for a range of thresholds of Day 29 Day29bindSpike levels with pointwise 95\% confidence intervals.}
+\centering
+\begin{tabular}[t]{rlrrr}
+\toprule
+log$_{10}$-Threshold & Threshold & Risk estimate & CI left & CI right\\
+\midrule
+\cellcolor{gray!6}{-0.813} & \cellcolor{gray!6}{1.54 * 10$^{1}$} & \cellcolor{gray!6}{0.00878} & \cellcolor{gray!6}{0.00676} & \cellcolor{gray!6}{0.01080}\\
+0.189 & 1.55 * 10$^{0}$ & 0.00837 & 0.00621 & 0.01052\\
+\cellcolor{gray!6}{0.341} & \cellcolor{gray!6}{2.19 * 10$^{0}$} & \cellcolor{gray!6}{0.00820} & \cellcolor{gray!6}{0.00605} & \cellcolor{gray!6}{0.01034}\\
+0.513 & 3.26 * 10$^{0}$ & 0.00762 & 0.00547 & 0.00977\\
+\cellcolor{gray!6}{0.792} & \cellcolor{gray!6}{6.19 * 10$^{0}$} & \cellcolor{gray!6}{0.00749} & \cellcolor{gray!6}{0.00506} & \cellcolor{gray!6}{0.00993}\\
+0.959 & 9.10 * 10$^{0}$ & 0.00720 & 0.00423 & 0.01017\\
+\cellcolor{gray!6}{1.113} & \cellcolor{gray!6}{1.30 * 10$^{1}$} & \cellcolor{gray!6}{0.00639} & \cellcolor{gray!6}{0.00297} & \cellcolor{gray!6}{0.00981}\\
+1.263 & 1.83 * 10$^{1}$ & 0.00565 & 0.00209 & 0.00920\\
+\cellcolor{gray!6}{1.491} & \cellcolor{gray!6}{3.10 * 10$^{1}$} & \cellcolor{gray!6}{0.00460} & \cellcolor{gray!6}{0.00103} & \cellcolor{gray!6}{0.00818}\\
+1.611 & 4.08 * 10$^{1}$ & 0.00460 & 0.00049 & 0.00871\\
+\cellcolor{gray!6}{1.729} & \cellcolor{gray!6}{5.36 * 10$^{1}$} & \cellcolor{gray!6}{0.00397} & \cellcolor{gray!6}{0.00068} & \cellcolor{gray!6}{0.00726}\\
+2.377 & 2.38 * 10$^{2}$ & 0.00000 & NA & NA\\
+\cellcolor{gray!6}{2.699} & \cellcolor{gray!6}{5.00 * 10$^{2}$} & \cellcolor{gray!6}{0.00000} & \cellcolor{gray!6}{NA} & \cellcolor{gray!6}{NA}\\
+3.000 & 1.00 * 10$^{3}$ & 0.00000 & NA & NA\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\clearpage
+\clearpage
+
+\hypertarget{plots-and-tables-with-estimates-and-simultaneous-confidence-intervals-for-day-29-monotone-corrected}{%
+\subsection{Plots and Tables with estimates and simultaneous confidence
+intervals for Day 29
+(monotone-corrected)}\label{plots-and-tables-with-estimates-and-simultaneous-confidence-intervals-for-day-29-monotone-corrected}}
+
+\clearpage
+
+\hypertarget{day-29-bindrbd-2}{%
+\subsubsection{Day 29 bindRBD}\label{day-29-bindrbd-2}}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{/Users/larsvanderlaan/correlates_reporting_forks/correlates_reporting/cor_threshold/figs/simultaneous_CI/PLOT_monotone_Day29bindRBD_simultCI.pdf}
+\caption{Adjusted threshold-response function for a range of thresholds of the
+  Day 29 Day29bindRBD levels with simultaneous 95\% confidence intervals. The dashed red line marks the threshold after which no more COVID events are observed. The estimates and confidence intervals are adjusted using the assumption that the true threshold-response is nonincreasing.}
+\end{figure}
+\begin{table}[!h]
+
+\caption{\label{tab:unnamed-chunk-47}Table of monotone-corrected risk estimates for a range of thresholds of Day 29 Day29bindRBD levels with simultaneous 95\% confidence intervals.}
+\centering
+\begin{tabular}[t]{rlrrr}
+\toprule
+log$_{10}$-Threshold & Threshold & Risk estimate & CI left & CI right\\
+\midrule
+\cellcolor{gray!6}{-0.099} & \cellcolor{gray!6}{7.96 * 10$^{1}$} & \cellcolor{gray!6}{0.00856} & \cellcolor{gray!6}{0.00577} & \cellcolor{gray!6}{0.01134}\\
+0.437 & 2.74 * 10$^{0}$ & 0.00832 & 0.00539 & 0.01125\\
+\cellcolor{gray!6}{0.585} & \cellcolor{gray!6}{3.85 * 10$^{0}$} & \cellcolor{gray!6}{0.00832} & \cellcolor{gray!6}{0.00520} & \cellcolor{gray!6}{0.01144}\\
+0.741 & 5.51 * 10$^{0}$ & 0.00792 & 0.00470 & 0.01114\\
+\cellcolor{gray!6}{1.000} & \cellcolor{gray!6}{1.00 * 10$^{1}$} & \cellcolor{gray!6}{0.00756} & \cellcolor{gray!6}{0.00422} & \cellcolor{gray!6}{0.01091}\\
+1.190 & 1.55 * 10$^{1}$ & 0.00700 & 0.00301 & 0.01099\\
+\cellcolor{gray!6}{1.371} & \cellcolor{gray!6}{2.35 * 10$^{1}$} & \cellcolor{gray!6}{0.00636} & \cellcolor{gray!6}{0.00191} & \cellcolor{gray!6}{0.01080}\\
+1.563 & 3.66 * 10$^{1}$ & 0.00592 & 0.00076 & 0.01108\\
+\cellcolor{gray!6}{1.852} & \cellcolor{gray!6}{7.11 * 10$^{1}$} & \cellcolor{gray!6}{0.00587} & \cellcolor{gray!6}{0.00000} & \cellcolor{gray!6}{0.01182}\\
+1.956 & 9.04 * 10$^{1}$ & 0.00506 & 0.00000 & 0.01025\\
+\cellcolor{gray!6}{2.083} & \cellcolor{gray!6}{1.21 * 10$^{2}$} & \cellcolor{gray!6}{0.00506} & \cellcolor{gray!6}{0.00000} & \cellcolor{gray!6}{0.01989}\\
+2.237 & 1.73 * 10$^{2}$ & 0.00506 & 0.00000 & 0.01989\\
+\cellcolor{gray!6}{2.699} & \cellcolor{gray!6}{5.00 * 10$^{2}$} & \cellcolor{gray!6}{0.00000} & \cellcolor{gray!6}{NA} & \cellcolor{gray!6}{NA}\\
+3.000 & 1.00 * 10$^{3}$ & 0.00000 & NA & NA\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\clearpage
+\clearpage
+
+\clearpage
+
+\hypertarget{day-29-pseudoneutid50-2}{%
+\subsubsection{Day 29 pseudoneutid50}\label{day-29-pseudoneutid50-2}}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{/Users/larsvanderlaan/correlates_reporting_forks/correlates_reporting/cor_threshold/figs/simultaneous_CI/PLOT_monotone_Day29pseudoneutid50_simultCI.pdf}
+\caption{Adjusted threshold-response function for a range of thresholds of the
+  Day 29 Day29pseudoneutid50 levels with simultaneous 95\% confidence intervals. The dashed red line marks the threshold after which no more COVID events are observed. The estimates and confidence intervals are adjusted using the assumption that the true threshold-response is nonincreasing.}
+\end{figure}
+\begin{table}[!h]
+
+\caption{\label{tab:unnamed-chunk-50}Table of monotone-corrected risk estimates for a range of thresholds of Day 29 Day29pseudoneutid50 levels with simultaneous 95\% confidence intervals.}
+\centering
+\begin{tabular}[t]{rlrrr}
+\toprule
+log$_{10}$-Threshold & Threshold & Risk estimate & CI left & CI right\\
+\midrule
+\cellcolor{gray!6}{0.083} & \cellcolor{gray!6}{1.21 * 10$^{0}$} & \cellcolor{gray!6}{0.00855} & \cellcolor{gray!6}{0.00570} & \cellcolor{gray!6}{0.01140}\\
+1.130 & 1.35 * 10$^{1}$ & 0.00816 & 0.00516 & 0.01117\\
+\cellcolor{gray!6}{1.204} & \cellcolor{gray!6}{1.60 * 10$^{1}$} & \cellcolor{gray!6}{0.00816} & \cellcolor{gray!6}{0.00512} & \cellcolor{gray!6}{0.01121}\\
+1.282 & 1.91 * 10$^{1}$ & 0.00780 & 0.00462 & 0.01098\\
+\cellcolor{gray!6}{1.423} & \cellcolor{gray!6}{2.65 * 10$^{1}$} & \cellcolor{gray!6}{0.00655} & \cellcolor{gray!6}{0.00348} & \cellcolor{gray!6}{0.00962}\\
+1.521 & 3.32 * 10$^{1}$ & 0.00612 & 0.00243 & 0.00982\\
+\cellcolor{gray!6}{1.613} & \cellcolor{gray!6}{4.10 * 10$^{1}$} & \cellcolor{gray!6}{0.00547} & \cellcolor{gray!6}{0.00127} & \cellcolor{gray!6}{0.00968}\\
+1.720 & 5.25 * 10$^{1}$ & 0.00428 & 0.00000 & 0.00873\\
+\cellcolor{gray!6}{1.891} & \cellcolor{gray!6}{7.78 * 10$^{1}$} & \cellcolor{gray!6}{0.00354} & \cellcolor{gray!6}{0.00000} & \cellcolor{gray!6}{0.00848}\\
+1.958 & 9.08 * 10$^{1}$ & 0.00251 & 0.00000 & 0.00628\\
+\cellcolor{gray!6}{2.047} & \cellcolor{gray!6}{1.11 * 10$^{2}$} & \cellcolor{gray!6}{0.00247} & \cellcolor{gray!6}{0.00000} & \cellcolor{gray!6}{0.00543}\\
+2.699 & 5.00 * 10$^{2}$ & 0.00000 & NA & NA\\
+\cellcolor{gray!6}{2.828} & \cellcolor{gray!6}{6.73 * 10$^{2}$} & \cellcolor{gray!6}{0.00000} & \cellcolor{gray!6}{NA} & \cellcolor{gray!6}{NA}\\
+3.000 & 1.00 * 10$^{3}$ & 0.00000 & NA & NA\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\clearpage
+\clearpage
+
+\clearpage
+
+\hypertarget{day-29-bindspike-2}{%
+\subsubsection{Day 29 bindSpike}\label{day-29-bindspike-2}}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{/Users/larsvanderlaan/correlates_reporting_forks/correlates_reporting/cor_threshold/figs/simultaneous_CI/PLOT_monotone_Day29bindSpike_simultCI.pdf}
+\caption{Adjusted threshold-response function for a range of thresholds of the
+  Day 29 Day29bindSpike levels with simultaneous 95\% confidence intervals. The dashed red line marks the threshold after which no more COVID events are observed. The estimates and confidence intervals are adjusted using the assumption that the true threshold-response is nonincreasing.}
+\end{figure}
+\begin{table}[!h]
+
+\caption{\label{tab:unnamed-chunk-53}Table of monotone-corrected risk estimates for a range of thresholds of Day 29 Day29bindSpike levels with simultaneous 95\% confidence intervals.}
+\centering
+\begin{tabular}[t]{rlrrr}
+\toprule
+log$_{10}$-Threshold & Threshold & Risk estimate & CI left & CI right\\
+\midrule
+\cellcolor{gray!6}{-0.813} & \cellcolor{gray!6}{1.54 * 10$^{1}$} & \cellcolor{gray!6}{0.00857} & \cellcolor{gray!6}{0.00570} & \cellcolor{gray!6}{0.01144}\\
+0.189 & 1.55 * 10$^{0}$ & 0.00814 & 0.00509 & 0.01119\\
+\cellcolor{gray!6}{0.341} & \cellcolor{gray!6}{2.19 * 10$^{0}$} & \cellcolor{gray!6}{0.00797} & \cellcolor{gray!6}{0.00493} & \cellcolor{gray!6}{0.01100}\\
+0.513 & 3.26 * 10$^{0}$ & 0.00737 & 0.00434 & 0.01041\\
+\cellcolor{gray!6}{0.792} & \cellcolor{gray!6}{6.19 * 10$^{0}$} & \cellcolor{gray!6}{0.00723} & \cellcolor{gray!6}{0.00380} & \cellcolor{gray!6}{0.01066}\\
+0.959 & 9.10 * 10$^{0}$ & 0.00692 & 0.00274 & 0.01109\\
+\cellcolor{gray!6}{1.113} & \cellcolor{gray!6}{1.30 * 10$^{1}$} & \cellcolor{gray!6}{0.00613} & \cellcolor{gray!6}{0.00133} & \cellcolor{gray!6}{0.01092}\\
+1.263 & 1.83 * 10$^{1}$ & 0.00544 & 0.00045 & 0.01043\\
+\cellcolor{gray!6}{1.491} & \cellcolor{gray!6}{3.10 * 10$^{1}$} & \cellcolor{gray!6}{0.00426} & \cellcolor{gray!6}{0.00000} & \cellcolor{gray!6}{0.00922}\\
+1.611 & 4.08 * 10$^{1}$ & 0.00426 & 0.00000 & 0.00990\\
+\cellcolor{gray!6}{1.729} & \cellcolor{gray!6}{5.36 * 10$^{1}$} & \cellcolor{gray!6}{0.00348} & \cellcolor{gray!6}{0.00000} & \cellcolor{gray!6}{0.00790}\\
+2.377 & 2.38 * 10$^{2}$ & 0.00000 & NA & NA\\
+\cellcolor{gray!6}{2.699} & \cellcolor{gray!6}{5.00 * 10$^{2}$} & \cellcolor{gray!6}{0.00000} & \cellcolor{gray!6}{NA} & \cellcolor{gray!6}{NA}\\
+3.000 & 1.00 * 10$^{3}$ & 0.00000 & NA & NA\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\clearpage
+\clearpage
+
+\hypertarget{plots-and-tables-with-estimates-and-simultaneous-confidence-intervals-for-day-29-monotone-corrected-1}{%
+\subsection{Plots and Tables with estimates and simultaneous confidence
+intervals for Day 29
+(monotone-corrected)}\label{plots-and-tables-with-estimates-and-simultaneous-confidence-intervals-for-day-29-monotone-corrected-1}}
+
+\clearpage
+
+\hypertarget{day-29-bindrbd-3}{%
+\subsubsection{Day 29 bindRBD}\label{day-29-bindrbd-3}}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{/Users/larsvanderlaan/correlates_reporting_forks/correlates_reporting/cor_threshold/figs/simultaneous_CI/PLOT_monotone_Day29bindRBD_simultCI.pdf}
+\caption{Adjusted threshold-response function for a range of thresholds of the
+  Day 29 Day29bindRBD levels with simultaneous 95\% confidence intervals. The dashed red line marks the threshold after which no more COVID events are observed. The estimates and confidence intervals are adjusted using the assumption that the true threshold-response is nonincreasing.}
+\end{figure}
+\begin{table}[!h]
+
+\caption{\label{tab:unnamed-chunk-56}Table of monotone-corrected risk estimates for a range of thresholds of Day 29 Day29bindRBD levels with simultaneous 95\% confidence intervals.}
+\centering
+\begin{tabular}[t]{rlrrr}
+\toprule
+log$_{10}$-Threshold & Threshold & Risk estimate & CI left & CI right\\
+\midrule
+\cellcolor{gray!6}{-0.099} & \cellcolor{gray!6}{7.96 * 10$^{1}$} & \cellcolor{gray!6}{0.00856} & \cellcolor{gray!6}{0.00577} & \cellcolor{gray!6}{0.01134}\\
+0.437 & 2.74 * 10$^{0}$ & 0.00832 & 0.00539 & 0.01125\\
+\cellcolor{gray!6}{0.585} & \cellcolor{gray!6}{3.85 * 10$^{0}$} & \cellcolor{gray!6}{0.00832} & \cellcolor{gray!6}{0.00520} & \cellcolor{gray!6}{0.01144}\\
+0.741 & 5.51 * 10$^{0}$ & 0.00792 & 0.00470 & 0.01114\\
+\cellcolor{gray!6}{1.000} & \cellcolor{gray!6}{1.00 * 10$^{1}$} & \cellcolor{gray!6}{0.00756} & \cellcolor{gray!6}{0.00422} & \cellcolor{gray!6}{0.01091}\\
+1.190 & 1.55 * 10$^{1}$ & 0.00700 & 0.00301 & 0.01099\\
+\cellcolor{gray!6}{1.371} & \cellcolor{gray!6}{2.35 * 10$^{1}$} & \cellcolor{gray!6}{0.00636} & \cellcolor{gray!6}{0.00191} & \cellcolor{gray!6}{0.01080}\\
+1.563 & 3.66 * 10$^{1}$ & 0.00592 & 0.00076 & 0.01108\\
+\cellcolor{gray!6}{1.852} & \cellcolor{gray!6}{7.11 * 10$^{1}$} & \cellcolor{gray!6}{0.00587} & \cellcolor{gray!6}{0.00000} & \cellcolor{gray!6}{0.01182}\\
+1.956 & 9.04 * 10$^{1}$ & 0.00506 & 0.00000 & 0.01025\\
+\cellcolor{gray!6}{2.083} & \cellcolor{gray!6}{1.21 * 10$^{2}$} & \cellcolor{gray!6}{0.00506} & \cellcolor{gray!6}{0.00000} & \cellcolor{gray!6}{0.01989}\\
+2.237 & 1.73 * 10$^{2}$ & 0.00506 & 0.00000 & 0.01989\\
+\cellcolor{gray!6}{2.699} & \cellcolor{gray!6}{5.00 * 10$^{2}$} & \cellcolor{gray!6}{0.00000} & \cellcolor{gray!6}{NA} & \cellcolor{gray!6}{NA}\\
+3.000 & 1.00 * 10$^{3}$ & 0.00000 & NA & NA\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\clearpage
+\clearpage
+
+\clearpage
+
+\hypertarget{day-29-pseudoneutid50-3}{%
+\subsubsection{Day 29 pseudoneutid50}\label{day-29-pseudoneutid50-3}}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{/Users/larsvanderlaan/correlates_reporting_forks/correlates_reporting/cor_threshold/figs/simultaneous_CI/PLOT_monotone_Day29pseudoneutid50_simultCI.pdf}
+\caption{Adjusted threshold-response function for a range of thresholds of the
+  Day 29 Day29pseudoneutid50 levels with simultaneous 95\% confidence intervals. The dashed red line marks the threshold after which no more COVID events are observed. The estimates and confidence intervals are adjusted using the assumption that the true threshold-response is nonincreasing.}
+\end{figure}
+\begin{table}[!h]
+
+\caption{\label{tab:unnamed-chunk-59}Table of monotone-corrected risk estimates for a range of thresholds of Day 29 Day29pseudoneutid50 levels with simultaneous 95\% confidence intervals.}
+\centering
+\begin{tabular}[t]{rlrrr}
+\toprule
+log$_{10}$-Threshold & Threshold & Risk estimate & CI left & CI right\\
+\midrule
+\cellcolor{gray!6}{0.083} & \cellcolor{gray!6}{1.21 * 10$^{0}$} & \cellcolor{gray!6}{0.00855} & \cellcolor{gray!6}{0.00570} & \cellcolor{gray!6}{0.01140}\\
+1.130 & 1.35 * 10$^{1}$ & 0.00816 & 0.00516 & 0.01117\\
+\cellcolor{gray!6}{1.204} & \cellcolor{gray!6}{1.60 * 10$^{1}$} & \cellcolor{gray!6}{0.00816} & \cellcolor{gray!6}{0.00512} & \cellcolor{gray!6}{0.01121}\\
+1.282 & 1.91 * 10$^{1}$ & 0.00780 & 0.00462 & 0.01098\\
+\cellcolor{gray!6}{1.423} & \cellcolor{gray!6}{2.65 * 10$^{1}$} & \cellcolor{gray!6}{0.00655} & \cellcolor{gray!6}{0.00348} & \cellcolor{gray!6}{0.00962}\\
+1.521 & 3.32 * 10$^{1}$ & 0.00612 & 0.00243 & 0.00982\\
+\cellcolor{gray!6}{1.613} & \cellcolor{gray!6}{4.10 * 10$^{1}$} & \cellcolor{gray!6}{0.00547} & \cellcolor{gray!6}{0.00127} & \cellcolor{gray!6}{0.00968}\\
+1.720 & 5.25 * 10$^{1}$ & 0.00428 & 0.00000 & 0.00873\\
+\cellcolor{gray!6}{1.891} & \cellcolor{gray!6}{7.78 * 10$^{1}$} & \cellcolor{gray!6}{0.00354} & \cellcolor{gray!6}{0.00000} & \cellcolor{gray!6}{0.00848}\\
+1.958 & 9.08 * 10$^{1}$ & 0.00251 & 0.00000 & 0.00628\\
+\cellcolor{gray!6}{2.047} & \cellcolor{gray!6}{1.11 * 10$^{2}$} & \cellcolor{gray!6}{0.00247} & \cellcolor{gray!6}{0.00000} & \cellcolor{gray!6}{0.00543}\\
+2.699 & 5.00 * 10$^{2}$ & 0.00000 & NA & NA\\
+\cellcolor{gray!6}{2.828} & \cellcolor{gray!6}{6.73 * 10$^{2}$} & \cellcolor{gray!6}{0.00000} & \cellcolor{gray!6}{NA} & \cellcolor{gray!6}{NA}\\
+3.000 & 1.00 * 10$^{3}$ & 0.00000 & NA & NA\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\clearpage
+\clearpage
+
+\clearpage
+
+\hypertarget{day-29-bindspike-3}{%
+\subsubsection{Day 29 bindSpike}\label{day-29-bindspike-3}}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{/Users/larsvanderlaan/correlates_reporting_forks/correlates_reporting/cor_threshold/figs/simultaneous_CI/PLOT_monotone_Day29bindSpike_simultCI.pdf}
+\caption{Adjusted threshold-response function for a range of thresholds of the
+  Day 29 Day29bindSpike levels with simultaneous 95\% confidence intervals. The dashed red line marks the threshold after which no more COVID events are observed. The estimates and confidence intervals are adjusted using the assumption that the true threshold-response is nonincreasing.}
+\end{figure}
+\begin{table}[!h]
+
+\caption{\label{tab:unnamed-chunk-62}Table of monotone-corrected risk estimates for a range of thresholds of Day 29 Day29bindSpike levels with simultaneous 95\% confidence intervals.}
+\centering
+\begin{tabular}[t]{rlrrr}
+\toprule
+log$_{10}$-Threshold & Threshold & Risk estimate & CI left & CI right\\
+\midrule
+\cellcolor{gray!6}{-0.813} & \cellcolor{gray!6}{1.54 * 10$^{1}$} & \cellcolor{gray!6}{0.00857} & \cellcolor{gray!6}{0.00570} & \cellcolor{gray!6}{0.01144}\\
+0.189 & 1.55 * 10$^{0}$ & 0.00814 & 0.00509 & 0.01119\\
+\cellcolor{gray!6}{0.341} & \cellcolor{gray!6}{2.19 * 10$^{0}$} & \cellcolor{gray!6}{0.00797} & \cellcolor{gray!6}{0.00493} & \cellcolor{gray!6}{0.01100}\\
+0.513 & 3.26 * 10$^{0}$ & 0.00737 & 0.00434 & 0.01041\\
+\cellcolor{gray!6}{0.792} & \cellcolor{gray!6}{6.19 * 10$^{0}$} & \cellcolor{gray!6}{0.00723} & \cellcolor{gray!6}{0.00380} & \cellcolor{gray!6}{0.01066}\\
+0.959 & 9.10 * 10$^{0}$ & 0.00692 & 0.00274 & 0.01109\\
+\cellcolor{gray!6}{1.113} & \cellcolor{gray!6}{1.30 * 10$^{1}$} & \cellcolor{gray!6}{0.00613} & \cellcolor{gray!6}{0.00133} & \cellcolor{gray!6}{0.01092}\\
+1.263 & 1.83 * 10$^{1}$ & 0.00544 & 0.00045 & 0.01043\\
+\cellcolor{gray!6}{1.491} & \cellcolor{gray!6}{3.10 * 10$^{1}$} & \cellcolor{gray!6}{0.00426} & \cellcolor{gray!6}{0.00000} & \cellcolor{gray!6}{0.00922}\\
+1.611 & 4.08 * 10$^{1}$ & 0.00426 & 0.00000 & 0.00990\\
+\cellcolor{gray!6}{1.729} & \cellcolor{gray!6}{5.36 * 10$^{1}$} & \cellcolor{gray!6}{0.00348} & \cellcolor{gray!6}{0.00000} & \cellcolor{gray!6}{0.00790}\\
+2.377 & 2.38 * 10$^{2}$ & 0.00000 & NA & NA\\
+\cellcolor{gray!6}{2.699} & \cellcolor{gray!6}{5.00 * 10$^{2}$} & \cellcolor{gray!6}{0.00000} & \cellcolor{gray!6}{NA} & \cellcolor{gray!6}{NA}\\
+3.000 & 1.00 * 10$^{3}$ & 0.00000 & NA & NA\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\clearpage
+\clearpage
+
+\hypertarget{plots-and-tables-with-estimates-and-simultaneous-confidence-intervals-for-day-29-monotone-corrected-counting-events-after-1-day-post-dose}{%
+\subsection{Plots and Tables with estimates and simultaneous confidence
+intervals for Day 29 (monotone-corrected) (counting events after 1 day
+post
+dose)}\label{plots-and-tables-with-estimates-and-simultaneous-confidence-intervals-for-day-29-monotone-corrected-counting-events-after-1-day-post-dose}}
+
+\clearpage
+
+\hypertarget{day-29-bindrbd-counting-events-after-1-day-post-dose-2}{%
+\subsubsection{Day 29 bindRBD (counting events after 1 day post
+dose)}\label{day-29-bindrbd-counting-events-after-1-day-post-dose-2}}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{/Users/larsvanderlaan/correlates_reporting_forks/correlates_reporting/cor_threshold/figs/simultaneous_CI/PLOT_monotone_Day29start1bindRBD_simultCI.pdf}
+\caption{Adjusted threshold-response function for a range of thresholds of the
+  Day 29 Day29bindRBD levels with simultaneous 95\% confidence intervals. The dashed red line marks the threshold after which no more COVID events are observed. The estimates and confidence intervals are adjusted using the assumption that the true threshold-response is nonincreasing.}
+\end{figure}
+\begin{table}[!h]
+
+\caption{\label{tab:unnamed-chunk-65}Table of monotone-corrected risk estimates for a range of thresholds of Day 29 Day29bindRBD levels with simultaneous 95\% confidence intervals.}
+\centering
+\begin{tabular}[t]{rlrrr}
+\toprule
+log$_{10}$-Threshold & Threshold & Risk estimate & CI left & CI right\\
+\midrule
+\cellcolor{gray!6}{-0.099} & \cellcolor{gray!6}{7.96 * 10$^{1}$} & \cellcolor{gray!6}{0.00876} & \cellcolor{gray!6}{0.00598} & \cellcolor{gray!6}{0.01154}\\
+0.437 & 2.74 * 10$^{0}$ & 0.00857 & 0.00564 & 0.01149\\
+\cellcolor{gray!6}{0.585} & \cellcolor{gray!6}{3.85 * 10$^{0}$} & \cellcolor{gray!6}{0.00857} & \cellcolor{gray!6}{0.00544} & \cellcolor{gray!6}{0.01169}\\
+0.741 & 5.51 * 10$^{0}$ & 0.00819 & 0.00496 & 0.01142\\
+\cellcolor{gray!6}{1.000} & \cellcolor{gray!6}{1.00 * 10$^{1}$} & \cellcolor{gray!6}{0.00788} & \cellcolor{gray!6}{0.00450} & \cellcolor{gray!6}{0.01126}\\
+1.190 & 1.55 * 10$^{1}$ & 0.00729 & 0.00326 & 0.01132\\
+\cellcolor{gray!6}{1.371} & \cellcolor{gray!6}{2.35 * 10$^{1}$} & \cellcolor{gray!6}{0.00671} & \cellcolor{gray!6}{0.00219} & \cellcolor{gray!6}{0.01122}\\
+1.563 & 3.66 * 10$^{1}$ & 0.00627 & 0.00100 & 0.01154\\
+\cellcolor{gray!6}{1.852} & \cellcolor{gray!6}{7.11 * 10$^{1}$} & \cellcolor{gray!6}{0.00621} & \cellcolor{gray!6}{0.00012} & \cellcolor{gray!6}{0.01229}\\
+1.956 & 9.04 * 10$^{1}$ & 0.00554 & 0.00016 & 0.01093\\
+\cellcolor{gray!6}{2.083} & \cellcolor{gray!6}{1.21 * 10$^{2}$} & \cellcolor{gray!6}{0.00554} & \cellcolor{gray!6}{0.00000} & \cellcolor{gray!6}{0.02102}\\
+2.237 & 1.73 * 10$^{2}$ & 0.00554 & 0.00000 & 0.02102\\
+\cellcolor{gray!6}{2.699} & \cellcolor{gray!6}{5.00 * 10$^{2}$} & \cellcolor{gray!6}{0.00000} & \cellcolor{gray!6}{NA} & \cellcolor{gray!6}{NA}\\
+3.000 & 1.00 * 10$^{3}$ & 0.00000 & NA & NA\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\clearpage
+\clearpage
+
+\clearpage
+
+\hypertarget{day-29-pseudoneutid50-counting-events-after-1-day-post-dose-2}{%
+\subsubsection{Day 29 pseudoneutid50 (counting events after 1 day post
+dose)}\label{day-29-pseudoneutid50-counting-events-after-1-day-post-dose-2}}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{/Users/larsvanderlaan/correlates_reporting_forks/correlates_reporting/cor_threshold/figs/simultaneous_CI/PLOT_monotone_Day29start1pseudoneutid50_simultCI.pdf}
+\caption{Adjusted threshold-response function for a range of thresholds of the
+  Day 29 Day29pseudoneutid50 levels with simultaneous 95\% confidence intervals. The dashed red line marks the threshold after which no more COVID events are observed. The estimates and confidence intervals are adjusted using the assumption that the true threshold-response is nonincreasing.}
+\end{figure}
+\begin{table}[!h]
+
+\caption{\label{tab:unnamed-chunk-68}Table of monotone-corrected risk estimates for a range of thresholds of Day 29 Day29pseudoneutid50 levels with simultaneous 95\% confidence intervals.}
+\centering
+\begin{tabular}[t]{rlrrr}
+\toprule
+log$_{10}$-Threshold & Threshold & Risk estimate & CI left & CI right\\
+\midrule
+\cellcolor{gray!6}{0.083} & \cellcolor{gray!6}{1.21 * 10$^{0}$} & \cellcolor{gray!6}{0.00875} & \cellcolor{gray!6}{0.00588} & \cellcolor{gray!6}{0.01162}\\
+1.130 & 1.35 * 10$^{1}$ & 0.00838 & 0.00535 & 0.01141\\
+\cellcolor{gray!6}{1.204} & \cellcolor{gray!6}{1.60 * 10$^{1}$} & \cellcolor{gray!6}{0.00838} & \cellcolor{gray!6}{0.00531} & \cellcolor{gray!6}{0.01145}\\
+1.282 & 1.91 * 10$^{1}$ & 0.00804 & 0.00495 & 0.01114\\
+\cellcolor{gray!6}{1.423} & \cellcolor{gray!6}{2.65 * 10$^{1}$} & \cellcolor{gray!6}{0.00678} & \cellcolor{gray!6}{0.00368} & \cellcolor{gray!6}{0.00989}\\
+1.521 & 3.32 * 10$^{1}$ & 0.00640 & 0.00265 & 0.01014\\
+\cellcolor{gray!6}{1.613} & \cellcolor{gray!6}{4.10 * 10$^{1}$} & \cellcolor{gray!6}{0.00579} & \cellcolor{gray!6}{0.00150} & \cellcolor{gray!6}{0.01008}\\
+1.720 & 5.25 * 10$^{1}$ & 0.00470 & 0.00012 & 0.00928\\
+\cellcolor{gray!6}{1.891} & \cellcolor{gray!6}{7.78 * 10$^{1}$} & \cellcolor{gray!6}{0.00403} & \cellcolor{gray!6}{0.00000} & \cellcolor{gray!6}{0.00915}\\
+1.958 & 9.08 * 10$^{1}$ & 0.00317 & 0.00000 & 0.00727\\
+\cellcolor{gray!6}{2.047} & \cellcolor{gray!6}{1.11 * 10$^{2}$} & \cellcolor{gray!6}{0.00287} & \cellcolor{gray!6}{0.00000} & \cellcolor{gray!6}{0.00607}\\
+2.699 & 5.00 * 10$^{2}$ & 0.00000 & NA & NA\\
+\cellcolor{gray!6}{2.828} & \cellcolor{gray!6}{6.73 * 10$^{2}$} & \cellcolor{gray!6}{0.00000} & \cellcolor{gray!6}{NA} & \cellcolor{gray!6}{NA}\\
+3.000 & 1.00 * 10$^{3}$ & 0.00000 & NA & NA\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\clearpage
+\clearpage
+
+\clearpage
+
+\hypertarget{day-29-bindspike-counting-events-after-1-day-post-dose-2}{%
+\subsubsection{Day 29 bindSpike (counting events after 1 day post
+dose)}\label{day-29-bindspike-counting-events-after-1-day-post-dose-2}}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{/Users/larsvanderlaan/correlates_reporting_forks/correlates_reporting/cor_threshold/figs/simultaneous_CI/PLOT_monotone_Day29start1bindSpike_simultCI.pdf}
+\caption{Adjusted threshold-response function for a range of thresholds of the
+  Day 29 Day29bindSpike levels with simultaneous 95\% confidence intervals. The dashed red line marks the threshold after which no more COVID events are observed. The estimates and confidence intervals are adjusted using the assumption that the true threshold-response is nonincreasing.}
+\end{figure}
+\begin{table}[!h]
+
+\caption{\label{tab:unnamed-chunk-71}Table of monotone-corrected risk estimates for a range of thresholds of Day 29 Day29bindSpike levels with simultaneous 95\% confidence intervals.}
+\centering
+\begin{tabular}[t]{rlrrr}
+\toprule
+log$_{10}$-Threshold & Threshold & Risk estimate & CI left & CI right\\
+\midrule
+\cellcolor{gray!6}{-0.813} & \cellcolor{gray!6}{1.54 * 10$^{1}$} & \cellcolor{gray!6}{0.00878} & \cellcolor{gray!6}{0.00590} & \cellcolor{gray!6}{0.01166}\\
+0.189 & 1.55 * 10$^{0}$ & 0.00837 & 0.00530 & 0.01143\\
+\cellcolor{gray!6}{0.341} & \cellcolor{gray!6}{2.19 * 10$^{0}$} & \cellcolor{gray!6}{0.00820} & \cellcolor{gray!6}{0.00514} & \cellcolor{gray!6}{0.01125}\\
+0.513 & 3.26 * 10$^{0}$ & 0.00762 & 0.00455 & 0.01068\\
+\cellcolor{gray!6}{0.792} & \cellcolor{gray!6}{6.19 * 10$^{0}$} & \cellcolor{gray!6}{0.00749} & \cellcolor{gray!6}{0.00402} & \cellcolor{gray!6}{0.01096}\\
+0.959 & 9.10 * 10$^{0}$ & 0.00720 & 0.00296 & 0.01144\\
+\cellcolor{gray!6}{1.113} & \cellcolor{gray!6}{1.30 * 10$^{1}$} & \cellcolor{gray!6}{0.00639} & \cellcolor{gray!6}{0.00152} & \cellcolor{gray!6}{0.01126}\\
+1.263 & 1.83 * 10$^{1}$ & 0.00565 & 0.00058 & 0.01071\\
+\cellcolor{gray!6}{1.491} & \cellcolor{gray!6}{3.10 * 10$^{1}$} & \cellcolor{gray!6}{0.00460} & \cellcolor{gray!6}{0.00000} & \cellcolor{gray!6}{0.00970}\\
+1.611 & 4.08 * 10$^{1}$ & 0.00460 & 0.00000 & 0.01046\\
+\cellcolor{gray!6}{1.729} & \cellcolor{gray!6}{5.36 * 10$^{1}$} & \cellcolor{gray!6}{0.00397} & \cellcolor{gray!6}{0.00000} & \cellcolor{gray!6}{0.00866}\\
+2.377 & 2.38 * 10$^{2}$ & 0.00000 & NA & NA\\
+\cellcolor{gray!6}{2.699} & \cellcolor{gray!6}{5.00 * 10$^{2}$} & \cellcolor{gray!6}{0.00000} & \cellcolor{gray!6}{NA} & \cellcolor{gray!6}{NA}\\
+3.000 & 1.00 * 10$^{3}$ & 0.00000 & NA & NA\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\clearpage
+\clearpage
+
+\hypertarget{plots-and-tables-with-estimates-and-simultaneous-confidence-intervals-for-day-29-monotone-corrected-counting-events-after-1-day-post-dose-1}{%
+\subsection{Plots and Tables with estimates and simultaneous confidence
+intervals for Day 29 (monotone-corrected) (counting events after 1 day
+post
+dose)}\label{plots-and-tables-with-estimates-and-simultaneous-confidence-intervals-for-day-29-monotone-corrected-counting-events-after-1-day-post-dose-1}}
+
+\clearpage
+
+\hypertarget{day-29-bindrbd-counting-events-after-1-day-post-dose-3}{%
+\subsubsection{Day 29 bindRBD (counting events after 1 day post
+dose)}\label{day-29-bindrbd-counting-events-after-1-day-post-dose-3}}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{/Users/larsvanderlaan/correlates_reporting_forks/correlates_reporting/cor_threshold/figs/simultaneous_CI/PLOT_monotone_Day29start1bindRBD_simultCI.pdf}
+\caption{Adjusted threshold-response function for a range of thresholds of the
+  Day 29 Day29bindRBD levels with simultaneous 95\% confidence intervals. The dashed red line marks the threshold after which no more COVID events are observed. The estimates and confidence intervals are adjusted using the assumption that the true threshold-response is nonincreasing.}
+\end{figure}
+\begin{table}[!h]
+
+\caption{\label{tab:unnamed-chunk-74}Table of monotone-corrected risk estimates for a range of thresholds of Day 29 Day29bindRBD levels with simultaneous 95\% confidence intervals.}
+\centering
+\begin{tabular}[t]{rlrrr}
+\toprule
+log$_{10}$-Threshold & Threshold & Risk estimate & CI left & CI right\\
+\midrule
+\cellcolor{gray!6}{-0.099} & \cellcolor{gray!6}{7.96 * 10$^{1}$} & \cellcolor{gray!6}{0.00876} & \cellcolor{gray!6}{0.00598} & \cellcolor{gray!6}{0.01154}\\
+0.437 & 2.74 * 10$^{0}$ & 0.00857 & 0.00564 & 0.01149\\
+\cellcolor{gray!6}{0.585} & \cellcolor{gray!6}{3.85 * 10$^{0}$} & \cellcolor{gray!6}{0.00857} & \cellcolor{gray!6}{0.00544} & \cellcolor{gray!6}{0.01169}\\
+0.741 & 5.51 * 10$^{0}$ & 0.00819 & 0.00496 & 0.01142\\
+\cellcolor{gray!6}{1.000} & \cellcolor{gray!6}{1.00 * 10$^{1}$} & \cellcolor{gray!6}{0.00788} & \cellcolor{gray!6}{0.00450} & \cellcolor{gray!6}{0.01126}\\
+1.190 & 1.55 * 10$^{1}$ & 0.00729 & 0.00326 & 0.01132\\
+\cellcolor{gray!6}{1.371} & \cellcolor{gray!6}{2.35 * 10$^{1}$} & \cellcolor{gray!6}{0.00671} & \cellcolor{gray!6}{0.00219} & \cellcolor{gray!6}{0.01122}\\
+1.563 & 3.66 * 10$^{1}$ & 0.00627 & 0.00100 & 0.01154\\
+\cellcolor{gray!6}{1.852} & \cellcolor{gray!6}{7.11 * 10$^{1}$} & \cellcolor{gray!6}{0.00621} & \cellcolor{gray!6}{0.00012} & \cellcolor{gray!6}{0.01229}\\
+1.956 & 9.04 * 10$^{1}$ & 0.00554 & 0.00016 & 0.01093\\
+\cellcolor{gray!6}{2.083} & \cellcolor{gray!6}{1.21 * 10$^{2}$} & \cellcolor{gray!6}{0.00554} & \cellcolor{gray!6}{0.00000} & \cellcolor{gray!6}{0.02102}\\
+2.237 & 1.73 * 10$^{2}$ & 0.00554 & 0.00000 & 0.02102\\
+\cellcolor{gray!6}{2.699} & \cellcolor{gray!6}{5.00 * 10$^{2}$} & \cellcolor{gray!6}{0.00000} & \cellcolor{gray!6}{NA} & \cellcolor{gray!6}{NA}\\
+3.000 & 1.00 * 10$^{3}$ & 0.00000 & NA & NA\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\clearpage
+\clearpage
+
+\clearpage
+
+\hypertarget{day-29-pseudoneutid50-counting-events-after-1-day-post-dose-3}{%
+\subsubsection{Day 29 pseudoneutid50 (counting events after 1 day post
+dose)}\label{day-29-pseudoneutid50-counting-events-after-1-day-post-dose-3}}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{/Users/larsvanderlaan/correlates_reporting_forks/correlates_reporting/cor_threshold/figs/simultaneous_CI/PLOT_monotone_Day29start1pseudoneutid50_simultCI.pdf}
+\caption{Adjusted threshold-response function for a range of thresholds of the
+  Day 29 Day29pseudoneutid50 levels with simultaneous 95\% confidence intervals. The dashed red line marks the threshold after which no more COVID events are observed. The estimates and confidence intervals are adjusted using the assumption that the true threshold-response is nonincreasing.}
+\end{figure}
+\begin{table}[!h]
+
+\caption{\label{tab:unnamed-chunk-77}Table of monotone-corrected risk estimates for a range of thresholds of Day 29 Day29pseudoneutid50 levels with simultaneous 95\% confidence intervals.}
+\centering
+\begin{tabular}[t]{rlrrr}
+\toprule
+log$_{10}$-Threshold & Threshold & Risk estimate & CI left & CI right\\
+\midrule
+\cellcolor{gray!6}{0.083} & \cellcolor{gray!6}{1.21 * 10$^{0}$} & \cellcolor{gray!6}{0.00875} & \cellcolor{gray!6}{0.00588} & \cellcolor{gray!6}{0.01162}\\
+1.130 & 1.35 * 10$^{1}$ & 0.00838 & 0.00535 & 0.01141\\
+\cellcolor{gray!6}{1.204} & \cellcolor{gray!6}{1.60 * 10$^{1}$} & \cellcolor{gray!6}{0.00838} & \cellcolor{gray!6}{0.00531} & \cellcolor{gray!6}{0.01145}\\
+1.282 & 1.91 * 10$^{1}$ & 0.00804 & 0.00495 & 0.01114\\
+\cellcolor{gray!6}{1.423} & \cellcolor{gray!6}{2.65 * 10$^{1}$} & \cellcolor{gray!6}{0.00678} & \cellcolor{gray!6}{0.00368} & \cellcolor{gray!6}{0.00989}\\
+1.521 & 3.32 * 10$^{1}$ & 0.00640 & 0.00265 & 0.01014\\
+\cellcolor{gray!6}{1.613} & \cellcolor{gray!6}{4.10 * 10$^{1}$} & \cellcolor{gray!6}{0.00579} & \cellcolor{gray!6}{0.00150} & \cellcolor{gray!6}{0.01008}\\
+1.720 & 5.25 * 10$^{1}$ & 0.00470 & 0.00012 & 0.00928\\
+\cellcolor{gray!6}{1.891} & \cellcolor{gray!6}{7.78 * 10$^{1}$} & \cellcolor{gray!6}{0.00403} & \cellcolor{gray!6}{0.00000} & \cellcolor{gray!6}{0.00915}\\
+1.958 & 9.08 * 10$^{1}$ & 0.00317 & 0.00000 & 0.00727\\
+\cellcolor{gray!6}{2.047} & \cellcolor{gray!6}{1.11 * 10$^{2}$} & \cellcolor{gray!6}{0.00287} & \cellcolor{gray!6}{0.00000} & \cellcolor{gray!6}{0.00607}\\
+2.699 & 5.00 * 10$^{2}$ & 0.00000 & NA & NA\\
+\cellcolor{gray!6}{2.828} & \cellcolor{gray!6}{6.73 * 10$^{2}$} & \cellcolor{gray!6}{0.00000} & \cellcolor{gray!6}{NA} & \cellcolor{gray!6}{NA}\\
+3.000 & 1.00 * 10$^{3}$ & 0.00000 & NA & NA\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\clearpage
+\clearpage
+
+\clearpage
+
+\hypertarget{day-29-bindspike-counting-events-after-1-day-post-dose-3}{%
+\subsubsection{Day 29 bindSpike (counting events after 1 day post
+dose)}\label{day-29-bindspike-counting-events-after-1-day-post-dose-3}}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{/Users/larsvanderlaan/correlates_reporting_forks/correlates_reporting/cor_threshold/figs/simultaneous_CI/PLOT_monotone_Day29start1bindSpike_simultCI.pdf}
+\caption{Adjusted threshold-response function for a range of thresholds of the
+  Day 29 Day29bindSpike levels with simultaneous 95\% confidence intervals. The dashed red line marks the threshold after which no more COVID events are observed. The estimates and confidence intervals are adjusted using the assumption that the true threshold-response is nonincreasing.}
+\end{figure}
+\begin{table}[!h]
+
+\caption{\label{tab:unnamed-chunk-80}Table of monotone-corrected risk estimates for a range of thresholds of Day 29 Day29bindSpike levels with simultaneous 95\% confidence intervals.}
+\centering
+\begin{tabular}[t]{rlrrr}
+\toprule
+log$_{10}$-Threshold & Threshold & Risk estimate & CI left & CI right\\
+\midrule
+\cellcolor{gray!6}{-0.813} & \cellcolor{gray!6}{1.54 * 10$^{1}$} & \cellcolor{gray!6}{0.00878} & \cellcolor{gray!6}{0.00590} & \cellcolor{gray!6}{0.01166}\\
+0.189 & 1.55 * 10$^{0}$ & 0.00837 & 0.00530 & 0.01143\\
+\cellcolor{gray!6}{0.341} & \cellcolor{gray!6}{2.19 * 10$^{0}$} & \cellcolor{gray!6}{0.00820} & \cellcolor{gray!6}{0.00514} & \cellcolor{gray!6}{0.01125}\\
+0.513 & 3.26 * 10$^{0}$ & 0.00762 & 0.00455 & 0.01068\\
+\cellcolor{gray!6}{0.792} & \cellcolor{gray!6}{6.19 * 10$^{0}$} & \cellcolor{gray!6}{0.00749} & \cellcolor{gray!6}{0.00402} & \cellcolor{gray!6}{0.01096}\\
+0.959 & 9.10 * 10$^{0}$ & 0.00720 & 0.00296 & 0.01144\\
+\cellcolor{gray!6}{1.113} & \cellcolor{gray!6}{1.30 * 10$^{1}$} & \cellcolor{gray!6}{0.00639} & \cellcolor{gray!6}{0.00152} & \cellcolor{gray!6}{0.01126}\\
+1.263 & 1.83 * 10$^{1}$ & 0.00565 & 0.00058 & 0.01071\\
+\cellcolor{gray!6}{1.491} & \cellcolor{gray!6}{3.10 * 10$^{1}$} & \cellcolor{gray!6}{0.00460} & \cellcolor{gray!6}{0.00000} & \cellcolor{gray!6}{0.00970}\\
+1.611 & 4.08 * 10$^{1}$ & 0.00460 & 0.00000 & 0.01046\\
+\cellcolor{gray!6}{1.729} & \cellcolor{gray!6}{5.36 * 10$^{1}$} & \cellcolor{gray!6}{0.00397} & \cellcolor{gray!6}{0.00000} & \cellcolor{gray!6}{0.00866}\\
+2.377 & 2.38 * 10$^{2}$ & 0.00000 & NA & NA\\
+\cellcolor{gray!6}{2.699} & \cellcolor{gray!6}{5.00 * 10$^{2}$} & \cellcolor{gray!6}{0.00000} & \cellcolor{gray!6}{NA} & \cellcolor{gray!6}{NA}\\
+3.000 & 1.00 * 10$^{3}$ & 0.00000 & NA & NA\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\clearpage
+\clearpage
+
+\newpage
+
+\hypertarget{univariate-cor-nonparametric-threshold-modeling-s-1}{%
+\section{Univariate CoR: Nonparametric Threshold Modeling
+(\textless{}=s)}\label{univariate-cor-nonparametric-threshold-modeling-s-1}}
+
+The same methodology as the previous section is apply to estimate the
+``below'' threshold-response function \(E_WE[Y=1|A=1,X,S \leq s].\)
+
+\end{document}

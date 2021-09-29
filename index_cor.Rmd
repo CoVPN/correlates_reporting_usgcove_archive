@@ -19,10 +19,9 @@ header-includes:
    - \usepackage{eso-pic,graphicx,transparent,caption,pdflscape,titling} # keep titling last!
    - \usepackage[margin=1in]{geometry}
    - \usepackage{float}
+   - \usepackage{subfig}
 ---
 
-\counterwithin{table}{section}
-\counterwithin{figure}{section}
 
 
 
@@ -33,7 +32,7 @@ knitr::asis_output("\\AddToShipoutPictureFG{
       \\scalebox{10}{\\texttransparent{0.3}{MOCK}}}}}}")
 ```
 
-## Disclaimers
+# Disclaimers
 
 
 The data presented in the analysis are provided to NIAID in accordance with Clinical Trial Agreement between the parties. The study was funded in part by BARDA under Government Contract No. 75A50120C00034.
@@ -49,7 +48,6 @@ The data presented in the analysis are provided to NIAID in accordance with Clin
 <!-- * These data are not to be disclosed without written permission of Moderna. -->
 
 
-<!-- `r if ( !( grepl("moderna", attr(config::get(config = Sys.getenv("TRIAL")), "config") ) ) ) '-->'` -->
 
 
 
@@ -59,7 +57,7 @@ The data presented in the analysis are provided to NIAID in accordance with Clin
 <!-- <p style="clear: both;"> -->
 <!-- <br> -->
 
-\clearpage
+
 \textbf{Statistical Analysis Plan}
 
 The SAP is available at https://doi.org/10.6084/m9.figshare.13198595

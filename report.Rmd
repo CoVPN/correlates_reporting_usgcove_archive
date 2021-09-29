@@ -1,0 +1,386 @@
+---
+header-includes:
+   - \usepackage{float}
+output:
+  pdf_document: default
+  html_document: default
+  citation_package: natbib
+  number_sections: true
+  extra_dependencies: ["caption", "subcaption", "graphicx"]
+  toc: true
+---
+
+```{r, echo=FALSE, message=FALSE}
+message("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ running cor_threshold report ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+```
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+setwd("/Users/larsvanderlaan/correlates_reporting_forks/correlates_reporting")
+library(here)
+library(dplyr)
+print(here::here())
+source(here::here( "_common.R"))
+ 
+times <- intersect(c("Day57", "Day29"), times)
+keys_short <- times
+if(study_name=="ENSEMBLE" | study_name=="MockENSEMBLE") {
+  keys_short <- c(keys_short, "Day29start1")
+}
+keys <- c()
+markers <- markers
+markers <- unlist(sapply(times, function(v) grep(v, markers, value = T))) # Remove the baseline markers
+for(assay in assays) {
+  keys <- c(keys, paste0(keys_short, assay))
+}
+ 
+key_to_markers <- markers
+names(key_to_markers) <- markers
+
+
+marker_to_time <- sapply(markers, function(v) {
+  times[stringr::str_detect(v, times)]
+})
+marker_to_assay <- sapply(markers, function(v) {
+  unname(assays[stringr::str_detect(v, assays)])
+})
+
+
+key_to_time <- sapply(keys, function(v) {
+  times[stringr::str_detect(v, times)]
+})
+key_to_assay <- sapply(keys, function(v) {
+  unname(assays[stringr::str_detect(v, assays)])
+})
+key_to_markers <- paste0(key_to_time, key_to_assay )
+names(key_to_markers) <- keys
+key_to_markers
+key_to_short <- sapply(keys, function(v) {
+  tmp <- setdiff(keys_short, "Day29start1")
+  if(stringr::str_detect(v, "Day29start1")) {
+    return("Day29start1")
+  } else {
+    return(unname(tmp[stringr::str_detect(v, tmp)]))
+  }
+   
+})
+```
+
+# Univariate CoR: Nonparametric Threshold Modeling (>=s)
+
+An extension of the unadjusted nonparametric threshold-searching approach
+developed in @Donovan, the covariate-adjusted TMLE-based approach developed by
+van der Laan, Zhang, Gilbert (submitted) is used to estimate the so-called
+threshold-response function $E_X[ E[Y \mid S \geq s, X, A = 1] \mid A=1]$ for a
+range of thresholds $s$.Here, $X$ is a set of baseline characteristics, $A=1$
+represents the vaccine group, $S$ is the biomarker/immune-response/correlate of
+interest, and $Y$ is the indicator of COVID disease before some time point
+$t_f$. This parameter can be viewed as a causal/covariate-adjusted version of
+the parameter $P(Y=1 \mid S \geq s, A=1)$. Intuitively, the threshold-response
+at a given threshold is the expected probability of obtaining COVID disease if
+one experiences a marker/immune-response value above that threshold. The
+threshold-response function is estimated for each of the four Day 57 antibody
+markers, in each case adjusting for the baseline covariates: baseline risk
+score, high risk indicator, and underrepresented minority status. A restrictive but flexible specification of the Highly Adaptive Lasso estimator is used for the covariate adjustment. A
+number of plots and tables are reported:
+\begin{enumerate}
+\item A plot and table with risk estimates and point-wise 95\% confidence intervals
+\item A plot and table with risk estimates and simultaneous 95\% confidence bands
+\item Monotone-corrected versions of 1 and 2.
+\end{enumerate}
+
+A reverse cumulative distribution function curve estimated by the IPW NPMLE of
+the marker values is superimposed on the threshold-response plots and a dashed
+red line is added to mark the threshold value after which no more events are
+observed.
+
+The blue dots on the plots represent the risk predictions at marker values where there was an observed COVID-19 case.
+
+
+```{r, echo = F, include = F}
+short_keys <- unique(key_to_short)
+
+```
+
+
+
+```{r, echo = F, include = F}
+days <- c()
+if(has57) {
+  days <- c(days, 59)
+}
+if(has29) {
+  days <- c(days, 29)
+}
+
+ci <- "pointwise"
+above = TRUE
+monotone <- FALSE
+
+```
+
+
+```{r, results="asis", echo = F }
+ 
+for(key in short_keys){
+  countAfter1 <- FALSE
+  if(length(stringr::str_detect(key,"start"))>0) {
+    countAfter1 <- TRUE
+  }
+  
+  day <- gsub("Day", "", key)
+  day <- gsub("start1", "", key)
+  title <- paste0("Plots and Tables with estimates and ", ci, " confidence intervals"," for Day ", day)
+  if(monotone) {
+    title <- paste0(title, " (monotone-corrected)")
+  }
+  if(countAfter1) {
+    title <- paste0(title, " (counting events after 1 day post dose)")
+  }
+  cat("##", title, "\n")
+  for(assay in assays) {
+    
+   key <- paste0(short_keys, assay)
+    marker <- key_to_markers[key]
+    cat(key)
+    #res = knitr::knit_child(c(here::here('cor_threshold', 'sub_report.Rmd')), quiet = TRUE)
+    res <- ""
+    cat(res, sep = '\n')
+    cat("\\clearpage", sep = '\n')
+  }
+}
+
+
+monotone <- TRUE
+for(key in short_keys){
+  countAfter1 <- FALSE
+  if(length(stringr::str_detect(key,"start"))>0) {
+    countAfter1 <- TRUE
+  }
+  day <- gsub("Day", "", key)
+  day <- gsub("start1", "", key)
+  title <- paste0("Plots and Tables with estimates and ", ci, " confidence intervals"," for Day ", day)
+  if(monotone) {
+    title <- paste0(title, " (monotone-corrected)")
+  }
+  if(countAfter1) {
+    title <- paste0(title, " (counting events after 1 day post dose)")
+  }
+  cat("##", title, "\n")
+  for(assay in assays) {
+    
+   key <- paste0(short_keys, assay)
+    marker <- key_to_markers[key]
+    cat(key)
+    #res = knitr::knit_child(c(here::here('cor_threshold', 'sub_report.Rmd')), quiet = TRUE)
+    cat(res, sep = '\n')
+    cat("\\clearpage", sep = '\n')
+  }
+}
+
+
+
+```
+
+
+
+```{r, echo = F , results = "asis", eval = F}
+ci <- "simultaneous"
+
+for(key in short_keys){
+  countAfter1 <- FALSE
+  if(length(stringr::str_detect(key,"start"))>0) {
+    countAfter1 <- TRUE
+  }
+  day <- gsub("Day", "", key)
+  day <- gsub("start1", "", key)
+  title <- paste0("Plots and Tables with estimates and ", ci, " confidence intervals"," for Day ", day)
+  if(monotone) {
+    title <- paste0(title, " (monotone-corrected)")
+  }
+  if(countAfter1) {
+    title <- paste0(title, " (counting events after 1 day post dose)")
+  }
+  cat("##", title, "\n")
+  for(assay in assays) {
+    
+   key <- paste0(short_keys, assay)
+    marker <- key_to_markers[key]
+    res = knitr::knit_child(c(here::here('cor_threshold', 'sub_report.Rmd')), quiet = TRUE)
+    cat(res, sep = '\n')
+    cat("\\clearpage", sep = '\n')
+  }
+}
+
+
+monotone <- TRUE
+for(key in short_keys){
+  countAfter1 <- FALSE
+  if(length(stringr::str_detect(key,"start"))>0) {
+    countAfter1 <- TRUE
+  }
+  day <- gsub("Day", "", key)
+  day <- gsub("start1", "", key)
+  title <- paste0("Plots and Tables with estimates and ", ci, " confidence intervals"," for Day ", day)
+  if(monotone) {
+    title <- paste0(title, " (monotone-corrected)")
+  }
+  if(countAfter1) {
+    title <- paste0(title, " (counting events after 1 day post dose)")
+  }
+  cat("##", title, "\n")
+  for(assay in assays) {
+    
+   key <- paste0(short_keys, assay)
+    marker <- key_to_markers[key]
+    res = knitr::knit_child(c(here::here('cor_threshold', 'sub_report.Rmd')), quiet = TRUE)
+    cat(res, sep = '\n')
+    cat("\\clearpage", sep = '\n')
+  }
+}
+
+```
+
+
+
+
+
+
+
+
+
+# Univariate CoR: Nonparametric Threshold Modeling (<=s)
+
+The same methodology as the previous section is apply to estimate the "below" threshold-response function $E_WE[Y=1|A=1,X,S \leq s].$
+
+
+
+```{r, echo = F, include = F, eval = F}
+ 
+ci <- "pointwise"
+above = FALSE
+monotone <- FALSE
+
+```
+
+
+```{r, results="asis", echo = F, eval = F}
+setwd("/Users/larsvanderlaan/correlates_reporting_forks/correlates_reporting")
+for(key in short_keys){
+  countAfter1 <- FALSE
+  if(length(stringr::str_detect(key,"start"))>0) {
+    countAfter1 <- TRUE
+  }
+  day <- gsub("Day", "", key)
+  day <- gsub("start1", "", key)
+  title <- paste0("Plots and Tables with estimates and ", ci, " confidence intervals"," for Day ", day)
+  if(monotone) {
+    title <- paste0(title, " (monotone-corrected)")
+  }
+  if(countAfter1) {
+    title <- paste0(title, " (counting events after 1 day post dose)")
+  }
+  cat("##", title, "\n")
+  for(assay in assays) {
+    
+   key <- paste0(short_keys, assay)
+    marker <- key_to_markers[key]
+    res = knitr::knit_child(c(here::here('cor_threshold', 'sub_report.Rmd')), quiet = TRUE)
+    cat(res, sep = '\n')
+    cat("\\clearpage", sep = '\n')
+  }
+}
+
+
+monotone <- TRUE
+for(key in short_keys){
+  countAfter1 <- FALSE
+  if(length(stringr::str_detect(key,"start"))>0) {
+    countAfter1 <- TRUE
+  }
+  day <- gsub("Day", "", key)
+  day <- gsub("start1", "", key)
+  title <- paste0("Plots and Tables with estimates and ", ci, " confidence intervals"," for Day ", day)
+  if(monotone) {
+    title <- paste0(title, " (monotone-corrected)")
+  }
+  if(countAfter1) {
+    title <- paste0(title, " (counting events after 1 day post dose)")
+  }
+  cat("##", title, "\n")
+  for(assay in assays) {
+    
+   key <- paste0(short_keys, assay)
+    marker <- key_to_markers[key]
+    res = knitr::knit_child(c(here::here('cor_threshold', 'sub_report.Rmd')), quiet = TRUE)
+    cat(res, sep = '\n')
+    cat("\\clearpage", sep = '\n')
+  }
+}
+
+
+
+```
+
+
+
+```{r, echo = F , results = "asis", eval = F}
+ci <- "simultaneous"
+
+for(key in short_keys){
+  countAfter1 <- FALSE
+  if(length(stringr::str_detect(key,"start"))>0) {
+    countAfter1 <- TRUE
+  }
+  day <- gsub("Day", "", key)
+  day <- gsub("start1", "", key)
+  title <- paste0("Plots and Tables with estimates and ", ci, " confidence intervals"," for Day ", day)
+  if(monotone) {
+    title <- paste0(title, " (monotone-corrected)")
+  }
+  if(countAfter1) {
+    title <- paste0(title, " (counting events after 1 day post dose)")
+  }
+  cat("##", title, "\n")
+  for(assay in assays) {
+    
+   key <- paste0(short_keys, assay)
+    marker <- key_to_markers[key]
+    res = knitr::knit_child(c(here::here('cor_threshold', 'sub_report.Rmd')), quiet = TRUE)
+    cat(res, sep = '\n')
+    cat("\\clearpage", sep = '\n')
+  }
+}
+
+
+monotone <- TRUE
+for(key in short_keys){
+  countAfter1 <- FALSE
+  if(length(stringr::str_detect(key,"start"))>0) {
+    countAfter1 <- TRUE
+  }
+  day <- gsub("Day", "", key)
+  day <- gsub("start1", "", key)
+  title <- paste0("Plots and Tables with estimates and ", ci, " confidence intervals"," for Day ", day)
+  if(monotone) {
+    title <- paste0(title, " (monotone-corrected)")
+  }
+  if(countAfter1) {
+    title <- paste0(title, " (counting events after 1 day post dose)")
+  }
+  cat("##", title, "\n")
+  for(assay in assays) {
+    
+   key <- paste0(short_keys, assay)
+    marker <- key_to_markers[key]
+    res = knitr::knit_child(c(here::here('cor_threshold', 'sub_report.Rmd')), quiet = TRUE)
+    cat(res, sep = '\n')
+    cat("\\clearpage", sep = '\n')
+  }
+}
+
+```
+
+
+

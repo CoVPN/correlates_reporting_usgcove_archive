@@ -2,56 +2,50 @@
 <!-- here::i_am("cor_nonlinear/report.Rmd") -->
 <!-- ``` -->
 
-<!-- The only difference between this Rmd and the standalone Rmd is  -->
-<!-- pathCoRoutput <- paste0("cor_nonlinear/", pathCoRoutput) -->
 
 ```{r, echo=FALSE, message=FALSE}
 message("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ running cor_nonlinear report ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 ```
 
 
-
-<!-- these latex variables are used in report_sub -->
-\newif\ifCOVE
-\newif\ifENSEMBLE
-`r paste0("\\", study_name_code, "true")` 
+`r 
+tt=timepoints
+`
 
 
-<!-- COVE -->
+<!-- \newif\ifCOVE -->
+<!-- \newif\ifENSEMBLE -->
+<!-- `r paste0("\\", study_name_code, "true")`  -->
+
+
 
 ```{r, echo=FALSE, results='asis'}
-if (study_name_code=="COVE") {
-  for (i in 1:2) {
-    tpeak <- ifelse(i==1, 29, 57)
+
+data_name_updated <- sub(".csv", "_with_riskscore.csv", data_name)
+covariates_adjusted = ifelse (file.exists(here::here("data_clean", data_name_updated)), covariates_riskscore, covariates_norisksco)
+covariates_adjusted = sub("\\~\\.\\+","",covariates_adjusted)
+covariates_adjusted = sub("_","",covariates_adjusted)
+
+if(file.exists(here::here('cor_nonlinear', paste0('report_', tolower(study_name), '.Rmd')))) {
+  
+  message ("trial-specific report rmd found")
+  res = knitr::knit_child(c(here::here('cor_nonlinear', paste0('report_', tolower(study_name), '.Rmd'))), quiet = TRUE)
+  cat(res, sep = '\n')
+
+} else {
+
+  for (tpeak in tt) {
     COR <- paste0("D", tpeak)
+    config.cor <- config::get(config = COR)
+    for(opt in names(config.cor)) eval(parse(text = paste0(names(config.cor[opt])," <- config.cor[[opt]]")))
     special.note = ""
-    pathCoRoutput <- paste0("output/", attr(config,"config"), "/", COR)
-    pathCoRoutput <- paste0("cor_nonlinear/", pathCoRoutput)
+    pathCoRoutput <- paste0("cor_nonlinear/output/", attr(config,"config"), "/", COR)
     pathCorcoxphOutput <- paste0("cor_coxph/output/", attr(config,"config"), "/", COR)
     res = knitr::knit_child(c(here::here('cor_nonlinear', 'report_sub.Rmd')), quiet = TRUE)
     cat(res, sep = '\n')
-    cat("\\clearpage", sep = '\n')
   }
+
 }
 ```
 
 
-
-
-<!-- ENSEMBLE -->
-
-```{r, echo=FALSE, results='asis'}
-if (study_name_code=="ENSEMBLE") {
-  for (i in 1:2) {
-    tpeak <- 29
-    COR <- ifelse(i==1, "D29", "D29start1")
-    special.note = paste0("$\\ddagger$ Count cases starting ", ifelse(i==1,7,1), " days post Day 29.")
-    pathCoRoutput <- paste0("output/", attr(config,"config"), "/", COR)
-    pathCoRoutput <- paste0("cor_nonlinear/", pathCoRoutput)
-    pathCorcoxphOutput <- paste0("cor_coxph/output/", attr(config,"config"), "/", COR)
-    res = knitr::knit_child(c(here::here('cor_nonlinear', 'report_sub.Rmd')), quiet = TRUE)
-    cat(res, sep = '\n')
-    cat("\\clearpage", sep = '\n')
-  }
-}
-```

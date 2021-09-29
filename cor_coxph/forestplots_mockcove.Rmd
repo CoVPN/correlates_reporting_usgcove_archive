@@ -1,0 +1,35 @@
+\begin{figure}[H]
+    \includegraphics[width=1\textwidth]{`r pathCoRoutput`/hr_forest_bindSpike_`r study_name`}
+    \includegraphics[width=1\textwidth]{`r pathCoRoutput`/hr_forest_bindRBD_`r study_name`}
+    \includegraphics[width=1\textwidth]{`r pathCoRoutput`/hr_forest_pseudoneutid50_`r study_name`}
+    \includegraphics[width=1\textwidth]{`r pathCoRoutput`/hr_forest_pseudoneutid80_`r study_name`}
+    \caption{Forest plots of hazard ratios per 10-fold increase in the marker among baseline negative vaccine recipients and subgroups with 95\% point-wise confidence intervals. `r special.note`}
+\end{figure}
+\clearpage
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{`r pathCoRoutput`/hr_forest_marginal_bindSpike_`r study_name`}
+    \caption{Forest plots of hazard ratios per 10-fold increase in the Day `r tpeak` binding Ab to spike markers among baseline negative vaccine recipients (top row) and different subpopulations with 95\% point-wise confidence intervals. `r special.note`}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{`r pathCoRoutput`/hr_forest_marginal_bindRBD_`r study_name`}
+    \caption{Forest plots of hazard ratios per 10-fold increase in the  Day `r tpeak` binding Ab to RBD markers among baseline negative vaccine recipients (top row) and different subpopulations with 95\% point-wise confidence intervals. `r special.note`}
+\end{figure}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{`r pathCoRoutput`/hr_forest_marginal_pseudoneutid50_`r study_name`}
+    \caption{Forest plots of hazard ratios per 10-fold increase in the  Day `r tpeak` pseudo neut ID50 markers among baseline negative vaccine recipients (top row) and different subpopulations with 95\% point-wise confidence intervals. `r special.note`}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{`r pathCoRoutput`/hr_forest_marginal_pseudoneutid80_`r study_name`}
+    \caption{Forest plots of hazard ratios per 10-fold increase in the  Day `r tpeak` pseudo neut ID80 markers among baseline negative vaccine recipients (top row) and different subpopulations with 95\% point-wise confidence intervals. `r special.note`}
+\end{figure}
+
+

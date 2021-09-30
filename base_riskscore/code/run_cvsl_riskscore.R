@@ -38,12 +38,6 @@ source(here("code", "sl_screens.R")) # set up the screen/algorithm combinations
 source(here("code", "utils.R")) # get CV-AUC for all algs
 
 ############ SETUP INPUT #######################
-# # Save immune1.csv as data_name in data_clean
-# if(study_name_code == "COVE" & run_prod == TRUE){
-#   read.csv("/trials/covpn/p3001/download_data/Moderna COVE mRNA 1273P301_immune_20210915/immune1.csv") %>%
-#     write.csv(here::here("..", "data_clean", "moderna_real_data_processed.csv"))
-# }
-
 # Read in data file
 inputFile <- read.csv(here::here("..", "data_clean", data_name))
 

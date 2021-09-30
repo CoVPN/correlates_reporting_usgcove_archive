@@ -1,4 +1,4 @@
-# Sys.setenv(TRIAL = "moderna_mock")
+# Sys.setenv(TRIAL = "moderna_real")
 #-----------------------------------------------
 # obligatory to append to the top of each script
 renv::activate(project = here::here(".."))
@@ -122,13 +122,14 @@ if(study_name_code == "ENSEMBLE"){
 ################################################
 
 # Consider only placebo data for risk score analysis
-if("Riskscorecohortflag" %in% names(inputFile)){
+if("Riskscorecohortflag" %in% names(inputFile) & study_name_code != "COVE"){
   assertthat::assert_that(
     all(!is.na(inputFile$Riskscorecohortflag)), msg = "NA values present in Riskscorecohortflag in inputFile!"
   )
 }else{
   if(study_name_code == "COVE"){
     inputFile <- inputFile %>%
+      select(-Riskscorecohortflag) %>% # For Moderna, drop Riskscorecohortflag created in data_processing step and create a new simpler one!
       mutate(Riskscorecohortflag = ifelse(Bserostatus == 0 & Perprotocol == 1, 1, 0))
   }
   if(study_name_code == "ENSEMBLE"){

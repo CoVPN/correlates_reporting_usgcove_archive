@@ -8,7 +8,7 @@ then
 	then
 		echo "Confidentiality statement is already included in index."
 	else
-		awk '/titling}/{print;print "   - \\predate{\\begin{center}}";print"   - \\postdate{\\vspace{2in} \\\\ \\Large HHS and Moderna Confidential Information – For Official Use Only – Not to be Disseminated INFORMATION NOT RELEASABLE TO THE PUBLIC UNLESS AUTHORIZED BY LAW. This information has not been publicly disclosed and may be a privileged, confidential, deliberative, and/or predecisional communication. It is for internal government use only and must not be disseminated, distributed, or copied to persons not authorized to receive the information. Unauthorized disclosure may result in prosecution to the full extent of the law.\\end{center}}";print "   - \\AddToShipoutPictureFG{\\AtPageCenter{\\makebox[0pt]{\\rotatebox[origin=c]{45}{\\scalebox{5}{\\texttransparent{0.3}{CONFIDENTIAL}}}}}}";next}1' index_$1.Rmd > tmp
+		awk '/titling}/{print;print "   - \\predate{\\begin{center}}";print"   - \\postdate{\\vspace{2in} \\\\ \\Large HHS and Moderna Confidential Information – For Official Use Only – Not to be Disseminated INFORMATION NOT RELEASABLE TO THE PUBLIC UNLESS AUTHORIZED BY LAW. This information has not been publicly disclosed and may be a privileged, confidential, deliberative, and/or predecisional communication. It is for internal government use only and must not be disseminated, distributed, or copied to persons not authorized to receive the information. Unauthorized disclosure may result in prosecution to the full extent of the law.\\end{center}}";print;next}1' index_$1.Rmd > tmp
 		mv index_$1.Rmd index_$1_tmp.Rmd
 		mv tmp index_$1.Rmd
 	fi

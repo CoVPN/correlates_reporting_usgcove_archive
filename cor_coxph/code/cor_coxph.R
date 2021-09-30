@@ -22,7 +22,7 @@ myprint(verbose)
 
 # COR defines the analysis to be done, e.g. D14
 Args <- commandArgs(trailingOnly=TRUE)
-if (length(Args)==0) Args=c(COR="D57") 
+if (length(Args)==0) Args=c(COR="D29") 
 COR=Args[1]; myprint(COR)
 # COR has a set of analysis-specific parameters defined in the config file
 config.cor <- config::get(config = COR)
@@ -220,11 +220,11 @@ if(length(config$forestplot_script)==1) {
         tmp.1=c(sapply(rv$fr.2[-1], function (x) x[c("HR","p.value"),1]))
         # concatList(tmp.1, ", ")
         if (tpeak=="29") {
-            tmp.2=c(2.89108e-01,1.86059e-05,4.91460e-01,7.62402e-03,4.22427e-01,1.35351e-02,3.43234e-01,1.30351e-03)
-#            tmp.2=c(1.99318e-01,6.61894e-07,4.47758e-01,4.39862e-03,2.62992e-01,6.71887e-04,2.27514e-01,1.04158e-05)
+#            tmp.2=c(2.89108e-01,1.86059e-05,4.91460e-01,7.62402e-03,4.22427e-01,1.35351e-02,3.43234e-01,1.30351e-03)
+            tmp.2=c(1.08362e-01,6.73150e-08,3.71222e-01,2.88212e-03,2.57965e-01,1.79417e-03,2.39606e-01,1.23384e-04)
         } else if (tpeak=="57") {
-            tmp.2=c(1.97396e-01,5.06030e-08,4.14723e-01,1.70766e-03,3.23171e-01,2.99022e-04,3.32166e-01,4.92577e-04)
-#            tmp.2=c(1.16696e-01,3.61471e-09,4.68585e-01,6.71056e-04,2.72765e-01,3.06337e-05,1.95776e-01,1.07521e-05)
+#            tmp.2=c(1.97396e-01,5.06030e-08,4.14723e-01,1.70766e-03,3.23171e-01,2.99022e-04,3.32166e-01,4.92577e-04)
+           tmp.2=c(7.01796e-02,1.16287e-13,3.46282e-01,5.22093e-05,1.95295e-01,1.37848e-06,2.09840e-01,9.26222e-06)
         }
         assertthat::assert_that(
             max(abs(tmp.1-tmp.2)/abs(tmp.2))<1e-5,

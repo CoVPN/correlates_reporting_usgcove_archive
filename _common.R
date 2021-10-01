@@ -2,10 +2,25 @@ library(methods)
 library(dplyr)
 library(kyotil)
 set.seed(98109)
+
 config <- config::get(config = Sys.getenv("TRIAL"))
 for(opt in names(config)){
   eval(parse(text = paste0(names(config[opt])," <- config[[opt]]")))
 }
+
+# COR defines the analysis to be done, e.g. D14
+Args <- commandArgs(trailingOnly=TRUE)
+if (length(Args)==0) Args=c(COR="D57") 
+COR=Args[1]; myprint(COR)
+# COR has a set of analysis-specific parameters defined in the config file
+config.cor <- config::get(config = COR)
+
+tpeak=as.integer(paste0(config.cor$tpeak))
+tpeaklag=as.integer(paste0(config.cor$tpeaklag))
+tfinal.tpeak=as.integer(paste0(config.cor$tfinal.tpeak))
+myprint(tpeak, tpeaklag, tfinal.tpeak)
+if (length(tpeak)==0 | length(tpeaklag)==0 | length(tfinal.tpeak)==0) stop("config "%.%COR%.%" misses some fields")
+
 
  
 # disabling lower level parallelization in favor of higher level of parallelization

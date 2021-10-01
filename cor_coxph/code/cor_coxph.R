@@ -17,21 +17,9 @@ library(Hmisc) # wtd.quantile, cut2
 library(xtable) # this is a dependency of kyotil
 source(here::here("code", "params.R"))
 
+
 myprint(study_name)
 myprint(verbose)
-
-# COR defines the analysis to be done, e.g. D14
-Args <- commandArgs(trailingOnly=TRUE)
-if (length(Args)==0) Args=c(COR="D29") 
-COR=Args[1]; myprint(COR)
-# COR has a set of analysis-specific parameters defined in the config file
-config.cor <- config::get(config = COR)
-tpeak=as.integer(paste0(config.cor$tpeak))
-tpeaklag=as.integer(paste0(config.cor$tpeaklag))
-tfinal.tpeak=as.integer(paste0(config.cor$tfinal.tpeak))
-myprint(tpeak, tpeaklag, tfinal.tpeak)
-if (length(tpeak)==0 | length(tpeaklag)==0 | length(tfinal.tpeak)==0) stop("config "%.%COR%.%" misses some fields")
-
 
 # path for figures and tables etc
 save.results.to = here::here("output")
@@ -178,9 +166,20 @@ print(form.0)
 
 ###################################################################################################
 # define trichotomized markers
-dat.vac.seroneg = add.trichotomized.markers (dat.vac.seroneg, tpeak, wt.col.name="wt")
-# save cutpoints
-marker.cutpoints=attr(dat.vac.seroneg, "marker.cutpoints")
+
+if(Sys.getenv("TRIAL")!="moderna_real") {
+    
+    dat.vac.seroneg = add.trichotomized.markers (dat.vac.seroneg, tpeak, wt.col.name="wt")
+    marker.cutpoints=attr(dat.vac.seroneg, "marker.cutpoints")
+    
+} else {
+    
+    dat.vac.seroneg = add.trichotomized.markers (dat.vac.seroneg, tpeak, wt.col.name="wt")
+    marker.cutpoints=attr(dat.vac.seroneg, "marker.cutpoints")
+       
+}
+
+
 cutpoints=list()
 for (a in assays) {        
     for (t in c("Day"%.%tpeak, "Delta"%.%tpeak%.%"overB")) {

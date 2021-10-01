@@ -18,10 +18,17 @@ vaccinees_risk <- read.csv(here("output", "vaccine_ptids_with_riskscores.csv"))
 # merge risk score with cleaned data by IDs, then save updated data file
 risk_scores <- rbind(placebos_risk, vaccinees_risk) %>%
   select(Ptid, risk_score, standardized_risk_score)
-dat_with_riskscore <- merge(dat_cleaned, risk_scores, by = "Ptid")
+dat_with_riskscore <- left_join(dat_cleaned, risk_scores, by = "Ptid")
 data_name_amended <- paste0(str_remove(data_name, ".csv"), "_with_riskscore")
-write_csv(dat_with_riskscore,
-          here("..", "data_clean", paste0(data_name_amended, ".csv")))
+
+# Ensure all baseline negative and PP subjects have a risk score!
+if(assertthat::assert_that(
+  all(!is.na(dat_with_riskscore %>% filter(Bserostatus==0 & Perprotocol==1) %>% .$risk_score)), 
+          msg = "NA values present in Riskscorecohortflag in inputFile!"
+)){
+  write_csv(dat_with_riskscore,
+            here("..", "data_clean", paste0(data_name_amended, ".csv")))
+}
 
 
 # Create table of cases in both arms (post Risk score analyses)

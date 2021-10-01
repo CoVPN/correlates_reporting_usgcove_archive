@@ -1,4 +1,4 @@
-# Sys.setenv(TRIAL = "janssen_pooled_mock")
+# Sys.setenv(TRIAL = "moderna_real") 
 #-----------------------------------------------
 # obligatory to append to the top of each script
 renv::activate(project = here::here(".."))
@@ -24,6 +24,7 @@ library(RhpcBLASctl)
 library(conflicted)
 conflicted::conflict_prefer("filter", "dplyr")
 conflict_prefer("summarise", "dplyr")
+conflict_prefer("omp_set_num_threads", "RhpcBLASctl")
 library(mice)
 library(tidymodels)
 
@@ -115,13 +116,14 @@ if(study_name_code == "ENSEMBLE"){
 ################################################
 
 # Consider only placebo data for risk score analysis
-if("Riskscorecohortflag" %in% names(inputFile)){
+if("Riskscorecohortflag" %in% names(inputFile) & study_name_code != "COVE"){
   assertthat::assert_that(
     all(!is.na(inputFile$Riskscorecohortflag)), msg = "NA values present in Riskscorecohortflag in inputFile!"
   )
 }else{
   if(study_name_code == "COVE"){
     inputFile <- inputFile %>%
+      select(-Riskscorecohortflag) %>% # For Moderna, drop Riskscorecohortflag created in data_processing step and create a new simpler one!
       mutate(Riskscorecohortflag = ifelse(Bserostatus == 0 & Perprotocol == 1, 1, 0))
   }
   if(study_name_code == "ENSEMBLE"){
@@ -210,11 +212,11 @@ if (np <= 30) {
   V_inner <- 5
 }
 
-### solve cores issue
-##blas_get_num_procs()
-#blas_set_num_threads(1)
-##print(blas_get_num_procs())
-#stopifnot(blas_get_num_procs() == 1)
+## solve cores issue
+#blas_get_num_procs()
+blas_set_num_threads(1)
+#print(blas_get_num_procs())
+stopifnot(blas_get_num_procs() == 1)
 
 
 # run super learner ensemble

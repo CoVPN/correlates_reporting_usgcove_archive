@@ -1,4 +1,4 @@
-# Sys.setenv(TRIAL = "moderna_real")
+# Sys.setenv(TRIAL = "moderna_real") 
 #-----------------------------------------------
 # obligatory to append to the top of each script
 renv::activate(project = here::here(".."))

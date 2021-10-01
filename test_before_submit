@@ -10,5 +10,10 @@ do
 	else
 		make -k -C $1 all
 	fi
-	bash ./_build_chapter.sh $1
+	if [[ "$1" == "base_riskscore" ]] 
+	then
+		bash ./_build.sh riskscore
+	else
+		bash ./_build_chapter.sh $1
+	fi
 done

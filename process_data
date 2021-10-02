@@ -1,0 +1,8 @@
+#!/bin/bash
+
+for T in moderna_mock janssen_pooled_mock # janssen_pooled_real  janssen_pooled_mock  janssen_na_mock
+do
+	export TRIAL=$T	
+	echo $TRIAL
+	make data_processed
+done

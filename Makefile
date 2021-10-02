@@ -1,5 +1,5 @@
 ## immuno_analysis        : builds immunogenicity exploratory analyses
-immuno_analysis: data_processed
+immuno_analysis: 
 	$(MAKE) -k -C immuno_tabular all
 	$(MAKE) -k -C immuno_graphical all
 
@@ -15,8 +15,8 @@ risk_analysis: data_processed
 risk_report: risk_analysis
 	bash ./_build.sh riskscore
 
-## cor_analysis_quick           : builds Correlates of Risk analyses
-cor_analysis_quick: data_processed
+## cor_analysis           : builds Correlates of Risk analyses
+cor_analysis: 
 	$(MAKE) -k -C cor_coxph all
 	$(MAKE) -k -C cor_tabular all
 	$(MAKE) -k -C cor_graphical all
@@ -27,8 +27,8 @@ cor_analysis_quick: data_processed
 #	$(MAKE) -k -C cor_nonpar all
 
 
-## cor_analysis_quick_noclean           : builds Correlates of Risk analyses
-cor_analysis_quick_noclean: data_processed
+## cor_analysis_noclean           : builds Correlates of Risk analyses
+cor_analysis_noclean: 
 	$(MAKE) -k -C cor_coxph cor_coxph
 	$(MAKE) -k -C cor_tabular all
 	$(MAKE) -k -C cor_graphical figs
@@ -39,8 +39,6 @@ cor_analysis_quick_noclean: data_processed
 #	$(MAKE) -k -C cor_nonpar all
 
 
-cor_analysis: risk_analysis cor_analysis_quick
-#cor_analysis: cor_analysis_quick_noclean
 
 
 ## cor_report             : builds the CoVPN correlates of risk report
@@ -48,7 +46,7 @@ cor_report: cor_analysis
 	bash ./_build.sh cor
 
 ## cop_analysis           : builds Correlates of Protection analyses
-cop_analysis: data_processed
+cop_analysis: 
 #	$(MAKE) -k -C cop_prinstrat all
 #	$(MAKE) -k -C cop_controlled all
 	$(MAKE) -k -C cop_stochastic all
@@ -59,8 +57,6 @@ cop_report: cop_analysis
 	bash ./_build.sh cop
 
 ## data_processed         : create processed data from raw data
-# make_dat_proc.R needs to be executed in data_clean folder to correctly
-# active renv
 data_processed: check_raw_data make_clean_data check_clean_data
 
 check_raw_data: 

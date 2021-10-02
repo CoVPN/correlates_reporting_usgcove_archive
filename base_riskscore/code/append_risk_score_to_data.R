@@ -24,7 +24,7 @@ data_name_amended <- paste0(str_remove(data_name, ".csv"), "_with_riskscore")
 # Ensure all baseline negative and PP subjects have a risk score!
 if(assertthat::assert_that(
   all(!is.na(dat_with_riskscore %>% filter(Bserostatus==0 & Perprotocol==1) %>% .$risk_score)), 
-          msg = "NA values present in Riskscorecohortflag in inputFile!"
+          msg = "Some baseline negative and PP subjects have NA values in risk score!"
 )){
   write_csv(dat_with_riskscore,
             here("..", "data_clean", paste0(data_name_amended, ".csv")))

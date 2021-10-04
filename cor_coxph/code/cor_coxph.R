@@ -17,10 +17,10 @@ library(forestplot)
 library(Hmisc) # wtd.quantile, cut2
 library(xtable) # this is a dependency of kyotil
 source(here::here("code", "params.R"))
-
-
+time.start=Sys.time()
 myprint(study_name)
 myprint(verbose)
+
 
 # path for figures and tables etc
 save.results.to = here::here("output")
@@ -31,56 +31,13 @@ save.results.to = paste0(save.results.to, "/", COR,"/");
 if (!dir.exists(save.results.to))  dir.create(save.results.to)
 print(paste0("save.results.to equals ", save.results.to))
     
-time.start=Sys.time()
 
-
-###################################################################################################
-# Decile immunogenicity table
-# this is kind of standalone
-# do this before reading data with risk score, before uloq censoring
-# use dataset without risk score so that we can get baseline pos groups as well
-if (config$is_ows_trial) {
-    
-    dat.mock.all <- read.csv(here::here("..", "data_clean", data_name))
-    if ("Day"%.%tpeak%.%"pseudoneutid50" %in% names(dat.mock.all)) {    
-        res=lapply (0:1, function(ii) {
-            dat.immuno.seroneg=subset(dat.mock.all, Trt==1 & Bserostatus==ii & ph2.immuno)    
-            ww=sort(unique(dat.immuno.seroneg$demo.stratum))
-            myprint(ww)
-            stopifnot(min(ww)==1)
-            stopifnot(max(ww)==length(ww))
-            names(ww)=demo.stratum.labels
-            mysapply (c(All=0,ww), function(w) { 
-                if(verbose) myprint(w)
-                dat.tmp= if (w==0) dat.immuno.seroneg else subset(dat.immuno.seroneg, demo.stratum==w)
-                10**wtd.quantile(dat.tmp[["Day"%.%tpeak%.%"pseudoneutid50"]], weights = dat.tmp$wt.subcohort, probs = 0:10/10)
-            })
-        })
-        tab=rbind(res[[1]], res[[2]])
-        colnames(tab)[1]="min"
-        colnames(tab)[ncol(tab)]="max"
-        tab
-        mytex(tab, file.name="cID50_deciles_"%.%study_name, align="r", include.colnames = T, save2input.only=T, input.foldername=save.results.to, digits=0,
-            add.to.row=list(list(0,nrow(res[[1]])), # insert at the beginning of table, and at the end of, say, the first table
-                c("       \n \\multicolumn{12}{l}{Baseline negative} \\\\ \n",
-                  "\\hline\n \\multicolumn{12}{l}{Baseline positive} \\\\ \n"
-                 )
-            )    
-        )
-    }
-        
-}
-
-
-
-###################################################################################################
 # set up analysis-specific variables using config.cor
 dat.mock$wt=dat.mock[[config.cor$wt]]
 dat.mock$ph1=dat.mock[[config.cor$ph1]]
 dat.mock$ph2=dat.mock[[config.cor$ph2]]
 dat.mock$EventIndPrimary =dat.mock[[config.cor$EventIndPrimary]]
 dat.mock$EventTimePrimary=dat.mock[[config.cor$EventTimePrimary]]
-    
 # B=1e3 and numPerm=1e4 take 10 min to run with 30 CPUS for one analysis
 B <-       config$num_boot_replicates 
 numPerm <- config$num_perm_replicates # number permutation replicates 1e4
@@ -90,12 +47,13 @@ myprint(numPerm)
 
 ###################################################################################################
 # get some summary info about event time etc
-# do this before uloq censoring
+# do before uloq censoring
 
 # Average follow-up of vaccine recipients starting at tpeaklag days post visit
 write(round(mean(subset(dat.mock, Trt==1 & Bserostatus==0 & ph1, EventTimePrimary, drop=T), na.rm=T)-tpeaklag), file=paste0(save.results.to, "avg_followup_"%.%study_name))
 
 if (config$is_ows_trial) source(here::here("code", "cor_coxph_misc.R"))
+
 
 ###################################################################################################
 # uloq censoring
@@ -202,7 +160,7 @@ if(length(config$forestplot_script)==1) {
     tmp=here::here("code", config$forestplot_script)
     if (file.exists(tmp)) source(tmp)
     
-    # sanity check forest plot results as a guard against unintended consequences
+    # unit testing 
     if (study_name == "MockCOVE") {
         tmp.1=c(sapply(rv$fr.2[-1], function (x) x[c("HR","p.value"),1])) # concatList(tmp.1, ", ")
         if (tpeak=="29") {

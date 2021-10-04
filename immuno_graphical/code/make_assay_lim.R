@@ -9,7 +9,7 @@ library(dplyr)
 source(here("code", "params.R"))
 
 
-load(here("..", "data_clean",paste0(attr(config, "config"), "_params.Rdata")))
+#load(here("..", "data_clean",paste0(attr(config, "config"), "_params.Rdata"))) # file removed. objects moved to _common.R
 
 dat.long.twophase.sample <- readRDS(here(
   "data_clean",

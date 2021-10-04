@@ -12,16 +12,23 @@ source(here::here("..", "_common.R"))
 library(here)
 library(tidyverse)
 dat_cleaned <- read.csv(here("..", "data_clean", data_name)) %>% as_tibble() 
-placebos_risk <- read_csv(here("output", "placebo_ptids_with_riskscores.csv"))
-vaccinees_risk <- read_csv(here("output", "vaccine_ptids_with_riskscores.csv"))
+placebos_risk <- read.csv(here("output", "placebo_ptids_with_riskscores.csv"))
+vaccinees_risk <- read.csv(here("output", "vaccine_ptids_with_riskscores.csv"))
 
 # merge risk score with cleaned data by IDs, then save updated data file
 risk_scores <- rbind(placebos_risk, vaccinees_risk) %>%
   select(Ptid, risk_score, standardized_risk_score)
-dat_with_riskscore <- merge(dat_cleaned, risk_scores, by = "Ptid")
+dat_with_riskscore <- left_join(dat_cleaned, risk_scores, by = "Ptid")
 data_name_amended <- paste0(str_remove(data_name, ".csv"), "_with_riskscore")
-write_csv(dat_with_riskscore,
-          here("..", "data_clean", paste0(data_name_amended, ".csv")))
+
+# Ensure all baseline negative and PP subjects have a risk score!
+if(assertthat::assert_that(
+  all(!is.na(dat_with_riskscore %>% filter(Riskscorecohortflag==1) %>% .$risk_score)), 
+          msg = "Some baseline negative and PP subjects have NA values in risk score!"
+)){
+  write_csv(dat_with_riskscore,
+            here("..", "data_clean", paste0(data_name_amended, ".csv")))
+}
 
 
 # Create table of cases in both arms (post Risk score analyses)

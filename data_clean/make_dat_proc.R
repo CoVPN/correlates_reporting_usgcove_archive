@@ -53,10 +53,8 @@ dat_proc=subset(dat_proc, !is.na(Bserostatus))
           dat_proc=subset(dat_proc, !is.na(EventTimePrimaryD29))
 if(has57) dat_proc=subset(dat_proc, !is.na(EventTimePrimaryD57))
 
-          dat_proc$EarlyendpointD29 <- with(dat_proc, ifelse(EarlyinfectionD29==1 | (EventIndPrimaryD1==1 & EventTimePrimaryD1 < NumberdaysD1toD29 + 7),1,0))
-if(study_name=="ENSEMBLE" | study_name=="MockENSEMBLE") {
-     dat_proc$EarlyendpointD29start1<- with(dat_proc, ifelse(EarlyinfectionD29start1==1| (EventIndPrimaryD1==1 & EventTimePrimaryD1 < NumberdaysD1toD29 + 1),1,0))
-}          
+dat_proc$EarlyendpointD29 <- with(dat_proc, ifelse(EarlyinfectionD29==1 | (EventIndPrimaryD1==1 & EventTimePrimaryD1 < NumberdaysD1toD29 + 7),1,0))
+dat_proc$EarlyendpointD29start1<- with(dat_proc, ifelse(EarlyinfectionD29start1==1| (EventIndPrimaryD1==1 & EventTimePrimaryD1 < NumberdaysD1toD29 + 1),1,0))
 if(has57) dat_proc$EarlyendpointD57 <- with(dat_proc, ifelse(EarlyinfectionD57==1 | (EventIndPrimaryD1==1 & EventTimePrimaryD1 < NumberdaysD1toD57 + 7),1,0))
 
 
@@ -66,10 +64,11 @@ if(has57) dat_proc$EarlyendpointD57 <- with(dat_proc, ifelse(EarlyinfectionD57==
 # 1. baseline SARS-CoV-2 negative, 
 # 2. per-protocol, 
 # 3. no evidence of SARS-CoV-2 infection or right-censoring up to time point tinterm (2 dose) or tpeak (1 dose)
-# 4. lack of missing data on a certain set of baseline input variables
-# no NAs allowed
-# #4 is not implemented in this script because the developer of this script need not have knowledge of risk score requirements
-dat_proc$Riskscorecohortflag <- with(dat_proc, ifelse(Bserostatus==0 & Perprotocol==1 & EarlyendpointD29==0 & EventTimePrimaryD29>=1, 1, 0))
+# 4. lack of missing data on a certain set of baseline input variables (not enfored here because the developer of this script need not have knowledge of risk score requirements)
+# no NAs allowed. 
+dat_proc$Riskscorecohortflag <- with(dat_proc, ifelse(Bserostatus==0 & Perprotocol==1 & EarlyendpointD29start1==0 & EventTimePrimaryD29>=1, 1, 0))
+# COVE is a special case, redefined for backward compatibility
+if (study_name=="COVE" | study_name=="MockCOVE") dat_proc$Riskscorecohortflag <- with(dat_proc, ifelse(Bserostatus==0 & Perprotocol==1, 1, 0))
 assertthat::assert_that(
     all(!is.na(dat_proc$Riskscorecohortflag)),
     msg = "missing Riskscorecohortflag")
@@ -254,13 +253,6 @@ dat_proc$Wstratum[with(dat_proc, EventIndPrimaryD29==1 & Trt==1 & Bserostatus==1
 #subset(dat_proc, Trt==1 & Bserostatus==1 & EventIndPrimaryD29 == 1)[1:3,]
 
 with(dat_proc, table(tps.stratum))
-
-# map tps.stratum to stratification variables
-tps.stratums=sort(unique(dat_proc$tps.stratum)); names(tps.stratums)=tps.stratums
-decode.tps.stratum=t(sapply(tps.stratums, function(i) unlist(subset(dat_proc, tps.stratum==i)[1,
-    if (study_name=="COVE" | study_name=="MockCOVE" ) c("Senior", "HighRiskInd", "URMforsubcohortsampling") else if (study_name=="ENSEMBLE" | study_name=="MockENSEMBLE" ) c("Senior", "HighRiskInd", "Region", "URMforsubcohortsampling")
-])))
-
 
 ###############################################################################
 # observation-level weights
@@ -587,74 +579,3 @@ if(subset_value != "All"){
 ###############################################################################
 
 write_csv(dat_proc, file = here("data_clean", data_name))
-
-
-
-
-###############################################################################
-# save some common parameters and helper functions
-###############################################################################
-
-# maxed over Spike, RBD, N, restricting to Day 29 or 57
-if(has29) MaxbAbDay29 = max(dat_proc[,paste0("Day29", c("bindSpike", "bindRBD", "bindN"))], na.rm=T)
-if(has29) MaxbAbDelta29overB = max(dat_proc[,paste0("Delta29overB", c("bindSpike", "bindRBD", "bindN"))], na.rm=T)
-if(has57) MaxbAbDay57 = max(dat_proc[,paste0("Day57", c("bindSpike", "bindRBD", "bindN"))], na.rm=T)
-if(has57) MaxbAbDelta57overB = max(dat_proc[,paste0("Delta57overB", c("bindSpike", "bindRBD", "bindN"))], na.rm=T)
-
-# maxed over ID50 and ID80, restricting to Day 29 or 57
-if("pseudoneutid50" %in% assays & "pseudoneutid80" %in% assays) {
-    if(has29) MaxID50ID80Day29 = max(dat_proc[,paste0("Day29", c("pseudoneutid50", "pseudoneutid80"))], na.rm=T)
-    if(has29) MaxID50ID80Delta29overB = max(dat_proc[,paste0("Delta29overB", c("pseudoneutid50", "pseudoneutid80"))], na.rm=TRUE)
-    if(has57) MaxID50ID80Day57 = max(dat_proc[,paste0("Day57", c("pseudoneutid50", "pseudoneutid80"))], na.rm=T)        
-    if(has57) MaxID50ID80Delta57overB = max(dat_proc[,paste0("Delta57overB", c("pseudoneutid50", "pseudoneutid80"))], na.rm=TRUE)
-}
-
-# a function to print tables of cases counts with different marker availability
-# note that D57 cases and intercurrent cases may add up to more than D29 cases because ph1.D57 requires EarlyendpointD57==0 while ph1.D29 requires EarlyendpointD29==0
-make.case.count.marker.availability.table=function(dat=NULL) {
-    if (is.null(dat)) dat=dat_proc
-    if (study_name=="COVE" | study_name=="MockCOVE" ) {
-        idx.trt=1:0
-        names(idx.trt)=c("vacc","plac")
-        cnts = sapply (idx.trt, simplify="array", function(trt) {
-             idx=1:3
-             names(idx)=c("Day 29 Cases", "Day 57 Cases", "Intercurrent Cases")
-             tab=t(sapply (idx, function(i) {           
-                tmp.1 = with(subset(dat, Trt==trt & Bserostatus==0 & (if(i==2) EventIndPrimaryD57 else EventIndPrimaryD29) &   (if(i==2) ph1.D57 else if(i==1) ph1.D29 else ph1.intercurrent.cases)), is.na(BbindSpike)     | is.na(BbindRBD) )
-                tmp.2 = with(subset(dat, Trt==trt & Bserostatus==0 & (if(i==2) EventIndPrimaryD57 else EventIndPrimaryD29) &   (if(i==2) ph1.D57 else if(i==1) ph1.D29 else ph1.intercurrent.cases)), is.na(Day29bindSpike) | is.na(Day29bindRBD))
-                tmp.3 = with(subset(dat, Trt==trt & Bserostatus==0 & (if(i==2) EventIndPrimaryD57 else EventIndPrimaryD29) &   (if(i==2) ph1.D57 else if(i==1) ph1.D29 else ph1.intercurrent.cases)), is.na(Day57bindSpike) | is.na(Day57bindRBD))    
-                
-                c(sum(tmp.1 & tmp.2 & tmp.3), sum(tmp.1 & tmp.2 & !tmp.3), sum(tmp.1 & !tmp.2 & tmp.3), sum(tmp.1 & !tmp.2 & !tmp.3), 
-                  sum(!tmp.1 & tmp.2 & tmp.3), sum(!tmp.1 & tmp.2 & !tmp.3), sum(!tmp.1 & !tmp.2 & tmp.3), sum(!tmp.1 & !tmp.2 & !tmp.3))
-            }))
-            colnames(tab)=c("---", "--+", "-+-", "-++", "+--", "+-+", "++-", "+++")
-            tab
-        })
-        cnts
-    } else if (study_name=="ENSEMBLE" | study_name=="MockENSEMBLE" ) {
-        idx.trt=1:0
-        names(idx.trt)=c("vacc","plac")
-        cnts = sapply (idx.trt, simplify="array", function(trt) {
-             idx=1:1
-             tab=t(sapply (idx, function(i) {           
-                tmp.1 = with(subset(dat, Trt==trt & Bserostatus==0 & if(i==2) EventIndPrimaryD57 else EventIndPrimaryD29 &   if(i==2) ph1.D57 else if(i==1) ph1.D29 else ph1.intercurrent.cases), is.na(BbindSpike)     | is.na(BbindRBD) )
-                tmp.2 = with(subset(dat, Trt==trt & Bserostatus==0 & if(i==2) EventIndPrimaryD57 else EventIndPrimaryD29 &   if(i==2) ph1.D57 else if(i==1) ph1.D29 else ph1.intercurrent.cases), is.na(Day29bindSpike) | is.na(Day29bindRBD))
-                
-                c(sum(tmp.1 & tmp.2), sum(!tmp.1 & tmp.2), sum(tmp.1 & !tmp.2), sum(!tmp.1 & !tmp.2))
-             }))
-             colnames(tab)=c("--", "+-", "-+", "++")
-             tab
-        })
-        t(drop(cnts))
-    } else {
-        NA
-    }
-}
-#subset(dat, Trt==trt & Bserostatus==0 & EventIndPrimaryD29==1 & ph1.intercurrent.cases)
-print(make.case.count.marker.availability.table(dat_proc))
-
-save(list=c(if(has57) c("MaxbAbDay57", "MaxbAbDelta57overB", if("pseudoneutid50" %in% assays & "pseudoneutid80" %in% assays) c("MaxID50ID80Day57", "MaxID50ID80Delta57overB")), 
-            if(has29) c("MaxbAbDay29", "MaxbAbDelta29overB", if("pseudoneutid50" %in% assays & "pseudoneutid80" %in% assays) c("MaxID50ID80Day29", "MaxID50ID80Delta29overB")),
-            "decode.tps.stratum", "make.case.count.marker.availability.table"
-          ),
-file=here("data_clean", paste0(attr(config, "config"), "_params.Rdata")))

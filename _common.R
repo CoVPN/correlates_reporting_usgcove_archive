@@ -3,24 +3,26 @@ library(dplyr)
 library(kyotil)
 set.seed(98109)
 
-config <- config::get(config = Sys.getenv("TRIAL"))
-for(opt in names(config)){
-  eval(parse(text = paste0(names(config[opt])," <- config[[opt]]")))
-}
-
 # COR defines the analysis to be done, e.g. D14
 Args <- commandArgs(trailingOnly=TRUE)
-if (length(Args)==0) Args=c(COR="D57") 
+if (length(Args)==0) Args=c(COR="D29start1") 
 COR=Args[1]; myprint(COR)
 # COR has a set of analysis-specific parameters defined in the config file
 config.cor <- config::get(config = COR)
-
+#
 tpeak=as.integer(paste0(config.cor$tpeak))
 tpeaklag=as.integer(paste0(config.cor$tpeaklag))
 tfinal.tpeak=as.integer(paste0(config.cor$tfinal.tpeak))
 myprint(tpeak, tpeaklag, tfinal.tpeak)
 # D29D57 may not have all fields
 if (length(tpeak)==0 | length(tpeaklag)==0) stop("config "%.%COR%.%" misses some fields")
+
+
+
+config <- config::get(config = Sys.getenv("TRIAL"))
+for(opt in names(config)){
+  eval(parse(text = paste0(names(config[opt])," <- config[[opt]]")))
+}
 
 
  
@@ -609,4 +611,87 @@ add.trichotomized.markers=function(dat, tpeak, wt.col.name) {
     attr(dat, "marker.cutpoints")=marker.cutpoints
     dat
     
+}
+
+
+###################################################################################################
+# read data in 
+
+# if this is run under _reporting level, it will not load and will warn
+data_name_updated <- sub(".csv", "_with_riskscore.csv", data_name)
+if (file.exists(here::here("..", "data_clean", data_name_updated))) {
+    dat.mock <- read.csv(here::here("..", "data_clean", data_name_updated))
+    data_name = data_name_updated
+    print(paste0("reading data from ",data_name))
+    
+    if(config$is_ows_trial) {
+        # maxed over Spike, RBD, N, restricting to Day 29 or 57
+        if(has29) MaxbAbDay29 = max(dat.mock[,paste0("Day29", c("bindSpike", "bindRBD", "bindN"))], na.rm=T)
+        if(has29) MaxbAbDelta29overB = max(dat.mock[,paste0("Delta29overB", c("bindSpike", "bindRBD", "bindN"))], na.rm=T)
+        if(has57) MaxbAbDay57 = max(dat.mock[,paste0("Day57", c("bindSpike", "bindRBD", "bindN"))], na.rm=T)
+        if(has57) MaxbAbDelta57overB = max(dat.mock[,paste0("Delta57overB", c("bindSpike", "bindRBD", "bindN"))], na.rm=T)
+        
+        # maxed over ID50 and ID80, restricting to Day 29 or 57
+        if("pseudoneutid50" %in% assays & "pseudoneutid80" %in% assays) {
+            if(has29) MaxID50ID80Day29 = max(dat.mock[,paste0("Day29", c("pseudoneutid50", "pseudoneutid80"))], na.rm=T)
+            if(has29) MaxID50ID80Delta29overB = max(dat.mock[,paste0("Delta29overB", c("pseudoneutid50", "pseudoneutid80"))], na.rm=TRUE)
+            if(has57) MaxID50ID80Day57 = max(dat.mock[,paste0("Day57", c("pseudoneutid50", "pseudoneutid80"))], na.rm=T)        
+            if(has57) MaxID50ID80Delta57overB = max(dat.mock[,paste0("Delta57overB", c("pseudoneutid50", "pseudoneutid80"))], na.rm=TRUE)
+        }
+    } 
+    
+    
+    # a function to print tables of cases counts with different marker availability
+    # note that D57 cases and intercurrent cases may add up to more than D29 cases because ph1.D57 requires EarlyendpointD57==0 while ph1.D29 requires EarlyendpointD29==0
+    make.case.count.marker.availability.table=function(dat) {
+        if (study_name=="COVE" | study_name=="MockCOVE" ) {
+            idx.trt=1:0
+            names(idx.trt)=c("vacc","plac")
+            cnts = sapply (idx.trt, simplify="array", function(trt) {
+                 idx=1:3
+                 names(idx)=c("Day 29 Cases", "Day 57 Cases", "Intercurrent Cases")
+                 tab=t(sapply (idx, function(i) {           
+                    tmp.1 = with(subset(dat, Trt==trt & Bserostatus==0 & (if(i==2) EventIndPrimaryD57 else EventIndPrimaryD29) &   (if(i==2) ph1.D57 else if(i==1) ph1.D29 else ph1.intercurrent.cases)), is.na(BbindSpike)     | is.na(BbindRBD) )
+                    tmp.2 = with(subset(dat, Trt==trt & Bserostatus==0 & (if(i==2) EventIndPrimaryD57 else EventIndPrimaryD29) &   (if(i==2) ph1.D57 else if(i==1) ph1.D29 else ph1.intercurrent.cases)), is.na(Day29bindSpike) | is.na(Day29bindRBD))
+                    tmp.3 = with(subset(dat, Trt==trt & Bserostatus==0 & (if(i==2) EventIndPrimaryD57 else EventIndPrimaryD29) &   (if(i==2) ph1.D57 else if(i==1) ph1.D29 else ph1.intercurrent.cases)), is.na(Day57bindSpike) | is.na(Day57bindRBD))    
+                    
+                    c(sum(tmp.1 & tmp.2 & tmp.3), sum(tmp.1 & tmp.2 & !tmp.3), sum(tmp.1 & !tmp.2 & tmp.3), sum(tmp.1 & !tmp.2 & !tmp.3), 
+                      sum(!tmp.1 & tmp.2 & tmp.3), sum(!tmp.1 & tmp.2 & !tmp.3), sum(!tmp.1 & !tmp.2 & tmp.3), sum(!tmp.1 & !tmp.2 & !tmp.3))
+                }))
+                colnames(tab)=c("---", "--+", "-+-", "-++", "+--", "+-+", "++-", "+++")
+                tab
+            })
+            cnts
+        } else if (study_name=="ENSEMBLE" | study_name=="MockENSEMBLE" ) {
+            idx.trt=1:0
+            names(idx.trt)=c("vacc","plac")
+            cnts = sapply (idx.trt, simplify="array", function(trt) {
+                 idx=1:1
+                 tab=t(sapply (idx, function(i) {           
+                    tmp.1 = with(subset(dat, Trt==trt & Bserostatus==0 & if(i==2) EventIndPrimaryD57 else EventIndPrimaryD29 &   if(i==2) ph1.D57 else if(i==1) ph1.D29 else ph1.intercurrent.cases), is.na(BbindSpike)     | is.na(BbindRBD) )
+                    tmp.2 = with(subset(dat, Trt==trt & Bserostatus==0 & if(i==2) EventIndPrimaryD57 else EventIndPrimaryD29 &   if(i==2) ph1.D57 else if(i==1) ph1.D29 else ph1.intercurrent.cases), is.na(Day29bindSpike) | is.na(Day29bindRBD))
+                    
+                    c(sum(tmp.1 & tmp.2), sum(!tmp.1 & tmp.2), sum(tmp.1 & !tmp.2), sum(!tmp.1 & !tmp.2))
+                 }))
+                 colnames(tab)=c("--", "+-", "-+", "++")
+                 tab
+            })
+            t(drop(cnts))
+        } else {
+            NA
+        }
+    }
+    #subset(dat, Trt==trt & Bserostatus==0 & EventIndPrimaryD29==1 & ph1.intercurrent.cases)
+    #print(make.case.count.marker.availability.table(dat_proc))
+    
+    
+    # map tps.stratum to stratification variables
+    tps.stratums=sort(unique(dat.mock$tps.stratum)); names(tps.stratums)=tps.stratums
+    decode.tps.stratum=t(sapply(tps.stratums, function(i) unlist(subset(dat.mock, tps.stratum==i)[1,
+        if (study_name=="COVE" | study_name=="MockCOVE" ) c("Senior", "HighRiskInd", "URMforsubcohortsampling") else if (study_name=="ENSEMBLE" | study_name=="MockENSEMBLE" ) c("Senior", "HighRiskInd", "Region", "URMforsubcohortsampling")
+    ])))
+
+    
+} else {
+    warning("dataset with risk score not available")
 }

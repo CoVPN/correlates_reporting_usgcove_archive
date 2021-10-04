@@ -568,7 +568,7 @@ if ((n_strtm2 <- ceiling(ncol(tab_strtm2)/2-1))!=0) {
 # Case counts by availability of markers at baseline, d29, d57
 
 if (study_name_code=="COVE"){
-  tab_case_cnt <- make.case.count.marker.availability.table() %>% 
+  tab_case_cnt <- make.case.count.marker.availability.table(dat_proc) %>% 
     data.frame(check.names = F) %>% 
     rename_all(gsub, pattern=".", replacement="_", fixed=T) %>% 
     rownames_to_column("Case") %>% 

@@ -3,6 +3,7 @@
 renv::activate(project = here::here(".."))    
     # There is a bug on Windows that prevents renv from working properly. The following code provides a workaround:
     if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
+
 source(here::here("..", "_common.R"))
 #-----------------------------------------------
 
@@ -73,19 +74,6 @@ if (config$is_ows_trial) {
 
 
 ###################################################################################################
-# read data with risk score
-data_name_updated <- sub(".csv", "_with_riskscore.csv", data_name)
-if (file.exists(here::here("..", "data_clean", data_name_updated))) {
-    dat.mock <- read.csv(here::here("..", "data_clean", data_name_updated))
-    data_name = data_name_updated
-} else {
-    dat.mock <- read.csv(here::here("..", "data_clean", data_name))
-}
-load(here::here("..", "data_clean/", paste0(attr(config,"config"), "_params.Rdata"))) 
-print(paste0("reading data from ",data_name))
-
-
-###################################################################################################
 # set up analysis-specific variables using config.cor
 dat.mock$wt=dat.mock[[config.cor$wt]]
 dat.mock$ph1=dat.mock[[config.cor$ph1]]
@@ -140,7 +128,7 @@ if (config$is_ows_trial) {
 #tmp=dat.vac.seroneg$Day57pseudoneutid50
 #dat.vac.seroneg$Day57pseudoneutid50=dat.vac.seroneg$Day57pseudoneutid80
 #dat.vac.seroneg$Day57pseudoneutid80=tmp
-    
+
 # define an alias for EventIndPrimaryDxx
 dat.vac.seroneg$yy=dat.vac.seroneg[[config.cor$EventIndPrimary]]
 dat.pla.seroneg$yy=dat.pla.seroneg[[config.cor$EventIndPrimary]]
@@ -213,17 +201,14 @@ source(here::here("code", "cor_coxph_ph.R"))
 if(length(config$forestplot_script)==1) {
     tmp=here::here("code", config$forestplot_script)
     if (file.exists(tmp)) source(tmp)
-
+    
     # sanity check forest plot results as a guard against unintended consequences
-    if (study_name == "MockCOVE" & !endsWith(data_name, "riskscore.csv")) {
-        tmp.1=c(sapply(rv$fr.2[-1], function (x) x[c("HR","p.value"),1]))
-        # concatList(tmp.1, ", ")
+    if (study_name == "MockCOVE") {
+        tmp.1=c(sapply(rv$fr.2[-1], function (x) x[c("HR","p.value"),1])) # concatList(tmp.1, ", ")
         if (tpeak=="29") {
-#            tmp.2=c(2.89108e-01,1.86059e-05,4.91460e-01,7.62402e-03,4.22427e-01,1.35351e-02,3.43234e-01,1.30351e-03)
-            tmp.2=c(1.08362e-01,6.73150e-08,3.71222e-01,2.88212e-03,2.57965e-01,1.79417e-03,2.39606e-01,1.23384e-04)
+            tmp.2=c(0.108597757170056, 5.43752655185657e-08, 0.36780637981061, 0.00247181982840213, 0.254935175616226, 0.00165223736237864, 0.237238216154369, 0.000114032270111453)
         } else if (tpeak=="57") {
-#            tmp.2=c(1.97396e-01,5.06030e-08,4.14723e-01,1.70766e-03,3.23171e-01,2.99022e-04,3.32166e-01,4.92577e-04)
-           tmp.2=c(7.01796e-02,1.16287e-13,3.46282e-01,5.22093e-05,1.95295e-01,1.37848e-06,2.09840e-01,9.26222e-06)
+           tmp.2=c(0.0708841997340482, 9.49081021373306e-14, 0.346285251104243, 4.6061705367641e-05, 0.19452649895182, 1.36571069435975e-06, 0.208025081398608, 7.69730801008827e-06)
         }
         assertthat::assert_that(
             max(abs(tmp.1-tmp.2)/abs(tmp.2))<1e-5,

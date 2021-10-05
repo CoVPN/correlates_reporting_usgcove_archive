@@ -30,22 +30,23 @@ env:
 # build reports via included Make recipes, in independent simultaneous jobs
 jobs:
   include:
-    - name: Moderna Immuno Report
-      env:
-        - REPORT_TYPE=IMMUNO
-        - TRIAL=moderna_mock
-      script:
-        - echo "Building immunogenicity report"
-        - make data_processed
-        - make immuno_report
     - name: Moderna CoR Report
       env:
         - REPORT_TYPE=COR
         - TRIAL=moderna_mock
       script:
         - echo "Building correlates of risk report"
-        - make data_processed
-        - make risk_report
+       #- make data_processed
+       #- make risk_report
+        - make cor_report
+    - name: Janssen Pooled CoR Report
+      env:
+        - REPORT_TYPE=COR
+        - TRIAL=janssen_pooled_mock
+      script:
+        - echo "Building correlates of risk report"
+       #- make data_processed
+       #- make risk_report
         - make cor_report
     # - name: Moderna CoP Report
     #   env:
@@ -56,37 +57,36 @@ jobs:
     #     - make data_processed
     #     - make risk_report
     #     - make cop_report
-    - name: Janssen Data Processing
-      env:
-        - REPORT_TYPE=IMMUNO
-        - TRIAL=janssen_pooled_mock
-      script:
-        - echo "Processing data"
-        - make data_processed
-    - name: Janssen Pooled Immuno Report
-      env:
-        - REPORT_TYPE=IMMUNO
-        - TRIAL=janssen_pooled_mock
-      script:
-        - echo "Building immunogenicity report"
-        - make data_processed
-        - make immuno_report
-    - name: Janssen Pooled Risk Score Report
-      env:
-        - REPORT_TYPE=RISK
-        - TRIAL=janssen_pooled_mock
-      script:
-        - echo "Building risk score report"
-        - make risk_report
-    - name: Janssen Pooled Correlates Report
-      env:
-        - REPORT_TYPE=COR
-        - TRIAL=janssen_pooled_mock
-      script:
-        - echo "Building correlates of risk report"
-        - make data_processed
-        - make risk_report
-        - make cor_report
+    #- name: Janssen Data Processing
+    #  env:
+    #    - REPORT_TYPE=IMMUNO
+    #    - TRIAL=janssen_pooled_mock
+    #  script:
+    #    - echo "Processing data"
+    #    - make data_processed
+    #- name: Moderna Immuno Report
+    #  env:
+    #    - REPORT_TYPE=IMMUNO
+    #    - TRIAL=moderna_mock
+    #  script:
+    #    - echo "Building immunogenicity report"
+    #    - make data_processed
+    #    - make immuno_report
+    #- name: Janssen Pooled Immuno Report
+    #  env:
+    #    - REPORT_TYPE=IMMUNO
+    #    - TRIAL=janssen_pooled_mock
+    #  script:
+    #    - echo "Building immunogenicity report"
+    #    - make data_processed
+    #    - make immuno_report
+     # - name: Janssen Pooled Risk Score Report
+     # env:
+     #   - REPORT_TYPE=RISK
+     #   - TRIAL=janssen_pooled_mock
+     # script:
+     #   - echo "Building risk score report"
+     #   - make risk_report
 
 apt_packages:
   - libxml2-dev
@@ -101,7 +101,7 @@ before_install:
 # tinytex installs tlmgr to a directory that is symlinked to $HOME/bin
 install:
   - cd .. && Rscript -e "install.packages(c('here', 'renv', 'tinytex'))"
-  - Rscript -e "tinytex::install_tinytex()"
+  - echo insecure >> ~/.curlrc && Rscript -e "tinytex::install_tinytex()"
   - export PATH=$HOME/bin:${PATH}
   - cd $TRAVIS_BUILD_DIR && Rscript -e "renv::restore()"
 

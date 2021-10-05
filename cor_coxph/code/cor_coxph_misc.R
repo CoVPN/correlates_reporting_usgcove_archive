@@ -1,3 +1,37 @@
+# Decile immunogenicity table
+# do this before uloq censoring
+if (config$is_ows_trial) {
+    
+    if ("Day"%.%tpeak%.%"pseudoneutid50" %in% names(dat.mock)) {    
+        res=lapply (0:1, function(ii) {
+            dat.immuno.seroneg=subset(dat.mock, Trt==1 & Bserostatus==ii & ph2.immuno)    
+            ww=sort(unique(dat.immuno.seroneg$demo.stratum))
+            myprint(ww)
+            stopifnot(min(ww)==1)
+            stopifnot(max(ww)==length(ww))
+            names(ww)=demo.stratum.labels
+            mysapply (c(All=0,ww), function(w) { 
+                if(verbose) myprint(w)
+                dat.tmp= if (w==0) dat.immuno.seroneg else subset(dat.immuno.seroneg, demo.stratum==w)
+                10**wtd.quantile(dat.tmp[["Day"%.%tpeak%.%"pseudoneutid50"]], weights = dat.tmp$wt.subcohort, probs = 0:10/10)
+            })
+        })
+        tab=rbind(res[[1]], res[[2]])
+        colnames(tab)[1]="min"
+        colnames(tab)[ncol(tab)]="max"
+        tab
+        mytex(tab, file.name="cID50_deciles_"%.%study_name, align="r", include.colnames = T, save2input.only=T, input.foldername=save.results.to, digits=0,
+            add.to.row=list(list(0,nrow(res[[1]])), # insert at the beginning of table, and at the end of, say, the first table
+                c("       \n \\multicolumn{12}{l}{Baseline negative} \\\\ \n",
+                  "\\hline\n \\multicolumn{12}{l}{Baseline positive} \\\\ \n"
+                 )
+            )    
+        )
+    }
+        
+}
+
+
 #Median and IQR and range of days from dose 1 to Day 29 visit, and from dose 1 to Day 57 visit (requested by Lindsey B).  
 #subsetting by (a) the whole immunogenicity subcohort, (2) non-cases in the immunogenicity subcohort, (3) intercurrent cases, (4) primary cases.
 if (study_name=="COVE" | study_name=="MockCOVE") {

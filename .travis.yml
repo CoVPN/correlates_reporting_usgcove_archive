@@ -100,8 +100,8 @@ before_install:
 # separately from the lockfile
 # tinytex installs tlmgr to a directory that is symlinked to $HOME/bin
 install:
-  - cd .. && Rscript -e "install.packages(c('here', 'renv', 'tinytex'))"
-  - Rscript -e "tinytex::install_tinytex()"
+  - cd .. && Rscript -e "install.packages(c('here', 'renv', 'tinytex', 'httr'))"
+  - Rscript -e "library(httr); set_config(config(ssl_verifypeer = 0L)); tinytex::install_tinytex()"
   - export PATH=$HOME/bin:${PATH}
   - cd $TRAVIS_BUILD_DIR && Rscript -e "renv::restore()"
 

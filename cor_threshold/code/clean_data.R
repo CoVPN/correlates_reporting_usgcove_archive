@@ -7,7 +7,7 @@ source(here::here("..", "_common.R"))
 source(here::here("code", "params.R"))
 
 # load data
-dat.mock <- read.csv(here::here("..", "data_clean", paste0(stringr::str_match(data_name,"(.+).csv")[,2],append_data,".csv")))
+#dat.mock <- read.csv(here::here("..", "data_clean", paste0(stringr::str_match(data_name,"(.+).csv")[,2],append_data,".csv")))
 
 
  

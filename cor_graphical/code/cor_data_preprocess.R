@@ -25,9 +25,12 @@ library(stringr)
 #myprint(tpeak, tpeaklag)
 #if (length(tpeak)==0 | length(tpeaklag)==0) stop("config "%.%COR%.%" misses some fields")
 
+# forcing this is not a good idea. ~ Youyi
 # set wt.DXX missingness to 0
 wt.vars <- colnames(dat.mock)[grepl("wt.D", colnames(dat.mock))]
-dat.mock[wt.vars][is.na(dat.mock[wt.vars])]<-0
+for (a in wt.vars) dat.mock[a][is.na(dat.mock[a])]<-0
+
+
 
 # load parameters
 source(here("code", "params.R"))

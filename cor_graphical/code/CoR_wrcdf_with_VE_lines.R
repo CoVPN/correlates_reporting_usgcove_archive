@@ -25,6 +25,7 @@ dat.cor.subset <- readRDS(here("data_clean",
 
 plot_ve_curves <- c(1, 1)
 for (bstatus in 0:1) {
+    if (verbose) print(bstatus)
   if (has57) {
     ve_dat <- dat.cor.subset %>%
       filter(EventTimePrimaryD57 >= 7, Bserostatus == bstatus) %>%
@@ -57,6 +58,7 @@ for (bstatus in 0:1) {
       VE_ub <- overall.ve[3]
 
       for (aa in 1:length(assays)) {
+      if (verbose) print(aa)
         subdat <-
           subset(
             dat.long.cor.subset,

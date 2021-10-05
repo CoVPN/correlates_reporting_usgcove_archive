@@ -56,13 +56,13 @@ jobs:
     #     - make data_processed
     #     - make risk_report
     #     - make cop_report
-    - name: Janssen Data Processing
-      env:
-        - REPORT_TYPE=IMMUNO
-        - TRIAL=janssen_pooled_mock
-      script:
-        - echo "Processing data"
-        - make data_processed
+    #- name: Janssen Data Processing
+    #  env:
+    #    - REPORT_TYPE=IMMUNO
+    #    - TRIAL=janssen_pooled_mock
+    #  script:
+    #    - echo "Processing data"
+    #    - make data_processed
     - name: Janssen Pooled Immuno Report
       env:
         - REPORT_TYPE=IMMUNO

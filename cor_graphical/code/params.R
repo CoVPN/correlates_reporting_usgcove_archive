@@ -1,7 +1,4 @@
-#-----------------------------------------------
-# obligatory to append to the top of each script
-source(here::here("..", "_common.R"))
-#-----------------------------------------------
+# this file should not source _common.R. ~ Youyi
 
 library(here)
 library(stringr)

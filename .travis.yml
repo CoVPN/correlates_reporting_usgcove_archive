@@ -36,17 +36,17 @@ jobs:
         - TRIAL=moderna_mock
       script:
         - echo "Building correlates of risk report"
-          - make data_processed
-          - make risk_report
+       #- make data_processed
+       #- make risk_report
         - make cor_report
-    - name: Janssen Pooled Correlates Report
+    - name: Janssen Pooled CoR Report
       env:
         - REPORT_TYPE=COR
         - TRIAL=janssen_pooled_mock
       script:
         - echo "Building correlates of risk report"
-          - make data_processed
-          - make risk_report
+       #- make data_processed
+       #- make risk_report
         - make cor_report
     # - name: Moderna CoP Report
     #   env:

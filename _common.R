@@ -5,7 +5,7 @@ set.seed(98109)
 
 # COR defines the analysis to be done, e.g. D14
 Args <- commandArgs(trailingOnly=TRUE)
-if (length(Args)==0) Args=c(COR="D29start1") 
+if (length(Args)==0) Args=c(COR="D57") 
 COR=Args[1]; myprint(COR)
 # COR has a set of analysis-specific parameters defined in the config file
 config.cor <- config::get(config = COR)

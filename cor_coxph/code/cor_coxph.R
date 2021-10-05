@@ -3,7 +3,7 @@
 renv::activate(project = here::here(".."))    
     # There is a bug on Windows that prevents renv from working properly. The following code provides a workaround:
     if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
-
+    
 source(here::here("..", "_common.R"))
 #-----------------------------------------------
 
@@ -119,7 +119,7 @@ if(Sys.getenv("TRIAL")!="moderna_real") {
     marker.cutpoints=attr(dat.vac.seroneg, "marker.cutpoints")
     
 } else {
-    
+    # to be changed
     dat.vac.seroneg = add.trichotomized.markers (dat.vac.seroneg, tpeak, wt.col.name="wt")
     marker.cutpoints=attr(dat.vac.seroneg, "marker.cutpoints")
        

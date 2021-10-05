@@ -228,11 +228,14 @@ labels_all <- full_join(labels.assays, resp.lb, by = c("time", "marker")) %>%
 # cat_v are rows of `subgroup`
 
 
-# Read in original data
-data_name_updated <- sub(".csv", "_with_riskscore.csv", data_name)
+# dat.mock was made in _common.R
+dat <- dat.mock
 
-dat <- dat_proc <- read.csv(here::here("..", "data_clean", data_name))
-#load(here::here("..", "data_clean/", paste0(attr(config,"config"), "_params.Rdata")))  # this is removed. objects moved to _common.R
+# Read in original data
+#data_name_updated <- sub(".csv", "_with_riskscore.csv", data_name)
+#dat <- dat_proc <- read.csv(here::here("..", "data_clean", data_name))
+#load(here::here("..", "data_clean/", paste0(attr(config,"config"), "_params.Rdata")))  # file removed. objects moved to _common.R
+
 
 # The stratified random cohort for immunogenicity
 ds_s <- dat %>%
@@ -568,7 +571,7 @@ if ((n_strtm2 <- ceiling(ncol(tab_strtm2)/2-1))!=0) {
 # Case counts by availability of markers at baseline, d29, d57
 
 if (study_name_code=="COVE"){
-  tab_case_cnt <- make.case.count.marker.availability.table(dat_proc) %>% 
+  tab_case_cnt <- make.case.count.marker.availability.table(dat) %>% 
     data.frame(check.names = F) %>% 
     rename_all(gsub, pattern=".", replacement="_", fixed=T) %>% 
     rownames_to_column("Case") %>% 

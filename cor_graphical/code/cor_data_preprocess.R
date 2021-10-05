@@ -10,19 +10,20 @@ library(here)
 library(dplyr)
 library(tidyverse)
 library(stringr)
-dat.mock <- read.csv(here("..", "data_clean", data_name))
+#dat.mock <- read.csv(here("..", "data_clean", data_name))# superceded by _common.R data read
 
-# COR defines the analysis to be done, e.g. D29, D57, D29start1
-Args <- commandArgs(trailingOnly=TRUE)
-if (length(Args)==0) Args=c(COR="D29D57") 
-COR=Args[1]; myprint(COR)
-
-# COR has a set of analysis-specific parameters defined in the config file
-config.cor <- config::get(config = COR)
-tpeak=as.integer(paste0(config.cor$tpeak))
-tpeaklag=as.integer(paste0(config.cor$tpeaklag))
-myprint(tpeak, tpeaklag)
-if (length(tpeak)==0 | length(tpeaklag)==0) stop("config "%.%COR%.%" misses some fields")
+## moved to _common.R
+## COR defines the analysis to be done, e.g. D29, D57, D29start1
+#Args <- commandArgs(trailingOnly=TRUE)
+#if (length(Args)==0) Args=c(COR="D29D57") 
+#COR=Args[1]; myprint(COR)
+#
+## COR has a set of analysis-specific parameters defined in the config file
+#config.cor <- config::get(config = COR)
+#tpeak=as.integer(paste0(config.cor$tpeak))
+#tpeaklag=as.integer(paste0(config.cor$tpeaklag))
+#myprint(tpeak, tpeaklag)
+#if (length(tpeak)==0 | length(tpeaklag)==0) stop("config "%.%COR%.%" misses some fields")
 
 # set wt.DXX missingness to 0
 wt.vars <- colnames(dat.mock)[grepl("wt.D", colnames(dat.mock))]
@@ -369,4 +370,3 @@ saveRDS(as.data.frame(dat.cor.subset),
 
 saveRDS(as.data.frame(dat.longer.cor.subset),
         file = here("data_clean", "longer_cor_data.rds"))
-

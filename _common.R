@@ -690,8 +690,8 @@ if (file.exists(here::here("..", "data_clean", data_name_updated))) {
     decode.tps.stratum=t(sapply(tps.stratums, function(i) unlist(subset(dat.mock, tps.stratum==i)[1,
         if (study_name=="COVE" | study_name=="MockCOVE" ) c("Senior", "HighRiskInd", "URMforsubcohortsampling") else if (study_name=="ENSEMBLE" | study_name=="MockENSEMBLE" ) c("Senior", "HighRiskInd", "Region", "URMforsubcohortsampling")
     ])))
-
     
+        
 } else {
     warning("dataset with risk score not available")
 }

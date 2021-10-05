@@ -54,9 +54,13 @@ dat_proc=subset(dat_proc, !is.na(Bserostatus))
 if(has57) dat_proc=subset(dat_proc, !is.na(EventTimePrimaryD57))
 
 dat_proc$EarlyendpointD29 <- with(dat_proc, ifelse(EarlyinfectionD29==1 | (EventIndPrimaryD1==1 & EventTimePrimaryD1 < NumberdaysD1toD29 + 7),1,0))
+
+# a hack to define EarlyinfectionD29start1, which is not in the mock or real moderna datasets
+# it is okay to have this because for moderna we are not using it to define Riskscorecohortflag and we are not doing D29start1 analyses
+if (study_name=="MockCOVE" | study_name=="COVE") dat_proc$EarlyinfectionD29start1=dat_proc$EarlyinfectionD29
+
 dat_proc$EarlyendpointD29start1<- with(dat_proc, ifelse(EarlyinfectionD29start1==1| (EventIndPrimaryD1==1 & EventTimePrimaryD1 < NumberdaysD1toD29 + 1),1,0))
 if(has57) dat_proc$EarlyendpointD57 <- with(dat_proc, ifelse(EarlyinfectionD57==1 | (EventIndPrimaryD1==1 & EventTimePrimaryD1 < NumberdaysD1toD57 + 7),1,0))
-
 
 
 # Indicator of membership in the cohort included in the analysis that defines the risk score in the placebo arm

@@ -5,7 +5,7 @@ set.seed(98109)
 
 # COR defines the analysis to be done, e.g. D14
 Args <- commandArgs(trailingOnly=TRUE)
-if (length(Args)==0) Args=c(COR="D29start1") 
+if (length(Args)==0) Args=c(COR="D57") 
 COR=Args[1]; myprint(COR)
 # COR has a set of analysis-specific parameters defined in the config file
 config.cor <- config::get(config = COR)
@@ -690,8 +690,8 @@ if (file.exists(here::here("..", "data_clean", data_name_updated))) {
     decode.tps.stratum=t(sapply(tps.stratums, function(i) unlist(subset(dat.mock, tps.stratum==i)[1,
         if (study_name=="COVE" | study_name=="MockCOVE" ) c("Senior", "HighRiskInd", "URMforsubcohortsampling") else if (study_name=="ENSEMBLE" | study_name=="MockENSEMBLE" ) c("Senior", "HighRiskInd", "Region", "URMforsubcohortsampling")
     ])))
-
     
+        
 } else {
     warning("dataset with risk score not available")
 }

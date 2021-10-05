@@ -15,23 +15,21 @@ library(xtable) # this is a dependency of kyotil
     
 source(here::here("code", "params.R"))
 
-# COR defines the analysis to be done, e.g. D29, D57, D29start1
-Args <- commandArgs(trailingOnly=TRUE)
-if (length(Args)==0) Args=c(COR="D29") 
-COR=Args[1]; myprint(COR)
-
-
-# COR defines the analysis to be done, e.g. D14
-Args <- commandArgs(trailingOnly=TRUE)
-if (length(Args)==0) Args=c(COR="D57") 
-COR=Args[1]; myprint(COR)
-# COR has a set of analysis-specific parameters defined in the config file
-config.cor <- config::get(config = COR)
-tpeak=as.integer(paste0(config.cor$tpeak))
-tpeaklag=as.integer(paste0(config.cor$tpeaklag))
-tfinal.tpeak=as.integer(paste0(config.cor$tfinal.tpeak))
-myprint(tpeak, tpeaklag, tfinal.tpeak)
-if (length(tpeak)==0 | length(tpeaklag)==0 | length(tfinal.tpeak)==0) stop("config "%.%COR%.%" misses some fields")
+## COR defines the analysis to be done, e.g. D29, D57, D29start1
+#Args <- commandArgs(trailingOnly=TRUE)
+#if (length(Args)==0) Args=c(COR="D29") 
+#COR=Args[1]; myprint(COR)
+## COR defines the analysis to be done, e.g. D14
+#Args <- commandArgs(trailingOnly=TRUE)
+#if (length(Args)==0) Args=c(COR="D57") 
+#COR=Args[1]; myprint(COR)
+## COR has a set of analysis-specific parameters defined in the config file
+#config.cor <- config::get(config = COR)
+#tpeak=as.integer(paste0(config.cor$tpeak))
+#tpeaklag=as.integer(paste0(config.cor$tpeaklag))
+#tfinal.tpeak=as.integer(paste0(config.cor$tfinal.tpeak))
+#myprint(tpeak, tpeaklag, tfinal.tpeak)
+#if (length(tpeak)==0 | length(tpeaklag)==0 | length(tfinal.tpeak)==0) stop("config "%.%COR%.%" misses some fields")
 
 
 # save tables and figures to analysis-specific folders
@@ -45,18 +43,18 @@ print(paste0("save.results.to equals ", save.results.to))
     
     
         
-###################################################################################################
-# read data_clean
-    
-data_name_updated <- sub(".csv", "_with_riskscore.csv", data_name)
-if (file.exists(here::here("..", "data_clean", data_name_updated))) {
-    dat.mock <- read.csv(here::here("..", "data_clean", data_name_updated))
-    data_name = data_name_updated
-} else {
-    dat.mock <- read.csv(here::here("..", "data_clean", data_name))
-}
-
-
+####################################################################################################
+## read data_clean
+#    
+#data_name_updated <- sub(".csv", "_with_riskscore.csv", data_name)
+#if (file.exists(here::here("..", "data_clean", data_name_updated))) {
+#    dat.mock <- read.csv(here::here("..", "data_clean", data_name_updated))
+#    data_name = data_name_updated
+#} else {
+#    dat.mock <- read.csv(here::here("..", "data_clean", data_name))
+#}
+#
+#
 #dat.mock$Region.f=as.factor(dat.mock$Region)
 #dat.mock$Region1=ifelse(dat.mock$Region==1, 1, 0)
 #dat.mock$Region2=ifelse(dat.mock$Region==2, 1, 0)

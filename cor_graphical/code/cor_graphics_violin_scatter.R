@@ -391,9 +391,9 @@ for (i in 1:length(plots)) {
       filter(!cohort_event == "Non-Cases") %>% 
       mutate(cohort_event = factor(cohort_event, levels = head(levels(cohort_event), -1)))
     
-    xvar <- ifelse(!(study_name=="ENSEMBLE" | study_name=="MockENSEMBLE"), "EventTimePrimaryD29",
+    xvar <- ifelse(!(study_name=="ENSEMBLE" | study_name=="MockENSEMBLE"), paste0("EventTimePrimaryD", tinterm),
                    ifelse(incNotMol=="IncludeNotMolecConfirmed", "EventTimePrimaryIncludeNotMolecConfirmedD1", "EventTimePrimaryD1"))
-    xlb <- ifelse(!(study_name=="ENSEMBLE" | study_name=="MockENSEMBLE"), 'Days Since the Day 29 Visit', 'Days Since the Day 1 Visit')
+    xlb <- ifelse(!(study_name=="ENSEMBLE" | study_name=="MockENSEMBLE"), paste0("Days Since the Day ", tinterm," Visit"), "Days Since the Day 1 Visit")
     y.breaks <- seq(floor(mins[plots[i]]), ceiling(maxs[plots[i]]))
     y.lim <- c(floor(mins[plots[i]]), ceiling(maxs[plots[i]]))
     x.breaks <- seq(from=0, to=max(ds.tmp[, xvar], na.rm=T), by=floor(max(ds.tmp[, xvar], na.rm=T)/5))

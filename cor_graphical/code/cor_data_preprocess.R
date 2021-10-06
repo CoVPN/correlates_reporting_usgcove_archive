@@ -57,16 +57,17 @@ if(study_name=="ENSEMBLE" | study_name=="MockENSEMBLE")  {
 } else {
   dat <- dat %>%
     mutate(cohort_event = factor(
-      ifelse(Perprotocol==1 & Bserostatus==0 & EarlyendpointD29==0 & TwophasesampIndD29==1 & EventIndPrimaryD29==1 & EventTimePrimaryD29 >=7 & EventTimePrimaryD29 <= (6 + NumberdaysD1toD57 - NumberdaysD1toD29), "Intercurrent Cases",
-             ifelse(Perprotocol==1 & Bserostatus==0 & EarlyendpointD57==0 & TwophasesampIndD29==1 & EventIndPrimaryD57==1, "Post-Peak Cases", 
+      ifelse(ph2.intercurrent.cases==1 & Bserostatus==0, "Intercurrent Cases",
+             ifelse(Perprotocol==1 & Bserostatus==0 & (!!as.name(paste0("EarlyendpointD", tpeak)))==0 & (!!as.name(paste0("TwophasesampIndD", tinterm)))==1 & (!!as.name(paste0("EventIndPrimaryD", tpeak)))==1, "Post-Peak Cases", 
                     # definition for post-peak cases include people with and without D57 marker data for downstream plotting
                     # will filter out those without D57 marker data in the D57 panels
-                    ifelse(Perprotocol==1 & Bserostatus==0 & EarlyendpointD57==0 & TwophasesampIndD57==1 & EventIndPrimaryD1==0, "Non-Cases", NA))),
+                    ifelse(Perprotocol==1 & Bserostatus==0 & (!!as.name(paste0("EarlyendpointD", tpeak)))==0 & (!!as.name(paste0("TwophasesampIndD", tpeak)))==1 & EventIndPrimaryD1==0, "Non-Cases", NA))),
       levels = c("Intercurrent Cases", "Post-Peak Cases", "Non-Cases"))
       )
 }
 
 dat <- dat[!is.na(dat$cohort_event),]
+
 
 
 
@@ -143,8 +144,8 @@ for (t in times[!grepl("Delta", times)]) {
 }
 
 # reset Delta29overB & Delta57overB for response call later using LLoD & ULoQ truncated data at Day 1, Day 29, Day 57
-dat.long$Delta29overB = with(dat.long, Day29 - B)
-if(!(study_name=="ENSEMBLE" | study_name=="MockENSEMBLE")) dat.long$Delta57overB = with(dat.long, Day57 - B)
+dat.long[, "Delta"%.%tinterm%.%"overB"] = dat.long[, "Day"%.%tinterm] - dat.long[, "B"]
+if(!(study_name=="ENSEMBLE" | study_name=="MockENSEMBLE")) dat.long[, "Delta"%.%tpeak%.%"overB"] = dat.long[, "Day"%.%tpeak] - dat.long[, "B"]
 
 # age threshold
 if (study_name=="COVE" | study_name=="MockCOVE") {age_thres=65; younger_age="Age < 65"; older_age="Age >= 65"
@@ -284,7 +285,7 @@ dat.longer.cor.subset <- dat.long.cor.subset.violin %>%
 #    for intercurrent cases at D57, Day 2-14 Cases & Day 15-35 Cases at D29, can't use ph2.D57/ph2.D29 because they are before D57/D29
 if(!(study_name=="ENSEMBLE" | study_name=="MockENSEMBLE")) {
   dat.longer.cor.subset <- dat.longer.cor.subset %>% 
-    filter(!(cohort_event %in% c("Intercurrent Cases", "Post-Peak Cases") & time == "Day57" & TwophasesampIndD57==0))
+    filter(!(cohort_event %in% c("Intercurrent Cases", "Post-Peak Cases") & time == paste0("Day", tpeak) & (!!as.name(paste0("TwophasesampIndD", tpeak)))==0))
 }
 
 # define response rates

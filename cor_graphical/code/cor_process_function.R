@@ -66,7 +66,7 @@ getResponder <- function(data,
 # a function to define response rate by group
 get_resp_by_group <- function(dat=dat, group=group){
   
-  if(study_name=="ENSEMBLE" | study_name=="MockENSEMBLE") {wt="wt.D29"} else {wt="wt.D57"}
+  if(study_name=="ENSEMBLE" | study_name=="MockENSEMBLE") {wt="wt.D29"} else {wt=paste0("wt.D", tpeak)}
   
   complete <- complete.cases(dat[, group])
   
@@ -95,7 +95,7 @@ get_sample_by_group <- function(dat.plot, group){
   
   dat.sample <- dat.plot %>%
     group_by_at(group) %>%
-    sample_n((ifelse(n()>=100 & cohort_event=="Non-Cases", 100, n())), replace=F) %>% filter(time=="Day 29") %>%
+    sample_n((ifelse(n()>=100 & cohort_event=="Non-Cases", 100, n())), replace=F) %>% filter(time==paste0(substr(times[2],1,3)," ", substr(times[2],4,5))) %>% # eg time=="Day 29"
     ungroup() %>%
     select(c("Ptid", group[!group %in% "time"])) %>%
     inner_join(dat.plot, by=c("Ptid", group[!group %in% "time"]))

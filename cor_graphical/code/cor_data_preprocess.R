@@ -144,8 +144,9 @@ for (t in times[!grepl("Delta", times)]) {
 }
 
 # reset Delta29overB & Delta57overB for response call later using LLoD & ULoQ truncated data at Day 1, Day 29, Day 57
-dat.long[, "Delta"%.%tinterm%.%"overB"] = dat.long[, "Day"%.%tinterm] - dat.long[, "B"]
-if(!(study_name=="ENSEMBLE" | study_name=="MockENSEMBLE")) dat.long[, "Delta"%.%tpeak%.%"overB"] = dat.long[, "Day"%.%tpeak] - dat.long[, "B"]
+for (t in unique(gsub("Day", "", times[!grepl("Delta|B", times)]))) {
+  dat.long[, "Delta"%.%t%.%"overB"] = dat.long[, "Day"%.%t] - dat.long[, "B"]
+}
 
 # age threshold
 if (study_name=="COVE" | study_name=="MockCOVE") {age_thres=65; younger_age="Age < 65"; older_age="Age >= 65"

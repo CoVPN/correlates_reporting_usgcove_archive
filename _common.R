@@ -13,6 +13,7 @@ config.cor <- config::get(config = COR)
 tpeak=as.integer(paste0(config.cor$tpeak))
 tpeaklag=as.integer(paste0(config.cor$tpeaklag))
 tfinal.tpeak=as.integer(paste0(config.cor$tfinal.tpeak))
+tinterm=as.integer(paste0(config.cor$tinterm))
 myprint(tpeak, tpeaklag, tfinal.tpeak)
 # D29D57 may not have all fields
 if (length(tpeak)==0 | length(tpeaklag)==0) stop("config "%.%COR%.%" misses some fields")

@@ -135,15 +135,8 @@ for (sev in c("", if (study_name=="ENSEMBLE" | study_name=="MockENSEMBLE") "seve
   		  for (assay in gsub("bind", "", gsub("bind", "", gsub("bind", "", gsub("pseudoneut","pnAb_", assays))))) {
   		    for (trt in c("Placebo", "Vaccine")) {
 
-  		      cat(paste0("![](",   here("cor_graphical", "figs", gsub("[_]+", "_", paste0(type, "_", assay, "_", trt, "_", "BaselineNeg_", facet, "_", sev, "_", ver, "_", study_name, ".pdf"))),   ")"))
-  		      
-  		      cat(paste0("\n\nFigure 2.5.", i, ": ", gsub("box", "", type), "plots of ", 
-  		                 labels.assays[grepl(substr(assay, nchar(assay)-4+1, nchar(assay)), names(labels.assays))], 
-  		                 ": baseline negative ", tolower(trt), " arm", 
-  		                 ifelse(facet!="", paste0(" by ", names(facets)[facets==facet]), ""), 
-  		                 ifelse(sev!="", " severe only", ""),
-  		                 " (version ", gsub("v", "", ver), ")", "\n\n"))
-  		      
+  		      res = knitr::knit_child(c(here::here('cor_graphical', 'report_sub1.Rmd')), quiet = TRUE)
+  		      cat(res, sep = '\n')
   		      cat("\\clearpage", sep = '\n')
   		      i = i + 1
   		    }
@@ -165,12 +158,9 @@ labels.time.no.fold <- labels.time[(names(labels.time) %in% times) & !grepl("fol
 for (cohort in c("Vaccine_BaselineNeg", "all")) {
 	for (assay in gsub("bind", "", gsub("bind", "", gsub("pseudoneut","pnAb_", assays)))) {
     for (day in gsub(" ","", labels.time.no.fold)) {
-		  cat(paste0("![](",   here("cor_graphical", "figs", paste0("scatter_", assay, "_", cohort, "_", day, "_", study_name, ".pdf")),   ")"))
       
-      cat(paste0("\n\nFigure 2.6.", i, ": ", "scatterplots of ", 
-                 labels.assays[grepl(substr(assay, nchar(assay)-4+1, nchar(assay)), names(labels.assays))], " vs Age: ",
-                 ifelse(cohort=="Vaccine_BaselineNeg", "baseline negative vaccine", "by"), " arm at day ", gsub("Day", "", day), "\n\n"))
-      
+		  res = knitr::knit_child(c(here::here('cor_graphical', 'report_sub2.Rmd')), quiet = TRUE)
+  		cat(res, sep = '\n')
       cat("\\clearpage", sep = '\n')
       i = i + 1
 		} 
@@ -179,14 +169,9 @@ for (cohort in c("Vaccine_BaselineNeg", "all")) {
 
 for (cohort in c("Vaccine_BaselineNeg", "all")){
 	for (assay in gsub("bind", "", gsub("bind", "", gsub("pseudoneut","pnAb_", assays)))){
-		cat(paste0("![](",   here("cor_graphical", "figs", paste0("scatter_daysince_", assay, "_", cohort, "_", study_name, ".pdf")),   ")"))
-  		      
-    cat(paste0("\n\nFigure 2.6.", i, ": ", "scatterplots of ", 
-               labels.assays[grepl(substr(assay, nchar(assay)-4+1, nchar(assay)), names(labels.assays))], 
-               " vs Days Since the ", labels.time.no.fold[length(labels.time.no.fold)-1], " Visit: ",
-               ifelse(cohort=="Vaccine_BaselineNeg", "baseline negative vaccine", "by"), " arm at ", 
-               labels.time.no.fold[length(labels.time.no.fold)-1], " and ", last(labels.time.no.fold), "\n\n"))
-    
+		
+	  res = knitr::knit_child(c(here::here('cor_graphical', 'report_sub3.Rmd')), quiet = TRUE)
+		cat(res, sep = '\n')
     cat("\\clearpage", sep = '\n')
     i = i + 1
 	}

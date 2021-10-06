@@ -5,7 +5,7 @@ set.seed(98109)
 
 # COR defines the analysis to be done, e.g. D14
 Args <- commandArgs(trailingOnly=TRUE)
-if (length(Args)==0) Args=c(COR="D29D57") 
+if (length(Args)==0) Args=c(COR="D57") 
 COR=Args[1]; myprint(COR)
 # COR has a set of analysis-specific parameters defined in the config file
 config.cor <- config::get(config = COR)
@@ -619,9 +619,15 @@ add.trichotomized.markers=function(dat, tpeak, wt.col.name) {
 
 # if this is run under _reporting level, it will not load and will warn
 data_name_updated <- sub(".csv", "_with_riskscore.csv", data_name)
-if (file.exists(here::here("..", "data_clean", data_name_updated))) {
-    dat.mock <- read.csv(here::here("..", "data_clean", data_name_updated))
-    data_name = data_name_updated
+if (startsWith(tolower(study_name), "mock")) {
+    path_to_data = here::here("..", "data_clean", data_name_updated)
+    data_name = data_name_updated    
+} else {
+    path_to_data = here::here("..", "..", data_cleaned)
+    data_name = path_to_data
+}
+if (file.exists(path_to_data)) {
+    dat.mock <- read.csv(path_to_data)
     print(paste0("reading data from ",data_name))
     
     if(config$is_ows_trial) {

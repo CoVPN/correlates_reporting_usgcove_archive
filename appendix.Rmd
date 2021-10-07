@@ -6,6 +6,30 @@ quiet <- capture.output({
   source(here::here("_common.R"))
 })
 library(here)
+library(digest)
+
+#processed_file_digest is created in _common.R, but because the working directory issue, it is not created properly when _common.R is sourced here.
+if (startsWith(tolower(study_name), "mock")) {
+    data_name_updated <- data_name
+    path_to_data = here::here("data_clean", data_name_updated)
+} else {
+    data_name_updated <- data_cleaned
+    path_to_data = here::here("..", data_name_updated)
+}
+if (file.exists(path_to_data)) {
+    dat.mock <- read.csv(path_to_data)
+    print(paste0("reading data from ",data_name_updated))
+
+    # get hash of commit at HEAD
+    commit_hash <- system("git rev-parse HEAD", intern = TRUE)    
+    # get hash of input processed data file based on chosen hashing algorithm
+    processed_file_digest <- digest(file = path_to_data, algo = hash_algorithm)
+    
+} else {
+    warning("dataset with risk score not available")
+  processed_file_digest = ""
+}
+
 
 ```
 
@@ -16,8 +40,4 @@ library(here)
   https://github.com/CoVPN/correlates_reporting/commit/`r system("git rev-parse HEAD", intern = TRUE)`
 
 
-* The `r hash_algorithm` hash sum of the processed file, `r paste0("\"",data_name,"\"")`: TBD
-
-<!-- processed_file_digest is created in _common.R, but because the working directory issue, it is not created properly when _common.R is sourced here. -->
-
-`r #processed_file_digest`
+* The `r hash_algorithm` hash sum of the processed file, `r paste0("\"",data_name_updated,"\"")`: `r processed_file_digest`

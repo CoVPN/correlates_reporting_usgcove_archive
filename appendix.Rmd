@@ -23,4 +23,3 @@ commit_hash <- system("git rev-parse HEAD", intern = TRUE)
   https://github.com/CoVPN/correlates_reporting/commit/`r commit_hash`
 
 
-<!-- * The `r hash_algorithm` hash sum of the processed file,   `r paste0("\"",data_name,"\"")`: `r processed_file_digest` -->

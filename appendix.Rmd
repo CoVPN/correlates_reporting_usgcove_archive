@@ -6,20 +6,18 @@ quiet <- capture.output({
   source(here::here("_common.R"))
 })
 library(here)
-library(digest)
 
-# get hash of commit at HEAD
-commit_hash <- system("git rev-parse HEAD", intern = TRUE)
-
-# get hash of input processed data file based on chosen hashing algorithm
-#processed_file <- here("data_clean", sub(".csv", "_with_riskscore.csv", data_name))
-#processed_file_digest <- digest(file = processed_file, algo = hash_algorithm)
 ```
 
 * This report was built from the
   [`CoVPN/correlates_reporting`](https://github.com/CoVPN/correlates_reporting)
-  repository with commit hash `r commit_hash`. A diff of the changes introduced
+  repository with commit hash `r system("git rev-parse HEAD", intern = TRUE)`. A diff of the changes introduced
   by that commit may be viewed at
-  https://github.com/CoVPN/correlates_reporting/commit/`r commit_hash`
+  https://github.com/CoVPN/correlates_reporting/commit/`r system("git rev-parse HEAD", intern = TRUE)`
 
 
+* The `r hash_algorithm` hash sum of the processed file, `r paste0("\"",data_name,"\"")`: TBD
+
+<!-- processed_file_digest is created in _common.R, but because the working directory issue, it is not created properly when _common.R is sourced here. -->
+
+`r #processed_file_digest`

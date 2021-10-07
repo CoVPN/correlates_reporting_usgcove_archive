@@ -1,6 +1,7 @@
 library(methods)
 library(dplyr)
 library(kyotil)
+library(digest)
 set.seed(98109)
 
 # COR defines the analysis to be done, e.g. D14
@@ -629,6 +630,11 @@ if (startsWith(tolower(study_name), "mock")) {
 if (file.exists(path_to_data)) {
     dat.mock <- read.csv(path_to_data)
     print(paste0("reading data from ",data_name))
+
+    # get hash of commit at HEAD
+    commit_hash <- system("git rev-parse HEAD", intern = TRUE)    
+    # get hash of input processed data file based on chosen hashing algorithm
+    processed_file_digest <- digest(file = path_to_data, algo = hash_algorithm)
     
     if(config$is_ows_trial) {
         # maxed over Spike, RBD, N, restricting to Day 29 or 57

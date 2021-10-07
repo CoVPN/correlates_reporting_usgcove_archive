@@ -25,6 +25,7 @@ moderna_trial: &moderna_trial
 moderna_real: &moderna_real
   <<: *moderna_trial
   data_in_file: immune1.csv 
+  data_cleaned: p3001/download_data/Moderna COVE mRNA 1273P301_immune_20210915/moderna_real_data_processed_with_riskscore.csv
   study_name: COVE
   num_boot_replicates: 1000
   num_perm_replicates: 10000

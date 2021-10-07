@@ -12,8 +12,8 @@ library(digest)
 commit_hash <- system("git rev-parse HEAD", intern = TRUE)
 
 # get hash of input processed data file based on chosen hashing algorithm
-processed_file <- here("data_clean", sub(".csv", "_with_riskscore.csv", data_name))
-processed_file_digest <- digest(file = processed_file, algo = hash_algorithm)
+#processed_file <- here("data_clean", sub(".csv", "_with_riskscore.csv", data_name))
+#processed_file_digest <- digest(file = processed_file, algo = hash_algorithm)
 ```
 
 * This report was built from the
@@ -23,5 +23,4 @@ processed_file_digest <- digest(file = processed_file, algo = hash_algorithm)
   https://github.com/CoVPN/correlates_reporting/commit/`r commit_hash`
 
 
-* The `r hash_algorithm` hash sum of the processed file,
-  `r paste0("\"",data_name,"\"")`: `r processed_file_digest`
+<!-- * The `r hash_algorithm` hash sum of the processed file,   `r paste0("\"",data_name,"\"")`: `r processed_file_digest` -->

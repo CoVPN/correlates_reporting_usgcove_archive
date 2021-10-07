@@ -113,18 +113,8 @@ print(form.0)
 ###################################################################################################
 # define trichotomized markers
 
-if(Sys.getenv("TRIAL")!="moderna_real") {
-    
-    dat.vac.seroneg = add.trichotomized.markers (dat.vac.seroneg, tpeak, wt.col.name="wt")
-    marker.cutpoints=attr(dat.vac.seroneg, "marker.cutpoints")
-    
-} else {
-    # to be changed
-    dat.vac.seroneg = add.trichotomized.markers (dat.vac.seroneg, tpeak, wt.col.name="wt")
-    marker.cutpoints=attr(dat.vac.seroneg, "marker.cutpoints")
-       
-}
-
+dat.vac.seroneg = add.trichotomized.markers (dat.vac.seroneg, tpeak, wt.col.name="wt")
+marker.cutpoints=attr(dat.vac.seroneg, "marker.cutpoints")
 
 cutpoints=list()
 for (a in assays) {        

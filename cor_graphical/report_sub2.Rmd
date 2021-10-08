@@ -1,9 +1,9 @@
 \begin{figure}[H]
-    \centering
-    \includegraphics[width=1\textwidth]{`r here("cor_graphical", "figs", paste0("scatter_", assay, "_", cohort, "_", day, "_", study_name, ".pdf"))`}
-    \caption{`r paste0("\n\nFigure 2.6.", i, ": ", "scatterplots of ", 
-                 labels.assays[grepl(substr(assay, nchar(assay)-4+1, nchar(assay)), names(labels.assays))], " vs Age: ",
-                 ifelse(cohort=="Vaccine_BaselineNeg", "baseline negative vaccine", "by"), " arm at day ", gsub("Day", "", day), "\n\n")`}
+\center
+
+\includegraphics[width=1\textwidth]{`r here("cor_graphical", "figs", paste0("scatter_", assay, "_", cohort, "_", day, "_", study_name, ".pdf"))`}
+
+\caption{`r paste0("\n\nFigure 2.6.", i, ": ", "scatterplots of ",  labels.assays[grepl(substr(assay, nchar(assay)-4+1, nchar(assay)), names(labels.assays))], " vs Age: ", ifelse(cohort=="Vaccine_BaselineNeg", "baseline negative vaccine", "by"), " arm at day ", gsub("Day", "", day), "\n\n")`}
 \end{figure}
 
 \hphantom{Random text to appease the latex god}

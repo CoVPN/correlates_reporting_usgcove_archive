@@ -1,11 +1,9 @@
 \begin{figure}[H]
-    \centering
-    \includegraphics[width=1\textwidth]{`r here("cor_graphical", "figs", paste0("scatter_daysince_", assay, "_", cohort, "_", study_name, ".pdf"))`}
-    \caption{`r paste0("\n\nFigure 2.6.", i, ": ", "scatterplots of ", 
-               labels.assays[grepl(substr(assay, nchar(assay)-4+1, nchar(assay)), names(labels.assays))], 
-               " vs Days Since the ", labels.time.no.fold[length(labels.time.no.fold)-1], " Visit: ",
-               ifelse(cohort=="Vaccine_BaselineNeg", "baseline negative vaccine", "by"), " arm at ", 
-               labels.time.no.fold[length(labels.time.no.fold)-1], " and ", last(labels.time.no.fold), "\n\n")`}
+\center
+
+\includegraphics[width=1\textwidth]{`r here("cor_graphical", "figs", paste0("scatter_daysince_", assay, "_", cohort, "_", study_name, ".pdf"))`}
+
+\caption{`r paste0("\n\nFigure 2.6.", i, ": ", "scatterplots of ", labels.assays[grepl(substr(assay, nchar(assay)-4+1, nchar(assay)), names(labels.assays))], " vs Days Since the ", labels.time.no.fold[length(labels.time.no.fold)-1], " Visit: ", ifelse(cohort=="Vaccine_BaselineNeg", "baseline negative vaccine", "by"), " arm at ", labels.time.no.fold[length(labels.time.no.fold)-1], " and ", last(labels.time.no.fold), "\n\n")`}
 \end{figure}
 
 \hphantom{Random text to appease the latex god}

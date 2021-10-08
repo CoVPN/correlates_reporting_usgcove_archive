@@ -12,20 +12,6 @@ library(kyotil) # p.adj.perm, getFormattedSummary
 myprint(study_name)
 myprint(verbose)
 
-# COR defines the analysis to be done, e.g. D29, D57, D29start1
-Args <- commandArgs(trailingOnly=TRUE)
-if (length(Args)==0) Args=c(COR="D29D57") 
-COR=Args[1]; myprint(COR)
-
-# COR has a set of analysis-specific parameters defined in the config file
-config.cor <- config::get(config = COR)
-tpeak=as.integer(paste0(config.cor$tpeak))
-tpeaklag=as.integer(paste0(config.cor$tpeaklag))
-tinterm=as.integer(paste0(config.cor$tinterm))
-myprint(tpeak, tpeaklag, tinterm)
-if (length(tpeak)==0 | length(tpeaklag)==0 | length(tinterm)==0) stop("config "%.%COR%.%" misses some fields")
-
-
 # path for figures and tables etc
 save.results.to = here::here("output")
 if (!dir.exists(save.results.to))  dir.create(save.results.to)
@@ -36,14 +22,7 @@ if (!dir.exists(save.results.to))  dir.create(save.results.to)
 print(paste0("save.results.to equals ", save.results.to))
     
 
-
-dat.mock <- read.csv(here::here("..", "data_clean", data_name))
-
-print(paste0("reading data from ",data_name))
-
-# PROPOSED CHANGE
 if (config$is_ows_trial) dat.mock=subset(dat.mock, Bserostatus==0)
-
 
 mypdf (mfrow=c(1,3), file=paste0(save.results.to, "barplot_mixed"))     
     tmp.1=table(subset(dat.mock, ph1.intercurrent.cases       & Trt==1, "EventTimePrimaryD"%.%tinterm, drop=T))

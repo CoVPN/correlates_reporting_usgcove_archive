@@ -1,0 +1,56 @@
+# Day `r Day` Vaccine efficacy curve
+
+
+\ifENSEMBLE
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{`r pathCoPoutput`/fig_Day`r Day`bindSpike_EventIndPrimaryD`r Day`_`r study_name`.pdf}
+   \caption{Vaccine efficacy curve estimate (solid line) with pointwise (dashed line) and simultaneous (dotted line) 95\% confidence intervals
+for vaccine efficacy in the Day `r Day` binding Ab to spike markers (denoted as S(1)) among baseline negative trial participants. p.int = two-sided p-value based on the Wald-test for interaction between 
+treatment antibody marker S(1) in the risk model, which evaluates whether vaccine efficacy changes over subgroups defined by the antibody marker S(1).}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{`r pathCoPoutput`/fig_Day`r Day`bindRBD_EventIndPrimaryD`r Day`_`r study_name`.pdf}
+   \caption{Vaccine efficacy curve estimate (solid line) with pointwise (dashed line) and simultaneous (dotted line) 95\% confidence intervals
+for vaccine efficacy in the Day `r Day` binding Ab to RBD markers (denoted as S(1)) among baseline negative trial participants. p.int = two-sided p-value based on the Wald-test for interaction between 
+treatment antibody marker S(1) in the risk model, which evaluates whether vaccine efficacy changes over subgroups defined by the antibody marker S(1).}
+\end{figure}
+
+\else
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{`r pathCoPoutput`/fig_Day`r Day`bindSpike_EventIndPrimaryD`r Day`_`r study_name`.pdf}
+   \caption{Vaccine efficacy curve estimate (solid line) with pointwise (dashed line) and simultaneous (dotted line) 95\% confidence intervals
+for vaccine efficacy in the Day `r Day` binding Ab to spike markers (denoted as S(1)) among baseline negative trial participants. p.int = two-sided p-value based on the Wald-test for interaction between 
+treatment antibody marker S(1) in the risk model, which evaluates whether vaccine efficacy changes over subgroups defined by the antibody marker S(1).}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{`r pathCoPoutput`/fig_Day`r Day`bindRBD_EventIndPrimaryD`r Day`_`r study_name`.pdf}
+   \caption{Vaccine efficacy curve estimate (solid line) with pointwise (dashed line) and simultaneous (dotted line) 95\% confidence intervals
+for vaccine efficacy in the Day `r Day` binding Ab to RBD markers (denoted as S(1)) among baseline negative trial participants. p.int = two-sided p-value based on the Wald-test for interaction between 
+treatment antibody marker S(1) in the risk model, which evaluates whether vaccine efficacy changes over subgroups defined by the antibody marker S(1).}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{`r pathCoPoutput`/fig_Day`r Day`pseudoneutid50_EventIndPrimaryD`r Day`_`r study_name`.pdf}
+   \caption{Vaccine efficacy curve estimate (solid line) with pointwise (dashed line) and simultaneous (dotted line) 95\% confidence intervals
+for vaccine efficacy in the Day `r Day` pseudo neut ID50 markers (denoted as S(1)) among baseline negative trial participants. p.int = two-sided p-value based on the Wald-test for interaction between 
+treatment antibody marker S(1) in the risk model, which evaluates whether vaccine efficacy changes over subgroups defined by the antibody marker S(1).}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{`r pathCoPoutput`/fig_Day`r Day`pseudoneutid80_EventIndPrimaryD`r Day`_`r study_name`.pdf}
+   \caption{Vaccine efficacy curve estimate (solid line) with pointwise (dashed line) and simultaneous (dotted line) 95\% confidence intervals
+for vaccine efficacy in the Day `r Day` pseudo neut ID80 markers (denoted as S(1)) among baseline negative trial participants. p.int = two-sided p-value based on the Wald-test for interaction between 
+treatment antibody marker S(1) in the risk model, which evaluates whether vaccine efficacy changes over subgroups defined by the antibody marker S(1).}
+\end{figure}
+
+\fi

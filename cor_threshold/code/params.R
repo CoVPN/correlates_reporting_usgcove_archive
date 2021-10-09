@@ -27,7 +27,9 @@ source(here::here("..", "_common.R"))
 
 ##### Compute reference times for analysis -semi hard coded
 
-data <- read.csv(here::here("..", "data_clean", data_name))
+#data <- read.csv(here::here("..", "data_clean", data_name))
+data <- dat.mock
+
 
 tf <- list()
 if(has29){

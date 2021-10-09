@@ -9,7 +9,7 @@ get_plot <- function(key, simultaneous_CI = F, monotone = F, above = TRUE) {
   library(survival)
     print("PLOTS")
     print(key)
-  dat.mock <- read.csv(here::here("..", "data_clean", paste0(stringr::str_match(data_name,"(.+).csv")[,2],append_data,".csv")))
+#  dat.mock <- read.csv(here::here("..", "data_clean", paste0(stringr::str_match(data_name,"(.+).csv")[,2],append_data,".csv")))
   data <- dat.mock
    short_key <- key_to_short[[key]]
    marker <- key_to_markers[key]

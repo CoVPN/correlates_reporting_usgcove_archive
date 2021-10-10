@@ -43,6 +43,7 @@ janssen_trial: &janssen_trial
   two_marker_timepoints: no
   timepoints: [29]
   assays: [bindSpike, bindRBD]
+  primary_assays: [bindSpike, bindRBD]
   times: [B, Day29, Delta29overB]
   data_raw_dir: janssen
   study_name_code: ENSEMBLE

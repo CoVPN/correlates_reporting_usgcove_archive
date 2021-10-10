@@ -1,0 +1,14 @@
+## Multivariate Cox Models of Risk {#cor-multicoxph-Day`r COR`}
+
+
+\begin{table}[H]
+\caption{Inference for Day `r tpeak` antibody marker covariate-adjusted correlates of risk of `r txt.endpoint` in the vaccine group: Hazard ratios per 10-fold increment in the marker*}
+\begin{center}
+    \input{`r pathCoRoutput`/CoR_multivariable_svycoxph_pretty_`r study_name`}\\
+\end{center}
+*Baseline covariates adjusted for: `r covariates_adjusted`. Maximum failure event time \input{`r pathCoRoutput`/timepoints_cum_risk_`r study_name`} days.\\
+%**`r txt.coxph.note2`\\
+`r special.note`
+    %\label{tab:CoR_multivariable_svycoxph_pretty_`r study_name`}
+\end{table}
+

@@ -57,6 +57,7 @@ janssen_trial_real: &janssen_trial_real
 janssen_trial_mock: &janssen_trial_mock
   <<: *janssen_trial
   data_in_file: COVID_ENSEMBLE_practicedata.csv
+  primary_assays: [bindSpike, bindRBD] 
   study_name: MockENSEMBLE
   num_boot_replicates: 10
   num_perm_replicates: 10

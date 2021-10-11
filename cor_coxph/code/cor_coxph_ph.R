@@ -257,3 +257,36 @@ tab.nop12=cbind(
 )
 rownames(tab.nop12)=c(rbind(c(labels.axis["Day"%.%tpeak, assays]), "", ""))
 rv$tab.2=tab.nop12
+
+
+
+
+###################################################################################################
+# multiple regression with all primary assays in one model
+
+if(verbose) print("Multiple regression for primary assays")
+
+if (!is.null(config$primary_assays)) {
+    f= update(form.0, as.formula(paste0("~.+", concatList(paste0("Day",config$timepoints, config$primary_assays),"+"))))
+    fit=svycoxph(f, design=design.vacc.seroneg) 
+
+    fits=list(fit)
+    est=getFormattedSummary(fits, exp=T, robust=T, rows=rows, type=1)
+    ci= getFormattedSummary(fits, exp=T, robust=T, rows=rows, type=13)
+    est = paste0(est, " ", ci)
+    p=  getFormattedSummary(fits, exp=T, robust=T, rows=rows, type=10)
+    
+    #generalized Wald test for whether the set of markers has any correlation (rejecting the complete null)
+    var.ind=length(coef(fit)) - length(config$primary_assays):1 + 1
+    stat=coef(fit)[var.ind] %*% solve(vcov(fit)[var.ind,var.ind]) %*% coef(fit)[var.ind] 
+    p.gwald=pchisq(stat, length(var.ind), lower.tail = FALSE)
+    
+    tab=cbind(est, p)
+    rownames(tab)=c(labels.axis["Day"%.%tpeak, config$primary_assays])
+    colnames(tab)=c("HR per 10 fold incr.", "P value")
+    tab
+    tab=rbind(tab, "Generalized Wald Test"=c("", formatDouble(p.gwald,3, remove.leading0 = F)))
+    
+    mytex(tab, file.name="CoR_multivariable_svycoxph_pretty_"%.%study_name, align="c", include.colnames = T, save2input.only=T, input.foldername=save.results.to, )
+
+}

@@ -8,20 +8,36 @@ quiet <- capture.output({
 library(here)
 library(digest)
 
-# get hash of commit at HEAD
-commit_hash <- system("git rev-parse HEAD", intern = TRUE)
+#processed_file_digest is created in _common.R, but because the working directory issue, it is not created properly when _common.R is sourced here.
+if (startsWith(tolower(study_name), "mock")) {
+    data_name_updated <- data_name
+    path_to_data = here::here("data_clean", data_name_updated)
+} else {
+    data_name_updated <- data_cleaned
+    path_to_data = here::here("..", data_name_updated)
+}
+if (file.exists(path_to_data)) {
+    dat.mock <- read.csv(path_to_data)
+    print(paste0("reading data from ",data_name_updated))
 
-# get hash of input processed data file based on chosen hashing algorithm
-processed_file <- here("data_clean", sub(".csv", "_with_riskscore.csv", data_name))
-processed_file_digest <- digest(file = processed_file, algo = hash_algorithm)
+    # get hash of commit at HEAD
+    commit_hash <- system("git rev-parse HEAD", intern = TRUE)    
+    # get hash of input processed data file based on chosen hashing algorithm
+    processed_file_digest <- digest(file = path_to_data, algo = hash_algorithm)
+    
+} else {
+    warning("dataset with risk score not available")
+  processed_file_digest = ""
+}
+
+
 ```
 
 * This report was built from the
   [`CoVPN/correlates_reporting`](https://github.com/CoVPN/correlates_reporting)
-  repository with commit hash `r commit_hash`. A diff of the changes introduced
+  repository with commit hash `r system("git rev-parse HEAD", intern = TRUE)`. A diff of the changes introduced
   by that commit may be viewed at
-  https://github.com/CoVPN/correlates_reporting/commit/`r commit_hash`
+  https://github.com/CoVPN/correlates_reporting/commit/`r system("git rev-parse HEAD", intern = TRUE)`
 
 
-* The `r hash_algorithm` hash sum of the processed file,
-  `r paste0("\"",data_name,"\"")`: `r processed_file_digest`
+* The `r hash_algorithm` hash sum of the processed file, `r paste0("\"",data_name_updated,"\"")`: `r processed_file_digest`

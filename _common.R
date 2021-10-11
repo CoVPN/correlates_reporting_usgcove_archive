@@ -1,12 +1,7 @@
-library(methods)
-library(dplyr)
-library(kyotil)
-set.seed(98109)
-
 # COR defines the analysis to be done, e.g. D14
 Args <- commandArgs(trailingOnly=TRUE)
-if (length(Args)==0) Args=c(COR="D29D57") 
-COR=Args[1]; myprint(COR)
+if (length(Args)==0) Args=c(COR="D29") 
+library(kyotil); COR=Args[1]; myprint(COR)
 # COR has a set of analysis-specific parameters defined in the config file
 config.cor <- config::get(config = COR)
 #
@@ -14,18 +9,21 @@ tpeak=as.integer(paste0(config.cor$tpeak))
 tpeaklag=as.integer(paste0(config.cor$tpeaklag))
 tfinal.tpeak=as.integer(paste0(config.cor$tfinal.tpeak))
 tinterm=as.integer(paste0(config.cor$tinterm))
-myprint(tpeak, tpeaklag, tfinal.tpeak)
+myprint(tpeak, tpeaklag, tfinal.tpeak, tinterm)
 # D29D57 may not have all fields
 if (length(tpeak)==0 | length(tpeaklag)==0) stop("config "%.%COR%.%" misses some fields")
 
+
+library(methods)
+library(dplyr)
+library(digest)
+set.seed(98109)
 
 
 config <- config::get(config = Sys.getenv("TRIAL"))
 for(opt in names(config)){
   eval(parse(text = paste0(names(config[opt])," <- config[[opt]]")))
 }
-
-
  
 # disabling lower level parallelization in favor of higher level of parallelization
 
@@ -620,10 +618,21 @@ add.trichotomized.markers=function(dat, tpeak, wt.col.name) {
 
 # if this is run under _reporting level, it will not load and will warn
 data_name_updated <- sub(".csv", "_with_riskscore.csv", data_name)
-if (file.exists(here::here("..", "data_clean", data_name_updated))) {
-    dat.mock <- read.csv(here::here("..", "data_clean", data_name_updated))
-    data_name = data_name_updated
+if (startsWith(tolower(study_name), "mock")) {
+    path_to_data = here::here("..", "data_clean", data_name_updated)
+    data_name = data_name_updated    
+} else {
+    path_to_data = here::here("..", "..", data_cleaned)
+    data_name = path_to_data
+}
+if (file.exists(path_to_data)) {
+    dat.mock <- read.csv(path_to_data)
     print(paste0("reading data from ",data_name))
+
+    # get hash of commit at HEAD
+    commit_hash <- system("git rev-parse HEAD", intern = TRUE)    
+    # get hash of input processed data file based on chosen hashing algorithm
+    processed_file_digest <- digest(file = path_to_data, algo = hash_algorithm)
     
     if(config$is_ows_trial) {
         # maxed over Spike, RBD, N, restricting to Day 29 or 57

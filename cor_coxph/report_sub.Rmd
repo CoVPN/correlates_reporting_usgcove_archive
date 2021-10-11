@@ -83,5 +83,12 @@ $^2$E-values are computed for upper tertile ($s=1$) vs. lower tertile ($s=0$) bi
 ```
 
 
+```{r, echo=FALSE, results='asis'}
+  if (!is.null(config$primary_assays)) {
+    res = knitr::knit_child(c(here::here('cor_coxph', 'multiple_regression.Rmd')), quiet = TRUE)
+    cat(res, sep = '\n')
+  }
+```
+
 
 

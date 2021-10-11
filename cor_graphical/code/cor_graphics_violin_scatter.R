@@ -49,6 +49,16 @@ col_lb <- c("Day 2-14 Cases"="#FF5EBF", "Day 15-29 Cases"="#0AB7C9", "Day 15-35 
 shp_lb <- c("Day 2-14 Cases"=18, "Day 15-29 Cases"=16, "Day 15-35 Cases"=16, "Intercurrent Cases"=16, "Post-Peak Cases"=17, "Non-Cases"=15)
 
 
+# path for figures and tables etc
+save.results.to = here::here("output")
+if (!dir.exists(save.results.to))  dir.create(save.results.to)
+save.results.to = paste0(here::here("output"), "/", attr(config,"config"));
+if (!dir.exists(save.results.to))  dir.create(save.results.to)
+save.results.to = paste0(save.results.to, "/", COR,"/");
+if (!dir.exists(save.results.to))  dir.create(save.results.to)
+print(paste0("save.results.to equals ", save.results.to))
+
+
 #' A ggplot object for violin box plot with or without lines
 #' 
 #' @param dat Dataframe with variables needed
@@ -170,7 +180,7 @@ for (i in 1:length(plots)) {
                                 )
           g <- grid.arrange(p, bottom = textGrob("All data points for cases are shown. Non-Case data points are shown for all eligible participants or for a random sample of 100 eligible participants, whichever is larger", x = 1, hjust = 1, gp = gpar(fontsize = 15)))
           file_name <- paste0("linebox_", gsub("bind","",gsub("pseudoneut","pnAb_",plots[i])), "_", trt[k], "_", gsub(" ","",bstatus[j]), "_", if(case_set=="severe") "severe_", "v",t,"_", study_name, ".pdf")
-          suppressWarnings(ggsave2(plot = g, filename = here("figs", file_name), width = 16, height = 11))
+          suppressWarnings(ggsave2(plot = g, filename = paste0(save.results.to, file_name), width = 16, height = 11))
           
           p <- violin_box_plot(dat=       subset(longer_cor_data_plot1, assay==plots[i] & Bserostatus==bstatus[j] & Trt==trt[k] & !is.na(value) & time %in% unlist(timesls[t]) & eval(as.name(case_set))==1), 
                                 dat.sample=subset(longer_cor_data_plot1, assay==plots[i] & Bserostatus==bstatus[j] & Trt==trt[k] & !is.na(value) & time %in% unlist(timesls[t]) & eval(as.name(case_set))==1), 
@@ -191,7 +201,7 @@ for (i in 1:length(plots)) {
                                 xlabel=gsub("\nCases", ifelse(case_set=="severe", "\nSevere\nCases", "\nCases"), x_lb)
                                 )
           file_name <- paste0("violinbox_", gsub("bind","",gsub("pseudoneut","pnAb_",plots[i])), "_", trt[k], "_", gsub(" ","",bstatus[j]), "_", if(case_set=="severe") "severe_", "v",t,"_", study_name, ".pdf")
-          suppressWarnings(ggsave2(plot = p, filename = here("figs", file_name), width = 16, height = 11))
+          suppressWarnings(ggsave2(plot = p, filename = paste0(save.results.to, file_name), width = 16, height = 11))
         }
       }
     }
@@ -241,7 +251,7 @@ for (i in 1:length(plots)) {
             g <- grid.arrange(p, bottom = textGrob("All data points for cases are shown. Non-Case data points are shown for all eligible participants or for a random sample of 100 eligible participants, whichever is larger", x = 1, hjust = 1, gp = gpar(fontsize = 15)))
             s1 <- ifelse(s=="age_geq_65_label", "Age", ifelse(s=="highrisk_label", "Risk", ifelse(s=="sex_label","Sex", ifelse(s=="minority_label","RaceEthnic", ifelse(s=="Dich_RaceEthnic","Dich_RaceEthnic",NA)))))
             file_name <- paste0("linebox_", gsub("bind","",gsub("pseudoneut","pnAb_",plots[i])), "_", trt[k], "_", gsub(" ","",bstatus[j]), "_", s1, "_", if(case_set=="severe") "severe_", "v", t,"_", study_name, ".pdf")
-            suppressWarnings(ggsave2(plot = g, filename = here("figs", file_name), width = 16, height = 11))
+            suppressWarnings(ggsave2(plot = g, filename = paste0(save.results.to, file_name), width = 16, height = 11))
             
             p <- violin_box_plot(dat=       subset(longer_cor_data_plot2, assay==plots[i] & Bserostatus==bstatus[j] & Trt==trt[k] & !is.na(value) & time %in% unlist(timesls[t]) & eval(as.name(case_set))==1), 
                                   dat.sample=subset(longer_cor_data_plot2, assay==plots[i] & Bserostatus==bstatus[j] & Trt==trt[k] & !is.na(value) & time %in% unlist(timesls[t]) & eval(as.name(case_set))==1), 
@@ -262,7 +272,7 @@ for (i in 1:length(plots)) {
                                   xlabel=gsub("\nCases", ifelse(case_set=="severe", "\nSevere\nCases", "\nCases"), x_lb)
                                   )
             file_name <- paste0("violinbox_", gsub("bind","",gsub("pseudoneut","pnAb_",plots[i])), "_", trt[k], "_", gsub(" ","",bstatus[j]), "_", s1, "_", if(case_set=="severe") "severe_", "v", t,"_", study_name, ".pdf")
-            suppressWarnings(ggsave2(plot = p, filename = here("figs", file_name), width = 16, height = 11))
+            suppressWarnings(ggsave2(plot = p, filename = paste0(save.results.to, file_name), width = 16, height = 11))
             
           }
         }
@@ -302,7 +312,7 @@ for (i in 1:length(plots)) {
                                 )
           g <- grid.arrange(p, bottom = textGrob("All data points for cases are shown. Non-Case data points are shown for all eligible participants or for a random sample of 100 eligible participants, whichever is larger", x = 1, hjust = 1, gp = gpar(fontsize = 15)))
           file_name <- paste0("linebox_", gsub("bind","",gsub("pseudoneut","pnAb_",plots[i])), "_", trt[k], "_", gsub(" ","",bstatus[j]), "_Age_Risk_", if(case_set=="severe") "severe_", "v", t,"_", study_name, ".pdf")
-          suppressWarnings(ggsave2(plot = g, filename = here("figs", file_name), width = 16, height = 13.5))
+          suppressWarnings(ggsave2(plot = g, filename = paste0(save.results.to, file_name), width = 16, height = 13.5))
           
           p <- violin_box_plot(dat=       subset(longer_cor_data_plot3, assay==plots[i] & Bserostatus==bstatus[j] & Trt==trt[k] & !is.na(value) & time %in% unlist(timesls[t]) & eval(as.name(case_set))==1), 
                                 dat.sample=subset(longer_cor_data_plot3, assay==plots[i] & Bserostatus==bstatus[j] & Trt==trt[k] & !is.na(value) & time %in% unlist(timesls[t]) & eval(as.name(case_set))==1), 
@@ -324,7 +334,7 @@ for (i in 1:length(plots)) {
                                 xlabel=gsub("\nCases", ifelse(case_set=="severe", "\nSevere\nCases", "\nCases"), x_lb)
                                 )
           file_name <- paste0("violinbox_", gsub("bind","",gsub("pseudoneut","pnAb_",plots[i])), "_", trt[k], "_", gsub(" ","",bstatus[j]), "_Age_Risk_", if(case_set=="severe") "severe_", "v", t,"_", study_name, ".pdf")
-          suppressWarnings(ggsave2(plot = p, filename = here("figs", file_name), width = 16, height = 13.5))
+          suppressWarnings(ggsave2(plot = p, filename = paste0(save.results.to, file_name), width = 16, height = 13.5))
         }
       }
     }
@@ -369,7 +379,7 @@ for (i in 1:length(plots)) {
               axis.text.x = element_text(size=ifelse(c=="Vaccine_BaselineNeg", 27, 19)))
       
       file_name <- paste0("scatter_",gsub("bind","",gsub("pseudoneut","pnAb_",plots[i])),"_",c,"_",gsub(" ","",timesls[[2]][d]),"_", study_name, ".pdf")
-      suppressMessages(ggsave2(plot = p, filename = here("figs", file_name), width = 12.5, height = 11))
+      suppressMessages(ggsave2(plot = p, filename = paste0(save.results.to, file_name), width = 12.5, height = 11))
       
     }
   }
@@ -420,7 +430,7 @@ for (i in 1:length(plots)) {
             axis.text.x = element_text(size=ifelse(c=="Vaccine_BaselineNeg", 27, 19)))
     
     file_name <- paste0("scatter_daysince_",gsub("bind","",gsub("pseudoneut","pnAb_",plots[i])),"_",c,"_",study_name, ".pdf")
-    suppressMessages(ggsave2(plot = p, filename = here("figs", file_name), width = 12.5, height = 11))
+    suppressMessages(ggsave2(plot = p, filename = paste0(save.results.to, file_name), width = 12.5, height = 11))
     
   }
 }

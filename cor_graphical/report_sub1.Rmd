@@ -1,7 +1,7 @@
 \begin{figure}
 \center
     
-\includegraphics[width=1\textwidth]{`r here("cor_graphical", "figs", gsub("[_]+", "_", paste0(type, "_", assay, "_", trt, "_", "BaselineNeg_", facet, "_", sev, "_", ver, "_", study_name)))`}
+\includegraphics[width=1\textwidth]{`r here("cor_graphical", "output", attr(config,"config"), COR, gsub("[_]+", "_", paste0(type, "_", assay, "_", trt, "_", "BaselineNeg_", facet, "_", sev, "_", ver, "_", study_name)))`}
 
 \caption{`r paste0("\n\nFigure 2.5.", i, ": ", gsub("box", "", type), "plots of ", labels.assays[grepl(substr(assay, nchar(assay)-4+1, nchar(assay)), names(labels.assays))], ": baseline negative ", tolower(trt), " arm", ifelse(facet!="", paste0(" by ", names(facets)[facets==facet]), ""), ifelse(sev!="", " severe only", ""), " (version ", gsub("v", "", ver), ")", "\n\n")`}
 \end{figure}

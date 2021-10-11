@@ -5,10 +5,68 @@ source(here::here("..", "_common.R"))
 
 library(tidyverse)
 
+#' Generate response calls and fold-rise indicator for endpoints:
+#' Responders at each pre-defined timepoint are defined as participants who
+#' had baseline values below the LLOD with detectable ID80 neutralization titer
+#' above the assay LLOD, or as participants with baseline values above
+#' the LLOD with a 4-fold increase in neutralizing antibody titer.
+#'
+#' @param data The dataframe with the endpoint of interest at baseline and
+#'  post-baseline.
+#' @param bl The variable of endpoint value at baseline
+#' @param post The variable of endpoint value at post-baseline
+#' @param folds Folds to generate fold-rise indicator
+#' @param cutoff LLOD or LLOQ
+#' @param respoderFR Fold-rise used for response call positivity criteria
+#'
+#' @return Response calls and fold-rise indicator for \code{bl}: \emph{bl}Resp,
+#'  \emph{bl}FR\emph{folds}
+getResponder <- function(data,
+                         cutoff.name, 
+                         times=times, 
+                         assays=assays, 
+                         folds=c(2, 4),
+                         grtns=c(2, 4),
+                         responderFR = 4,
+                         pos.cutoffs = pos.cutoffs) {
+  
+  cutoff <- get(paste0(cutoff.name, "s"))
+  for (i in times){
+    for (j in assays){
+      post <- paste0(i, j)
+      bl <- paste0("B", j)
+      delta <- paste0("Delta", gsub("Day", "", i), "overB", j)
+      
+      data[, bl] <- pmin(data[, bl], log10(uloqs[j]))
+      data[, post] <- pmin(data[, post], log10(uloqs[j]))
+      data[, delta] <- ifelse(10^data[, post] < lloqs[j], log10(lloqs[j]/2), data[, post])-ifelse(10^data[, bl] < lloqs[j], log10(lloqs[j]/2), data[, bl])
+      
+      for (k in folds){
+        data[, paste0(post, k, cutoff.name)] <- as.numeric(10^data[, post] >= k*cutoff[j])
+      }
+      
+      for (k in grtns){
+        data[, paste0(post, "FR", k)] <- as.numeric(10^data[, delta] >= k)
+      }
+      
+      if (!is.na(pos.cutoffs[j])) {
+        data[, paste0(post, "Resp")] <- as.numeric(data[, post] > log10(pos.cutoffs[j]))
+        data[, paste0(bl, "Resp")] <- as.numeric(data[, bl] > log10(pos.cutoffs[j]))
+      } else {
+        data[, paste0(post, "Resp")] <- as.numeric(
+          (data[, bl] < log10(cutoff[j]) & data[, post] > log10(cutoff[j])) |
+            (data[, bl] >= log10(cutoff[j]) & data[, paste0(post, "FR", responderFR)] == 1))
+        data[, paste0(bl, "Resp")] <- as.numeric(data[, bl] > log10(cutoff[j]))
+      }
+    }
+  }
+  return(data)
+}
+
 # a function to define response rate by group
 get_resp_by_group <- function(dat=dat, group=group){
   
-  if(study_name=="ENSEMBLE" | study_name=="MockENSEMBLE") {wt="wt.D29"} else {wt="wt.D57"}
+  if(study_name=="ENSEMBLE" | study_name=="MockENSEMBLE") {wt="wt.D29"} else {wt=paste0("wt.D", tpeak)}
   
   complete <- complete.cases(dat[, group])
   
@@ -37,7 +95,7 @@ get_sample_by_group <- function(dat.plot, group){
   
   dat.sample <- dat.plot %>%
     group_by_at(group) %>%
-    sample_n((ifelse(n()>=100 & cohort_event=="Non-Cases", 100, n())), replace=F) %>% filter(time=="Day 29") %>%
+    sample_n((ifelse(n()>=100 & cohort_event=="Non-Cases", 100, n())), replace=F) %>% filter(time==paste0(substr(times[2],1,3)," ", substr(times[2],4,5))) %>% # eg time=="Day 29"
     ungroup() %>%
     select(c("Ptid", group[!group %in% "time"])) %>%
     inner_join(dat.plot, by=c("Ptid", group[!group %in% "time"]))

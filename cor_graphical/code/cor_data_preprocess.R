@@ -57,16 +57,17 @@ if(study_name=="ENSEMBLE" | study_name=="MockENSEMBLE")  {
 } else {
   dat <- dat %>%
     mutate(cohort_event = factor(
-      ifelse(Perprotocol==1 & Bserostatus==0 & EarlyendpointD29==0 & TwophasesampIndD29==1 & EventIndPrimaryD29==1 & EventTimePrimaryD29 >=7 & EventTimePrimaryD29 <= (6 + NumberdaysD1toD57 - NumberdaysD1toD29), "Intercurrent Cases",
-             ifelse(Perprotocol==1 & Bserostatus==0 & EarlyendpointD57==0 & TwophasesampIndD29==1 & EventIndPrimaryD57==1, "Post-Peak Cases", 
+      ifelse(ph2.intercurrent.cases==1 & Bserostatus==0, "Intercurrent Cases",
+             ifelse(Perprotocol==1 & Bserostatus==0 & (!!as.name(paste0("EarlyendpointD", tpeak)))==0 & (!!as.name(paste0("TwophasesampIndD", tinterm)))==1 & (!!as.name(paste0("EventIndPrimaryD", tpeak)))==1, "Post-Peak Cases", 
                     # definition for post-peak cases include people with and without D57 marker data for downstream plotting
                     # will filter out those without D57 marker data in the D57 panels
-                    ifelse(Perprotocol==1 & Bserostatus==0 & EarlyendpointD57==0 & TwophasesampIndD57==1 & EventIndPrimaryD1==0, "Non-Cases", NA))),
+                    ifelse(Perprotocol==1 & Bserostatus==0 & (!!as.name(paste0("EarlyendpointD", tpeak)))==0 & (!!as.name(paste0("TwophasesampIndD", tpeak)))==1 & EventIndPrimaryD1==0, "Non-Cases", NA))),
       levels = c("Intercurrent Cases", "Post-Peak Cases", "Non-Cases"))
       )
 }
 
 dat <- dat[!is.na(dat$cohort_event),]
+
 
 
 
@@ -143,8 +144,9 @@ for (t in times[!grepl("Delta", times)]) {
 }
 
 # reset Delta29overB & Delta57overB for response call later using LLoD & ULoQ truncated data at Day 1, Day 29, Day 57
-dat.long$Delta29overB = with(dat.long, Day29 - B)
-if(!(study_name=="ENSEMBLE" | study_name=="MockENSEMBLE")) dat.long$Delta57overB = with(dat.long, Day57 - B)
+for (t in unique(gsub("Day", "", times[!grepl("Delta|B", times)]))) {
+  dat.long[, "Delta"%.%t%.%"overB"] = dat.long[, "Day"%.%t] - dat.long[, "B"]
+}
 
 # age threshold
 if (study_name=="COVE" | study_name=="MockCOVE") {age_thres=65; younger_age="Age < 65"; older_age="Age >= 65"
@@ -284,40 +286,21 @@ dat.longer.cor.subset <- dat.long.cor.subset.violin %>%
 #    for intercurrent cases at D57, Day 2-14 Cases & Day 15-35 Cases at D29, can't use ph2.D57/ph2.D29 because they are before D57/D29
 if(!(study_name=="ENSEMBLE" | study_name=="MockENSEMBLE")) {
   dat.longer.cor.subset <- dat.longer.cor.subset %>% 
-    filter(!(cohort_event %in% c("Intercurrent Cases", "Post-Peak Cases") & time == "Day57" & TwophasesampIndD57==0))
+    filter(!(cohort_event %in% c("Intercurrent Cases", "Post-Peak Cases") & time == paste0("Day", tpeak) & (!!as.name(paste0("TwophasesampIndD", tpeak)))==0))
 }
 
 # define response rates
+resp <- getResponder(dat.mock, cutoff.name="lloq", times=grep("Day", times, value=T), 
+             assays=assays, pos.cutoffs = pos.cutoffs)
+resp2 <- resp[, c("Ptid", colnames(resp)[grepl("Resp", colnames(resp))])] %>%
+  pivot_longer(!Ptid, names_to = "category", values_to = "response")
+  
 dat.longer.cor.subset <- dat.longer.cor.subset %>%
+  filter(!grepl("Delta", time)) %>%
+  mutate(category=paste0(time, assay, "Resp")) %>%
+  left_join(resp2, by=c("Ptid", "category")) %>%
   mutate(
-    time = ifelse(time=="B", "Day 1", ifelse(time=="Day29", "Day 29", ifelse(time=="Day57", "Day 57", time))),
-    baseline_lt_thres = ifelse(time=="Day 1" & value >= LLoQ, 1, 0),
-    increase_4F_D29 = ifelse(time=="Delta29overB" & value>log10(4), 1, 0),
-    increase_4F_D57 = ifelse(time=="Delta57overB" & value>log10(4), 1, 0)) %>%
-  group_by(Ptid, assay) %>%
-  mutate(baseline_lt_thres_ptid=max(baseline_lt_thres),
-         increase_4F_D29_ptid=max(increase_4F_D29),
-         increase_4F_D57_ptid=max(increase_4F_D57)) %>%
-  ungroup() %>%
-  filter(!grepl("Delta", time))
-
-if(!(study_name=="ENSEMBLE" | study_name=="MockENSEMBLE")) {
-  dat.longer.cor.subset$response_nab = with(dat.longer.cor.subset, 
-          ifelse(baseline_lt_thres_ptid == 0 & value >= LLoQ, 1,
-                 ifelse(baseline_lt_thres_ptid == 1 & time == "Day 1", 1,
-                       ifelse(baseline_lt_thres_ptid == 1 & time == "Day 29" & increase_4F_D29_ptid==1, 1,
-                              ifelse(baseline_lt_thres_ptid == 1 & time == "Day 57" & increase_4F_D57_ptid==1, 1,0)))))
-} else {
-  dat.longer.cor.subset$increase_4F_D57=NULL
-  dat.longer.cor.subset$increase_4F_D57_ptid=NULL
-  dat.longer.cor.subset$response_nab = with(dat.longer.cor.subset, 
-           ifelse(baseline_lt_thres_ptid == 0 & value >= LLoQ, 1,
-                  ifelse(baseline_lt_thres_ptid == 1 & time == "Day 1", 1,
-                         ifelse(baseline_lt_thres_ptid == 1 & time == "Day 29" & increase_4F_D29_ptid==1, 1, 0))))}
-
-dat.longer.cor.subset$response_bind = with(dat.longer.cor.subset, ifelse(value >= pos.cutoffs, 1, 0))
-dat.longer.cor.subset$response = with(dat.longer.cor.subset, ifelse(assay %in% c("pseudoneutid50", "pseudoneutid80"), response_nab, 
-                           ifelse(assay %in% c("bindSpike", "bindRBD", "bindN"), response_bind, NA)))
+    time = ifelse(time=="B", "Day 1", ifelse(grepl("Day", time), paste(substr(time, 1, 3), substr(time, 4, 5)), NA)))
 
 # define severe: severe case or non-case
 if(study_name=="ENSEMBLE" | study_name=="MockENSEMBLE") {

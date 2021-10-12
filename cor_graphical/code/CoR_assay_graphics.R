@@ -20,18 +20,39 @@ dat.cor.subset <- readRDS(here(
   "cor_data.rds"
 ))
 
+# path for figures
+save.results.to <- here::here("output")
+if (!dir.exists(save.results.to))  dir.create(save.results.to)
+save.results.to <- paste0(here::here("output"), "/", attr(config,"config"));
+if (!dir.exists(save.results.to))  dir.create(save.results.to)
+save.results.to <- paste0(save.results.to, "/", COR,"/");
+if (!dir.exists(save.results.to))  dir.create(save.results.to)
+print(paste0("save.results.to equals ", save.results.to))
+
+
+### variables for looping
+plots_ytitles <- labels.assays.short
+plots_titles <- labels.assays[names(labels.assays) %in% names(labels.assays.short)]
+timesls <- list(labels.time[(names(labels.time) %in% times) & !grepl("fold-rise", labels.time)][-1], 
+                labels.time[(names(labels.time) %in% times) & !grepl("fold-rise", labels.time)])
+
 #=========================================================================================================================
 # Reverse empirical cdf (rcdf) plots for the Baseline/Day 57/Baseline-subtracted Day 57assay readouts, 
 # stratified by treatment group and event status, in baseline negative or positive subjects
 # We made four ggplot objects, each for one assay, and combine them with ggarrange
 #=========================================================================================================================
-wts <- c("wt.D57", "wt.D29", "wt.D57", "wt.D29", "wt.D57")
-tps <- c("Day29", "Day57", "Delta29overB", "Delta57overB")
-for (tp in tps[tps %in% times]){
+tps <- times[times != "B"]
+for (tp in tps){
   dat.long.cor.subset$TrtEvent <- paste(as.character(dat.long.cor.subset$Trt), as.character(dat.long.cor.subset$cohort_event),sep = ", ")
-  if (tp %in% c("Day57", "Delta57overB")) {  ## day 57 analysis don't include intercurrent cases
-    dat.long.cor.subset <- dat.long.cor.subset %>% filter(cohort_event != "Intercurrent Cases" & ph2.D57==1)
-  }
+  
+  
+  # if (tp %in% c("Day57", "Delta57overB")) {  ## day 57 analysis don't include intercurrent cases
+  #   dat.long.cor.subset <- dat.long.cor.subset %>% filter(cohort_event != "Intercurrent Cases" & ph2.D57==1)
+  # }
+  
+  # Get the numerical day to find weights
+  day <- gsub(".*?([0-9]+).*", "\\1", tp)
+  
   rcdf_list <- vector("list", 4)
   for (aa in seq_along(assays)) {
     rcdf_list[[aa]] <- ggplot(subset(dat.long.cor.subset, assay == assays[aa]), 
@@ -39,10 +60,7 @@ for (tp in tps[tps %in% times]){
                                 x = tp, 
                                 colour = "TrtEvent", 
                                 linetype = "cohort_event",
-                                weight = ifelse(
-                                  tp %in% c("Day29", "Delta29overB"),
-                                  "wt.D29", 
-                                  "wt.D57")
+                                weight = paste0("wt.D", day)
                               )
     ) +
       geom_step(aes(y = 1 - ..y..), stat = "ecdf", lwd = 1) +
@@ -82,17 +100,6 @@ for (tp in tps[tps %in% times]){
 ## make another subsample datasets such that the jitter plot for each subgroup in each panel contains no more
 ## than 50 data points
 set.seed(12345)
-dat.sample3 <- dat.long.cor.subset %>%
-  filter(., .$Trt == "Vaccine") %>% 
-  split(., list(.$assay, .$cohort_event)) %>%
-  lapply(., function(x) {
-    if(nrow(x) <= 100) {
-      return(x)
-    } else {
-      return(x[sample(1:nrow(x), size = 100),])
-    }}) %>% bind_rows
-
-set.seed(12345)
 dat.sample4 <-  dat.long.cor.subset %>%
   filter(., .$Trt == "Vaccine") %>% 
   split(., list(.$assay, .$cohort_event)) %>%
@@ -112,11 +119,13 @@ dat.sample4 <-  dat.long.cor.subset %>%
 for (tp in tps[tps %in% times]){
   subdat <- dat.long.cor.subset
   subdat_jitter <- dat.sample4
-  if (tp %in% c("Day57", "Delta57overB")) {
-    subdat <- dat.long.cor.subset %>% filter(cohort_event != "Intercurrent Cases" & ph2.D57==1)
-    subdat_jitter <- subdat_jitter %>% filter(cohort_event != "Intercurrent Cases" & ph2.D57==1)
-  }
-  boxplot_list <- vector("list", 4)
+  
+  # if (tp %in% c("Day57", "Delta57overB")) {
+  #   subdat <- dat.long.cor.subset %>% filter(cohort_event != "Intercurrent Cases" & ph2.D57==1)
+  #   subdat_jitter <- subdat_jitter %>% filter(cohort_event != "Intercurrent Cases" & ph2.D57==1)
+  # }
+  
+  boxplot_list <- vector("list", length(assays))
   for (aa in seq_along(assays)) {
     boxplot_list[[aa]] <-  ggplot(subset(subdat, assay == assays[aa] & Trt == "Vaccine"), 
                                   aes_string(x = "cohort_event", y = tp)) +
@@ -141,7 +150,7 @@ for (tp in tps[tps %in% times]){
             strip.text = element_text(size = 14, face = "bold"),
             legend.title = element_blank(),
             legend.text = element_text(size = 14),)
-    if (tp %in% c("Day29", "Day57")) {
+    if (grepl("delta", tp, ignore.case = TRUE)) {
       boxplot_list[[aa]] <- boxplot_list[[aa]] + 
         geom_hline(yintercept = log10(lloqs[assays][aa]), linetype = 2, color = "black", lwd = 1) +
         geom_hline(yintercept = log10(uloqs[assays][aa]), linetype = 2, color = "black", lwd = 1)

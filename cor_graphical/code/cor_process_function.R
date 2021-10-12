@@ -1,6 +1,5 @@
 #-----------------------------------------------
 # obligatory to append to the top of each script
-source(here::here("..", "_common.R"))
 #-----------------------------------------------
 
 library(tidyverse)

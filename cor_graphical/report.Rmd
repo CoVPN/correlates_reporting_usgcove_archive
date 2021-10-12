@@ -17,6 +17,7 @@ library(latex2exp)
 here::i_am("cor_graphical/report.Rmd")
 plot_ve_curves <- readRDS(here::here("cor_graphical", "data_clean", "plot_ve_curves.rds"))
 source(here::here("_common.R"))
+COR=ifelse(grepl("ENSEMBLE", study_name), "D29", "D29D57")
 ```
 
 ## Boxplots

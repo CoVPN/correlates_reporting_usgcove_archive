@@ -5,12 +5,12 @@ renv::activate(project = here::here(".."))
 # There is a bug on Windows that prevents renv from working properly. The following code provides a workaround:
 if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
     
-source(here::here("..", "_common.R"))
-COR=ifelse(grepl("ENSEMBLE", study_name), "D29", "D29D57") # will delete this hard code later
 incNotMol <- ""  #"IncludeNotMolecConfirmed"
 #-----------------------------------------------
 
 source(here::here("code", "cor_process_function.R"))
+source(here::here("..", "_common.R"))
+COR=ifelse(grepl("ENSEMBLE", study_name), "D29", "D29D57") # will delete this hard code later
 library(scales)
 library(tidyverse)
 library(here)

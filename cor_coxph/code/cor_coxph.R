@@ -1,4 +1,4 @@
-#Sys.setenv(TRIAL = "moderna_mock") # moderna_mock  janssen_pooled_mock  janssen_pooled_real  janssen_na_mock
+#Sys.setenv(TRIAL = "janssen_pooled_mock") # moderna_mock  janssen_pooled_mock  janssen_pooled_real  janssen_na_mock
 #Sys.setenv(VERBOSE = 1) 
 renv::activate(project = here::here(".."))    
     # There is a bug on Windows that prevents renv from working properly. The following code provides a workaround:
@@ -113,18 +113,8 @@ print(form.0)
 ###################################################################################################
 # define trichotomized markers
 
-if(Sys.getenv("TRIAL")!="moderna_real") {
-    
-    dat.vac.seroneg = add.trichotomized.markers (dat.vac.seroneg, tpeak, wt.col.name="wt")
-    marker.cutpoints=attr(dat.vac.seroneg, "marker.cutpoints")
-    
-} else {
-    # to be changed
-    dat.vac.seroneg = add.trichotomized.markers (dat.vac.seroneg, tpeak, wt.col.name="wt")
-    marker.cutpoints=attr(dat.vac.seroneg, "marker.cutpoints")
-       
-}
-
+dat.vac.seroneg = add.trichotomized.markers (dat.vac.seroneg, tpeak, wt.col.name="wt")
+marker.cutpoints=attr(dat.vac.seroneg, "marker.cutpoints")
 
 cutpoints=list()
 for (a in assays) {        

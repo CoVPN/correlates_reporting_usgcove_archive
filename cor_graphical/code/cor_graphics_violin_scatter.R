@@ -6,6 +6,7 @@ renv::activate(project = here::here(".."))
 if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
     
 source(here::here("..", "_common.R"))
+COR=ifelse(grepl("ENSEMBLE", study_name), COR, "D29D57")
 incNotMol <- ""  #"IncludeNotMolecConfirmed"
 #-----------------------------------------------
 
@@ -42,12 +43,25 @@ names(maxs) <- min_max_plot$assay
 
 
 # labels
-x_lb <- c("Day 1" = "Day 1", "Day 29" = "Day 29", "Day 57" = "Day 57",
-         "Intercurrent Cases"="Intercurrent\nCases", "Post-Peak Cases"="Post-Peak\nCases", "Non-Cases"="Non-Cases",
-         "Day 2-14 Cases"="Day 2-14\nCases", "Day 15-29 Cases"="Day 15-29\nCases", "Day 15-35 Cases"="Day 15-35\nCases", "Post-Peak Cases"="Post-Peak\nCases", "Non-Cases"="Non-Cases")
-col_lb <- c("Day 2-14 Cases"="#FF5EBF", "Day 15-29 Cases"="#0AB7C9", "Day 15-35 Cases"="#0AB7C9", "Intercurrent Cases"="#0AB7C9","Post-Peak Cases"="#FF6F1B","Non-Cases"="#810094")
-shp_lb <- c("Day 2-14 Cases"=18, "Day 15-29 Cases"=16, "Day 15-35 Cases"=16, "Intercurrent Cases"=16, "Post-Peak Cases"=17, "Non-Cases"=15)
-
+if (study_name=="ENSEMBLE" | study_name=="MockENSEMBLE"){
+  x_lb <- c("Day 1", "Day 29", "Day 2-14\nCases", paste0("Day 15-", 28+tpeaklag, "\nCases"), "Post-Peak\nCases", "Non-Cases")
+  names(x_lb) <- c("Day 1", "Day 29", "Day 2-14 Cases", paste0("Day 15-", 28+tpeaklag, " Cases"), "Post-Peak Cases", "Non-Cases")
+  
+  col_lb <- c("#FF5EBF", "#0AB7C9", "#FF6F1B", "#810094")
+  names(col_lb) <- c("Day 2-14 Cases", paste0("Day 15-", 28+tpeaklag, " Cases"), "Post-Peak Cases", "Non-Cases")
+  
+  shp_lb <- c(18, 16, 17, 15)
+  names(shp_lb) <- c("Day 2-14 Cases", paste0("Day 15-", 28+tpeaklag, " Cases"), "Post-Peak Cases", "Non-Cases")
+} else {
+  x_lb <- c("Day 1", paste0("Day ", tinterm), paste0("Day ", tpeak), "Intercurrent\nCases", "Post-Peak\nCases", "Non-Cases")
+  names(x_lb) <- c("Day 1", paste0("Day ", tinterm), paste0("Day ", tpeak), "Intercurrent Cases", "Post-Peak Cases", "Non-Cases")
+  
+  col_lb <- c("#0AB7C9","#FF6F1B","#810094")
+  names(col_lb) <- c("Intercurrent Cases","Post-Peak Cases","Non-Cases")
+  
+  shp_lb <- c(16, 17, 15)
+  names(shp_lb) <- c("Intercurrent Cases", "Post-Peak Cases", "Non-Cases")
+}
 
 # path for figures and tables etc
 save.results.to = here::here("output")

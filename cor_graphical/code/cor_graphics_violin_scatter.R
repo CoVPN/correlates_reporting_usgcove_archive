@@ -6,7 +6,7 @@ renv::activate(project = here::here(".."))
 if (.Platform$OS.type == "windows") .libPaths(c(paste0(Sys.getenv ("R_HOME"), "/library"), .libPaths()))
     
 source(here::here("..", "_common.R"))
-COR=ifelse(grepl("ENSEMBLE", study_name), COR, "D29D57")
+COR=ifelse(grepl("ENSEMBLE", study_name), "D29", "D29D57") # will delete this hard code later
 incNotMol <- ""  #"IncludeNotMolecConfirmed"
 #-----------------------------------------------
 

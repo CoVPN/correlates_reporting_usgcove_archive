@@ -2,6 +2,10 @@
 source(here::here("_common.R"))
 `
 
+`r 
+COR=ifelse(grepl("ENSEMBLE", study_name), COR, "D29D57")
+`
+
 \begin{figure}[H]
 \center
 

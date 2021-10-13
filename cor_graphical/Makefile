@@ -18,7 +18,7 @@ fig_code: code/cor_graphics_violin_scatter.R \
 
 ## clean          : clean up data_clean and output folder
 clean:
-	rm -f data_clean/* && rm -f output/*
+	rm -f data_clean/* && rm -rf output/*
 
 ## report        : create a standalone report
 report:

@@ -1,7 +1,3 @@
-`r 
-source(here::here("_common.R"))
-`
-
 `r
 COR=ifelse(grepl("ENSEMBLE", study_name), "D29", "D29D57")
 `

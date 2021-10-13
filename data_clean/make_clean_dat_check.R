@@ -8,7 +8,7 @@ source(here::here("_common.R"))
 library(here)
 
 # load data and rename first column (ID)
-dat_clean <- read.csv(here("data_clean", data_name))
+dat_clean <- read.csv(here("data_clean", paste0(attr(config, "config"), "_data_processed.csv"))) 
 
 #with(subset(dat_clean, Bserostatus==0 & Perprotocol==1 & ph1.immuno), hist(Day29bindN))
 #    (subset(dat_clean, Bserostatus==0 & Perprotocol==1 & ph1.immuno & Day29bindN>2))

@@ -39,7 +39,7 @@ source(here("code", "utils.R")) # get CV-AUC for all algs
 
 ############ SETUP INPUT #######################
 # Read in data file
-inputFile <- read.csv(here::here("..", "data_clean", data_name))
+inputFile <- read.csv(here::here("..", "data_clean", paste0(attr(config, "config"), "_data_processed.csv"))) 
 
 # Identify the risk demographic variable names that will be used to compute the risk score
 # Identify the endpoint variable

@@ -13,8 +13,8 @@ library(stringr)
 
 # forcing this is not a good idea. ~ Youyi
 # set wt.DXX missingness to 0
-wt.vars <- colnames(dat.mock)[grepl("wt.D", colnames(dat.mock))]
-for (a in wt.vars) dat.mock[a][is.na(dat.mock[a])]<-0
+# wt.vars <- colnames(dat.mock)[grepl("wt.D", colnames(dat.mock))]
+# for (a in wt.vars) dat.mock[a][is.na(dat.mock[a])]<-0
 
 # load parameters
 source(here("code", "params.R"))
@@ -124,7 +124,7 @@ dat.long$demo_lab <-
   with(dat.long, factor(paste0(age.geq.65, HighRiskInd),
     levels = c("00", "01", "10", "11"),
     labels = c(
-      paste(younger_age, "not at tisk"),
+      paste(younger_age, "not at risk"),
       paste(younger_age, "at risk"),
       paste(older_age, "not at risk"),
       paste(older_age, "at risk")

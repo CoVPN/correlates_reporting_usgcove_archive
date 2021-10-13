@@ -29,19 +29,16 @@ save.results.to <- paste0(save.results.to, "/", COR,"/");
 if (!dir.exists(save.results.to))  dir.create(save.results.to)
 print(paste0("save.results.to equals ", save.results.to))
 
-
-### variables for looping
-plots_ytitles <- labels.assays.short
-plots_titles <- labels.assays[names(labels.assays) %in% names(labels.assays.short)]
-timesls <- list(labels.time[(names(labels.time) %in% times) & !grepl("fold-rise", labels.time)][-1], 
-                labels.time[(names(labels.time) %in% times) & !grepl("fold-rise", labels.time)])
+# Determine times for particular analyses
+nums <- gsub("[^\\d]+", "", times, perl=TRUE)
+tps <- times[startsWith(nums, as.character(tpeak))]
 
 #=========================================================================================================================
-# Reverse empirical cdf (rcdf) plots for the Baseline/Day 57/Baseline-subtracted Day 57assay readouts, 
+# Reverse empirical cdf (rcdf) plots, 
 # stratified by treatment group and event status, in baseline negative or positive subjects
 # We made four ggplot objects, each for one assay, and combine them with ggarrange
 #=========================================================================================================================
-tps <- times[times != "B"]
+
 for (tp in tps){
   dat.long.cor.subset$TrtEvent <- paste(as.character(dat.long.cor.subset$Trt), as.character(dat.long.cor.subset$cohort_event),sep = ", ")
   
@@ -50,9 +47,6 @@ for (tp in tps){
   #   dat.long.cor.subset <- dat.long.cor.subset %>% filter(cohort_event != "Intercurrent Cases" & ph2.D57==1)
   # }
   
-  # Get the numerical day to find weights
-  day <- gsub(".*?([0-9]+).*", "\\1", tp)
-  
   rcdf_list <- vector("list", 4)
   for (aa in seq_along(assays)) {
     rcdf_list[[aa]] <- ggplot(subset(dat.long.cor.subset, assay == assays[aa]), 
@@ -60,7 +54,7 @@ for (tp in tps){
                                 x = tp, 
                                 colour = "TrtEvent", 
                                 linetype = "cohort_event",
-                                weight = paste0("wt.D", day)
+                                weight = config.cor$wt
                               )
     ) +
       geom_step(aes(y = 1 - ..y..), stat = "ecdf", lwd = 1) +
@@ -80,7 +74,7 @@ for (tp in tps){
             axis.text = element_text(size = 14))
   }
   
-  ggsave(ggarrange(plotlist = rcdf_list, ncol = 2, nrow = 2, 
+  ggsave(ggarrange(plotlist = rcdf_list, ncol = 2, nrow=2,
                    common.legend = TRUE, legend = "bottom",
                    align = "h"),
          filename = paste0(save.results.to, "/Marker_RCDF_", tp, 
@@ -116,7 +110,7 @@ dat.sample4 <-  dat.long.cor.subset %>%
 
 
 
-for (tp in tps[tps %in% times]){
+for (tp in tps){
   subdat <- dat.long.cor.subset
   subdat_jitter <- dat.sample4
   
@@ -150,7 +144,7 @@ for (tp in tps[tps %in% times]){
             strip.text = element_text(size = 14, face = "bold"),
             legend.title = element_blank(),
             legend.text = element_text(size = 14),)
-    if (grepl("delta", tp, ignore.case = TRUE)) {
+    if (!grepl("delta", tp, ignore.case = TRUE)) {
       boxplot_list[[aa]] <- boxplot_list[[aa]] + 
         geom_hline(yintercept = log10(lloqs[assays][aa]), linetype = 2, color = "black", lwd = 1) +
         geom_hline(yintercept = log10(uloqs[assays][aa]), linetype = 2, color = "black", lwd = 1)
@@ -206,13 +200,10 @@ dat.sample5 <-  dat.long.cor.subset %>%
 
 
 
-for (tp in tps[tps %in% times]){
+for (tp in tps){
   subdat <-dat.long.cor.subset
   subdat_jitter <- dat.sample5
-  if (tp %in% c("Day57", "Delta57overB")) {
-    subdat <- subdat %>% filter(cohort_event != "Intercurrent Cases" & ph2.D57==1)
-    subdat_jitter <- subdat_jitter %>% filter(cohort_event != "Intercurrent Cases" & ph2.D57==1)
-  }
+
   for (aa in seq_along(assays)) {
     boxplots <-  ggplot(subset(subdat, assay == assays[aa] & Trt == "Vaccine"), aes_string(x = "cohort_event", y = tp)) +
       geom_boxplot(aes(colour = cohort_event), width = 0.6, lwd = 1) + 
@@ -239,7 +230,7 @@ for (tp in tps[tps %in% times]){
             legend.title = element_blank(),
             legend.text = element_text(size = 14))
     
-    if (tp %in% c("Day29", "Day57")) {
+    if (!grepl("delta", tp, ignore.case = TRUE)) {
       boxplots <- boxplots + 
         geom_hline(yintercept = log10(llods[assays][aa]), linetype = 2, color = "black", lwd = 1) +
         geom_hline(yintercept = log10(lloqs[assays][aa]), linetype = 2, color = "black", lwd = 1) +
@@ -256,67 +247,67 @@ for (tp in tps[tps %in% times]){
 }
 
 
-#-----------------------------------------------
-# Spaghetti PLOTS
-#-----------------------------------------------
-# - Spaghetti plots of antibody marker change over time
-#-----------------------------------------------
-
-## in each baseline serostatus group, randomly select 10 placebo recipients and 20 vaccine recipients
-set.seed(12345)
-
-# First we need to restrict to ph2.D57==1 if has57==true, to remove participants without day57 ab readings
-if(has57) {
-  dat.cor.subset.spaghetti <- filter(dat.cor.subset, ph2.D57==1)
-  dat.long.cor.subset.spaghetti <- filter(dat.long.cor.subset, ph2.D57==1)
-} else {
-  dat.cor.subset.spaghetti <- dat.cor.subset
-  dat.long.cor.subset.spaghetti <- dat.long.cor.subset
-}
-
-
-var_names <- expand.grid(times = intersect(c("B", "Day29", "Day57"), times),
-                         assays = assays) %>%
-  mutate(var_names = paste0(times, assays)) %>%
-  .[, "var_names"]
-
-spaghetti_ptid <- dat.cor.subset.spaghetti[, c("Ptid", "Trt", var_names, "cohort_event")] %>%
-  filter(., complete.cases(.), Trt == 1) %>%
-  transmute(cohort_event = cohort_event,
-            Ptid = Ptid) %>%
-  split(., list(.$cohort_event)) %>%
-  lapply(function(xx) {
-    if (nrow(xx) <= 20) {
-      return(xx$Ptid)
-    } else {
-      return(sample(xx$Ptid, 20))
-    }
-  }) %>% unlist %>% as.character
-
-spaghetti_dat <- dat.long.cor.subset.spaghetti[, c("Ptid", "cohort_event", "assay",
-                                         intersect(c("B", "Day29", "Day57"), times))] %>%
-  filter(Ptid %in% spaghetti_ptid) %>%
-  pivot_longer(cols = intersect(c("B", "Day29", "Day57"), times),
-               names_to = "time") %>%
-  mutate(assay_label = factor(assay, levels = assays, labels = labels.assays.short[assays]),
-         time_label = factor(time, levels = intersect(c("B", "Day29", "Day57"), times),
-                             labels = c("D1", "D29", "D57")[c("B", "Day29", "Day57") %in% times])) %>%
-  as.data.frame
-
-
-subdat <- spaghetti_dat
-covid_corr_spaghetti_facets(plot_dat = subdat,
-                            x = "time_label",
-                            y = "value",
-                            id = "Ptid",
-                            color = "cohort_event",
-                            facet_by = "assay_label",
-                            plot_title = "Vaccine group",
-                            ylim = c(-2, 6),
-                            ybreaks = seq(-2, 6, by = 2),
-                            filename = paste0(
-                              save.results.to, "/spaghetti_plot_trt_",
-                              study_name, ".png"
-                            ),
-                            height = 6, width = 5)
-
+# #-----------------------------------------------
+# # Spaghetti PLOTS not required for generalization, so commenting this out for now
+# #-----------------------------------------------
+# # - Spaghetti plots of antibody marker change over time
+# #-----------------------------------------------
+# 
+# ## in each baseline serostatus group, randomly select 10 placebo recipients and 20 vaccine recipients
+# set.seed(12345)
+# 
+# # First we need to restrict to ph2.D57==1 if has57==true, to remove participants without day57 ab readings
+# if(has57) {
+#   dat.cor.subset.spaghetti <- filter(dat.cor.subset, ph2.D57==1)
+#   dat.long.cor.subset.spaghetti <- filter(dat.long.cor.subset, ph2.D57==1)
+# } else {
+#   dat.cor.subset.spaghetti <- dat.cor.subset
+#   dat.long.cor.subset.spaghetti <- dat.long.cor.subset
+# }
+# 
+# 
+# var_names <- expand.grid(times = intersect(c("B", "Day29", "Day57"), times),
+#                          assays = assays) %>%
+#   mutate(var_names = paste0(times, assays)) %>%
+#   .[, "var_names"]
+# 
+# spaghetti_ptid <- dat.cor.subset.spaghetti[, c("Ptid", "Trt", var_names, "cohort_event")] %>%
+#   filter(., complete.cases(.), Trt == 1) %>%
+#   transmute(cohort_event = cohort_event,
+#             Ptid = Ptid) %>%
+#   split(., list(.$cohort_event)) %>%
+#   lapply(function(xx) {
+#     if (nrow(xx) <= 20) {
+#       return(xx$Ptid)
+#     } else {
+#       return(sample(xx$Ptid, 20))
+#     }
+#   }) %>% unlist %>% as.character
+# 
+# spaghetti_dat <- dat.long.cor.subset.spaghetti[, c("Ptid", "cohort_event", "assay",
+#                                          intersect(c("B", "Day29", "Day57"), times))] %>%
+#   filter(Ptid %in% spaghetti_ptid) %>%
+#   pivot_longer(cols = intersect(c("B", "Day29", "Day57"), times),
+#                names_to = "time") %>%
+#   mutate(assay_label = factor(assay, levels = assays, labels = labels.assays.short[assays]),
+#          time_label = factor(time, levels = intersect(c("B", "Day29", "Day57"), times),
+#                              labels = c("D1", "D29", "D57")[c("B", "Day29", "Day57") %in% times])) %>%
+#   as.data.frame
+# 
+# 
+# subdat <- spaghetti_dat
+# covid_corr_spaghetti_facets(plot_dat = subdat,
+#                             x = "time_label",
+#                             y = "value",
+#                             id = "Ptid",
+#                             color = "cohort_event",
+#                             facet_by = "assay_label",
+#                             plot_title = "Vaccine group",
+#                             ylim = c(-2, 6),
+#                             ybreaks = seq(-2, 6, by = 2),
+#                             filename = paste0(
+#                               save.results.to, "/spaghetti_plot_trt_",
+#                               study_name, ".png"
+#                             ),
+#                             height = 6, width = 5)
+# 

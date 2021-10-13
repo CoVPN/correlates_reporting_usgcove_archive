@@ -1,3 +1,7 @@
+`r 
+COR=ifelse(grepl("ENSEMBLE", study_name), "D29", "D29D57")
+`
+
 \begin{figure}[H]
 \center
 

@@ -11,7 +11,7 @@ source(here::here("..", "_common.R"))
 # load required libraries, cleaned data, and risk score estimates
 library(here)
 library(tidyverse)
-dat_cleaned <- read.csv(here("..", "data_clean", data_name)) %>% as_tibble() 
+dat_cleaned <- read.csv(here("..", "data_clean", paste0(attr(config, "config"), "_data_processed.csv"))) %>% as_tibble() 
 placebos_risk <- read.csv(here("output", "placebo_ptids_with_riskscores.csv"))
 vaccinees_risk <- read.csv(here("output", "vaccine_ptids_with_riskscores.csv"))
 
@@ -19,7 +19,7 @@ vaccinees_risk <- read.csv(here("output", "vaccine_ptids_with_riskscores.csv"))
 risk_scores <- rbind(placebos_risk, vaccinees_risk) %>%
   select(Ptid, risk_score, standardized_risk_score)
 dat_with_riskscore <- left_join(dat_cleaned, risk_scores, by = "Ptid")
-data_name_amended <- paste0(str_remove(data_name, ".csv"), "_with_riskscore")
+data_name_amended <- paste0(str_remove(paste0(attr(config, "config"), "_data_processed.csv"), ".csv"), "_with_riskscore")
 
 # Ensure all baseline negative and PP subjects have a risk score!
 if(assertthat::assert_that(

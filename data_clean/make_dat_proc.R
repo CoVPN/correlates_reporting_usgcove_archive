@@ -582,4 +582,5 @@ if(subset_value != "All"){
 # bundle data sets and save as CSV
 ###############################################################################
 
-write_csv(dat_proc, file = here("data_clean", data_name))
+ 
+write_csv(dat_proc, file = here("data_clean", paste0(attr(config, "config"), "_data_processed.csv")))

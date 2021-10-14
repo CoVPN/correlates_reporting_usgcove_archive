@@ -1,8 +1,0 @@
-# CoP: Controlled Vaccine Efficacy {#cop-controlled}
-
-TO FILL IN
-
-```{r cop-controlled-setup}
-# TODO
-```
-

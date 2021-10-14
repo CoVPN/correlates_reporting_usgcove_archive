@@ -30,8 +30,8 @@ if (!dir.exists(save.results.to))  dir.create(save.results.to)
 print(paste0("save.results.to equals ", save.results.to))
 
 # Determine times for particular analyses
-nums <- gsub("[^\\d]+", "", times, perl=TRUE)
-tps <- times[startsWith(nums, as.character(tpeak))]
+nums <- as.numeric(gsub("[^\\d]+", "", times, perl=TRUE))
+tps <- times[nums%in%tpeak]
 
 #=========================================================================================================================
 # Reverse empirical cdf (rcdf) plots, 

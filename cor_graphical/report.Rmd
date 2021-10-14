@@ -24,21 +24,26 @@ COR=ifelse(grepl("ENSEMBLE", study_name), "D29", "D29D57")
 ```{r, echo=FALSE, results='asis'}
 i <-1
 
-tps <- times[gsub("[^\\d]+", "", times, perl=TRUE) == tpeak]
-tpsLabels <- labels.time[tps]
+
 
 # Eventually will have to loop through assays, and combine each individual assay's boxplots into one figure
-for (tpNum in seq(tps)) {
+for(time in timepoints) {
   
-  tp <- tps[tpNum]
-  tpLabel <- tpsLabels[tpNum]
-  lineText <- ifelse(grep("Delta", tp), "", " The three dashed lines in each figure are ULOQ, LLOQ, and LLOD, from top to bottom 
-                     respectively.")
+  tps <- times[gsub("[^\\d]+", "", times, perl=TRUE)==time]
+  tpsLabels <- labels.time[tps]
+  currCOR <- paste0("D",time)
   
-  res = knitr::knit_child(c(here::here('cor_graphical', 'report_boxplots.Rmd')), quiet = TRUE)
-  cat(res, sep = '\n')
-  cat("\\clearpage", sep = '\n')
-  i = i + 1
+  for (tpNum in seq(tps)) {
+    
+    tp <- tps[tpNum]
+    tpLabel <- tpsLabels[tpNum]
+    lineText <- ifelse(grep("Delta", tp), "", " The three dashed lines in each figure are ULOQ, LLOQ, and LLOD, from top to bottom respectively.")
+    
+    res = knitr::knit_child(c(here::here('cor_graphical', 'report_boxplots.Rmd')), quiet = TRUE)
+    cat(res, sep = '\n')
+    cat("\\clearpage", sep = '\n')
+    i = i + 1
+  }
 }
 
 ```
@@ -48,16 +53,25 @@ for (tpNum in seq(tps)) {
 
 ```{r, echo=FALSE, results='asis'}
 
-# Eventually will have to loop through assays, and combine each individual assay's boxplots into one figure
-for (tpNum in seq(tps)) {
+# Eventually will have to loop through assays, and combine each individual assay's RCDFs into one figure
+for(time in timepoints) {
   
-  tp <- tps[tpNum]
-  tpLabel <- tpsLabels[tpNum]
+  tps <- times[gsub("[^\\d]+", "", times, perl=TRUE)==time]
+  tpsLabels <- labels.time[tps]
+  tp <- tps[!grepl("Delta", tps)]
+  tpLabel <- tpsLabels[!grepl("Delta", tps)]
+  currCOR <- paste0("D",time)
   
-  res = knitr::knit_child(c(here::here('cor_graphical', 'report_marker_rcdf.Rmd')), quiet = TRUE)
-  cat(res, sep = '\n')
-  cat("\\clearpage", sep = '\n')
-  i = i + 1
+  for (tpNum in seq(tps)) {
+    
+    tp <- tps[tpNum]
+    tpLabel <- tpsLabels[tpNum]
+    
+    res = knitr::knit_child(c(here::here('cor_graphical', 'report_marker_rcdf.Rmd')), quiet = TRUE)
+    cat(res, sep = '\n')
+    cat("\\clearpage", sep = '\n')
+    i = i + 1
+  }
 }
 
 ```
@@ -77,16 +91,25 @@ tpLabel <- tpsLabels[!grepl("Delta", tps)]
 
 # Only show figures if there are substantial cases
 # (I haven't seen a scenario where there aren't, but keeping this from Kendrick)
-if(plot_ve_curves[1]){
-  for (assayNum in seq(assays)) {
-    
-    assay <- assays[assayNum]
-    assayLabel <- assay.labels[assayNum]
-    
-    res = knitr::knit_child(c(here::here('cor_graphical', 'report_rcdf.Rmd')), quiet = TRUE)
-    cat(res, sep = '\n')
-    cat("\\clearpage", sep = '\n')
-    i = i + 1
+for(time in timepoints) {
+  
+  tps <- times[gsub("[^\\d]+", "", times, perl=TRUE)==time]
+  tpsLabels <- labels.time[tps]
+  tp <- tps[!grepl("Delta", tps)]
+  tpLabel <- tpsLabels[!grepl("Delta", tps)]
+  currCOR <- paste0("D",time)
+  
+  if(plot_ve_curves[1]){
+    for (assayNum in seq(assays)) {
+      
+      assay <- assays[assayNum]
+      assayLabel <- assay.labels[assayNum]
+      
+      res = knitr::knit_child(c(here::here('cor_graphical', 'report_rcdf.Rmd')), quiet = TRUE)
+      cat(res, sep = '\n')
+      cat("\\clearpage", sep = '\n')
+      i = i + 1
+    }
   }
 }
 

@@ -1,7 +1,7 @@
 \begin{figure}[H]
 \center
 
-\includegraphics[width=1\textwidth]{`r here("cor_graphical", "output", attr(config,"config"), COR, paste0("boxplots_", tp, "_trt_vaccine_x_cc_", study_name, ".pdf"))`}
+\includegraphics[width=1\textwidth]{`r here("cor_graphical", "output", attr(config,"config"), currCOR, paste0("boxplots_", tp, "_trt_vaccine_x_cc_", study_name, ".png"))`}
 
 \caption{`r paste0("\n\nFigure 3.", i, ": ", "Boxplots of ",  tpLabel, " Ab markers: vaccine arm.", lineText, "\n\n")`}
 \end{figure}

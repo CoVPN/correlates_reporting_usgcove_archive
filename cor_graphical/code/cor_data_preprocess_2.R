@@ -52,11 +52,6 @@ dat.long.subject_level <- dat %>%
   replicate(length(assays),., simplify = FALSE) %>%
   bind_rows()
 
-name_grid <- expand.grid(
-  aa = times,
-  cc = c("", "CPV", paste(".imp", 1:10, sep = ""))
-)
-
 dat.long.assay_value.names <- times
 dat.long.assay_value <- as.data.frame(matrix(
   nrow = nrow(dat) * length(assays),

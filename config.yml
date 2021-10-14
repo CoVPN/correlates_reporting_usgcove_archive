@@ -1,12 +1,34 @@
 ###################################################################################################
 # trials
 
+# difference between timepoints and times: times helps define markers
+
 default: &default
-  info: correlates_reporting
+  is_ows_trial: no
+  case_cohort: no
+
+hvtn705: &hvtn705
+  two_marker_timepoints: no
+  timepoints: [210]
+  subset_variable: None
+  subset_value: All
+  assays: [ELCZ,ELMo,ADCPgp140C97ZAfib,IgG3gp140C97ZAfibritin40delta,IgG3gp140Mos1fibritin40delta,IgG340mdw_gp120,IgG340mdw_gp140,IgG340mdw_V1V2,IgG3gp4140delta,IgG340mdw_multi,IgG340mdw_gp120_gp140_vm,mdw_xassay]
+  assay_labels: [IgG to VT-C (EU/ml), IgG to VT-M (EU/ml), Average phagocytosis score to gp140 C97ZA, IgG3 Net MFI to gp140 C97ZA, IgG3 Net MFI to gp140 Mosaic, IgG3 gp120 breadth (Weighted average log10 Net MFI), IgG3 gp140 breadth (Weighted average log10 Net MFI), IgG3 V1V2 breadth (Weighted average log10 Net MFI), IgG3 Net MFI to gp41, IgG3 multi-epitope breadth (Wt average log10 Net MFI), IgG3 gp120 + gp140 breadth (Wt average log10 Net MFI), Overall maximal diversity score]
+  primary_assays: [ELCZ,ELMo,ADCPgp140C97ZAfib,IgG3gp140C97ZAfibritin40delta] 
+  times: [B, Day210] 
+  time_labels: [Day 1, Day 210]
+  study_name: HVTN705
+  covariates_riskscore: ~.+ RSA + Age + BMI + Riskscore
+#  data_cleaned: ../vaccine/p705/correlates_temp/HVTN705_hybridrealmock_practicedata_Oct2021.csv
+  data_cleaned: correlates_reporting/data_clean/HVTN705_hybridrealmock_practicedata_Oct2021.csv
+  num_boot_replicates: 10
+  num_perm_replicates: 10
+
 
 ows_trial: &ows_trial
   forestplot_script: cor_coxph_forestplots_ows.R
   is_ows_trial: yes
+  case_cohort: yes
 
 
 moderna_trial: &moderna_trial
@@ -16,7 +38,10 @@ moderna_trial: &moderna_trial
   subset_variable: None
   subset_value: All
   assays: [bindSpike, bindRBD, pseudoneutid50, pseudoneutid80]
+  assay_labels: [Binding Antibody to Spike, Binding Antibody to RBD, PsV Neutralization 50% Titer, PsV Neutralization 80% Titer]
+  assay_labels_short: [Anti Spike IgG (BAU/ml), Anti RBD IgG (BAU/ml), Pseudovirus-nAb cID50, Pseudovirus-nAb cID80]
   times: [B, Day29, Day57, Delta29overB, Delta57overB, Delta57over29]
+  time_labels: [Day 1, Day 29, Day 57, D29 fold-rise over D1, D57 fold-rise over D1, D57 fold-rise over D29]
   data_raw_dir: moderna
   study_name_code: COVE
   covariates_riskscore: ~.+ MinorityInd + HighRiskInd + risk_score
@@ -43,7 +68,10 @@ janssen_trial: &janssen_trial
   two_marker_timepoints: no
   timepoints: [29]
   assays: [bindSpike, bindRBD]
+  assay_labels: [Binding Antibody to Spike, Binding Antibody to RBD]
+  assay_labels_short: [Anti Spike IgG (BAU/ml), Anti RBD IgG (BAU/ml)]
   times: [B, Day29, Delta29overB]
+  time_labels: [Day 1, Day 29, D29 fold-rise over D1]
   data_raw_dir: janssen
   study_name_code: ENSEMBLE
 
@@ -57,7 +85,6 @@ janssen_trial_real: &janssen_trial_real
 janssen_trial_mock: &janssen_trial_mock
   <<: *janssen_trial
   data_in_file: COVID_ENSEMBLE_practicedata.csv
-  primary_assays: [bindSpike, bindRBD] 
   study_name: MockENSEMBLE
   num_boot_replicates: 10
   num_perm_replicates: 10
@@ -122,11 +149,17 @@ janssen_sa_mock:
 ###################################################################################################
 # correlates analyses
 
+# there are some redundancy in ph1, ph2, WtStratum, wt in that given the first three, we can compute wt
+# the redundancy is not needed if we only have single time point analyses
+# but for double time points analyses, we need more than one weight variable
+# the reason we need WtStratum is that for bootstrapping (needed for some single time point analyses)
+
 # primary endpoint D57 markers
 D57:
   ph1: ph1.D57
   ph2: ph2.D57
   wt: wt.D57
+  WtStratum: Wstratum
   EventIndPrimary: EventIndPrimaryD57   
   EventTimePrimary: EventTimePrimaryD57   
   tpeak: 57
@@ -140,6 +173,7 @@ D29:
   ph1: ph1.D29
   ph2: ph2.D29
   wt: wt.D29
+  WtStratum: Wstratum
   EventIndPrimary: EventIndPrimaryD29  
   EventTimePrimary: EventTimePrimaryD29
   tpeak: 29
@@ -153,6 +187,7 @@ D29start1:
   ph1: ph1.D29start1
   ph2: ph2.D29start1
   wt: wt.D29start1
+  WtStratum: Wstratum
   EventIndPrimary: EventIndPrimaryD29  
   EventTimePrimary: EventTimePrimaryD29
   tpeak: 29
@@ -160,7 +195,20 @@ D29start1:
   tfinal.tpeak: 0
   txt.endpoint: COVID
   txt.coxph.note2: No. at-risk = estimated number in the population for analysis, i.e. baseline negative per-protocol vaccine recipients not experiencing the COVID endpoint or infected through Day 29 visit; no. cases = number of this cohort with an observed COVID endpoint.
-  
+
+D210:
+  ph1: Ph1ptids.D210
+  ph2: Ph2ptids.D210
+  wt: wt.D210
+  WtStratum: Sampstratum.D210
+  EventIndPrimary: Delta.D210   
+  EventTimePrimary: Ttilde.D210
+  tpeak: 210
+  tpeaklag: 1
+  tfinal.tpeak: 0
+  txt.endpoint: HIV
+  txt.coxph.note2: No. at-risk = estimated number in the population for analysis, i.e. per-protocol vaccine recipients not infected through 1 days post Month 7 visit; no. cases = number of this cohort with an observed endpoint.
+
   
 ####################
 # two time points 

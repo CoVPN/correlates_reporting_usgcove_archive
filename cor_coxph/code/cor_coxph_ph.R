@@ -6,8 +6,7 @@ if(verbose) print("Regression for continuous markers")
 
 
 fits=list()
-for (a in c("Day"%.%tpeak%.%assays, "Delta"%.%tpeak%.%"overB"%.%assays)) {
-#a = "Day"%.%tpeak%.%assays[1]
+for (a in all.markers) {
     f= update(form.0, as.formula(paste0("~.+", a)))
     fits[[a]]=svycoxph(f, design=design.vacc.seroneg) 
 }
@@ -210,8 +209,8 @@ overall.p.2=c(rbind(overall.p.2, NA,NA))
 # if "Delta"%.%tpeak%.%"overB" is included, nevents have a problem because some markers may have only two category in the cases
 
 # n cases and n at risk
-natrisk = round(c(sapply (c("Day"%.%tpeak%.%assays)%.%"cat", function(a) aggregate(subset(dat.vac.seroneg,ph2)        [["wt"]], subset(dat.vac.seroneg,ph2        )[a], sum, na.rm=T, drop=F)[,2] )))
-nevents = round(c(sapply (c("Day"%.%tpeak%.%assays)%.%"cat", function(a) aggregate(subset(dat.vac.seroneg,yy==1 & ph2)[["wt"]], subset(dat.vac.seroneg,yy==1 & ph2)[a], sum, na.rm=T, drop=F)[,2] )))
+natrisk = round(c(sapply (c("Day"%.%tpeak%.%assays)%.%"cat", function(a) aggregate(subset(dat.vac.seroneg,ph2==1)        [["wt"]], subset(dat.vac.seroneg,ph2==1        )[a], sum, na.rm=T, drop=F)[,2] )))
+nevents = round(c(sapply (c("Day"%.%tpeak%.%assays)%.%"cat", function(a) aggregate(subset(dat.vac.seroneg,yy==1 & ph2==1)[["wt"]], subset(dat.vac.seroneg,yy==1 & ph2==1)[a], sum, na.rm=T, drop=F)[,2] )))
 natrisk[is.na(natrisk)]=0
 nevents[is.na(nevents)]=0
 colSums(matrix(natrisk, nrow=3))
@@ -269,15 +268,15 @@ if(verbose) print("Multiple regression for primary assays")
 if (!is.null(config$primary_assays)) {
     f= update(form.0, as.formula(paste0("~.+", concatList(paste0("Day",config$timepoints, config$primary_assays),"+"))))
     fit=svycoxph(f, design=design.vacc.seroneg) 
+    var.ind=length(coef(fit)) - length(config$primary_assays):1 + 1
 
     fits=list(fit)
-    est=getFormattedSummary(fits, exp=T, robust=T, rows=rows, type=1)
-    ci= getFormattedSummary(fits, exp=T, robust=T, rows=rows, type=13)
+    est=getFormattedSummary(fits, exp=T, robust=T, rows=var.ind, type=1)
+    ci= getFormattedSummary(fits, exp=T, robust=T, rows=var.ind, type=13)
     est = paste0(est, " ", ci)
-    p=  getFormattedSummary(fits, exp=T, robust=T, rows=rows, type=10)
+    p=  getFormattedSummary(fits, exp=T, robust=T, rows=var.ind, type=10)
     
     #generalized Wald test for whether the set of markers has any correlation (rejecting the complete null)
-    var.ind=length(coef(fit)) - length(config$primary_assays):1 + 1
     stat=coef(fit)[var.ind] %*% solve(vcov(fit)[var.ind,var.ind]) %*% coef(fit)[var.ind] 
     p.gwald=pchisq(stat, length(var.ind), lower.tail = FALSE)
     

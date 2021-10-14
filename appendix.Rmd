@@ -3,10 +3,14 @@
 ```{r, echo = FALSE, message = FALSE, warning = FALSE}
 quiet <- capture.output({
   renv::activate(project = here::here())
-  source(here::here("_common.R"))
+  #source(here::here("_common.R"))
 })
 library(here)
 library(digest)
+
+# hash algorithm picked based on https://csrc.nist.gov/projects/hash-functions
+hash_algorithm <- "sha256"
+
 
 #processed_file_digest is created in _common.R, but because the working directory issue, it is not created properly when _common.R is sourced here.
 if (startsWith(tolower(study_name), "mock")) {

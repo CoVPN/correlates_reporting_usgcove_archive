@@ -1,119 +1,194 @@
-# COR defines the analysis to be done, e.g. D14
-Args <- commandArgs(trailingOnly=TRUE)
-if (length(Args)==0) Args=c(COR="D29") 
-library(kyotil); COR=Args[1]; myprint(COR)
-# COR has a set of analysis-specific parameters defined in the config file
-config.cor <- config::get(config = COR)
-#
-tpeak=as.integer(paste0(config.cor$tpeak))
-tpeaklag=as.integer(paste0(config.cor$tpeaklag))
-tfinal.tpeak=as.integer(paste0(config.cor$tfinal.tpeak))
-tinterm=as.integer(paste0(config.cor$tinterm))
-myprint(tpeak, tpeaklag, tfinal.tpeak, tinterm)
-# D29D57 may not have all fields
-if (length(tpeak)==0 | length(tpeaklag)==0) stop("config "%.%COR%.%" misses some fields")
+#if (exists(".DEF.COMMON")) stop ("_common.R has already been loaded") else .DEF.COMMON=TRUE
 
 
 library(methods)
 library(dplyr)
-library(digest)
-set.seed(98109)
-
-
-config <- config::get(config = Sys.getenv("TRIAL"))
-for(opt in names(config)){
-  eval(parse(text = paste0(names(config[opt])," <- config[[opt]]")))
-}
- 
-# disabling lower level parallelization in favor of higher level of parallelization
-
-# set parallelization in openBLAS and openMP
+library(kyotil)
+# disable lower level parallelization in favor of higher level of parallelization
 library(RhpcBLASctl)
 blas_get_num_procs()
 blas_set_num_threads(1L)
 stopifnot(blas_get_num_procs() == 1L)
 omp_set_num_threads(1L)
-
-
+#
+set.seed(98109)
 verbose=Sys.getenv("VERBOSE")=="1"
+    
+# COR defines the analysis to be done, e.g. D14
+Args <- commandArgs(trailingOnly=TRUE)
+if (length(Args)==0) Args=c(COR="D210") 
+COR=Args[1]; myprint(COR)
+
+
+###################################################################################################
+# read config
+# TRIAL-related 
+config <- config::get(config = Sys.getenv("TRIAL"))
+for(opt in names(config)){
+  eval(parse(text = paste0(names(config[opt])," <- config[[opt]]")))
+}
+# correlates analyses-related 
+config.cor <- config::get(config = COR)
+tpeak=as.integer(paste0(config.cor$tpeak))
+tpeaklag=as.integer(paste0(config.cor$tpeaklag))
+tfinal.tpeak=as.integer(paste0(config.cor$tfinal.tpeak))
+tinterm=as.integer(paste0(config.cor$tinterm))
+myprint(tpeak, tpeaklag, tfinal.tpeak, tinterm)
+# some config may not have all fields
+if (length(tpeak)==0 | length(tpeaklag)==0) stop("config "%.%COR%.%" misses some fields")
+    
+# to be deprecated
+has57 = study_name %in% c("COVE","MockCOVE")
+has29 = study_name %in% c("COVE","ENSEMBLE", "MockCOVE","MockENSEMBLE")
+
+
+###################################################################################################
+# read data
+
+data_name = paste0(attr(config, "config"), "_data_processed.csv")
+if (startsWith(tolower(study_name), "mock")) {
+    data_name_updated <- sub(".csv", "_with_riskscore.csv", data_name)
+    path_to_data = ifelse (endsWith(here::here(), "correlates_reporting"), here::here("data_clean", data_name_updated), here::here("..", "data_clean", data_name_updated))
+    data_name = data_name_updated    
+} else {
+    path_to_data = ifelse (endsWith(here::here(), "correlates_reporting"), here::here("..", data_cleaned), here::here("..", "..", data_cleaned))
+    data_name = path_to_data
+}
+print(path_to_data)
+# if this is run under _reporting level, it will not load. Thus we only warn and not stop
+if (!file.exists(path_to_data)) stop ("dataset with risk score not available ")
+
+
+dat.mock <- read.csv(path_to_data)
+
+if (is.null(config.cor$tinterm)) {
+    dat.mock$ph1=dat.mock[[config.cor$ph1]]
+    dat.mock$ph2=dat.mock[[config.cor$ph2]]
+    dat.mock$EventIndPrimary =dat.mock[[config.cor$EventIndPrimary]]
+    dat.mock$EventTimePrimary=dat.mock[[config.cor$EventTimePrimary]]
+    dat.mock$Wstratum=dat.mock[[config.cor$WtStratum]]
+    dat.mock$wt=dat.mock[[config.cor$wt]]
+}
+
+## wt can be computed from ph1, ph2 and Wstratum. See config for redundancy note
+#wts_table <- dat.mock %>% dplyr::filter(ph1==1) %>% with(table(Wstratum, ph2))
+#wts_norm <- rowSums(wts_table) / wts_table[, 2]
+#dat.mock$wt <- wts_norm[dat.mock$Wstratum %.% ""]
+#dat.mock$wt = ifelse(with(dat.mock, ph1), dat.mock$wt, NA) # the step above assigns weights for some subjects outside ph1. the next step makes them NA
+
+
+# some common graphing parameters
+if(config$is_ows_trial) {
+    # maxed over Spike, RBD, N, restricting to Day 29 or 57
+    if(has29) MaxbAbDay29 = max(dat.mock[,paste0("Day29", c("bindSpike", "bindRBD", "bindN"))], na.rm=T)
+    if(has29) MaxbAbDelta29overB = max(dat.mock[,paste0("Delta29overB", c("bindSpike", "bindRBD", "bindN"))], na.rm=T)
+    if(has57) MaxbAbDay57 = max(dat.mock[,paste0("Day57", c("bindSpike", "bindRBD", "bindN"))], na.rm=T)
+    if(has57) MaxbAbDelta57overB = max(dat.mock[,paste0("Delta57overB", c("bindSpike", "bindRBD", "bindN"))], na.rm=T)
+    
+    # maxed over ID50 and ID80, restricting to Day 29 or 57
+    if("pseudoneutid50" %in% assays & "pseudoneutid80" %in% assays) {
+        if(has29) MaxID50ID80Day29 = max(dat.mock[,paste0("Day29", c("pseudoneutid50", "pseudoneutid80"))], na.rm=T)
+        if(has29) MaxID50ID80Delta29overB = max(dat.mock[,paste0("Delta29overB", c("pseudoneutid50", "pseudoneutid80"))], na.rm=TRUE)
+        if(has57) MaxID50ID80Day57 = max(dat.mock[,paste0("Day57", c("pseudoneutid50", "pseudoneutid80"))], na.rm=T)        
+        if(has57) MaxID50ID80Delta57overB = max(dat.mock[,paste0("Delta57overB", c("pseudoneutid50", "pseudoneutid80"))], na.rm=TRUE)
+    }
+}     
+
+
+## map tps.stratum to stratification variables
+#tps.stratums=sort(unique(dat.mock$tps.stratum)); names(tps.stratums)=tps.stratums
+#decode.tps.stratum=t(sapply(tps.stratums, function(i) unlist(subset(dat.mock, tps.stratum==i)[1,
+#    if (study_name=="COVE" | study_name=="MockCOVE" ) {
+#        c("Senior", "HighRiskInd", "URMforsubcohortsampling")
+#    } else if (study_name=="ENSEMBLE" | study_name=="MockENSEMBLE" ) {
+#        c("Senior", "HighRiskInd", "Region", "URMforsubcohortsampling")
+#    } else {
+#        NA
+#    }
+#])))
+
+    
+
+
+
+###################################################################################################
 
 names(assays)=assays # add names so that lapply results will have names
 
-# if this flag is true, then the N IgG binding antibody is reported 
-# in the immuno report (but is not analyzed in the cor or cop reports).
-include_bindN <- TRUE
+if (config$is_ows_trial) {
 
-# conversion factors
-convf=c(bindSpike=0.0090, bindRBD=0.0272, bindN=0.0024, pseudoneutid50=0.242, pseudoneutid80=1.502)
-
-# For bAb, IU and BAU are the same thing
-# limits for each assay (IU for bAb and pseudoneut, no need to convert again)
-# the following are copied from SAP to avoid any mistake (get rid of commas)
-tmp=list(
-    bindSpike=c(
-        pos.cutoff=10.8424,
-        LLOD = 0.3076,
-        ULOD = 172226.2,
-        LLOQ = 1.7968,
-        ULOQ = 10155.95)
-    ,
-    bindRBD=c(
-        pos.cutoff=14.0858,
-        LLOD = 1.593648,
-        ULOD = 223074,
-        LLOQ = 3.4263,
-        ULOQ = 16269.23)
-    ,
-    bindN=c( 
-        pos.cutoff=23.4711,
-        LLOD = 0.093744,
-        ULOD = 52488,
-        LLOQ = 4.4897,
-        ULOQ = 574.6783)
-    ,
-    pseudoneutid50=c( 
-        LLOD = 2.42,
-        ULOD = NA,
-        LLOQ = 4.477,
-        ULOQ = 10919)
-    ,
-    pseudoneutid80=c( 
-        LLOD = 15.02,
-        ULOD = NA,
-        LLOQ = 21.4786,
-        ULOQ = 15368)
-    ,
-    liveneutmn50=c( 
-        LLOD = 62.16,
-        ULOD = NA,
-        LLOQ = 117.35,
-        ULOQ = 18976.19)
-)
-
-pos.cutoffs=sapply(tmp, function(x) unname(x["pos.cutoff"]))
-llods=sapply(tmp, function(x) unname(x["LLOD"]))
-lloqs=sapply(tmp, function(x) unname(x["LLOQ"]))
-uloqs=sapply(tmp, function(x) unname(x["ULOQ"]))
-
-
-# Per Sarah O'Connell, for ensemble, the positivity cut offs and LLODs will be identical, 
-# as will the quantitative limits for N protein which are based on convalescent samples.
-# But the RBD and Spike quantitation ranges will be different for the Janssen partial validation than for Moderna. 
-if(study_name=="ENSEMBLE" | study_name=="MockENSEMBLE") {
-    lloqs["bindSpike"]=1.8429 
-    lloqs["bindRBD"]=5.0243 
+    # For bAb, IU and BAU are the same thing
+    # limits for each assay (IU for bAb and pseudoneut, no need to convert again)
+    # the following are copied from SAP to avoid any mistake (get rid of commas)
+    tmp=list(
+        bindSpike=c(
+            pos.cutoff=10.8424,
+            LLOD = 0.3076,
+            ULOD = 172226.2,
+            LLOQ = 1.7968,
+            ULOQ = 10155.95)
+        ,
+        bindRBD=c(
+            pos.cutoff=14.0858,
+            LLOD = 1.593648,
+            ULOD = 223074,
+            LLOQ = 3.4263,
+            ULOQ = 16269.23)
+        ,
+        bindN=c( 
+            pos.cutoff=23.4711,
+            LLOD = 0.093744,
+            ULOD = 52488,
+            LLOQ = 4.4897,
+            ULOQ = 574.6783)
+        ,
+        pseudoneutid50=c( 
+            LLOD = 2.42,
+            ULOD = NA,
+            LLOQ = 4.477,
+            ULOQ = 10919)
+        ,
+        pseudoneutid80=c( 
+            LLOD = 15.02,
+            ULOD = NA,
+            LLOQ = 21.4786,
+            ULOQ = 15368)
+        ,
+        liveneutmn50=c( 
+            LLOD = 62.16,
+            ULOD = NA,
+            LLOQ = 117.35,
+            ULOQ = 18976.19)
+    )
     
-    uloqs["bindSpike"]=238.1165 
-    uloqs["bindRBD"]=172.5755    
+    pos.cutoffs=sapply(tmp, function(x) unname(x["pos.cutoff"]))
+    llods=sapply(tmp, function(x) unname(x["LLOD"]))
+    lloqs=sapply(tmp, function(x) unname(x["LLOQ"]))
+    uloqs=sapply(tmp, function(x) unname(x["ULOQ"]))
+    
+    # Per Sarah O'Connell, for ensemble, the positivity cut offs and LLODs will be identical, 
+    # as will the quantitative limits for N protein which are based on convalescent samples.
+    # But the RBD and Spike quantitation ranges will be different for the Janssen partial validation than for Moderna. 
+    if(study_name=="ENSEMBLE" | study_name=="MockENSEMBLE") {
+        lloqs["bindSpike"]=1.8429 
+        lloqs["bindRBD"]=5.0243 
+        
+        uloqs["bindSpike"]=238.1165 
+        uloqs["bindRBD"]=172.5755    
+    }
+    
+} else {
+    pos.cutoffs=sapply(assays, function(a) -Inf)
+    llods=sapply(assays, function(a) -Inf)
+    lloqs=sapply(assays, function(a) -Inf)
+    uloqs=sapply(assays, function(a) Inf)
 }
-
 
 must_have_assays <- c(
   "bindSpike", "bindRBD"
   # NOTE: the live neutralization marker will eventually be available
   #"liveneutmn50"
 )
-
 
 assays_to_be_censored_at_uloq_cor <- c(
   "bindSpike", "bindRBD", "pseudoneutid50", "pseudoneutid80"
@@ -124,12 +199,8 @@ assays_to_be_censored_at_uloq_cor <- c(
 ###############################################################################
 # figure labels and titles for markers
 ###############################################################################
-#has29 = "Day29" %in% times
-has57 = study_name %in% c("COVE","MockCOVE")
-has29 = study_name %in% c("COVE","ENSEMBLE", "MockCOVE","MockENSEMBLE")
 
-markers <- c(outer(times[which(times %in% c("B", "Day29", "Day57"))], 
-                   assays, "%.%"))
+markers <- c(outer(times[which(times %in% c("B", "Day29", "Day57"))], assays, "%.%"))
 
 # race labeling
 labels.race <- c(
@@ -149,62 +220,74 @@ labels.ethnicity <- c(
   "Not reported and unknown"
 )
 
-labels.assays.short <- c("Anti N IgG (BAU/ml)", 
-                         "Anti Spike IgG (BAU/ml)", 
-                         "Anti RBD IgG (BAU/ml)", 
-                         "Pseudovirus-nAb cID50", 
-                         "Pseudovirus-nAb cID80", 
-                         "Live virus-nAb cMN50")
-names(labels.assays.short) <- c("bindN",
-  "bindSpike",
-  "bindRBD",
-  "pseudoneutid50",
-  "pseudoneutid80",
-  "liveneutmn50")
+
+#labels.assays <- c("Binding Antibody to Spike", 
+#                   "Binding Antibody to RBD",
+#                   "PsV Neutralization 50% Titer",
+#                   "PsV Neutralization 80% Titer",
+#                   "WT LV Neutralization 50% Titer")
+#
+#names(labels.assays) <- c("bindSpike", 
+#                          "bindRBD", 
+#                          "pseudoneutid50",
+#                          "pseudoneutid80",
+#                          "liveneutmn50")
+
+#labels.assays.short <- c("Anti N IgG (BAU/ml)", 
+#                         "Anti Spike IgG (BAU/ml)", 
+#                         "Anti RBD IgG (BAU/ml)", 
+#                         "Pseudovirus-nAb cID50", 
+#                         "Pseudovirus-nAb cID80", 
+#                         "Live virus-nAb cMN50")
+#names(labels.assays.short) <- c("bindN",
+#  "bindSpike",
+#  "bindRBD",
+#  "pseudoneutid50",
+#  "pseudoneutid80",
+#  "liveneutmn50")
+
+#labels.time=c()
+#for (t in times) {
+#    labels.time=c(labels.time, "Day "%.%ifelse(t=="B", 1, t))
+#}
+#if (length(timepoints)==2) {
+#    labels.time <- c("Day 1", "Day "%.%timepoints[1], "Day "%.%timepoints[2], 
+#                     "D"%.%timepoints[1]%.%" fold-rise over D1", 
+#                     "D"%.%timepoints[2]%.%" fold-rise over D1", 
+#                     "D"%.%timepoints[2]%.%" fold-rise over D"%.%timepoints[1])
+#    names(labels.time) <- c("B", "Day"%.%timepoints[1], "Day"%.%timepoints[2], 
+#                        "Delta"%.%timepoints[1]%.%"overB", "Delta"%.%timepoints[2]%.%"overB", "Delta"%.%timepoints[2]%.%"over"%.%timepoints[1])
+#} else {
+#    labels.time <- c("Day 1", "Day "%.%timepoints[1], "D"%.%timepoints[1]%.%" fold-rise over D1")
+#    names(labels.time) <- c("B", "Day"%.%timepoints[1], "Delta"%.%timepoints[1]%.%"overB")
+#}
+
+
+labels.assays = config$assay_labels
+names(labels.assays) = config$assays
+
+if (is.null(config$assay_labels_short)) {
+    labels.assays.short=labels.assays
+} else {
+    labels.assays.short = config$assay_labels_short
+    names(labels.assays.short) = config$assays
+}
 
 # hacky fix for tabular, since unclear who else is using
 # the truncated labels.assays.short later
 labels.assays.short.tabular <- labels.assays.short
 
-labels.time <- c("Day 1", "Day 29", "Day 57", 
-                 "D29 fold-rise over D1", 
-                 "D57 fold-rise over D1", 
-                 "D57 fold-rise over D29")
+labels.time = config$time_labels
+names(labels.time) = config$times
 
-names(labels.time) <- c("B", "Day29", "Day57", "Delta29overB", 
-                        "Delta57overB", "Delta57over29")
 
 # axis labeling
-labels.axis <- outer(
-  rep("", length(times)),
-  labels.assays.short[assays],
-  "%.%"
-)
+labels.axis <- outer(rep("", length(times)), labels.assays.short[assays], "%.%")
 labels.axis <- as.data.frame(labels.axis)
 rownames(labels.axis) <- times
 
-labels.assays <- c("Binding Antibody to Spike", 
-                   "Binding Antibody to RBD",
-                   "PsV Neutralization 50% Titer",
-                   "PsV Neutralization 80% Titer",
-                   "WT LV Neutralization 50% Titer")
-
-names(labels.assays) <- c("bindSpike", 
-                          "bindRBD", 
-                          "pseudoneutid50",
-                          "pseudoneutid80",
-                          "liveneutmn50")
-
 # title labeling
-labels.title <- outer(
-  labels.assays[assays],
-  ": " %.%
-    c(
-      "Day 1", "Day 29", "Day 57", "D29 fold-rise over D1",
-      "D57 fold-rise over D1", "D57 fold-rise over D29"
-    ),
-  paste0
-)
+labels.title <- outer(labels.assays[assays], ": " %.% labels.time, paste0)
 labels.title <- as.data.frame(labels.title)
 colnames(labels.title) <- times
 # NOTE: hacky solution to deal with changes in the number of markers
@@ -212,8 +295,9 @@ rownames(labels.title)[seq_along(assays)] <- assays
 labels.title <- as.data.frame(t(labels.title))
 
 # creating short and long labels
-labels.assays.short <- labels.axis[1, ]
+#labels.assays.short <- labels.axis[1, ] # should not create this again
 labels.assays.long <- labels.title
+
 
 # baseline stratum labeling
 Bstratum.labels <- c(
@@ -260,15 +344,6 @@ names(regions.ENSEMBLE)=labels.regions.ENSEMBLE
 labels.countries.ENSEMBLE=c("0"="United States", "1"="Argentina", "2"="Brazil", "3"="Chile", "4"="Columbia", "5"="Mexico", "6"="Peru", "7"="South Africa")
 countries.ENSEMBLE=0:7
 names(countries.ENSEMBLE)=labels.countries.ENSEMBLE
-
-
-###############################################################################
-# reproduciblity options
-###############################################################################
-
-# NOTE: used in appendix.Rmd to store digests of input raw/processed data files
-# hash algorithm picked based on https://csrc.nist.gov/projects/hash-functions
-hash_algorithm <- "sha256"
 
 
 ###############################################################################
@@ -362,6 +437,15 @@ ggsave_custom <- function(filename = default_name(plot),
 
 
 
+
+
+
+
+###################################################################################################
+# utility functions
+###################################################################################################
+
+
 get.range.cor=function(dat, assay=c("bindSpike", "bindRBD", "pseudoneutid50", "pseudoneutid80"), time) {
     assay<-match.arg(assay)
     if(assay %in% c("bindSpike", "bindRBD")) {
@@ -420,7 +504,7 @@ bootstrap.case.control.samples=function(dat.ph1, delta.name="EventIndPrimary", s
     dat.tmp=data.frame(ptid=1:nrow(dat.ph1), delta=dat.ph1[,delta.name], strata=dat.ph1[,strata.name], ph2=dat.ph1[,ph2.name])
     
     nn.ph1=with(dat.tmp, table(strata, delta))
-    nn.ph2=with(subset(dat.tmp, ph2), table(strata, delta))
+    nn.ph2=with(subset(dat.tmp, ph2==1), table(strata, delta))
     if(!all(rownames(nn.ph1)==rownames(nn.ph2))) stop("ph2 strata differ from ph1 strata")
     strat=rownames(nn.ph1); names(strat)=strat
     # ctrl.ptids is a list of lists
@@ -450,6 +534,7 @@ bootstrap.case.control.samples=function(dat.ph1, delta.name="EventIndPrimary", s
     # return data frame
     dat.ph1[c(case.ptids.b, ctrl.ptids.b), ]
 }
+
 ## testing
 #dat.b=bootstrap.case.control.samples(dat.vac.seroneg)
 #with(dat.vac.seroneg, table(ph2, tps.stratum, EventIndPrimary))
@@ -536,8 +621,6 @@ marker.name.to.assay=function(marker.name) {
 }
 
 
-data_name = paste0(attr(config, "config"), "_data_processed.csv")
-
 # x is the marker values
 # assay is one of assays, e.g. pseudoneutid80
 report.assay.values=function(x, assay){
@@ -553,17 +636,14 @@ report.assay.values=function(x, assay){
 
 
 
-
-
-###################################################################################################
-# function to define trichotomized markers 
 add.trichotomized.markers=function(dat, tpeak, wt.col.name) {
     if(verbose) print("add.trichotomized.markers ...")
     
     marker.cutpoints <- list()    
     for (a in assays) {
         marker.cutpoints[[a]] <- list()    
-        for (ind.t in c("Day"%.%tpeak, "Delta"%.%tpeak%.%"overB")) {
+        #for (ind.t in times[-1]) {
+        for (ind.t in "Day"%.%tpeak) {        
             if (verbose) myprint(a, ind.t, newline=F)
             tmp.a=dat[[ind.t %.% a]]
             
@@ -613,95 +693,45 @@ add.trichotomized.markers=function(dat, tpeak, wt.col.name) {
 }
 
 
-###################################################################################################
-# read data in 
 
-# if this is run under _reporting level, it will not load and will warn
-data_name_updated <- sub(".csv", "_with_riskscore.csv", data_name)
-if (startsWith(tolower(study_name), "mock")) {
-    path_to_data = here::here("..", "data_clean", data_name_updated)
-    data_name = data_name_updated    
-} else {
-    path_to_data = here::here("..", "..", data_cleaned)
-    data_name = path_to_data
-}
-if (file.exists(path_to_data)) {
-    dat.mock <- read.csv(path_to_data)
-    print(paste0("reading data from ",data_name))
-
-    # get hash of commit at HEAD
-    commit_hash <- system("git rev-parse HEAD", intern = TRUE)    
-    # get hash of input processed data file based on chosen hashing algorithm
-    processed_file_digest <- digest(file = path_to_data, algo = hash_algorithm)
-    
-    if(config$is_ows_trial) {
-        # maxed over Spike, RBD, N, restricting to Day 29 or 57
-        if(has29) MaxbAbDay29 = max(dat.mock[,paste0("Day29", c("bindSpike", "bindRBD", "bindN"))], na.rm=T)
-        if(has29) MaxbAbDelta29overB = max(dat.mock[,paste0("Delta29overB", c("bindSpike", "bindRBD", "bindN"))], na.rm=T)
-        if(has57) MaxbAbDay57 = max(dat.mock[,paste0("Day57", c("bindSpike", "bindRBD", "bindN"))], na.rm=T)
-        if(has57) MaxbAbDelta57overB = max(dat.mock[,paste0("Delta57overB", c("bindSpike", "bindRBD", "bindN"))], na.rm=T)
-        
-        # maxed over ID50 and ID80, restricting to Day 29 or 57
-        if("pseudoneutid50" %in% assays & "pseudoneutid80" %in% assays) {
-            if(has29) MaxID50ID80Day29 = max(dat.mock[,paste0("Day29", c("pseudoneutid50", "pseudoneutid80"))], na.rm=T)
-            if(has29) MaxID50ID80Delta29overB = max(dat.mock[,paste0("Delta29overB", c("pseudoneutid50", "pseudoneutid80"))], na.rm=TRUE)
-            if(has57) MaxID50ID80Day57 = max(dat.mock[,paste0("Day57", c("pseudoneutid50", "pseudoneutid80"))], na.rm=T)        
-            if(has57) MaxID50ID80Delta57overB = max(dat.mock[,paste0("Delta57overB", c("pseudoneutid50", "pseudoneutid80"))], na.rm=TRUE)
-        }
-    } 
-    
-    
-    # a function to print tables of cases counts with different marker availability
-    # note that D57 cases and intercurrent cases may add up to more than D29 cases because ph1.D57 requires EarlyendpointD57==0 while ph1.D29 requires EarlyendpointD29==0
-    make.case.count.marker.availability.table=function(dat) {
-        if (study_name=="COVE" | study_name=="MockCOVE" ) {
-            idx.trt=1:0
-            names(idx.trt)=c("vacc","plac")
-            cnts = sapply (idx.trt, simplify="array", function(trt) {
-                 idx=1:3
-                 names(idx)=c("Day 29 Cases", "Day 57 Cases", "Intercurrent Cases")
-                 tab=t(sapply (idx, function(i) {           
-                    tmp.1 = with(subset(dat, Trt==trt & Bserostatus==0 & (if(i==2) EventIndPrimaryD57 else EventIndPrimaryD29) &   (if(i==2) ph1.D57 else if(i==1) ph1.D29 else ph1.intercurrent.cases)), is.na(BbindSpike)     | is.na(BbindRBD) )
-                    tmp.2 = with(subset(dat, Trt==trt & Bserostatus==0 & (if(i==2) EventIndPrimaryD57 else EventIndPrimaryD29) &   (if(i==2) ph1.D57 else if(i==1) ph1.D29 else ph1.intercurrent.cases)), is.na(Day29bindSpike) | is.na(Day29bindRBD))
-                    tmp.3 = with(subset(dat, Trt==trt & Bserostatus==0 & (if(i==2) EventIndPrimaryD57 else EventIndPrimaryD29) &   (if(i==2) ph1.D57 else if(i==1) ph1.D29 else ph1.intercurrent.cases)), is.na(Day57bindSpike) | is.na(Day57bindRBD))    
-                    
-                    c(sum(tmp.1 & tmp.2 & tmp.3), sum(tmp.1 & tmp.2 & !tmp.3), sum(tmp.1 & !tmp.2 & tmp.3), sum(tmp.1 & !tmp.2 & !tmp.3), 
-                      sum(!tmp.1 & tmp.2 & tmp.3), sum(!tmp.1 & tmp.2 & !tmp.3), sum(!tmp.1 & !tmp.2 & tmp.3), sum(!tmp.1 & !tmp.2 & !tmp.3))
-                }))
-                colnames(tab)=c("---", "--+", "-+-", "-++", "+--", "+-+", "++-", "+++")
-                tab
-            })
-            cnts
-        } else if (study_name=="ENSEMBLE" | study_name=="MockENSEMBLE" ) {
-            idx.trt=1:0
-            names(idx.trt)=c("vacc","plac")
-            cnts = sapply (idx.trt, simplify="array", function(trt) {
-                 idx=1:1
-                 tab=t(sapply (idx, function(i) {           
-                    tmp.1 = with(subset(dat, Trt==trt & Bserostatus==0 & if(i==2) EventIndPrimaryD57 else EventIndPrimaryD29 &   if(i==2) ph1.D57 else if(i==1) ph1.D29 else ph1.intercurrent.cases), is.na(BbindSpike)     | is.na(BbindRBD) )
-                    tmp.2 = with(subset(dat, Trt==trt & Bserostatus==0 & if(i==2) EventIndPrimaryD57 else EventIndPrimaryD29 &   if(i==2) ph1.D57 else if(i==1) ph1.D29 else ph1.intercurrent.cases), is.na(Day29bindSpike) | is.na(Day29bindRBD))
-                    
-                    c(sum(tmp.1 & tmp.2), sum(!tmp.1 & tmp.2), sum(tmp.1 & !tmp.2), sum(!tmp.1 & !tmp.2))
-                 }))
-                 colnames(tab)=c("--", "+-", "-+", "++")
-                 tab
-            })
-            t(drop(cnts))
-        } else {
-            NA
-        }
+# a function to print tables of cases counts with different marker availability
+# note that D57 cases and intercurrent cases may add up to more than D29 cases because ph1.D57 requires EarlyendpointD57==0 while ph1.D29 requires EarlyendpointD29==0
+make.case.count.marker.availability.table=function(dat) {
+    if (study_name=="COVE" | study_name=="MockCOVE" ) {
+        idx.trt=1:0
+        names(idx.trt)=c("vacc","plac")
+        cnts = sapply (idx.trt, simplify="array", function(trt) {
+             idx=1:3
+             names(idx)=c("Day 29 Cases", "Day 57 Cases", "Intercurrent Cases")
+             tab=t(sapply (idx, function(i) {           
+                tmp.1 = with(subset(dat, Trt==trt & Bserostatus==0 & (if(i==2) EventIndPrimaryD57 else EventIndPrimaryD29) &   (if(i==2) ph1.D57 else if(i==1) ph1.D29 else ph1.intercurrent.cases)), is.na(BbindSpike)     | is.na(BbindRBD) )
+                tmp.2 = with(subset(dat, Trt==trt & Bserostatus==0 & (if(i==2) EventIndPrimaryD57 else EventIndPrimaryD29) &   (if(i==2) ph1.D57 else if(i==1) ph1.D29 else ph1.intercurrent.cases)), is.na(Day29bindSpike) | is.na(Day29bindRBD))
+                tmp.3 = with(subset(dat, Trt==trt & Bserostatus==0 & (if(i==2) EventIndPrimaryD57 else EventIndPrimaryD29) &   (if(i==2) ph1.D57 else if(i==1) ph1.D29 else ph1.intercurrent.cases)), is.na(Day57bindSpike) | is.na(Day57bindRBD))    
+                
+                c(sum(tmp.1 & tmp.2 & tmp.3), sum(tmp.1 & tmp.2 & !tmp.3), sum(tmp.1 & !tmp.2 & tmp.3), sum(tmp.1 & !tmp.2 & !tmp.3), 
+                  sum(!tmp.1 & tmp.2 & tmp.3), sum(!tmp.1 & tmp.2 & !tmp.3), sum(!tmp.1 & !tmp.2 & tmp.3), sum(!tmp.1 & !tmp.2 & !tmp.3))
+            }))
+            colnames(tab)=c("---", "--+", "-+-", "-++", "+--", "+-+", "++-", "+++")
+            tab
+        })
+        cnts
+    } else if (study_name=="ENSEMBLE" | study_name=="MockENSEMBLE" ) {
+        idx.trt=1:0
+        names(idx.trt)=c("vacc","plac")
+        cnts = sapply (idx.trt, simplify="array", function(trt) {
+             idx=1:1
+             tab=t(sapply (idx, function(i) {           
+                tmp.1 = with(subset(dat, Trt==trt & Bserostatus==0 & if(i==2) EventIndPrimaryD57 else EventIndPrimaryD29 &   if(i==2) ph1.D57 else if(i==1) ph1.D29 else ph1.intercurrent.cases), is.na(BbindSpike)     | is.na(BbindRBD) )
+                tmp.2 = with(subset(dat, Trt==trt & Bserostatus==0 & if(i==2) EventIndPrimaryD57 else EventIndPrimaryD29 &   if(i==2) ph1.D57 else if(i==1) ph1.D29 else ph1.intercurrent.cases), is.na(Day29bindSpike) | is.na(Day29bindRBD))
+                
+                c(sum(tmp.1 & tmp.2), sum(!tmp.1 & tmp.2), sum(tmp.1 & !tmp.2), sum(!tmp.1 & !tmp.2))
+             }))
+             colnames(tab)=c("--", "+-", "-+", "++")
+             tab
+        })
+        t(drop(cnts))
+    } else {
+        NA
     }
-    #subset(dat, Trt==trt & Bserostatus==0 & EventIndPrimaryD29==1 & ph1.intercurrent.cases)
-    #print(make.case.count.marker.availability.table(dat_proc))
-    
-    
-    # map tps.stratum to stratification variables
-    tps.stratums=sort(unique(dat.mock$tps.stratum)); names(tps.stratums)=tps.stratums
-    decode.tps.stratum=t(sapply(tps.stratums, function(i) unlist(subset(dat.mock, tps.stratum==i)[1,
-        if (study_name=="COVE" | study_name=="MockCOVE" ) c("Senior", "HighRiskInd", "URMforsubcohortsampling") else if (study_name=="ENSEMBLE" | study_name=="MockENSEMBLE" ) c("Senior", "HighRiskInd", "Region", "URMforsubcohortsampling")
-    ])))
-    
-        
-} else {
-    warning("dataset with risk score not available")
 }
+#make.case.count.marker.availability.table(dat.mock)

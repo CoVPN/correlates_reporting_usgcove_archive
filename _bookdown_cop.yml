@@ -1,5 +1,5 @@
 delete_merged_file: true
-before_chapter_script: "_common.R"
+before_chapter_script: 
 output_dir: "_report_cop"
 clean: packages.bib
 keep_tex: true

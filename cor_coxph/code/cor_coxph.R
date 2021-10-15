@@ -1,4 +1,4 @@
-#Sys.setenv(TRIAL = "janssen_pooled_mock") # moderna_mock  janssen_pooled_mock  janssen_pooled_real  janssen_na_mock
+#Sys.setenv(TRIAL = "moderna_mock") # moderna_mock  moderna_real  janssen_pooled_mock  janssen_pooled_real  janssen_na_mock  hvtn705
 #Sys.setenv(VERBOSE = 1) 
 renv::activate(project = here::here(".."))    
     # There is a bug on Windows that prevents renv from working properly. The following code provides a workaround:
@@ -21,6 +21,10 @@ time.start=Sys.time()
 myprint(study_name)
 myprint(verbose)
 
+all.markers=paste0("Day", tpeak, assays)
+
+if (config$is_ows_trial) dat.mock=subset(dat.mock, Bserostatus==0)
+
 
 # path for figures and tables etc
 save.results.to = here::here("output")
@@ -32,12 +36,6 @@ if (!dir.exists(save.results.to))  dir.create(save.results.to)
 print(paste0("save.results.to equals ", save.results.to))
     
 
-# set up analysis-specific variables using config.cor
-dat.mock$wt=dat.mock[[config.cor$wt]]
-dat.mock$ph1=dat.mock[[config.cor$ph1]]
-dat.mock$ph2=dat.mock[[config.cor$ph2]]
-dat.mock$EventIndPrimary =dat.mock[[config.cor$EventIndPrimary]]
-dat.mock$EventTimePrimary=dat.mock[[config.cor$EventTimePrimary]]
 # B=1e3 and numPerm=1e4 take 10 min to run with 30 CPUS for one analysis
 B <-       config$num_boot_replicates 
 numPerm <- config$num_perm_replicates # number permutation replicates 1e4
@@ -50,7 +48,7 @@ myprint(numPerm)
 # do before uloq censoring
 
 # Average follow-up of vaccine recipients starting at tpeaklag days post visit
-write(round(mean(subset(dat.mock, Trt==1 & Bserostatus==0 & ph1, EventTimePrimary, drop=T), na.rm=T)-tpeaklag), file=paste0(save.results.to, "avg_followup_"%.%study_name))
+write(round(mean(subset(dat.mock, Trt==1 & ph1, EventTimePrimary, drop=T), na.rm=T)-tpeaklag), file=paste0(save.results.to, "avg_followup_"%.%study_name))
 
 if (config$is_ows_trial) source(here::here("code", "cor_coxph_misc.R"))
 
@@ -69,13 +67,8 @@ if (config$is_ows_trial) {
 
 # the following data frame define the phase 1 ptids
 # do this after uloq censoring
-if (config$is_ows_trial) {
-    dat.vac.seroneg=subset(dat.mock, Trt==1 & Bserostatus==0 & ph1)
-    dat.pla.seroneg=subset(dat.mock, Trt==0 & Bserostatus==0 & ph1)
-} else {
-    dat.vac.seroneg=subset(dat.mock, Trt==1 & ph1)
-    dat.pla.seroneg=subset(dat.mock, Trt==0 & ph1)
-}
+dat.vac.seroneg=subset(dat.mock, Trt==1 & ph1)
+dat.pla.seroneg=subset(dat.mock, Trt==0 & ph1)
 
 ## temp: experimenting with multitesting
 ## based on moderna_mock
@@ -101,12 +94,8 @@ write(tfinal.tpeak, file=paste0(save.results.to, "timepoints_cum_risk_"%.%study_
 
     
 # formulae
-form.s = as.formula(paste0("Surv(", config.cor$EventTimePrimary, ", ", config.cor$EventIndPrimary, ") ~ 1"))
-if (endsWith(data_name, "riskscore.csv")) {
-    form.0 = update (form.s, as.formula(config$covariates_riskscore))
-} else {
-    form.0 = update (form.s, as.formula(config$covariates_norisksco)) 
-}
+form.s = Surv(EventTimePrimary, EventIndPrimary) ~ 1
+form.0 = update (form.s, as.formula(config$covariates_riskscore))
 print(form.0)
 
 
@@ -118,7 +107,7 @@ marker.cutpoints=attr(dat.vac.seroneg, "marker.cutpoints")
 
 cutpoints=list()
 for (a in assays) {        
-    for (t in c("Day"%.%tpeak, "Delta"%.%tpeak%.%"overB")) {
+    for (t in "Day"%.%tpeak) {
         q.a=marker.cutpoints[[a]][[t]]
         write(paste0(labels.axis[1,a], " [", concatList(round(q.a, 2), ", "), ")%"), file=paste0(save.results.to, "cutpoints_", t, a, "_"%.%study_name))
     }

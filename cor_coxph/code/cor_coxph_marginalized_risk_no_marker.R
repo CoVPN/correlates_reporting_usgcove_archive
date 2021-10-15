@@ -34,11 +34,15 @@ if(!file.exists(paste0(save.results.to, "marginalized.risk.no.marker.",study_nam
         save.seed <- try(get(".Random.seed", .GlobalEnv), silent=TRUE) 
         if (class(save.seed)=="try-error") {set.seed(1); save.seed <- get(".Random.seed", .GlobalEnv) }   
         
-        ptids.by.stratum=get.ptids.by.stratum.for.bootstrap (dat.tmp) 
+        if(config$case_cohort) ptids.by.stratum=get.ptids.by.stratum.for.bootstrap (dat.tmp) 
     
         # if mc.cores is >1 here, the process will be stuck in coxph for some unknown reason
         out=mclapply(1:B, mc.cores = 1, FUN=function(seed) {   
-            dat.b = get.bootstrap.data.cor (dat.tmp, ptids.by.stratum, seed) 
+            if(config$case_cohort) {
+                dat.b = get.bootstrap.data.cor (dat.tmp, ptids.by.stratum, seed) 
+            } else {
+                dat.b = bootstrap.case.control.samples(dat.tmp, delta.name="EventIndPrimary", strata.name="tps.stratum", ph2.name="ph2") 
+            }
             get.marginalized.risk.no.marker(dat.b)    
             
         })

@@ -47,7 +47,7 @@ for (tp in tps){
   #   dat.long.cor.subset <- dat.long.cor.subset %>% filter(cohort_event != "Intercurrent Cases" & ph2.D57==1)
   # }
   
-  rcdf_list <- vector("list", 4)
+  rcdf_list <- vector("list", length(assays))
   for (aa in seq_along(assays)) {
     rcdf_list[[aa]] <- ggplot(subset(dat.long.cor.subset, assay == assays[aa]), 
                               aes_string(

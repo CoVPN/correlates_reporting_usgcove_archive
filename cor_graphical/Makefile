@@ -1,20 +1,36 @@
 ## all            : clear current results and make figures
 all: clean figs
 
-## clean_data     : saves data sets for plotting in data_clean
-clean_data: code/cor_data_preprocess.R
-	Rscript code/cor_data_preprocess.R D29D57
-
-## figs           : make figures
-figs: fig_code clean_data
+## figs           : clean data and make figures
+figs: 
+ifeq ($(TRIAL),$(filter $(TRIAL), moderna_mock moderna_real))
+	Rscript code/cor_data_preprocess.R D29D57 # Yiwen's
 	Rscript code/cor_graphics_violin_scatter.R D29D57
-	Rscript code/CoR_assay_graphics.R D29D57
-	Rscript code/CoR_wrcdf_with_VE_lines.R D29D57
+	
+	Rscript code/cor_data_preprocess_2.R D29 # Brian's
+	Rscript code/CoR_assay_graphics.R D29
+	Rscript code/CoR_wrcdf_with_VE_lines.R D29
+	
+	Rscript code/cor_data_preprocess_2.R D57 # Brian's
+	Rscript code/CoR_assay_graphics.R D57
+	Rscript code/CoR_wrcdf_with_VE_lines.R D57
 
-fig_code: code/cor_graphics_violin_scatter.R \
-  code/CoR_assay_graphics.R \
-  code/CoR_wrcdf_with_VE_lines.R \
-  code/params.R
+else ifeq ($(TRIAL),$(filter $(TRIAL), janssen_pooled_mock janssen_pooled_real janssen_na_mock janssen_na_real janssen_la_mock janssen_la_real janssen_sa_mock janssen_sa_real))
+	Rscript code/cor_data_preprocess.R D29 # Yiwen's
+	Rscript code/cor_graphics_violin_scatter.R D29
+	
+	Rscript code/cor_data_preprocess.R D29start1 # Yiwen's
+	Rscript code/cor_graphics_violin_scatter.R D29start1
+	
+	Rscript code/cor_data_preprocess_2.R D29 # Brian's
+	Rscript code/CoR_assay_graphics.R D29
+	Rscript code/CoR_wrcdf_with_VE_lines.R D29
+	
+	Rscript code/cor_data_preprocess_2.R D29start1 # Brian's
+	Rscript code/CoR_assay_graphics.R D29start1
+	Rscript code/CoR_wrcdf_with_VE_lines.R D29start1
+	
+endif
 
 ## clean          : clean up data_clean and output folder
 clean:
@@ -27,4 +43,4 @@ report:
 help: Makefile
 	@sed -n 's/^##//p' $<
 
-.PHONY: fig_code figs clean all clean_data
+.PHONY: figs clean all

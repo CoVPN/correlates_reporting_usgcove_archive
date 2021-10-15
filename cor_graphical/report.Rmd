@@ -21,104 +21,106 @@ COR=ifelse(grepl("ENSEMBLE", study_name), "D29", "D29D57")
 
 ## Boxplots
 
-```{r, fig.cap = "Boxplots of D57 Ab markers: vaccine arm. The three dashed lines in each figure are ULOQ, LLOQ, and LLOD, from top to bottom respectively.", eval = has57}
-include_graphics(here("cor_graphical", "figs", paste0("boxplots_Day57_trt_vaccine_x_cc_", study_name, ".png")))
+```{r, echo=FALSE, results='asis'}
+i <-1
+
+
+
+# Eventually will have to loop through assays, and combine each individual assay's boxplots into one figure
+for(time in timepoints) {
+  
+  tps <- times[gsub("[^\\d]+", "", times, perl=TRUE)==time]
+  tpsLabels <- labels.time[tps]
+  currCOR <- paste0("D",time)
+  
+  for (tpNum in seq(tps)) {
+    
+    tp <- tps[tpNum]
+    tpLabel <- tpsLabels[tpNum]
+    lineText <- ifelse(grepl("Delta", tp), "", " The three dashed lines in each figure are ULOQ, LLOQ, and LLOD, from top to bottom respectively.")
+    
+    res = knitr::knit_child(c(here::here('cor_graphical', 'report_boxplots.Rmd')), quiet = TRUE)
+    cat(res, sep = '\n')
+    cat("\\clearpage", sep = '\n')
+    i = i + 1
+  }
+}
+
 ```
 
-\clearpage
-```{r, fig.cap = "Boxplots of D57 fold-rise over D1 Ab markers: vaccine arm.", eval = has57}
-include_graphics(here("cor_graphical", "figs", paste0("boxplots_Delta57overB_trt_vaccine_x_cc_", study_name, ".png")))
-```
 
-\clearpage
-```{r, fig.cap = "Boxplots of D29 Ab markers: vaccine arm. The three dashed lines in each figure are ULOQ, LLOQ, and LLOD, from top to bottom respectively."}
-include_graphics(here("cor_graphical", "figs", paste0("boxplots_Day29_trt_vaccine_x_cc_", study_name, ".png")))
-```
-
-\clearpage
-```{r, fig.cap = "Boxplots of D29 fold-rise over D1 Ab markers: vaccine arm."}
-include_graphics(here("cor_graphical", "figs", paste0("boxplots_Delta29overB_trt_vaccine_x_cc_", study_name, ".png")))
-```
-
-
-
-\clearpage
 ## Weighted RCDF plots
 
+```{r, echo=FALSE, results='asis'}
 
+# Eventually will have to loop through assays, and combine each individual assay's RCDFs into one figure
+for(time in timepoints) {
+  
+  tps <- times[gsub("[^\\d]+", "", times, perl=TRUE)==time]
+  tpsLabels <- labels.time[tps]
+  tp <- tps[!grepl("Delta", tps)]
+  tpLabel <- tpsLabels[!grepl("Delta", tps)]
+  currCOR <- paste0("D",time)
+  
+  for (tpNum in seq(tps)) {
+    
+    tp <- tps[tpNum]
+    tpLabel <- tpsLabels[tpNum]
+    
+    res = knitr::knit_child(c(here::here('cor_graphical', 'report_marker_rcdf.Rmd')), quiet = TRUE)
+    cat(res, sep = '\n')
+    cat("\\clearpage", sep = '\n')
+    i = i + 1
+  }
+}
 
-```{r, fig.cap = "RCDF plots for D57 Ab markers by treatment arm.", eval = has57}
-include_graphics(here("cor_graphical", "figs", paste0("Marker_RCDF_Day57_trt_by_event_status_bstatus_", study_name, ".png")))
 ```
 
-\clearpage
-```{r, fig.cap = "RCDF plots for D57 fold-rise over D1 Ab markers by treatment arm.", eval = has57}
-include_graphics(here("cor_graphical", "figs", paste0("Marker_RCDF_Delta57overB_trt_by_event_status_bstatus_", study_name, ".png")))
-```
 
-\clearpage
-```{r, fig.cap = "RCDF plots for D29 Ab markers by treatment arm. "}
-include_graphics(here("cor_graphical", "figs", paste0("Marker_RCDF_Day29_trt_by_event_status_bstatus_", study_name, ".png")))
-```
-
-\clearpage
-```{r, fig.cap = "RCDF plots for D29 fold-rise over D1 Ab markers by treatment arm."}
-include_graphics(here("cor_graphical", "figs", paste0("Marker_RCDF_Delta29overB_trt_by_event_status_bstatus_", study_name, ".png")))
-```
-
-
-
-
-\clearpage
 ## Weighted RCDF plots of threshold correlate concentration for vaccine efficacy
 
-```{r, fig.cap = "Marker RCDF of D57 anti-Spike binding Ab: vaccine arm",eval = (plot_ve_curves[1] == 1 & has57)}
-include_graphics(here("cor_graphical", "figs", paste0("RCDF_VE_Day57_trt_Vaccine_BaselineNeg_bindSpike_", study_name, ".png")))
+```{r, echo=FALSE, results='asis'}
+
+assay.labels <- sapply(assays, function(assay) {
+  if(grepl("bind", assay)) { return ( paste0( gsub("bind", "anti-", assay), " binding Ab") ) } 
+  else if(grepl("pseudoneutid", assay)) { return ( gsub("pseudoneutid", "PsV-nAb ID", assay) ) } 
+  else return (assay)
+})
+
+tpLabel <- tpsLabels[!grepl("Delta", tps)]
+
+# Only show figures if there are substantial cases
+# (I haven't seen a scenario where there aren't, but keeping this from Kendrick)
+for(time in timepoints) {
+  
+  tps <- times[gsub("[^\\d]+", "", times, perl=TRUE)==time]
+  tpsLabels <- labels.time[tps]
+  tp <- tps[!grepl("Delta", tps)]
+  tpLabel <- tpsLabels[!grepl("Delta", tps)]
+  currCOR <- paste0("D",time)
+  
+  if(plot_ve_curves[1]){
+    for (assayNum in seq(assays)) {
+      
+      assay <- assays[assayNum]
+      assayLabel <- assay.labels[assayNum]
+      
+      res = knitr::knit_child(c(here::here('cor_graphical', 'report_rcdf.Rmd')), quiet = TRUE)
+      cat(res, sep = '\n')
+      cat("\\clearpage", sep = '\n')
+      i = i + 1
+    }
+  }
+}
+
 ```
 
-\clearpage
-```{r, fig.cap = "Marker RCDF of D57 anti-RBD binding Ab: vaccine arm", eval = (plot_ve_curves[1] == 1 & has57)}
-include_graphics(here("cor_graphical", "figs", paste0("RCDF_VE_Day57_trt_Vaccine_BaselineNeg_bindRBD_", study_name, ".png")))
-```
 
-\clearpage
-```{r, fig.cap = "Marker RCDF of D57 PsV-nAb ID50: vaccine arm", eval = (plot_ve_curves[1] == 1 & has57 & ("pseudoneutid50" %in% assays))}
-include_graphics(here("cor_graphical", "figs", paste0("RCDF_VE_Day57_trt_Vaccine_BaselineNeg_pseudoneutid50_", study_name, ".png")))
-```
+<!-- ## Spaghetti plots -->
 
-\clearpage
-```{r, fig.cap = "Marker RCDF of D57 PsV-nAb ID80: vaccine arm", eval = (plot_ve_curves[1] == 1 & has57 & ("pseudoneutid80" %in% assays))}
-include_graphics(here("cor_graphical", "figs", paste0("RCDF_VE_Day57_trt_Vaccine_BaselineNeg_pseudoneutid80_", study_name, ".png")))
-```
-
-
-
-\clearpage
-```{r, fig.cap = "Marker RCDF of D29 anti-Spike binding Ab: vaccine arm",eval = (plot_ve_curves[1] == 1)}
-include_graphics(here("cor_graphical", "figs", paste0("RCDF_VE_Day29_trt_Vaccine_BaselineNeg_bindSpike_", study_name, ".png")))
-```
-
-\clearpage
-```{r, fig.cap = "Marker RCDF of D29 anti-RBD binding Ab: vaccine arm", eval = (plot_ve_curves[1] == 1)}
-include_graphics(here("cor_graphical", "figs", paste0("RCDF_VE_Day29_trt_Vaccine_BaselineNeg_bindRBD_", study_name, ".png")))
-```
-
-\clearpage
-```{r, fig.cap = "Marker RCDF of D29 PsV-nAb ID50: vaccine arm", eval = (plot_ve_curves[1] == 1 & ("pseudoneutid50" %in% assays))}
-include_graphics(here("cor_graphical", "figs", paste0("RCDF_VE_Day29_trt_Vaccine_BaselineNeg_pseudoneutid50_", study_name, ".png")))
-```
-
-\clearpage
-```{r, fig.cap = "Marker RCDF of D29 PsV-nAb ID80: vaccine arm", eval = (plot_ve_curves[1] == 1 & ("pseudoneutid80" %in% assays))}
-include_graphics(here("cor_graphical", "figs", paste0("RCDF_VE_Day29_trt_Vaccine_BaselineNeg_pseudoneutid80_", study_name, ".png")))
-```
-
-\clearpage
-## Spaghetti plots
-
-```{r, fig.cap = "Spaghetti Plots of Marker Trajectory: vaccine arm"}
-include_graphics(here("cor_graphical", "figs", paste0("spaghetti_plot_trt_", study_name, ".png")))
-```
+<!-- ```{r, fig.cap = "Spaghetti Plots of Marker Trajectory: vaccine arm"} -->
+<!-- include_graphics(here("cor_graphical", "figs", paste0("spaghetti_plot_trt_", study_name, ".png"))) -->
+<!-- ``` -->
 
 
 \clearpage

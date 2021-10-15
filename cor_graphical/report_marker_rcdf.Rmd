@@ -1,0 +1,12 @@
+\begin{figure}[H]
+\center
+
+\includegraphics[width=1\textwidth]{`r here("cor_graphical", "output", attr(config,"config"), currCOR, paste0("Marker_RCDF_", tp, "_trt_by_event_status_bstatus_", study_name, ".png"))`}
+
+\caption{`r paste0("\n\nFigure 3.", i, ": ", "RCDF plots for ",  tpLabel, " Ab markers by treatment arm.", "\n\n")`}
+\end{figure}
+
+\hphantom{Random text to appease the latex god}
+
+
+

@@ -1,9 +1,0 @@
-# Univariate CoR: More Flexible and Nonparametric Risk Modeling {#cor-nonpar}
-
-TO FILL IN
-
-```{r cor-nonpar-setup}
-# TODO
-```
-
-

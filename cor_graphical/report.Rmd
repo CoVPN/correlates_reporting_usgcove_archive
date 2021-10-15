@@ -37,7 +37,7 @@ for(time in timepoints) {
     
     tp <- tps[tpNum]
     tpLabel <- tpsLabels[tpNum]
-    lineText <- ifelse(grep("Delta", tp), "", " The three dashed lines in each figure are ULOQ, LLOQ, and LLOD, from top to bottom respectively.")
+    lineText <- ifelse(grepl("Delta", tp), "", " The three dashed lines in each figure are ULOQ, LLOQ, and LLOD, from top to bottom respectively.")
     
     res = knitr::knit_child(c(here::here('cor_graphical', 'report_boxplots.Rmd')), quiet = TRUE)
     cat(res, sep = '\n')

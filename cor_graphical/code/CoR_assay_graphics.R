@@ -74,7 +74,7 @@ for (tp in tps){
             axis.text = element_text(size = 14))
   }
   
-  ggsave(ggarrange(plotlist = rcdf_list, ncol = 2, nrow=2,
+  ggsave(ggarrange(plotlist = rcdf_list, ncol = 2, nrow=(length(assays) %/% 2),
                    common.legend = TRUE, legend = "bottom",
                    align = "h"),
          filename = paste0(save.results.to, "/Marker_RCDF_", tp, 
@@ -163,7 +163,7 @@ for (tp in tps){
   
   # Suppress hline warnings
   suppressWarnings(ggsave(ggarrange(plotlist = boxplot_list, 
-                   ncol = 2, nrow = 2, 
+                   ncol = 2, nrow=(length(assays) %/% 2), 
                    common.legend = TRUE, legend = "bottom",
                    align = "h") + 
            theme(plot.title = element_text(hjust = 0.5, size = 10)),

@@ -43,4 +43,4 @@ report:
 help: Makefile
 	@sed -n 's/^##//p' $<
 
-.PHONY: fig_code figs clean all clean_data
+.PHONY: figs clean all

@@ -1,0 +1,30 @@
+delete_merged_file: true
+before_chapter_script: 
+output_dir: "_report_cor"
+clean: packages.bib
+keep_tex: true
+language:
+  label:
+    fig: "FIGURE "
+    tab: "TABLE "
+  ui:
+    chapter_name: "Section "
+
+# abbreviated cor report
+rmd_files: [
+  "index_cor.Rmd",
+  "cor_threshold/report.Rmd",
+  "references.Rmd",
+  "appendix.Rmd"
+]
+
+# # full cor report
+# rmd_files: [
+#   "index_cor.Rmd",
+#   "cor_graphical/report.Rmd",
+#   "cor_coxph/report.Rmd",
+#   "cor_nonpar/report.Rmd",
+#   "cor_threshold/report.Rmd",
+#   "cor_surrogates/report.Rmd",
+#   "references.Rmd"
+# ]

@@ -1,13 +1,14 @@
-# CoVPN Correlates Analysis Reporting Archive
+# CoVPN/USG Correlates Analysis Reporting Archive
 
 __Note:__ As of 16 October 2021, this repository has been archived. Generalized
 versions of its data processing and analysis modules have been split in two and
-migrated to a correlates data processing workflow (at
-https://github.com/CoVPN/correlates_processing/) and a correlates of risk /
-protection analysis workflow (at
-https://github.com/CoVPN/correlates_reporting2/). This archive serves as
-a reference of the workflows used in developing reports for the Moderna and
-Janssen (ENSEMBLE) COVID-19 vaccine efficacy trials.
+migrated to a [correlates data processing
+workflow](https://github.com/CoVPN/correlates_processing/) and a [correlates of
+risk and protection analysis
+workflow](https://github.com/CoVPN/correlates_reporting2/). This archive serves
+as a reference of the workflows used in developing reports for the immune
+correlates analyses of the Moderna and Janssen (ENSEMBLE) COVID-19 vaccine
+efficacy trials.
 
 The _Statistical Analysis Plan_ is available
   * [on Figshare](https://doi.org/10.6084/m9.figshare.13198595)

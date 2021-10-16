@@ -47,17 +47,6 @@ The data presented in the analysis are provided to NIAID in accordance with Clin
 
 <!-- * These data are not to be disclosed without written permission of Moderna. -->
 
-
-
-
-
-
-<!-- <img style="float: center; margin-right: 1%; margin-bottom: 0.01em" -->
-<!--      src="covpn_logo.png" width="40%" height="40%"> -->
-<!-- <p style="clear: both;"> -->
-<!-- <br> -->
-
-
 \textbf{Statistical Analysis Plan}
 
 The SAP is available at https://doi.org/10.6084/m9.figshare.13198595

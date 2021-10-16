@@ -38,19 +38,11 @@ knitr::asis_output("\\AddToShipoutPictureFG{
  
 * These data are not to be disclosed without written permission of Moderna.
 
-
 `r if ( !( grepl("moderna", attr(config::get(config = Sys.getenv("TRIAL")), "config") ) ) ) '-->'`
-
-
 
 `r if (knitr::is_latex_output()) '<!--'`
 
 # CoVPN Correlates Analysis Report {-}
-
-<img style="float: center; margin-right: 1%; margin-bottom: 0.01em"
-     src="covpn_logo.png" width="40%" height="40%">
-<p style="clear: both;">
-<br>
 
 ## Statistical Analysis Plan {-}
 

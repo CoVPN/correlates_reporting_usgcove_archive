@@ -125,8 +125,8 @@ Remotes:
   github::tlverse/sl3@master,
   github::nhejazi/haldensify@master,
   github::nhejazi/txshift@master
-URL: https://github.com/CoVPN/correlates_reporting
-BugReports: https://github.com/CoVPN/correlates_reporting/issues
+URL: https://github.com/CoVPN/correlates_reporting_usgcove_archive
+BugReports: https://github.com/CoVPN/correlates_reporting_usgcove_archive/issues
 RoxygenNote: 7.1.1
 License: GPL (>= 3)
 Encoding: UTF-8

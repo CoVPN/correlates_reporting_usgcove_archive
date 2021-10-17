@@ -4,9 +4,9 @@ date: "`r format(Sys.time(), '%B %d, %Y')`"
 output: pdf_document
 ---
 
-Project directory: `correlates_reporting/immuno_graphical`
+Project directory: `correlates_reporting_usgcove_archive/immuno_graphical`
 
-Specifications: `correlates_reporting/immuno_graphical/verification/graphical_specifications.md`
+Specifications: `correlates_reporting_usgcove_archive/immuno_graphical/verification/graphical_specifications.md`
 
 Other Background Information: N/A 
 

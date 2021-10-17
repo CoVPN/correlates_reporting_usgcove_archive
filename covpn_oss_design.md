@@ -14,7 +14,8 @@ infrastructures. In line with these objectives, the data analysis and reporting
 architecture adheres closely to best practices developed in the free and open
 source software community; the unrestricted source code is publicly available as
 a single version-controlled repository on GitHub, a widely used collaborative
-programming platform, at https://github.com/CoVPN/correlates_reporting.
+programming platform, at
+https://github.com/CoVPN/correlates_reporting_usgcove_archive/.
 
 The repository includes distinct modules, each mapped closely to a section of
 the SAP, allowing all members of the implementation team to develop code for

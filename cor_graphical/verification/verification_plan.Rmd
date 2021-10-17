@@ -4,11 +4,11 @@ date: "`r format(Sys.time(), '%B %d, %Y')`"
 output: pdf_document
 ---
 
-Project directory: `correlates_reporting/cor_graphical`
+Project directory: `correlates_reporting_usgcove_archive/cor_graphical`
 
-Specifications: `correlates_reporting/cor_graphical/verification/cor_graphi_specifications.md`
+Specifications: `correlates_reporting_usgcove_archive/cor_graphical/verification/cor_graphi_specifications.md`
 
-Other Background Information: N/A 
+Other Background Information: N/A
 
 ### Verification  Sign-Off
 

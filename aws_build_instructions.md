@@ -64,7 +64,7 @@ credentials::set_github_pat()
 The output should read something like `Using GITHUB_PAT from ...` You can now clone the GitHub repository using `git`. Exit `R` and at the command line, `clone` the repository.
 
 ```bash 
-git clone https://github.com/covpn/correlates_reporting
+git clone https://github.com/covpn/correlates_reporting_usgcove_archive
 ```
 
 ### Setting up the `R` environment using `renv`
@@ -76,10 +76,10 @@ install.packages("renv")
 install.packages("here")
 ```
 
-Exit out of `R` and from the command line, move into the `correlates_reporting` directory and open an `R` session.
+Exit out of `R` and from the command line, move into the `correlates_reporting_usgcove_archive` directory and open an `R` session.
 
 ```bash
-cd correlates_reporting && R
+cd correlates_reporting_usgcove_archive && R
 ```
 
 Once `R` has started, it should load the `renv` package automatically. When you get an `R` command prompt, execute the following command to download and configure all necessary `R` packages.
@@ -125,7 +125,7 @@ Finally, we need to create a virtual environment in the package repository and
 install requirements.
 
 ```bash
-# need to be in correlates_reporting/cor_surrogates folder
+# need to be in correlates_reporting_usgcove_archive/cor_surrogates folder
 cd cor_surrogates
 # install virtualenv if needed
 pip install virtualenv
@@ -140,8 +140,8 @@ pip install -r requirements.txt
 ### Placing data file
 
 The pipeline expects data to be formatted according to documentation [...]
-(https://github.com/covpn/correlates_reporting/). A data set with this format
-should be placed in `correlates_reporting/data_raw/[folder]`, where `[folder]`
+(https://github.com/covpn/correlates_reporting_usgcove_archive/). A data set with this format
+should be placed in `correlates_reporting_usgcove_archive/data_raw/[folder]`, where `[folder]`
 is `data_raw_dir` specified in the `config.yml` file (see below).
 
 ### Workflow for building reports
@@ -149,8 +149,8 @@ is `data_raw_dir` specified in the `config.yml` file (see below).
 #### Updating `renv`
 
 Once an image has been built that includes the GitHub repository, the general work flow will be to
-- `git pull` the updated `correlates_reporting` repository;
-- open `R` in the `correlates_reporting` directory;
+- `git pull` the updated `correlates_reporting_usgcove_archive` repository;
+- open `R` in the `correlates_reporting_usgcove_archive` directory;
 - run `renv::restore()` to update `R` package list;
 - exit `R` and proceed to report building below.
 
@@ -242,4 +242,4 @@ make cor_report
 
 The compiled `pdf` report will appear in `_report_cor/covpn_correlates_cor.pdf`.
 
-For test builds, we recommend turning town the number of bootstrap and permutation resamples in `cor_coxph/code/params.R` by setting the values of the variables [`B`](https://github.com/CoVPN/correlates_reporting/blob/fb1e0c976e6ffb8ed939325dbd20a6c59f44f82b/cor_coxph/code/params.R#L2) and [`numPerm`](https://github.com/CoVPN/correlates_reporting/blob/fb1e0c976e6ffb8ed939325dbd20a6c59f44f82b/cor_coxph/code/params.R#L3) both to `5`.
+For test builds, we recommend turning town the number of bootstrap and permutation resamples in `cor_coxph/code/params.R` by setting the values of the variables [`B`](https://github.com/CoVPN/correlates_reporting_usgcove_archive/blob/fb1e0c976e6ffb8ed939325dbd20a6c59f44f82b/cor_coxph/code/params.R#L2) and [`numPerm`](https://github.com/CoVPN/correlates_reporting_usgcove_archive/blob/fb1e0c976e6ffb8ed939325dbd20a6c59f44f82b/cor_coxph/code/params.R#L3) both to `5`.

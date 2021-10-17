@@ -27,12 +27,12 @@ which outlines most aspects of our project organization recommendations.
 * Package version control and virtual environments using
   [`renv`](https://rstudio.github.io/renv/).
 * Code review procedure: see our [contribution
-   guidelines](https://github.com/CoVPN/correlates_reporting/blob/master/CONTRIBUTING.md).
+   guidelines](https://github.com/CoVPN/correlates_reporting_usgcove_archive/blob/master/CONTRIBUTING.md).
 
 ---
 
 ## License
 
 The contents of this repository are distributed under the GPL-3 license. See
-file [`LICENSE.md`](https://github.com/CoVPN/correlates_reporting/blob/master/LICENSE.md)
+file [`LICENSE.md`](https://github.com/CoVPN/correlates_reporting_usgcove_archive/blob/master/LICENSE.md)
 for details.

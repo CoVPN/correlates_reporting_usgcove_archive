@@ -20,7 +20,7 @@ hvtn705: &hvtn705
   study_name: HVTN705
   covariates_riskscore: ~.+ RSA + Age + BMI + Riskscore
 #  data_cleaned: ../vaccine/p705/correlates_temp/HVTN705_hybridrealmock_practicedata_Oct2021.csv
-  data_cleaned: correlates_reporting/data_clean/HVTN705_hybridrealmock_practicedata_Oct2021.csv
+  data_cleaned: correlates_reporting_usgcove_archive/data_clean/HVTN705_hybridrealmock_practicedata_Oct2021.csv
   num_boot_replicates: 10
   num_perm_replicates: 10
 

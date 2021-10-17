@@ -8,11 +8,11 @@ git config --global http.postBuffer 100000000
 # clone the repository's gh-pages branch
 git clone -b gh-pages \
   https://${GH_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git \
-  correlates_reporting
+  correlates_reporting_usgcove_archive
 
 # overwrite contents from existing gh-pages branch
-cd correlates_reporting
-echo "Files in correlates_reporting/ _before_ copying:"
+cd correlates_reporting_usgcove_archive
+echo "Files in correlates_reporting_usgcove_archive/ _before_ copying:"
 ls -l
 
 # replace with reports and note R version
@@ -44,7 +44,7 @@ fi
 echo "Reports built with R version $TRAVIS_R_VERSION"
 
 # check what files have been copied to branch gh-pages
-echo "All files in correlates_reporting/ _after_ copying:"
+echo "All files in correlates_reporting_usgcove_archive/ _after_ copying:"
 ls -l
 
 # stage, commit, push copied files to branch gh-pages

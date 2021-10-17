@@ -38,10 +38,10 @@ if (file.exists(path_to_data)) {
 ```
 
 * This report was built from the
-  [`CoVPN/correlates_reporting`](https://github.com/CoVPN/correlates_reporting)
+  [`CoVPN/correlates_reporting_usgcove_archive`](https://github.com/CoVPN/correlates_reporting_usgcove_archive)
   repository with commit hash `r system("git rev-parse HEAD", intern = TRUE)`. A diff of the changes introduced
   by that commit may be viewed at
-  https://github.com/CoVPN/correlates_reporting/commit/`r system("git rev-parse HEAD", intern = TRUE)`
+  https://github.com/CoVPN/correlates_reporting_usgcove_archive/commit/`r system("git rev-parse HEAD", intern = TRUE)`
 
 
 * The `r hash_algorithm` hash sum of the processed file, `r paste0("\"",data_name_updated,"\"")`: `r processed_file_digest`

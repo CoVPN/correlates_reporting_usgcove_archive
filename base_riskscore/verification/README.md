@@ -14,7 +14,7 @@ This directory contains:
 To create the verification report, execute the following commands.
 
 ```{bash, eval = FALSE, echo = TRUE}
-# from correlates_reporting directory
+# from correlates_reporting_usgcove_archive directory
 make data_processed
 # programmer
 make -C base_riskscore all

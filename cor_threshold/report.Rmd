@@ -17,7 +17,7 @@ message("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ running cor_threshold report ~~~~~~~~~~~
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-#setwd("/Users/larsvanderlaan/correlates_reporting_forks/correlates_reporting")
+#setwd("/Users/larsvanderlaan/correlates_reporting_usgcove_archive_forks/correlates_reporting_usgcove_archive")
 library(here)
 library(dplyr)
 print(here::here())
@@ -291,7 +291,7 @@ monotone <- FALSE
 
 
 ```{r, results="asis", echo = F, eval = F}
-setwd("/Users/larsvanderlaan/correlates_reporting_forks/correlates_reporting")
+setwd("/Users/larsvanderlaan/correlates_reporting_usgcove_archive_forks/correlates_reporting_usgcove_archive")
 for(key in short_keys){
   countAfter1 <- FALSE
   if((stringr::str_detect(key,"start"))>0) {

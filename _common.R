@@ -48,10 +48,10 @@ has29 = study_name %in% c("COVE","ENSEMBLE", "MockCOVE","MockENSEMBLE")
 data_name = paste0(attr(config, "config"), "_data_processed.csv")
 if (startsWith(tolower(study_name), "mock")) {
     data_name_updated <- sub(".csv", "_with_riskscore.csv", data_name)
-    path_to_data = ifelse (endsWith(here::here(), "correlates_reporting"), here::here("data_clean", data_name_updated), here::here("..", "data_clean", data_name_updated))
+    path_to_data = ifelse (endsWith(here::here(), "correlates_reporting_usgcove_archive"), here::here("data_clean", data_name_updated), here::here("..", "data_clean", data_name_updated))
     data_name = data_name_updated    
 } else {
-    path_to_data = ifelse (endsWith(here::here(), "correlates_reporting"), here::here("..", data_cleaned), here::here("..", "..", data_cleaned))
+    path_to_data = ifelse (endsWith(here::here(), "correlates_reporting_usgcove_archive"), here::here("..", data_cleaned), here::here("..", "..", data_cleaned))
     data_name = path_to_data
 }
 print(path_to_data)

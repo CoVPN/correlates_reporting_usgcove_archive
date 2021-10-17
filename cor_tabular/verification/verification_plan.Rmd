@@ -4,7 +4,7 @@ date: "`r format(Sys.time(), '%B %d, %Y')`"
 output: pdf_document
 ---
 
-Project directory: `correlates_reporting/cor_tabular`
+Project directory: `correlates_reporting_usgcove_archive/cor_tabular`
 
 Specifications:
 

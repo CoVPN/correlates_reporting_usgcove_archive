@@ -151,7 +151,7 @@ Some basic commands:
 To clone the repo, 
 
 ```bash
-git clone https://usr@github.com/CoVPN/correlates_reporting.git
+git clone https://{USER}@github.com/CoVPN/correlates_reporting_usgcove_archive.git
 ```
 
 
@@ -226,7 +226,7 @@ can simply write `study_name`).
 
 In order to facilitate _reproducible reporting_, this project makes use of
 automated testing and checking via the continuous integration service
-[Travis-CI](https://travis-ci.com/github/CoVPN/correlates_reporting/builds).
+[Travis-CI](https://travis-ci.com/github/CoVPN/correlates_reporting_usgcove_archive/builds).
 For any contributed or changed code, the Travis-CI service will automatically
 attempt to build the reports corresponding to each of the statistical analyses
 outline in the statistical analysis plan. This automatic check serves to ensure
@@ -239,7 +239,7 @@ provided) but also check that their contributions pass on the machine instances
 spawned by the Travis-CI service. For any given build, logs are provided to help
 elucidate any potential sources of error. Upon passing a continuous integration
 check, Travis-CI will automatically post the resultant reports to the `gh-pages`
-branch at https://github.com/CoVPN/correlates_reporting/tree/gh-pages.
+branch at https://github.com/CoVPN/correlates_reporting_usgcove_archive/tree/gh-pages.
 
 ## Optimal Flow
 
@@ -278,7 +278,7 @@ Follow this flow closely:
    who will provide feedback on how to improve/streamline the contributed code.
    Note that the PR will be subject to automated continuous integration checks
    by the [Travis-CI
-   service](https://travis-ci.com/github/CoVPN/correlates_reporting/builds); a
+   service](https://travis-ci.com/github/CoVPN/correlates_reporting_usgcove_archive/builds); a
    PR that fails to pass these automated checks _will not be merged_.
 9. Once the PR has been accepted, merge normally (i.e., do _not_ use a special
    merge), then delete the feature branch.

@@ -1,4 +1,4 @@
-# CoVPN/USG Correlates Analysis Reporting Archive
+# CoVPN/USG Correlates Analysis Reporting [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5593129.svg)](https://doi.org/10.5281/zenodo.5593129)
 
 __Note:__ As of 16 October 2021, this repository has been archived. Generalized
 versions of its data processing and analysis modules have been split in two and
@@ -28,6 +28,24 @@ which outlines most aspects of our project organization recommendations.
   [`renv`](https://rstudio.github.io/renv/).
 * Code review procedure: see our [contribution
    guidelines](https://github.com/CoVPN/correlates_reporting_usgcove_archive/blob/master/CONTRIBUTING.md).
+
+---
+
+## CITATION
+
+When citing the analysis workflow or analytic results produced by its use,
+please cite the following
+
+        @software{gilbert2021usgcove,
+          author = {Gilbert, Peter B and Fong, Youyi and Benkeser, David and
+            Hejazi, Nima S and Hughes, Ellis and Borate, Bhavesh and Yu,
+            Chenchen and Lu, Yiwen and Li, Kendrick Q and {van der Laan}, Lars
+            WP and Simpkins, Brian},
+          title = {{COVID-19 Prevention Network Immune Correlates Analyses},
+          year  = {2021},
+          doi = {10.5281/zenodo.5593129},
+          url = {https://github.com/CoVPN/correlates_reporting_usgcove_archive}
+        }
 
 ---
 

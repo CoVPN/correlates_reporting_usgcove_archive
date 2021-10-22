@@ -1,4 +1,4 @@
-# CoVPN/USG Correlates Analysis Reporting [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5593129.svg)](https://doi.org/10.5281/zenodo.5593129)
+# CoVPN/USG Correlates Analysis Reporting Archive [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5593129.svg)](https://doi.org/10.5281/zenodo.5593129) [![Build Status](https://app.travis-ci.com/CoVPN/correlates_reporting_usgcove_archive.svg?branch=master)](https://app.travis-ci.com/CoVPN/correlates_reporting_usgcove_archive)
 
 __Note:__ As of 16 October 2021, this repository has been archived. Generalized
 versions of its data processing and analysis modules have been split in two and
@@ -31,10 +31,10 @@ which outlines most aspects of our project organization recommendations.
 
 ---
 
-## CITATION
+## Citation
 
 When citing the analysis workflow or analytic results produced by its use,
-please cite the following
+please use the following `BibTeX` entry or equivalent:
 
         @software{gilbert2021usgcove,
           author = {Gilbert, Peter B and Fong, Youyi and Benkeser, David and
